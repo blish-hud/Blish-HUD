@@ -1,0 +1,852 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/platform:Windows
+/config:
+/profile:HiDef
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+/reference:..\..\..\..\..\..\..\.nuget\packages\monogame.extended.content.pipeline\1.1.0\tools\MonoGame.Extended.Content.Pipeline.dll
+
+#---------------------------------- Content ---------------------------------#
+
+#begin atlas/ui.json
+/importer:TexturePackerJsonImporter
+/processor:TexturePackerProcessor
+/build:atlas/ui.json
+
+#begin atlas/ui-atlas.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:atlas/ui-atlas.png
+
+#begin audio/bundle-activated.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/bundle-activated.wav
+
+#begin audio/button-click.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/button-click.wav
+
+#begin audio/color-change.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/color-change.wav
+
+#begin audio/error.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/error.wav
+
+#begin audio/inventory-move.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/inventory-move.wav
+
+#begin audio/numeric-spinner.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/numeric-spinner.wav
+
+#begin audio/open-skill-slot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/open-skill-slot.wav
+
+#begin audio/page-open-1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/page-open-1.wav
+
+#begin audio/page-open-2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/page-open-2.wav
+
+#begin audio/page-open-3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/page-open-3.wav
+
+#begin audio/select-skill.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/select-skill.wav
+
+#begin audio/tab-swap-1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/tab-swap-1.wav
+
+#begin audio/tab-swap-2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/tab-swap-2.wav
+
+#begin audio/tab-swap-3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/tab-swap-3.wav
+
+#begin audio/tab-swap-4.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/tab-swap-4.wav
+
+#begin audio/tab-swap-5.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/tab-swap-5.wav
+
+#begin audio/window-close.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/window-close.wav
+
+#begin common/button-states.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=True
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:common/button-states.jpg
+
+#begin common/cursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:common/cursor.png
+
+#begin common/dissolve.tga
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:common/dissolve.tga
+
+#begin common/error.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:common/error.png
+
+#begin common/menomonia.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:common/menomonia.spritefont
+
+#begin common/menomonia.ttf
+/copy:common/menomonia.ttf
+
+#begin common/solid.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:common/solid.png
+
+#begin common/trebuchet-ms-bold.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:common/trebuchet-ms-bold.spritefont
+
+#begin common/trebuchet-ms-italic.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:common/trebuchet-ms-italic.spritefont
+
+#begin common/trebuchet-ms-regular.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:common/trebuchet-ms-regular.spritefont
+
+#begin effects/alphamask.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/alphamask.fx
+
+#begin effects/distancedissolve.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/distancedissolve.fx
+
+#begin effects/glow.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/glow.fx
+
+#begin effects/menuitem.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/menuitem.fx
+
+#begin effects/menuitem2.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/menuitem2.fx
+
+#begin effects/trail.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/trail.fx
+
+#begin fonts/consolas-10.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/consolas-10.spritefont
+
+#begin fonts/consolas-10-bold.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/consolas-10-bold.spritefont
+
+#begin fonts/consolas-12.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/consolas-12.spritefont
+
+#begin fonts/consolas-12-bold.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/consolas-12-bold.spritefont
+
+#begin fonts/consolas-8.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/consolas-8.spritefont
+
+#begin fonts/consolas-8-bold.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/consolas-8-bold.spritefont
+
+#begin fonts/menomonia/menomonia-11-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-11-bold.fnt
+
+#begin fonts/menomonia/menomonia-11-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-11-bold_0.png
+
+#begin fonts/menomonia/menomonia-11-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-11-italic.fnt
+
+#begin fonts/menomonia/menomonia-11-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-11-italic_0.png
+
+#begin fonts/menomonia/menomonia-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-11-regular.fnt
+
+#begin fonts/menomonia/menomonia-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-11-regular_0.png
+
+#begin fonts/menomonia/menomonia-12-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-12-bold.fnt
+
+#begin fonts/menomonia/menomonia-12-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-12-bold_0.png
+
+#begin fonts/menomonia/menomonia-12-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-12-italic.fnt
+
+#begin fonts/menomonia/menomonia-12-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-12-italic_0.png
+
+#begin fonts/menomonia/menomonia-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-12-regular.fnt
+
+#begin fonts/menomonia/menomonia-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-12-regular_0.png
+
+#begin fonts/menomonia/menomonia-14-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-14-bold.fnt
+
+#begin fonts/menomonia/menomonia-14-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-14-bold_0.png
+
+#begin fonts/menomonia/menomonia-14-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-14-italic.fnt
+
+#begin fonts/menomonia/menomonia-14-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-14-italic_0.png
+
+#begin fonts/menomonia/menomonia-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-14-regular.fnt
+
+#begin fonts/menomonia/menomonia-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-14-regular_0.png
+
+#begin fonts/menomonia/menomonia-16-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-16-bold.fnt
+
+#begin fonts/menomonia/menomonia-16-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-16-bold_0.png
+
+#begin fonts/menomonia/menomonia-16-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-16-italic.fnt
+
+#begin fonts/menomonia/menomonia-16-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-16-italic_0.png
+
+#begin fonts/menomonia/menomonia-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-16-regular.fnt
+
+#begin fonts/menomonia/menomonia-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-16-regular_0.png
+
+#begin fonts/menomonia/menomonia-18-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-18-bold.fnt
+
+#begin fonts/menomonia/menomonia-18-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-18-bold_0.png
+
+#begin fonts/menomonia/menomonia-18-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-18-italic.fnt
+
+#begin fonts/menomonia/menomonia-18-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-18-italic_0.png
+
+#begin fonts/menomonia/menomonia-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-18-regular.fnt
+
+#begin fonts/menomonia/menomonia-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-18-regular_0.png
+
+#begin fonts/menomonia/menomonia-20-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-20-bold.fnt
+
+#begin fonts/menomonia/menomonia-20-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-20-bold_0.png
+
+#begin fonts/menomonia/menomonia-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-20-regular.fnt
+
+#begin fonts/menomonia/menomonia-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-20-regular_0.png
+
+#begin fonts/menomonia/menomonia-22-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-22-bold.fnt
+
+#begin fonts/menomonia/menomonia-22-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-22-bold_0.png
+
+#begin fonts/menomonia/menomonia-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-22-regular.fnt
+
+#begin fonts/menomonia/menomonia-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-22-regular_0.png
+
+#begin fonts/menomonia/menomonia-24-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-24-bold.fnt
+
+#begin fonts/menomonia/menomonia-24-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-24-bold_0.png
+
+#begin fonts/menomonia/menomonia-24-bold_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-24-bold_1.png
+
+#begin fonts/menomonia/menomonia-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-24-regular.fnt
+
+#begin fonts/menomonia/menomonia-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-24-regular_0.png
+
+#begin fonts/menomonia/menomonia-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-32-regular.fnt
+
+#begin fonts/menomonia/menomonia-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-32-regular_0.png
+
+#begin fonts/menomonia/menomonia-32-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-32-regular_1.png
+
+#begin fonts/menomonia/menomonia-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-34-regular.fnt
+
+#begin fonts/menomonia/menomonia-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-34-regular_0.png
+
+#begin fonts/menomonia/menomonia-34-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-34-regular_1.png
+
+#begin fonts/menomonia/menomonia-36-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-36-bold.fnt
+
+#begin fonts/menomonia/menomonia-36-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-36-bold_0.png
+
+#begin fonts/menomonia/menomonia-36-bold_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-36-bold_1.png
+
+#begin fonts/menomonia/menomonia-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-36-regular.fnt
+
+#begin fonts/menomonia/menomonia-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-36-regular_0.png
+
+#begin fonts/menomonia/menomonia-36-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-36-regular_1.png
+
+#begin fonts/menomonia/menomonia-8-bold.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-8-bold.fnt
+
+#begin fonts/menomonia/menomonia-8-bold_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-8-bold_0.png
+
+#begin fonts/menomonia/menomonia-8-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-8-italic.fnt
+
+#begin fonts/menomonia/menomonia-8-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-8-italic_0.png
+
+#begin fonts/menomonia/menomonia-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/menomonia/menomonia-8-regular.fnt
+
+#begin fonts/menomonia/menomonia-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia/menomonia-8-regular_0.png
+
+#begin fonts/menomonia-8-regular_0.tga
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/menomonia-8-regular_0.tga
+

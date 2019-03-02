@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blish HUD", "Blish HUD\Blish HUD.csproj", "{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release - No Sentry|Any CPU = Release - No Sentry|Any CPU
+		Release - No Sentry|x64 = Release - No Sentry|x64
+		Release - No Sentry|x86 = Release - No Sentry|x86
+		Release - Sentry|Any CPU = Release - Sentry|Any CPU
+		Release - Sentry|x64 = Release - Sentry|x64
+		Release - Sentry|x86 = Release - Sentry|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|x64.ActiveCfg = Debug|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|x64.Build.0 = Debug|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|x86.ActiveCfg = Debug|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release - No Sentry|Any CPU.ActiveCfg = Release - Sentry|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release - No Sentry|x64.ActiveCfg = Release - No Sentry|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release - No Sentry|x64.Build.0 = Release - No Sentry|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release - No Sentry|x86.ActiveCfg = Release - Sentry|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release - Sentry|Any CPU.ActiveCfg = Release - Sentry|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release - Sentry|x64.ActiveCfg = Release - Sentry|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release - Sentry|x64.Build.0 = Release - Sentry|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release - Sentry|x86.ActiveCfg = Release - Sentry|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|Any CPU.ActiveCfg = Release|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x64.ActiveCfg = Release|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x64.Build.0 = Release|x64
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x86.ActiveCfg = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BCD3C4BD-915D-4622-A220-D39D18A327D9}
+	EndGlobalSection
+EndGlobal
