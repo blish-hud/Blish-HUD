@@ -136,6 +136,7 @@ namespace Blish_HUD {
                         }
                     } else {
                         #if DEBUG
+                        Directory.CreateDirectory(@"ref\to-include");
 
                         // Makes it easy to know what's in use so that it can be added to the ref archive later
                         if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
