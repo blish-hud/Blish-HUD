@@ -13,6 +13,7 @@ namespace Blish_HUD.Modules.PoiLookup {
 
         private PoiLookupWindow LandmarkSearchWindow;
         private SkillBox LandmarkSearch;
+        private CornerIcon landmarkSearchIcon;
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
@@ -39,19 +40,35 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Location = GameService.Graphics.SpriteScreen.Size / new Point(2)
             };
 
-            var testMenu = new ContextMenuStrip();
-            testMenu.AddMenuItem("Use");
-            testMenu.AddMenuItem("Mail item to...");
-            testMenu.AddMenuItem("Destroy");
-            testMenu.AddMenuItem("Use All");
-
             LandmarkSearch = new SkillBox() {
                 Location = new Point(GameService.Graphics.WindowWidth / 4 * 1 - 30, 0),
                 Icon     = GameService.Content.GetTexture("landmark-search-icon"),
                 Parent   = GameService.Graphics.SpriteScreen,
-                Menu     = testMenu
+                Menu     = new ContextMenuStrip(),
+                Visible  = false
             };
 
+            LandmarkSearch.Menu.AddMenuItem("Use small icon").Click += delegate {
+                LandmarkSearch.Visible     = false;
+                landmarkSearchIcon.Visible = true;
+            };
+
+            landmarkSearchIcon = new CornerIcon() {
+                Icon = GameService.Content.GetTexture("landmark-search"),
+                HoverIcon = GameService.Content.GetTexture("landmark-search-hover"),
+                Menu             = new ContextMenuStrip(),
+                BasicTooltipText = "Landmark Search",
+                Priority         = 5,
+            };
+
+            landmarkSearchIcon.Menu.AddMenuItem("Use large icon").Click += delegate {
+                LandmarkSearch.Visible = true;
+                landmarkSearchIcon.Visible = false;
+            };
+
+            landmarkSearchIcon.Click += delegate {
+                LandmarkSearchWindow.ToggleWindow();
+            };
 
             GameService.Graphics.SpriteScreen.Resized += delegate { LandmarkSearch.Location = new Point(GameService.Graphics.WindowWidth / 4 * 1 - 30, 0); };
 
@@ -62,7 +79,7 @@ namespace Blish_HUD.Modules.PoiLookup {
             var floorInfo = BHGw2Api.Floor.FloorFromContinentAndId(1, 1);
 
             if (floorInfo == null) {
-                Console.WriteLine("PoiLookup: Could not load landmark information from API. Aborting.");
+                GameService.Debug.WriteWarningLine("PoiLookup: Could not load landmark information from API. Aborting.");
                 return;
             }
 
@@ -103,10 +120,6 @@ namespace Blish_HUD.Modules.PoiLookup {
             }
             
             return closestWp;
-        }
-
-        public override void Update(GameTime gameTime) {
-            LandmarkSearch.Visible = GameService.GameIntegration.IsInGame;
         }
 
     }

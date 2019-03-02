@@ -149,7 +149,7 @@ namespace Blish_HUD.Controls {
 
         // TODO: Use a shader to replace "HoverIcon"
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (this.HoverIcon == null) return;
+            if (this.Icon == null) return;
 
             if (this.MouseOver) {
                 if (this.HoverIcon == null) {

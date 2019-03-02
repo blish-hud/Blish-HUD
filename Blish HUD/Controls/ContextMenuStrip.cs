@@ -64,6 +64,8 @@ namespace Blish_HUD.Controls {
                 newChild.Height = ITEM_HEIGHT;
                 newChild.Width = this.Width - BORDER_PADDING * 2;
                 newChild.Left = BORDER_PADDING;
+
+                newChild.Click += delegate { this.Visible = false; };
             }
 
             int lastBottom = -4;
