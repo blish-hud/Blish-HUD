@@ -16,7 +16,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
             if (categoryNodes == null) return;
 
             foreach (XmlNode categoryNode in categoryNodes) {
-                PackFormat.PathingCategoryBuilder.UnpackCategory(categoryNode, GameService.Pathing.Categories);
+                PathingCategoryBuilder.UnpackCategory(categoryNode, GameService.Pathing.Categories);
             }
         }
 
@@ -25,7 +25,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
             if (poiNodes == null) return;
 
             foreach (XmlNode poiNode in poiNodes) {
-                PackFormat.MarkerBuilder.UnpackPoi(poiNode);
+                MarkerBuilder.UnpackPoi(poiNode);
             }
         }
 

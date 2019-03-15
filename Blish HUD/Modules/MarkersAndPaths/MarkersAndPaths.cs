@@ -9,8 +9,10 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
     public class MarkersAndPaths : Module {
 
         internal const string MARKER_DIRECTORY = "markers";
+        internal const string PATHS_DIRECTORY = "paths";
 
         private string MarkerDirectory => Path.Combine(GameService.FileSrv.BasePath, MARKER_DIRECTORY);
+        private string PathsDirectory => Path.Combine(GameService.FileSrv.BasePath, PATHS_DIRECTORY);
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
@@ -27,10 +29,12 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         protected override void OnEnabled() {
-            // Ensure the marker directory is available in the documents folder
+            // Ensure both the marker and paths directory are available in the documents folder
             if (!Directory.Exists(this.MarkerDirectory)) Directory.CreateDirectory(this.MarkerDirectory);
+            if (!Directory.Exists(this.PathsDirectory)) Directory.CreateDirectory(this.MarkerDirectory);
 
             // Could take a while to load in everything - offload it so that Blish HUD can finish starting
+            // Load the markers and paths
             var loadPacks = new Task(LoadPacks);
             loadPacks.Start();
         }

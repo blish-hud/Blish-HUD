@@ -207,9 +207,10 @@
     <Compile Include="Modules\EventTimers\EventTimers.cs" />
     <Compile Include="Modules\MarkersAndPaths\Controls\CategoryMenuItem.cs" />
     <Compile Include="Modules\MarkersAndPaths\MarkersAndPaths.cs" />
-    <Compile Include="Modules\MarkersAndPaths\PackFormat\OverlayDataReader.cs" />
-    <Compile Include="Modules\MarkersAndPaths\PackFormat\MarkerBuilder.cs" />
-    <Compile Include="Modules\MarkersAndPaths\PackFormat\PathingCategoryBuilder.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\AugTyr\OverlayDataReader.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\OverlayDataReader.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\MarkerBuilder.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PathingCategoryBuilder.cs" />
     <Compile Include="Modules\MouseUsability\Controls\MouseHighlight.cs" />
     <Compile Include="Modules\MouseUsability\Controls\MouseHighlightDemoPanel.cs" />
     <Compile Include="Modules\MouseUsability\MouseUsability.cs" />

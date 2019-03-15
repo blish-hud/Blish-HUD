@@ -10,14 +10,16 @@ namespace Blish_HUD {
 
         public SettingEntry<Dictionary<string, bool>> ModuleStates { get; private set; }
 
-        private List<Modules.Module> _availableModules;
-        public List<Modules.Module> AvailableModules => _availableModules;
+        public List<Modules.Module> AvailableModules { get; private set; }
 
         protected override void Initialize() {
-            _availableModules = new List<Modules.Module>();
+            this.AvailableModules = new List<Modules.Module>();
 
-            this.ModuleStates = GameService.Settings.CoreSettings.DefineSetting("ModuleStates",
-                new Dictionary<string, bool>(), new Dictionary<string, bool>());
+            this.ModuleStates = Settings.CoreSettings.DefineSetting(
+                                                                    "ModuleStates",
+                                                                    new Dictionary<string, bool>(), 
+                                                                    new Dictionary<string, bool>()
+                                                                   );
         }
 
         public void RegisterModule(Modules.Module module) {
@@ -41,7 +43,7 @@ namespace Blish_HUD {
             // RegisterModule(new Modules.RangeCircles());
             RegisterModule(new Modules.PoiLookup.PoiLookup());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
-            // RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
+            RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
         }
 
         protected override void Unload() {
