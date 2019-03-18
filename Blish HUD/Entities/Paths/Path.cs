@@ -17,7 +17,9 @@ namespace Blish_HUD.Entities.Paths {
         /// </summary>
         public int MapId { get; protected set; }
 
-        public virtual IEnumerable<Vector3> PathPoints { get; protected set; }
+        public virtual List<Vector3> PathPoints { get; protected set; }
+
+        public Texture2D PathTexture { get; set; }
 
     }
 }

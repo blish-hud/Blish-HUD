@@ -655,10 +655,10 @@ namespace Blish_HUD.Controls {
                     }
                 //}
 
-                using (var ctrlSpritebatch = new SpriteBatch(graphicsDevice)) {
-                    graphicsDevice.SetRenderTarget(RenderCache);
+                graphicsDevice.SetRenderTarget(RenderCache);
+                graphicsDevice.Clear(this.BackgroundColor);
 
-                    graphicsDevice.Clear(this.BackgroundColor);
+                using (var ctrlSpritebatch = new SpriteBatch(graphicsDevice)) {
 
                     ctrlSpritebatch.Begin(
                                           SpriteSortMode.Immediate,
@@ -668,8 +668,6 @@ namespace Blish_HUD.Controls {
                     Paint(ctrlSpritebatch, bounds.OffsetBy(-this.Padding.X, -this.Padding.Y));
 
                     ctrlSpritebatch.End();
-
-                    graphicsDevice.SetRenderTarget(null);
                 }
             }
 

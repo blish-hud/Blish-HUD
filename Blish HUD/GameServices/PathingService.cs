@@ -13,6 +13,7 @@ using Blish_HUD.Annotations;
 using Blish_HUD.Controls;
 using Blish_HUD.Custom.Collections;
 using Blish_HUD.Entities;
+using Blish_HUD.Entities.Paths;
 using Microsoft.Xna.Framework;
 using Praeclarum.Bind;
 using Panel = Blish_HUD.Controls.Panel;
@@ -22,6 +23,7 @@ namespace Blish_HUD {
     public class PathingService : GameService {
 
         public List<Marker> Markers { get; set; } = new List<Marker>();
+        public List<Path> Paths { get; set; } = new List<Path>();
 
         public readonly PathingCategory Categories = new PathingCategory("root") { Visible = true };
 
@@ -31,104 +33,36 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            GameService.Director.BlishHudWindow.AddTab("Markers and Paths", "marker-pathing-icon", BuildPanel(GameService.Director.BlishHudWindow.ContentRegion), int.MaxValue - 5);
+            //GameService.Director.BlishHudWindow.AddTab("Markers and Paths", "marker-pathing-icon", BuildPanel(GameService.Director.BlishHudWindow.ContentRegion), int.MaxValue - 5);
 
-            //testMarker = new Marker(GameService.Content.GetTexture("42683"), GameService.Player.Position, new Vector2(1, 1)) {
-            //    MapId = -1
-            //};
-            
-            //this.RegisterMarker(testMarker);
+            // We will actually just be using a CornerIcon for now
+            BuildPanel(Rectangle.Empty);
         }
 
-        // TODO: This panel actually belongs to the Markers & Paths module: move it there
         private Panel BuildPanel(Rectangle bounds) {
-
             const string PC_THISMAP = "This Map";
 
-            var psPanel = new Panel() {
-                Size      = bounds.Size,
-                CanScroll = false,
+            var psIcon = new CornerIcon() {
+                BasicTooltipText = "Markers and Paths",
+                Icon             = Content.GetTexture("marker-pathing-icon")
             };
 
-            var packsPanel = new FlowPanel() {
-                FlowDirection  = FlowPanel.ControlFlowDirection.LeftToRight,
-                ControlPadding = 8,
-                Location       = new Point(psPanel.Width - 630, 50),
-                Size           = new Point(630,                 psPanel.Height - 50 - Panel.BOTTOM_MARGIN),
-                Parent         = psPanel,
-                CanScroll      = true,
+            var psContextMenu = new ContextMenuStrip();
+            var thisMap = psContextMenu.AddMenuItem(PC_THISMAP);
+
+            var allMarkers = psContextMenu.AddMenuItem("All Markers");
+
+            var rootCategoryMenu = new ContextMenuStrip();
+
+            allMarkers.Submenu = rootCategoryMenu;
+
+            psIcon.Click += delegate {
+                psContextMenu.Show(psIcon.Location + psIcon.Size);
             };
 
-            for (int i = 0; i < 25; i++) {
+            // Handle adding loaded categories
 
-                var detailButtonTest1 = new DetailsButton() {
-                    Parent   = packsPanel,
-                    IconSize = DetailsIconSize.Large,
-                    Icon     = Content.GetTexture("1228232"),
-                    Text     = "Name of the event! " + i.ToString()
-                };
-
-                var gicon1 = new GlowButton() {
-                    Icon     = Content.GetTexture("waypoint"),
-                    Location = new Point(1, 1),
-                    Parent   = detailButtonTest1
-                };
-
-                var detailButtonTest2 = new DetailsButton() {
-                    Parent   = packsPanel,
-                    IconSize = DetailsIconSize.Small,
-                    Icon     = Content.GetTexture("1228232"),
-                    Text     = "Name of the event! " + i.ToString() 
-                };
-
-                var gicon2 = new GlowButton() {
-                    Icon     = Content.GetTexture("102530"),
-                    Location = new Point(1, 1),
-                    Parent   = detailButtonTest2,
-                    GlowColor = Color.Red
-                };
-
-                var gicon3 = new GlowButton() {
-                    Icon     = Content.GetTexture("pathing-icon"),
-                    Location = new Point(gicon2.Right + 2, 1),
-                    Parent   = detailButtonTest2,
-                    GlowColor = Color.Blue
-                };
-
-                bool ico = true;
-
-                gicon3.Click += delegate {
-                    gicon3.Icon = Content.GetTexture(ico ? "578853" : "pathing-icon");
-
-                    ico = !ico;
-                };
-
-            }
-
-            var menuPanel = new Panel {
-                ShowBorder = true,
-                Size       = new Point(psPanel.Width - packsPanel.Width - 15, packsPanel.Height + Panel.BOTTOM_MARGIN),
-                Location   = new Point(5,                                     50),
-                CanScroll  = true,
-                Parent     = psPanel,
-                Title      = "Marker and Path Categories"
-            };
-
-            var mpCategories = new Menu {
-                Size           = menuPanel.ContentRegion.Size,
-                MenuItemHeight = 40,
-                Parent         = menuPanel,
-            };
-
-            // Create standard entries
-
-            var thisMapMenuItem = new MenuItem {
-                Text = PC_THISMAP,
-                Icon = Content.GetTexture("1431767"), // Current events icon
-                Parent = mpCategories
-            };
-
-            void HandleCategoryChange(object sender, NotifyCollectionChangedEventArgs e, Controls.Container parentMenuItem) {
+            void HandleCategoryChange(object sender, NotifyCollectionChangedEventArgs e, ContextMenuStrip parentMenuItem) {
                 var parentCategory = sender as PathingCategory;
 
                 switch (e.Action) {
@@ -139,8 +73,8 @@ namespace Blish_HUD {
                     case NotifyCollectionChangedAction.Reset:
                         goto case NotifyCollectionChangedAction.Remove;
                     case NotifyCollectionChangedAction.Remove:
-                        foreach (PathingCategory category in e.NewItems) {
-                            AddCategoryMenuItem(parentMenuItem, category);
+                        foreach (PathingCategory category in e.OldItems) {
+                            RemoveCategoryMenuItem(parentCategory, category);
                         }
                         break;
                     case NotifyCollectionChangedAction.Add:
@@ -151,33 +85,43 @@ namespace Blish_HUD {
                 }
             }
 
-            void AddCategoryMenuItem(Controls.Container parentMenuItem, PathingCategory newCategory) {
+            void AddCategoryMenuItem(ContextMenuStrip parentMenuItem, PathingCategory newCategory) {
 
-                var newCategoryMenuItem = new Modules.MarkersAndPaths.Controls.CategoryMenuItem() {
-                    Text     = newCategory.Name,
-                    CanCheck = true,
-                    Icon     = string.IsNullOrWhiteSpace(newCategory.Name) ? null : Content.GetTexture(newCategory.IconFile),
-                    Parent   = parentMenuItem
-                };
+                var newCategoryContextMenuItem = parentMenuItem.AddMenuItem(newCategory.Name);
+                newCategoryContextMenuItem.CanCheck = true;
 
-                Binding.Create(() => newCategoryMenuItem.Checked == newCategory.Visible);
+                //var newCategoryMenuItem = new Modules.MarkersAndPaths.Controls.CategoryMenuItem() {
+                //    Text     = newCategory.Name,
+                //    CanCheck = true,
+                //    Icon     = string.IsNullOrWhiteSpace(newCategory.Name) ? null : Content.GetTexture(newCategory.IconFile),
+                //    Parent   = parentMenuItem
+                //};
+
+                Binding.Create(() => newCategoryContextMenuItem.Checked == newCategory.Visible &&
+                                     newCategoryContextMenuItem.Text == newCategory.DisplayName);
+
+                
 
                 newCategory.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args) {
-                    HandleCategoryChange(sender, args, newCategoryMenuItem);
+                    if (newCategoryContextMenuItem.Submenu == null)
+                        newCategoryContextMenuItem.Submenu = new ContextMenuStrip();
+
+                    HandleCategoryChange(sender, args, newCategoryContextMenuItem.Submenu);
                 };
 
             }
 
             this.Categories.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs args) {
-                HandleCategoryChange(sender, args, mpCategories);
+                HandleCategoryChange(sender, args, rootCategoryMenu);
             };
 
-            return psPanel;
+            return null;
         }
 
-        private void RemoveCategoryMenuItem(PathingCategory parentCategory, PathingCategory newCategory) {
+        private void RemoveCategoryMenuItem(PathingCategory parentCategory, PathingCategory oldCategory) {
             Console.WriteLine("A category was removed, but updating the MenuItems to reflect that hasn't been implemented yet!");
             // TODO: Implement RemoveCategoryMenuItem
+            throw new NotImplementedException($"Function {nameof(RemoveCategoryMenuItem)} of {nameof(PathingService)} was called before it has been implemented in code.");
         }
 
         private void ProcessMarkerState(Marker marker) {
@@ -188,15 +132,32 @@ namespace Blish_HUD {
             }
         }
 
+        private void ProcessPathState(Path path) {
+            if (path.MapId == Player.MapId || path.MapId == -1) {
+                Graphics.World.Entities.Add(path);
+            } else if (Graphics.World.Entities.Contains(path)) {
+                Graphics.World.Entities.Remove(path);
+            }
+        }
+
         private void PlayerOnOnMapIdChanged(object sender, EventArgs e) {
             foreach (var marker in this.Markers) {
                 ProcessMarkerState(marker);
+            }
+
+            foreach (var path in this.Paths) {
+                ProcessPathState(path);
             }
         }
 
         public void RegisterMarker(Marker newMarker) {
             this.Markers.Add(newMarker);
             ProcessMarkerState(newMarker);
+        }
+
+        public void RegisterPath(Path newPath) {
+            this.Paths.Add(newPath);
+            ProcessPathState(newPath);
         }
 
         protected override void Update(GameTime gameTime) {
@@ -244,7 +205,19 @@ namespace Blish_HUD {
                                        ? $"{this.Parent.Namespace}.{this.Name}"
                                        : this.Name;
 
-        public string DisplayName { get; set; }
+        private List<Entities.Marker> _markers = new List<Marker>();
+        private List<Entities.Paths.Path> _paths = new List<Path>();
+
+        private string _displayName;
+        public string DisplayName {
+            get => !string.IsNullOrWhiteSpace(_displayName) ? _displayName : this.Name;
+            set {
+                if (_displayName == value) return;
+
+                _displayName = value;
+                OnPropertyChanged();
+            }
+        }
 
         private string _iconFile;
         public string IconFile {
@@ -261,7 +234,7 @@ namespace Blish_HUD {
             }
         }
 
-        private bool _visible;
+        private bool _visible = true;
         public bool Visible {
             //get => this.Parent?.Visible ?? true && _visible;
             get => _visible;
@@ -269,6 +242,21 @@ namespace Blish_HUD {
                 if (_visible == value) return;
 
                 _visible = value;
+
+                _markers.ForEach(m => m.Visible = _visible);
+                _paths.ForEach(p => p.Visible = _visible);
+
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _enabled = true;
+        public bool Enabled {
+            get => _enabled;
+            set {
+                if (_enabled == value) return;
+
+                _enabled = value;
                 OnPropertyChanged();
             }
         }
@@ -297,6 +285,14 @@ namespace Blish_HUD {
 
         public PathingCategory(string name) {
             this.Name = name.ToLower();
+        }
+
+        public void AddMarker(Entities.Marker newMarker) {
+            _markers.Add(newMarker);
+        }
+
+        public void AddPath(Entities.Paths.Path newPath) {
+            _paths.Add(newPath);
         }
 
         public PathingCategory GetOrAddCategoryFromNamespace(string @namespace) {
@@ -335,7 +331,7 @@ namespace Blish_HUD {
         private void ChildPropertyChanged(object sender, PropertyChangedEventArgs e) {
             var childCat = sender as PathingCategory;
 
-            // Not sure you even got here...
+            // Not sure how you even got here...
             if (childCat == null) return;
 
             // Just something to let us waterfall back up

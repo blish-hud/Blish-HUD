@@ -52,8 +52,6 @@ namespace Blish_HUD {
 
         //private GameService[] gameServices;
         
-        public static Effect TrailEffect;
-
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -67,7 +65,6 @@ namespace Blish_HUD {
 
             font_def12 = this.Content.Load<SpriteFont>("common\\menomonia");
             font_consolas = this.Content.Load<BitmapFont>("fonts\\menomonia\\menomonia-11-regular");
-            TrailEffect = this.Content.Load<Effect>("effects\\trail");
 
             WinHandle = this.Window.Handle;
             var ctrl = System.Windows.Forms.Control.FromHandle(WinHandle);
@@ -210,25 +207,32 @@ namespace Blish_HUD {
             //rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             // TODO: We need to be culling in production builds
             rasterizerState.CullMode = CullMode.None;
-            //rasterizerState.FillMode = FillMode.WireFrame;
             this.GraphicsDevice.RasterizerState = rasterizerState;
-
-            this.GraphicsDevice.Clear(Color.Transparent);
             
             float aspectRatio = this.GraphicsDevice.Viewport.Width / (float) this.GraphicsDevice.Viewport.Height;
 
-            this.GraphicsDevice.SamplerStates[0] = SamplerState.AnisotropicWrap;
+            this.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
 
             this.GraphicsDevice.DepthStencilState = b;
-            
+
+
             spriteBatch.Begin();
 
-            GameService.Debug.StartTimeFunc("UI Elements");
-            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible)
-                GameService.Graphics.SpriteScreen.Draw(this.GraphicsDevice, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
-            GameService.Debug.StopTimeFunc("UI Elements");
+            this.GraphicsDevice.Clear(Color.Transparent);
 
-            
+
+            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
+                if (GameService.Graphics.SpriteScreen.GetRender() != null)
+                    spriteBatch.Draw(GameService.Graphics.SpriteScreen.GetRender(), new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
+            }
+
+            // Only draw 3D elements if we are in game
+            GameService.Debug.StartTimeFunc("3D objects");
+            if (GameService.GameIntegration.IsInGame)
+                GameService.Graphics.World.Draw(this.GraphicsDevice);
+            GameService.Debug.StopTimeFunc("3D objects");
+
+
             //GameService.Debug.StartTimeFunc("Trails");
             //TrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.View * GameService.Camera.Projection * Matrix.Identity);
 
@@ -236,7 +240,7 @@ namespace Blish_HUD {
             //    if (data == null || data.Trails == null) continue;
             //    foreach (Trail trail in data.Trails) {
             //        if (trail.MapId != GameService.Player.MapId) continue;
-                    
+
             //        TrailEffect.Parameters["Texture"].SetValue(trail.Texture);
             //        TrailEffect.Parameters["TotalMilliseconds"]
             //            .SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
@@ -260,20 +264,8 @@ namespace Blish_HUD {
             //        }
             //    }
             //}
-            //GameService.Debug.StopTimeFunc("Trails"); 
-            
+            //GameService.Debug.StopTimeFunc("Trails");
 
-            // Only draw 3D elements if we are in game
-            GameService.Debug.StartTimeFunc("3D objects");
-            if (GameService.GameIntegration.IsInGame)
-                GameService.Graphics.World.Draw(this.GraphicsDevice);
-            GameService.Debug.StopTimeFunc("3D objects");
-            
-
-            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
-                if (GameService.Graphics.SpriteScreen.GetRender() != null)
-                    spriteBatch.Draw(GameService.Graphics.SpriteScreen.GetRender(), new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
-            }
 
 #if DEBUG
 

@@ -4,14 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
+using Blish_HUD.Modules.Compatibility.TacO;
 using Microsoft.Xna.Framework;
 using Praeclarum.Bind;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
 
-    public static class MarkerBuilder {
+    public static class PoiBuilder {
 
         private const string ELEMENT_POITYPE_POI = "poi";
+        private const string ELEMENT_POITYPE_TRAIL = "trail";
 
         public static void UnpackPoi(XmlNode poiNode) {
             switch (poiNode.Name.ToLower()) {
@@ -23,13 +26,19 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
                     }
 
                     break;
+                case ELEMENT_POITYPE_TRAIL:
+                    var newTrails = Entities.Paths.Trail.FromXmlNode(poiNode);
+
+                    newTrails.ForEach((trail) => GameService.Pathing.RegisterPath(trail));
+
+                    break;
                 default:
                     Console.WriteLine($"Tried to unpack '{poiNode.Name}' as POI!");
                     break;
             }
         }
 
-        public static Entities.Marker FromXmlNode(XmlNode poiNode) {
+        public static Blish_HUD.Entities.Marker FromXmlNode(XmlNode poiNode) {
             int mapId = int.Parse(poiNode.Attributes["MapID"]?.InnerText ?? "-1");
 
             float xPos = float.Parse(poiNode.Attributes["xpos"]?.InnerText ?? "0");
@@ -47,7 +56,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
 
             var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(type);
 
-            var loadedMarker = new Entities.Marker(
+            var loadedMarker = new Blish_HUD.Entities.Marker(
                                        GameService.Content.GetTexture(
                                                                       System.IO.Path.Combine(
                                                                                              GameService.FileSrv.BasePath,

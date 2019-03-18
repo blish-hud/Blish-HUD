@@ -32,6 +32,37 @@ namespace Blish_HUD.Controls {
             Input.RightMouseButtonPressed += MouseButtonPressed;
         }
 
+        protected override void OnResized(ResizedEventArgs e) {
+            foreach (var childItem in this.Children) {
+                childItem.Width = this.Width - BORDER_PADDING * 2;
+            }
+
+            base.OnResized(e);
+        }
+
+        public void Show(Point position) {
+            this.Location = position;
+            this.Visible = true;
+        }
+
+        public void Show(Control activeControl) {
+            if (activeControl is ContextMenuStripItem parentMenu) {
+                this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top);
+                this.ZIndex = parentMenu.ZIndex - 1;
+            } else
+                this.Location = activeControl.Location + activeControl.Size;
+
+            this.Visible = true;
+        }
+
+        public void Hide() {
+            this.Visible = false;
+
+            foreach (var cmsiChild in this.Children.Select(otherChild => otherChild as ContextMenuStripItem)) {
+                cmsiChild?.Submenu?.Hide();
+            }
+        }
+
         protected override void OnChildAdded(ChildChangedEventArgs e) {
             base.OnChildAdded(e);
             OnChildMembershipChanged(e);
@@ -62,15 +93,24 @@ namespace Blish_HUD.Controls {
                 }
 
                 newChild.Height = ITEM_HEIGHT;
-                newChild.Width = this.Width - BORDER_PADDING * 2;
                 newChild.Left = BORDER_PADDING;
 
                 newChild.Click += delegate { this.Visible = false; };
+
+                // Stop showing submenus if adjacent menu items are moused over
+                newChild.MouseEntered += delegate {
+                    foreach (var ocCmsi in this.Children.Except(new[] { newChild }).Select(otherChild => otherChild as ContextMenuStripItem)) {
+                        ocCmsi?.Submenu?.Hide();
+                    }
+                };
             }
+
+            this.Width = e.ResultingChildren.Max(c => c.Width) + BORDER_PADDING * 2;
 
             int lastBottom = -4;
             e.ResultingChildren.ForEach(child => {
                                             child.Top = lastBottom + ITEM_VERTICALMARGIN;
+                                            child.Width = this.Width - BORDER_PADDING * 2;
                                             lastBottom = child.Bottom;
                                         });
 
@@ -108,7 +148,7 @@ namespace Blish_HUD.Controls {
             // Bottom line
             spriteBatch.Draw(_edgeSprite,
                              new Rectangle(1, this.Height, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             new Rectangle(1, _edgeSprite.Height / 2, _edgeSprite.Width, this.Width - BORDER_PADDING),
+                             new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, this.Width - BORDER_PADDING),
                              Color.White * 0.8f,
                              -MathHelper.PiOver2,
                              Vector2.Zero,

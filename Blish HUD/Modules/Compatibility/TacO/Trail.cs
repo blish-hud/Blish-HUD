@@ -11,7 +11,7 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
 
     public class TrailSection {
 
-        public Trail AssociatedTrail { get; protected set; }
+        public TrailOld AssociatedTrail { get; protected set; }
 
         public Vector3[] SectionData { get; protected set; }
         public VertexPositionColorTexture[] VertexData { get; protected set; }
@@ -32,7 +32,7 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
             }
         }
 
-        public TrailSection(Trail assocTrail, IEnumerable<Vector3> posData) {
+        public TrailSection(TrailOld assocTrail, IEnumerable<Vector3> posData) {
             this.AssociatedTrail = assocTrail;
             this.SectionData = posData.ToArray();
 
@@ -75,14 +75,14 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
                 var rightPoint = currPoint + (offset * -imgScale);
 
                 this.VertexData[i * 2 + 1] = new VertexPositionColorTexture(leftPoint, Color.White, new Vector2(0, this.Distance - pastDistance / imgScale / 2));
-                this.VertexData[i * 2] = new VertexPositionColorTexture(rightPoint, Color.White, new Vector2(1, this.Distance - pastDistance / imgScale / 2));
+                this.VertexData[i * 2]     = new VertexPositionColorTexture(rightPoint, Color.White, new Vector2(1, this.Distance - pastDistance / imgScale / 2));
 
                 prevPoint = currPoint;
             }
         }
     }
 
-    public class Trail {
+    public class TrailOld {
 
         public string Type { get; set; }
         public int MapId { get; set; }
@@ -97,20 +97,20 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
         public float AnimSpeed { get; set; }
         public Texture2D Texture { get; set; }
 
-        public static Trail FromTrlFile(string trlFile, Texture2D pathTexture) {
+        public static TrailOld FromTrlFile(string trlFile, Texture2D pathTexture) {
             if (!File.Exists(trlFile)) {
                 Console.WriteLine("No trl file found at " + trlFile);
                 return null;
             }
 
-            var tacoTrl = new Trail() {Texture = pathTexture};
+            var tacoTrl = new TrailOld() {Texture = pathTexture};
 
             byte[] rawTacoTrlData = File.ReadAllBytes(trlFile);
 
             // 32 bit, little-endian
             using (var mReader = new MemoryStream(rawTacoTrlData)) {
                 using (var bReader = new BinaryReader(mReader, Encoding.ASCII)) {
-                    // First four bytes are just 0000 (or, at least, in all of my testing they are)
+                    // First four bytes are just 0000 to signify the first path section
                     bReader.ReadInt32();
 
                     tacoTrl.MapId = bReader.ReadInt32();

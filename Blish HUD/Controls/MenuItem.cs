@@ -203,7 +203,7 @@ namespace Blish_HUD.Controls {
 
         private static List<TextureRegion2D> _cbRegions;
 
-        private static void LoadSprites() {
+        private static void LoadCheckboxSprites() {
             if (_cbRegions != null) return;
 
             _cbRegions = new List<TextureRegion2D>();
@@ -240,12 +240,10 @@ namespace Blish_HUD.Controls {
 
             this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, this.Height - this.MenuItemHeight);
 
-            LoadSprites();
+            LoadCheckboxSprites();
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            base.OnClick(e);
-
             if (this.Enabled
              && this.CanCheck
              && this.MouseOverIconBox) { /* Mouse was clicked inside of the checkbox */
@@ -263,6 +261,8 @@ namespace Blish_HUD.Controls {
 
                 this.Checked = !this.Checked;
             }
+
+            base.OnClick(e);
         }
 
         protected override void OnMouseMoved(MouseEventArgs e) {

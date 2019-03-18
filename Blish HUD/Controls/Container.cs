@@ -210,42 +210,40 @@ namespace Blish_HUD.Controls {
                 );
             }
 
-            var contentSpritebatch = new SpriteBatch(graphicsDevice);
             graphicsDevice.SetRenderTarget(ContentRenderCache);
-
             graphicsDevice.Clear(Color.Transparent);
 
-            // Paint children
-            foreach (var childControl in sortedChildren) {
-                if (childControl.Visible) {
-                    contentSpritebatch.Begin(
-                                             SpriteSortMode.Immediate,
-                                             childControl.BlendState,
-                                             null,
-                                             null,
-                                             null,
-                                             childControl.DrawEffect
-                                            );
+            using (var contentSpritebatch = new SpriteBatch(graphicsDevice)) {
 
-                    var childRender = childControl.GetRender();
+                // Paint children
+                foreach (var childControl in sortedChildren) {
+                    if (childControl.Visible) {
+                        contentSpritebatch.Begin(
+                                                 SpriteSortMode.Immediate,
+                                                 childControl.BlendState,
+                                                 null,
+                                                 null,
+                                                 null,
+                                                 childControl.DrawEffect
+                                                );
 
-                    if (childRender != null)
-                        contentSpritebatch.Draw(
-                                            childControl.GetRender(),
-                                            childControl.OuterBounds.OffsetBy(this.Padding),
-                                            Color.White * childControl.Opacity
-                                           );
-                    else 
-                        Console.WriteLine($"Child control {childControl.GetType().FullName} did not provide anything to render.");
+                        var childRender = childControl.GetRender();
 
-                    contentSpritebatch.End();
+                        if (childRender != null)
+                            contentSpritebatch.Draw(
+                                                    childControl.GetRender(),
+                                                    childControl.OuterBounds.OffsetBy(this.Padding),
+                                                    Color.White * childControl.Opacity
+                                                   );
+                        else
+                            Console.WriteLine($"Child control {childControl.GetType().FullName} did not provide anything to render.");
+
+                        contentSpritebatch.End();
+                    }
+
+                    graphicsDevice.SetRenderTarget(null);
                 }
             }
-
-            graphicsDevice.SetRenderTarget(null);
-            //graphicsDevice.Clear(Color.Transparent);
-
-            contentSpritebatch.Dispose();
         }
 
         public override void Draw(GraphicsDevice graphicsDevice, Rectangle bounds) {
@@ -287,27 +285,25 @@ namespace Blish_HUD.Controls {
 
                 PaintContent(graphicsDevice, zSortedChildren);
 
-                var ctrlSpritebatch = new SpriteBatch(graphicsDevice);
                 graphicsDevice.SetRenderTarget(RenderCache);
+                //graphicsDevice.Clear(Color.Transparent);
 
-                graphicsDevice.Clear(Color.Transparent);
+                using (var ctrlSpritebatch = new SpriteBatch(graphicsDevice)) {
+                    ctrlSpritebatch.Begin();
 
-                ctrlSpritebatch.Begin();
+                    // Paint container background
+                    PaintContainer(ctrlSpritebatch, bounds);
 
-                // Paint container background
-                PaintContainer(ctrlSpritebatch, bounds);
-                //Paint(ctrlSpritebatch, Bounds);
+                    //Paint(ctrlSpritebatch, Bounds);
 
-                // TODO: Only if debugging
-                //ctrlSpritebatch.Draw(ContentService.Textures.Pixel, this.ContentRegion, Color.Blue);
-                if (ContentRenderCache != null)
-                    ctrlSpritebatch.Draw(ContentRenderCache, this.ContentRegion, new Rectangle(0, this.VerticalScrollOffset, this.ContentRegion.Width, this.ContentRegion.Height), Color.White);
+                    // TODO: Only if debugging
+                    //ctrlSpritebatch.Draw(ContentService.Textures.Pixel, this.ContentRegion, Color.Blue);
+                    if (ContentRenderCache != null) ctrlSpritebatch.Draw(ContentRenderCache, this.ContentRegion, new Rectangle(0, this.VerticalScrollOffset, this.ContentRegion.Width, this.ContentRegion.Height), Color.White);
 
-                ctrlSpritebatch.End();
+                    ctrlSpritebatch.End();
+                }
+
                 graphicsDevice.SetRenderTarget(null);
-
-                ctrlSpritebatch.Dispose();
-                graphicsDevice.Clear(Color.Transparent);
             }
 
             this.NeedsRedraw = false;

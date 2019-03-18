@@ -29,11 +29,11 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
         public MarkerCategory Category { get; set; }
         
         public List<POI> POIs { get; set; }
-        public List<Trail> Trails { get; set; }
+        public List<TrailOld> Trails { get; set; }
 
         public OverlayData() {
             this.POIs = new List<POI>();
-            this.Trails = new List<Trail>();
+            this.Trails = new List<TrailOld>();
         }
 
         private static string SanitizeXml(string xmlDoc) {
@@ -86,7 +86,7 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
                             nText = Utils.Pipeline.TextureFromFile(GameService.Graphics.GraphicsDevice, texturePath);
 
                         var nTrail =
-                            Trail.FromTrlFile(
+                            TrailOld.FromTrlFile(
                                 System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filepath), poi.Attributes["trailData"].InnerText),
                                 nText);
                         nTrail.GUID = poi.Attributes["GUID"]?.InnerText;

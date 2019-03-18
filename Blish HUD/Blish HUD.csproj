@@ -178,7 +178,8 @@
     <Compile Include="Entities\Marker.cs" />
     <Compile Include="Entities\Paths\Path.cs" />
     <Compile Include="Entities\Paths\Route.cs" />
-    <Compile Include="Entities\Paths\Trail.cs" />
+    <Compile Include="Modules\MarkersAndPaths\Entities\ITacOMarkerType.cs" />
+    <Compile Include="Modules\MarkersAndPaths\Entities\Trail.cs" />
     <Compile Include="Entities\Primitives\Cuboid.cs" />
     <Compile Include="Entities\Primitives\Face.cs" />
     <Compile Include="Entities\Primitives\Mesh.cs" />
@@ -209,7 +210,7 @@
     <Compile Include="Modules\MarkersAndPaths\MarkersAndPaths.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\AugTyr\OverlayDataReader.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\OverlayDataReader.cs" />
-    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\MarkerBuilder.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PoiBuilder.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PathingCategoryBuilder.cs" />
     <Compile Include="Modules\MouseUsability\Controls\MouseHighlight.cs" />
     <Compile Include="Modules\MouseUsability\Controls\MouseHighlightDemoPanel.cs" />

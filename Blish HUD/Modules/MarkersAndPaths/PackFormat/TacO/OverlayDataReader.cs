@@ -25,7 +25,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
             if (poiNodes == null) return;
 
             foreach (XmlNode poiNode in poiNodes) {
-                MarkerBuilder.UnpackPoi(poiNode);
+                PoiBuilder.UnpackPoi(poiNode);
             }
         }
 

@@ -15,11 +15,11 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
         public string GUID { get; protected set; }
 
         public override void Update(GameTime gameTime) {
-            if (this.Visible && this.FadeStart > 0 && this.ClipDistance > 0) {
-                this.Opacity = Math.Min(Math.Abs(this.DistanceFromPlayer - this.FadeStart) / Math.Abs(this.ClipDistance - this.FadeStart), 1);
-            }
+            //if (this.Visible && this.FadeNear > 0 && this.FadeFar > 0) {
+            //    this.Opacity = Math.Min(Math.Abs(this.DistanceFromPlayer - this.FadeNear) / Math.Abs(this.FadeFar - this.FadeNear), 1);
+            //}
 
-            base.Update(gameTime);
+            //base.Update(gameTime);
         }
 
         public MarkerCategory ReferenceCategory;
@@ -29,8 +29,8 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
             this.Type = type;
             this.Behavior = behavior;
             this.GUID = guid;
-            this.FadeStart = referenceCategory.FadeNear;
-            this.ClipDistance = referenceCategory.FadeFar;
+            //this.FadeNear = referenceCategory.FadeNear;
+            //this.FadeFar = referenceCategory.FadeFar;
         }
 
         public static POI FromXmlNode(XmlNode node) {

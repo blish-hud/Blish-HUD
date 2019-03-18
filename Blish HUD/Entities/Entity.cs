@@ -31,12 +31,10 @@ namespace Blish_HUD.Entities {
         }
 
         public Vector3 Position { get; set; } = Vector3.Zero;
-
-        // FadeStart needs to be less than ClipDistance
-        public float FadeStart { get; set; } = 0;
-        public float ClipDistance { get; set; } = 0;
         
-        // TODO: Include FadeStart/ClipDistance into the get call
+        //public float FadeNear { get; set; } = 0;
+        //public float FadeFar { get; set; } = 0;
+        
         public float Opacity { get; set; } = 1.0f;
 
         public float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Player.Position);

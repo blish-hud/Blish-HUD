@@ -35,8 +35,9 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
             // Could take a while to load in everything - offload it so that Blish HUD can finish starting
             // Load the markers and paths
-            var loadPacks = new Task(LoadPacks);
-            loadPacks.Start();
+            //var loadPacks = new Task(LoadPacks);
+            //loadPacks.Start();
+            LoadPacks();
         }
         
         private void LoadPacks() {
