@@ -36,7 +36,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
             }
 
             var packDocument = new XmlDocument();
-            string packSrc = File.ReadAllText(packPath); //SanitizeXml(File.ReadAllText(packPath));
+            string packSrc = SanitizeXml(File.ReadAllText(packPath));
 
             //try {
 

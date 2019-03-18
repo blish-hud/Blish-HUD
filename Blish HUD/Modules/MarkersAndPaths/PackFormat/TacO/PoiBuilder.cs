@@ -61,7 +61,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
                                                                       System.IO.Path.Combine(
                                                                                              GameService.FileSrv.BasePath,
                                                                                              MarkersAndPaths.MARKER_DIRECTORY,
-                                                                                             refCategory.IconFile
+                                                                                             refCategory.IconFile ?? ""
                                                                                             )
                                                                      ),
                                        new Vector3(xPos, zPos, yPos),

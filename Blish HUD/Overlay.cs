@@ -207,30 +207,23 @@ namespace Blish_HUD {
             //rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             // TODO: We need to be culling in production builds
             rasterizerState.CullMode = CullMode.None;
+            //rasterizerState.FillMode = FillMode.WireFrame;
             this.GraphicsDevice.RasterizerState = rasterizerState;
-            
-            float aspectRatio = this.GraphicsDevice.Viewport.Width / (float) this.GraphicsDevice.Viewport.Height;
-
-            this.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
-
-            this.GraphicsDevice.DepthStencilState = b;
-
-
-            spriteBatch.Begin();
 
             this.GraphicsDevice.Clear(Color.Transparent);
 
+            float aspectRatio = this.GraphicsDevice.Viewport.Width / (float)this.GraphicsDevice.Viewport.Height;
 
-            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
-                if (GameService.Graphics.SpriteScreen.GetRender() != null)
-                    spriteBatch.Draw(GameService.Graphics.SpriteScreen.GetRender(), new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
-            }
+            this.GraphicsDevice.SamplerStates[0] = SamplerState.AnisotropicWrap;
 
-            // Only draw 3D elements if we are in game
-            GameService.Debug.StartTimeFunc("3D objects");
-            if (GameService.GameIntegration.IsInGame)
-                GameService.Graphics.World.Draw(this.GraphicsDevice);
-            GameService.Debug.StopTimeFunc("3D objects");
+            this.GraphicsDevice.DepthStencilState = b;
+
+            spriteBatch.Begin();
+
+            GameService.Debug.StartTimeFunc("UI Elements");
+            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible)
+                GameService.Graphics.SpriteScreen.Draw(this.GraphicsDevice, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+            GameService.Debug.StopTimeFunc("UI Elements");
 
 
             //GameService.Debug.StartTimeFunc("Trails");
@@ -264,7 +257,20 @@ namespace Blish_HUD {
             //        }
             //    }
             //}
-            //GameService.Debug.StopTimeFunc("Trails");
+            //GameService.Debug.StopTimeFunc("Trails"); 
+
+
+            // Only draw 3D elements if we are in game
+            GameService.Debug.StartTimeFunc("3D objects");
+            if (GameService.GameIntegration.IsInGame)
+                GameService.Graphics.World.Draw(this.GraphicsDevice);
+            GameService.Debug.StopTimeFunc("3D objects");
+
+
+            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
+                if (GameService.Graphics.SpriteScreen.GetRender() != null)
+                    spriteBatch.Draw(GameService.Graphics.SpriteScreen.GetRender(), new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
+            }
 
 
 #if DEBUG
