@@ -36,6 +36,13 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public override void Update(GameTime gameTime) {
+            base.Update(gameTime);
+
+            if (this.NeedsRedraw)
+                UpdateLayout(this.Children.ToList());
+        }
+
         protected override void OnChildAdded(ChildChangedEventArgs e) {
             base.OnChildAdded(e);
             OnChildrenChanged(e);
@@ -47,15 +54,13 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnChildrenChanged(ChildChangedEventArgs e) {
-            List<Control> allChildren = this.Children.ToList();
+            //UpdateLayout(e.ResultingChildren);
+        }
 
-            if (e.Added) {
-                allChildren.Add(e.ChangedChild);
-            } else {
-                allChildren.Remove(e.ChangedChild);
-            }
+        public override void Invalidate() {
+            UpdateLayout(this.Children.ToList());
 
-            UpdateLayout(allChildren);
+            base.Invalidate();
         }
 
         private void UpdateLayout(List<Control> allChildren) {
@@ -65,7 +70,7 @@ namespace Blish_HUD.Controls {
                 int currentBottom = 0;
                 int lastRight = 0;
 
-                foreach (var child in allChildren) {
+                foreach (var child in allChildren.Where(c => c.Visible)) {
                     // Need to flow over to the next line
                     if (child.Width > this.Width - lastRight) {
                         // TODO: Consider a more graceful alternative (like just stick it on its own line)

@@ -169,13 +169,17 @@ namespace Blish_HUD {
 
             if (this.Gw2IsRunning) {
                 try {
-                    this.Gw2Process.EnableRaisingEvents  =  true;
+                    this.Gw2Process.EnableRaisingEvents =  true;
                     this.Gw2Process.Exited              += OnGw2Exit;
                 } catch (Win32Exception ex) /* [BLISHHUD-W] */ {
                     // We should probably switch methods of determining when the application has closed
                     // TODO: This needs to catch exceptions nicely - it can *sometimes* glitch out when multiboxing (experienced once)
                     // System.ComponentModel.Win32Exception
                     // Access is denied
+
+                    Console.WriteLine(ex.Message);
+                } catch (InvalidOperationException ex) {
+                    // Can get thrown if the game is closed if we just launched it
 
                     Console.WriteLine(ex.Message);
                 }
@@ -221,15 +225,15 @@ namespace Blish_HUD {
         }
 
         // Keep overlay updates in a separate thread
-        private Thread overlayUpdate;
+        //private Thread overlayUpdate;
         
         // Keeps track of how long it's been since we last checked for the gw2 process
         private double lastGw2Check = 0;
 
-        private int updateRan = 0;
-        private int updateSkip = 0;
+        //private int updateRan = 0;
+        //private int updateSkip = 0;
 
-        public double UpdateRatio => (double)updateRan / ((double)updateRan + (double)updateSkip);
+        //public double UpdateRatio => (double)updateRan / ((double)updateRan + (double)updateSkip);
 
         protected override void Update(GameTime gameTime) {
             // Determine if we are in game or not

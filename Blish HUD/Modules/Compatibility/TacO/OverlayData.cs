@@ -74,7 +74,7 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
 
                         if (nPOI != null) {
                             tacoOverlayData.POIs.Add(nPOI);
-                            GameService.Pathing.RegisterMarker(nPOI);
+                            //GameService.Pathing.RegisterMarker(nPOI);
                         }
                     } else if (poi.Name == "Trail") {
                         // TODO: Trail needs to have a 'FromXmlNode' function just like POI does above to clean this all up

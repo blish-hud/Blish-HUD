@@ -61,8 +61,8 @@ namespace Blish_HUD.Controls {
             int boundsBottom = PADDING;
 
             if (childList.Any()) {
-                boundsRight  = childList.Max(c => c.Right);
-                boundsBottom = childList.Max(c => c.Bottom);
+                boundsRight  = childList.Where(c => c.Visible).Max(c => c.Right);
+                boundsBottom = childList.Where(c => c.Visible).Max(c => c.Bottom);
             }
 
             this.Size = new Point(boundsRight + PADDING, boundsBottom + PADDING);

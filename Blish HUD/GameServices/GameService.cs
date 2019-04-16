@@ -59,6 +59,7 @@ namespace Blish_HUD {
         public static readonly HotkeysService Hotkeys;
         public static readonly PathingService Pathing;
         public static readonly ModuleService Module;
+        public static readonly PersistentStoreService Store;
 
         #endregion
 
@@ -66,6 +67,7 @@ namespace Blish_HUD {
             // Init game services
             Debug = new DebugService();
             FileSrv = new FileService();
+            Store = new PersistentStoreService();
             Settings = new SettingsService();
             Content = new ContentService();
             Animation = new AnimationService();
@@ -95,7 +97,8 @@ namespace Blish_HUD {
                 GameIntegration,
                 Hotkeys,
                 Pathing,
-                Module
+                Module,
+                Store
             };
 
             GameServices.AddService<DebugService>(AllServices[0]);
@@ -112,6 +115,7 @@ namespace Blish_HUD {
             GameServices.AddService<GameIntegrationService>(AllServices[11]);
             GameServices.AddService<HotkeysService>(AllServices[12]);
             GameServices.AddService<ModuleService>(AllServices[14]);
+            GameServices.AddService<PersistentStoreService>(AllServices[15]);
         }
 
         #region Property Binding

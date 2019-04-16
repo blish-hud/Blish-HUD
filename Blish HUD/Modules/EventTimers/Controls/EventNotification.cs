@@ -30,21 +30,23 @@ namespace Blish_HUD.Modules.EventTimers {
             this.Size = new Point(NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
             this.Location = new Point(60, 60 + (NOTIFICATION_HEIGHT + 15) * VisibleNotifications);
 
+            string wrappedTitle = Utils.DrawUtil.WrapText(Content.DefaultFont14, title, this.Width - NOTIFICATION_HEIGHT - 20 - 32);
             var titleLbl = new Label() {
                 Parent            = this,
                 Location          = new Point(NOTIFICATION_HEIGHT                   + 10, 0),
                 Size              = new Point(this.Width - NOTIFICATION_HEIGHT - 10 - 32, this.Height / 2),
                 VerticalAlignment = DrawUtil.VerticalAlignment.Middle,
                 Font              = Content.DefaultFont14,
-                Text              = title,
+                Text              = wrappedTitle,
             };
 
+            string wrapped = Utils.DrawUtil.WrapText(Content.DefaultFont14, message, this.Width - NOTIFICATION_HEIGHT - 20 - 32);
             var messageLbl = new Label() {
                 Parent            = this,
                 Location          = new Point(NOTIFICATION_HEIGHT                   + 10, this.Height / 2),
                 Size              = new Point(this.Width - NOTIFICATION_HEIGHT - 10 - 32, this.Height / 2),
                 VerticalAlignment = DrawUtil.VerticalAlignment.Middle,
-                Text              = message,
+                Text              = wrapped,
             };
 
             VisibleNotifications++;

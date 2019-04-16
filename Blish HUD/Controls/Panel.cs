@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Controls {
     public class Panel:Container {
@@ -138,7 +137,7 @@ namespace Blish_HUD.Controls {
                                          );
         }
 
-        private readonly List<Binding> _scrollbarBindings = new List<Binding>();
+        private readonly List<Adhesive.Binding> _scrollbarBindings = new List<Adhesive.Binding>();
 
         private void UpdateScrollbar() {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
@@ -147,27 +146,41 @@ namespace Blish_HUD.Controls {
                 if (_panelScrollbar == null) 
                     _panelScrollbar = new Scrollbar(this);
 
-                _scrollbarBindings.ForEach((bind) => bind.Unbind());
+                // TODO: Switch to breaking these bindings once it is supported in Adhesive
+                _scrollbarBindings.ForEach((bind) => bind.Disable());
                 _scrollbarBindings.Clear();
 
                 int psHOffset = this.ShowBorder ? -20 : 0;
                 int psYOffset = this.ShowBorder ? 10 : 0;
                 int psXOffset = this.ShowBorder ? -RIGHT_MARGIN - 2 : -20;
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Parent == this.Parent));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Parent == this.Parent));
+                _scrollbarBindings.Add(
+                                       Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Parent, () => this.Parent, applyLeft: true));
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Height == this.Height));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Height == this.Height));
+                _scrollbarBindings.Add(
+                                       Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Height, () => this.Height, applyLeft: true));
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Right == this.Right - _panelScrollbar.Width));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Right == this.Right - _panelScrollbar.Width));
+                _scrollbarBindings.Add(
+                                        Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Right, () => this.Right, (r) => r - _panelScrollbar.Width, applyLeft: true));
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Top == this.Top));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Top == this.Top));
+                _scrollbarBindings.Add(
+                                        Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Top, () => this.Top, applyLeft: true));
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Visible == this.Visible));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Visible == this.Visible));
+                _scrollbarBindings.Add(
+                                        Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Visible, () => this.Visible, applyLeft: true));
 
                 // Ensure scrollbar is visible
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.ZIndex == this.ZIndex + 2));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.ZIndex == this.ZIndex + 2));
+                _scrollbarBindings.Add(
+                                       Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex, () => this.ZIndex, (z) => z + 2, applyLeft: true));
             } else {
-                _scrollbarBindings.ForEach((bind) => bind.Unbind());
+                // TODO: Switch to breaking these bindings once it is supported in Adhesive
+                _scrollbarBindings.ForEach((bind) => bind.Disable());
                 _scrollbarBindings.Clear();
 
                 _panelScrollbar?.Dispose();

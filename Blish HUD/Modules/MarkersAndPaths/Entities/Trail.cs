@@ -2,21 +2,29 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Blish_HUD.Modules.MarkersAndPaths;
+using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO;
+using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Readers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
 
     [Serializable]
-    public class Trail : Blish_HUD.Entities.Paths.Path {
+    public class Trail {
 
         private static Effect _trailEffect;
-        
+
+        public List<Vector3> PathPoints { get; set; } = new List<Vector3>();
+        public Texture2D PathTexture { get; set; }
+        public int MapId { get; set; }
+        public PathingCategory RefCategory { get; set; }
+
+
         public VertexPositionColorTexture[] VertexData  { get; set; }
 
         public string      IconFile;
@@ -58,14 +66,14 @@ namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
 
         public Trail() {
             _trailEffect = _trailEffect ?? Overlay.cm.Load<Effect>("effects\\trail");
-            this.Visible = true;
+            //this.Visible = true;
         }
         
-        public override void Update(GameTime gameTime) {
+        public void Update(GameTime gameTime) {
             _trailEffect.Parameters["TotalMilliseconds"].SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
         }
 
-        public override void Draw(GraphicsDevice graphicsDevice) {
+        public void Draw(GraphicsDevice graphicsDevice) {
             _trailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.View * GameService.Camera.Projection * Matrix.Identity);
             _trailEffect.Parameters["Texture"].SetValue(this.PathTexture);
             _trailEffect.Parameters["FlowSpeed"].SetValue(this.AnimSpeed);
@@ -139,7 +147,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
             return trailSection;
         }
 
-        public static List<Trail> FromTrlFile(string trlFile, Texture2D pathTexture) {
+        public static List<Trail> FromTrlFile(string trlFile, Texture2D pathTexture, PathingCategory refCategory) {
             if (!File.Exists(trlFile)) {
                 Console.WriteLine("No trl file found at " + trlFile);
                 return new List<Trail>();
@@ -183,6 +191,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
                     if (trailPoints.Count > 0) {
                         var endTrlSection = Trail.FromPositions(pathTexture, trailPoints, mapId);
                         if (endTrlSection != null) {
+                            endTrlSection.RefCategory = refCategory;
                             trlSections.Add(endTrlSection);
                         }
 
@@ -194,46 +203,66 @@ namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
             return trlSections;
         }
 
-        public static List<Trail> FromXmlNode(XmlNode trailNode) {
+        //public static List<TacOTrailPathable> FromXmlNode(XmlNode trailNode) {
 
-            string textureFilePath = trailNode.Attributes?["texture"]?.InnerText;
+        //    string textureFilePath = trailNode.Attributes?["texture"]?.InnerText;
 
-            if (!string.IsNullOrWhiteSpace(textureFilePath)) {
-                string trailData = trailNode.Attributes?["trailData"]?.InnerText;
-                string type = trailNode.Attributes["type"]?.InnerText;
+        //    if (!string.IsNullOrWhiteSpace(textureFilePath)) {
+        //        string trailData = trailNode.Attributes?["trailData"]?.InnerText;
+        //        string type = trailNode.Attributes["type"]?.InnerText;
 
-                // type is required
-                if (type == null) return new List<Trail>();
+        //        // type is required
+        //        if (type == null) return new List<TacOTrailPathable>();
 
-                var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(type);
+        //        var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(type);
 
-                if (!string.IsNullOrWhiteSpace(trailData)) {
-                    var fullTexturePath = GameService.Content.GetTexture(
-                                                                         System.IO.Path.Combine(
-                                                                            GameService.FileSrv.BasePath,
-                                                                            MarkersAndPaths.MARKER_DIRECTORY,
-                                                                            textureFilePath
-                                                                           )
-                                                                        );
+        //        if (!string.IsNullOrWhiteSpace(trailData)) {
+        //            var fullTexturePath = GameService.Content.GetTexture(
+        //                                                                 System.IO.Path.Combine(
+        //                                                                    GameService.FileSrv.BasePath,
+        //                                                                    MarkersAndPaths.MARKER_DIRECTORY,
+        //                                                                    textureFilePath
+        //                                                                   )
+        //                                                                );
 
-                    var fullTrailPath = Path.Combine(
-                                                     GameService.FileSrv.BasePath,
-                                                     MarkersAndPaths.MARKER_DIRECTORY,
-                                                     trailData
-                                                    );
+        //            var fullTrailPath = Path.Combine(
+        //                                             GameService.FileSrv.BasePath,
+        //                                             MarkersAndPaths.MARKER_DIRECTORY,
+        //                                             trailData
+        //                                            );
 
-                    Console.WriteLine($"Loading trail '{fullTrailPath}'");
+        //            Console.WriteLine($"Loading trail '{fullTrailPath}'");
 
-                    var trails = Trail.FromTrlFile(fullTrailPath, fullTexturePath);
+        //            var sectionData = TrlReader.ReadFile(fullTrailPath);
 
-                    trails.ForEach(t => Binding.Create(() => t.Visible == refCategory.Visible));
+        //            var pathList = new List<TacOTrailPathable>();
 
-                    return trails;
-                }
-            }
+        //            sectionData.ForEach(t => {
+        //                var newPathableSection = new TacOTrailPathable(t.TrailPoints) {
+        //                    ManagedEntity = {
+        //                        TrailTexture = fullTexturePath
+        //                    },
+        //                    MapId = t.MapId
+        //                };
 
-            return new List<Trail>();
-        }
+        //                pathList.Add(newPathableSection);
+        //                refCategory.AddPathable(newPathableSection);
+        //            });
+
+        //            return pathList;
+
+        //            //trails.ForEach(
+        //            //               t => refCategory.AddPath(t)
+        //            //               //t => Adhesive.Binding.CreateOneWayBinding(
+        //            //               //                                          () => t.Visible,
+        //            //               //                                          () => refCategory.Visible, applyLeft: true
+        //            //               //                                         )
+        //            //              );
+        //        }
+        //    }
+
+        //    return new List<TacOTrailPathable>();
+        //}
 
     }
 }

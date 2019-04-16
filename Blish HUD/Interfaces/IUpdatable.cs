@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
-namespace Blish_HUD.Entities {
-    public class IInteractable {
-        
+namespace Blish_HUD {
+    public interface IUpdatable {
 
-        float InteractionDistance { get; set; }
+        void Update(GameTime gameTime);
 
     }
 }

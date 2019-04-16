@@ -43,6 +43,11 @@ namespace Blish_HUD {
         }
 
         private double lastMumbleCheck = 0;
+        
+        public int _delayedTicks = 0;
+
+        private Queue<int> _uiTickRates = new Queue<int>();
+        public float AverageFramesPerUITick => (float)_uiTickRates.Sum(t => t) / _uiTickRates.Count;
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
@@ -56,6 +61,12 @@ namespace Blish_HUD {
                         this.UiTick        = _mumbleBacking.UiTick;
 
                         GameService.Graphics.UIScale = (GraphicsService.UiScale) _mumbleBacking.Identity.UiScale;
+
+                        if (_uiTickRates.Count > 10) _uiTickRates.Dequeue();
+                        _uiTickRates.Enqueue(_delayedTicks);
+                        _delayedTicks = 0;
+                    } else {
+                        _delayedTicks += 1;
                     }
                 } catch (NullReferenceException ex) /* [BLISHHUD-X] */ {
                     Console.WriteLine("Mumble connection failed.");

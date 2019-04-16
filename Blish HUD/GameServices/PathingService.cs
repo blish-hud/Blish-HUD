@@ -13,19 +13,28 @@ using Blish_HUD.Annotations;
 using Blish_HUD.Controls;
 using Blish_HUD.Custom.Collections;
 using Blish_HUD.Entities;
-using Blish_HUD.Entities.Paths;
+using Blish_HUD.Modules.MarkersAndPaths;
+using Blish_HUD.Pathing;
+using Humanizer;
 using Microsoft.Xna.Framework;
-using Praeclarum.Bind;
 using Panel = Blish_HUD.Controls.Panel;
 
 namespace Blish_HUD {
 
     public class PathingService : GameService {
 
-        public List<Marker> Markers { get; set; } = new List<Marker>();
-        public List<Path> Paths { get; set; } = new List<Path>();
+        public const string MARKER_DIRECTORY = "markers";
 
+        private const string PATHING_STORENAME = "Pathing";
+
+        public List<IPathable<Entity>> Pathables { get; set; } = new List<IPathable<Entity>>();
+        
         public readonly PathingCategory Categories = new PathingCategory("root") { Visible = true };
+
+        public List<IPackFileSystemContext> PackContexts { get; set; } = new List<IPackFileSystemContext>();
+
+        private PersistentStore _pathingStore;
+        public PersistentStore PathingStore => _pathingStore ?? (_pathingStore = GameService.Store.Stores.GetSubstore(PATHING_STORENAME));
 
         protected override void Initialize() {
             // Subscribe to map changes so that we can hide or show markers for the new map
@@ -87,7 +96,7 @@ namespace Blish_HUD {
 
             void AddCategoryMenuItem(ContextMenuStrip parentMenuItem, PathingCategory newCategory) {
 
-                var newCategoryContextMenuItem = parentMenuItem.AddMenuItem(newCategory.Name);
+                var newCategoryContextMenuItem = parentMenuItem.AddMenuItem(newCategory.DisplayName);
                 newCategoryContextMenuItem.CanCheck = true;
 
                 //var newCategoryMenuItem = new Modules.MarkersAndPaths.Controls.CategoryMenuItem() {
@@ -97,8 +106,19 @@ namespace Blish_HUD {
                 //    Parent   = parentMenuItem
                 //};
 
-                Binding.Create(() => newCategoryContextMenuItem.Checked == newCategory.Visible &&
-                                     newCategoryContextMenuItem.Text == newCategory.DisplayName);
+                // SLOW
+                //Binding.Create(() => newCategoryContextMenuItem.Checked == newCategory.Visible &&
+                //                     newCategoryContextMenuItem.Text == newCategory.DisplayName);
+
+                Adhesive.Binding.CreateTwoWayBinding(
+                                                     () => newCategoryContextMenuItem.Checked,
+                                                     () => newCategory.Visible
+                                                    );
+
+                Adhesive.Binding.CreateOneWayBinding(
+                                                     () => newCategoryContextMenuItem.Text,
+                                                     () => newCategory.DisplayName
+                                                    );
 
                 
 
@@ -124,44 +144,43 @@ namespace Blish_HUD {
             throw new NotImplementedException($"Function {nameof(RemoveCategoryMenuItem)} of {nameof(PathingService)} was called before it has been implemented in code.");
         }
 
-        private void ProcessMarkerState(Marker marker) {
-            if (marker.MapId == Player.MapId || marker.MapId == -1) {
-                Graphics.World.Entities.Add(marker);
-            } else if (Graphics.World.Entities.Contains(marker)) {
-                Graphics.World.Entities.Remove(marker);
-            }
-        }
-
-        private void ProcessPathState(Path path) {
-            if (path.MapId == Player.MapId || path.MapId == -1) {
-                Graphics.World.Entities.Add(path);
-            } else if (Graphics.World.Entities.Contains(path)) {
-                Graphics.World.Entities.Remove(path);
+        private void ProcessPathableState(IPathable<Entity> pathable) {
+            if (pathable.MapId == Player.MapId || pathable.MapId == -1) {
+                pathable.Active = true;
+                Graphics.World.Entities.Add(pathable.ManagedEntity);
+            } else if (Graphics.World.Entities.Contains(pathable.ManagedEntity)) {
+                pathable.Active = false;
+                Graphics.World.Entities.Remove(pathable.ManagedEntity);
             }
         }
 
         private void PlayerOnOnMapIdChanged(object sender, EventArgs e) {
-            foreach (var marker in this.Markers) {
-                ProcessMarkerState(marker);
-            }
+            for (int i = 0; i < this.Pathables.Count - 1; i++)
+                ProcessPathableState(this.Pathables[i]);
 
-            foreach (var path in this.Paths) {
-                ProcessPathState(path);
-            }
+            foreach (var packContext in this.PackContexts)
+                packContext.RunTextureDisposal();
         }
 
-        public void RegisterMarker(Marker newMarker) {
-            this.Markers.Add(newMarker);
-            ProcessMarkerState(newMarker);
+        public void RegisterPathable(IPathable<Entity> pathable) {
+            if (pathable == null) return;
+
+            this.Pathables.Add(pathable);
+            ProcessPathableState(pathable);
         }
 
-        public void RegisterPath(Path newPath) {
-            this.Paths.Add(newPath);
-            ProcessPathState(newPath);
+        public void RegisterPathContext(IPackFileSystemContext packContext) {
+            if (packContext == null) return;
+
+            this.PackContexts.Add(packContext);
         }
 
         protected override void Update(GameTime gameTime) {
+            foreach (IPathable<Entity> pathable in this.Pathables) {
+                if (!pathable.Active) continue;
 
+                pathable.Update(gameTime);
+            }
         }
 
         protected override void Unload() {
@@ -205,12 +224,19 @@ namespace Blish_HUD {
                                        ? $"{this.Parent.Namespace}.{this.Name}"
                                        : this.Name;
 
-        private List<Entities.Marker> _markers = new List<Marker>();
-        private List<Entities.Paths.Path> _paths = new List<Path>();
+        //private List<Entities.Marker> _markers = new List<Marker>();
+        //private List<Entities.Pathing.Paths.ITrail> _paths = new List<ITrail>();
+
+        private List<Pathing.IPathable> _pathables = new List<IPathable>();
+
+        //public ReadOnlyCollection<Entities.Marker> Markers => _markers.AsReadOnly();
+        //public ReadOnlyCollection<Entities.Pathing.Paths.ITrail> Paths => _paths.AsReadOnly();
+
+        public ReadOnlyCollection<Pathing.IPathable> Pathables => _pathables.AsReadOnly();
 
         private string _displayName;
         public string DisplayName {
-            get => !string.IsNullOrWhiteSpace(_displayName) ? _displayName : this.Name;
+            get => !string.IsNullOrWhiteSpace(_displayName) ? _displayName : this.Name.Titleize();
             set {
                 if (_displayName == value) return;
 
@@ -243,10 +269,23 @@ namespace Blish_HUD {
 
                 _visible = value;
 
-                _markers.ForEach(m => m.Visible = _visible);
-                _paths.ForEach(p => p.Visible = _visible);
+                //UpdateMarkerState();
+                UpdatePathableState();
 
                 OnPropertyChanged();
+            }
+        }
+
+        private bool _parentVisible = true;
+        private bool ParentVisible {
+            get => _parentVisible;
+            set {
+                if (_parentVisible == value) return;
+
+                _parentVisible = value;
+
+                //UpdateMarkerState();
+                UpdatePathableState();
             }
         }
 
@@ -261,38 +300,61 @@ namespace Blish_HUD {
             }
         }
 
-        public float       Size         = 1.0f;
-        public float       Alpha        = 1.0f;
-        public float       FadeNear     = -1.0f;
-        public float       FadeFar      = -1.0f;
-        public float       Height       = 1.5f;
+        //public float       Size         = 1.0f;
+        //public float       Alpha        = 1.0f;
+        //public float       FadeNear     = -1.0f;
+        //public float       FadeFar      = -1.0f;
+        //public float       Height       = 1.5f;
 
-        // TODO: Implement POIBehavior
-        //public POIBehavior Behavior     = POIBehavior.AlwaysVisible;
+        //// TODO: Implement POIBehavior
+        ////public POIBehavior Behavior     = POIBehavior.AlwaysVisible;
 
-        public int         ResetLength  = 0;
-        public int         ResetOffset  = 0;
-        public int         AutoTrigger  = 0;
-        public int         HasCountdown = 0;
-        public float       TriggerRange = 2.0f;
-        public int         MinSize      = 5;
-        public int         MaxSize      = 2048;
-        public Color       Color        = Color.White;
-        public string      TrailData;
-        public float       AnimSpeed = 1;
-        public float       TrailScale = 1;
-        public string      ToggleCategory;
+        //public int         ResetLength  = 0;
+        //public int         ResetOffset  = 0;
+        //public int         AutoTrigger  = 0;
+        //public int         HasCountdown = 0;
+        //public float       TriggerRange = 2.0f;
+        //public int         MinSize      = 5;
+        //public int         MaxSize      = 2048;
+        //public Color       Color        = Color.White;
+        //public string      TrailData;
+        //public float       AnimSpeed = 1;
+        //public float       TrailScale = 1;
+        //public string      ToggleCategory;
+
+        public XmlNode SourceXmlNode { get; set; }
 
         public PathingCategory(string name) {
             this.Name = name.ToLower();
         }
 
-        public void AddMarker(Entities.Marker newMarker) {
-            _markers.Add(newMarker);
+        //public void UpdateMarkerState() {
+        //    _markers.ForEach(m => m.Visible = this.ParentVisible && this.Visible);
+        //    _paths.ForEach(p => p.Visible   = this.ParentVisible && this.Visible);
+
+        //    foreach (var child in this) {
+        //        child.ParentVisible = _parentVisible && this.Visible;
+        //    }
+        //}
+
+        public void UpdatePathableState() {
+            _pathables.ForEach(p => ((IPathable<Entity>)p).ManagedEntity.Visible = this.ParentVisible && this.Visible);
+
+            foreach (var child in this) {
+                child.ParentVisible = _parentVisible && this.Visible;
+            }
         }
 
-        public void AddPath(Entities.Paths.Path newPath) {
-            _paths.Add(newPath);
+        //public void AddMarker(Entities.Marker newMarker) {
+        //    _markers.Add(newMarker);
+        //}
+
+        //public void AddPath(Entities.Pathing.Paths.ITrail newTrail) {
+        //    _paths.Add(newTrail);
+        //}
+
+        public void AddPathable(Pathing.IPathable pathable) {
+            _pathables.Add(pathable);
         }
 
         public PathingCategory GetOrAddCategoryFromNamespace(string @namespace) {

@@ -7,8 +7,11 @@ using System.Runtime.Caching;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Content.Pipeline;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using MonoGame.Framework.Content;
 
 namespace Blish_HUD {
     public class ContentService:GameService {
@@ -76,13 +79,14 @@ namespace Blish_HUD {
 
         public enum FontStyle {
             Regular,
-            Bold,
             Italic
         }
 
         private Dictionary<string, SoundEffect> _loadedSoundEffects;
         private Dictionary<string, BitmapFont> _loadedBitmapFonts;
         private Dictionary<string, Texture2D> _loadedTextures;
+
+        private Dictionary<string, Texture2D> _mapLoadedTextures;
 
         //private IAppCache contentCache = new CachingService();
 
@@ -150,6 +154,7 @@ namespace Blish_HUD {
             }
         }
 
+
         public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas2(string textureAtlasName) {
             return _contentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
         }
@@ -162,6 +167,23 @@ namespace Blish_HUD {
             return GetTexture(textureName, Textures.Error);
         }
 
+        public void CacheTexture(string texturePath) {
+            string cacheFolder = Path.Combine(FileSrv.BasePath, "cache");
+            string spritesFolder = Path.Combine(cacheFolder, "sprites");
+            string tempFolder = Path.Combine(cacheFolder, "_temp");
+            Directory.CreateDirectory(spritesFolder);
+            Directory.CreateDirectory(tempFolder);
+
+            var pm = new MonoGame.Framework.Content.Pipeline.Builder.PipelineManager(spritesFolder, tempFolder, @"Path\_temp");
+            pm.Profile = GraphicsProfile.HiDef;
+            pm.CompressContent = false;
+            pm.Platform = TargetPlatform.Windows;
+            var builtContent = pm.BuildContent(texturePath);
+            var processedContent = pm.ProcessContent(builtContent);
+
+            //Console.WriteLine($"{texturePath} => {processedContent.GetType().Name}");
+        }
+
         public Texture2D GetTexture(string textureName, Texture2D defaultTexture) {
             if (textureName == null) return defaultTexture;
 
@@ -169,6 +191,7 @@ namespace Blish_HUD {
                 return cachedTexture;
 
             if (File.Exists(textureName)) {
+                CacheTexture(textureName);
                 return TextureFromFile(GameService.Graphics.GraphicsDevice, textureName);
             }
 
@@ -178,7 +201,7 @@ namespace Blish_HUD {
                 try {
                     cachedTexture = _contentManager.Load<Texture2D>(textureName);
                 } catch (ContentLoadException e) {
-                    GameService.Debug.WriteInfoLine($"Could not find '{textureName}' precompiled or in include directory. Full: {e.Message}");
+                    GameService.Debug.WriteInfoLine($"Could not find '{textureName}' precompiled or in include directory. Full error message: {e.ToString()}");
                 }
             }
 
@@ -192,8 +215,13 @@ namespace Blish_HUD {
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
             string fullFontName = $"{font.ToString().ToLower()}-{((int)size).ToString()}-{style.ToString().ToLower()}";
 
-            if (!_loadedBitmapFonts.ContainsKey(fullFontName))
-                _loadedBitmapFonts.Add(fullFontName, _contentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}"));
+            if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
+                var loadedFont = _contentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}");
+                loadedFont.LetterSpacing = -1;
+                _loadedBitmapFonts.Add(fullFontName, loadedFont);
+
+                return loadedFont;
+            }
 
             return _loadedBitmapFonts[fullFontName];
         }

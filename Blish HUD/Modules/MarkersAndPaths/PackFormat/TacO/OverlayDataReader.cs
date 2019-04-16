@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -20,35 +21,33 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
             }
         }
 
-        private static void TryLoadPOIs(XmlDocument packDocument) {
+        private static void TryLoadPOIs(XmlDocument packDocument, IPackFileSystemContext packContext) {
             var poiNodes = packDocument.DocumentElement?.SelectSingleNode("/OverlayData/POIs");
             if (poiNodes == null) return;
 
             foreach (XmlNode poiNode in poiNodes) {
-                PoiBuilder.UnpackPoi(poiNode);
+                PoiBuilder.UnpackPathable(poiNode, packContext);
             }
         }
 
-        public static void ReadFromXmlFile(string packPath) {
-            if (!File.Exists(packPath)) {
-                GameService.Debug.WriteWarning($"Could not find pack '{packPath}'.");
-                return;
+        public static void ReadFromXmlPack(string xmlPackContents, IPackFileSystemContext packContext) {
+            var    packDocument = new XmlDocument();
+            string packSrc      = SanitizeXml(xmlPackContents);
+            bool packLoaded = false;
+
+            try {
+                packDocument.LoadXml(packSrc);
+                packLoaded = true;
+            } catch (XmlException exception) {
+                GameService.Debug.WriteErrorLine($"Could not load tacO overlay file {packContext} from context {xmlPackContents.GetType().Name} due to an XML error.  Error: {exception.Message}");
+            } catch (Exception exception) {
+                throw;
             }
 
-            var packDocument = new XmlDocument();
-            string packSrc = SanitizeXml(File.ReadAllText(packPath));
-
-            //try {
-
-                packDocument.LoadXml(packSrc);
-
+            if (packLoaded) {
                 TryLoadCategories(packDocument);
-
-                TryLoadPOIs(packDocument);
-
-            //} catch (Exception exception) {
-            //    GameService.Debug.WriteErrorLine("Could not load tacO overlay file {0}.  Error: {1}", packPath, exception.Message);
-            //}
+                TryLoadPOIs(packDocument, packContext);
+            }
         }
 
         private static string SanitizeXml(string xmlDoc) {

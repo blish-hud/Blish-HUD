@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD {
     public class ModuleService : GameService {
 
+        private const string MODULESTATES_CORE_SETTING = "ModuleStates";
+
         public SettingEntry<Dictionary<string, bool>> ModuleStates { get; private set; }
 
         public List<Modules.Module> AvailableModules { get; private set; }
@@ -16,7 +18,7 @@ namespace Blish_HUD {
             this.AvailableModules = new List<Modules.Module>();
 
             this.ModuleStates = Settings.CoreSettings.DefineSetting(
-                                                                    "ModuleStates",
+                                                                    MODULESTATES_CORE_SETTING,
                                                                     new Dictionary<string, bool>(), 
                                                                     new Dictionary<string, bool>()
                                                                    );

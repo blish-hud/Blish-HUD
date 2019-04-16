@@ -103,14 +103,20 @@ namespace Blish_HUD.Controls {
                         ocCmsi?.Submenu?.Hide();
                     }
                 };
+
+                Adhesive.Binding.CreateOneWayBinding(
+                                                     () => newChild.Width,
+                                                     () => this.Width, 
+                                                     (w) => w - BORDER_PADDING * 2, 
+                                                     true
+                                                    );
             }
 
-            this.Width = e.ResultingChildren.Max(c => c.Width) + BORDER_PADDING * 2;
+            this.Width = e.ResultingChildren.Where(c => c.Visible).Max(c => c.Width) + BORDER_PADDING * 2;
 
             int lastBottom = -4;
-            e.ResultingChildren.ForEach(child => {
+            e.ResultingChildren.Where(c => c.Visible).ToList().ForEach(child => {
                                             child.Top = lastBottom + ITEM_VERTICALMARGIN;
-                                            child.Width = this.Width - BORDER_PADDING * 2;
                                             lastBottom = child.Bottom;
                                         });
 

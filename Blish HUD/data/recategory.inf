@@ -1,0 +1,92 @@
+# Accounts for:
+# 	Default TacO:
+# 		Adventure_FloorIsLava.xml
+# 		collectibles_astudyingold.xml
+#		collectibles_goldenlostbadges.xml
+#		collectibles_mursaattokens.xml
+#		collectibles_QuirkyQuagganQuest.xml
+#		collectibles_tabletsoftheunseen.xml
+#		collectibles_ThoroughSampling.xml
+#		Festival_CanthanNewYear_Firecrackers.xml
+#		Festival_Halloween_CarvingPumpkins.xml
+#		Festival_Wintersday_Orphans.xml
+#		GuildMission_Bounty_2Mult.xml
+#		GuildMission_Bounty_BigMayana.xml
+#		GuildMission_Bounty_BookwormBwikki.xml
+#		GuildMission_Bounty_Brekkabek.xml
+#		GuildMission_Bounty_Crusader_Michiele.xml
+#		GuildMission_Bounty_Deputy_Brooke.xml
+#		GuildMission_Bounty_Devious_Teesa.xml
+#		GuildMission_Bounty_Diplomat_Tarban.xml
+#		GuildMission_Bounty_Half_Baked_Komali.xml
+#		GuildMission_Bounty_Poobadoo.xml
+#		GuildMission_Bounty_Prisoner1141.xml
+#		GuildMission_Bounty_Shaman_Arderus.xml
+#		GuildMission_Bounty_Tricksy_Trekksa.xml
+#		GuildMission_Bounty_Trillia_Midwell.xml
+#		GuildMission_Bounty_Yanonka.xml
+#		GuildMission_Bounty_Short_Fuse_Felix.xml
+#		GuildMission_Bounty_Sotzz.xml
+#		GuildRaces.xml
+#		JP_Megapack.xml
+
+
+[Guild Missions.Bounties]
+tactical.guildmission.bounty.2mult
+tactical.guildmission.bounty.bigmayana
+tactical.guildmission.bounty.bookwormbwikki
+tactical.guildmission.bounty.brekkabek
+tactical.guildmission.bounty.crusadermichiele
+tactical.guildmission.bounty.deputybrooke
+tactical.guildmission.bounty.deviousteesa
+tactical.guildmission.bounty.diplomattarban
+tactical.guildmission.bounty.halfbakedkomali
+tactical.guildmission.bounty.poobadoo
+tactical.guildmission.bounty.prisoner1141blue
+tactical.guildmission.bounty.prisoner1141orange
+tactical.guildmission.bounty.prisoner1141red
+tactical.guildmission.bounty.shamanarderus
+tactical.guildmission.bounty.tricksytrekksa
+tactical.guildmission.bounty.trilliamidwell
+tactical.guildmission.bounty.yanonka
+tactical.guildmission.bounty.shortfusefelix
+tactical.guildmission.bounty.sotzzthescallywag
+
+[Guild Missions.Races]
+guildrace.bearlope
+guildrace.ghostwolfrun
+guildrace.crabscuttle
+guildrace.devourerburrow
+guildrace.spiderscurry
+guildrace.chickenrun
+
+[Adventures.All]
+tactical.adventure.floorislava
+
+[Achievements.Jumping Puzzles]
+jumpingpuzzle.guide
+
+[Achievements.Collectibles]
+collectible.astudyingold
+collectible.goldenlostbadges
+Collectible.RisingFlames.TokenCollector
+collectible.acrackintheice.quirkyquagganquest
+Collectible.RisingFlames.TabletsoftheUnseen
+collectible.acrackintheice.thoroughsampling
+
+[Festivals.Lunar New Year]
+festivals.canthannewyear.firecracker
+
+[Festivals.Super Adventure Festival]
+
+[Festivals.Festival of the Four Winds]
+
+[Festivals.Halloween]
+festivals.halloween.carvingpumpkin
+
+[Festivals.Wintersday]
+festivals.wintersday.orphan
+
+[Other.Hero Point Train]
+tt.ttt.trails.pof
+tt.ttt.trails.hot

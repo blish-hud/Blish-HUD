@@ -6,74 +6,103 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Blish_HUD.Modules.Compatibility.TacO;
+using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO;
+using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables;
+using Blish_HUD.Pathing;
+using Microsoft.Scripting.Utils;
 using Microsoft.Xna.Framework;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
+    /*
+     *# Size
+     *# Alpha
+     *# FadeNear
+     *# FadeFar
+     *# Height
+     *# Behavior
+     * ResetLength
+     * ResetOffset
+     * AutoTrigger
+     * HasCountdown
+     * TriggerRange
+     *# MinSize
+     *# MaxSize
+     * Color
+     * TrailData
+     * AnimSpeed
+     * Texture
+     * TrailScale
+     * ToggleCategory
+     */
+
+    public class TacOPathable {
+
+        public float Size { get; set; }
+        public float Alpha { get; set; }
+        public float FadeNear { get; set; }
+        public float FadeFar { get; set; }
+        public float HeightOffset { get; set; }
+        public int Behavior { get; set; }
+        public int ResetLength { get; set; }
+        public int ResetOffset { get; set; }
+        public int AutoTrigger { get; set; }
+        public int HasCountdown { get; set; }
+        public float TriggerRange { get; set; }
+        public int MinSize { get; set; }
+        public int MaxSize { get; set; }
+        public float AnimSpeed { get; set; }
+        public int MapId { get; set; }
+        public string Texture { get; set; }
+        public float XPos { get; set; }
+        public float YPos { get; set; }
+        public float ZPos { get; set; }
+        public string Type { get; set; }
+        public string Guid { get; set; }
+
+    }
+
+
 
     public static class PoiBuilder {
 
         private const string ELEMENT_POITYPE_POI = "poi";
         private const string ELEMENT_POITYPE_TRAIL = "trail";
+        private const string ELEMENT_POITYPE_ROUTE = "route";
 
-        public static void UnpackPoi(XmlNode poiNode) {
-            switch (poiNode.Name.ToLower()) {
+        public static void UnpackPathable(XmlNode pathableNode, IPackFileSystemContext packContext) {
+            switch (pathableNode.Name.ToLower()) {
                 case ELEMENT_POITYPE_POI:
-                    var newMarker = FromXmlNode(poiNode);
+                    var newPoiMarker = new TacOMarkerPathable(pathableNode, packContext);
 
-                    if (newMarker != null) {
-                        GameService.Pathing.RegisterMarker(newMarker);
+                    if (newPoiMarker.SuccessfullyLoaded) {
+                        GameService.Pathing.RegisterPathable(newPoiMarker);
+                    } else {
+                        Console.WriteLine("Failed to load marker: ");
+                        Console.WriteLine(string.Join(";; ", pathableNode.Attributes.Select(s => ((XmlAttribute)s).Name + " = " + ((XmlAttribute)s).Value)));
+                    }
+                    break;
+                case ELEMENT_POITYPE_TRAIL:
+                    var newPathTrail = new TacOTrailPathable(pathableNode, packContext);
+
+                    if (newPathTrail.SuccessfullyLoaded) {
+                        GameService.Pathing.RegisterPathable(newPathTrail);
+                    } else {
+                        Console.WriteLine("Failed to load trail: ");
+                        Console.WriteLine(pathableNode?.Attributes?["trailData"]?.Value.Trim());
                     }
 
                     break;
-                case ELEMENT_POITYPE_TRAIL:
-                    var newTrails = Entities.Paths.Trail.FromXmlNode(poiNode);
-
-                    newTrails.ForEach((trail) => GameService.Pathing.RegisterPath(trail));
+                case ELEMENT_POITYPE_ROUTE:
+                    Console.WriteLine("Skipped loading route.");
+                    //RouteBuilder.UnpackNode(pathableNode);
 
                     break;
                 default:
-                    Console.WriteLine($"Tried to unpack '{poiNode.Name}' as POI!");
+                    Console.WriteLine($"Tried to unpack '{pathableNode.Name}' as POI!");
                     break;
             }
         }
 
-        public static Blish_HUD.Entities.Marker FromXmlNode(XmlNode poiNode) {
-            int mapId = int.Parse(poiNode.Attributes["MapID"]?.InnerText ?? "-1");
-
-            float xPos = float.Parse(poiNode.Attributes["xpos"]?.InnerText ?? "0");
-            float yPos = float.Parse(poiNode.Attributes["ypos"]?.InnerText ?? "0");
-            float zPos = float.Parse(poiNode.Attributes["zpos"]?.InnerText ?? "0");
-
-            string type = poiNode.Attributes["type"]?.InnerText;
-
-            int behavior = Utils.Pipeline.IntValueFromXmlNodeAttribute(poiNode, "behavior");
-
-            string guid = poiNode.Attributes["GUID"]?.InnerText;
-
-            // type is required
-            if (type == null) return null;
-
-            var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(type);
-
-            var loadedMarker = new Blish_HUD.Entities.Marker(
-                                       GameService.Content.GetTexture(
-                                                                      System.IO.Path.Combine(
-                                                                                             GameService.FileSrv.BasePath,
-                                                                                             MarkersAndPaths.MARKER_DIRECTORY,
-                                                                                             refCategory.IconFile ?? ""
-                                                                                            )
-                                                                     ),
-                                       new Vector3(xPos, zPos, yPos),
-                                       new Vector2(1)
-                                      ) { MapId = mapId };
-
-            // Ensure the marker state matches that of the assigned category
-            Binding.Create(() => loadedMarker.Visible == refCategory.Visible);
-            //loadedMarker.Visible = true;
-
-            return loadedMarker;
-        }
-
     }
+
 }

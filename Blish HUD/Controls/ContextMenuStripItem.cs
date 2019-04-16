@@ -104,11 +104,13 @@ namespace Blish_HUD.Controls {
 
         private void UpdateControlWidth(string newText) {
             var textSize = Content.DefaultFont14.MeasureString(newText);
-            this.Width = (int)textSize.Width + TEXT_LEFTPADDING + (this.Submenu != null ? TEXT_LEFTPADDING : HORIZONTAL_PADDING);
+            int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
 
-            if (this.Parent == null) return;
-
-            this.Parent.Width = Math.Max(this.Width, this.Parent.Width);
+            if (this.Parent == null) {
+                this.Width = nWidth;
+            } else {
+                this.Parent.Width = Math.Max(nWidth, this.Parent.Width);
+            }
         }
 
         protected override void OnClick(MouseEventArgs e) {
@@ -151,7 +153,7 @@ namespace Blish_HUD.Controls {
                                                32,
                                                32
                                               ),
-                                 Color.White
+                                 StandardColors.Default
                                 );
 
             } else {
@@ -163,7 +165,7 @@ namespace Blish_HUD.Controls {
                                                    BULLET_SIZE,
                                                    BULLET_SIZE
                                                   ),
-                                     this.MouseOver ? Color.FromNonPremultiplied(255, 228, 181, 255) : Color.White
+                                     this.MouseOver ? StandardColors.Tinted : StandardColors.Default
                                     );
             }
 
@@ -175,7 +177,7 @@ namespace Blish_HUD.Controls {
                                                          0                             + 1,
                                                          this.Width - TEXT_LEFTPADDING - HORIZONTAL_PADDING,
                                                          this.Height),
-                                           Color.Black);
+                                           StandardColors.Shadow);
 
             Utils.DrawUtil.DrawAlignedText(spriteBatch,
                                            Content.DefaultFont14,
@@ -184,7 +186,7 @@ namespace Blish_HUD.Controls {
                                                          0,
                                                          this.Width - TEXT_LEFTPADDING - HORIZONTAL_PADDING,
                                                          this.Height),
-                                           this.Enabled ? Color.White : Color.DarkGray);
+                                           this.Enabled ? StandardColors.Default : StandardColors.DisabledText);
 
             // Indicate submenu, if there is one
             if (this.Submenu != null) {
@@ -193,7 +195,7 @@ namespace Blish_HUD.Controls {
                                                bounds.Height / 2 - _arrowSprite.Height / 2,
                                                _arrowSprite.Width,
                                                _arrowSprite.Height),
-                                 this.MouseOver ? Color.FromNonPremultiplied(255, 228, 181, 255) : Color.White);
+                                 this.MouseOver ? StandardColors.Tinted : StandardColors.Default);
             }
         }
 

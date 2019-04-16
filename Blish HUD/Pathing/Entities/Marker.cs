@@ -1,13 +1,20 @@
 ﻿using System;
+using Blish_HUD.Entities.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Blish_HUD.Entities {
-    public class Marker : Primitives.Billboard {
+namespace Blish_HUD.Pathing.Entities {
+    public class Marker : Blish_HUD.Entities.Primitives.Billboard {
 
-        public int MapId { get; set; } = -1;
+        public Marker() : base() {
+            this.VerticalConstraint = BillboardVerticalConstraint.PlayerPosition;
+        }
 
         public Marker(Texture2D image, Vector3 position, Vector2 size) : base(image, position, size) {
+            this.VerticalConstraint = image.Height == image.Width
+                                          ? BillboardVerticalConstraint.PlayerPosition
+                                          : BillboardVerticalConstraint.PlayerPosition;
+
             //GameService.Input.MouseMoved += Input_MouseMoved;
         }
 
@@ -22,8 +29,6 @@ namespace Blish_HUD.Entities {
             
             // Z < 1 means that the point is in front of the camera, not behind it
             mouseOver = screenPosition.Z < 1 && xdist < 2 && ydist < 2;
-
-
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {

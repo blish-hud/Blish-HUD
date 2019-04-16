@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
@@ -66,15 +67,21 @@ namespace Blish_HUD {
 
             public double AverageRuntime {
                 get {
-                    return timeBuffer.Sum(i => i);
+                    float totalRuntime = 0;
+                    
+                    for (int i = 0; i < timeBuffer.Count - 1; i++) {
+                        totalRuntime += timeBuffer[i];
+                    }
+
+                    return totalRuntime / timeBuffer.Count;
                 }
             }
 
-            private readonly Queue<long> timeBuffer;
+            private readonly List<long> timeBuffer;
             private readonly Stopwatch funcStopwatch;
 
             public FuncClock() {
-                timeBuffer = new Queue<long>();
+                timeBuffer = new List<long>();
                 funcStopwatch = new Stopwatch();
             }
 
@@ -85,10 +92,10 @@ namespace Blish_HUD {
             public void Stop() {
                 funcStopwatch.Stop();
 
-                if (timeBuffer.Count > BUFFER_LENGTH) timeBuffer.Dequeue();
+                if (timeBuffer.Count > BUFFER_LENGTH) timeBuffer.RemoveAt(0);
 
                 this.LastTime = funcStopwatch.ElapsedMilliseconds;
-                timeBuffer.Enqueue(funcStopwatch.ElapsedMilliseconds);
+                timeBuffer.Add(funcStopwatch.ElapsedMilliseconds);
 
                 funcStopwatch.Reset();
             }
@@ -97,19 +104,25 @@ namespace Blish_HUD {
 
         public Dictionary<string, FuncClock> FuncTimes;
         public void StartTimeFunc(string func) {
-#if DEBUG
-            if (!FuncTimes.ContainsKey(func))
-                FuncTimes.Add(func, new FuncClock());
+            #if DEBUG
+                if (!FuncTimes.ContainsKey(func))
+                    FuncTimes.Add(func, new FuncClock());
 
-            FuncTimes[func].Start();
-#endif
+                FuncTimes[func].Start();
+            #endif
         }
 
         public void StopTimeFunc(string func) {
-#if DEBUG
-            if (FuncTimes.ContainsKey(func))
-                FuncTimes[func].Stop();
-#endif
+            #if DEBUG
+                FuncTimes[func]?.Stop();
+            #endif
+        }
+
+        public void StopTimeFuncAndOutput(string func) {
+            #if DEBUG
+                FuncTimes[func]?.Stop();
+                Console.WriteLine($"{func} ran for {FuncTimes[func]?.LastTime.Milliseconds().Humanize()}.");
+            #endif
         }
 
         public void DisplayAlert(string source, string message, DateTimeOffset expiration) {

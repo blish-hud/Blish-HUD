@@ -182,8 +182,8 @@ namespace Blish_HUD.Controls {
             var contentBounds = this.ContentRegion;
 
             if (this.Children.Any()) {
-                contentBounds.Width = Math.Max(this.ContentRegion.Width, this.Children.Max(c => c.Right));
-                contentBounds.Height = Math.Max(this.ContentRegion.Height, this.Children.Max(c => c.Bottom));
+                contentBounds.Width = Math.Max(this.ContentRegion.Width, this.Children.Where(c => c.Visible).Max(c => c.Right));
+                contentBounds.Height = Math.Max(this.ContentRegion.Height, this.Children.Where(c => c.Visible).Max(c => c.Bottom));
             }
 
             if (ContentRenderCache != null) {
@@ -210,53 +210,57 @@ namespace Blish_HUD.Controls {
                 );
             }
 
-            var contentSpritebatch = new SpriteBatch(graphicsDevice);
-            graphicsDevice.SetRenderTarget(ContentRenderCache);
+            using (var contentSpritebatch = new SpriteBatch(graphicsDevice)) {
+                graphicsDevice.SetRenderTarget(ContentRenderCache);
 
-            graphicsDevice.Clear(Color.Transparent);
+                graphicsDevice.Clear(Color.Transparent);
 
-            // Paint children
-            foreach (var childControl in sortedChildren) {
-                if (childControl.Visible) {
-                    contentSpritebatch.Begin(
-                                             SpriteSortMode.Immediate,
-                                             childControl.BlendState,
-                                             null,
-                                             null,
-                                             null,
-                                             childControl.DrawEffect
-                                            );
+                // Paint children
+                foreach (var childControl in sortedChildren) {
+                    if (childControl.Visible) {
+                        var childRender = childControl.GetRender();
 
-                    var childRender = childControl.GetRender();
+                        contentSpritebatch.Begin(
+                                                 SpriteSortMode.Deferred,
+                                                 childControl.BlendState,
+                                                 SamplerState.LinearWrap,
+                                                 DepthStencilState.Default,
+                                                 RasterizerState.CullCounterClockwise,
+                                                 childControl.DrawEffect
+                                                );
 
-                    if (childRender != null)
-                        contentSpritebatch.Draw(
-                                            childControl.GetRender(),
-                                            childControl.OuterBounds.OffsetBy(this.Padding),
-                                            Color.White * childControl.Opacity
-                                           );
-                    else
-                        Console.WriteLine($"Child control {childControl.GetType().FullName} did not provide anything to render.");
+                        if (childRender != null)
+                            contentSpritebatch.Draw(
+                                                    childRender,
+                                                    childControl.OuterBounds.OffsetBy(this.Padding),
+                                                    Color.White * childControl.Opacity
+                                                   );
+                        else
+                            Console.WriteLine($"Child control {childControl.GetType().FullName} did not provide anything to render.");
 
-                    contentSpritebatch.End();
+                        contentSpritebatch.End();
+                    }
                 }
+
+                graphicsDevice.SetRenderTarget(null);
+
+                //graphicsDevice.Clear(Color.Transparent);
+
             }
-
-            graphicsDevice.SetRenderTarget(null);
-            //graphicsDevice.Clear(Color.Transparent);
-
-            contentSpritebatch.Dispose();
         }
 
         public override void Draw(GraphicsDevice graphicsDevice, Rectangle bounds) {
             if (this.NeedsRedraw || RenderCache == null) {
                 //if (RenderCache != null && (RenderCache.Width != this.Width || RenderCache.Height != this.Height))
                 RenderCache?.Dispose();
+                
+
 
                 //if (RenderCache == null) {
                 try {
                     RenderCache = new RenderTarget2D(
-                                                     graphicsDevice, this.Width + this.Padding.X * 2, this.Height + this.Padding.Y * 2,
+                                                     graphicsDevice,
+                                                     this.Width + this.Padding.X * 2, this.Height + this.Padding.Y * 2,
                                                      false,
                                                      SurfaceFormat.Color,
                                                      DepthFormat.None,
@@ -318,7 +322,7 @@ namespace Blish_HUD.Controls {
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
-            return this.Children.GetEnumerator();
+            return this.GetEnumerator();
         }
 
     }

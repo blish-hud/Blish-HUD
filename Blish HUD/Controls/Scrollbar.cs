@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -140,6 +141,9 @@ namespace Blish_HUD.Controls {
 
 
         protected void OnWheelScroll(object sender, MouseEventArgs e) {
+            // Don't scroll if the scrollbar isn't visible
+            if (!this.Visible || ScrollbarPercent > 0.99) return;
+
             // Avoid scrolling nested panels
             var ctrl = (Control) sender;
             while (ctrl != this.AssociatedContainer && ctrl != null) {
@@ -165,7 +169,7 @@ namespace Blish_HUD.Controls {
 
         private void UpdateAssocContainer() {
             if (this.AssociatedContainer?.ContentRenderCache != null) {
-                this.AssociatedContainer.VerticalScrollOffset = (int)Math.Floor(Math.Max(this.AssociatedContainer.ContentRenderCache.Height - this.AssociatedContainer.ContentRegion.Height, 256) * this.ScrollDistance);
+                this.AssociatedContainer.VerticalScrollOffset = (int)Math.Floor(Math.Max(this.AssociatedContainer.ContentRenderCache.Height - this.AssociatedContainer.ContentRegion.Height, 612) * this.ScrollDistance);
             }
         }
 
@@ -197,7 +201,13 @@ namespace Blish_HUD.Controls {
         }
 
         public override void Invalidate() {
+            var _lastVal = this.ScrollbarPercent;
             RecalculateScrollbarSize();
+
+            if (_lastVal != this.ScrollbarPercent && this.AssociatedContainer != null) {
+                this.ScrollDistance = 0;
+                this.TargetScrollDistance = 0;
+            }
 
             UpArrowBounds = new Rectangle(this.Width / 2 - spriteUpArrow.Width / 2, 0, spriteUpArrow.Width, spriteUpArrow.Height);
             DownArrowBounds = new Rectangle(this.Width / 2 - spriteDownArrow.Width / 2, this.Height - spriteDownArrow.Height, spriteDownArrow.Width, spriteDownArrow.Height);
@@ -210,11 +220,13 @@ namespace Blish_HUD.Controls {
         private void RecalculateScrollbarSize() {
             if (this.AssociatedContainer == null) return;
             
-            int lowestContent = Math.Max(this.AssociatedContainer.Children.Any() ? this.AssociatedContainer.Children.Max(c => c.Bottom) : 0, this.AssociatedContainer.ContentRegion.Height);
+            int lowestContent = Math.Max(this.AssociatedContainer.Children.Any() ? this.AssociatedContainer.Children.Where(c => c.Visible).Max(c => c.Bottom) : 0, this.AssociatedContainer.ContentRegion.Height);
 
             ScrollbarPercent = (double) this.AssociatedContainer.ContentRegion.Height / (double)lowestContent;
 
             this.ScrollbarHeight = (int)Math.Max(Math.Floor(this.TrackLength * ScrollbarPercent) - 1, MIN_LENGTH);
+
+            UpdateAssocContainer();
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {

@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
 using Newtonsoft.Json;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Controls {
 
@@ -44,14 +43,25 @@ namespace Blish_HUD.Controls {
                 if (_menuItemHeight == value) return;
 
                 _menuItemHeight = value;
-                UpdateContentRegion();
 
-                foreach (var control in this.Children) {
-                    var childMenuItem = (IMenuItem)control;
+                OnPropertyChanged();
 
+                // Update all children to ensure they match in height
+                foreach (var childMenuItem in this.Children.Cast<IMenuItem>()) {
                     childMenuItem.MenuItemHeight = value;
                 }
 
+                UpdateContentRegion(this.Children.ToList());
+            }
+        }
+
+        private int _menuDepth = 0;
+        protected int MenuDepth {
+            get => _menuDepth;
+            set {
+                if (_menuDepth == value) return;
+
+                _menuDepth = value;
                 OnPropertyChanged();
             }
         }
@@ -189,7 +199,7 @@ namespace Blish_HUD.Controls {
 
         private Rectangle FirstItemBoxRegion =>
             new Rectangle(
-                          this.LeftSidePadding,
+                          0,
                           this.MenuItemHeight / 2 - ICON_SIZE / 2,
                           ICON_SIZE,
                           ICON_SIZE
@@ -268,11 +278,15 @@ namespace Blish_HUD.Controls {
         protected override void OnMouseMoved(MouseEventArgs e) {
             base.OnMouseMoved(e);
 
-            // Used if this menu item has its checkbox enabled
-            this.MouseOverIconBox = this.MouseOver && this.FirstItemBoxRegion.Contains(this.RelativeMousePosition);
-
             // Helps us know when the mouse is over the MenuItem itself, or actually over its children
             this.OverSection = this.RelativeMousePosition.Y <= this.MenuItemHeight;
+
+            // Used if this menu item has its checkbox enabled
+            this.MouseOverIconBox = this.CanCheck 
+                                 && this.OverSection
+                                 && this.FirstItemBoxRegion
+                                        .OffsetBy(this.LeftSidePadding, 0)
+                                        .Contains(this.RelativeMousePosition);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
@@ -284,35 +298,35 @@ namespace Blish_HUD.Controls {
         protected override CaptureType CapturesInput() => CaptureType.Mouse;
 
         protected override void OnChildAdded(ChildChangedEventArgs e) { 
-            if (!(e.ChangedChild is IMenuItem newChild)) {
+            if (!(e.ChangedChild is MenuItem newChild)) {
                 e.Cancel = true;
                 return;
             }
 
             newChild.MenuItemHeight = this.MenuItemHeight;
+            newChild.MenuDepth = this.MenuDepth + 1;
 
             // Ensure child items remains the same width as us
-            Binding.Create(() => e.ChangedChild.Width  == this.Width);
+            //Binding.Create(() => e.ChangedChild.Width  == this.Width);
+            Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Width,
+                                                 () => this.Width, applyLeft: true);
 
-            // We'll bind the top of the control to the bottom of the last control we added
+            // We'll bind the top of the new control to the bottom of the last control we added
             var lastItem = this.Children.LastOrDefault();
             if (lastItem != null)
-                Binding.Create(() => e.ChangedChild.Top == lastItem.Top + lastItem.Height /* complex binding to break 2-way bind */);
+                Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
+                                                     () => lastItem.Bottom, applyLeft: true);
+                //Binding.Create(() => e.ChangedChild.Top == lastItem.Top + lastItem.Height /* complex binding to break 2-way bind */);
 
-            e.ChangedChild.Resized += delegate { UpdateContentRegion(); };
+            //e.ChangedChild.Resized += delegate { UpdateContentRegion(this.Children.ToList()); };
 
-            UpdateContentRegion();    
+                
+            UpdateContentRegion(e.ResultingChildren);    
         }
 
-        private void UpdateContentRegion(IEnumerable<MenuItem> extraChildren = null) {
-            var allChildItems = new List<IMenuItem>(this.Children.Select(c => (IMenuItem) c).ToList<IMenuItem>());
-
-            // Allows OnChildAdded to include the pending child item that was added
-            if (extraChildren != null)
-                allChildItems.AddRange(extraChildren);
-
+        private void UpdateContentRegion(IList<Control> allChildItems) {
             if (allChildItems.Any()) {
-                this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, allChildItems.Max(c => ((Control) c).Bottom));
+                this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, allChildItems.Where(c => c.Visible).Max(c => c.Bottom));
             } else {
                 this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, 1);
             }
@@ -401,6 +415,8 @@ namespace Blish_HUD.Controls {
         public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
             int currentLeftSidePadding = this.LeftSidePadding;
 
+            //bounds = new Rectangle(bounds.X + ARROW_SIZE * this.MenuDepth, bounds.Y, bounds.Width, bounds.Height);
+
             if (this.Children.Any())
                 DrawDropdownArrow(spriteBatch, bounds);
 
@@ -423,7 +439,7 @@ namespace Blish_HUD.Controls {
             if (firstItemSprite != null) {
                 spriteBatch.Draw(
                                  firstItemSprite,
-                                 this.FirstItemBoxRegion,
+                                 this.FirstItemBoxRegion.OffsetBy(currentLeftSidePadding, 0),
                                  Color.White
                                 );
                 

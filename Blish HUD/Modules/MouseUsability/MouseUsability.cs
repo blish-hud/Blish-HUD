@@ -8,7 +8,6 @@ using Blish_HUD.BHGw2Api;
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Humanizer;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Modules.MouseUsability {
     public class MouseUsability : Module {
@@ -150,7 +149,10 @@ namespace Blish_HUD.Modules.MouseUsability {
             // highlightColor, "ColorId"
             //);
 
-            Binding.Create(() => setting_hl_highlightColorId.Value == highlightColor.ColorId);
+            //Binding.Create(() => setting_hl_highlightColorId.Value == highlightColor.ColorId);
+
+            Adhesive.Binding.CreateTwoWayBinding(() => setting_hl_highlightColorId.Value,
+                                                 () => highlightColor.ColorId);
 
             var lblOutlineColor = new Label() {
                 Parent = muPanel,

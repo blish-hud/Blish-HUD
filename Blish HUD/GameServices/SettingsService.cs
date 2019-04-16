@@ -12,7 +12,6 @@ using Flurl.Http;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Praeclarum.Bind;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
@@ -74,7 +73,7 @@ namespace Blish_HUD {
         public T Value {
             get => _value;
             set {
-                if (this.Value.Equals(value)) return;
+                if (object.Equals(_value, value)) return;
 
                 var prevValue = this.Value;
                 _value = value;
@@ -198,8 +197,8 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            _registeredSettings = new Dictionary<string, Settings>();
-            this.CoreSettings   = new Settings();
+            _registeredSettings      = new Dictionary<string, Settings>();
+            this.CoreSettings        = new Settings();
 
             _jsonSettings = new JsonSerializerSettings() {
                 PreserveReferencesHandling = PreserveReferencesHandling.All,
@@ -223,7 +222,7 @@ namespace Blish_HUD {
                 // TODO: If this fails, we may need to prompt the user to re-generate the settings (in case they were corrupted or something)
                 Console.WriteLine(e.Message);
             }
-}
+        }
 
         public void Save() {
             string rawSettings = JsonConvert.SerializeObject(this, Formatting.Indented, _jsonSettings);
@@ -251,7 +250,9 @@ namespace Blish_HUD {
                     Checked = strongSetting.Value
                 };
 
-                Binding.Create(() => settingCtrl.Checked == strongSetting.Value);
+                //Binding.Create(() => settingCtrl.Checked == strongSetting.Value);
+                Adhesive.Binding.CreateTwoWayBinding(() => settingCtrl.Checked,
+                                                     () => strongSetting.Value);
 
                 return settingCtrl;
             });
@@ -260,11 +261,9 @@ namespace Blish_HUD {
         protected override void Load() {
             LoadRenderers();
 
-            var directorService = GameServices.GetService<DirectorService>();
-
-            directorService.OnLoad += delegate {
-                directorService.BlishHudWindow
-                    .AddTab("Settings", "155052", BuildSettingPanel(directorService.BlishHudWindow), int.MaxValue - 1);
+            GameService.Director.OnLoad += delegate {
+                GameService.Director.BlishHudWindow
+                    .AddTab("Settings", "155052", BuildSettingPanel(GameService.Director.BlishHudWindow), int.MaxValue - 1);
             };
         }
 

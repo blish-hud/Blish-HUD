@@ -88,8 +88,6 @@ namespace Blish_HUD {
         protected override void Unload() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) {
-            //this.Resolution = GameService.GameIntegration.Gw2WindowSize;
-
             this.SpriteScreen.Update(gameTime);
             this.World.Update(gameTime);
         }

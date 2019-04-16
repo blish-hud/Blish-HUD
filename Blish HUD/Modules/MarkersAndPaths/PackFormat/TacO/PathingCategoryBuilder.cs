@@ -38,13 +38,15 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
                                    : parent.GetOrAddCategoryFromNamespace(categoryName);
 
             subjCategory.DisplayName = categoryNode.Attributes["DisplayName"]?.InnerText; // ?? categoryNode.Attributes["name"]?.InnerText;
-            subjCategory.IconFile    = categoryNode.Attributes["iconFile"]?.InnerText.Replace('/', System.IO.Path.DirectorySeparatorChar);
+            //subjCategory.IconFile    = categoryNode.Attributes["iconFile"]?.InnerText.Replace('/', System.IO.Path.DirectorySeparatorChar);
 
-            float.TryParse(categoryNode.Attributes["iconSize"]?.InnerText,     out subjCategory.Size);
-            float.TryParse(categoryNode.Attributes["heightOffset"]?.InnerText, out subjCategory.Height);
-            float.TryParse(categoryNode.Attributes["fadeFar"]?.InnerText,      out subjCategory.FadeFar);
-            float.TryParse(categoryNode.Attributes["FadeStart"]?.InnerText,    out subjCategory.FadeNear);
-            float.TryParse(categoryNode.Attributes["alpha"]?.InnerText,        out subjCategory.Alpha);
+            subjCategory.SourceXmlNode = categoryNode;
+
+            //float.TryParse(categoryNode.Attributes["iconSize"]?.InnerText,     out subjCategory.Size);
+            //float.TryParse(categoryNode.Attributes["heightOffset"]?.InnerText, out subjCategory.Height);
+            //float.TryParse(categoryNode.Attributes["fadeFar"]?.InnerText,      out subjCategory.FadeFar);
+            //float.TryParse(categoryNode.Attributes["FadeStart"]?.InnerText,    out subjCategory.FadeNear);
+            //float.TryParse(categoryNode.Attributes["alpha"]?.InnerText,        out subjCategory.Alpha);
 
             return subjCategory;
         }

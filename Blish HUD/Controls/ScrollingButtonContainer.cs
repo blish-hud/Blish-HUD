@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Controls {
 
@@ -13,7 +14,6 @@ namespace Blish_HUD.Controls {
                 _shaderRoller = value;
 
                 GetScrollEffect().Parameters["Roller"].SetValue(this.ShaderRoller);
-                GetScrollEffect().Parameters["VerticalDraw"].SetValue(GetVerticalDrawPercent());
 
                 this.Invalidate();
             }
@@ -27,10 +27,18 @@ namespace Blish_HUD.Controls {
                 _scrollEffect.Parameters["Overlay"].SetValue(Content.GetTexture("156071"));
             }
 
+            _scrollEffect.Parameters["VerticalDraw"].SetValue(GetVerticalDrawPercent());
+
             return _scrollEffect;
         }
 
         private Glide.Tween _shaderAnim;
+
+        protected override void OnResized(ResizedEventArgs e) {
+            base.OnResized(e);
+
+            GetScrollEffect().Parameters["VerticalDraw"].SetValue(GetVerticalDrawPercent());
+        }
 
         private void MouseEnteredContainer(MouseEventArgs e) {
             this.DrawEffect = GetScrollEffect();
@@ -56,7 +64,7 @@ namespace Blish_HUD.Controls {
 
             if (this.RelativeMousePosition.Y > this.Height * GetVerticalDrawPercent())
                 MouseLeftContainer(e);
-            else if (!this.MouseOver)
+            else if (_shaderAnim == null)
                 MouseEnteredContainer(e);
         }
 

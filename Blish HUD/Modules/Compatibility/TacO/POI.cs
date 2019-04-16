@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Xml;
 
 namespace Blish_HUD.Modules.Compatibility.TacO {
-    public class POI : Entities.Marker {
+    public class POI : Pathing.Entities.Marker {
 
         public string Type { get; set; }
         public int Behavior { get; set; }
@@ -56,10 +56,10 @@ namespace Blish_HUD.Modules.Compatibility.TacO {
             }
 
             // Axis is swapped, so z and y must switch places.
-            var tacoPoint = new POI(refCategory, new Vector3(xPos, zPos, yPos), type, behavior, guid) {MapId = mapId};
+            //var tacoPoint = new POI(refCategory, new Vector3(xPos, zPos, yPos), type, behavior, guid) {MapId = mapId};
 
 
-            return tacoPoint;
+            return null;
         }
 
     }

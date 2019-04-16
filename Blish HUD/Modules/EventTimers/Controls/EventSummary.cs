@@ -221,12 +221,13 @@ namespace Blish_HUD.Modules.EventTimers {
 
             //spriteBatch.Draw(IconBoxSprite, new Rectangle(0, 0, bounds.Height - 35, bounds.Height - 35), Color.White);
 
+            string wrappedText = Utils.DrawUtil.WrapText(Content.DefaultFont14, this.AssignedMeta.Name, 200);
             // Draw name of event (multiple times for stroke effect)
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89 - 2, 0 - 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89 + 2, 0 + 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89 - 2, 0 + 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89 + 2, 0 - 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89, 0, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.White, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89 - 2, 0 - 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89 + 2, 0 + 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89 - 2, 0 + 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89 + 2, 0 - 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89, 0, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.White, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
             
             // Draw the upcoming event time
             Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.NextTime.ToShortTimeString(), new Rectangle(0, bounds.Height - BOTTOMSECTION_HEIGHT, NEXTTIME_WIDTH, 35), Color.White, Utils.DrawUtil.HorizontalAlignment.Right, Utils.DrawUtil.VerticalAlignment.Middle);

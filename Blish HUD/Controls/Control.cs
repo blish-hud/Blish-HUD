@@ -30,6 +30,46 @@ namespace Blish_HUD.Controls {
 
     public abstract class Control : INotifyPropertyChanged, IDisposable {
 
+        #region Static References
+
+        #region StandardColors
+
+        public static class StandardColors {
+
+            /// <summary>
+            /// Color of standard text or untinted elements in an enabled control.
+            ///
+            /// The color is white (#FFFFFF).
+            /// </summary>
+            public static Color Default => new Color(0xffffffff);
+
+            /// <summary>
+            /// Color of standard text in a disabled control.
+            ///
+            /// The color is a dark gray (#AAAAAA).
+            /// </summary>
+            public static Color DisabledText => new Color(0xffaaaaaa);
+
+            /// <summary>
+            /// A tint often applied to control elements while the control is hovered over.
+            ///
+            /// The color is a light peach (#FFE4B5).
+            /// </summary>
+            public static Color Tinted => new Color(0xffffe4b5);
+
+            /// <summary>
+            /// Color of text or element shadows.
+            ///
+            /// The color is black (#000000).
+            /// </summary>
+            public static Color Shadow => new Color(0xff000000);
+
+        }
+
+        #endregion
+
+        #endregion
+
         #region Control Events
 
         #region Mouse Events
@@ -54,7 +94,9 @@ namespace Blish_HUD.Controls {
 
         protected virtual void OnLeftMouseButtonReleased(MouseEventArgs e) {
             this.LeftMouseButtonReleased?.Invoke(this, e);
-            this.Click?.Invoke(this, e);
+
+            if (this.Enabled)
+                this.Click?.Invoke(this, e);
         }
 
         protected virtual void OnMouseMoved(MouseEventArgs e) {
@@ -545,10 +587,13 @@ namespace Blish_HUD.Controls {
             this.Menu.Visible = true;
         }
 
+        private int invCount = 0;
         /// <summary>
         /// Avoid overriding <see cref="Invalidate"/> as it has the potential to be called multiple times prior to a render taking place.
         /// </summary>
         public virtual void Invalidate() {
+            //invCount++;
+            //Console.WriteLine($"{this.GetType().Name} has invalidated {invCount} times!");
             this.NeedsRedraw = true;
             this.Parent?.Invalidate();
         }
@@ -661,9 +706,9 @@ namespace Blish_HUD.Controls {
                 using (var ctrlSpritebatch = new SpriteBatch(graphicsDevice)) {
 
                     ctrlSpritebatch.Begin(
-                                          SpriteSortMode.Immediate,
+                                          SpriteSortMode.Deferred,
                                           this.BlendState,
-                                          this.SamplerState
+                                          null
                                          );
                     Paint(ctrlSpritebatch, bounds.OffsetBy(-this.Padding.X, -this.Padding.Y));
 
@@ -732,7 +777,17 @@ namespace Blish_HUD.Controls {
         }
         #endregion
 
-        #region Property Binding
+        #region Property Management and Binding
+
+        protected bool SetProperty<T>(ref T property, T newValue, [CallerMemberName] string propertyName = null, bool invalidateParentOnly = false) {
+            if (Equals(property, newValue) || propertyName == null) return false;
+
+            property = newValue;
+
+            OnPropertyChanged(propertyName, invalidateParentOnly);
+
+            return true;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         
@@ -750,8 +805,8 @@ namespace Blish_HUD.Controls {
             if (invalidateParent) this.Parent?.Invalidate();
         }
 
-        protected void OnPropertyChanged(string propertyName, bool invalidateParent) {
-            OnPropertyChanged(propertyName, false, invalidateParent);
+        protected void OnPropertyChanged(string propertyName, bool invalidateParentOnly) {
+            OnPropertyChanged(propertyName, !invalidateParentOnly, true);
         }
 
         [NotifyPropertyChangedInvocator]

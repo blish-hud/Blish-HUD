@@ -101,6 +101,7 @@ namespace Blish_HUD {
 #if DEBUG
             graphics.SynchronizeWithVerticalRetrace = false;
             this.IsFixedTimeStep = false;
+            //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
 #endif
             //TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
 
@@ -188,8 +189,11 @@ namespace Blish_HUD {
             }
 
             // Update all game services
-            foreach (var service in GameService.All)
+            foreach (var service in GameService.All) {
+                GameService.Debug.StartTimeFunc($"Service: {service.GetType().Name}");
                 service.DoUpdate(gameTime);
+                GameService.Debug.StopTimeFunc($"Service: {service.GetType().Name}");
+            }
 
             base.Update(gameTime);
         }
@@ -203,27 +207,22 @@ namespace Blish_HUD {
         protected override void Draw(GameTime gameTime) {
             if (!GameService.GameIntegration.Gw2IsRunning) return;
 
-            var rasterizerState = new RasterizerState();
-            //rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
-            // TODO: We need to be culling in production builds
-            rasterizerState.CullMode = CullMode.None;
-            //rasterizerState.FillMode = FillMode.WireFrame;
-            this.GraphicsDevice.RasterizerState = rasterizerState;
+            //var rasterizerState = new RasterizerState();
+            ////rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
+            //// TODO: We need to be culling in production builds
+            //// Actually, on second thought, some things need no culling (like trails) so they can be seen from both sides
+            //rasterizerState.CullMode = CullMode.None;
+            ////rasterizerState.FillMode = FillMode.WireFrame;
+            //this.GraphicsDevice.RasterizerState = rasterizerState;
+
+            this.GraphicsDevice.BlendState = BlendState.Opaque;
+            this.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            this.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+            this.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+
 
             this.GraphicsDevice.Clear(Color.Transparent);
 
-            float aspectRatio = this.GraphicsDevice.Viewport.Width / (float)this.GraphicsDevice.Viewport.Height;
-
-            this.GraphicsDevice.SamplerStates[0] = SamplerState.AnisotropicWrap;
-
-            this.GraphicsDevice.DepthStencilState = b;
-
-            spriteBatch.Begin();
-
-            GameService.Debug.StartTimeFunc("UI Elements");
-            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible)
-                GameService.Graphics.SpriteScreen.Draw(this.GraphicsDevice, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
-            GameService.Debug.StopTimeFunc("UI Elements");
 
 
             //GameService.Debug.StartTimeFunc("Trails");
@@ -259,17 +258,23 @@ namespace Blish_HUD {
             //}
             //GameService.Debug.StopTimeFunc("Trails"); 
 
+            GameService.Debug.StartTimeFunc("UI Elements");
+            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible)
+                GameService.Graphics.SpriteScreen.Draw(this.GraphicsDevice, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+            GameService.Debug.StopTimeFunc("UI Elements");
 
-            // Only draw 3D elements if we are in game
             GameService.Debug.StartTimeFunc("3D objects");
+            // Only draw 3D elements if we are in game
             if (GameService.GameIntegration.IsInGame)
                 GameService.Graphics.World.Draw(this.GraphicsDevice);
             GameService.Debug.StopTimeFunc("3D objects");
+            
+            spriteBatch.Begin();
 
-
+            Texture2D outRender;
             if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
-                if (GameService.Graphics.SpriteScreen.GetRender() != null)
-                    spriteBatch.Draw(GameService.Graphics.SpriteScreen.GetRender(), new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
+                if ((outRender = GameService.Graphics.SpriteScreen.GetRender()) != null)
+                    spriteBatch.Draw(outRender, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
             }
 
 
@@ -287,18 +292,20 @@ namespace Blish_HUD {
             spriteBatch.DrawString(font_def12, fps, new Vector2(debugLeft, 25), Color.Red);
 
             int i = 0;
-            foreach (KeyValuePair<string, DebugService.FuncClock> timedFuncPair in GameService.Debug.FuncTimes) {
+            foreach (KeyValuePair<string, DebugService.FuncClock> timedFuncPair in GameService.Debug.FuncTimes.Where(ft => ft.Value.AverageRuntime > 1).OrderByDescending(ft => ft.Value.AverageRuntime)) {
                 spriteBatch.DrawString(font_def12, $"{timedFuncPair.Key} {timedFuncPair.Value.AverageRuntime} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
                 i++;
             }
 
-            spriteBatch.DrawString(font_def12, $"Markers Available: {GameService.Pathing.Markers.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(font_def12, $"Pathables Available: {GameService.Pathing.Pathables.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
-            spriteBatch.DrawString(font_def12, $"Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(font_def12, $"3D Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(font_def12, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
             spriteBatch.DrawString(font_def12, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-
-            //spriteBatch.DrawString(font_def12, $"{GameService.GameIntegration.UpdateRatio}%", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            //i++;
+            //spriteBatch.DrawString(font_def12, $"UI Tick: {(deltaTime * GameService.Gw2Mumble.AverageFramesPerUITick / 60)}%", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
 
 #endif
 

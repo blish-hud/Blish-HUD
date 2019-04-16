@@ -7,7 +7,6 @@ using System.Threading;
 using System.Windows.Forms;
 using Blish_HUD;
 using Sentry;
-using Binding = Praeclarum.Bind.Binding;
 
 namespace Blish_HUD {
 #if WINDOWS || LINUX
@@ -16,7 +15,7 @@ namespace Blish_HUD {
     /// </summary>
     public static class Program {
 
-        public const string APP_VERSION = "blish_hud@0.2.1-alpha.6";
+        public const string APP_VERSION = "blish_hud@0.2.1-alpha.7";
 
         /// <summary>
         /// The main entry point for the application.
@@ -36,7 +35,7 @@ namespace Blish_HUD {
 #endif
 
 #if SENTRY
-            const string SENTRY_DSN = "<dns-here>";
+            const string SENTRY_DSN = "https://e11516741a32440ca7a72b68d5af93df@sentry.do-ny3.svr.gw2blishhud.com/2";
 
             using (SentrySdk.Init(
                                   o => {
@@ -63,7 +62,7 @@ namespace Blish_HUD {
                                              scope.SetTag("start-dir", Directory.GetCurrentDirectory().Replace(Environment.UserName, "<SENTRY-FILTERED-OUT-USERNAME>"));
                                          });
 
-                using (var game = new MainLoop())
+                using (var game = new Overlay())
                     game.Run();
             }
 #else

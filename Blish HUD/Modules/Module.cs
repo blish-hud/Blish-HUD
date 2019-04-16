@@ -52,8 +52,9 @@ namespace Blish_HUD.Modules {
         protected bool Loaded = false;
 
         public Module() {
-            this.Settings = GameServices.GetService<SettingsService>()
-                .RegisterSettings(this.GetModuleInfo().Namespace, true);
+            this.Settings = GameService
+                           .Settings
+                           .RegisterSettings(this.GetModuleInfo().Namespace, true);
 
             this.DefineSettings(this.Settings);
         }
@@ -65,9 +66,9 @@ namespace Blish_HUD.Modules {
 
         protected virtual void OnDisabled() {
 
-            // Clear out any tabs that were made
+            // Clear out any tabs that were made (that the module didn't clean up)
             foreach (var windowTab2 in TabsAdded) {
-                GameServices.GetService<DirectorService>().BlishHudWindow.RemoveTab(windowTab2);
+                GameService.Director.BlishHudWindow.RemoveTab(windowTab2);
             }
         }
         public virtual void Update(GameTime gameTime) { /* NOOP */ }

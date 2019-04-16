@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
 
-namespace Blish_HUD.Modules.MarkersAndPaths.Entities {
-    public interface ITacOMarkerType {
-
+namespace Blish_HUD.Pathing.Behavior {
+    class BehaviorSet {
     }
 }

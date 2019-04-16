@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Blish_HUD.Entities.Paths;
 using Blish_HUD.Modules.TacO.Origin;
 using Blish_HUD.Modules.PoiLookup;
 using Microsoft.Xna.Framework;

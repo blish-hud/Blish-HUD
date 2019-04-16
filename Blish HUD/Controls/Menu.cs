@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Controls {
     public class Menu : Container, IMenuItem {
@@ -48,12 +47,15 @@ namespace Blish_HUD.Controls {
             };
 
             // Ensure child items remains the same width as us
-            Binding.Create(() => e.ChangedChild.Width == this.Width);
+            Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Width,
+                                                 () => this.Width, applyLeft: true);
 
             // We'll bind the top of the control to the bottom of the last control we added
             var lastItem = this.Children.LastOrDefault();
             if (lastItem != null) {
-                Binding.Create(() => e.ChangedChild.Top == lastItem.Top + lastItem.Height /* complex binding to break 2-way bind */);
+                Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
+                                                     () => lastItem.Bottom, applyLeft: true);
+                //Binding.Create(() => e.ChangedChild.Top == lastItem.Top + lastItem.Height /* complex binding to break 2-way bind */));
             }
             //this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, allChildItems.Max(c => ((Control)c).Bottom));
         }
@@ -69,7 +71,7 @@ namespace Blish_HUD.Controls {
             if (!this.Children.Any()) return;
 
             // Draw items dark every other one
-            int totalItemHeight = this.Children.Max(c => c.Bottom);
+            int totalItemHeight = this.Children.Where(c => c.Visible).Max(c => c.Bottom);
 
             for (int sec = 0; sec < totalItemHeight / this.MenuItemHeight; sec += 2) {
                 spriteBatch.Draw(Content.GetTexture("156044"), new Rectangle(this.ContentRegion.Left, this.ContentRegion.Top + this.MenuItemHeight * sec - this.VerticalScrollOffset, this.ContentRegion.Width, this.MenuItemHeight), Color.Black * 0.7f);
