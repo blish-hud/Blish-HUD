@@ -55,7 +55,7 @@ namespace Blish_HUD.Controls {
             ///
             /// The color is a light peach (#FFE4B5).
             /// </summary>
-            public static Color Tinted => new Color(0xffffe4b5);
+            public static Color Tinted => Color.FromNonPremultiplied(255, 228, 181, 255);
 
             /// <summary>
             /// Color of text or element shadows.

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Annotations;
+using Blish_HUD.Entities;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -96,8 +97,22 @@ namespace Blish_HUD.Pathing.Entities {
                 pastDistance -= Vector3.Distance(currPoint, nextPoint);
 
                 currPoint = nextPoint;
-            }
 
+                #if DEBUG
+                //var leftBoxPoint = new Cube() {
+                //    Color    = Color.Red,
+                //    Size     = new Vector3(0.25f),
+                //    Position = leftPoint
+                //};
+                //var rightBoxPoint = new Cube() {
+                //    Color    = Color.Red,
+                //    Size     = new Vector3(0.25f),
+                //    Position = rightPoint
+                //};
+                //GameService.Graphics.World.Entities.Add(leftBoxPoint);
+                //GameService.Graphics.World.Entities.Add(rightBoxPoint);
+                #endif
+            }
 
             var fleftPoint  = currPoint + (offset * imgScale);
             var frightPoint = currPoint + (offset * -imgScale);
@@ -154,9 +169,6 @@ namespace Blish_HUD.Pathing.Entities {
             _basicTrailEffect.Parameters["FadeNear"].SetValue(this.FadeNear);
             _basicTrailEffect.Parameters["FadeFar"].SetValue(this.FadeFar);
             _basicTrailEffect.Parameters["Opacity"].SetValue(this.Opacity);
-            //_basicTrailEffect.Parameters["FadeOutDistance"].SetValue(3000f);
-            //_basicTrailEffect.Parameters["FullClip"].SetValue(3500f);
-            //_basicTrailEffect.Parameters["FadeDistance"].SetValue(this.TrailTexture.Height / 256.0f / 2.0f);
             _basicTrailEffect.Parameters["TotalLength"].SetValue(20f); // this.TrailLength / this.TrailTexture.Height * 2);
 
             graphicsDevice.BlendState        = BlendState.AlphaBlend;

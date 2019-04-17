@@ -22,6 +22,16 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             set => SetProperty(ref _type, value);
         }
 
+        public float FadeNear {
+            get => this.ManagedEntity.FadeNear;
+            set => this.ManagedEntity.FadeNear = value;
+        }
+
+        public float FadeFar {
+            get => this.ManagedEntity.FadeFar;
+            set => this.ManagedEntity.FadeFar = value;
+        }
+
         public string TrlFilePath {
             get => _trlFilePath;
             set => SetProperty(ref _trlFilePath, value);
@@ -50,6 +60,22 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
                 if (!float.TryParse(attribute.Value, out float fOut)) return false;
 
                 this.Opacity = fOut;
+                return true;
+            });
+
+            // FadeNear
+            RegisterAttribute("fadeNear", delegate (XmlAttribute attribute) {
+                if (!float.TryParse(attribute.Value, out float fOut)) return false;
+
+                this.FadeNear = fOut;
+                return true;
+            });
+
+            // FadeFar
+            RegisterAttribute("fadeFar", delegate (XmlAttribute attribute) {
+                if (!float.TryParse(attribute.Value, out float fOut)) return false;
+
+                this.FadeFar = fOut;
                 return true;
             });
 

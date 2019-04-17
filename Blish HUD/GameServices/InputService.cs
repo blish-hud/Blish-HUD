@@ -138,7 +138,8 @@ namespace Blish_HUD {
         protected override void Initialize() {
             graphics = GameServices.GetService<GraphicsService>();
 
-#if !NOMOUSEHOOK
+#if !DEBUG
+            //NOMOUSEHOOK
             thrdMouseHook = new Thread(HookMouse);
             thrdMouseHook.IsBackground = true;
             thrdMouseHook.Start();

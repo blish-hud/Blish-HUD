@@ -34,7 +34,7 @@ namespace Blish_HUD {
         protected override void Initialize() { }
 
         protected override void Load() {
-            GameService.Director.BlishHudWindow.AddTab("Hotkeys", "marker-pathing-icon", BuildHotkeysPanel(GameService.Director.BlishHudWindow), int.MaxValue - 4);
+            //GameService.Director.BlishHudWindow.AddTab("Hotkeys", "marker-pathing-icon", BuildHotkeysPanel(GameService.Director.BlishHudWindow), int.MaxValue - 4);
         }
 
         protected override void Unload() { }

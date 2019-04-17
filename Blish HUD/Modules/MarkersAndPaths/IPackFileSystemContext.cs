@@ -201,13 +201,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         public Stream LoadFileStream(string filePath) {
             ZipArchiveEntry textureEntry;
 
-            //foreach (var textureEntry in _packArchive.Entries) {
-            //    if (textureEntry.FullName.EndsWith(filePath)) {
-            //        return textureEntry.Open().ToMemoryStream();
-            //    }
-            //}
-
-            if ((textureEntry = _packArchive.GetEntry(filePath)) != null) {
+            if ((textureEntry = _packArchive.GetEntry(filePath.Replace(@"\", "/"))) != null) {
                 return textureEntry.Open().ToMemoryStream();
             }
             //} else {
