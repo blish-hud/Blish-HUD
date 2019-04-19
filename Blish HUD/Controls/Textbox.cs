@@ -81,8 +81,8 @@ namespace Blish_HUD.Controls {
             };
 
             #if DEBUG
-                /* This method is pretty hacked up, so I want to make sure we can keep tabs on
-                   it as the application evolves. */
+                /* This method is pretty hacked up, so I want to make
+                   sure we can keep tabs on it as the application evolves. */
                 _focusForm.Opacity   = 0.2f;
                 _focusForm.BackColor = System.Drawing.Color.Magenta;
             #endif
@@ -190,7 +190,10 @@ namespace Blish_HUD.Controls {
         }
 
         public override void Update(GameTime gameTime) {
-            _focusForm.Location = this.AbsoluteBounds.Location.ScaleToUi().ToSystemDrawingPoint();
+            var focusLocation = this.AbsoluteBounds.Location.ScaleToUi().ToSystemDrawingPoint();
+            focusLocation.Offset(Overlay.Form.Location);
+
+            _focusForm.Location = focusLocation;
             _focusForm.Size = this.AbsoluteBounds.Size.ScaleToUi().ToSystemDrawingSize();
 
             this.CaretVisible = _mttb.Focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(lastInvalidate).TotalSeconds < 0.75);

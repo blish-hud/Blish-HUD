@@ -55,7 +55,7 @@ namespace Blish_HUD.Modules.EventTimers {
         }
 
         public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(Content.GetTexture("ns-button"), bounds, Color.White * 0.75f);
+            spriteBatch.Draw(Content.GetTexture("ns-button"), bounds, Color.White * 0.85f);
 
             int icoSize = Math.Min(Icon.Width, 52);
 

@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using Color = System.Drawing.Color;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
@@ -44,7 +45,7 @@ namespace Blish_HUD {
         public ContextMenuStrip TrayIconMenu { get; private set; }
 
         public bool IsInGame { get; private set; } = false;
-
+        
         private bool _gw2IsRunning = false;
         public bool Gw2IsRunning {
             get => _gw2IsRunning;

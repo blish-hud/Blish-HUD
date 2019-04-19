@@ -311,16 +311,26 @@ namespace Blish_HUD.Modules.PoiLookup {
         private void ResultCtrl_Submitted(PoiItem item, bool copyAlt) {
             // TODO: Lots of this code can be reduced / cleaned up
             if (copyAlt) {
-                var closestLandmark = Module.GetClosestWaypoint(item.Landmark);
-                System.Windows.Forms.Clipboard.SetText(closestLandmark.ChatLink);
+                try {
+                    var closestLandmark = Module.GetClosestWaypoint(item.Landmark);
+                    Clipboard.SetText(closestLandmark.ChatLink);
 
-                if (Module.settingShowNotificationWhenLandmarkIsCopied.Value)
-                    Controls.Notification.ShowNotification(item.Icon, $"{closestLandmark.Type} copied to clipboard.", 2);
+                    if (Module.settingShowNotificationWhenLandmarkIsCopied.Value)
+                        Controls.Notification.ShowNotification(item.Icon, $"{closestLandmark.Type} copied to clipboard.", 2);
+                } catch (Exception ex) {
+                    // TODO: Notify properly here. This rarely happens, but we shouldn't let it crash the app.
+                    Controls.Notification.ShowNotification(item.Icon, "Failed to copy to clipboard. Try again?", 2);
+                }
             } else {
-                System.Windows.Forms.Clipboard.SetText(item.Landmark.ChatLink);
-
-                if (Module.settingShowNotificationWhenLandmarkIsCopied.Value)
-                    Controls.Notification.ShowNotification(item.Icon, $"{item.Landmark.Type} copied to clipboard.", 2);
+                try {
+                    Clipboard.SetText(item.Landmark.ChatLink);
+                    
+                    if (Module.settingShowNotificationWhenLandmarkIsCopied.Value)
+                        Controls.Notification.ShowNotification(item.Icon, $"{item.Landmark.Type} copied to clipboard.", 2);
+                } catch (Exception ex) {
+                    // TODO: Notify properly here. This rarely happens, but we shouldn't let it crash the app.
+                    Controls.Notification.ShowNotification(item.Icon, "Failed to copy to clipboard. Try again?", 2);
+                }
             }
 
             Searchbox.Text = "";

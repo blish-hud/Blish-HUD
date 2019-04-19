@@ -45,7 +45,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             // Type
             RegisterAttribute("type",
                               attribute => (!string.IsNullOrWhiteSpace(this.Type = attribute.Value.Trim())),
-                              true);
+                              false);
 
             // TrailData
             RegisterAttribute("trailData",
@@ -101,11 +101,11 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             // Process attributes from type category first
             var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(this.Type);
 
-            if (refCategory.SourceXmlNode?.Attributes != null) {
+            if (refCategory?.SourceXmlNode?.Attributes != null) {
                 ProcessAttributes(refCategory.SourceXmlNode.Attributes);
             }
 
-            refCategory.AddPathable(this);
+            refCategory?.AddPathable(this);
             
             // Load trl file
             var sectionData = TrlReader.ReadStream(this.PackContext.LoadFileStream(this.TrlFilePath));

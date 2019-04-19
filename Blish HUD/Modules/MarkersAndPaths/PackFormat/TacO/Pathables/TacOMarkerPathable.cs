@@ -85,7 +85,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             // Type
             RegisterAttribute("type",
                               attribute => (!string.IsNullOrWhiteSpace(this.Type = attribute.Value.Trim())),
-                              true);
+                              false);
 
             // Alpha (alias:Opacity)
             RegisterAttribute("alpha", delegate (XmlAttribute attribute) {
@@ -171,11 +171,11 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             // Process attributes from type category first
             var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(this.Type);
 
-            if (refCategory.SourceXmlNode?.Attributes != null) {
+            if (refCategory?.SourceXmlNode?.Attributes != null) {
                 ProcessAttributes(refCategory.SourceXmlNode.Attributes);
             }
 
-            refCategory.AddPathable(this);
+            refCategory?.AddPathable(this);
 
             // Finalize attributes
             if (attributeLoaders.ContainsKey("heightoffset")) {

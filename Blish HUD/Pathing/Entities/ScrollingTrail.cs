@@ -14,7 +14,7 @@ namespace Blish_HUD.Pathing.Entities {
     public class ScrollingTrail : Trail, ITrail {
 
 
-        public const float TRAIL_WIDTH = 20 * 0.0254f;
+        public const float TRAIL_WIDTH = 40 * 0.0254f;
 
         private float _animationSpeed = 1;
 

@@ -27,17 +27,14 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
     public class DirectoryPackContext : IPackFileSystemContext {
 
-        private readonly string _markerDir;
+        private readonly string _packDir;
 
         private Dictionary<string, Texture2D> _textureCache;
         private HashSet<string>               _pendingTextureRemoval;
         private HashSet<string>               _isUsedOnNextMap;
 
         public DirectoryPackContext(string directoryRoot) {
-            //if (!Directory.Exists(directoryRoot))
-            //    throw new DirectoryNotFoundException($"The marker directory could not be found: {directoryRoot}");
-
-            _markerDir = directoryRoot;
+            _packDir = directoryRoot;
 
             _textureCache          = new Dictionary<string, Texture2D>();
             _pendingTextureRemoval = new HashSet<string>();
@@ -56,11 +53,11 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         public void LoadOnXmlPack(Action<string, IPackFileSystemContext> loadXmlFunc) {
-            RunOnAllXmlPacks(_markerDir, loadXmlFunc);
+            RunOnAllXmlPacks(_packDir, loadXmlFunc);
         }
 
         public bool FileExists(string filePath) {
-            return File.Exists(Path.Combine(_markerDir, filePath));
+            return File.Exists(Path.Combine(_packDir, filePath));
         }
 
         public void RunTextureDisposal() {
@@ -95,7 +92,11 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
             if (!_textureCache.ContainsKey(texturePath)) {
                 using (var textureStream = LoadFileStream(texturePath)) {
-                    _textureCache.Add(texturePath, Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream));
+                    if (textureStream != Stream.Null) {
+                        _textureCache.Add(texturePath, Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream));
+                    } else {
+                        return fallbackTexture;
+                    }
                 }
             }
 
@@ -103,7 +104,17 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         public Stream LoadFileStream(string filePath) {
-            return new FileStream(Path.Combine(_markerDir, filePath), FileMode.Open);
+            var fullFilePath = Path.Combine(_packDir, filePath);
+
+            if (File.Exists(fullFilePath)) {
+                try {
+                    return new FileStream(fullFilePath, FileMode.Open);
+                } catch (Exception ex) {
+                    return Stream.Null;
+                }
+            }
+
+            return Stream.Null;
         }
         
         public void Dispose() {
@@ -123,9 +134,6 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         private HashSet<string>               _isUsedOnNextMap;
 
         public ZipPackContext(string zipPackPath) {
-            //if (!File.Exists(zipPackPath))
-            //    throw new FileNotFoundException("The ZIP pathing pack could not be loaded.", zipPackPath);
-
             _packArchive = ZipFile.OpenRead(zipPackPath);
 
             _textureCache          = new Dictionary<string, Texture2D>();
@@ -134,9 +142,6 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         public void LoadOnXmlPack(Action<string, IPackFileSystemContext> loadXmlFunc) {
-            //if (_packArchive == null)
-            //    throw new ObjectDisposedException(nameof(_packArchive), "The pack archive reader was unable to be opened, or has already been disposed.");
-
             foreach (var entry in _packArchive.Entries) {
                 if (entry.Name.ToLower().EndsWith(".xml")) {
                     Console.WriteLine($"[{nameof(ZipPackContext)}] Loading pack file {entry.FullName}");
@@ -184,14 +189,16 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         public Texture2D LoadTexture(string texturePath, Texture2D fallbackTexture) {
-            //if (_packArchive == null)
-            //    throw new ObjectDisposedException(nameof(_packArchive), "The pack archive reader was unable to be opened, or has already been disposed.");
             
             _isUsedOnNextMap.Add(texturePath);
 
             if (!_textureCache.ContainsKey(texturePath)) {
                 using (var textureStream = LoadFileStream(texturePath)) {
-                    _textureCache.Add(texturePath, Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream));
+                    if (textureStream != Stream.Null) {
+                        _textureCache.Add(texturePath, Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream));
+                    } else {
+                        return fallbackTexture;
+                    }
                 }
             }
 
@@ -199,16 +206,18 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         public Stream LoadFileStream(string filePath) {
-            ZipArchiveEntry textureEntry;
+            ZipArchiveEntry fileEntry;
 
-            if ((textureEntry = _packArchive.GetEntry(filePath.Replace(@"\", "/"))) != null) {
-                return textureEntry.Open().ToMemoryStream();
+            if ((fileEntry = _packArchive.GetEntry(filePath.Replace(@"\", "/"))) != null) {
+                try {
+                    return fileEntry.Open().ToMemoryStream();
+                } catch (Exception ex) {
+                    return Stream.Null;
+                }
             }
-            //} else {
-            //    throw new FileNotFoundException("File was not found inside of archive.", filePath);
 
-            // Can't find it, so just send back an empty memory stream
-            return new MemoryStream(new byte[] {});
+            // Can't find it, so just send back an empty stream
+            return Stream.Null;
         }
 
         public void Dispose() {

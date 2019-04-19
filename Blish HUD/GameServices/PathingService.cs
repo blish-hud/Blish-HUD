@@ -358,6 +358,8 @@ namespace Blish_HUD {
         }
 
         public PathingCategory GetOrAddCategoryFromNamespace(string @namespace) {
+            if (@namespace == null) return null;
+
             return this.GetOrAddCategoryFromNamespace(@namespace.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries));
         }
 

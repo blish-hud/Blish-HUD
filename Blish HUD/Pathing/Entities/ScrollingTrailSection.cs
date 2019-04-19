@@ -162,7 +162,8 @@ namespace Blish_HUD.Pathing.Entities {
         public override void Draw(GraphicsDevice graphicsDevice) {
             if (this.TrailTexture == null || this.VertexData?.Length < 3 || this.VertexData == null) return;
 
-            _basicTrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.View * GameService.Camera.Projection * Matrix.Identity);
+            _basicTrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.WorldViewProjection);
+            _basicTrailEffect.Parameters["PlayerViewProjection"].SetValue(GameService.Camera.PlayerView * GameService.Camera.Projection);
             _basicTrailEffect.Parameters["Texture"].SetValue(this.TrailTexture);
             _basicTrailEffect.Parameters["FlowSpeed"].SetValue(this.AnimationSpeed);
             _basicTrailEffect.Parameters["PlayerPosition"].SetValue(GameService.Player.Position);

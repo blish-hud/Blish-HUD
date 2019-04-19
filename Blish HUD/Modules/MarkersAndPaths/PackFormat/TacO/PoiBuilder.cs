@@ -78,7 +78,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
                         GameService.Pathing.RegisterPathable(newPoiMarker);
                     } else {
                         Console.WriteLine("Failed to load marker: ");
-                        Console.WriteLine(string.Join(";; ", pathableNode.Attributes.Select(s => ((XmlAttribute)s).Name + " = " + ((XmlAttribute)s).Value)));
+                        Console.WriteLine(string.Join("; ", pathableNode.Attributes.Select(s => ((XmlAttribute)s).Name + " = " + ((XmlAttribute)s).Value)));
                     }
                     break;
                 case ELEMENT_POITYPE_TRAIL:
@@ -88,7 +88,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
                         GameService.Pathing.RegisterPathable(newPathTrail);
                     } else {
                         Console.WriteLine("Failed to load trail: ");
-                        Console.WriteLine(pathableNode?.Attributes?["trailData"]?.Value.Trim());
+                        Console.WriteLine(string.Join("; ", pathableNode.Attributes.Select(s => ((XmlAttribute)s).Name + " = " + ((XmlAttribute)s).Value)));
                     }
 
                     break;

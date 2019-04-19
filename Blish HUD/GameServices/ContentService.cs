@@ -29,18 +29,6 @@ namespace Blish_HUD {
                 return Color.FromNonPremultiplied((int)(amt * 255), (int)(amt * 255), (int)(amt * 255), 255);
             }
 
-            public static class GW2Colors {
-                public static readonly Color White = Color.FromNonPremultiplied(189, 186, 185, 255);
-                public static readonly Color Red = Color.FromNonPremultiplied(135, 0, 10, 255);
-                public static readonly Color Blueberry = Color.FromNonPremultiplied(36, 65, 122, 255);
-                public static readonly Color AncientSilver = Color.FromNonPremultiplied(157, 142, 108, 255);
-                public static readonly Color Abyss = Color.FromNonPremultiplied(26, 24, 27, 255);
-                public static readonly Color Green = Color.FromNonPremultiplied(28, 90, 45, 255);
-                public static readonly Color Gray = Color.FromNonPremultiplied(72, 69, 70, 255);
-                public static readonly Color Fuchsia = Color.FromNonPremultiplied(117, 25, 67, 255);
-                public static readonly Color Oxblood = Color.FromNonPremultiplied(55, 4, 0, 255);
-                public static readonly Color Orange = Color.FromNonPremultiplied(152, 63, 23, 255);
-            }
         }
 
         public static class Textures {

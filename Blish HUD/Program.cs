@@ -15,7 +15,7 @@ namespace Blish_HUD {
     /// </summary>
     public static class Program {
 
-        public const string APP_VERSION = "blish_hud@0.2.1-alpha.7_DEV";
+        public const string APP_VERSION = "blish_hud@0.2.1-alpha.7.3_DEV";
 
         /// <summary>
         /// The main entry point for the application.
@@ -29,11 +29,7 @@ namespace Blish_HUD {
 
             // TODO: Implement for error logging in released versions
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-#if DEBUG
-            //Binding.Error += delegate (string s) { Console.WriteLine($"Binding Error: {s}"); };
-#endif
-
+            
 #if SENTRY
             const string SENTRY_DSN = "https://e11516741a32440ca7a72b68d5af93df@sentry.do-ny3.svr.gw2blishhud.com/2";
 
