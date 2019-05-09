@@ -33,21 +33,10 @@ namespace Blish_HUD.Utils {
         //}
 
         public static void DrawAlignedText(SpriteBatch sb, SpriteFont sf, string text, Rectangle bounds, Color clr, HorizontalAlignment ha, VerticalAlignment va) {
+            // Filter out any characters our font doesn't support
             text = string.Join("", text.ToCharArray().Where(c => sf.Characters.Contains(c)));
 
             var textSize = sf.MeasureString(text);
-
-            // TODO: Implament correctly
-            // Need to break line into multiple lines if it's too wide
-            // We only break on spaces at the moment - if no space, then we just draw it out of bounds
-            //if (textSize.X + bounds.X > bounds.Width && text.Contains(" ")) {
-            //    int breakSpace = text.LastIndexOf(' ');
-
-            //    string multiString = text.Substring(0, breakSpace - 1) + Environment.NewLine + text.Substring(breakSpace);
-            //    DrawAlignedText(sb, sf, multiString, bounds, clr, ha, va);
-
-            //    return;
-            //}
 
             int xPos = bounds.X;
             int yPos = bounds.Y;
@@ -78,10 +67,10 @@ namespace Blish_HUD.Utils {
 
         /// <remarks> Source: https://stackoverflow.com/a/15987581/595437 </remarks>
         public static string WrapText(BitmapFont spriteFont, string text, float maxLineWidth) {
-            string[]      words      = text.Split(' ');
-            var sb         = new StringBuilder();
-            float         lineWidth  = 0f;
-            float         spaceWidth = spriteFont.MeasureString(" ").Width;
+            string[] words      = text.Split(' ');
+            var      sb         = new StringBuilder();
+            float    lineWidth  = 0f;
+            float    spaceWidth = spriteFont.MeasureString(" ").Width;
 
             foreach (string word in words) {
                 Vector2 size = spriteFont.MeasureString(word);

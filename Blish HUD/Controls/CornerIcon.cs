@@ -149,19 +149,20 @@ namespace Blish_HUD.Controls {
 
         // TODO: Use a shader to replace "HoverIcon"
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (this.Icon == null) return;
+            if (_icon == null) return;
 
             if (this.MouseOver) {
-                if (this.HoverIcon == null) {
-                    var srcBounds = bounds;
-                    srcBounds.Inflate(1.5f, 1.5f);
+                if (_hoverIcon == null) {
+                    // TODO: Figure out what we were inflating CornerIcon for
+                    //var srcBounds = _size.InBounds(bounds);
+                    //srcBounds.Inflate(1.5f, 1.5f);
 
-                    spriteBatch.Draw(this.Icon, bounds, Color.White);
+                    spriteBatch.DrawOnCtrl(this, _icon, new Rectangle(Point.Zero, _size));
                 } else {
-                    spriteBatch.Draw(this.HoverIcon, bounds, Color.White);
+                    spriteBatch.DrawOnCtrl(this, _hoverIcon, new Rectangle(Point.Zero, _size));
                 }
             } else {
-                spriteBatch.Draw(this.Icon, bounds, Color.White * this.HoverTrans);
+                spriteBatch.DrawOnCtrl(this, _icon, new Rectangle(Point.Zero, _size), Color.White * _hoverTrans);
             }
         }
     }

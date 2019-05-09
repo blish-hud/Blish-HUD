@@ -8,7 +8,7 @@ using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
 
-    public class ContextMenuStripItem : ScrollingButton, ICheckable {
+    public class ContextMenuStripItem : Control, ICheckable {
 
         private const int BULLET_SIZE        = 18;
         private const int HORIZONTAL_PADDING = 6;
@@ -100,6 +100,13 @@ namespace Blish_HUD.Controls {
             _arrowSprite = _arrowSprite ?? Content.GetTexture("context-menu-strip-submenu");
 
             LoadCheckboxSprites();
+
+            this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
+        }
+
+        public override void RecalculateLayout() {
+            if (this.EffectBehind != null)
+                this.EffectBehind.Size = _size.ToVector2();
         }
 
         private void UpdateControlWidth(string newText) {
@@ -138,61 +145,60 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (this.CanCheck) {
-                string state = this.Checked ? "-checked" : "-unchecked";
+            if (_canCheck) {
+                string state = _checked ? "-checked" : "-unchecked";
 
                 string extension = "";
                 extension = this.MouseOver ? "-active" : extension;
                 extension = !this.Enabled ? "-disabled" : extension;
 
-                spriteBatch.Draw(
+                spriteBatch.DrawOnCtrl(this,
                                  _cbRegions.First(cb => cb.Name == $"checkbox/cb{state}{extension}"),
                                  new Rectangle(
-                                               HORIZONTAL_PADDING + BULLET_SIZE / 2 - 32 / 2,
-                                               bounds.Height / 2 - 32 / 2,
+                                               HORIZONTAL_PADDING + BULLET_SIZE / 2 - 16,
+                                               _size.Y / 2 - 16,
                                                32,
                                                32
                                               ),
-                                 StandardColors.Default
-                                );
+                                 StandardColors.Default);
 
             } else {
-                spriteBatch.Draw(
-                                     _bulletSprite,
-                                     new Rectangle(
-                                                   HORIZONTAL_PADDING,
-                                                   bounds.Height / 2 - BULLET_SIZE / 2,
-                                                   BULLET_SIZE,
-                                                   BULLET_SIZE
-                                                  ),
-                                     this.MouseOver ? StandardColors.Tinted : StandardColors.Default
-                                    );
+                spriteBatch.DrawOnCtrl(this,
+                                 _bulletSprite,
+                                 new Rectangle(
+                                               HORIZONTAL_PADDING,
+                                               _size.Y / 2 - BULLET_SIZE / 2,
+                                               BULLET_SIZE,
+                                               BULLET_SIZE
+                                              ),
+                                 this.MouseOver ? StandardColors.Tinted : StandardColors.Default);
             }
 
             // Draw shadow
-            Utils.DrawUtil.DrawAlignedText(spriteBatch,
+            spriteBatch.DrawStringOnCtrl(this,
+                                           _text,
                                            Content.DefaultFont14,
-                                           this.Text,
-                                           new Rectangle(TEXT_LEFTPADDING              + 1,
-                                                         0                             + 1,
-                                                         this.Width - TEXT_LEFTPADDING - HORIZONTAL_PADDING,
-                                                         this.Height),
+                                           new Rectangle(TEXT_LEFTPADDING + 1,
+                                                         0 + 1,
+                                                         _size.X - TEXT_LEFTPADDING - HORIZONTAL_PADDING,
+                                                         _size.Y),
                                            StandardColors.Shadow);
 
-            Utils.DrawUtil.DrawAlignedText(spriteBatch,
+            spriteBatch.DrawStringOnCtrl(this,
+                                           _text,
                                            Content.DefaultFont14,
-                                           this.Text,
                                            new Rectangle(TEXT_LEFTPADDING,
                                                          0,
-                                                         this.Width - TEXT_LEFTPADDING - HORIZONTAL_PADDING,
-                                                         this.Height),
-                                           this.Enabled ? StandardColors.Default : StandardColors.DisabledText);
+                                                         _size.X - TEXT_LEFTPADDING - HORIZONTAL_PADDING,
+                                                         _size.Y),
+                                           _enabled ? StandardColors.Default : StandardColors.DisabledText);
 
             // Indicate submenu, if there is one
-            if (this.Submenu != null) {
-                spriteBatch.Draw(_arrowSprite,
-                                 new Rectangle(bounds.Width - HORIZONTAL_PADDING - _arrowSprite.Width,
-                                               bounds.Height / 2 - _arrowSprite.Height / 2,
+            if (_submenu != null) {
+                spriteBatch.DrawOnCtrl(this,
+                                 _arrowSprite,
+                                 new Rectangle(_size.X - HORIZONTAL_PADDING - _arrowSprite.Width,
+                                               _size.Y / 2 - _arrowSprite.Height / 2,
                                                _arrowSprite.Width,
                                                _arrowSprite.Height),
                                  this.MouseOver ? StandardColors.Tinted : StandardColors.Default);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Modules {
 
@@ -35,7 +36,7 @@ namespace Blish_HUD.Modules {
 
         protected bool _enabled = false;
         
-        private List<WindowTab2> TabsAdded = new List<WindowTab2>();
+        private List<WindowTab> TabsAdded = new List<WindowTab>();
 
         public bool Enabled {
             get => _enabled;
@@ -54,9 +55,9 @@ namespace Blish_HUD.Modules {
         public Module() {
             this.Settings = GameService
                            .Settings
-                           .RegisterSettings(this.GetModuleInfo().Namespace, true);
+                           .RegisterSettings(GetModuleInfo().Namespace, true);
 
-            this.DefineSettings(this.Settings);
+            DefineSettings(this.Settings);
         }
 
         protected virtual void OnLoad() { Loaded = true; }
@@ -75,7 +76,7 @@ namespace Blish_HUD.Modules {
 
         // Module Options
 
-        protected void AddSectionTab(string tabName, string icon, Panel panel) {
+        protected void AddSectionTab(string tabName, Texture2D icon, Panel panel) {
             TabsAdded.Add(GameService.Director.BlishHudWindow.AddTab(tabName, icon, panel));
         }
 

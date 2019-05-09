@@ -16,7 +16,7 @@ namespace Blish_HUD.Modules {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Discord Rich Presence Module",
+                "Discord Rich Presence Module",
                 "bh.general.discordrp",
                 "Integrates with Discord to show what you're up to in the world of Guild Wars 2.",
                 "LandersXanders.1235",

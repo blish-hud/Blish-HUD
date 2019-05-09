@@ -34,8 +34,8 @@ sampler OverlaySample = sampler_state
 float4 PixelShaderFunction(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0
 {
     float4 control_clr = tex2D(s0, TexCoords) * Color;
-    float4 mask_clr = tex2D(MaskSample, TexCoords) * Color;
-    float4 overlay_clr = tex2D(OverlaySample, TexCoords) * Color;
+    float4 mask_clr = tex2D(MaskSample, TexCoords);
+    float4 overlay_clr = tex2D(OverlaySample, TexCoords);
 	
     float alpha_comb = lerp(mask_clr.b - 1.0 - mask_clr.r, 1.0, Roller);
 

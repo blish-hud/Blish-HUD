@@ -11,7 +11,7 @@ namespace Blish_HUD.Modules.BeetleRacing {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Beetle Racing Module",
+                "Beetle Racing Module",
                 "bh.general.speed",
                 "Currently only provides the speedometer feature.  Additional features are planned for future releases.",
                 "LandersXanders.1235",

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using MonoGame.Extended.TextureAtlases;
 namespace Blish_HUD.Controls {
 
     // TODO: Need to have events updated in ColorBox to match the standard applied in Control class
+    // TODO: Need to revisit the implementation of ColorBox
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class ColorBox:Control {
 
         public event EventHandler<EventArgs> OnColorChanged;
@@ -20,16 +23,13 @@ namespace Blish_HUD.Controls {
 
         private bool _selected = false;
         public bool Selected {
-            get { return _selected; }
+            get => _selected;
             set {
-                if (_selected == value) return;
-
-                _selected = value;
-                this.OnSelected?.Invoke(this, EventArgs.Empty);
-
-                OnPropertyChanged();
-
-                if (this.Visible) Content.PlaySoundEffectByName(@"audio\color-change");
+                if (SetProperty(ref _selected, value)) {
+                    this.OnSelected?.Invoke(this, EventArgs.Empty);
+                    if (this.Visible)
+                        Content.PlaySoundEffectByName(@"audio\color-change");
+                }
             }
         }
 

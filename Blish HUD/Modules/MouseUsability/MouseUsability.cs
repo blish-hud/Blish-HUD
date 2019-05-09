@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.MouseUsability {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Mouse Module",
+                "Mouse Module",
                 "bh.general.mouse",
                 "Provides various mouse QoL features.",
                 "LandersXanders.1235",
@@ -88,13 +88,13 @@ namespace Blish_HUD.Modules.MouseUsability {
             AllColors = await ApiItem.CallForManyAsync<DyeColor>("/v2/colors?ids=all", 5.Days(), true);
 
             // Add tab with settings in the main Blish HUD window
-            GameServices.GetService<DirectorService>().BlishHudWindow.AddTab("Mouse Usability", "mouse-icon", BuildSettingPanel());
+            GameService.Director.BlishHudWindow.AddTab("Mouse Usability", GameService.Content.GetTexture("mouse-icon"), BuildSettingPanel());
         }
 
         private Panel BuildSettingPanel() {
             var muPanel = new Panel();
 
-            var lblMouseHighlight = new Label() {
+            var lblMouseHighlight = new LabelBase() {
                 Parent = muPanel,
                 Location = new Point(15, 25),
                 Text = "Mouse Highlight",
@@ -125,7 +125,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 Height = colorPicker.Height
             };
 
-            var lblHighlightColor = new Label() {
+            var lblHighlightColor = new LabelBase() {
                 Parent = muPanel,
                 Top = colorPicker.Bottom + 10,
                 Left = colorPicker.Left,
@@ -154,7 +154,7 @@ namespace Blish_HUD.Modules.MouseUsability {
             Adhesive.Binding.CreateTwoWayBinding(() => setting_hl_highlightColorId.Value,
                                                  () => highlightColor.ColorId);
 
-            var lblOutlineColor = new Label() {
+            var lblOutlineColor = new LabelBase() {
                 Parent = muPanel,
                 Top = colorPicker.Bottom + 10,
                 Left = highlightColor.Right + 25,
@@ -191,7 +191,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 Checked = setting_hl_showOverBlishHud.Value,
             };
 
-            var lblOpacity = new Label() {
+            var lblOpacity = new LabelBase() {
                 Parent = muPanel,
                 Top = cbShowOverUI.Bottom + 6,
                 Left = cbShowOverUI.Left,
@@ -211,7 +211,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 Value = 1.0f,
             };
 
-            var lblHighlightThickness = new Label() {
+            var lblHighlightThickness = new LabelBase() {
                 Parent = muPanel,
                 Top = lblOpacity.Bottom + 6,
                 Left = colorPicker.Left,
@@ -240,7 +240,7 @@ namespace Blish_HUD.Modules.MouseUsability {
             //    }
             //);
 
-            var lblOutlineThickness = new Label() {
+            var lblOutlineThickness = new LabelBase() {
                 Parent = muPanel,
                 Top = tbHighlightThickness.Bottom + 6,
                 Left = colorPicker.Left,

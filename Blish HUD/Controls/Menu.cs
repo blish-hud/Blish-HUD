@@ -14,22 +14,24 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<EventArgs> ItemSelected;
 
-        private int _menuItemHeight = DEFAULT_ITEM_HEIGHT;
+        protected int _menuItemHeight = DEFAULT_ITEM_HEIGHT;
         public int MenuItemHeight {
             get => _menuItemHeight;
             set {
-                if (_menuItemHeight == value) return;
+                if (SetProperty(ref _menuItemHeight, value)) {
+                    foreach (var control in _children) {
+                        var childMenuItem = (IMenuItem) control;
 
-                _menuItemHeight = value;
-
-                foreach (var control in this.Children) {
-                    var childMenuItem = (IMenuItem)control;
-
-                    childMenuItem.MenuItemHeight = value;
+                        childMenuItem.MenuItemHeight = value;
+                    }
                 }
-
-                OnPropertyChanged();
             }
+        }
+
+        protected bool _shouldShift = false;
+        public bool ShouldShift {
+            get => _shouldShift;
+            set => SetProperty(ref _shouldShift, value, true);
         }
 
         public bool Selected { get; set; }
@@ -42,39 +44,47 @@ namespace Blish_HUD.Controls {
 
             newChild.MenuItemHeight = this.MenuItemHeight;
 
-            var allChildItems = new List<IMenuItem>(this.Children.Select(c => (IMenuItem)c).ToList<IMenuItem>()) {
-                newChild
-            };
-
             // Ensure child items remains the same width as us
             Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Width,
                                                  () => this.Width, applyLeft: true);
 
             // We'll bind the top of the control to the bottom of the last control we added
-            var lastItem = this.Children.LastOrDefault();
+            var lastItem = _children.LastOrDefault();
             if (lastItem != null) {
                 Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
                                                      () => lastItem.Bottom, applyLeft: true);
-                //Binding.Create(() => e.ChangedChild.Top == lastItem.Top + lastItem.Height /* complex binding to break 2-way bind */));
             }
-            //this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, allChildItems.Max(c => ((Control)c).Bottom));
+
+            ShouldShift = e.ResultingChildren.Any(mi => {
+                                                      MenuItem cmi = (MenuItem) mi;
+
+                                                      return cmi.CanCheck || cmi.Icon != null || cmi.Children.Any() ;
+                                                  });
         }
 
-        public MenuItem AddMenuItem(string text) {
+        public MenuItem AddMenuItem(string text, Texture2D icon = null) {
             return new MenuItem(text) {
+                Icon   = icon,
                 Parent = this
             };
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
-            // No back tints to draw if we have no items
-            if (!this.Children.Any()) return;
-
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw items dark every other one
-            int totalItemHeight = this.Children.Where(c => c.Visible).Max(c => c.Bottom);
+            int totalItemHeight = _children.Where(c => c.Visible).Max(c => c.Bottom);
 
-            for (int sec = 0; sec < totalItemHeight / this.MenuItemHeight; sec += 2) {
-                spriteBatch.Draw(Content.GetTexture("156044"), new Rectangle(this.ContentRegion.Left, this.ContentRegion.Top + this.MenuItemHeight * sec - this.VerticalScrollOffset, this.ContentRegion.Width, this.MenuItemHeight), Color.Black * 0.7f);
+            for (int sec = 0; sec < totalItemHeight / MenuItemHeight; sec += 2) {
+                spriteBatch.DrawOnCtrl(
+                                       this,
+                                       Content.GetTexture("156044"),
+                                       new Rectangle(
+                                                     0,
+                                                     MenuItemHeight * sec - VerticalScrollOffset,
+                                                     _size.X,
+                                                     MenuItemHeight
+                                                    ),
+                                       Color.Black * 0.7f
+                                      );
             }
         }
 

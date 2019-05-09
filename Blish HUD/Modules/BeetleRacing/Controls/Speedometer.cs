@@ -34,8 +34,8 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
             return CaptureType.None;
         }
 
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
+        public override void DoUpdate(GameTime gameTime) {
+            base.DoUpdate(gameTime);
 
             Invalidate();
         }
@@ -43,13 +43,31 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             float ang = (float)((4 + this.Speed / MaxSpeed * 2));
 
-            spriteBatch.Draw(Content.GetTexture("speed-fill"), new Rectangle(bounds.Width / 2, bounds.Y + 140, 150, 203), null, Color.GreenYellow, ang, new Vector2(Content.GetTexture("speed-fill").Bounds.Width / 2, 141), SpriteEffects.None, 1); // new Vector2(64, 203), SpriteEffects.None, 0);
-            spriteBatch.Draw(Content.GetTexture("1060345-2"), bounds, bounds, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0);
+            spriteBatch.Draw(Content.GetTexture("speed-fill"),
+                             new Rectangle(_size.X / 2, _size.Y, 150, 203).ToBounds(bounds),
+                             null,
+                             Color.GreenYellow,
+                             ang,
+                             new Vector2(Content.GetTexture("speed-fill").Bounds.Width / 2, 141),
+                             SpriteEffects.None, 1);
+
+            spriteBatch.Draw(Content.GetTexture("1060345-2"),
+                             _size.InBounds(bounds),
+                             null,
+                             Color.White,
+                             0f,
+                             Vector2.Zero,
+                             SpriteEffects.None,
+                             0);
 
             if (this.ShowSpeedValue) {
-                Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14,
-                    ((int) Math.Round(this.Speed * 8, 0)).ToString(), new Rectangle(0, 0, this.Width, 50),
-                    Color.White, DrawUtil.HorizontalAlignment.Center, DrawUtil.VerticalAlignment.Bottom);
+                DrawUtil.DrawAlignedText(spriteBatch,
+                                         Content.DefaultFont14,
+                                         ((int) Math.Round(this.Speed * 8, 0)).ToString(),
+                                         new Rectangle(0, 0, _size.X, 50).ToBounds(bounds),
+                                         Color.White,
+                                         DrawUtil.HorizontalAlignment.Center,
+                                         DrawUtil.VerticalAlignment.Bottom);
             }
         }
 

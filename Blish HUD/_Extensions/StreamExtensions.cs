@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blish_HUD._Extensions {
+namespace Blish_HUD {
     public static class StreamExtensions {
 
         public static MemoryStream ToMemoryStream(this Stream stream) {

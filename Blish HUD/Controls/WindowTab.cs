@@ -7,44 +7,27 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-    public class WindowTab:Control {
 
-        private bool _active = false;
-        public bool Active { get { return _active; } set { _active = value; Invalidate(); } }
+    public struct WindowTab {
+        public string    Name     { get; set; }
+        public Texture2D Icon     { get; set; }
+        public int       Priority { get; set; }
 
-        public WindowTab() {
-            this.Size = new Point(104, 52);
-            
-            this.LeftMouseButtonReleased += WindowTab_LeftMouseButtonReleased;
+        public WindowTab(string name, Texture2D icon) : this(name, icon, name.Length) { /* NOOP */ }
+
+        public WindowTab(string name, Texture2D icon, int priority) {
+            this.Name     = name;
+            this.Icon     = icon;
+            this.Priority = priority;
         }
 
-        private void WindowTab_LeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            if (this.Active) return;
-
-            this.Active = true;
-
-            int varSe = new Random().Next(1, 5);
-
-            Content.PlaySoundEffectByName($"audio\\tab-swap-{varSe}");
+        public static bool operator ==(WindowTab tab1, WindowTab tab2) {
+            return tab1.Name == tab2.Name && tab1.Icon == tab2.Icon;
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
+        public static bool operator !=(WindowTab tab1, WindowTab tab2) {
+            return !(tab1 == tab2);
         }
-
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (this.Active) {
-                if (this.Parent != null) {
-                    spriteBatch.Draw(Content.GetTexture("hero-background2"), bounds.OffsetBy(24, 0), this.Bounds.Add(52, 0, 110, 0), Color.White);
-                }
-
-                spriteBatch.Draw(Content.GetTexture("window-tab-active"), bounds, Color.White);
-            } else {
-                spriteBatch.Draw(Content.GetTexture("black-46x52"), Content.GetTexture("black-46x52").Bounds.OffsetBy(58, 0), Color.White);
-            }
-
-            spriteBatch.Draw(Content.GetTexture("156746"), new Rectangle(this.Width - 14 - 26, this.Height / 2 - 18, 32, 32), Color.White * (this.MouseOver || this.Active ? 1f : 0.8f));
-        }
-
     }
+
 }

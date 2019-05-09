@@ -19,12 +19,12 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                                  "(General) Markers & Paths",
-                                  "bh.general.markersandpaths",
-                                  "Allows you to import markers and paths built for TacO and AugTyr.",
-                                  "LandersXanders.1235 (with additional code provided by BoyC)",
-                                  "1"
-                                 );
+                  "Markers & Paths",
+                  "bh.general.markersandpaths",
+                  "Allows you to import markers and paths built for TacO and AugTyr.",
+                  "LandersXanders.1235 (with additional code provided by BoyC)",
+                  "1"
+            );
         }
 
         public override void DefineSettings(Settings settings) {
@@ -40,7 +40,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             LoadPacks();
             GameService.Debug.StopTimeFuncAndOutput("LoadPacks");
 
-            //AddSectionTab("Markers and Paths", "marker-pathing-icon", GetPanel());
+            //AddSectionTab("Markers and Paths", GameService.Content.GetTexture("marker-pathing-icon"), GetPanel());
 
             // Could take a while to load in everything - offload it so that Blish HUD can finish starting
             // Load the markers and paths
@@ -65,8 +65,8 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             };
 
             var mpItemsPanel = new FlowPanel() {
-                FlowDirection  = FlowPanel.ControlFlowDirection.LeftToRight,
-                ControlPadding = 8,
+                FlowDirection  = ControlFlowDirection.LeftToRight,
+                ControlPadding = new Vector2(8f, 8f),
                 Location       = new Point(mpPanel.Width - 630, 50),
                 Size           = new Point(630,                 mpPanel.Height - 50 - Panel.BOTTOM_MARGIN),
                 Parent         = mpPanel,

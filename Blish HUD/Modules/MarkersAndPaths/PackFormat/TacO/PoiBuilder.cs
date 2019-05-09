@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
-using Blish_HUD.Modules.Compatibility.TacO;
-using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO;
 using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables;
-using Blish_HUD.Pathing;
 using Microsoft.Scripting.Utils;
-using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
     /*

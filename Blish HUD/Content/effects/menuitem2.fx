@@ -46,8 +46,6 @@ float4 PSScroll(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 Tex
 	
     float alpha_comb = lerp(mask_clr.b - mask_clr.r - 1.0, 1.0, Roller);
 
-    //clip(alpha_comb);
-
     if (alpha_comb <= 0)
     {
         return float4(0, 0, 0, 0);

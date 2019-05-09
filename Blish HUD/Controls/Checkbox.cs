@@ -11,7 +11,7 @@ using MonoGame.Extended.TextureAtlases;
 namespace Blish_HUD.Controls {
 
     // TODO: Checkbox needs to shrink on mousedown (animation)
-    public class Checkbox:Label, ICheckable {
+    public class Checkbox:LabelBase, ICheckable {
 
         public const int CHECKBOX_SIZE = 32;
 
@@ -51,12 +51,9 @@ namespace Blish_HUD.Controls {
         public bool Checked {
             get => _checked;
             set {
-                if (_checked == value) return;
-
-                _checked = value;
-                OnPropertyChanged();
-
-                OnCheckedChanged(new CheckChangedEvent(_checked));
+                if (SetProperty(ref _checked, value)) {
+                    OnCheckedChanged(new CheckChangedEvent(_checked));
+                }
             }
         }
 
@@ -65,10 +62,15 @@ namespace Blish_HUD.Controls {
 
             this.Height = CHECKBOX_SIZE / 2;
 
-            LeftOffset = CHECKBOX_SIZE / 3 * 2;
             this.AutoSizeWidth = true;
             this.TextColor = Color.White;
             this.VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle;
+        }
+
+        public override void RecalculateLayout() {
+            base.RecalculateLayout();
+
+            _size = new Point(CHECKBOX_SIZE / 3 * 2 + LabelRegion.X, _size.Y);
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
@@ -99,9 +101,14 @@ namespace Blish_HUD.Controls {
 
             var sprite = cbRegions.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
 
-            spriteBatch.Draw(sprite, new Rectangle(-9, 0, CHECKBOX_SIZE, CHECKBOX_SIZE).OffsetBy(bounds.Location).OffsetBy(0, this.Height / 2 - CHECKBOX_SIZE / 2), Color.White);
+            spriteBatch.DrawOnCtrl(this,
+                                   sprite,
+                                   new Rectangle(-9,
+                                                 this.Height / 2 - CHECKBOX_SIZE / 2,
+                                                 CHECKBOX_SIZE,
+                                                 CHECKBOX_SIZE));
 
-            base.Paint(spriteBatch, bounds);
+            DrawText(spriteBatch, new Rectangle(CHECKBOX_SIZE / 3 * 2, 0, LabelRegion.X, LabelRegion.Y));
         }
 
     }

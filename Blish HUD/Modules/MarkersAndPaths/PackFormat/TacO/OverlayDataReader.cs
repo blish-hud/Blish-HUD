@@ -51,8 +51,9 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
         }
 
         private static string SanitizeXml(string xmlDoc) {
-            // TODO: Ask Tekkit to fix syntax
+            // TODO: Ask Tekkit (and others) to fix syntax
             return xmlDoc
+                  .Replace("&", "&amp;")
                   .Replace("=\"<",      "=\"&lt;")
                   .Replace(">\">",      "&gt;\">")
                   .Replace("*",         "")

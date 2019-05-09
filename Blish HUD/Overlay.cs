@@ -3,21 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
-using Blish_HUD.Controls;
-using Blish_HUD.Modules.Compatibility.TacO;
-using Blish_HUD;
-using Humanizer;
 using Microsoft.Xna.Framework.Content;
 
 namespace Blish_HUD {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
+
     public class Overlay : Game {
 
         public readonly GraphicsDeviceManager graphics;
@@ -39,6 +29,7 @@ namespace Blish_HUD {
             cm = this.Content;
 
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            graphics.PreferMultiSampling = true;
 
             this.IsMouseVisible = true;
         }
@@ -63,9 +54,6 @@ namespace Blish_HUD {
 
             ///  ///
 
-            font_def12 = this.Content.Load<SpriteFont>("common\\menomonia");
-            font_consolas = this.Content.Load<BitmapFont>("fonts\\menomonia\\menomonia-11-regular");
-
             WinHandle = this.Window.Handle;
             var ctrl = System.Windows.Forms.Control.FromHandle(WinHandle);
             Form = ctrl.FindForm();
@@ -86,7 +74,7 @@ namespace Blish_HUD {
             this.IsFixedTimeStep = false;
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
 #endif
-           
+
             // Initialize all game services
             foreach (var service in GameService.All)
                 service.DoInitialize(this);
@@ -94,11 +82,10 @@ namespace Blish_HUD {
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent() {
+            _uiRasterizer = new RasterizerState() {
+                ScissorTestEnable = true
+            };
 
             BHGw2Api.Settings.Load();
 
@@ -115,8 +102,6 @@ namespace Blish_HUD {
             foreach (var service in GameService.All)
                 service.DoUnload();
         }
-
-        public static SpriteFont font_def12;
 
         protected override void BeginRun() {
             base.BeginRun();
@@ -150,6 +135,8 @@ namespace Blish_HUD {
             base.Update(gameTime);
         }
 
+        public static RasterizerState _uiRasterizer;
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -164,28 +151,29 @@ namespace Blish_HUD {
 
             this.GraphicsDevice.Clear(Color.Transparent);
 
-            GameService.Debug.StartTimeFunc("UI Elements");
-            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible)
-                GameService.Graphics.SpriteScreen.Draw(this.GraphicsDevice, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
-            GameService.Debug.StopTimeFunc("UI Elements");
-
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game
             if (GameService.GameIntegration.IsInGame)
                 GameService.Graphics.World.Draw(this.GraphicsDevice);
             GameService.Debug.StopTimeFunc("3D objects");
-            
-            spriteBatch.Begin();
 
-            Texture2D outRender;
+            GameService.Debug.StartTimeFunc("UI Elements");
             if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
-                if ((outRender = GameService.Graphics.SpriteScreen.GetRender()) != null)
-                    spriteBatch.Draw(outRender, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
+                GameService.Graphics.SpriteScreen.Draw(
+                                                       spriteBatch, new Rectangle(
+                                                                                  0,
+                                                                                  0,
+                                                                                  graphics.PreferredBackBufferWidth,
+                                                                                  graphics.PreferredBackBufferHeight
+                                                                                 )
+                                                      );
             }
+            GameService.Debug.StopTimeFunc("UI Elements");
 
 
 #if DEBUG
-            
+            spriteBatch.Begin();
+
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _frameCounter.Update(deltaTime);
@@ -194,21 +182,21 @@ namespace Blish_HUD {
 
             int debugLeft = GameService.Graphics.WindowWidth - 750;
 
-            spriteBatch.DrawString(font_def12, fps, new Vector2(debugLeft, 25), Color.Red);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, fps, new Vector2(debugLeft, 25), Color.Red);
 
             int i = 0;
             foreach (KeyValuePair<string, DebugService.FuncClock> timedFuncPair in GameService.Debug.FuncTimes.Where(ft => ft.Value.AverageRuntime > 1).OrderByDescending(ft => ft.Value.AverageRuntime)) {
-                spriteBatch.DrawString(font_def12, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.AverageRuntime)} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+                spriteBatch.DrawString(GameService.Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.AverageRuntime)} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
                 i++;
             }
 
-            spriteBatch.DrawString(font_def12, $"Pathables Available: {GameService.Pathing.Pathables.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Pathables Available: {GameService.Pathing.Pathables.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
-            spriteBatch.DrawString(font_def12, $"3D Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, $"3D Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
-            spriteBatch.DrawString(font_def12, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
-            spriteBatch.DrawString(font_def12, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
 
 #endif
 

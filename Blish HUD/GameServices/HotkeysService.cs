@@ -41,7 +41,7 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) { }
 
-        internal Panel BuildHotkeysPanel(Window wndw) {
+        internal Panel BuildHotkeysPanel(WindowBase wndw) {
             var hkPanel = new Panel();
 
             var backButton = new BackButton(wndw) {

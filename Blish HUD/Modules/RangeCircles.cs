@@ -14,7 +14,7 @@ namespace Blish_HUD.Modules {
         
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Range Circles Module",
+                "Range Circles Module",
                 "bh.general.rangecircles",
                 "Displays range circles to help give a visual indicator of what the range is for your attacks.",
                 "LandersXanders.1235",

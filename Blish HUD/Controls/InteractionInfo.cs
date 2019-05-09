@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    public class InteractionInfo : Label {
+    public class InteractionInfo : LabelBase {
 
         private const int CONTROL_WIDTH = 170;
         private const int CONTROL_HEIGHT = 85;
@@ -22,18 +22,18 @@ namespace Blish_HUD.Controls {
 
         private Tween _fadeAnimation;
 
-        private int _verticalIndex = 0;
+        protected int _verticalIndex = 0;
 
         public int VerticalIndex {
             get => _verticalIndex;
-            set => SetProperty(ref _verticalIndex, value, invalidateParentOnly: true);
+            set => SetProperty(ref _verticalIndex, value, invalidateLayout: true);
         }
 
         public InteractionInfo() {
             this.Text = DEFAULT_INFO_TEXT;
             this.VerticalAlignment = DrawUtil.VerticalAlignment.Middle;
             this.ShowShadow = true;
-            this.StrokeShadow = true;
+            this.StrokeText = true;
             this.Font = Content.DefaultFont12;
             this.Size = new Point(CONTROL_WIDTH, CONTROL_HEIGHT);
             this.Location = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
@@ -68,15 +68,21 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             var textRegion = new Rectangle(
-                                           (int)(bounds.Width  * 0.24),
+                                           (int)(_size.X  * 0.24),
                                            (int)(bounds.Height * 0.34),
-                                           (int)(bounds.Width  * 0.62),
-                                           (int)(bounds.Height * 0.26)
+                                           (int)(_size.X * 0.62),
+                                           (int)(_size.Y * 0.26)
                                           );
-            
-            spriteBatch.Draw(Content.GetTexture("156775"), bounds, Color.White);
 
-            DrawText(spriteBatch, textRegion, $"{Utils.DrawUtil.WrapText(this.Font, this.Text, textRegion.Width)}");
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   Content.GetTexture("156775"),
+                                   new Rectangle(Point.Zero, _size)
+                                  );
+
+            DrawText(spriteBatch,
+                     textRegion,
+                     $"{Utils.DrawUtil.WrapText(this.Font, this.Text, textRegion.Width)}");
         }
 
     }

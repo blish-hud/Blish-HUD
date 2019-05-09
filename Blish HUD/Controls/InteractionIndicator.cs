@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    public class InteractionIndicator : Label {
+    public class InteractionIndicator : LabelBase {
 
         private const int CONTROL_WIDTH = 256;
         private const int CONTROL_HEIGHT = 64;
@@ -23,13 +23,13 @@ namespace Blish_HUD.Controls {
 
         private Tween _fadeAnimation;
 
-        private Keys[] _interactionKeys = new [] { Keys.F };
-        private int _verticalIndex = 1;
+        protected Keys[] _interactionKeys = new [] { Keys.F };
+        protected int _verticalIndex = 1;
 
         public int VerticalIndex {
             get => _verticalIndex;
             set {
-                if (SetProperty(ref _verticalIndex, value, invalidateParentOnly: true))
+                if (SetProperty(ref _verticalIndex, value, invalidateLayout: true))
                     this.Top = (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)) - CONTROL_HEIGHT * _verticalIndex;
             }
         }
@@ -43,7 +43,7 @@ namespace Blish_HUD.Controls {
             this.Text = DEFAULT_INTERACT_TEXT;
             this.VerticalAlignment = DrawUtil.VerticalAlignment.Middle;
             this.ShowShadow = true;
-            this.StrokeShadow = true;
+            this.StrokeText = true;
             this.Font = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
             this.Size = new Point((int)(CONTROL_WIDTH * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), (int)(CONTROL_HEIGHT * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)));
             this.Location = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
@@ -76,12 +76,16 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(Content.GetTexture("156775"), bounds, bounds.OffsetBy(0, CONTROL_HEIGHT / 2), Color.White);
+            spriteBatch.DrawOnCtrl(this, Content.GetTexture("156775"),
+                             bounds,
+                             bounds.OffsetBy(0, CONTROL_HEIGHT / 2),
+                             Color.White);
             
             DrawText(spriteBatch, new Rectangle((int)(bounds.Width * 0.2),
                                                 (int)(bounds.Height * 0.13),
                                                 (int)(bounds.Width  * 0.78),
-                                                (int)(bounds.Height * 0.5)), $"{Utils.DrawUtil.WrapText(this.Font, this.Text, bounds.Width * 0.5f)} [{string.Join(" + ", this.InteractionKeys)}]");
+                                                (int)(bounds.Height * 0.5)),
+                     $"{DrawUtil.WrapText(this.Font, this.Text, bounds.Width * 0.5f)} [{string.Join(" + ", this.InteractionKeys)}]");
         }
 
     }

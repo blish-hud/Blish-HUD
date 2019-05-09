@@ -8,6 +8,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
+
+    /// <summary>
+    /// Represents a right-click shortcut menu.  Can be assigned to <see cref="Control.Menu"/>.
+    /// </summary>
     public class ContextMenuStrip:Container {
 
         private const int BORDER_PADDING = 2;
@@ -49,8 +53,9 @@ namespace Blish_HUD.Controls {
             if (activeControl is ContextMenuStripItem parentMenu) {
                 this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top);
                 this.ZIndex = parentMenu.ZIndex - 1;
-            } else
+            } else {
                 this.Location = activeControl.Location + activeControl.Size;
+            }
 
             this.Visible = true;
         }
@@ -74,6 +79,14 @@ namespace Blish_HUD.Controls {
         }
 
         private void MouseButtonPressed(object sender, MouseEventArgs e) {
+            if (!this.Visible) return;
+
+            if (Input.ActiveControl is ContextMenuStripItem menuStrip) {
+                if (menuStrip.CanCheck) {
+                    return;
+                }
+            }
+
             if (!this.MouseOver)
                 this.Visible = false;
         }
@@ -94,8 +107,6 @@ namespace Blish_HUD.Controls {
 
                 newChild.Height = ITEM_HEIGHT;
                 newChild.Left = BORDER_PADDING;
-
-                newChild.Click += delegate { this.Visible = false; };
 
                 // Stop showing submenus if adjacent menu items are moused over
                 newChild.MouseEntered += delegate {
@@ -124,48 +135,61 @@ namespace Blish_HUD.Controls {
         }
 
         protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
+            return CaptureType.Filter;
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(ContentService.Textures.Pixel, 
-                             new Rectangle(BORDER_PADDING,
-                                           BORDER_PADDING,
-                                           this.Width - BORDER_PADDING * 2,
-                                           this.Height - BORDER_PADDING * 2),
-                             Color.FromNonPremultiplied(33, 32, 33, 255));
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   ContentService.Textures.Pixel,
+                                   new Rectangle(
+                                                 BORDER_PADDING,
+                                                 BORDER_PADDING,
+                                                 _size.X - BORDER_PADDING * 2,
+                                                 _size.Y - BORDER_PADDING * 2
+                                                ),
+                                   Color.FromNonPremultiplied(33, 32, 33, 255)
+                                  );
 
             // Left line
-            spriteBatch.Draw(_edgeSprite,
-                             new Rectangle(0, 1, _edgeSprite.Width, this.Height - BORDER_PADDING),
-                             new Rectangle(0, 1, _edgeSprite.Width, this.Height - BORDER_PADDING),
-                             Color.White * 0.8f);
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   _edgeSprite,
+                                   new Rectangle(0, 1, _edgeSprite.Width, _size.Y - BORDER_PADDING),
+                                   new Rectangle(0, 1, _edgeSprite.Width, _size.Y - BORDER_PADDING),
+                                   Color.White * 0.8f
+                                  );
 
             // Top line
-            spriteBatch.Draw(_edgeSprite,
-                             new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             Color.White * 0.8f,
-                             -MathHelper.PiOver2,
-                             Vector2.Zero,
-                             SpriteEffects.None,
-                             0f);
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   _edgeSprite,
+                                   new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, _size.X - BORDER_PADDING),
+                                   new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, _size.X - BORDER_PADDING),
+                                   Color.White * 0.8f,
+                                   -MathHelper.PiOver2,
+                                   Vector2.Zero
+                                  );
 
             // Bottom line
-            spriteBatch.Draw(_edgeSprite,
-                             new Rectangle(1, this.Height, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             Color.White * 0.8f,
-                             -MathHelper.PiOver2,
-                             Vector2.Zero,
-                             SpriteEffects.None,
-                             0f);
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   _edgeSprite,
+                                   new Rectangle(1, _size.Y,        _edgeSprite.Width, _size.X - BORDER_PADDING),
+                                   new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, _size.X - BORDER_PADDING),
+                                   Color.White * 0.8f,
+                                   -MathHelper.PiOver2,
+                                   Vector2.Zero
+                                  );
 
             // Right line
-            spriteBatch.Draw(_edgeSprite,
-                             new Rectangle(this.Width - _edgeSprite.Width, 1, _edgeSprite.Width, this.Height - 2),
-                             new Rectangle(0, 1, _edgeSprite.Width, this.Height - 2),
-                             Color.White * 0.8f);
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   _edgeSprite,
+                                   new Rectangle(_size.X - _edgeSprite.Width, 1, _edgeSprite.Width, _size.Y - 2),
+                                   new Rectangle(0,                           1, _edgeSprite.Width, _size.Y - 2),
+                                   Color.White * 0.8f
+                                  );
         }
     }
 

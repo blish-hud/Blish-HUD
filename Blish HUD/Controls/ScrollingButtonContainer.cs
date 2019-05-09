@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Controls {
-
+    /*
     public abstract class ScrollingButtonContainer : Container {
 
         private float _shaderRoller = 0;
@@ -79,5 +79,5 @@ namespace Blish_HUD.Controls {
         }
 
     }
-
+    */
 }

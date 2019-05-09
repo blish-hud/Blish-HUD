@@ -45,7 +45,7 @@ namespace Blish_HUD {
             //GameService.Director.BlishHudWindow.AddTab("Markers and Paths", "marker-pathing-icon", BuildPanel(GameService.Director.BlishHudWindow.ContentRegion), int.MaxValue - 5);
 
             // We will actually just be using a CornerIcon for now
-            BuildPanel(Rectangle.Empty);
+           BuildPanel(Rectangle.Empty);
         }
 
         private Panel BuildPanel(Rectangle bounds) {

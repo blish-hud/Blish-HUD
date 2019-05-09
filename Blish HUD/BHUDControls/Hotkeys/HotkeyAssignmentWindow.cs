@@ -40,7 +40,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
         }
 
         private void BuildChildElements() {
-            var assignInputsLbl = new Label() {
+            var assignInputsLbl = new LabelBase() {
                 Text = $"Assign inputs to: {HotkeyDefinition.Name}",
                 Location = new Point(40, 35),
                 ShowShadow = true,
@@ -79,7 +79,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
             };
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.Draw(Content.GetTexture("hotkey-window"), bounds, Color.White);
 
             // Easy way to get a string representation of the hotkeys

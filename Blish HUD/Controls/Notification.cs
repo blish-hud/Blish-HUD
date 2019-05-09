@@ -20,7 +20,7 @@ namespace Blish_HUD.Controls {
         public Texture2D Icon { get; set; }
         public string Message { get; set; }
         
-        private Glide.Tween notificationLifecycle;
+        private Glide.Tween _notificationLifecycle;
 
         private Notification(Texture2D icon, string message, int duration) {
             this.Icon = icon;
@@ -36,25 +36,36 @@ namespace Blish_HUD.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.Draw(Content.GetTexture("chat-no-interaction-blue"), bounds, Color.White);
             spriteBatch.Draw(this.Icon, new Rectangle(64, 32, 128, 128).OffsetBy(bounds.Location), Color.White);
+            
+            spriteBatch.DrawStringOnCtrl(
+                                         this,
+                                         this.Message,
+                                         Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular),
+                                         new Rectangle(
+                                                       bounds.X + 64 + 128 + 17,
+                                                       bounds.Y            + 33,
+                                                       this.Width - 64     - 128,
+                                                       128
+                                                      ),
+                                         Color.Black
+                                        );
 
-            Utils.DrawUtil.DrawAlignedText(spriteBatch,
-                 Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular), this.Message,
-                 new Rectangle(bounds.X + 64 + 128 + 17, 33, this.Width - 64 - 128, 128),
-                 Color.Black,
-                 Utils.DrawUtil.HorizontalAlignment.Left,
-                 Utils.DrawUtil.VerticalAlignment.Middle
-             );
-            Utils.DrawUtil.DrawAlignedText(spriteBatch,
-                 Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular), this.Message,
-                 new Rectangle(bounds.X + 64 + 128 + 16, 32, this.Width - 64 - 128, 128),
-                 Color.White,
-                 Utils.DrawUtil.HorizontalAlignment.Left,
-                 Utils.DrawUtil.VerticalAlignment.Middle
-             );
+            spriteBatch.DrawStringOnCtrl(
+                                         this,
+                                         this.Message,
+                                         Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular),
+                                         new Rectangle(
+                                                       64 + 128 + 16,
+                                                       32,
+                                                       this.Width - 64 - 128,
+                                                       128
+                                                      ),
+                                         Color.White
+                                        );
         }
 
         private void Show() {
-            notificationLifecycle = Animation.Tweener
+            _notificationLifecycle = Animation.Tweener
                 .Tween(this, new { Opacity = 1f }, 0.2f)
                 .Repeat(1)
                 .RepeatDelay(this.Duration)
@@ -72,7 +83,7 @@ namespace Blish_HUD.Controls {
 
         protected override void Dispose(bool disposing) {
             base.Dispose(disposing);
-            notificationLifecycle = null;
+            _notificationLifecycle = null;
         }
 
     }

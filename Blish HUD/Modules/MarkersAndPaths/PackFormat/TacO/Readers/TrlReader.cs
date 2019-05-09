@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD._Extensions;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Readers {

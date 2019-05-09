@@ -14,26 +14,27 @@ namespace Blish_HUD.Controls {
         public const int TOOLTIP3D_BASEINDEX = 40;
         public const int WINDOW_BASEZINDEX = 41;
         public const int TOOLWINDOW_BASEZINDEX = 45;
-        public const int TOOLTIP_BASEZINDEX = 50;
-        public const int CONTEXTMENU_BASEINDEX = 52;
+        public const int TOOLTIP_BASEZINDEX = 55;
+        public const int CONTEXTMENU_BASEINDEX = 50;
 
         public Screen() : base() {
             this.Location = new Point(0, 0);
             this.Size = new Point(GameService.Graphics.GraphicsDevice.Viewport.Width, GameService.Graphics.GraphicsDevice.Viewport.Height);
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             // NOOP
         }
 
-        public override bool TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            List<Control> ZSortedChildren = this.Children.OrderByDescending(i => i.ZIndex).ToList();
+        public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
+            List<Control> ZSortedChildren = _children.OrderByDescending(i => i.ZIndex).ToList();
 
             foreach (var childControl in ZSortedChildren) {
-                if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible && childControl.TriggerMouseInput(mouseEventType, ms)) return true;
+                if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible)
+                    return childControl.TriggerMouseInput(mouseEventType, ms);
             }
 
-            return false;
+            return null;
         }
 
     }

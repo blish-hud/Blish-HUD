@@ -2,21 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Blish_HUD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
-using Screen = Blish_HUD.Controls.Screen;
 
 namespace Blish_HUD.Modules.PoiLookup {
 
     // TODO: This should be updated to allow any number of possible results be displayed
-    public class PoiLookupWindow : Controls.Window {
+    public class PoiLookupWindow : Controls.WindowBase {
 
         private const int WINDOW_WIDTH = 256; //196;
         private const int WINDOW_HEIGHT = 178;
@@ -43,31 +37,19 @@ namespace Blish_HUD.Modules.PoiLookup {
 
                 _currentPoiItem = value;
 
-                Result1.Active = Result1 == _currentPoiItem;
-                Result2.Active = Result2 == _currentPoiItem;
-                Result3.Active = Result3 == _currentPoiItem;
-                
-                //_currentPoiItem?.TriggerMouseInput(MouseEventType.MouseMoved,
-                //                                   new MouseState(
-                //                                                  _currentPoiItem.AbsoluteBounds.Location.X + 5,
-                //                                                  _currentPoiItem.AbsoluteBounds.Location.Y + 5,
-                //                                                  0,
-                //                                                  ButtonState.Released,
-                //                                                  ButtonState.Released,
-                //                                                  ButtonState.Released,
-                //                                                  ButtonState.Released,
-                //                                                  ButtonState.Released
-                //                                                 ));
+                _result1.Active = _result1 == _currentPoiItem;
+                _result2.Active = _result2 == _currentPoiItem;
+                _result3.Active = _result3 == _currentPoiItem;
             }
         }
 
-        Controls.Textbox Searchbox;
+        Controls.TextBox Searchbox;
 
-        private PoiItem Result1;
-        private PoiItem Result2;
-        private PoiItem Result3;
+        private PoiItem _result1;
+        private PoiItem _result2;
+        private PoiItem _result3;
 
-        private ToolTip ResultDetails;
+        private ToolTip _resultDetails;
 
         private readonly PoiLookup Module;
 
@@ -80,18 +62,17 @@ namespace Blish_HUD.Modules.PoiLookup {
             this.ZIndex = Controls.Screen.TOOLWINDOW_BASEZINDEX;
             ExitBounds = new Rectangle(this.Width - 32, 0, 32, 32);
 
-            Searchbox = new Controls.Textbox();
+            Searchbox = new Controls.TextBox();
             Searchbox.PlaceholderText = "Search";
             Searchbox.Location = new Point(0, TitleBarHeight);
             Searchbox.Size = new Point(this.Width, Searchbox.Height);
             Searchbox.Parent = this;
 
             // Tooltip used by all three result items
-
             var ttDetails1 = new Controls.Tooltip();
-            var ttDetailsLmName = new Controls.Label() {
+            var ttDetailsLmName = new Controls.LabelBase() {
                 Text              = "Name Loading...",
-                Font              = Content.GetFont(TOOLTIP_FONT_FAMILY, ContentService.FontSize.Size16, ContentService.FontStyle.Regular),
+                Font              = Content.DefaultFont16,
                 Location          = new Point(10, 10),
                 Height            = 11,
                 TextColor         = ContentService.Colors.Chardonnay,
@@ -103,9 +84,9 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent            = ttDetails1
             };
 
-            var ttDetailsInfHint1 = new Controls.Label() {
+            var ttDetailsInfHint1 = new Controls.LabelBase() {
                 Text              = "Enter: Copy landmark to clipboard.",
-                Font              = Content.GetFont(TOOLTIP_FONT_FAMILY, TOOLTIP_FONT_SIZE, ContentService.FontStyle.Regular),
+                Font              = Content.DefaultFont16,
                 Location          = new Point(10, ttDetailsLmName.Bottom + 5),
                 TextColor         = Color.White,
                 ShadowColor       = Color.Black,
@@ -116,10 +97,9 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent            = ttDetails1
             };
 
-
-            var ttDetailsInf1 = new Controls.Label() {
+            var ttDetailsInf1 = new Controls.LabelBase() {
                 Text              = "Closest Waypoint",
-                Font              = Content.GetFont(TOOLTIP_FONT_FAMILY, ContentService.FontSize.Size16, ContentService.FontStyle.Regular),
+                Font              = Content.DefaultFont16,
                 Location          = new Point(10, ttDetailsInfHint1.Bottom + 12),
                 Height            = 11,
                 TextColor         = ContentService.Colors.Chardonnay,
@@ -131,9 +111,9 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent            = ttDetails1
             };
 
-            var ttDetailsInfRes1 = new Controls.Label() {
+            var ttDetailsInfRes1 = new Controls.LabelBase() {
                 Text              = " ",
-                Font              = Content.GetFont(TOOLTIP_FONT_FAMILY, TOOLTIP_FONT_SIZE, ContentService.FontStyle.Regular),
+                Font              = Content.DefaultFont14,
                 Location          = new Point(10, ttDetailsInf1.Bottom + 5),
                 TextColor         = Color.White,
                 ShadowColor       = Color.Black,
@@ -144,9 +124,9 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent            = ttDetails1
             };
 
-            var ttDetailsInfHint2 = new Controls.Label() {
+            var ttDetailsInfHint2 = new Controls.LabelBase() {
                 Text              = "Shift + Enter: Copy closest waypoint to clipboard.",
-                Font              = Content.GetFont(TOOLTIP_FONT_FAMILY, TOOLTIP_FONT_SIZE, ContentService.FontStyle.Regular),
+                Font              = Content.DefaultFont14,
                 Location          = new Point(10, ttDetailsInfRes1.Bottom + 5),
                 TextColor         = Color.White,
                 ShadowColor       = Color.Black,
@@ -160,7 +140,7 @@ namespace Blish_HUD.Modules.PoiLookup {
 
             // Result items
 
-            Result1 = new PoiItem {
+            _result1 = new PoiItem {
                 Icon     = Content.GetTexture("60976"),
                 Visible  = false,
                 Location = new Point(2, TitleBarHeight + Searchbox.Height),
@@ -169,7 +149,7 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent   = this
             };
 
-            Result2 = new PoiItem {
+            _result2 = new PoiItem {
                 Icon     = Content.GetTexture("60976"),
                 Visible  = false,
                 Location = new Point(2, TitleBarHeight + Searchbox.Height + 39),
@@ -178,7 +158,7 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent   = this
             };
 
-            Result3 = new PoiItem {
+            _result3 = new PoiItem {
                 Icon     = Content.GetTexture("60976"),
                 Visible  = false,
                 Location = new Point(2, TitleBarHeight + Searchbox.Height + 78),
@@ -225,39 +205,39 @@ namespace Blish_HUD.Modules.PoiLookup {
                 if (keys == Keys.LeftControl || keys == Keys.RightControl) ctrlDown = false;
             };
 
-            Result1.PropertyChanged += ResultCtrl_Activated;
-            Result2.PropertyChanged += ResultCtrl_Activated;
-            Result3.PropertyChanged += ResultCtrl_Activated;
+            _result1.PropertyChanged += ResultCtrl_Activated;
+            _result2.PropertyChanged += ResultCtrl_Activated;
+            _result3.PropertyChanged += ResultCtrl_Activated;
 
-            Result1.LeftMouseButtonReleased += delegate { ResultCtrl_Submitted(Result1, ctrlDown); };
-            Result2.LeftMouseButtonReleased += delegate { ResultCtrl_Submitted(Result2, ctrlDown); };
-            Result3.LeftMouseButtonReleased += delegate { ResultCtrl_Submitted(Result3, ctrlDown); };
+            _result1.LeftMouseButtonReleased += delegate { ResultCtrl_Submitted(_result1, ctrlDown); };
+            _result2.LeftMouseButtonReleased += delegate { ResultCtrl_Submitted(_result2, ctrlDown); };
+            _result3.LeftMouseButtonReleased += delegate { ResultCtrl_Submitted(_result3, ctrlDown); };
 
             Searchbox.OnEnterPressed += delegate {
-                if (Result1.Visible)
+                if (_result1.Visible)
                     ResultCtrl_Submitted(this.CurrentPoiItem, ctrlDown);
             };
 
             Searchbox.OnKeyPressed += delegate(object sender, Keys keys) {
                 if (keys == Keys.Down) {
-                    if (this.CurrentPoiItem == null && Result1.Visible) {
-                        this.CurrentPoiItem = Result1;
-                    } else if(this.CurrentPoiItem == Result1 && Result2.Visible) {
-                        this.CurrentPoiItem = Result2;
-                    } else if (this.CurrentPoiItem == Result2 && Result3.Visible) {
-                        this.CurrentPoiItem = Result3;
+                    if (this.CurrentPoiItem == null && _result1.Visible) {
+                        this.CurrentPoiItem = _result1;
+                    } else if(this.CurrentPoiItem == _result1 && _result2.Visible) {
+                        this.CurrentPoiItem = _result2;
+                    } else if (this.CurrentPoiItem == _result2 && _result3.Visible) {
+                        this.CurrentPoiItem = _result3;
                     }
                 } else if (keys == Keys.Up) {
                     // We don't need to check if these ones are visible since if the one below is visible
                     // the one above it must also be visible, anyways
-                    if (this.CurrentPoiItem == Result3) {
-                        this.CurrentPoiItem = Result2;
-                    } else if (this.CurrentPoiItem == Result2) {
-                        this.CurrentPoiItem = Result1;
+                    if (this.CurrentPoiItem == _result3) {
+                        this.CurrentPoiItem = _result2;
+                    } else if (this.CurrentPoiItem == _result2) {
+                        this.CurrentPoiItem = _result1;
                     }
                 } else {
                     // They've continued to type something - bring it back to the first result
-                    this.CurrentPoiItem = Result1.Visible ? Result1 : null;
+                    this.CurrentPoiItem = _result1.Visible ? _result1 : null;
                 }
             };
 
@@ -266,7 +246,7 @@ namespace Blish_HUD.Modules.PoiLookup {
 
         // TODO: Split out as async and show spinner
         private void SearchBox_TextChanged(object sender, EventArgs e) {
-            var poiCtrls = new List<PoiItem> { Result1, Result2, Result3 };
+            var poiCtrls = new List<PoiItem> { _result1, _result2, _result3 };
             poiCtrls.ForEach(ctrl => ctrl.Visible = false);
 
             if (Searchbox.Text.Length > 0) {
@@ -301,11 +281,15 @@ namespace Blish_HUD.Modules.PoiLookup {
             }
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(GameServices.GetService<ContentService>().GetTexture("156390"), bounds, Color.White);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular), "Landmark Search", new Rectangle(8, 0, ExitBounds.Left - 16, TitleBarHeight), Color.White, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            spriteBatch.DrawOnCtrl(this, Content.GetTexture("156390"), new Rectangle(Point.Zero, _size));
+            spriteBatch.DrawStringOnCtrl(this, 
+                                           "Landmark Search",
+                                           Content.DefaultFont14,
+                                           new Rectangle(8, 0, ExitBounds.Left - 16, TitleBarHeight),
+                                           Color.White);
 
-            base.PaintContainer(spriteBatch, bounds);
+            base.PaintBeforeChildren(spriteBatch, bounds);
         }
 
         private void ResultCtrl_Submitted(PoiItem item, bool copyAlt) {
@@ -336,7 +320,7 @@ namespace Blish_HUD.Modules.PoiLookup {
             Searchbox.Text = "";
 
             if (Module.settingHideWindowAfterSelection.Value)
-                HideWindow();
+                Hide();
 
             GameService.GameIntegration.FocusGw2();
         }

@@ -136,18 +136,25 @@
     <Compile Include="BHGw2Api\Settings.cs" />
     <Compile Include="BHUDControls\Hotkeys\HotkeyAssigner.cs" />
     <Compile Include="BHUDControls\Hotkeys\HotkeyAssignmentWindow.cs" />
-    <Compile Include="BHUDControls\Pathing\Category.cs" />
     <Compile Include="Controls\ContextMenuStripItem.cs" />
     <Compile Include="Controls\DetailsButton.cs" />
+    <Compile Include="Controls\Effects\ControlEffect.cs" />
+    <Compile Include="Controls\Effects\GlowEffect.cs" />
+    <Compile Include="Controls\Effects\ScrollingHighlightEffect.cs" />
+    <Compile Include="Controls\Resources\Checkable.cs" />
+    <Compile Include="Controls\_Events\ChildChangedEventArgs.cs" />
+    <Compile Include="Controls\_Events\MovedEventArgs.cs" />
+    <Compile Include="Controls\_Events\RegionChangedEventArgs.cs" />
+    <Compile Include="Controls\_Events\ResizedEventArgs.cs" />
     <Compile Include="Controls\FlowPanel.cs" />
     <Compile Include="Controls\GlowButton.cs" />
     <Compile Include="Controls\ICheckable.cs" />
     <Compile Include="Controls\InteractionIndicator.cs" />
     <Compile Include="Controls\InteractionInfo.cs" />
-    <Compile Include="Controls\ScrollingButton.cs" />
+    <Compile Include="Controls\MultilineTextBox.cs" />
+    <Compile Include="Controls\ScrollingHighlight.cs" />
     <Compile Include="Controls\IMenuItem.cs" />
     <Compile Include="Controls\BackButton.cs" />
-    <Compile Include="Controls\Chat.cs" />
     <Compile Include="Controls\Checkbox.cs" />
     <Compile Include="Controls\ColorBox.cs" />
     <Compile Include="Controls\ColorPicker.cs" />
@@ -157,7 +164,7 @@
     <Compile Include="Controls\CornerIcon.cs" />
     <Compile Include="Controls\Dropdown.cs" />
     <Compile Include="Controls\Image.cs" />
-    <Compile Include="Controls\Label.cs" />
+    <Compile Include="Controls\LabelBase.cs" />
     <Compile Include="Controls\LoadingSpinner.cs" />
     <Compile Include="Controls\Menu.cs" />
     <Compile Include="Controls\MenuItem.cs" />
@@ -170,12 +177,13 @@
     <Compile Include="Controls\SkillBox.cs" />
     <Compile Include="Controls\StandardButton.cs" />
     <Compile Include="Controls\TabbedWindow.cs" />
-    <Compile Include="Controls\Textbox.cs" />
+    <Compile Include="Controls\TextBox.cs" />
     <Compile Include="Controls\TintedPanel.cs" />
     <Compile Include="Controls\Tooltip.cs" />
     <Compile Include="Controls\TrackBar.cs" />
-    <Compile Include="Controls\Window.cs" />
+    <Compile Include="Controls\WindowBase.cs" />
     <Compile Include="Controls\WindowTab.cs" />
+    <Compile Include="Controls\_Types\Thickness.cs" />
     <Compile Include="CustomBlendStates.cs" />
     <Compile Include="Custom\ObservableKeyedCollection.cs" />
     <Compile Include="Entities\Cube.cs" />
@@ -230,11 +238,8 @@
     <Compile Include="Library\Glide\Tweener.cs" />
     <Compile Include="Modules\BeetleRacing\BeetleRacing.cs" />
     <Compile Include="Modules\BeetleRacing\Controls\Speedometer.cs" />
-    <Compile Include="Modules\Compatibility\TacO\Route.cs" />
     <Compile Include="Modules\EventTimers\Controls\EventNotification.cs" />
     <Compile Include="Modules\EventTimers\Controls\EventSummary.cs" />
-    <Compile Include="Modules\EventTimers\Controls\EventView.cs" />
-    <Compile Include="Modules\EventTimers\Controls\MenuSection.cs" />
     <Compile Include="Modules\EventTimers\EventTimers.cs" />
     <Compile Include="Modules\MarkersAndPaths\Controls\CategoryMenuItem.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\RouteBuilder.cs" />
@@ -256,19 +261,7 @@
     <Compile Include="GameServices\ContentService.cs" />
     <Compile Include="GameServices\SettingsService.cs" />
     <Compile Include="Modules\Compass.cs" />
-    <Compile Include="Modules\Compatibility\AugTyr\AugTyrNode.cs" />
-    <Compile Include="Modules\Compatibility\AugTyr\AugTyrRoute.cs" />
     <Compile Include="Entities\Primitives\Billboard.cs" />
-    <Compile Include="Modules\TacO\Origin\GW2TacticalCategory.cs" />
-    <Compile Include="Modules\TacO\Origin\GW2Trail.cs" />
-    <Compile Include="Modules\TacO\Origin\MarkerTypeData.cs" />
-    <Compile Include="Modules\TacO\Origin\POI.cs" />
-    <Compile Include="Modules\TacO\Origin\POIBehavior.cs" />
-    <Compile Include="Modules\TacO\Origin\Util.cs" />
-    <Compile Include="Modules\TacO\Origin\POIActivationData.cs" />
-    <Compile Include="Modules\TacO\Origin\POIActivationDataKey.cs" />
-    <Compile Include="Modules\TacO\Origin\POIRoute.cs" />
-    <Compile Include="Modules\TacO\TacO.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -285,11 +278,6 @@
     <Compile Include="GameServices\PlayerService.cs" />
     <Compile Include="GameServices\GraphicsService.cs" />
     <Compile Include="SentryWrapper.cs" />
-    <Compile Include="Modules\Compatibility\TacO\MarkerCategory.cs" />
-    <Compile Include="Modules\Compatibility\TacO\OverlayData.cs" />
-    <Compile Include="Modules\Compatibility\TacO\POI.cs" />
-    <Compile Include="Modules\Compatibility\TacO\Trail.cs" />
-    <Compile Include="Modules\Daily\PactSupplyNetworkAgents.cs" />
     <Compile Include="Modules\DebugText.cs" />
     <Compile Include="Modules\DiscordRichPresence.cs" />
     <Compile Include="Modules\Module.cs" />
@@ -309,8 +297,11 @@
     <Compile Include="WinApi\MouseHook.cs" />
     <Compile Include="_Extensions\PointExtensions.cs" />
     <Compile Include="_Extensions\RectangleExtension.cs" />
+    <Compile Include="_Extensions\SpriteBatchExtensions.cs" />
     <Compile Include="_Extensions\StreamExtensions.cs" />
     <Compile Include="_Extensions\StringExtensions.cs" />
+    <Compile Include="_Extensions\Texture2DExtension.cs" />
+    <Compile Include="_Extensions\Vector2Extension.cs" />
     <Compile Include="_Extensions\Vector3Extensions.cs" />
     <Compile Include="_Extensions\XmlNodeExtensions.cs" />
   </ItemGroup>
@@ -434,16 +425,16 @@
       <Version>2.0.1-alpha</Version>
     </PackageReference>
     <PackageReference Include="Costura.Fody">
-      <Version>3.3.3</Version>
+      <Version>4.0.0</Version>
     </PackageReference>
     <PackageReference Include="DynamicLanguageRuntime">
       <Version>1.2.2</Version>
     </PackageReference>
     <PackageReference Include="Flurl.Http">
-      <Version>2.4.1</Version>
+      <Version>2.4.2</Version>
     </PackageReference>
     <PackageReference Include="Fody">
-      <Version>4.2.1</Version>
+      <Version>5.0.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -481,7 +472,7 @@
       <Version>2.0.3</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
+      <Version>12.0.2</Version>
     </PackageReference>
     <PackageReference Include="protobuf-net">
       <Version>2.4.0</Version>

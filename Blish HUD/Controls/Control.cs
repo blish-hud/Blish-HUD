@@ -13,6 +13,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Blish_HUD.Annotations;
+using Blish_HUD.Controls.Effects;
+using Blish_HUD.Utils;
 using Flurl.Util;
 using Newtonsoft.Json;
 
@@ -68,6 +70,44 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        #region Resources
+
+        private static SpriteBatchParameters _defaultSpriteBatchParameters;
+
+        #endregion
+
+        static Control() {
+            _defaultSpriteBatchParameters = new SpriteBatchParameters();
+        }
+
+        #endregion
+
+        #region Static Control Events
+
+        public class ControlChangedEventArgs : EventArgs {
+            public Control ActivatedControl { get; }
+
+            public ControlChangedEventArgs(Control activatedControl) {
+                this.ActivatedControl = activatedControl;
+            }
+
+        }
+
+        public static event EventHandler<ControlChangedEventArgs> ActiveControlChanged;
+
+        private static Control _activeControl;
+        public static Control ActiveControl {
+            get => _activeControl;
+            set {
+                if (_activeControl == value) return;
+
+                _activeControl = value;
+
+                // _activeControl is not what should be passed as the sender...
+                ActiveControlChanged?.Invoke(_activeControl, new ControlChangedEventArgs(_activeControl));
+            }
+        }
+
         #endregion
 
         #region Control Events
@@ -95,8 +135,9 @@ namespace Blish_HUD.Controls {
         protected virtual void OnLeftMouseButtonReleased(MouseEventArgs e) {
             this.LeftMouseButtonReleased?.Invoke(this, e);
 
-            if (this.Enabled)
+            if (this.Enabled) {
                 this.Click?.Invoke(this, e);
+            }
         }
 
         protected virtual void OnMouseMoved(MouseEventArgs e) {
@@ -124,7 +165,7 @@ namespace Blish_HUD.Controls {
         }
 
         /// <summary>
-        /// Alias for <see cref="OnLeftMouseButtonReleased"/>.
+        /// Fires <see cref="OnLeftMouseButtonReleased"/> if the control is enabled.
         /// </summary>
         protected virtual void OnClick(MouseEventArgs e) {
             OnLeftMouseButtonReleased(e);
@@ -132,29 +173,19 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        public class ResizedEventArgs : EventArgs {
-            public Point PreviousSize { get; }
-            public Point CurrentSize  { get; }
-
-            public ResizedEventArgs(Point previousSize, Point currentSize) {
-                this.PreviousSize = previousSize;
-                this.CurrentSize = currentSize;
-            }
-        }
+        public event EventHandler<EventArgs> Shown;
+        public event EventHandler<EventArgs> Hidden;
         public event EventHandler<ResizedEventArgs> Resized;
-
-        public class MovedEventArgs:EventArgs {
-            public Point PreviousLocation { get; }
-            public Point CurrentLocation  { get; }
-
-            public MovedEventArgs(Point previousLocation, Point currentLocation) {
-                this.PreviousLocation = previousLocation;
-                this.CurrentLocation  = currentLocation;
-            }
-        }
         public event EventHandler<MovedEventArgs> Moved;
-
         public event EventHandler<EventArgs> Disposed;
+
+        protected virtual void OnShown(EventArgs e) {
+            this.Shown?.Invoke(this, e);
+        }
+
+        protected virtual void OnHidden(EventArgs e) {
+            this.Hidden?.Invoke(this, e);
+        }
 
         protected virtual void OnResized(ResizedEventArgs e) {
             this.Resized?.Invoke(this, e);
@@ -166,7 +197,7 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        private bool _mouseOver = false;
+        protected bool _mouseOver = false;
         [JsonIgnore]
         public bool MouseOver {
             get => _mouseOver;
@@ -184,7 +215,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private Point _location;
+        protected Point _location;
         public Point Location {
             get => _location;
             set {
@@ -193,19 +224,18 @@ namespace Blish_HUD.Controls {
                 var previousLocation = _location;
 
                 _location = value;
-                // Just moving the control should not invalidate its own render state
-                // The parent will need to update its render state with the new location, though
-                OnPropertyChanged("Location", true);
+
+                OnPropertyChanged();
 
                 // We do this to make sure we raise PropertyChanged events for alias properties
                 if (previousLocation.Y != _location.Y)
-                    OnPropertyChanged(nameof(this.Top), true);
+                    OnPropertyChanged(nameof(this.Top));
                 if (previousLocation.X != _location.X)
-                    OnPropertyChanged(nameof(this.Left), true);
+                    OnPropertyChanged(nameof(this.Left));
                 if (previousLocation.Y + _size.Y != _location.Y + _size.Y)
-                    OnPropertyChanged(nameof(this.Bottom), true);
+                    OnPropertyChanged(nameof(this.Bottom));
                 if (previousLocation.X + _size.X != _location.X + _size.X)
-                    OnPropertyChanged(nameof(this.Right), true);
+                    OnPropertyChanged(nameof(this.Right));
 
                 OnMoved(new MovedEventArgs(previousLocation, _location));
             }
@@ -255,7 +285,7 @@ namespace Blish_HUD.Controls {
 
         #endregion
         
-        private Point _size = new Point(40, 20);
+        protected Point _size = new Point(40, 20);
         /// <summary>
         /// The size of the control.  Both the X and Y component must be greater than 0.
         /// </summary>
@@ -276,15 +306,17 @@ namespace Blish_HUD.Controls {
                 OnPropertyChanged();
 
                 if (previousSize.Y != _size.Y)
-                    OnPropertyChanged(nameof(this.Height));
+                    OnPropertyChanged(nameof(this.Height), true);
                 if (previousSize.X != _size.X)
-                    OnPropertyChanged(nameof(this.Width));
+                    OnPropertyChanged(nameof(this.Width), true);
                 if (_location.Y + previousSize.Y != _location.Y + _size.Y)
                     OnPropertyChanged(nameof(this.Bottom), true);
                 if (_location.X + previousSize.X != _location.X + _size.X)
                     OnPropertyChanged(nameof(this.Right), true);
 
                 OnResized(new ResizedEventArgs(previousSize, _size));
+
+                this.Invalidate();
             }
         }
 
@@ -312,43 +344,51 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        protected bool ClipsBounds { get; set; } = true;
+
+        private ControlEffect _effectBehind;
+        protected ControlEffect EffectBehind {
+            get => _effectBehind;
+            set => SetProperty(ref _effectBehind, value);
+        }
+
+        private ControlEffect _effectInFront;
+        protected ControlEffect EffectInFront {
+            get => _effectInFront;
+            set => SetProperty(ref _effectInFront, value);
+        }
+
+        /// <summary>
+        /// The bounds of the control, relative to the parent control.
+        /// </summary>
         [JsonIgnore]
-        public Rectangle Bounds => new Rectangle(this.Location, this.Size);
+        public Rectangle LocalBounds => new Rectangle(this.Location, this.Size);
 
         // TODO: Ensure that when properties AbsoluteBounds derives from change, this one also raises a PropertyChanged event
+        /// <summary>
+        /// The bounds of the control, relative to the overlay window / SpriteScreen.
+        /// </summary>
         [JsonIgnore]
         public Rectangle AbsoluteBounds {
             get {
-                if (this.Parent == null) return this.Bounds;
+                if (_parent == null) return this.LocalBounds;
 
                 // Clean this up
                 // This is really the absolute bounds of the ContentRegion currently because mouse
                 // input is currently using this to determine if the click was within the region
-                return new Rectangle(
-                                     this.Parent.AbsoluteBounds.X + this.Left                              + this.Parent.ContentRegion.X,
-                                     this.Parent.AbsoluteBounds.Y + this.Top + this.Parent.ContentRegion.Y - this.Parent.VerticalScrollOffset,
-                                     this.Width,
-                                     this.Height
-                                    );
+                return new Rectangle(_parent.AbsoluteBounds.X + _parent.ContentRegion.X + _location.X - _parent.HorizontalScrollOffset,
+                                     _parent.AbsoluteBounds.Y + _parent.ContentRegion.Y + _location.Y - _parent.VerticalScrollOffset,
+                                     _size.X,
+                                     _size.Y);
             }
         }
 
-        // TODO: Ensure that when properties OuterBounds derives from change, this one also raises a PropertyChanged event
         [JsonIgnore]
-        public Rectangle OuterBounds {
-            get =>
-                new Rectangle(
-                              this.Left   - this.Padding.X,
-                              this.Top    - this.Padding.Y,
-                              this.Width  + this.Padding.X * 2,
-                              this.Height + this.Padding.Y * 2
-                             );
-        }
+        public Point RelativeMousePosition => Input.MouseState.Position - AbsoluteBounds.Location;
 
-        [JsonIgnore]
-        protected Point RelativeMousePosition => Input.MouseState.Position - this.AbsoluteBounds.Location;
-
-        /// <summary>If provided, the menu will display when the control is right-clicked on.</summary>
+        /// <summary>
+        /// If provided, the menu will display when the control is right-clicked on.
+        /// </summary>
         public ContextMenuStrip Menu { get; set; }
 
         /// <summary>
@@ -375,51 +415,38 @@ namespace Blish_HUD.Controls {
                 if (!string.IsNullOrWhiteSpace(value)) {
                     this.Tooltip = SharedTooltip;
 
-                    // LOGIC: we need to unsubscribe from this event below, otherwise, while incredibly unlikely, we could create a memory leak
-                    this.MouseEntered += delegate { 
+                    this.MouseEntered += delegate {
                         _sharedTooltipLabel.Text = this.BasicTooltipText;
                     };
                 } else {
+                    this.Tooltip.Hide();
                     this.Tooltip = null;
                 }
             }
         }
 
-        private float _opacity = 1f;
+        protected float _opacity = 1f;
         public float Opacity {
             get => _opacity;
-            set {
-                if (_opacity == value) return;
-
-                _opacity = value;
-
-                // Parent container is what draws us with a specific opacity, so we don't need to invalidate ourselves
-                OnPropertyChanged(nameof(this.Opacity), true);
-            }
+            set => SetProperty(ref _opacity, value);
         }
 
-        private bool _visible = true;
+        protected bool _visible = true;
         public bool Visible {
             get => _visible;
             set {
-                if (_visible == value) return;
-
-                _visible = value;
-                
-                // Parent container will handle visibility, so we don't need to invalidate
-                OnPropertyChanged(nameof(this.Visible), true);
+                if (SetProperty(ref _visible, value)) {
+                    if (_visible) OnShown(EventArgs.Empty);
+                    else OnHidden(EventArgs.Empty);
+                }
             }
         }
 
-        // TODO: Remove padding as we no longer use it
-        // TODO: EDIT: Re-add padding, maybe, because it actually worked better than what
-        // I have to deal with now 😑 
-        private Point _padding = Point.Zero;
-        /// <summary>
-        /// Please don't use this at the moment.  In the future, it will allow you to render things outside of the actual size of the control (which is good for things like Windows that have some design elements that hang outside the actual Window bounds.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public Point Padding { get => Point.Zero; set { _padding = value; Invalidate(); } }
+        protected Thickness _padding = Thickness.Zero;
+        public Thickness Padding {
+            get => _padding;
+            set => SetProperty(ref _padding, value, true);
+        }
 
         private Container _parent;
         public Container Parent {
@@ -435,41 +462,23 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private int _zIndex = 5;
+        protected int _zIndex = 5;
         public int ZIndex {
             get => _zIndex;
-            set {
-                if (_zIndex == value) return;
-
-                _zIndex = value;
-
-                // Parent container will adjust render order, so we don't need to invalidate
-                OnPropertyChanged(nameof(this.ZIndex), true);
-            }
+            set => SetProperty(ref _zIndex, value);
         }
 
-        private bool _enabled = true;
+        protected bool _enabled = true;
         public bool Enabled {
             get => _enabled;
-            set {
-                if (_enabled == value) return;
-
-                _enabled = value;
-
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _enabled, value);
         }
 
-        private Color _backgroundColor = Color.Transparent;
+        protected Color _backgroundColor = Color.Transparent;
         [JsonIgnore]
         public Color BackgroundColor {
             get => _backgroundColor;
-            set {
-                if (_backgroundColor == value) return;
-
-                _backgroundColor = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _backgroundColor, value);
         }
 
         private static Tooltip _sharedTooltip;
@@ -480,7 +489,7 @@ namespace Blish_HUD.Controls {
                 // Lazy load shared tooltip instance
                 _sharedTooltip = new Tooltip();
 
-                _sharedTooltipLabel = new Label() {
+                _sharedTooltipLabel = new LabelBase() {
                     Text = "Loading...",
                     Location = new Point(Tooltip.PADDING),
                     AutoSizeHeight = true,
@@ -493,51 +502,21 @@ namespace Blish_HUD.Controls {
                 return _sharedTooltip;
             }
         }
-        private static Label _sharedTooltipLabel;
+        private static LabelBase _sharedTooltipLabel;
 
         #region Render Properties
 
         [JsonIgnore]
-        protected bool NeedsRedraw { get; set; }
+        protected bool LayoutIsInvalid { get; private set; } = true;
 
-        private SamplerState _samplerState;
+        protected SpriteBatchParameters _spriteBatchParameters;
+
         [JsonIgnore]
-        public SamplerState SamplerState {
-            get => _samplerState;
+        public SpriteBatchParameters SpriteBatchParameters {
+            get => _spriteBatchParameters ?? _defaultSpriteBatchParameters;
             set {
-                if (_samplerState == value) return;
-
-                _samplerState = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private BlendState _blendState;
-        //[JsonIgnore]
-        public BlendState BlendState {
-            get => _blendState;
-            set {
-                if (_blendState == value) return;
-
-                _blendState = value;
-
-                // Parent handles redrawing with different BlendStates, so we don't need to invalidate ourselves
-                OnPropertyChanged(nameof(this.BlendState), true);
-            }
-        }
-
-
-        private Effect _drawEffect;
-        [JsonIgnore]
-        public Effect DrawEffect {
-            get => _drawEffect;
-            set {
-                if (_drawEffect == value) return;
-
-                _drawEffect = value;
-
-                // Parent handles redrawing with different DrawEffects, so we don't need to invalidate ourselves
-                OnPropertyChanged(nameof(this.DrawEffect), true);
+                if (_spriteBatchParameters != _defaultSpriteBatchParameters)
+                    _spriteBatchParameters = value;
             }
         }
 
@@ -553,9 +532,6 @@ namespace Blish_HUD.Controls {
         
         // Many controls utilize sprites loaded from the same atlas
         protected static TextureAtlas ControlAtlas;
-
-        // Holds the most recent render of the control
-        protected RenderTarget2D RenderCache;
 
         public Control() {
             if (Content != null)
@@ -586,25 +562,39 @@ namespace Blish_HUD.Controls {
 
             this.Menu.Visible = true;
         }
-
-        private int invCount = 0;
+        
         /// <summary>
         /// Avoid overriding <see cref="Invalidate"/> as it has the potential to be called multiple times prior to a render taking place.
         /// </summary>
         public virtual void Invalidate() {
-            //invCount++;
-            //Console.WriteLine($"{this.GetType().Name} has invalidated {invCount} times!");
-            this.NeedsRedraw = true;
-            this.Parent?.Invalidate();
+            this.LayoutIsInvalid = true;
+        }
+
+        /// <summary>
+        /// Called whenever the size or location of the control is changed.
+        /// </summary>
+        public virtual void RecalculateLayout() {
+            /* NOOP */
         }
         
-        protected abstract void Paint(SpriteBatch spriteBatch, Rectangle bounds);
+        protected float AbsoluteOpacity(bool isInternal) {
+            if (_parent == null) return _opacity;
+
+            return isInternal
+                       ? _parent.AbsoluteOpacity(true) - (1f - _opacity)
+                       : MathHelper.Clamp(_parent.AbsoluteOpacity(true) - (1f - _opacity), 0f, 1f);
+        }
+
+        public float AbsoluteOpacity() {
+            return AbsoluteOpacity(false);
+        }
 
         /// <summary>
         /// Specifies which type of input this <see cref="Control"/> accepts, possibly blocks from other <see cref="Control"/>s, and prevents the game from seeing.
         /// </summary>
         public CaptureType Captures => CapturesInput();
 
+        // TODO: Consider making CapturesInput abstract
         /// <summary>
         /// Override to specify which type of input this <see cref="Control"/> accepts.
         /// </summary>
@@ -615,112 +605,113 @@ namespace Blish_HUD.Controls {
 
         public virtual void TriggerKeyboardInput(KeyboardMessage e) { /* NOOP */ }
 
-        public virtual bool TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            var captureResults = CaptureType.Filter;
+        public virtual Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
+            var inputCapture = CapturesInput();
+
+            if (!inputCapture.HasFlag(CaptureType.Mouse) && !inputCapture.HasFlag(CaptureType.MouseWheel) && !inputCapture.HasFlag(CaptureType.Filter))
+                return null;
 
             switch (mouseEventType) {
                 case MouseEventType.LeftMouseButtonPressed:
-                    captureResults = CaptureType.Mouse;
                     OnLeftMouseButtonPressed(new MouseEventArgs(ms));
+                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
                     break;
                 case MouseEventType.LeftMouseButtonReleased:
-                    captureResults = CaptureType.Mouse;
                     OnClick(new MouseEventArgs(ms));
+                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
                     break;
                 case MouseEventType.RightMouseButtonPressed:
-                    captureResults = CaptureType.Mouse;
                     OnRightMouseButtonPressed(new MouseEventArgs(ms));
+                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
                     break;
                 case MouseEventType.RightMouseButtonReleased:
-                    captureResults = CaptureType.Mouse;
                     OnRightMouseButtonReleased(new MouseEventArgs(ms));
+                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
                     break;
                 case MouseEventType.MouseMoved:
-                    if (this.GetType() == typeof(Textbox)) {
-                        Input.ActiveControl = this;
-                    }
-
                     OnMouseMoved(new MouseEventArgs(ms));
-
                     this.MouseOver = true;
+                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
                     break;
                 case MouseEventType.MouseWheelScrolled:
-                    captureResults = CaptureType.MouseWheel;
                     OnMouseWheelScrolled(new MouseEventArgs(ms));
+                    return inputCapture.HasFlag(CaptureType.MouseWheel) ? this : null;
                     break;
             }
 
-            return this.Captures.HasFlag(captureResults);
+            return null;
         }
 
-        public virtual void Update(GameTime gameTime) {
+        public virtual void Show() {
+            this.Visible = true;
+        }
+
+        public virtual void Hide() {
+            this.Visible = false;
+        }
+
+        public virtual void DoUpdate(GameTime gameTime) { /* NOOP */ }
+
+        private void HandleTooltip() {
             if (this.MouseOver && !this.AbsoluteBounds.Contains(Input.MouseState.Position)) {
                 if (this.Tooltip != null) this.Tooltip.Visible = false;
                 this.MouseOver = false;
-            } else if (this.MouseOver && this.Tooltip != null ) { // TODO: This all needs to be handled by the Tooltip, not by the control
+            } else if (this.MouseOver && this.Tooltip != null) { // TODO: This all needs to be handled by the Tooltip, not by the control
                 this.Tooltip.CurrentControl = this;
 
                 // We're going to assume nobody has a display so small that the tooltip just can't fit in any direction
-                int topPos = Input.MouseState.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height > 0 
-                                 ? -Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height 
+                int topPos = Input.MouseState.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height > 0
+                                 ? -Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height
                                  : Tooltip.MOUSE_VERTICAL_MARGIN * 2;
 
-                int leftPos = Input.MouseState.Position.X + this.Tooltip.Width < Graphics.SpriteScreen.Width 
-                                  ? 0 
+                int leftPos = Input.MouseState.Position.X + this.Tooltip.Width < Graphics.SpriteScreen.Width
+                                  ? 0
                                   : -this.Tooltip.Width;
-                
+
                 this.Tooltip.Location = Input.MouseState.Position + new Point(leftPos, topPos);
-                
+
                 this.Tooltip.Visible = true;
             }
         }
 
-        public virtual void Draw(GraphicsDevice graphicsDevice, Rectangle bounds) {
-            if (this.NeedsRedraw || RenderCache == null) {
-                //if (RenderCache != null && (RenderCache.Width != this.Width || RenderCache.Height != this.Height))
-                    RenderCache?.Dispose();
+        public void Update(GameTime gameTime) {
+            DoUpdate(gameTime);
 
-                //if (RenderCache == null) {
-                    try {
-                        RenderCache = new RenderTarget2D(
-                                                         graphicsDevice, this.Width + this.Padding.X * 2, this.Height + this.Padding.Y * 2,
-                                                         false,
-                                                         SurfaceFormat.Color,
-                                                         DepthFormat.None,
-                                                         graphicsDevice.PresentationParameters.MultiSampleCount,
-                                                         RenderTargetUsage.PreserveContents
-                                                        );
-                    } catch (ArgumentOutOfRangeException aoorEx) {
-                        // TODO: Use debug service to write to log that we are trying to create a render target that is too small
-                        Console.WriteLine($"{this.GetType().FullName} attempted to render at an invalid size: {this.Width}x{this.Height}");
-                    } catch (Exception generalEx) {
-                        // TODO: Use debug service to write to log that we had an unexpected error
-                        Console.WriteLine($"{this.GetType().FullName} had an unexpected error when attempting to render:");
-                        Console.WriteLine(generalEx.Message);
-                    }
-                //}
-
-                graphicsDevice.SetRenderTarget(RenderCache);
-                graphicsDevice.Clear(this.BackgroundColor);
-
-                using (var ctrlSpritebatch = new SpriteBatch(graphicsDevice)) {
-
-                    ctrlSpritebatch.Begin(
-                                          SpriteSortMode.Deferred,
-                                          this.BlendState,
-                                          null
-                                         );
-                    Paint(ctrlSpritebatch, bounds.OffsetBy(-this.Padding.X, -this.Padding.Y));
-
-                    ctrlSpritebatch.End();
-                }
+            if (this.LayoutIsInvalid) {
+                RecalculateLayout();
+                this.LayoutIsInvalid = false;
             }
 
-            this.NeedsRedraw = false;
+            HandleTooltip();
         }
 
-        public Texture2D GetRender() {
-            return RenderCache;
+        /// <summary>
+        /// Draw the control.
+        /// </summary>
+        /// <param name="bounds">The draw region of the control.  Anything outside of this region will be clipped.  If this control is the child of a container, it could potentially be clipped even further by <see cref="spriteBatch.GraphicsDevice.ScissorRectangle" />.</param>
+        protected abstract void Paint(SpriteBatch spriteBatch, Rectangle bounds);
+
+        public virtual void Draw(SpriteBatch spriteBatch, Rectangle drawBounds) {
+            var contentScissor = Graphics.GraphicsDevice.ScissorRectangle;
+
+            Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(contentScissor, this.AbsoluteBounds.WithPadding(_padding));
+
+            this.EffectBehind?.Draw(spriteBatch, drawBounds);
+
+            spriteBatch.Begin(this.SpriteBatchParameters);
+                
+            // Draw background
+            if (_backgroundColor != Color.Transparent)
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, drawBounds, _backgroundColor);
+
+            // Draw control
+            Paint(spriteBatch, drawBounds);
+
+            spriteBatch.End();
+
+            //this.EffectInFront?.Draw(drawBounds);
+
+            Graphics.GraphicsDevice.ScissorRectangle = contentScissor;
         }
 
         #region IDisposable Support
@@ -731,6 +722,9 @@ namespace Blish_HUD.Controls {
                 if (disposing) {
                     // Let everything know we're disposing (esp. Data Bindings)
                     this.Disposed?.Invoke(this, EventArgs.Empty);
+
+                    // Unassociate any subcontrols
+                    this.EffectBehind = null;
 
                     // Disconnect all existing event handlers
                     this.LeftMouseButtonPressed = null;
@@ -745,9 +739,6 @@ namespace Blish_HUD.Controls {
                     this.Resized = null;
                     this.Moved = null;
                     this.Disposed = null;
-
-                    // Dispose of the render cache (likely the largest memory usage of the instance)
-                    RenderCache?.Dispose();
 
                     // Cancel any animations that were currently running on this object
                     Animation.Tweener.TargetCancel(this);
@@ -779,39 +770,32 @@ namespace Blish_HUD.Controls {
 
         #region Property Management and Binding
 
-        protected bool SetProperty<T>(ref T property, T newValue, [CallerMemberName] string propertyName = null, bool invalidateParentOnly = false) {
+        protected bool SetProperty<T>(ref T property, T newValue, bool invalidateLayout = false, [CallerMemberName] string propertyName = null) {
             if (Equals(property, newValue) || propertyName == null) return false;
 
             property = newValue;
 
-            OnPropertyChanged(propertyName, invalidateParentOnly);
+            OnPropertyChanged(propertyName, invalidateLayout);
 
             return true;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         
-        protected void OnPropertyChanged(string propertyName, bool invalidateSelf, bool invalidateParent) {
-            if (String.IsNullOrEmpty(propertyName)) return;
+        protected void OnPropertyChanged(string propertyName, bool invalidateLayout) {
+            if (string.IsNullOrEmpty(propertyName)) return;
 
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-            if (invalidateSelf) {
+            if (invalidateLayout) {
+                Console.WriteLine($"[INVALIDATED LAYOUT] {this.GetType().Name} > {propertyName}");
                 Invalidate();
-
-                // Invalidating self automatically invalidates parent, so no need to continue
-                return;
             }
-            if (invalidateParent) this.Parent?.Invalidate();
-        }
-
-        protected void OnPropertyChanged(string propertyName, bool invalidateParentOnly) {
-            OnPropertyChanged(propertyName, !invalidateParentOnly, true);
         }
 
         [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            OnPropertyChanged(propertyName, true, false);
+            OnPropertyChanged(propertyName, false);
         }
 
         #endregion

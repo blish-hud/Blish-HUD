@@ -261,9 +261,9 @@ namespace Blish_HUD {
         protected override void Load() {
             LoadRenderers();
 
-            GameService.Director.OnLoad += delegate {
-                GameService.Director.BlishHudWindow
-                    .AddTab("Settings", "155052", BuildSettingPanel(GameService.Director.BlishHudWindow), int.MaxValue - 1);
+            Director.OnLoad += delegate {
+                Director.BlishHudWindow
+                        .AddTab("Settings", Content.GetTexture("155052"), BuildSettingPanel(GameService.Director.BlishHudWindow), int.MaxValue - 1);
             };
         }
 
@@ -271,33 +271,83 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) { /* NOOP */ }
 
-        private Panel BuildSettingPanel(Controls.Window wndw) {
-            var ssPanel = new Panel();
-
-            var settingsMenu = new Menu() {
-                Size = new Point(256, 32 * 8),
-                MenuItemHeight = 32,
-                Location = new Point(20, 20),
-                Parent = ssPanel,
+        private Panel BuildSettingPanel(Controls.WindowBase wndw) {
+            var baseSettingsPanel = new Panel() {
+                Size = wndw.ContentRegion.Size
             };
-            
-            //var settingsMi_BlishHud = settingsMenu.AddMenuItem("Blish HUD Settings");
-            //var settingsMi_Api = settingsMenu.AddMenuItem("API Settings");
-            var settingsMi_Module = settingsMenu.AddMenuItem("Module Settings");
-            //var setItemHotkeys = settingsMenu.AddMenuItem("Hotkeys");
-            //var settingsMi_Integration = settingsMenu.AddMenuItem("Integration Settings");
-            //var settingsMi_Update = settingsMenu.AddMenuItem("Update Settings");
-            var aboutMi = settingsMenu.AddMenuItem("About");
-            var exitMi = settingsMenu.AddMenuItem("Exit");
 
-            settingsMi_Module.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
-            //setItemHotkeys.OnLeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(GameServices.GetService<HotkeysService>().BuildHotkeysPanel(wndw)); };
-            aboutMi.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildAboutPanel(wndw)); };
+            var settingsMenuSection = new Panel() {
+                ShowBorder = true,
+                Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20 - 50, baseSettingsPanel.Height - 50 - Panel.BOTTOM_MARGIN),
+                Location   = new Point(5, 50),
+                CanScroll  = true,
+                Title      = "Settings",
+                Parent     = baseSettingsPanel
+            };
 
-            // TODO: Add an "are you sure?" prompt
-            exitMi.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { Overlay.Exit(); };
+            var settingsListMenu = new Menu() {
+                Size     = settingsMenuSection.ContentRegion.Size,
+                MenuItemHeight = 40,
+                Parent   = settingsMenuSection
+            };
 
-            return ssPanel;
+            Panel cPanel = null;
+
+            var settingsMi_App = settingsListMenu.AddMenuItem("Application Settings", Content.GetTexture("156736"));
+            var settingsMi_Controls = settingsListMenu.AddMenuItem("Control Settings", Content.GetTexture("156734"));
+            var settingsMi_Sound = settingsListMenu.AddMenuItem("Sound Settings", Content.GetTexture("156738"));
+            var settingsMi_Modules = settingsListMenu.AddMenuItem("Manage Modules", Content.GetTexture("156764-noarrow"));
+            var settingsMi_API = settingsListMenu.AddMenuItem("API Settings", Content.GetTexture("156684"));
+            var settingsMi_Update = settingsListMenu.AddMenuItem("Check For Updates", Content.GetTexture("156411"));
+            var settingsMi_SupportUs = settingsListMenu.AddMenuItem("Support the Project", Content.GetTexture("156331"));
+            var settingsMi_About = settingsListMenu.AddMenuItem("About", Content.GetTexture("440023"));
+            var settingsMi_Exit = settingsListMenu.AddMenuItem("Close Blish HUD", Content.GetTexture("155049"));
+
+            GameService.Module.OnLoad += delegate {
+                foreach (var module in GameService.Module.AvailableModules) {
+                    var moduleInfo = module.GetModuleInfo();
+
+                    var moduleMi = new MenuItem(moduleInfo.Name) {
+                        BasicTooltipText = moduleInfo.Description,
+                        Icon             = module.Enabled ? Content.GetTexture("1234938") : Content.GetTexture("1234939"),
+                        Parent           = settingsMi_Modules
+                    };
+                }
+            };
+
+            settingsMi_About.Click += delegate {
+                cPanel?.Hide();
+                cPanel?.Dispose();
+
+                cPanel = BuildAboutPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+                cPanel.Parent = baseSettingsPanel;
+            };
+
+            //var settingsMenu = new Menu() {
+            //    Size = new Point(256, 32 * 8),
+            //    MenuItemHeight = 32,
+            //    Location = new Point(20, 20),
+            //    Parent = ssPanel,
+            //};
+
+            ////var settingsMi_BlishHud = settingsMenu.AddMenuItem("Blish HUD Settings");
+            ////var settingsMi_Api = settingsMenu.AddMenuItem("API Settings");
+            //var settingsMi_Module = settingsMenu.AddMenuItem("Module Settings");
+            ////var setItemHotkeys = settingsMenu.AddMenuItem("Hotkeys");
+            ////var settingsMi_Integration = settingsMenu.AddMenuItem("Integration Settings");
+            ////var settingsMi_Update = settingsMenu.AddMenuItem("Update Settings");
+            //var aboutMi = settingsMenu.AddMenuItem("About");
+            //var exitMi = settingsMenu.AddMenuItem("Exit");
+
+            //settingsMi_Module.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
+            ////setItemHotkeys.OnLeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(GameServices.GetService<HotkeysService>().BuildHotkeysPanel(wndw)); };
+            //aboutMi.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildAboutPanel(wndw)); };
+
+            //// TODO: Add an "are you sure?" prompt
+            //exitMi.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { Overlay.Exit(); };
+
+            return baseSettingsPanel;
         }
 
         // TODO: All of this needs to be somewhere else
@@ -309,7 +359,7 @@ namespace Blish_HUD {
             trademarks are the property of their respective owners.";
 
         private string ANET_COPYRIGHT_NOTICE_CLEAN =
-            "(C) 2010 to 2018 ArenaNet, LLC. All rights reserved. Guild Wars, Guild Wars 2, Heart of Thorns,|" +
+            "(C) 2010 - 2019 ArenaNet, LLC. All rights reserved. Guild Wars, Guild Wars 2, Heart of Thorns,|" +
             "Guild Wars 2: Path of Fire, ArenaNet, NCSOFT, the Interlocking NC Logo, and all associated|" +
             "logos and designs are trademarks or registered trademarks of NCSOFT Corporation. All other|" +
             "trademarks are the property of their respective owners.";
@@ -319,175 +369,174 @@ namespace Blish_HUD {
         private const string DISCORD_INVITE = "https://discord.gg/78PYm77";
         private const string SUBREDDIT_URL = "https://www.reddit.com/r/blishhud";
 
-        private Panel BuildAboutPanel(Controls.Window wndw) {
-            var asPanel = new Panel() {CanScroll = false, Size = wndw.Size};
+        private Panel BuildAboutPanel(Point size) {
+            var asPanel = new Panel() {CanScroll = false, Size = size};
 
-            var backButton = new BackButton(wndw) {
-                Text     = "Settings",
-                NavTitle = "About",
-                Parent   = asPanel,
-                Location = new Point(20, 20),
-            };
-
-            string cleanNotice = Utils.String.FilterByFont(Overlay.font_def12, ANET_COPYRIGHT_NOTICE_CLEAN);
+            //var backButton = new BackButton(wndw) {
+            //    Text     = "Settings",
+            //    NavTitle = "About",
+            //    Parent   = asPanel,
+            //    Location = new Point(20, 20),
+            //};
 
             // TODO: Label should support multi-line strings and should still support alignment
             // I hate everything about this - there needs to be a better way.
 
-            var copyrightNotice1 = new Label() {
+            var cleanNotice = ANET_COPYRIGHT_NOTICE_CLEAN;
+
+            var copyrightNotice1 = new LabelBase() {
                 Text = cleanNotice.Split('|')[0],
-                Location            = new Point(0, backButton.Bottom + 20),
-                AutoSizeHeight      = true,
-                Width               = wndw.ContentRegion.Width,
+                AutoSizeHeight = true,
+                Width               = size.X,
                 HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
                 Parent              = asPanel
             };
 
-            var copyrightNotice2 = new Label() {
+            var copyrightNotice2 = new LabelBase() {
                 Text = cleanNotice.Split('|')[1],
                 Location            = new Point(0, copyrightNotice1.Bottom + 5),
                 AutoSizeHeight      = true,
-                Width               = wndw.ContentRegion.Width,
+                Width = size.X,
                 HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
                 Parent              = asPanel
             };
 
-            var copyrightNotice3 = new Label() {
+            var copyrightNotice3 = new LabelBase() {
                 Text = cleanNotice.Split('|')[2],
                 Location            = new Point(0, copyrightNotice2.Bottom + 5),
                 AutoSizeHeight      = true,
-                Width               = wndw.ContentRegion.Width,
+                Width = size.X,
                 HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
                 Parent              = asPanel
             };
             
-            var copyrightNotice4 = new Label() {
+            var copyrightNotice4 = new LabelBase() {
                 Text = cleanNotice.Split('|')[3],
                 Location            = new Point(0, copyrightNotice3.Bottom + 5),
                 AutoSizeHeight      = true,
-                Width               = wndw.ContentRegion.Width,
+                Width = size.X,
                 HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
                 Parent              = asPanel
-            };
-            
+            }; 
+
             // OSS
 
-            var ossNotice = new Label() {
+            var ossNotice = new LabelBase() {
                 Text           = "Blish HUD makes use of multiple open source libraries:",
-                Location       = new Point(backButton.Left + 3, copyrightNotice4.Bottom + 25),
+                Location       = new Point(20 + 3, copyrightNotice4.Bottom + 25),
                 AutoSizeHeight = true,
-                Width          = wndw.ContentRegion.Width,
-                Parent         = asPanel
+                Width          = size.X - 20 - 3,
+                //Parent         = asPanel
             };
 
-            var ossPanel = new TintedPanel() {
-                Parent    = asPanel,
-                Size      = new Point(asPanel.ContentRegion.Width - 60, wndw.ContentRegion.Height - ossNotice.Bottom - 76),
-                Location  = new Point(20,                               ossNotice.Bottom + 10),
-                CanScroll = true,
-            };
+            //var ossPanel = new TintedPanel() {
+            //    Parent    = asPanel,
+            //    Size      = new Point(asPanel.ContentRegion.Width - 60, wndw.ContentRegion.Height - ossNotice.Bottom - 76),
+            //    Location  = new Point(20,                               ossNotice.Bottom + 10),
+            //    CanScroll = true,
+            //};
 
-            string licenseFilePath = Path.Combine("data", LICENSES_FILE);
-            if (File.Exists(licenseFilePath)) {
-                string rawRefLicense = File.ReadAllText(licenseFilePath);
+            //string licenseFilePath = Path.Combine("data", LICENSES_FILE);
+            //if (File.Exists(licenseFilePath)) {
+            //    string rawRefLicense = File.ReadAllText(licenseFilePath);
 
-                var licenseReference = JArray.Parse(rawRefLicense);
+            //    var licenseReference = JArray.Parse(rawRefLicense);
 
-                int lPos = 10;
+            //    int lPos = 10;
 
-                foreach (JObject project in licenseReference) {
+            //    foreach (JObject project in licenseReference) {
 
-                    if (project.TryGetValue("project", out var name)) {
-                        string sName = name.Value<string>();
+            //        if (project.TryGetValue("project", out var name)) {
+            //            string sName = name.Value<string>();
 
-                        var projectNameLbl = new Label() {
-                            Text              = sName,
-                            Location          = new Point(ossNotice.Left, lPos),
-                            Width             = 256,
-                            Height            = 26,
-                            VerticalAlignment = DrawUtil.VerticalAlignment.Middle,
-                            Parent            = ossPanel
-                        };
+            //            var projectNameLbl = new LabelBase() {
+            //                Text              = sName,
+            //                Location          = new Point(ossNotice.Left, lPos),
+            //                Width             = 256,
+            //                Height            = 26,
+            //                VerticalAlignment = DrawUtil.VerticalAlignment.Middle,
+            //                Parent            = ossPanel
+            //            };
 
-                        if (project.TryGetValue("license", out var license)) {
-                            string sLicense = license.Value<string>();
+            //            if (project.TryGetValue("license", out var license)) {
+            //                string sLicense = license.Value<string>();
 
-                            if (Uri.TryCreate(sLicense, UriKind.Absolute, out var licenseUri) && (licenseUri.Scheme == Uri.UriSchemeHttp || licenseUri.Scheme == Uri.UriSchemeHttps)) {
+            //                if (Uri.TryCreate(sLicense, UriKind.Absolute, out var licenseUri) && (licenseUri.Scheme == Uri.UriSchemeHttp || licenseUri.Scheme == Uri.UriSchemeHttps)) {
 
-                                var licenseBttn = new StandardButton() {
-                                    Text     = "View License",
-                                    Location = new Point(projectNameLbl.Right + 10, lPos),
-                                    Width    = 128,
-                                    Height   = 26,
-                                    Parent   = ossPanel
-                                };
+            //                    var licenseBttn = new StandardButton() {
+            //                        Text     = "View License",
+            //                        Location = new Point(projectNameLbl.Right + 10, lPos),
+            //                        Width    = 128,
+            //                        Height   = 26,
+            //                        Parent   = ossPanel
+            //                    };
 
-                                licenseBttn.LeftMouseButtonReleased += (sender, args) => {
-                                    wndw.Navigate(BuildLicensePanel(wndw, sName, sLicense));
-                                };
-                            }
-                        }
+            //                    licenseBttn.LeftMouseButtonReleased += (sender, args) => {
+            //                        wndw.Navigate(BuildLicensePanel(wndw, sName, sLicense));
+            //                    };
+            //                }
+            //            }
 
-                        if (project.TryGetValue("repository", out var repository)) {
-                            string sRepository = repository.Value<string>();
+            //            if (project.TryGetValue("repository", out var repository)) {
+            //                string sRepository = repository.Value<string>();
 
-                            if (Uri.TryCreate(sRepository, UriKind.Absolute, out var repoUri) && (repoUri.Scheme == Uri.UriSchemeHttp || repoUri.Scheme == Uri.UriSchemeHttps)) {
+            //                if (Uri.TryCreate(sRepository, UriKind.Absolute, out var repoUri) && (repoUri.Scheme == Uri.UriSchemeHttp || repoUri.Scheme == Uri.UriSchemeHttps)) {
 
-                                var repoBttn = new StandardButton() {
-                                    Text     = "Repository",
-                                    Location = new Point(projectNameLbl.Right + 128 + 15, lPos),
-                                    Width    = 128,
-                                    Height   = 26,
-                                    Parent   = ossPanel
-                                };
+            //                    var repoBttn = new StandardButton() {
+            //                        Text     = "Repository",
+            //                        Location = new Point(projectNameLbl.Right + 128 + 15, lPos),
+            //                        Width    = 128,
+            //                        Height   = 26,
+            //                        Parent   = ossPanel
+            //                    };
 
-                                repoBttn.LeftMouseButtonReleased += (sender, args) => { Process.Start(sRepository); };
-                            }
-                        }
+            //                    repoBttn.LeftMouseButtonReleased += (sender, args) => { Process.Start(sRepository); };
+            //                }
+            //            }
 
-                        lPos = projectNameLbl.Bottom + 5;
-                    }
-                }
+            //            lPos = projectNameLbl.Bottom + 5;
+            //        }
+            //    }
 
 
-            }
+            //}
 
-            var joinDiscordBttn = new StandardButton() {
-                Text     = "Join the Blish HUD Discord Channel",
-                Width    = 280,
-                Height   = 26,
-                Location = new Point(20, wndw.ContentRegion.Height - 26),
-                Parent   = asPanel,
-            };
+            //var joinDiscordBttn = new StandardButton() {
+            //    Text     = "Join the Blish HUD Discord Channel",
+            //    Width    = 280,
+            //    Height   = 26,
+            //    Location = new Point(20, wndw.ContentRegion.Height - 26),
+            //    Parent   = asPanel,
+            //};
 
-            var subredditBttn = new StandardButton() {
-                Text     = "Visit the Blish HUD Subreddit",
-                Width    = 280,
-                Height   = 26,
-                Location = new Point(joinDiscordBttn.Right + 10, wndw.ContentRegion.Height - 26),
-                Parent   = asPanel,
-            };
+            //var subredditBttn = new StandardButton() {
+            //    Text     = "Visit the Blish HUD Subreddit",
+            //    Width    = 280,
+            //    Height   = 26,
+            //    Location = new Point(joinDiscordBttn.Right + 10, wndw.ContentRegion.Height - 26),
+            //    Parent   = asPanel,
+            //};
 
-            joinDiscordBttn.LeftMouseButtonReleased += delegate { Process.Start(DISCORD_INVITE); };
-            subredditBttn.LeftMouseButtonReleased += delegate { Process.Start(SUBREDDIT_URL); };
+            //joinDiscordBttn.LeftMouseButtonReleased += delegate { Process.Start(DISCORD_INVITE); };
+            //subredditBttn.LeftMouseButtonReleased += delegate { Process.Start(SUBREDDIT_URL); };
 
-            var versionLbl = new Label() {
-#if SENTRY
-                Text           = $"{Program.APP_VERSION} (Sentry Enabled)",
-#else
-                Text           = Program.APP_VERSION,
-#endif
-                AutoSizeWidth  = true,
-                AutoSizeHeight = true,
-                Parent         = asPanel
-            };
+//            var versionLbl = new LabelBase() {
+//#if SENTRY
+//                Text           = $"{Program.APP_VERSION} (Sentry Enabled)",
+//#else
+//                Text           = Program.APP_VERSION,
+//#endif
+//                AutoSizeWidth  = true,
+//                AutoSizeHeight = true,
+//                Parent         = asPanel
+//            };
 
-            versionLbl.Location = new Point(wndw.ContentRegion.Width - versionLbl.Width - 20, wndw.ContentRegion.Height - versionLbl.Height);
+//            versionLbl.Location = new Point(wndw.ContentRegion.Width - versionLbl.Width - 20, wndw.ContentRegion.Height - versionLbl.Height);
 
             return asPanel;
         }
 
-        private Panel BuildLicensePanel(Controls.Window wndw, string name, string licenseUrl) {
+        private Panel BuildLicensePanel(Controls.WindowBase wndw, string name, string licenseUrl) {
             var lPanel = new Panel() {CanScroll = false, Size = wndw.ContentRegion.Size };
 
             var backButton = new BackButton(wndw) {
@@ -517,7 +566,7 @@ namespace Blish_HUD {
                                                    }
 
                                                    foreach (string licenseLine in rawLicense.Split('\n')) {
-                                                       var lineLbl = new Label() {
+                                                       var lineLbl = new LabelBase() {
                                                            Text = licenseLine,
                                                            Location = new Point(backButton.Left, lPos),
                                                            AutoSizeHeight = true,
@@ -541,7 +590,7 @@ namespace Blish_HUD {
 
         // TODO: Cleanup where this is stored
         private List<Control> LstSettings = new List<Control>();
-        private Panel BuildModulePanel(Controls.Window wndw) {
+        private Panel BuildModulePanel(Controls.WindowBase wndw) {
             var mPanel = new Panel();
 
             var backButton = new BackButton(wndw) {
@@ -551,7 +600,7 @@ namespace Blish_HUD {
                 Location = new Point(20, 20),
             };
 
-            var moduleSelectLbl = new Label() {
+            var moduleSelectLbl = new LabelBase() {
                 Text = "Module",
                 AutoSizeWidth = true,
                 AutoSizeHeight = true,
@@ -568,28 +617,28 @@ namespace Blish_HUD {
             moduleDropdown.Top -= moduleSelectLbl.Height - moduleDropdown.Height / 2;
 
             // Display module information
-            var lblModuleName = new Label() {
+            var lblModuleName = new LabelBase() {
                 Text = "Module Name: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 Location = new Point(moduleSelectLbl.Left + 15, moduleSelectLbl.Bottom + 15),
             };
-            var lblModuleAuthor = new Label() {
+            var lblModuleAuthor = new LabelBase() {
                 Text = "Author: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 Location = new Point(lblModuleName.Left, lblModuleName.Bottom + 3),
             };
-            var lblModuleVersion = new Label() {
+            var lblModuleVersion = new LabelBase() {
                 Text = "Version: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 Location = new Point(lblModuleAuthor.Left, lblModuleAuthor.Bottom + 3),
             };
-            var lblModuleDescription = new Label() {
+            var lblModuleDescription = new LabelBase() {
                 Text = "Description: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,
@@ -601,7 +650,7 @@ namespace Blish_HUD {
                 Parent = mPanel,
                 Location = new Point(moduleDropdown.Right + 10, moduleDropdown.Top)
             };
-            var lblModuleNamespace = new Label() {
+            var lblModuleNamespace = new LabelBase() {
                 Text = "Module Namespace: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,

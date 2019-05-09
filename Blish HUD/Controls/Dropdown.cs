@@ -15,15 +15,10 @@ namespace Blish_HUD.Controls {
 
             private Dropdown _assocDropdown;
 
-            private int _highlightedItem = -1;
+            protected int _highlightedItem = -1;
             private int HighlightedItem {
                 get => _highlightedItem;
-                set {
-                    if (_highlightedItem == value) return;
-
-                    _highlightedItem = value;
-                    OnPropertyChanged();
-                }
+                set => SetProperty(ref _highlightedItem, value);
             }
 
             private DropdownPanel(Dropdown assocDropdown) {
@@ -64,17 +59,46 @@ namespace Blish_HUD.Controls {
             }
 
             protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-                spriteBatch.Draw(ContentService.Textures.Pixel, bounds, Color.Black);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(Point.Zero, _size), Color.Black);
 
                 int index = 0;
                 foreach (string item in _assocDropdown.Items) {
 
                     if (index == this.HighlightedItem) {
-                        spriteBatch.Draw(ContentService.Textures.Pixel, new Rectangle(2, 2 + _assocDropdown.Height * index, bounds.Width - 12 - spriteArrow.Width, _assocDropdown.Height - 4), new Color(45, 37, 25, 255));
+                        spriteBatch.DrawOnCtrl(
+                                               this,
+                                               ContentService.Textures.Pixel,
+                                               new Rectangle(
+                                                             2,
+                                                             2                     + _assocDropdown.Height * index,
+                                                             _size.X - 12          - spriteArrow.Width,
+                                                             _assocDropdown.Height - 4
+                                                            ),
+                                               new Color(45, 37, 25, 255)
+                                              );
 
-                        Utils.DrawUtil.DrawAlignedText(spriteBatch, Overlay.font_def12, item, new Rectangle(8, _assocDropdown.Height * index, bounds.Width - 13 - spriteArrow.Width, _assocDropdown.Height), ContentService.Colors.Chardonnay, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+                        spriteBatch.DrawStringOnCtrl(
+                                                     this,
+                                                     item,
+                                                     Content.DefaultFont14,
+                                                     new Rectangle(
+                                                                   8,
+                                                                   _assocDropdown.Height * index,
+                                                                   bounds.Width - 13 - spriteArrow.Width,
+                                                                   _assocDropdown.Height
+                                                                  ),
+                                                     ContentService.Colors.Chardonnay
+                                                    );
                     } else {
-                        Utils.DrawUtil.DrawAlignedText(spriteBatch, Overlay.font_def12, item, new Rectangle(8, _assocDropdown.Height * index, bounds.Width - 13 - spriteArrow.Width, _assocDropdown.Height), Color.FromNonPremultiplied(239, 240, 239, 255), Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+                        spriteBatch.DrawStringOnCtrl(
+                                                     this,
+                                                     item,
+                                                     Content.DefaultFont14,
+                                                     new Rectangle(8,
+                                                                   _assocDropdown.Height * index,
+                                                                   bounds.Width - 13 - spriteArrow.Width,
+                                                                   _assocDropdown.Height),
+                                                     Color.FromNonPremultiplied(239, 240, 239, 255));
                     }
 
                     index++;
@@ -112,7 +136,7 @@ namespace Blish_HUD.Controls {
             this.ValueChanged?.Invoke(this, e);
         }
 
-        public ObservableCollection<string> Items { get; protected set; }
+        public ObservableCollection<string> Items { get; }
 
         private string _selectedItem;
         public string SelectedItem {
@@ -139,8 +163,7 @@ namespace Blish_HUD.Controls {
             spriteInputBox = spriteInputBox ?? ControlAtlas.GetRegion("inputboxes/input-box");
             spriteArrow = spriteArrow ?? ControlAtlas.GetRegion("inputboxes/dd-arrow");
             spriteArrowActive = spriteArrowActive ?? ControlAtlas.GetRegion("inputboxes/dd-arrow-active");
-
-            //
+            
             this.Items = new ObservableCollection<string>();
 
             this.Items.CollectionChanged += delegate {
@@ -165,12 +188,53 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(Content.GetTexture("input-box"), bounds.Subtract(new Rectangle(0, 0, 5, 0)), new Rectangle(0, 0, Math.Min(GameServices.GetService<ContentService>().GetTexture("textbox").Width - 5, this.Width - 5), Content.GetTexture("textbox").Height), Color.White);
-            spriteBatch.Draw(Content.GetTexture("input-box"), new Rectangle(bounds.Right - 5, bounds.Y, 5, bounds.Height), new Rectangle(GameServices.GetService<ContentService>().GetTexture("textbox").Width - 5, 0, 5, Content.GetTexture("textbox").Height), Color.White);
-            
-            spriteBatch.Draw(this.MouseOver ? spriteArrowActive : spriteArrow, new Rectangle(bounds.Right - spriteArrow.Width - 5, bounds.Height / 2 - spriteArrow.Height / 2, spriteArrow.Width, spriteArrow.Height), Color.White);
+            // Draw dropdown
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   Content.GetTexture("input-box"),
+                                   new Rectangle(Point.Zero, _size).Subtract(new Rectangle(0, 0, 5, 0)),
+                                   new Rectangle(
+                                                 0, 0,
+                                                 Math.Min(Content.GetTexture("textbox").Width - 5, this.Width - 5),
+                                                 Content.GetTexture("textbox").Height
+                                                )
+                                  );
 
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Overlay.font_def12, this.SelectedItem, new Rectangle(5,0, bounds.Width - 10 - spriteArrow.Width, bounds.Height), Color.FromNonPremultiplied(239, 240, 239, 255), Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+            // Draw right side of dropdown
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   Content.GetTexture("input-box"),
+                                   new Rectangle(_size.X - 5, 0, 5, _size.Y),
+                                   new Rectangle(
+                                                 Content.GetTexture("textbox").Width - 5, 0,
+                                                 5, Content.GetTexture("textbox").Height
+                                                )
+                                  );
+            
+            // Draw dropdown arrow
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   this.MouseOver ? spriteArrowActive : spriteArrow,
+                                   new Rectangle(
+                                                 _size.X - spriteArrow.Width - 5,
+                                                 _size.Y / 2                 - spriteArrow.Height / 2,
+                                                 spriteArrow.Width,
+                                                 spriteArrow.Height
+                                                )
+                                  );
+
+            // Draw text
+            spriteBatch.DrawStringOnCtrl(
+                                         this,
+                                         _selectedItem,
+                                         Content.DefaultFont14,
+                                         new Rectangle(
+                                                       5, 0,
+                                                       _size.X - 10 - spriteArrow.Width,
+                                                       _size.Y
+                                                      ),
+                                         Color.FromNonPremultiplied(239, 240, 239, 255)
+                                        );
         }
 
     }

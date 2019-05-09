@@ -1,29 +1,26 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-    public abstract class ScrollingButton : Control {
-
+    /*
+    public class ScrollingHighlight : Control {
+        
         private float _shaderRoller = 0;
         public float ShaderRoller {
             get => _shaderRoller;
             set {
-                if (_shaderRoller == value) return;
-
-                _shaderRoller = value;
-
-                GetScrollEffect().Parameters["Roller"].SetValue(this.ShaderRoller);
-
-                this.Invalidate();
+                if (SetProperty(ref _shaderRoller, value)) {
+                    GetScrollEffect().Parameters["Roller"].SetValue(this.ShaderRoller);
+                }
             }
         }
 
         private Effect _scrollEffect;
         private Effect GetScrollEffect() {
             if (_scrollEffect == null) {
-                _scrollEffect = Overlay.cm.Load<Effect>(@"effects\menuitem2");
+                _scrollEffect = Overlay.cm.Load<Effect>(@"effects\menuitem");
                 _scrollEffect.Parameters["Mask"].SetValue(Content.GetTexture("156072"));
                 _scrollEffect.Parameters["Overlay"].SetValue(Content.GetTexture("156071"));
-                _scrollEffect.Parameters["VerticalDraw"].SetValue(1f);
             }
 
             return _scrollEffect;
@@ -56,6 +53,11 @@ namespace Blish_HUD.Controls {
             this.ShaderRoller = 0;
         }
 
-    }
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            if (_enabled)
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Transparent);
+        }
 
+    }
+    */
 }

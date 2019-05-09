@@ -6,6 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.Controls {
+
+    public static class CheckableReference {
+
+
+
+    }
+
     public interface ICheckable {
         
         event EventHandler<CheckChangedEvent> CheckedChanged;

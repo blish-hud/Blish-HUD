@@ -7,40 +7,40 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Controls {
+
+    public enum ControlFlowDirection {
+        LeftToRight,
+        TopToBottom
+    }
+
     public class FlowPanel : Panel {
 
-        public enum ControlFlowDirection {
-            LeftToRight,
-            TopToBottom
-        }
-
-        private int _controlPadding = 0;
-        public int ControlPadding {
+        protected Vector2 _controlPadding = Vector2.Zero;
+        public Vector2 ControlPadding {
             get => _controlPadding;
-            set {
-                if (_controlPadding == value) return;
-
-                _controlPadding = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _controlPadding, value, true);
         }
 
-        private ControlFlowDirection _flowDirection = ControlFlowDirection.LeftToRight;
+        protected bool _padLeftBeforeControl = false;
+        public bool PadLeftBeforeControl {
+            get => _padLeftBeforeControl;
+            set => SetProperty(ref _padLeftBeforeControl, value, true);
+        }
+
+        protected bool _padTopBeforeControl = false;
+        public bool PadTopBeforeControl {
+            get => _padTopBeforeControl;
+            set => SetProperty(ref _padTopBeforeControl, value, true);
+        }
+
+        protected ControlFlowDirection _flowDirection = ControlFlowDirection.LeftToRight;
         public ControlFlowDirection FlowDirection {
             get => _flowDirection;
-            set {
-                if (_flowDirection == value) return;
-
-                _flowDirection = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _flowDirection, value, true);
         }
 
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
-
-            if (this.NeedsRedraw)
-                UpdateLayout(this.Children.ToList());
+        protected override void OnContentResized(RegionChangedEventArgs e) {
+            base.OnContentResized(e);
         }
 
         protected override void OnChildAdded(ChildChangedEventArgs e) {
@@ -54,21 +54,19 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnChildrenChanged(ChildChangedEventArgs e) {
-            //UpdateLayout(e.ResultingChildren);
+            ReflowChildLayout(e.ResultingChildren);
         }
 
-        public override void Invalidate() {
-            UpdateLayout(this.Children.ToList());
-
-            base.Invalidate();
+        public override void RecalculateLayout() {
+            ReflowChildLayout(_children);
         }
 
-        private void UpdateLayout(List<Control> allChildren) {
+        private void ReflowChildLayout(List<Control> allChildren) {
             // TODO: Implement TopToBottom ControlFlowDirection
             if (this.FlowDirection == ControlFlowDirection.LeftToRight) {
-                int nextBottom = 0;
-                int currentBottom = 0;
-                int lastRight = 0;
+                float nextBottom = _padTopBeforeControl ? _controlPadding.Y : 0;
+                float currentBottom = 0;
+                float lastRight = _padLeftBeforeControl ? _controlPadding.X : 0;
 
                 foreach (var child in allChildren.Where(c => c.Visible)) {
                     // Need to flow over to the next line
@@ -78,13 +76,13 @@ namespace Blish_HUD.Controls {
                         if (child.Width > this.ContentRegion.Width)
                             throw new Exception("Control is too large to flow in FlowPanel");
 
-                        currentBottom = nextBottom + this.ControlPadding;
-                        lastRight = 0;
+                        currentBottom = nextBottom + _controlPadding.Y;
+                        lastRight = _padLeftBeforeControl ? _controlPadding.X : 0;
                     }
 
-                    child.Location = new Point(lastRight, currentBottom);
+                    child.Location = new Point((int)lastRight, (int)currentBottom);
 
-                    lastRight = child.Right + this.ControlPadding;
+                    lastRight = child.Right + _controlPadding.X;
 
                     // Ensure rows don't overlap
                     nextBottom = Math.Max(nextBottom, child.Bottom);

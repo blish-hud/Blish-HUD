@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Blish_HUD.Controls;
+using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
-using Label = Blish_HUD.Controls.Label;
 using Panel = Blish_HUD.Controls.Panel;
 
 namespace Blish_HUD {
@@ -27,21 +27,9 @@ namespace Blish_HUD {
                 Icon = GameService.Content.GetTexture("logo"),
                 HoverIcon = GameService.Content.GetTexture("logo-big"),
                 Menu = new ContextMenuStrip(),
-                Tooltip = new Tooltip(),
+                BasicTooltipText = "Blish HUD",
                 Priority = int.MinValue,
             };
-
-            this.BlishMenuIcon.Tooltip.AddChild(new Label() {
-                Text = "Blish HUD",
-                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
-                Location = new Point(10, 8),
-                Height = 12,
-                TextColor = Color.White,
-                ShadowColor = Color.Black,
-                ShowShadow = true,
-                AutoSizeWidth = true,
-                VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle,
-            });
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
             this.BlishContextMenu.AddMenuItem("Close Blish HUD").Click += delegate { Overlay.Exit(); };
@@ -71,21 +59,28 @@ namespace Blish_HUD {
                     this.BlishHudWindow.Location = new Point(Graphics.WindowWidth / 2 - this.BlishHudWindow.Width / 2, Graphics.WindowHeight / 2 - this.BlishHudWindow.Height / 2);
             };
 
-            this.BlishHudWindow.AddTab("Home", "255369", BuildHomePanel(this.BlishHudWindow), int.MinValue);
+            this.BlishHudWindow.AddTab("Home", Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);
         }
 
-        private Panel BuildHomePanel(Window wndw) {
+        private Panel BuildHomePanel(WindowBase wndw) {
             var hPanel = new Panel() {
                 Size = wndw.ContentRegion.Size
             };
 
-            var hi = new Label() {
-                Text = "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)",
+            //var mltb = new MultilineTextBox() {
+            //    Size = new Point(wndw.ContentRegion.Width * 2 / 3, wndw.ContentRegion.Height * 2 / 3),
+            //    Parent = hPanel
+            //};
+
+            var hi = new LabelBase() {
+                Text = Utils.DrawUtil.WrapText(Content.DefaultFont14, "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)", 50),
                 Parent = hPanel,
                 Location = Point.Zero,
-                AutoSizeHeight = true,
+                Height = 128,
                 AutoSizeWidth = true,
-                StrokeShadow = true
+                StrokeText = true,
+                HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
+                BackgroundColor = Color.Magenta
             };
 
             hi.Location = new Point(hPanel.Width / 2 - hi.Width / 2, hPanel.Height / 2 - hi.Height / 2);
