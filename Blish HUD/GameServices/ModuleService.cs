@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blish_HUD.Modules;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
@@ -10,12 +14,19 @@ namespace Blish_HUD {
 
         private const string MODULESTATES_CORE_SETTING = "ModuleStates";
 
+        private const string MODULES_DIRECTORY = "modules";
+
+        private string ModulesDirectory => Path.Combine(GameService.FileSrv.BasePath, MODULES_DIRECTORY);
+
         public SettingEntry<Dictionary<string, bool>> ModuleStates { get; private set; }
 
-        public List<Modules.Module> AvailableModules { get; private set; }
+        public List<IModule> AvailableModules { get; private set; }
+
+        [ImportMany]
+        public List<IModule> ExternalModules { get; set; }
 
         protected override void Initialize() {
-            this.AvailableModules = new List<Modules.Module>();
+            this.AvailableModules = new List<IModule>();
 
             this.ModuleStates = Settings.CoreSettings.DefineSetting(
                                                                     MODULESTATES_CORE_SETTING,
@@ -24,7 +35,7 @@ namespace Blish_HUD {
                                                                    );
         }
 
-        public void RegisterModule(Modules.Module module) {
+        public void RegisterModule(IModule module) {
             this.AvailableModules.Add(module);
 
             // All modules are disabled by default, currently to allow for users to select which modules they would like to enable
@@ -35,7 +46,21 @@ namespace Blish_HUD {
             }
         }
 
+        private void ComposeModulesFromNamespace() {
+            AssemblyCatalog      catalog   = new AssemblyCatalog(System.Reflection.Assembly.GetExecutingAssembly());
+            CompositionContainer container = new CompositionContainer(catalog);
+            container.SatisfyImportsOnce(this);
+        }
+
+        private void ComposeModulesFromDirectory(string directory) {
+            DirectoryCatalog catalog = new DirectoryCatalog(directory);
+            CompositionContainer container = new CompositionContainer(catalog);
+            container.SatisfyImportsOnce(this);
+        }
+
         protected override void Load() {
+            if (!Directory.Exists(this.ModulesDirectory)) Directory.CreateDirectory(this.ModulesDirectory);
+
             // TODO: Load modules dynamically
             RegisterModule(new Modules.DebugText());
             RegisterModule(new Modules.DiscordRichPresence());
@@ -46,6 +71,18 @@ namespace Blish_HUD {
             RegisterModule(new Modules.PoiLookup.PoiLookup());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
             RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
+
+            //ComposeModulesFromNamespace();
+#if DEBUG
+            ComposeModulesFromDirectory(Directory.GetCurrentDirectory());
+#else
+            ComposeModulesFromDirectory(this.ModulesDirectory);
+#endif
+
+            foreach (var externalModule in this.ExternalModules) {
+                Console.WriteLine($"Registering external module: {externalModule.GetModuleInfo().Name}");
+                RegisterModule(externalModule);
+            }
         }
 
         protected override void Unload() {

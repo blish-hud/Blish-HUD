@@ -12,27 +12,40 @@ namespace Blish_HUD.Modules {
     public struct ModuleInfo {
 
         public readonly string Name;
+        public readonly Texture2D Icon;
         public readonly string Author;
         public readonly string Version;
         public readonly string Description;
         public readonly string Namespace;
 
-        public ModuleInfo(string name, string @namespace, string description, string author, string version) {
+        public readonly bool EnabledWithoutGw2;
+
+        /// <param name="name">The name of the module. This is the name that users will see when your module is listed.</param>
+        /// <param name="icon">An icon that represents your module.  It should be no larger than 32x32.</param>
+        /// <param name="namespace">The namespace of your module.  This should almost always be 'typeof(YourModuleClass).FullName'."/></param>
+        /// <param name="description">The description of your module that will be shown to users.</param>
+        /// <param name="author">Your online tag, GW2 username, or your name.</param>
+        /// <param name="version">The current version of your module.</param>
+        /// <param name="enabledWithoutGw2">If enabled, your module will not be unloaded when GW2 is closed and left in the tray.</param>
+        public ModuleInfo(string name, Texture2D icon, string @namespace, string description, string author, string version, bool enabledWithoutGw2 = false) {
             this.Name = name;
+            this.Icon = icon;
             this.Namespace = @namespace;
             this.Description = description;
             this.Author = author;
             this.Version = version;
+
+            this.EnabledWithoutGw2 = enabledWithoutGw2;
         }
 
     }
 
-    public abstract class Module {
+    public abstract class Module : IModule {
 
         public abstract ModuleInfo GetModuleInfo();
         public abstract void DefineSettings(Settings settings);
 
-        public readonly Settings Settings;
+        public Settings Settings { get; set; }
 
         protected bool _enabled = false;
         
@@ -60,12 +73,12 @@ namespace Blish_HUD.Modules {
             DefineSettings(this.Settings);
         }
 
-        protected virtual void OnLoad() { Loaded = true; }
-        protected virtual void OnEnabled() {
+        public virtual void OnLoad() { Loaded = true; }
+        public virtual void OnEnabled() {
             if (!Loaded) OnLoad();
         }
 
-        protected virtual void OnDisabled() {
+        public virtual void OnDisabled() {
 
             // Clear out any tabs that were made (that the module didn't clean up)
             foreach (var windowTab2 in TabsAdded) {

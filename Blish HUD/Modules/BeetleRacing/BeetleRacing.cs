@@ -12,6 +12,7 @@ namespace Blish_HUD.Modules.BeetleRacing {
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
                 "Beetle Racing Module",
+                null,
                 "bh.general.speed",
                 "Currently only provides the speedometer feature.  Additional features are planned for future releases.",
                 "LandersXanders.1235",
@@ -34,7 +35,7 @@ namespace Blish_HUD.Modules.BeetleRacing {
 
         private Speedometer speedometer;
 
-        protected override void OnEnabled() {
+        public override void OnEnabled() {
             base.OnEnabled();
 
             speedometer = new Speedometer {
@@ -43,7 +44,7 @@ namespace Blish_HUD.Modules.BeetleRacing {
             };
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             sampleBuffer.Clear();
             lastPos = Vector3.Zero;
             speedometer.Dispose();

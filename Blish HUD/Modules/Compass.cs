@@ -19,6 +19,7 @@ namespace Blish_HUD.Modules {
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
                 "Tactical Compass Module",
+                null,
                 "bh.general.compass",
                 "Displays a basic indicator at your feet that shows you North, East, South, and West.",
                 "LandersXanders.1235",
@@ -32,7 +33,7 @@ namespace Blish_HUD.Modules {
 
         private readonly float compassSize = 0.5f;
 
-        protected override void OnEnabled() {
+        public override void OnEnabled() {
             base.OnEnabled();
 
             northBb = new Entities.Primitives.Billboard(GameService.Content.GetTexture("north"), GameService.Player.Position + new Vector3(0, 1, 0), new Vector2(compassSize, compassSize));
@@ -46,7 +47,7 @@ namespace Blish_HUD.Modules {
             GameService.Graphics.World.Entities.Add(westBb);
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             base.OnDisabled();
 
             GameService.Graphics.World.Entities.Remove(northBb);

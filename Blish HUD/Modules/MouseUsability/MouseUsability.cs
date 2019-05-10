@@ -21,6 +21,7 @@ namespace Blish_HUD.Modules.MouseUsability {
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
                 "Mouse Module",
+                null,
                 "bh.general.mouse",
                 "Provides various mouse QoL features.",
                 "LandersXanders.1235",
@@ -57,7 +58,7 @@ namespace Blish_HUD.Modules.MouseUsability {
 
         #endregion
 
-        protected override void OnLoad() {
+        public override void OnLoad() {
             base.OnLoad();
 
             HorizontalHighlight?.Dispose();
@@ -317,7 +318,7 @@ namespace Blish_HUD.Modules.MouseUsability {
             //}
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             base.OnDisabled();
 
             HorizontalHighlight?.Dispose();

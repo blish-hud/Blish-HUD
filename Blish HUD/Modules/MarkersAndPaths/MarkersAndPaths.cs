@@ -20,6 +20,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
                   "Markers & Paths",
+                  null,
                   "bh.general.markersandpaths",
                   "Allows you to import markers and paths built for TacO and AugTyr.",
                   "LandersXanders.1235 (with additional code provided by BoyC)",
@@ -31,7 +32,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
         }
 
-        protected override void OnEnabled() {
+        public override void OnEnabled() {
             // Ensure both the marker and paths directory are available in the documents folder
             if (!Directory.Exists(this.MarkerDirectory)) Directory.CreateDirectory(this.MarkerDirectory);
             if (!Directory.Exists(this.PathsDirectory)) Directory.CreateDirectory(this.PathsDirectory);

@@ -278,7 +278,7 @@ namespace Blish_HUD {
 
             var settingsMenuSection = new Panel() {
                 ShowBorder = true,
-                Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20 - 50, baseSettingsPanel.Height - 50 - Panel.BOTTOM_MARGIN),
+                Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20, baseSettingsPanel.Height - 50 - Panel.BOTTOM_MARGIN),
                 Location   = new Point(5, 50),
                 CanScroll  = true,
                 Title      = "Settings",
@@ -303,13 +303,15 @@ namespace Blish_HUD {
             var settingsMi_About = settingsListMenu.AddMenuItem("About", Content.GetTexture("440023"));
             var settingsMi_Exit = settingsListMenu.AddMenuItem("Close Blish HUD", Content.GetTexture("155049"));
 
+            //settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
+
             GameService.Module.OnLoad += delegate {
                 foreach (var module in GameService.Module.AvailableModules) {
                     var moduleInfo = module.GetModuleInfo();
 
                     var moduleMi = new MenuItem(moduleInfo.Name) {
                         BasicTooltipText = moduleInfo.Description,
-                        Icon             = module.Enabled ? Content.GetTexture("1234938") : Content.GetTexture("1234939"),
+                        Icon             = module.GetModuleInfo().Icon,//module.Enabled ? Content.GetTexture("1234938") : Content.GetTexture("1234939"),
                         Parent           = settingsMi_Modules
                     };
                 }

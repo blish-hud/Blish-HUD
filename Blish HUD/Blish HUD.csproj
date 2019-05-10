@@ -190,9 +190,11 @@
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityContainer.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
+    <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\MarkersAndPaths\IPackFileSystemContext.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\ITacOPathable.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Readers\TrlReader.cs" />
+    <Compile Include="Modules\TestMefModule.cs" />
     <Compile Include="Pathing\Entities\Marker.cs" />
     <Compile Include="GameServices\PersistentStoreService.cs" />
     <Compile Include="Interfaces\IRenderable2D.cs" />

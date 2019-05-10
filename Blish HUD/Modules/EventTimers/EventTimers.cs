@@ -25,14 +25,11 @@ namespace Blish_HUD.Modules.EventTimers {
         private const int NEXTTIME_WIDTH = 75;
 
         private List<DetailsButton> displayedEvents;
-
-        protected override void OnLoad() {
-            base.OnLoad();
-        }
-
+        
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
                 "Event Timers Module",
+                null,
                 "bh.general.events",
                 "Displays upcoming events and gives you the option to subscribe to in-game notifications for when they're going to be starting soon.",
                 "LandersXanders.1235",
@@ -44,7 +41,7 @@ namespace Blish_HUD.Modules.EventTimers {
 
         public override void DefineSettings(Settings settings) { allSettings = settings; }
 
-        protected override void OnEnabled() {
+        public override void OnEnabled() {
             base.OnEnabled();
             
             displayedEvents = new List<DetailsButton>();
@@ -257,7 +254,7 @@ namespace Blish_HUD.Modules.EventTimers {
             BHGw2Api.Meta.UpdateEventSchedules();
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             displayedEvents.ForEach(de => de.Dispose());
             displayedEvents.Clear();
 
