@@ -32,8 +32,8 @@ float4 DrawGlow(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 Tex
     clr += tex2D(s0, float2(TexCoords.x        , TexCoords.y - Pixel));
     clr += tex2D(s0, float2(TexCoords.x        , TexCoords.y - Pixel - Pixel));
     clr += tex2D(s0, float2(TexCoords.x - Pixel, TexCoords.y - Pixel));
-    
-    return float4(clr.rgb, clr.a * 0.1) * GlowColor;
+	
+    return float4(clr.rgb * 12, clr.a * 0.1) * GlowColor;
 }
 
 float4 DrawIcon(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0 {

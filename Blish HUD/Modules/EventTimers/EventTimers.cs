@@ -144,7 +144,7 @@ namespace Blish_HUD.Modules.EventTimers {
                         Icon = GameService.Content.GetTexture("102530"),
                         //Left = NEXTTIME_WIDTH + 10,
                         Parent    = es2,
-                        GlowColor = Color.Orange
+                        GlowColor = Color.White * 0.1f
                     };
 
                     glowWikiBttn.Click += delegate {
@@ -160,7 +160,7 @@ namespace Blish_HUD.Modules.EventTimers {
                         Icon = GameService.Content.GetTexture("waypoint"),
                         //Left = NEXTTIME_WIDTH + 32 + 10,
                         Parent = es2,
-                        GlowColor = Color.Blue
+                        GlowColor = Color.White * 0.1f
                     };
 
                     glowWaypointBttn.Click += delegate {

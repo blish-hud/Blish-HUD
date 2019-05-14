@@ -79,18 +79,7 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_icon != null) {
-                spriteBatch.DrawOnCtrl(
-                                       this,
-                                       _icon, bounds
-                                       /*
-                                       new Rectangle(
-                                                     _size.X / 2 - ICON_WIDTH  / 2,
-                                                     _size.Y / 2 - ICON_HEIGHT / 2,
-                                                     ICON_WIDTH,
-                                                     ICON_HEIGHT
-                                                    )
-                                                    */
-                                      );
+                spriteBatch.DrawOnCtrl(this, _icon, bounds);
             }
         }
 

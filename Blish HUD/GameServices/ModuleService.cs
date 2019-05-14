@@ -73,11 +73,7 @@ namespace Blish_HUD {
             RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
 
             //ComposeModulesFromNamespace();
-#if DEBUG
-            ComposeModulesFromDirectory(Directory.GetCurrentDirectory());
-#else
             ComposeModulesFromDirectory(this.ModulesDirectory);
-#endif
 
             foreach (var externalModule in this.ExternalModules) {
                 Console.WriteLine($"Registering external module: {externalModule.GetModuleInfo().Name}");
@@ -91,12 +87,15 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             this.AvailableModules.ForEach(s => {
-                //try {
+                try {
                     if (s.Enabled) s.Update(gameTime);
-                //} catch (Exception ex) {
-                //    Console.WriteLine($"{s.GetModuleInfo().Name} module had an error:");
-                //    Console.WriteLine(ex.Message);
-                //}
+                } catch (Exception ex) {
+#if DEBUG
+                    throw;
+#endif
+                    Console.WriteLine($"{s.GetModuleInfo().Name} module had an error:");
+                    Console.WriteLine(ex.Message);
+                }
             });
         }
     }
