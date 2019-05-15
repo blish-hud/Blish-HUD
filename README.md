@@ -9,3 +9,9 @@ _A more structured readme will come in the future._
 I included MonoGame.Extended content pipeline dependency straight in the Content folder with a reference already set, so you shouldn't have to worry about that anymore.
 
 Place graphics into the new "ref" folder found in the project directory.  When Blish HUD builds, it will auto build a ref.dat and include it in the output directory for you.
+
+## Contributing
+Pull requests are welcome. You are encouraged to join the discussion in the [Blish HUD #development_discussion Discord channel](https://discord.gg/nGbd3kU).
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
