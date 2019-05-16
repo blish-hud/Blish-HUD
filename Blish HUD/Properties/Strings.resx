@@ -117,4 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Service_DirectorService_Tab_Home" xml:space="preserve">
+    <value>Home</value>
+    <comment>The "Home" tab shown in the main Blish HUD tabbed window.@Invariant</comment>
+  </data>
+  <data name="General_BlishHUD" xml:space="preserve">
+    <value>Blish HUD</value>
+  </data>
 </root>

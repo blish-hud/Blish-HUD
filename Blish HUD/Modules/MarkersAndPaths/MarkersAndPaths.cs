@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
                   "Markers & Paths",
-                  null,
+                  GameService.Content.GetTexture("157355"),
                   "bh.general.markersandpaths",
                   "Allows you to import markers and paths built for TacO and AugTyr.",
                   "LandersXanders.1235 (with additional code provided by BoyC)",

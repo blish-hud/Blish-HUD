@@ -16,8 +16,8 @@ namespace Blish_HUD.Modules {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "Discord Rich Presence Module",
-                null,
+                "Discord Rich Presence",
+                GameService.Content.GetTexture("Discord-Logo-Color"),
                 "bh.general.discordrp",
                 "Integrates with Discord to show what you're up to in the world of Guild Wars 2.",
                 "LandersXanders.1235",

@@ -22,8 +22,8 @@ namespace Blish_HUD.WinApi {
 
             public Int32 wheelDelta {
                 get {
-                    int v                                              = Convert.ToInt32((mouseData & 0xFFFF0000) >> 16);
-                    if (v > SystemInformation.MouseWheelScrollDelta) v = v - (ushort.MaxValue + 1);
+                    int v = Convert.ToInt32((mouseData & 0xFFFF0000) >> 16);
+                    if (v > SystemInformation.MouseWheelScrollDelta) v -= (ushort.MaxValue + 1);
                     return v;
                 }
             }

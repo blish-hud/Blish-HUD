@@ -59,7 +59,7 @@ namespace Blish_HUD {
                     this.BlishHudWindow.Location = new Point(Graphics.WindowWidth / 2 - this.BlishHudWindow.Width / 2, Graphics.WindowHeight / 2 - this.BlishHudWindow.Height / 2);
             };
 
-            this.BlishHudWindow.AddTab("Home", Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);
+            this.BlishHudWindow.AddTab(Properties.Strings.Service_DirectorService_Tab_Home, Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);
         }
 
         private Panel BuildHomePanel(WindowBase wndw) {

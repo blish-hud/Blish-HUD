@@ -17,7 +17,7 @@ namespace Blish_HUD.Modules {
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
                 "Debug Module",
-                null,
+                GameService.Content.GetTexture("155018"),
                 "bh.general.debug",
                 "Allows you to show basic 'debug' details such as your xyz coordinates, server IP address, shard ID, and a few other minor details.",
                 "LandersXanders.1235",

@@ -28,7 +28,7 @@ namespace Blish_HUD.Modules.EventTimers {
         
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "Event Timers Module",
+                "Event Timers",
                 null,
                 "bh.general.events",
                 "Displays upcoming events and gives you the option to subscribe to in-game notifications for when they're going to be starting soon.",

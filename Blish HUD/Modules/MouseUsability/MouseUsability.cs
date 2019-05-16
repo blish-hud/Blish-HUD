@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.MouseUsability {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "Mouse Module",
+                "Mouse Usability",
                 null,
                 "bh.general.mouse",
                 "Provides various mouse QoL features.",

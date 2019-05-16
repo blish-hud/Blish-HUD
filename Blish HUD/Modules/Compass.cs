@@ -18,7 +18,7 @@ namespace Blish_HUD.Modules {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "Tactical Compass Module",
+                "Tactical Compass",
                 null,
                 "bh.general.compass",
                 "Displays a basic indicator at your feet that shows you North, East, South, and West.",

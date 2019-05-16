@@ -17,7 +17,7 @@ namespace Blish_HUD.Modules.PoiLookup {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "Landmark Lookup Module",
+                "Landmark Lookup",
                 null,
                 "bh.general.landmarklookup",
                 "Allows you to search for in game landmarks (waypoints, POIs, vistas, etc.) and copy the chat codes into your clipboard.",
