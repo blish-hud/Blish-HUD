@@ -119,9 +119,12 @@
   </resheader>
   <data name="Service_DirectorService_Tab_Home" xml:space="preserve">
     <value>Home</value>
-    <comment>The "Home" tab shown in the main Blish HUD tabbed window.@Invariant</comment>
+    <comment>The "Home" tab shown in the main Blish HUD tabbed window.</comment>
   </data>
   <data name="General_BlishHUD" xml:space="preserve">
     <value>Blish HUD</value>
+  </data>
+  <data name="General_Close" xml:space="preserve">
+    <value>Close</value>
   </data>
 </root>

@@ -102,7 +102,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override CaptureType CapturesInput() {
-            return CaptureType.None;
+            return string.IsNullOrWhiteSpace(this.BasicTooltipText) ? CaptureType.None : CaptureType.Mouse;
         }
 
         /// <summary>

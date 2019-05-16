@@ -159,14 +159,14 @@ namespace Blish_HUD {
 
             GameService.Debug.StartTimeFunc("UI Elements");
             if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
-                GameService.Graphics.SpriteScreen.Draw(
-                                                       spriteBatch, new Rectangle(
-                                                                                  0,
-                                                                                  0,
-                                                                                  graphics.PreferredBackBufferWidth,
-                                                                                  graphics.PreferredBackBufferHeight
-                                                                                 )
-                                                      );
+                var screenBounds = new Rectangle(
+                                                 0,
+                                                 0,
+                                                 graphics.PreferredBackBufferWidth,
+                                                 graphics.PreferredBackBufferHeight
+                                                );
+
+                GameService.Graphics.SpriteScreen.Draw(spriteBatch, screenBounds, screenBounds);
             }
             GameService.Debug.StopTimeFunc("UI Elements");
 

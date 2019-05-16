@@ -104,6 +104,10 @@ namespace Blish_HUD {
                 this.HudFocused = value != null;
                 this.HookOverride = (value != null && value.Captures.HasFlag(CaptureType.ForceNone));
 
+                //string controlName = value?.GetType().Name;
+                //if (!string.IsNullOrWhiteSpace(controlName))
+                //    Console.WriteLine(controlName);
+
                 _activeControl = value;
             }
         }

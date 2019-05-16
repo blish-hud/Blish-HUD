@@ -204,6 +204,10 @@ namespace Blish_HUD.Controls {
             };
         }
 
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse | CaptureType.Filter;
+        }
+
         public override void RecalculateLayout() {
             int bottomRegionLeft = EVENTSUMMARY_HEIGHT;
 

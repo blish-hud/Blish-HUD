@@ -159,11 +159,15 @@ namespace Blish_HUD.Controls {
 
         public virtual void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
-        public override void Draw(SpriteBatch spriteBatch, Rectangle drawBounds) {
+        public override void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor) {
             // Remember our old scissor so that we can restore it when we're done drawing our children
-            var contentScissor = Graphics.GraphicsDevice.ScissorRectangle;
+            //var contentScissor = Graphics.GraphicsDevice.ScissorRectangle;
 
-            Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(contentScissor, this.AbsoluteBounds.WithPadding(_padding));
+            var controlScissor = Rectangle.Intersect(scissor, this.AbsoluteBounds.WithPadding(_padding));
+
+            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
+
+            //var temp = Graphics.GraphicsDevice.ScissorRectangle; //Rectangle.Intersect(contentScissor, this.AbsoluteBounds.WithPadding(_padding));
 
             this.EffectBehind?.Draw(spriteBatch, drawBounds);
 
@@ -181,22 +185,23 @@ namespace Blish_HUD.Controls {
 
             /* Set the scissor to the intersection rectangle created from the current scissor and the new
                one (this is to prevent the child controls from leaking ouside the parent scissor  */
-            Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(Graphics.GraphicsDevice.ScissorRectangle, ContentRegion.ToBounds(this.AbsoluteBounds));
+            //Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(temp, ContentRegion.ToBounds(this.AbsoluteBounds));
 
-            
+            var contentScissor = Rectangle.Intersect(controlScissor, ContentRegion.ToBounds(this.AbsoluteBounds));
+
 
             // Render each visible child
             foreach (var childControl in zSortedChildren) {
                 if (childControl.Visible) {
                     var childBounds = new Rectangle(Point.Zero, childControl.Size);
 
-                    if (childControl.AbsoluteBounds.Intersects(Graphics.GraphicsDevice.ScissorRectangle))
-                        childControl.Draw(spriteBatch, childBounds);
+                    if (childControl.AbsoluteBounds.Intersects(contentScissor))
+                        childControl.Draw(spriteBatch, childBounds, contentScissor);
                 }
             }
 
             // Restore scissor
-            Graphics.GraphicsDevice.ScissorRectangle = contentScissor;
+            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
 
             //using (var spriteBatch = new SpriteBatch(Graphics.GraphicsDevice)) {
             //    spriteBatch.Begin(SpriteSortMode.Immediate,

@@ -81,10 +81,20 @@ namespace Blish_HUD.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string General_Close {
+            get {
+                Contract.Ensures(Contract.Result<string>() != null);
+                return ResourceManager.GetString("General_Close", resourceCulture) ?? string.Empty;
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         /// <remarks>
-        /// The "Home" tab shown in the main Blish HUD tabbed window.@Invariant
+        /// The "Home" tab shown in the main Blish HUD tabbed window.
         /// </remarks>
         public static string Service_DirectorService_Tab_Home {
             get {
@@ -106,10 +116,14 @@ namespace Blish_HUD.Properties {
         /// </summary>
         General_BlishHUD,
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        General_Close,
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         /// <remarks>
-        /// The "Home" tab shown in the main Blish HUD tabbed window.@Invariant
+        /// The "Home" tab shown in the main Blish HUD tabbed window.
         /// </remarks>
         Service_DirectorService_Tab_Home,
     }

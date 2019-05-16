@@ -110,22 +110,13 @@ namespace Blish_HUD.Modules.EventTimers {
             };
 
             foreach (var meta in Meta.Events) {
-                //var es = new EventSummary(meta, allSettings) {
-                //    Parent = eventPanel,
-                //    BasicTooltipText = meta.Category
-                //};
-
-                // TODO: This will soon replace the current implementation (as soon as it has feature parity)
-
-                var maxf = Utils.Calc.GetRandom(1, 50);
-                var cf = Utils.Calc.GetRandom(1, maxf);
-
                 var es2 = new DetailsButton {
                     Parent = eventPanel,
                     BasicTooltipText = meta.Category,
                     Text = meta.Name,
-                    IconSize = DetailsIconSize.Large,
+                    IconSize = DetailsIconSize.Small,
                     Icon = string.IsNullOrWhiteSpace(meta.Icon) ? null : GameService.Content.GetTexture(meta.Icon),
+                    ShowVignette = false
                 };
 
                 var nextTimeLabel = new LabelBase {
@@ -142,7 +133,6 @@ namespace Blish_HUD.Modules.EventTimers {
                 if (!string.IsNullOrWhiteSpace(meta.Wiki)) {
                     var glowWikiBttn = new GlowButton {
                         Icon = GameService.Content.GetTexture("102530"),
-                        //Left = NEXTTIME_WIDTH + 10,
                         Parent    = es2,
                         GlowColor = Color.White * 0.1f
                     };
@@ -151,14 +141,12 @@ namespace Blish_HUD.Modules.EventTimers {
                         if (Url.IsValid(meta.Wiki)) {
                             Process.Start(meta.Wiki);
                         }
-                        //displayedEvents.ForEach(esv => esv.CurrentFill = Utils.Calc.GetRandom(1, esv.MaxFill));
                     };
                 }
 
                 if (!string.IsNullOrWhiteSpace(meta.Waypoint)) {
                     var glowWaypointBttn = new GlowButton {
                         Icon = GameService.Content.GetTexture("waypoint"),
-                        //Left = NEXTTIME_WIDTH + 32 + 10,
                         Parent = es2,
                         GlowColor = Color.White * 0.1f
                     };
@@ -166,20 +154,9 @@ namespace Blish_HUD.Modules.EventTimers {
                     glowWaypointBttn.Click += delegate {
                         System.Windows.Forms.Clipboard.SetText(meta.Waypoint);
 
-                        Controls.Notification.ShowNotification(GameService.Content.GetTexture("waypoint"),
-                                                               "Waypoint copied to clipboard.",
-                                                               2);
+                        Controls.Notification.ShowNotification(GameService.Content.GetTexture("waypoint"), "Waypoint copied to clipboard.", 2);
                     };
                 }
-
-                var eventMode = new Dropdown() {
-                    Parent = es2,
-                    Width  = 100
-                };
-
-                eventMode.Items.Add("Enabled");
-                eventMode.Items.Add("Disabled");
-
 
                 meta.OnNextRunTimeChanged += delegate {
                     UpdateSort(ddSortMethod, EventArgs.Empty);
@@ -232,6 +209,10 @@ namespace Blish_HUD.Modules.EventTimers {
 
             ddSortMethod.SelectedItem = DD_NEXTUP;
             UpdateSort(ddSortMethod, EventArgs.Empty);
+
+            Console.WriteLine("Main Panel is: " + etPanel.Location.ToString() + " :: " + etPanel.Size.ToString());
+            Console.WriteLine("Event Panel is: " + eventPanel.Location.ToString() + " :: " + eventPanel.Size.ToString());
+            Console.WriteLine("Menu Section Panel is: " + menuSection.Location.ToString() + " :: " + eventPanel.Size.ToString());
 
             return etPanel;
         }

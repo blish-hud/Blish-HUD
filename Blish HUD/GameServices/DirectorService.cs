@@ -24,29 +24,21 @@ namespace Blish_HUD {
 
         protected override void Load() {
             this.BlishMenuIcon = new CornerIcon() {
-                Icon = GameService.Content.GetTexture("logo"),
-                HoverIcon = GameService.Content.GetTexture("logo-big"),
-                Menu = new ContextMenuStrip(),
-                BasicTooltipText = "Blish HUD",
-                Priority = int.MinValue,
+                Icon             = Content.GetTexture("logo"),
+                HoverIcon        = Content.GetTexture("logo-big"),
+                Menu             = new ContextMenuStrip(),
+                BasicTooltipText = Properties.Strings.General_BlishHUD,
+                Priority         = int.MinValue,
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem("Close Blish HUD").Click += delegate { Overlay.Exit(); };
+            this.BlishContextMenu.AddMenuItem($"{Properties.Strings.General_Close} {Properties.Strings.General_BlishHUD}").Click += delegate { Overlay.Exit(); };
 
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
-                Title = "Blish HUD"
+                Title  = Properties.Strings.General_BlishHUD,
+                Emblem = Content.GetTexture("test-window-icon9")
             };
-
-            //var iconHoverRegion = new MouseZone() {
-            //    Size = new Point(32 * 10, 32),
-            //    Location = new Point(0, 0),
-            //    Parent = GameService.Graphics.SpriteScreen,
-            //};
-
-            //iconHoverRegion.MouseEntered += delegate { this.BlishMenuIcon.MouseInHouse = true; };
-            //iconHoverRegion.MouseLeft += delegate { this.BlishMenuIcon.MouseInHouse = false; };
 
             this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
                 this.BlishHudWindow.ToggleWindow();
@@ -66,11 +58,6 @@ namespace Blish_HUD {
             var hPanel = new Panel() {
                 Size = wndw.ContentRegion.Size
             };
-
-            //var mltb = new MultilineTextBox() {
-            //    Size = new Point(wndw.ContentRegion.Width * 2 / 3, wndw.ContentRegion.Height * 2 / 3),
-            //    Parent = hPanel
-            //};
 
             var hi = new LabelBase() {
                 Text = Utils.DrawUtil.WrapText(Content.DefaultFont14, "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)", 50),

@@ -22,6 +22,9 @@ namespace Blish_HUD.Controls {
         private const int WINDOW_WIDTH = 1024;
         private const int WINDOW_HEIGHT = 780;
 
+        private const int WINDOWCONTENT_WIDTH = 1024;
+        private const int WINDOWCONTENT_HEIGHT = 700;
+
         #region Load Static
 
         private static Texture2D _textureDefaultBackround;
@@ -47,6 +50,7 @@ namespace Blish_HUD.Controls {
             get => _selectedTabIndex;
             set {
                 if (SetProperty(ref _selectedTabIndex, value)) {
+                    this.Subtitle = SelectedTab.Name;
                     this.TabChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -84,7 +88,9 @@ namespace Blish_HUD.Controls {
             //LeftTitleBarBounds = new Rectangle(TitleBarBounds.X, TitleBarBounds.Y, Math.Min(TitleBarBounds.Width - 128, 1024), 64);
             //RightTitleBarBounds = new Rectangle(TitleBarBounds.Right - 128, TitleBarBounds.Y, 128, 64);
 
-            ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, Width - TAB_WIDTH / 2, Height - 128);
+            //ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, Width - TAB_WIDTH / 2, Height - 128);
+
+            ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, WINDOWCONTENT_WIDTH, WINDOWCONTENT_HEIGHT);
 
             this.MouseMoved += TabbedWindow_MouseMoved;
             this.LeftMouseButtonPressed += TabbedWindow_LeftMouseButtonPressed;
@@ -111,10 +117,10 @@ namespace Blish_HUD.Controls {
                 for (int tabIndex = 0; tabIndex < Tabs.Count; tabIndex++) {
                     var tab = Tabs[tabIndex];
                     if (TabRegions[tab].Contains(RelativeMousePosition)) {
-                        HoveredTabIndex      = tabIndex;
-                        newSet               = true;
+                        HoveredTabIndex       = tabIndex;
+                        newSet                = true;
                         this.BasicTooltipText = tab.Name;
-                        //Tooltip              = TabTooltip;
+
                         break;
                     }
                 }
@@ -134,6 +140,7 @@ namespace Blish_HUD.Controls {
                     var tab = tabList[tabIndex];
                     if (TabRegions[tab].Contains(RelativeMousePosition)) {
                         SelectedTabIndex = tabIndex;
+
                         break;
                     }
                 }
@@ -310,15 +317,6 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this, _textureSplitLine,
                                    _layoutBottomSplitLineBounds,
                                    _layoutBottomSplitLineSourceBounds);
-
-            // Draw the corner texture
-            var cornerTexture = Content.GetTexture("156008");
-            spriteBatch.DrawOnCtrl(this, cornerTexture,
-                             new Rectangle(_size.X - cornerTexture.Width,
-                                           _size.Y - cornerTexture.Height,
-                                           cornerTexture.Width,
-                                           cornerTexture.Height),
-                             Color.White);
         }
 
     }

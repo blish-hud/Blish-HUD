@@ -143,6 +143,8 @@ namespace Blish_HUD.BHGw2Api {
             //uniqueEvents.ForEach(x => Console.WriteLine($"{x.Category}: {x.Name} will start at {String.Join(", ", x.Times)}."));
 
             Events = uniqueEvents;
+
+            UpdateEventSchedules();
         }
 
     }

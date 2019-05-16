@@ -656,7 +656,7 @@ namespace Blish_HUD.Controls {
             if (this.MouseOver && !this.AbsoluteBounds.Contains(Input.MouseState.Position)) {
                 if (this.Tooltip != null) this.Tooltip.Visible = false;
                 this.MouseOver = false;
-            } else if (this.MouseOver && this.Tooltip != null) { // TODO: This all needs to be handled by the Tooltip, not by the control
+            } else if (this.MouseOver && this.Tooltip != null) { // TODO: This all needs to be handled by the Tooltip, probably, not by the control
                 this.Tooltip.CurrentControl = this;
 
                 // We're going to assume nobody has a display so small that the tooltip just can't fit in any direction
@@ -691,10 +691,8 @@ namespace Blish_HUD.Controls {
         /// <param name="bounds">The draw region of the control.  Anything outside of this region will be clipped.  If this control is the child of a container, it could potentially be clipped even further by <see cref="spriteBatch.GraphicsDevice.ScissorRectangle" />.</param>
         protected abstract void Paint(SpriteBatch spriteBatch, Rectangle bounds);
 
-        public virtual void Draw(SpriteBatch spriteBatch, Rectangle drawBounds) {
-            var contentScissor = Graphics.GraphicsDevice.ScissorRectangle;
-
-            Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(contentScissor, this.AbsoluteBounds.WithPadding(_padding));
+        public virtual void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor) {
+            Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(scissor, this.AbsoluteBounds.WithPadding(_padding)).ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
 
             this.EffectBehind?.Draw(spriteBatch, drawBounds);
 
@@ -710,8 +708,6 @@ namespace Blish_HUD.Controls {
             spriteBatch.End();
 
             //this.EffectInFront?.Draw(drawBounds);
-
-            Graphics.GraphicsDevice.ScissorRectangle = contentScissor;
         }
 
         #region IDisposable Support

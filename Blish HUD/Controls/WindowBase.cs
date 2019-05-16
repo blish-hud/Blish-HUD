@@ -11,6 +11,13 @@ using MonoGame.Extended;
 namespace Blish_HUD.Controls {
     public abstract class WindowBase:Container {
 
+        private const int COMMON_MARGIN = 16;
+        private const int TITLE_OFFSET = 80;
+        private const int SUBTITLE_OFFSET = 20;
+
+        private const int CORNERRIGHT_MARGIN  = 5;
+        private const int CORNERBOTTOM_MARGIN = -5;
+
         #region Load Static
 
         private static Texture2D _textureTitleBarLeft;
@@ -21,37 +28,69 @@ namespace Blish_HUD.Controls {
         private static Texture2D _textureExitButton;
         private static Texture2D _textureExitButtonActive;
 
+        private static Texture2D _textureWindowCorner;
+        private static Texture2D _textureWindowResizableCorner;
+        private static Texture2D _textureWindowResizableCornerActive;
+
         static WindowBase() {
-            _textureTitleBarLeft  = Content.GetTexture("titlebar-inactive");
-            _textureTitleBarRight = Content.GetTexture("window-topright");
-            _textureTitleBarLeftActive    = Content.GetTexture("titlebar-active");
-            _textureTitleBarRightActive   = Content.GetTexture("window-topright-active");
+            _textureTitleBarLeft        = Content.GetTexture("titlebar-inactive");
+            _textureTitleBarRight       = Content.GetTexture("window-topright");
+            _textureTitleBarLeftActive  = Content.GetTexture("titlebar-active");
+            _textureTitleBarRightActive = Content.GetTexture("window-topright-active");
 
             _textureExitButton       = Content.GetTexture("button-exit");
             _textureExitButtonActive = Content.GetTexture("button-exit-active");
+
+            _textureWindowCorner                = Content.GetTexture(@"controls\window\156008");
+            _textureWindowResizableCorner       = Content.GetTexture(@"controls\window\156009");
+            _textureWindowResizableCornerActive = Content.GetTexture(@"controls\window\156010");
         }
 
         #endregion
 
         protected string _title = "No Title";
+        /// <summary>
+        /// The text shown at the top of the window.
+        /// </summary>
         public string Title {
             get => _title;
-            set => SetProperty(ref _title, value);
+            set => SetProperty(ref _title, value, true);
+        }
+
+        protected string _subtitle = "";
+        /// <summary>
+        /// The text shown to the right of the title in the title bar.
+        /// This text is smaller and is normally used to show the current tab name and/or hotkey used to open the window.
+        /// </summary>
+        public string Subtitle {
+            get => _subtitle;
+            set => SetProperty(ref _subtitle, value);
         }
 
         protected bool _canResize = false;
+        /// <summary>
+        /// Allows the window to be resized by dragging the bottom right corner.
+        /// </summary>
+        /// <remarks>This property has not been implemented.</remarks>
         public bool CanResize {
             get => _canResize;
             set => SetProperty(ref _canResize, value);
         }
 
         protected Texture2D _emblem = null;
+        /// <summary>
+        /// The emblem/badge displayed in the top left corner of the window.
+        /// </summary>
         public Texture2D Emblem {
             get => _emblem;
             set => SetProperty(ref _emblem, value);
         }
 
         protected bool _topMost;
+        /// <summary>
+        /// If this window will show on top of all other windows, regardless of which one had focus last.
+        /// </summary>
+        /// <remarks>This property has not been implemented.</remarks>
         public bool TopMost {
             get => _topMost;
             set => SetProperty(ref _topMost, value);
@@ -99,15 +138,10 @@ namespace Blish_HUD.Controls {
 
         protected int TitleBarHeight = 0;
 
-        protected Rectangle TitleBarBounds;
-
         protected Texture2D _windowBackground;
         protected Vector2   _windowBackgroundOrigin;
-        protected Point     _windowSize;
         protected Rectangle _windowBackgroundBounds;
         protected Rectangle _titleBarBounds;
-
-        private int _titleBarHeight;
 
         #endregion
 
@@ -116,26 +150,29 @@ namespace Blish_HUD.Controls {
         private Rectangle _layoutLeftTitleBarBounds;
         private Rectangle _layoutRightTitleBarBounds;
 
+        private Rectangle _layoutSubtitleBounds;
+
         private Rectangle _layoutExitButtonBounds;
+
+        private Rectangle _layoutWindowCornerBounds;
 
         #endregion
 
         #region Region States
 
-        protected bool MouseOverTitleBar   = false;
-        protected bool MouseOverExitButton = false;
+        protected bool MouseOverTitleBar     = false;
+        protected bool MouseOverExitButton   = false;
+        protected bool MouseOverCornerResize = false;
 
         #endregion
 
         public WindowBase() {
-            this.LeftMouseButtonPressed += Window_LeftMouseButtonPressed;
-            this.LeftMouseButtonReleased += Window_LeftMouseButtonReleased;
             this.Opacity = 0f;
             this.Visible = false;
 
             this.ZIndex = Screen.WINDOW_BASEZINDEX;
 
-            Input.LeftMouseButtonReleased += Window_LeftMouseButtonReleased;
+            Input.LeftMouseButtonReleased += delegate { Dragging = false; };
 
             fade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
             fade.Pause();
@@ -164,18 +201,38 @@ namespace Blish_HUD.Controls {
         }
 
         public override void RecalculateLayout() {
+            // Title bar bounds
             int titleBarDrawOffset = _titleBarBounds.Y - (_textureTitleBarLeft.Height / 2 - _titleBarBounds.Height / 2);
-            int titleBarRightWidth = _textureTitleBarRight.Width - 16;
+            int titleBarRightWidth = _textureTitleBarRight.Width - COMMON_MARGIN;
 
             _layoutLeftTitleBarBounds  = new Rectangle(_titleBarBounds.X,                          titleBarDrawOffset, Math.Min(_titleBarBounds.Width - titleBarRightWidth, _windowBackgroundBounds.Width - titleBarRightWidth), _textureTitleBarLeft.Height);
             _layoutRightTitleBarBounds = new Rectangle(_titleBarBounds.Right - titleBarRightWidth, titleBarDrawOffset, _textureTitleBarRight.Width,                                                                              _textureTitleBarRight.Height);
 
-            _layoutExitButtonBounds = new Rectangle(_layoutRightTitleBarBounds.Right - 32 - _textureExitButton.Width, _layoutRightTitleBarBounds.Y + 16, _textureExitButton.Width, _textureExitButton.Height);
+            // Title bar text bounds
+            if (!string.IsNullOrWhiteSpace(_title) && !string.IsNullOrWhiteSpace(_subtitle)) {
+                int titleTextWidth = (int)Content.DefaultFont32.MeasureString(_title).Width;
+
+                _layoutSubtitleBounds = _layoutLeftTitleBarBounds.OffsetBy(TITLE_OFFSET + titleTextWidth + SUBTITLE_OFFSET, 0);
+            }
+
+
+            // Title bar exit button bounds
+            _layoutExitButtonBounds = new Rectangle(_layoutRightTitleBarBounds.Right - (COMMON_MARGIN * 2) - _textureExitButton.Width,
+                                                    _layoutRightTitleBarBounds.Y + COMMON_MARGIN,
+                                                    _textureExitButton.Width,
+                                                    _textureExitButton.Height);
+
+            // Corner edge bounds
+            _layoutWindowCornerBounds = new Rectangle(_layoutRightTitleBarBounds.Right - _textureWindowCorner.Width - COMMON_MARGIN,
+                                                      this.ContentRegion.Bottom - _textureWindowCorner.Height + COMMON_MARGIN,
+                                                      _textureWindowCorner.Width,
+                                                      _textureWindowCorner.Height);
         }
 
         protected override void OnMouseMoved(MouseEventArgs e) {
-            MouseOverTitleBar   = false;
-            MouseOverExitButton = false;
+            MouseOverTitleBar     = false;
+            MouseOverExitButton   = false;
+            MouseOverCornerResize = false;
 
             if (this.RelativeMousePosition.Y < _titleBarBounds.Bottom) {
                 if (_layoutExitButtonBounds.Contains(this.RelativeMousePosition)) {
@@ -183,6 +240,9 @@ namespace Blish_HUD.Controls {
                 } else {
                     MouseOverTitleBar = true;
                 }
+            } else if (_canResize && _layoutWindowCornerBounds.Contains(this.RelativeMousePosition)) {
+                // TODO: Reduce the size of the corner resize area - compare to in game region for reference
+                MouseOverCornerResize = true;
             }
 
             base.OnMouseMoved(e);
@@ -192,18 +252,24 @@ namespace Blish_HUD.Controls {
             return CaptureType.Mouse | CaptureType.MouseWheel | CaptureType.Filter;
         }
 
-        private void Window_LeftMouseButtonPressed(object sender, MouseEventArgs e) {
+        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             if (MouseOverTitleBar) {
-                Dragging = true;
+                Dragging  = true;
                 DragStart = Input.MouseState.Position;
             } else if (MouseOverExitButton) {
                 Hide();
             }
+
+            base.OnLeftMouseButtonPressed(e);
         }
 
-        private void Window_LeftMouseButtonReleased(object sender, MouseEventArgs e) {
+        protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
             Dragging = false;
+
+            base.OnLeftMouseButtonReleased(e);
         }
+
+        #region Window Navigation
 
         private readonly LinkedList<Panel> _currentNav = new LinkedList<Panel>();
 
@@ -230,6 +296,8 @@ namespace Blish_HUD.Controls {
 
             _currentNav.AddFirst(this.ActivePanel);
         }
+
+        #endregion
 
         public void ToggleWindow() {
             if (_visible) Hide();
@@ -269,6 +337,8 @@ namespace Blish_HUD.Controls {
             base.DoUpdate(gameTime);
         }
 
+        #region Paint Window
+
         protected virtual void PaintWindowBackground(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this,
                                    _windowBackground,
@@ -299,21 +369,43 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _layoutRightTitleBarBounds);
             }
 
-            spriteBatch.DrawStringOnCtrl(this,
-                                         _title,
-                                         Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size32, ContentService.FontStyle.Regular),
-                                         _layoutLeftTitleBarBounds.OffsetBy(80, 0),
-                                         ContentService.Colors.ColonialWhite);
+            if (!string.IsNullOrWhiteSpace(_title)) {
+                spriteBatch.DrawStringOnCtrl(this,
+                                             _title,
+                                             Content.DefaultFont32,
+                                             _layoutLeftTitleBarBounds.OffsetBy(80, 0),
+                                             ContentService.Colors.ColonialWhite);
+
+                if (!string.IsNullOrWhiteSpace(_subtitle)) {
+                    spriteBatch.DrawStringOnCtrl(this,
+                                                 _subtitle,
+                                                 Content.DefaultFont16,
+                                                 _layoutSubtitleBounds,
+                                                 Color.White);
+                }
+            }
         }
 
         protected virtual void PaintEmblem(SpriteBatch spriteBatch, Rectangle bounds) {
-            //if (_emblem != null) {
-                spriteBatch.DrawOnCtrl(
-                                       this,
-                                       Content.GetTexture("test-window-icon9"),
-                                       Content.GetTexture("test-window-icon9").Bounds.Subtract(new Rectangle(Content.GetTexture("test-window-icon9").Width / 8, Content.GetTexture("test-window-icon9").Height / 4, 0, 0)) //.Subtract(new Rectangle((int)_padding.Left, (int)_padding.Top, 0, 0))
-                                      );
-            //}
+            if (_emblem != null) {
+                spriteBatch.DrawOnCtrl(this,
+                                       _emblem,
+                                       _emblem.Bounds.Subtract(new Rectangle(_emblem.Width / 8, _emblem.Height / 4, 0, 0)));
+            }
+        }
+
+        protected virtual void PaintCorner(SpriteBatch spriteBatch, Rectangle bounds) {
+            if (_canResize) {
+                spriteBatch.DrawOnCtrl(this,
+                                       MouseOverCornerResize
+                                           ? _textureWindowResizableCornerActive
+                                           : _textureWindowResizableCorner,
+                                       _layoutWindowCornerBounds);
+            } else {
+                spriteBatch.DrawOnCtrl(this,
+                                       _textureWindowCorner,
+                                       _layoutWindowCornerBounds);
+            }
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
@@ -329,8 +421,12 @@ namespace Blish_HUD.Controls {
         public override void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             if (StandardWindow) {
                 PaintEmblem(spriteBatch, bounds);
+
+                PaintCorner(spriteBatch, bounds);
             }
         }
+
+#endregion
 
     }
 }

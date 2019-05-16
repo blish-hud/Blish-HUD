@@ -48,5 +48,9 @@ namespace Blish_HUD {
             return new Rectangle(r1.Location + new Point(p1, p2), r1.Size);
         }
 
+        public static Rectangle ScaleBy(this Rectangle rectangle, float scale) {
+            return new Rectangle((int)Math.Floor(rectangle.X * scale), (int)Math.Floor(rectangle.Y * scale), (int)Math.Ceiling(rectangle.Width * scale), (int)Math.Ceiling(rectangle.Height * scale));
+        }
+
     }
 }
