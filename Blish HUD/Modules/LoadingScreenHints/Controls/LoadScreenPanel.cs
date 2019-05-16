@@ -121,7 +121,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
 
                     total = GuessCharacter.Characters.Count;
                     count = SeenGuessCharacters.Count;
-                    if (count > total) { SeenGuessCharacters.Clear(); count = 0; }
+                    if (count >= total) { SeenGuessCharacters.Clear(); count = 0; }
                     range = Enumerable.Range(1, total).Where(i => !SeenGuessCharacters.Contains(i));
                     index = rand.Next(0, total - count - 1);
                     hint = range.ElementAt(index);
