@@ -20,7 +20,7 @@ namespace Blish_HUD.Controls.Effects {
         private const string SPARAM_MASK        = "Mask";
         private const string SPARAM_OVERLAY     = "Overlay";
         private const string SPARAM_ROLLER      = "Roller";
-        private const float  ANIMATION_DURATION = 0.6f;
+        private const float  ANIMATION_DURATION = 0.5f;
 
         #region Static Persistant Effect
 
@@ -33,8 +33,6 @@ namespace Blish_HUD.Controls.Effects {
         }
 
         #endregion
-
-        public Collection<Rectangle> ActiveZones = new Collection<Rectangle>();
 
         private float _scrollRoller = 0;
         public float ScrollRoller {
@@ -54,15 +52,13 @@ namespace Blish_HUD.Controls.Effects {
         }
 
         public override SpriteBatchParameters GetSpriteBatchParameters() {
-            return new SpriteBatchParameters(
-                                             SpriteSortMode.Immediate,
+            return new SpriteBatchParameters(SpriteSortMode.Immediate,
                                              BlendState.AlphaBlend,
                                              SamplerState.LinearWrap,
                                              null,
                                              null,
                                              _scrollingEffect,
-                                             GameService.Graphics.UIScaleTransform
-                                            );
+                                             GameService.Graphics.UIScaleTransform);
         }
 
         private void AssignedControlOnMouseEntered(object sender, MouseEventArgs e) {
@@ -72,11 +68,9 @@ namespace Blish_HUD.Controls.Effects {
 
             _shaderAnim = GameService.Animation
                                      .Tweener
-                                     .Tween(
-                                            this,
+                                     .Tween(this,
                                             new {ScrollRoller = 1.0f},
-                                            ANIMATION_DURATION
-                                           );
+                                            ANIMATION_DURATION);
 
             _mouseOver = true;
         }
@@ -102,7 +96,7 @@ namespace Blish_HUD.Controls.Effects {
 
 
         public override void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (_mouseOver && (!ActiveZones.Any() || ActiveZones.Any(r => r.Contains(AssignedControl.RelativeMousePosition))))
+            if (_mouseOver)
                 spriteBatch.DrawOnCtrl(this.AssignedControl, ContentService.Textures.Pixel, bounds, Color.Transparent);
         }
 

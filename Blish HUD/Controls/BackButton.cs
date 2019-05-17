@@ -68,9 +68,6 @@ namespace Blish_HUD.Controls {
         #endregion
 
         public override void RecalculateLayout() {
-            if (this.EffectBehind != null)
-                this.EffectBehind.Size = _size.ToVector2();
-
             _layoutButtonIconBounds = new Rectangle(BACKBUTTON_ICON_PADDING, BACKBUTTON_ICON_PADDING, BACKBUTTON_ICON_SIZE, BACKBUTTON_ICON_SIZE);
             _layoutTextBounds = new Rectangle(BACKBUTTON_HEIGHT, 0, _size.X - BACKBUTTON_HEIGHT, _size.Y);
         }

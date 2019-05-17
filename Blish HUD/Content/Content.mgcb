@@ -266,6 +266,12 @@
 /processorParam:DebugMode=Auto
 /build:effects/menuitem2.fx
 
+#begin effects/silhouette.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/silhouette.fx
+
 #begin effects/trail.fx
 /importer:EffectImporter
 /processor:EffectProcessor

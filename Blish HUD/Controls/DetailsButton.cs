@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Blish_HUD.Controls.Effects;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -46,12 +47,12 @@ namespace Blish_HUD.Controls {
         /// </summary>
         Standard,
         /// <summary>
-        /// Based on the achievement controls shown on the Summary tab, this view only displays the <see cref="DetailsButton.Text"/>,
+        /// [NOT IMPLEMENTED] Based on the achievement controls shown on the Summary tab, this view only displays the <see cref="DetailsButton.Text"/>,
         /// optionally displays a fill, and the fill fraction or <see cref="DetailsButton.IconDetails"/>.
         /// </summary>
         Summary,
         /// <summary>
-        /// Based on the achievement control when the achievement has been completed.  A burst is shown behind the <see cref="DetailsButton.Icon"/>
+        /// [NOT IMPLEMENTED] Based on the achievement control when the achievement has been completed.  A burst is shown behind the <see cref="DetailsButton.Icon"/>
         /// and the text and <see cref="DetailsButton.IconDetails"/> are shown to the right of it.
         /// </summary>
         Completed
@@ -62,21 +63,38 @@ namespace Blish_HUD.Controls {
     /// </summary>
     public class DetailsButton : FlowPanel {
 
-        private const int EVENTSUMMARY_WIDTH  = 354;
-        private const int EVENTSUMMARY_HEIGHT = 100;
-        private const int BOTTOMSECTION_HEIGHT = 35;
+        private const int DEFAULT_EVENTSUMMARY_WIDTH   = 354;
+        private const int DEFAULT_EVENTSUMMARY_HEIGHT  = 100;
+        private const int DEFAULT_BOTTOMSECTION_HEIGHT = 35;
 
-        private DetailsDisplayMode _displayMode = DetailsDisplayMode.Standard;
-        private DetailsIconSize _iconSize = DetailsIconSize.Large;
-        private string _text;
-        private string _iconDetails;
-        private Texture2D _icon;
-        private bool _showVignette = true;
-        private int _maxFill;
-        private int _currentFill;
-        private bool _showFillFraction;
-        private Color _fillColor = Color.LightGray;
-        private DetailsHighlightType _highlightType = DetailsHighlightType.ScrollingHighlight;
+        #region Load Static
+
+        private static Texture2D _textureFillCrest;
+        private static Texture2D _textureVignette;
+        private static Texture2D _textureCornerButton;
+        private static Texture2D _textureBottomSectionSeparator;
+
+        static DetailsButton() {
+            _textureFillCrest              = Content.GetTexture(@"controls\detailsbutton\605004");
+            _textureVignette               = Content.GetTexture(@"controls\detailsbutton\605003");
+            _textureCornerButton           = Content.GetTexture(@"controls\detailsbutton\605011");
+            _textureBottomSectionSeparator = Content.GetTexture(@"157218");
+        }
+
+        #endregion
+
+        private DetailsDisplayMode   _displayMode = DetailsDisplayMode.Standard;
+        private DetailsIconSize      _iconSize    = DetailsIconSize.Large;
+        private string               _text;
+        private string               _iconDetails;
+        private Texture2D            _icon;
+        private bool                 _showVignette = true;
+        private int                  _maxFill;
+        private int                  _currentFill;
+        private bool                 _showFillFraction;
+        private Color                _fillColor           = Color.LightGray;
+        private DetailsHighlightType _highlightType       = DetailsHighlightType.ScrollingHighlight;
+        private int                  _bottomSectionHeight = DEFAULT_BOTTOMSECTION_HEIGHT;
 
         /// <summary>
         /// Determines the way the <see cref="DetailsButton"/> will render.
@@ -189,27 +207,47 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private Glide.Tween _fillAnim;
+        /// <summary>
+        /// The height of the bottom content region.  The default is 35.
+        /// </summary>
+        public int BottomSectionHeight {
+            get => _bottomSectionHeight;
+            set => SetProperty(ref _bottomSectionHeight, value, true);
+        }
+
+        private Glide.Tween              _fillAnim;
+        private ScrollingHighlightEffect _scrollEffect;
 
         public DetailsButton() {
-            this.Size = new Point(EVENTSUMMARY_WIDTH, EVENTSUMMARY_HEIGHT);
+            this.Size = new Point(DEFAULT_EVENTSUMMARY_WIDTH, DEFAULT_EVENTSUMMARY_HEIGHT);
             
             this.ControlPadding = new Vector2(6, 1);
             this.PadLeftBeforeControl = true;
             this.PadTopBeforeControl = true;
 
-            this.EffectBehind = new Effects.ScrollingHighlightEffect(this) {
-                Size    = _size.ToVector2(),
+            _scrollEffect = new ScrollingHighlightEffect(this) {
                 Enabled = (_highlightType == DetailsHighlightType.ScrollingHighlight)
             };
+
+            this.EffectBehind = _scrollEffect;
         }
 
         protected override CaptureType CapturesInput() {
             return CaptureType.Mouse | CaptureType.Filter;
         }
 
+        protected override void OnMouseMoved(MouseEventArgs e) {
+            _scrollEffect.SetEnableState(
+                                         _highlightType == DetailsHighlightType.ScrollingHighlight
+                                            && (this.RelativeMousePosition.Y < this.ContentRegion.Top
+                                            ||  this.RelativeMousePosition.X < this.ContentRegion.Left)
+                                        );
+
+            base.OnMouseMoved(e);
+        }
+
         public override void RecalculateLayout() {
-            int bottomRegionLeft = EVENTSUMMARY_HEIGHT;
+            int bottomRegionLeft = _size.Y;
 
             if (this.IconSize == DetailsIconSize.Small) {
                 bottomRegionLeft = 0;
@@ -220,31 +258,23 @@ namespace Blish_HUD.Controls {
             }
 
             this.ContentRegion = new Rectangle(bottomRegionLeft,
-                                               this.Height - BOTTOMSECTION_HEIGHT,
+                                               this.Height - _bottomSectionHeight,
                                                this.Width - bottomRegionLeft,
-                                               BOTTOMSECTION_HEIGHT);
-
-            if (this.EffectBehind != null) {
-                ((Effects.ScrollingHighlightEffect)this.EffectBehind).ActiveZones.Clear();
-                ((Effects.ScrollingHighlightEffect)this.EffectBehind).ActiveZones.Add(new Rectangle(0, 0, _size.X, this.ContentRegion.Top));
-                ((Effects.ScrollingHighlightEffect)this.EffectBehind).ActiveZones.Add(new Rectangle(0, 0, this.ContentRegion.Left, _size.Y));
-            }
+                                               _bottomSectionHeight);
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             float backgroundOpacity = (this.MouseOver && _highlightType == DetailsHighlightType.LightHighlight) ? 0.1f : 0.25f;
 
             // Draw background
-            spriteBatch.DrawOnCtrl(
-                                   this,
+            spriteBatch.DrawOnCtrl(this,
                                    ContentService.Textures.Pixel,
-                                   new Rectangle(Point.Zero, _size),
-                                   Color.Black * backgroundOpacity
-                                  );
+                                   bounds,
+                                   Color.Black * backgroundOpacity);
 
             int iconSize = this.IconSize == DetailsIconSize.Large
-                               ? EVENTSUMMARY_HEIGHT
-                               : EVENTSUMMARY_HEIGHT - BOTTOMSECTION_HEIGHT;
+                               ? _size.Y
+                               : _size.Y - _bottomSectionHeight;
 
             int iconOffset = this.IconSize == DetailsIconSize.Large
                                  ? 0
@@ -257,24 +287,20 @@ namespace Blish_HUD.Controls {
             float fillSpace = iconSize * fillPercent;
 
             // Draw bottom section
-            spriteBatch.DrawOnCtrl(
-                                   this,
+            spriteBatch.DrawOnCtrl(this,
                                    ContentService.Textures.Pixel,
                                    new Rectangle(this.ContentRegion.X - iconOffset, this.ContentRegion.Y, this.ContentRegion.Width + iconOffset, this.ContentRegion.Height),
-                                   Color.Black * 0.1f
-                                  );
+                                   Color.Black * 0.1f);
 
             /*** Handle fill ***/
             if (_maxFill > 0 && _showVignette) {
                 // Draw icon twice
-                if (this.Icon != null) {
-
+                if (_icon != null) {
                     float localIconFill = (fillSpace - iconSize / 2f + 32) / 64;
 
                     // Icon above the fill
                     if (localIconFill < 1)
-                        spriteBatch.DrawOnCtrl(
-                                               this,
+                        spriteBatch.DrawOnCtrl(this,
                                                _icon,
                                                new Rectangle(
                                                              iconSize / 2 - 64 / 2 + iconOffset,
@@ -283,8 +309,7 @@ namespace Blish_HUD.Controls {
                                                              64 - (int)(64 * localIconFill)
                                                             ),
                                                new Rectangle(0, 0, 64, 64 - (int)(64 * localIconFill)),
-                                               Color.DarkGray * 0.4f
-                                              );
+                                               Color.DarkGray * 0.4f);
 
                     // Icon below the fill
                     if (localIconFill > 0)
@@ -307,7 +332,7 @@ namespace Blish_HUD.Controls {
 
                     // Only show the fill crest if we aren't full
                     if (fillPercent < 0.99)
-                        spriteBatch.DrawOnCtrl(this, Content.GetTexture("605004"),  new Rectangle(0, iconSize - (int) (fillSpace), iconSize, iconSize));
+                        spriteBatch.DrawOnCtrl(this, _textureFillCrest,  new Rectangle(0, iconSize - (int) (fillSpace), iconSize, iconSize));
                 }
 
                 if (_showFillFraction)
@@ -317,12 +342,10 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(
                                        this,
                                        _icon,
-                                       new Rectangle(
-                                                     iconSize / 2 - 64 / 2 + iconOffset,
+                                       new Rectangle(iconSize / 2 - 64 / 2 + iconOffset,
                                                      iconSize / 2          - 64 / 2,
                                                      64,
-                                                     64
-                                                    )
+                                                     64)
                                       );
             }
 
@@ -331,25 +354,20 @@ namespace Blish_HUD.Controls {
             }
 
             // Draw icon vignette (draw with or without the icon to keep a consistent look)
-            //if (this.IconSize == DetailsIconSize.Large)
             if (_showVignette)
-                spriteBatch.DrawOnCtrl(
-                                       this,
-                                       Content.GetTexture("605003"),
-                                       new Rectangle(0, 0, iconSize, iconSize)
-                                      );
+                spriteBatch.DrawOnCtrl(this,
+                                       _textureVignette,
+                                       new Rectangle(0, 0, iconSize, iconSize));
 
             // Draw bottom section seperator
-            spriteBatch.DrawOnCtrl(
-                                   this,
-                                   Content.GetTexture("157218"),
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureBottomSectionSeparator,
                                    this.IconSize == DetailsIconSize.Large
-                                   ? new Rectangle(this.ContentRegion.Left, _size.Y - 39, this.ContentRegion.Width, 8)
-                                   : new Rectangle(0, _size.Y - 39, _size.X, 8)
-                                  );
+                                       ? new Rectangle(this.ContentRegion.Left, _size.Y - _bottomSectionHeight - _textureBottomSectionSeparator.Height / 2, this.ContentRegion.Width, _textureBottomSectionSeparator.Height)
+                                       : new Rectangle(0, _size.Y - _bottomSectionHeight - _textureBottomSectionSeparator.Height / 2, _size.X, _textureBottomSectionSeparator.Height));
 
             // Draw text
-            spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont14, new Rectangle(iconSize + 20, 0, EVENTSUMMARY_WIDTH - iconSize - 35, this.Height - BOTTOMSECTION_HEIGHT), Color.White, true, true);
+            spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont14, new Rectangle(iconSize + 20, 0, _size.X - iconSize - 35, this.Height - _bottomSectionHeight), Color.White, true, true);
         }
 
     }

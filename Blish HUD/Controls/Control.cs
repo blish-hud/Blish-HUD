@@ -347,12 +347,18 @@ namespace Blish_HUD.Controls {
         protected bool ClipsBounds { get; set; } = true;
 
         private ControlEffect _effectBehind;
+        /// <summary>
+        /// The <see cref="ControlEffect"/> to apply behind the control.
+        /// </summary>
         protected ControlEffect EffectBehind {
             get => _effectBehind;
             set => SetProperty(ref _effectBehind, value);
         }
 
         private ControlEffect _effectInFront;
+        /// <summary>
+        /// [NOT IMPLEMENTED] The <see cref="ControlEffect"/> to apply on top of the control.
+        /// </summary>
         protected ControlEffect EffectInFront {
             get => _effectInFront;
             set => SetProperty(ref _effectInFront, value);

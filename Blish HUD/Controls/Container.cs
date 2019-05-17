@@ -152,43 +152,31 @@ namespace Blish_HUD.Controls {
                     childControl.Update(gameTime);
             }
         }
-        
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
-        public virtual void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
-
-        public virtual void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
-
-        public override void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor) {
-            // Remember our old scissor so that we can restore it when we're done drawing our children
-            //var contentScissor = Graphics.GraphicsDevice.ScissorRectangle;
-
-            var controlScissor = Rectangle.Intersect(scissor, this.AbsoluteBounds.WithPadding(_padding));
-
-            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
-
-            //var temp = Graphics.GraphicsDevice.ScissorRectangle; //Rectangle.Intersect(contentScissor, this.AbsoluteBounds.WithPadding(_padding));
-
-            this.EffectBehind?.Draw(spriteBatch, drawBounds);
-
-            spriteBatch.Begin(this.SpriteBatchParameters);
-
-            // Draw background color
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(Point.Zero, _size), _backgroundColor);
+        protected sealed override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            var controlScissor = Graphics.GraphicsDevice.ScissorRectangle.ScaleBy(1 / Graphics.GetScaleRatio(Graphics.UIScale));
 
             // Draw container background
-            PaintBeforeChildren(spriteBatch, drawBounds);
+            PaintBeforeChildren(spriteBatch, bounds);
 
             spriteBatch.End();
 
+            PaintChildren(spriteBatch, bounds, controlScissor);
+
+            // Restore scissor
+            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
+
+            spriteBatch.Begin(this.SpriteBatchParameters);
+
+            PaintAfterChildren(spriteBatch, bounds);
+        }
+
+        public virtual void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
+
+        public void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
+            var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
+
             List<Control> zSortedChildren = _children.OrderBy(i => i.ZIndex).ToList();
-
-            /* Set the scissor to the intersection rectangle created from the current scissor and the new
-               one (this is to prevent the child controls from leaking ouside the parent scissor  */
-            //Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(temp, ContentRegion.ToBounds(this.AbsoluteBounds));
-
-            var contentScissor = Rectangle.Intersect(controlScissor, ContentRegion.ToBounds(this.AbsoluteBounds));
-
 
             // Render each visible child
             foreach (var childControl in zSortedChildren) {
@@ -199,31 +187,9 @@ namespace Blish_HUD.Controls {
                         childControl.Draw(spriteBatch, childBounds, contentScissor);
                 }
             }
-
-            // Restore scissor
-            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
-
-            //using (var spriteBatch = new SpriteBatch(Graphics.GraphicsDevice)) {
-            //    spriteBatch.Begin(SpriteSortMode.Immediate,
-            //                      _blendState,
-            //                      _samplerState,
-            //                      null,
-            //                      Overlay._uiRasterizer,
-            //                      _drawEffect,
-            //                      Matrix.CreateScale(GameService.Graphics.GetScaleRatio(GameService.Graphics.UIScale)));
-
-            spriteBatch.End();
-
-            spriteBatch.Begin(this.SpriteBatchParameters);
-
-            //spriteBatch.Draw(ContentService.Textures.Pixel, Graphics.GraphicsDevice.ScissorRectangle, _backgroundColor);
-
-            PaintAfterChildren(spriteBatch, drawBounds);
-
-
-            spriteBatch.End();
-            //}
         }
+
+        public virtual void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
         #region IEnumerable Implementation
 

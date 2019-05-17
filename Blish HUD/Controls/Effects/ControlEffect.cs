@@ -12,17 +12,29 @@ namespace Blish_HUD.Controls.Effects {
         
         protected Control AssignedControl { get; }
 
-        /// <summary>
-        /// The size within the <see cref="Control"/> it applies to.
-        /// </summary>
-        public Vector2 Size     { get; set; }
 
+        private Vector2? _size;
         /// <summary>
-        /// The location relative to the <see cref="Control"/> it applies to.
+        /// The size within the <see cref="Control"/> it applies to.  If not explicitly set, the size of the assigned control will be used.
         /// </summary>
-        public Vector2 Location { get; set; }
+        public Vector2 Size {
+            get => _size ?? AssignedControl.Size.ToVector2();
+            set => _size = value;
+        }
+
+        private Vector2? _location;
+        /// <summary>
+        /// The location relative to the <see cref="Control"/> it applies to.  If not explicitly set, <see cref="Vector2.Zero"/> will be used.
+        /// </summary>
+        public Vector2 Location {
+            get => _location ?? Vector2.Zero;
+            set => _location = value;
+        }
 
         private bool _enabled = true;
+        /// <summary>
+        /// If the <see cref="ControlEffect"/> should render or not.
+        /// </summary>
         public bool Enabled {
             get => _enabled;
             set {
@@ -30,15 +42,15 @@ namespace Blish_HUD.Controls.Effects {
 
                 _enabled = value;
 
-                if (_enabled) OnEnable();
-                else OnDisable();
+                if (_enabled)
+                    OnEnable();
+                else
+                    OnDisable();
             }
         }
 
         public ControlEffect(Control assignedControl) {
             this.AssignedControl = assignedControl;
-
-            this.Size = assignedControl.Size.ToVector2();
         }
 
         public abstract SpriteBatchParameters GetSpriteBatchParameters();
@@ -55,6 +67,13 @@ namespace Blish_HUD.Controls.Effects {
         /// Disables the <see cref="Effect"/> on the <see cref="Control"/>.
         /// </summary>
         public void Disable() { this.Enabled = false; }
+
+        /// <summary>
+        /// Enables or disables the <see cref="ControlEffect"/> depending on the value of <param name="enabled"></param>.
+        /// </summary>
+        public void SetEnableState(bool enabled) {
+            this.Enabled = enabled;
+        }
 
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
         public virtual void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }

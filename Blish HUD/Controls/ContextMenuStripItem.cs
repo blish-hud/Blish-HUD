@@ -104,11 +104,6 @@ namespace Blish_HUD.Controls {
             this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
         }
 
-        public override void RecalculateLayout() {
-            if (this.EffectBehind != null)
-                this.EffectBehind.Size = _size.ToVector2();
-        }
-
         private void UpdateControlWidth(string newText) {
             var textSize = Content.DefaultFont14.MeasureString(newText);
             int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
