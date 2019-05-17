@@ -191,6 +191,18 @@
 #begin common/menomonia.ttf
 /copy:common/menomonia.ttf
 
+#begin common/ow-trail.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:common/ow-trail.png
+
 #begin common/solid.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -655,16 +667,4 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:fonts/menomonia-8-regular_0.tga
-
-#begin common/ow-trail.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:common/ow-trail.png
 

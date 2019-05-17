@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Modules;
@@ -46,6 +48,22 @@ namespace Blish_HUD {
             }
         }
 
+        public void ComposeModuleFromArchive(string archivePath) {
+            var catalog = new AggregateCatalog();
+
+            using (var archiveReader = ZipFile.OpenRead(archivePath)) {
+                ZipArchiveEntry moduleEntry = archiveReader.GetEntry("ExampleBHUDModule.dll");
+
+                var assemblyStream = moduleEntry.Open().ToMemoryStream();
+                var assemblyData = assemblyStream.ToArray();
+
+                catalog.Catalogs.Add(new AssemblyCatalog(Assembly.Load(assemblyData)));
+            }
+
+            var container = new CompositionContainer(catalog);
+            container.SatisfyImportsOnce(this);
+        }
+
         private void ComposeModulesFromNamespace() {
             AssemblyCatalog      catalog   = new AssemblyCatalog(System.Reflection.Assembly.GetExecutingAssembly());
             CompositionContainer container = new CompositionContainer(catalog);
@@ -71,9 +89,11 @@ namespace Blish_HUD {
             // RegisterModule(new Modules.PoiLookup.PoiLookup());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
             RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
+            RegisterModule(new Modules.LoadingScreenHints.LoadingScreenHints());
 
             //ComposeModulesFromNamespace();
             ComposeModulesFromDirectory(this.ModulesDirectory);
+            //ComposeModuleFromArchive(Path.Combine(this.ModulesDirectory, "ExampleBHUDModule.zip"));
 
             foreach (var externalModule in this.ExternalModules) {
                 Console.WriteLine($"Registering external module: {externalModule.GetModuleInfo().Name}");

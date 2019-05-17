@@ -80,13 +80,6 @@ namespace Blish_HUD {
         public MouseState MouseState { get; private set; }
         public KeyboardState KeyboardState { get; private set; }
 
-        // TODO: Probably can get rid of this
-        public Vector2 MousePosition {
-            get {
-                return new Vector2(this.MouseState.X, this.MouseState.Y);
-            }
-        }
-
         // TODO: Rename this to prevent confusion with the (Thread) "thrdMouseHook"
         internal static WinApi.MouseHook mouseHook;
         internal static WinApi.KeyboardHook keyboardHook;
@@ -148,8 +141,7 @@ namespace Blish_HUD {
         protected override void Initialize() {
             graphics = GameServices.GetService<GraphicsService>();
 
-#if !DEBUG
-//NOMOUSEHOOK
+#if !NOMOUSEHOOK
             thrdMouseHook = new Thread(HookMouse);
             thrdMouseHook.IsBackground = true;
             thrdMouseHook.Start();

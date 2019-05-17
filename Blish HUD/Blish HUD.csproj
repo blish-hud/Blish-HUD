@@ -58,7 +58,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;NOMOUSEHOOK</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -191,6 +191,11 @@
     <Compile Include="Entities\EntityContainer.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
     <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\GamingTip.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\GuessCharacter.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\LoadScreenPanel.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\Narration.cs" />
+    <Compile Include="Modules\LoadingScreenHints\LoadingScreenHints.cs" />
     <Compile Include="Modules\MarkersAndPaths\IPackFileSystemContext.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\ITacOPathable.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Readers\TrlReader.cs" />

@@ -132,9 +132,10 @@ namespace Blish_HUD.Modules.EventTimers {
 
                 if (!string.IsNullOrWhiteSpace(meta.Wiki)) {
                     var glowWikiBttn = new GlowButton {
-                        Icon = GameService.Content.GetTexture("102530"),
-                        Parent    = es2,
-                        GlowColor = Color.White * 0.1f
+                        Icon             = GameService.Content.GetTexture("102530"),
+                        BasicTooltipText = "Read about this event on the wiki.",
+                        Parent           = es2,
+                        GlowColor        = Color.White * 0.1f
                     };
 
                     glowWikiBttn.Click += delegate {
@@ -147,6 +148,7 @@ namespace Blish_HUD.Modules.EventTimers {
                 if (!string.IsNullOrWhiteSpace(meta.Waypoint)) {
                     var glowWaypointBttn = new GlowButton {
                         Icon = GameService.Content.GetTexture("waypoint"),
+                        BasicTooltipText = $"Nearby waypoint: {meta.Waypoint}",
                         Parent = es2,
                         GlowColor = Color.White * 0.1f
                     };
