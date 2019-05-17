@@ -62,10 +62,9 @@ namespace Blish_HUD.Controls {
     /// </summary>
     public class DetailsButton : FlowPanel {
 
-        private const int EVENTSUMMARY_WIDTH  = 354;
-        private const int EVENTSUMMARY_HEIGHT = 100;
-        private const int BOTTOMSECTION_HEIGHT = 35;
-
+        public int EVENTSUMMARY_WIDTH;
+        public int EVENTSUMMARY_HEIGHT { get; private set; } // 100
+        public int BOTTOMSECTION_HEIGHT { get; private set; } // 35
         private DetailsDisplayMode _displayMode = DetailsDisplayMode.Standard;
         private DetailsIconSize _iconSize = DetailsIconSize.Large;
         private string _text;
@@ -192,6 +191,9 @@ namespace Blish_HUD.Controls {
         private Glide.Tween _fillAnim;
 
         public DetailsButton() {
+            this.EVENTSUMMARY_WIDTH = 354;
+            this.EVENTSUMMARY_HEIGHT = 100;
+            this.BOTTOMSECTION_HEIGHT = 35;
             this.Size = new Point(EVENTSUMMARY_WIDTH, EVENTSUMMARY_HEIGHT);
             
             this.ControlPadding = new Vector2(6, 1);
