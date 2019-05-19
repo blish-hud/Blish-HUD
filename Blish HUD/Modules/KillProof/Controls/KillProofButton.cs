@@ -9,10 +9,6 @@ using MonoGame.Extended.BitmapFonts;
 using Blish_HUD.Controls;
 namespace Blish_HUD.Modules.KillProof.Controls
 {
-
-    /// <summary>
-    /// Used to show details and multiple options for a single topic. Designed to look like the Achievements details icon.
-    /// </summary>
     public class KillProofButton : DetailsButton
     {
         private BitmapFont _font;
@@ -37,16 +33,13 @@ namespace Blish_HUD.Modules.KillProof.Controls
                 _bottomText = value;
             }
         }
-        private string _title = "";
-        public string Title
+        private bool _isTitleDisplay = false;
+        public bool IsTitleDisplay
         {
-            get => _title;
-            set
-            {
-                if (_title == value) return;
-
-                _title = value;
-                OnPropertyChanged();
+            get => _isTitleDisplay;
+            set {
+                if (value == _isTitleDisplay) return;
+                _isTitleDisplay = value;
             }
         }
         public KillProofButton()
@@ -65,7 +58,7 @@ namespace Blish_HUD.Modules.KillProof.Controls
             int iconSize = this.IconSize == DetailsIconSize.Large ? EVENTSUMMARY_HEIGHT : EVENTSUMMARY_HEIGHT - BOTTOMSECTION_HEIGHT;
 
             // Draw bottom text
-            if (Title != "")
+            if (this.IsTitleDisplay)
             {
                 spriteBatch.DrawOnCtrl(this, Content.GetTexture("icon_title"), new Rectangle(EVENTSUMMARY_WIDTH - 36, bounds.Height - BOTTOMSECTION_HEIGHT + 1, 32, 32), Color.White);
             }
@@ -75,7 +68,7 @@ namespace Blish_HUD.Modules.KillProof.Controls
             }
             if (this.Icon != null)
             {
-                // Draw icon (the ternary in there is nasty - need to do a better way to offset this
+                // Draw icon
                 spriteBatch.DrawOnCtrl(this, this.Icon, new Rectangle(iconSize / 2 - 64 / 2 + (this.IconSize == DetailsIconSize.Small ? 10 : 0), iconSize / 2 - 64 / 2, 64, 64), Color.White);
 
                 // Draw icon box

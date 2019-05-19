@@ -17,12 +17,11 @@ namespace Blish_HUD.Modules.KillProof
 
         private Point LABEL_SMALL = new Point(400, 30);
         private Point LABEL_BIG = new Point(400, 40);
-        private Point ICON_SIZE = new Point(64, 64);
         private LabelBase CurrentAccount;
         private LabelBase CurrentAccountLastRefresh;
         private LabelBase CurrentAccountKpId;
         private LabelBase CurrentAccountProofUrl;
-        private List<KillProofButton> displayedKillProofs = new List<KillProofButton>();
+        private List<KillProofButton> DisplayedKillProofs;
         private readonly Dictionary<string, string> KillProofRepository = new Dictionary<string, string>{
             {"li","Legendary Insights (LI)"},
             {"ld","Legendary Divinations (LD)"},
@@ -62,6 +61,7 @@ namespace Blish_HUD.Modules.KillProof
         {
             base.OnEnabled();
 
+            DisplayedKillProofs = new List<KillProofButton>();
             KillProofTab = GameService.Director.BlishHudWindow.AddTab("KillProof", GameService.Content.GetTexture("killproof_icon"), BuildHomePanel(GameService.Director.BlishHudWindow), 0);
         }
 
@@ -73,7 +73,9 @@ namespace Blish_HUD.Modules.KillProof
                 Size = wndw.ContentRegion.Size
             };
 
-            // HEADER
+            /// ###################
+            ///       HEADER
+            /// ###################
             var header = new Panel()
             {
                 Parent = hPanel,
@@ -129,9 +131,12 @@ namespace Blish_HUD.Modules.KillProof
             ddSortMethod.Items.Add(DD_KILLPROOF);
             ddSortMethod.Items.Add(DD_RAID);
             ddSortMethod.Items.Add(DD_FRACTAL);
-            ddSortMethod.ValueChanged += UpdateSort;
             ddSortMethod.SelectedItem = DD_ALL;
-            // FOOTER
+            ddSortMethod.ValueChanged += UpdateSort;
+
+            /// ###################
+            ///       FOOTER
+            /// ###################
             var footer = new Panel()
             {
                 Parent = hPanel,
@@ -198,61 +203,49 @@ namespace Blish_HUD.Modules.KillProof
 
             var data = JObject.Parse(loader.Result);
 
-            foreach (KillProofButton e1 in displayedKillProofs) { e1.Dispose(); }
-            displayedKillProofs.Clear();
-            if ((string)data["error"] != null)
+            foreach (KillProofButton e1 in DisplayedKillProofs) { e1.Dispose(); }
+            DisplayedKillProofs.Clear();
+
+            CurrentAccount.Text = data["error"] == null ? (string)data["account_name"] : (string)data["error"];
+            CurrentAccountLastRefresh.Text = data["last_refresh"] != null ? "Last Refresh: " + String.Format("{0:dddd, d. MMMM yyyy - HH:mm:ss}", (DateTime)data["last_refresh"]) : "";
+            CurrentAccountKpId.Text = data["kpid"] != null ? "ID: " + (string)data["kpid"] : "";
+            CurrentAccountProofUrl.Text = data["proof_url"] != null ? (string)data["proof_url"] : "";
+
+            var killproofs = data["killproofs"] != null ? JsonConvert.DeserializeObject<Dictionary<string, int>>(data["killproofs"].ToString()) : new Dictionary<string, int>();
+
+            foreach (KeyValuePair<string, int> token in killproofs)
             {
-                CurrentAccount.Text = (string)data["error"];
-                CurrentAccountLastRefresh.Text = "";
-                CurrentAccountKpId.Text = "";
-                CurrentAccountProofUrl.Text = "";
-            }
-            else
-            {
-                CurrentAccount.Text = (string)data["account_name"] != null ? (string)data["account_name"] : "";
-                var refreshDate = (DateTime)data["last_refresh"];
-                CurrentAccountLastRefresh.Text = (string)data["last_refresh"] != null ? "Last Refresh: " + String.Format("{0:dddd, d. MMMM yyyy - HH:mm:ss}", refreshDate) : "";
-                CurrentAccountKpId.Text = (string)data["kpid"] != null ? "ID: " + (string)data["kpid"] : "";
-                CurrentAccountProofUrl.Text = (string)data["proof_url"] != null ? (string)data["proof_url"] : "";
-
-                var killproofs = JsonConvert.DeserializeObject<Dictionary<string, int>>(data["killproofs"].ToString());
-
-                foreach (KeyValuePair<string, int> token in killproofs)
+                if (token.Value > 0)
                 {
-                    if (token.Value > 0)
-                    {
-                        var killProofButton = new KillProofButton()
-                        {
-                            Parent = contentPanel,
-                            Icon = GameService.Content.GetTexture("icon_" + token.Key),
-                            Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size24, ContentService.FontStyle.Regular),
-                            Text = token.Value.ToString(),
-                            BottomText = KillProofRepository[token.Key]
-                        };
-                        displayedKillProofs.Add(killProofButton);
-                    }
-                }
-
-
-                var titles = JsonConvert.DeserializeObject<Dictionary<string, string>>(data["titles"].ToString());
-
-                foreach (KeyValuePair<string, string> token in titles)
-                {
-                    var titleButton = new KillProofButton()
+                    var killProofButton = new KillProofButton()
                     {
                         Parent = contentPanel,
-                        Icon = GameService.Content.GetTexture("icon_" + token.Value),
-                        Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular),
-                        Text = token.Key,
-                        Title = token.Value
+                        Icon = GameService.Content.GetTexture("icon_" + token.Key),
+                        Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size24, ContentService.FontStyle.Regular),
+                        Text = token.Value.ToString(),
+                        BottomText = KillProofRepository[token.Key]
                     };
-                    System.Console.WriteLine(token.Value);
-                    displayedKillProofs.Add(titleButton);
+                    DisplayedKillProofs.Add(killProofButton);
                 }
-
-
-                RepositionKp();
             }
+
+            var titles = data["titles"] != null ? JsonConvert.DeserializeObject<Dictionary<string, string>>(data["titles"].ToString()) : new Dictionary<string, string>();
+
+            foreach (KeyValuePair<string, string> token in titles)
+            {
+                var titleButton = new KillProofButton()
+                {
+                    Parent = contentPanel,
+                    Icon = GameService.Content.GetTexture("icon_" + token.Value),
+                    Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular),
+                    Text = token.Key,
+                    BottomText = token.Value,
+                    IsTitleDisplay = true
+                };
+                DisplayedKillProofs.Add(titleButton);
+            }
+
+            RepositionKp();
             return contentPanel;
         }
         private void UpdateSort(object sender, EventArgs e)
@@ -260,20 +253,25 @@ namespace Blish_HUD.Modules.KillProof
             switch (((Dropdown)sender).SelectedItem)
             {
                 case DD_ALL:
-                    displayedKillProofs.Sort((e1, e2) => e1.BottomText.CompareTo(e2.BottomText));
-                    foreach (KillProofButton e1 in displayedKillProofs) { e1.Visible = true; }
+                    DisplayedKillProofs.Sort((e1, e2) =>
+                    {
+                        int result = e1.IsTitleDisplay.CompareTo(e2.IsTitleDisplay);
+                        if (result != 0) return result;
+                        else return e1.BottomText.CompareTo(e2.BottomText);
+                    });
+                    foreach (KillProofButton e1 in DisplayedKillProofs) { e1.Visible = true; }
                     break;
                 case DD_KILLPROOF:
-                    displayedKillProofs.Sort((e1, e2) => e1.BottomText.CompareTo(e2.BottomText));
-                    foreach (KillProofButton e1 in displayedKillProofs) { e1.Visible = e1.Title == ""; }
+                    DisplayedKillProofs.Sort((e1, e2) => e1.BottomText.CompareTo(e2.BottomText));
+                    foreach (KillProofButton e1 in DisplayedKillProofs) { e1.Visible = !e1.IsTitleDisplay; }
                     break;
                 case DD_FRACTAL:
-                    displayedKillProofs.Sort((e1, e2) => e1.Text.CompareTo(e2.Text));
-                    foreach (KillProofButton e1 in displayedKillProofs) { e1.Visible = e1.Title.ToLower().Contains("fractal"); }
+                    DisplayedKillProofs.Sort((e1, e2) => e1.Text.CompareTo(e2.Text));
+                    foreach (KillProofButton e1 in DisplayedKillProofs) { e1.Visible = e1.BottomText.ToLower().Contains("fractal"); }
                     break;
                 case DD_RAID:
-                    displayedKillProofs.Sort((e1, e2) => e1.Text.CompareTo(e2.Text));
-                    foreach (KillProofButton e1 in displayedKillProofs) { e1.Visible = e1.Title.ToLower().Contains("raid"); }
+                    DisplayedKillProofs.Sort((e1, e2) => e1.Text.CompareTo(e2.Text));
+                    foreach (KillProofButton e1 in DisplayedKillProofs) { e1.Visible = e1.BottomText.ToLower().Contains("raid"); }
                     break;
                 default:
                     throw new NotSupportedException();
@@ -284,7 +282,7 @@ namespace Blish_HUD.Modules.KillProof
         private void RepositionKp()
         {
             int pos = 0;
-            foreach (var kp in displayedKillProofs)
+            foreach (KillProofButton kp in DisplayedKillProofs)
             {
                 int x = pos % 3;
                 int y = pos / 3;
@@ -297,22 +295,7 @@ namespace Blish_HUD.Modules.KillProof
         }
         public override void OnDisabled()
         {
-            sampleBuffer.Clear();
             GameService.Director.BlishHudWindow.RemoveTab(KillProofTab);
-        }
-        private long lastUpdate = 0;
-        private Queue<double> sampleBuffer = new Queue<double>();
-
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-
-            // Unless we're in game running around, don't show.
-            if (!GameService.GameIntegration.IsInGame)
-            {
-                return;
-            }
-            lastUpdate = GameService.Gw2Mumble.UiTick;
         }
     }
 }
