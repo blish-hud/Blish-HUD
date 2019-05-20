@@ -60,6 +60,7 @@ namespace Blish_HUD {
         public static readonly PathingService Pathing;
         public static readonly ModuleService Module;
         public static readonly PersistentStoreService Store;
+        public static readonly ArcDpsService ArcDps;
 
         #endregion
 
@@ -81,6 +82,7 @@ namespace Blish_HUD {
             Hotkeys = new HotkeysService();
             Pathing = new PathingService();
             Module = new ModuleService();
+            ArcDps = new ArcDpsService();
 
             AllServices = new GameService[] {
                 Debug,
@@ -98,7 +100,8 @@ namespace Blish_HUD {
                 Hotkeys,
                 Pathing,
                 Module,
-                Store
+                Store,
+                ArcDps
             };
 
             GameServices.AddService<DebugService>(AllServices[0]);
@@ -116,6 +119,7 @@ namespace Blish_HUD {
             GameServices.AddService<HotkeysService>(AllServices[12]);
             GameServices.AddService<ModuleService>(AllServices[14]);
             GameServices.AddService<PersistentStoreService>(AllServices[15]);
+            GameServices.AddService<ArcDpsService>(AllServices[16]);
         }
 
         #region Property Binding
