@@ -94,8 +94,8 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
                     total = GamingTip.Tips.Count;
                     count = SeenGamingTips.Count;
                     if (count >= total) { SeenGamingTips.Clear(); count = 0; }
-                    range = Enumerable.Range(1, total).Where(i => !SeenGamingTips.Contains(i));
-                    index = rand.Next(0, total - count - 1);
+                    range = Enumerable.Range(0, total - 1).Where(i => !SeenGamingTips.Contains(i));
+                    index = rand.Next(0, total - count - 2);
                     hint = range.ElementAt(index);
 
                     SeenGamingTips.Add(hint);
@@ -108,8 +108,8 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
                     total = Narration.Narratives.Count;
                     count = SeenNarrations.Count;
                     if (count >= total) { SeenNarrations.Clear(); count = 0; }
-                    range = Enumerable.Range(1, total).Where(i => !SeenNarrations.Contains(i));
-                    index = rand.Next(0, total - count - 1);
+                    range = Enumerable.Range(0, total - 1).Where(i => !SeenNarrations.Contains(i));
+                    index = rand.Next(0, total - count - 2);
                     hint = range.ElementAt(index);
 
                     SeenNarrations.Add(hint);
@@ -122,8 +122,8 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
                     total = GuessCharacter.Characters.Count;
                     count = SeenGuessCharacters.Count;
                     if (count >= total) { SeenGuessCharacters.Clear(); count = 0; }
-                    range = Enumerable.Range(1, total).Where(i => !SeenGuessCharacters.Contains(i));
-                    index = rand.Next(0, total - count - 1);
+                    range = Enumerable.Range(0, total - 1).Where(i => !SeenGuessCharacters.Contains(i));
+                    index = rand.Next(0, total - count - 2);
                     hint = range.ElementAt(index);
 
                     SeenGuessCharacters.Add(hint);
