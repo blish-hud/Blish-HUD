@@ -43,8 +43,9 @@ namespace Blish_HUD {
 
                 float uiScale = GetScaleRatio(value);
                 this.SpriteScreen.Size = new Point((int)(Overlay.graphics.PreferredBackBufferWidth / uiScale), (int)(Overlay.graphics.PreferredBackBufferHeight / uiScale));
-                
-                _uiScaleTransform = Matrix.CreateScale(GetScaleRatio(this.UIScale));
+
+                _uiScaleTransform = Matrix.CreateScale(uiScale);
+
             }
         }
 

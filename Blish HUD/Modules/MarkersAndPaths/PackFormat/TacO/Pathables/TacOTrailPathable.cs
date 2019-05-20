@@ -44,12 +44,12 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
 
             // Type
             RegisterAttribute("type",
-                              attribute => (!string.IsNullOrWhiteSpace(this.Type = attribute.Value.Trim())),
+                              attribute => (!string.IsNullOrEmpty(this.Type = attribute.Value.Trim())),
                               false);
 
             // TrailData
             RegisterAttribute("trailData",
-                              attribute => (!string.IsNullOrWhiteSpace(
+                              attribute => (!string.IsNullOrEmpty(
                                    this.TrlFilePath = attribute.Value.Trim()
                                   )
                               ),

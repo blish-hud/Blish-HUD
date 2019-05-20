@@ -20,6 +20,7 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
         public bool ShowSpeedValue { get; set; } = false;
 
         public Speedometer() {
+            this.ClipsBounds = false;
             this.Size = new Point(128, 128);
 
             UpdateLocation(null, null);
@@ -43,29 +44,29 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             float ang = (float)((4 + this.Speed / MaxSpeed * 2));
 
-            spriteBatch.Draw(Content.GetTexture("speed-fill"),
-                             new Rectangle(_size.X / 2, _size.Y, 150, 203).ToBounds(bounds),
-                             null,
-                             Color.GreenYellow,
-                             ang,
-                             new Vector2(Content.GetTexture("speed-fill").Bounds.Width / 2, 141),
-                             SpriteEffects.None, 1);
+            spriteBatch.DrawOnCtrl(this,
+                                   Content.GetTexture("speed-fill"),
+                                   new Rectangle(_size.X / 2, _size.Y, 150, 203),
+                                   null,
+                                   Color.GreenYellow,
+                                   ang,
+                                   new Vector2(Content.GetTexture("speed-fill").Bounds.Width / 2, 141));
 
-            spriteBatch.Draw(Content.GetTexture("1060345-2"),
-                             _size.InBounds(bounds),
-                             null,
-                             Color.White,
-                             0f,
-                             Vector2.Zero,
-                             SpriteEffects.None,
-                             0);
+            spriteBatch.DrawOnCtrl(this,
+                                   Content.GetTexture("1060345-2"),
+                                   _size.InBounds(bounds),
+                                   null,
+                                   Color.White,
+                                   0f,
+                                   Vector2.Zero);
 
             if (this.ShowSpeedValue) {
-                DrawUtil.DrawAlignedText(spriteBatch,
+                spriteBatch.DrawStringOnCtrl(this,
+                                         Math.Round(this.Speed).ToString(),
                                          Content.DefaultFont14,
-                                         ((int) Math.Round(this.Speed * 8, 0)).ToString(),
-                                         new Rectangle(0, 0, _size.X, 50).ToBounds(bounds),
+                                         new Rectangle(0, 0, _size.X, 50),
                                          Color.White,
+                                         false,
                                          DrawUtil.HorizontalAlignment.Center,
                                          DrawUtil.VerticalAlignment.Bottom);
             }

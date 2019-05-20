@@ -128,8 +128,8 @@ namespace Blish_HUD.Modules.EventTimers {
                 this.MouseOverWaypoint = false;
             }
 
-            this.MouseOverWaypoint = this.MouseOverWaypoint && !string.IsNullOrWhiteSpace(this.AssignedMeta.Waypoint);
-            this.MouseOverWiki = this.MouseOverWiki && !string.IsNullOrWhiteSpace(this.AssignedMeta.Wiki);
+            this.MouseOverWaypoint = this.MouseOverWaypoint && !string.IsNullOrEmpty(this.AssignedMeta.Waypoint);
+            this.MouseOverWiki = this.MouseOverWiki && !string.IsNullOrEmpty(this.AssignedMeta.Wiki);
 
             if (this.MouseOverEye)
                 this.BasicTooltipText = "Click to toggle tracking for this event.";
@@ -194,7 +194,7 @@ namespace Blish_HUD.Modules.EventTimers {
                              Color.White);
 
             // Draw wiki icon
-            if (!string.IsNullOrWhiteSpace(this.AssignedMeta.Wiki)) {
+            if (!string.IsNullOrEmpty(this.AssignedMeta.Wiki)) {
                 if (this.MouseOverWiki)
                     spriteBatch.Draw(Content.GetTexture("glow-wiki"),
                                      new Rectangle(NEXTTIME_WIDTH + 15, _size.Y - BOTTOMSECTION_HEIGHT + 1, 32, 32).ToBounds(bounds),
@@ -206,7 +206,7 @@ namespace Blish_HUD.Modules.EventTimers {
             }
 
             // Draw waypoint icon
-            if (!string.IsNullOrWhiteSpace(this.AssignedMeta.Waypoint)) {
+            if (!string.IsNullOrEmpty(this.AssignedMeta.Waypoint)) {
                 if (this.MouseOverWaypoint)
                     spriteBatch.Draw(Content.GetTexture("glow-waypoint"),
                                      new Rectangle(NEXTTIME_WIDTH + 15 + 35, _size.Y - BOTTOMSECTION_HEIGHT + 1, 32, 32).ToBounds(bounds),

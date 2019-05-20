@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Blish_HUD.Modules.MarkersAndPaths;
+using Blish_HUD.Pathing.Behaviors;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Format {
@@ -68,6 +69,10 @@ namespace Blish_HUD.Pathing.Format {
                 this.SuccessfullyLoaded = FinalizeAttributes(_attributeLoaders);
             }
 
+            if (this.SuccessfullyLoaded) {
+                AssignBehaviors();
+            }
+
             _attributeLoaders = null;
             _leftOverAttributes = null;
         }
@@ -96,8 +101,7 @@ namespace Blish_HUD.Pathing.Format {
 
         protected void RegisterAttribute(string attributeName, Func<XmlAttribute, bool> loadAttribute, bool required = false) {
             _attributeLoaders.Add(attributeName.ToLower(),
-                                  new LoadedPathableAttributeDescription(loadAttribute,
-                                                                         required));
+                                  new LoadedPathableAttributeDescription(loadAttribute, required));
         }
 
         protected virtual void PrepareAttributes() {
@@ -111,7 +115,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // IPathable:GUID
             RegisterAttribute("GUID",
-                              attribute => (!string.IsNullOrWhiteSpace(this.Guid = attribute.Value.TrimEnd('='))),
+                              attribute => (!string.IsNullOrEmpty(this.Guid = attribute.Value.TrimEnd('='))),
                               false);
 
             // IPathable:Opacity
@@ -166,7 +170,21 @@ namespace Blish_HUD.Pathing.Format {
         }
 
         protected virtual void AssignBehaviors() {
+            foreach (var autoBehavior in PathingBehavior.AllAvailableBehaviors) {
 
+                var b = IdentifyingBehaviorAttributePrefixAttribute.GetAttributesOnType(autoBehavior);
+
+                var idNames = b.Select(ab => ab.AttributePrefix).First();
+
+                var attrNames = _leftOverAttributes.Select(xmlAttr => xmlAttr.Name.ToLower());
+
+                if (attrNames.Any(sa => sa.StartsWith(idNames))) {
+                    var genAB = autoBehavior.MakeGenericType(this.GetType(), typeof(TEntity));
+                    var loadedBehavior = Activator.CreateInstance(genAB, this) as ILoadableBehavior;
+                    loadedBehavior.LoadWithAttributes(_leftOverAttributes.Where(sa => sa.Name.ToLower().StartsWith(idNames)));
+                    this.Behavior.Add((PathingBehavior)loadedBehavior);
+                }
+            }
         }
 
         private void LoadResources() {

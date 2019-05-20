@@ -34,6 +34,7 @@ namespace Blish_HUD {
         public List<IPackFileSystemContext> PackContexts { get; set; } = new List<IPackFileSystemContext>();
 
         private PersistentStore _pathingStore;
+
         public PersistentStore PathingStore => _pathingStore ?? (_pathingStore = GameService.Store.Stores.GetSubstore(PATHING_STORENAME));
 
         protected override void Initialize() {
@@ -236,7 +237,7 @@ namespace Blish_HUD {
 
         private string _displayName;
         public string DisplayName {
-            get => !string.IsNullOrWhiteSpace(_displayName) ? _displayName : this.Name.Titleize();
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : this.Name.Titleize();
             set {
                 if (_displayName == value) return;
 

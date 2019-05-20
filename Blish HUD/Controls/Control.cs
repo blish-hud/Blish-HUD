@@ -418,7 +418,7 @@ namespace Blish_HUD.Controls {
                 // In the event that the tooltip text is changed while it's being shown, this will update it
                 if (SharedTooltip.CurrentControl == this) _sharedTooltipLabel.Text = value;
 
-                if (!string.IsNullOrWhiteSpace(value)) {
+                if (!string.IsNullOrEmpty(value)) {
                     this.Tooltip = SharedTooltip;
 
                     this.MouseEntered += delegate {
@@ -495,7 +495,7 @@ namespace Blish_HUD.Controls {
                 // Lazy load shared tooltip instance
                 _sharedTooltip = new Tooltip();
 
-                _sharedTooltipLabel = new LabelBase() {
+                _sharedTooltipLabel = new Label() {
                     Text = "Loading...",
                     Location = new Point(Tooltip.PADDING),
                     AutoSizeHeight = true,
@@ -508,10 +508,10 @@ namespace Blish_HUD.Controls {
                 return _sharedTooltip;
             }
         }
-        private static LabelBase _sharedTooltipLabel;
+        private static Label _sharedTooltipLabel;
 
         #region Render Properties
-
+        
         [JsonIgnore]
         protected bool LayoutIsInvalid { get; private set; } = true;
 
@@ -648,10 +648,16 @@ namespace Blish_HUD.Controls {
             return null;
         }
 
+        /// <summary>
+        /// Makes the control visible.
+        /// </summary>
         public virtual void Show() {
             this.Visible = true;
         }
 
+        /// <summary>
+        /// Hides the control so that it is no longer visible.
+        /// </summary>
         public virtual void Hide() {
             this.Visible = false;
         }
@@ -726,20 +732,21 @@ namespace Blish_HUD.Controls {
                     this.Disposed?.Invoke(this, EventArgs.Empty);
 
                     // Unassociate any subcontrols
-                    this.EffectBehind = null;
+                    this.EffectBehind  = null;
+                    this.EffectInFront = null;
 
                     // Disconnect all existing event handlers
-                    this.LeftMouseButtonPressed = null;
-                    this.LeftMouseButtonReleased = null;
-                    this.MouseMoved = null;
-                    this.RightMouseButtonPressed = null;
+                    this.LeftMouseButtonPressed   = null;
+                    this.LeftMouseButtonReleased  = null;
+                    this.MouseMoved               = null;
+                    this.RightMouseButtonPressed  = null;
                     this.RightMouseButtonReleased = null;
-                    this.MouseWheelScrolled = null;
-                    this.MouseEntered = null;
-                    this.MouseLeft = null;
+                    this.MouseWheelScrolled       = null;
+                    this.MouseEntered             = null;
+                    this.MouseLeft                = null;
 
-                    this.Resized = null;
-                    this.Moved = null;
+                    this.Resized  = null;
+                    this.Moved    = null;
                     this.Disposed = null;
 
                     // Cancel any animations that were currently running on this object

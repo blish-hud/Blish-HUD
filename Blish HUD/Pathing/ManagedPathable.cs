@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Annotations;
-using Blish_HUD.Pathing.Behavior;
+using Blish_HUD.Pathing.Behaviors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -34,15 +34,16 @@ namespace Blish_HUD.Pathing {
         /// </summary>
         ViewAndModify,
     }
-    
-    public abstract class ManagedPathable<TEntity> : IPathable<TEntity>, INotifyPropertyChanged 
+
+    public abstract class ManagedPathable<TEntity> : IPathable<TEntity>, INotifyPropertyChanged
         where TEntity : Blish_HUD.Entities.Entity {
 
-        private readonly TEntity                                   _managedEntity;
-        private PathingBehavior<ManagedPathable<TEntity>, TEntity> _behavior;
-        private int                                                _mapId  = -1;
-        private UserAccess                                         _access = UserAccess.None;
-        private string                                             _guid;
+        private readonly TEntity _managedEntity;
+        //private List<PathingBehavior<ManagedPathable<TEntity>, TEntity>> _behaviors = new List<PathingBehavior<ManagedPathable<TEntity>, TEntity>>();
+        private List<PathingBehavior> _behaviors = new List<PathingBehavior>();
+        private int _mapId = -1;
+        private UserAccess _access = UserAccess.None;
+        private string _guid;
 
         /// <summary>
         /// Used by the Pathing service to either add or remove this path
@@ -75,9 +76,9 @@ namespace Blish_HUD.Pathing {
             set { this.ManagedEntity.Position = value; OnPropertyChanged(); }
         }
 
-        public PathingBehavior<ManagedPathable<TEntity>, TEntity> Behavior {
-            get => _behavior ?? (_behavior = new Default<ManagedPathable<TEntity>, TEntity>(this));
-            set => SetProperty(ref _behavior, value);
+        public List<PathingBehavior> Behavior {
+            get => _behaviors;
+            set => SetProperty(ref _behaviors, value);
         }
 
         public TEntity ManagedEntity => _managedEntity;
@@ -94,7 +95,9 @@ namespace Blish_HUD.Pathing {
         }
 
         public virtual void Update(GameTime gameTime) {
-            _behavior?.Update(gameTime);
+            for (int i = 0; i < _behaviors.Count; i++) {
+                _behaviors[i].Update(gameTime);
+            }
         }
 
         #region Property Management and Binding

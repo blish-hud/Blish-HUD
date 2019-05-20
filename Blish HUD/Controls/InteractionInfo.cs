@@ -22,6 +22,14 @@ namespace Blish_HUD.Controls {
 
         private Tween _fadeAnimation;
 
+        /// <summary>
+        /// The text this <see cref="InteractionInfo"/> should show.
+        /// </summary>
+        public string Text {
+            get => _text;
+            set => SetProperty(ref _text, value, true);
+        }
+
         protected int _verticalIndex = 0;
 
         public int VerticalIndex {
@@ -30,11 +38,11 @@ namespace Blish_HUD.Controls {
         }
 
         public InteractionInfo() {
-            this.Text = DEFAULT_INFO_TEXT;
-            this.VerticalAlignment = DrawUtil.VerticalAlignment.Middle;
-            this.ShowShadow = true;
-            this.StrokeText = true;
-            this.Font = Content.DefaultFont12;
+            _text = DEFAULT_INFO_TEXT;
+            _verticalAlignment = DrawUtil.VerticalAlignment.Middle;
+            _showShadow = true;
+            _strokeText = true;
+            _font = Content.DefaultFont12;
             this.Size = new Point(CONTROL_WIDTH, CONTROL_HEIGHT);
             this.Location = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
             this.Opacity = 0f;
@@ -50,7 +58,7 @@ namespace Blish_HUD.Controls {
 
         }
 
-        public void Show() {
+        public override void Show() {
             _fadeAnimation?.Cancel();
 
             this.Visible = true;
@@ -58,7 +66,7 @@ namespace Blish_HUD.Controls {
             _fadeAnimation = Animation.Tweener.Tween(this, new { Opacity = 0.9f }, (0.9f - this.Opacity) / 2);
         }
 
-        public void Hide() {
+        public override void Hide() {
             _fadeAnimation?.Cancel();
             _fadeAnimation = Animation.Tweener.Tween(this, new { Opacity = 0f }, this.Opacity / 2).OnComplete(
                                                                                                               delegate {
@@ -74,15 +82,13 @@ namespace Blish_HUD.Controls {
                                            (int)(_size.Y * 0.26)
                                           );
 
-            spriteBatch.DrawOnCtrl(
-                                   this,
+            spriteBatch.DrawOnCtrl(this,
                                    Content.GetTexture("156775"),
-                                   new Rectangle(Point.Zero, _size)
-                                  );
+                                   bounds);
 
             DrawText(spriteBatch,
                      textRegion,
-                     $"{Utils.DrawUtil.WrapText(this.Font, this.Text, textRegion.Width)}");
+                     $"{Utils.DrawUtil.WrapText(_font, _text, textRegion.Width)}");
         }
 
     }

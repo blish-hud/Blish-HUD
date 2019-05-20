@@ -53,6 +53,7 @@ namespace Blish_HUD.Modules.BeetleRacing {
         
         private Vector3 lastPos = Vector3.Zero;
         private long lastUpdate = 0;
+        private double leftOverTime = 0;
         private Queue<double> sampleBuffer = new Queue<double>();
 
         public override void Update(GameTime gameTime) {
@@ -66,9 +67,12 @@ namespace Blish_HUD.Modules.BeetleRacing {
                 return;
             }
 
+            leftOverTime += gameTime.ElapsedGameTime.TotalSeconds;
+
             // TODO: Ignore same tick for speed updates
-            if (lastPos != Vector3.Zero) { // && lastUpdate != GameService.Gw2Mumble.UiTick) {
-                double velocity = Vector3.Distance(GameService.Player.Position, lastPos) / gameTime.ElapsedGameTime.TotalSeconds;
+            if (lastPos != Vector3.Zero && lastUpdate != GameService.Gw2Mumble.UiTick) {
+                double velocity = Vector3.Distance(GameService.Player.Position, lastPos) * 39.3700787f / leftOverTime;
+                leftOverTime = 0;
 
                 // TODO: Make the sample buffer a setting
                 if (sampleBuffer.Count > 50) {

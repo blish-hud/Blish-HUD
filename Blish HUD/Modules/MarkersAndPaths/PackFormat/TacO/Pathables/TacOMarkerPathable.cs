@@ -16,11 +16,6 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
     public class TacOMarkerPathable : LoadedMarkerPathable, ITacOPathable {
 
-
-        /*
-        public int    Behavior     { get; set; }
-        */
-
         private string _type;
         private float  _fadeNear     = -1;
         private float  _fadeFar      = -1;
@@ -29,7 +24,9 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
         private bool   _autoTrigger;
         private bool   _hasCountdown;
         private float  _triggerRange;
-        private int    _tacOBehavior;
+        private int    _tacOBehaviorId;
+
+        private BasicTOBehavior<ManagedPathable<Marker>, Marker> _tacOBehavior;
 
         public string Type {
             get => _type;
@@ -71,11 +68,16 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             set => SetProperty(ref _triggerRange, value);
         }
 
-        public int TacOBehavior {
-            get => _tacOBehavior;
+        public int TacOBehaviorId {
+            get => _tacOBehaviorId;
             set {
-                if (SetProperty(ref _tacOBehavior, value))
-                    this.Behavior = new BasicTOBehavior<ManagedPathable<Marker>, Marker>(this, (TacO.Behavior.TacOBehavior)_tacOBehavior);
+                if (SetProperty(ref _tacOBehaviorId, value)) {
+                    this.Behavior.Remove(_tacOBehavior);
+
+                    _tacOBehavior = new BasicTOBehavior<ManagedPathable<Marker>, Marker>(this, (TacOBehavior)_tacOBehaviorId);
+
+                    this.Behavior.Add(_tacOBehavior);
+                }
             }
         }
 
@@ -84,7 +86,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
         protected override void PrepareAttributes() {
             // Type
             RegisterAttribute("type",
-                              attribute => (!string.IsNullOrWhiteSpace(this.Type = attribute.Value.Trim())),
+                              attribute => (!string.IsNullOrEmpty(this.Type = attribute.Value.Trim())),
                               false);
 
             // Alpha (alias:Opacity)
@@ -160,7 +162,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             RegisterAttribute("behavior", delegate (XmlAttribute attribute) {
                 if (!int.TryParse(attribute.Value, out int iOut)) return false;
 
-                this.TacOBehavior = iOut;
+                this.TacOBehaviorId = iOut;
                 return true;
             });
             

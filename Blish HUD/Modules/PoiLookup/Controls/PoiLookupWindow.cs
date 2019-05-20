@@ -70,7 +70,7 @@ namespace Blish_HUD.Modules.PoiLookup {
 
             // Tooltip used by all three result items
             var ttDetails1 = new Controls.Tooltip();
-            var ttDetailsLmName = new Controls.LabelBase() {
+            var ttDetailsLmName = new Controls.Label() {
                 Text              = "Name Loading...",
                 Font              = Content.DefaultFont16,
                 Location          = new Point(10, 10),
@@ -84,7 +84,7 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent            = ttDetails1
             };
 
-            var ttDetailsInfHint1 = new Controls.LabelBase() {
+            var ttDetailsInfHint1 = new Controls.Label() {
                 Text              = "Enter: Copy landmark to clipboard.",
                 Font              = Content.DefaultFont16,
                 Location          = new Point(10, ttDetailsLmName.Bottom + 5),
@@ -97,7 +97,7 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent            = ttDetails1
             };
 
-            var ttDetailsInf1 = new Controls.LabelBase() {
+            var ttDetailsInf1 = new Controls.Label() {
                 Text              = "Closest Waypoint",
                 Font              = Content.DefaultFont16,
                 Location          = new Point(10, ttDetailsInfHint1.Bottom + 12),
@@ -111,7 +111,7 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent            = ttDetails1
             };
 
-            var ttDetailsInfRes1 = new Controls.LabelBase() {
+            var ttDetailsInfRes1 = new Controls.Label() {
                 Text              = " ",
                 Font              = Content.DefaultFont14,
                 Location          = new Point(10, ttDetailsInf1.Bottom + 5),
@@ -124,7 +124,7 @@ namespace Blish_HUD.Modules.PoiLookup {
                 Parent            = ttDetails1
             };
 
-            var ttDetailsInfHint2 = new Controls.LabelBase() {
+            var ttDetailsInfHint2 = new Controls.Label() {
                 Text              = "Shift + Enter: Copy closest waypoint to clipboard.",
                 Font              = Content.DefaultFont14,
                 Location          = new Point(10, ttDetailsInfRes1.Bottom + 5),

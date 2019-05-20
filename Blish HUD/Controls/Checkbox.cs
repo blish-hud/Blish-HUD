@@ -15,7 +15,6 @@ namespace Blish_HUD.Controls {
 
         public const int CHECKBOX_SIZE = 32;
 
-        
         public event EventHandler<CheckChangedEvent> CheckedChanged;
 
         protected virtual void OnCheckedChanged(CheckChangedEvent e) {
@@ -47,6 +46,14 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        /// <summary>
+        /// The text this <see cref="Checkbox"/> should show.
+        /// </summary>
+        public string Text {
+            get => _text;
+            set => SetProperty(ref _text, value, true);
+        }
+
         private bool _checked = false;
         public bool Checked {
             get => _checked;
@@ -62,9 +69,9 @@ namespace Blish_HUD.Controls {
 
             this.Height = CHECKBOX_SIZE / 2;
 
-            this.AutoSizeWidth = true;
-            this.TextColor = Color.White;
-            this.VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle;
+            _autoSizeWidth = true;
+            _textColor = Color.White;
+            _verticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle;
         }
 
         public override void RecalculateLayout() {

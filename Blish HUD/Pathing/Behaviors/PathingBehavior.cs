@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing;
@@ -10,20 +11,28 @@ using Blish_HUD.Pathing.Markers;
 using Glide;
 using Microsoft.Xna.Framework;
 
-namespace Blish_HUD.Pathing.Behavior {
+namespace Blish_HUD.Pathing.Behaviors {
 
     public abstract class PathingBehavior {
 
-        public static List<PathingBehavior> AllAvailableBehaviors;
-
         private const string PATHINGBEHAVIOR_STORENAME = "Behaviors";
 
-        protected static PersistentStore _behaviorStore;
-        protected        PersistentStore BehaviorStore => _behaviorStore ?? (_behaviorStore = GameService.Pathing.PathingStore.GetSubstore(PATHINGBEHAVIOR_STORENAME));
+        public static List<Type> AllAvailableBehaviors { get; }
+
+        private static PersistentStore _behaviorStore;
+
+        static PathingBehavior() {
+            _behaviorStore = GameService.Pathing.PathingStore.GetSubstore(PATHINGBEHAVIOR_STORENAME);
+
+            AllAvailableBehaviors = IdentifyingBehaviorAttributePrefixAttribute.GetTypes(System.Reflection.Assembly.GetExecutingAssembly()).ToList();
+        }
+        protected PersistentStore BehaviorStore => _behaviorStore;
+
+        public virtual void Update(GameTime gameTime) { /* NOOP */ }
 
     }
 
-    public abstract class PathingBehavior<TPathable, TEntity> :PathingBehavior, IUpdatable
+    public abstract class PathingBehavior<TPathable, TEntity> : PathingBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
         
@@ -33,12 +42,10 @@ namespace Blish_HUD.Pathing.Behavior {
             this.ManagedPathable = managedPathable;
         }
 
-        public virtual void Update(GameTime gameTime) { /* NOOP */ }
-
     }
 
     /// <summary>
-    /// Default behavior (even if one is not defined).  Not automatic behaviors are performed if this is the
+    /// Default behavior (even if one is not defined).  No automatic behaviors are performed if this is the
     /// only <see cref="PathingBehavior"/> applied to the <see cref="ManagedPathable{TEntity}"/>.
     /// </summary>
     public class Default<TPathable, TEntity> : PathingBehavior<TPathable, TEntity>
@@ -52,7 +59,7 @@ namespace Blish_HUD.Pathing.Behavior {
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
 
-        public float ZoneRadius { get; set; }
+        public float ZoneRadius { get; set; } = 10;
 
         public bool InZoneRadius { get; protected set; }
 
@@ -91,13 +98,10 @@ namespace Blish_HUD.Pathing.Behavior {
             //_indicator = new InteractionIndicator();
         }
 
-
-
     }
 
-
-
-    public class BounceWhenClose<TPathable, TEntity> : InZone<TPathable, TEntity>
+    [IdentifyingBehaviorAttributePrefix("bounce")]
+    public class BounceWhenClose<TPathable, TEntity> : InZone<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
 
@@ -127,13 +131,17 @@ namespace Blish_HUD.Pathing.Behavior {
 
             _bounceAnimation?.Cancel();
 
-            _bounceAnimation = GameService.Animation.Tweener.Tween(
-                                                                   this.ManagedPathable.ManagedEntity,
+            _bounceAnimation = GameService.Animation.Tweener.Tween(this.ManagedPathable.ManagedEntity,
                                                                    new {VerticalOffset = 0f},
                                                                    this.ManagedPathable.ManagedEntity.VerticalOffset / 2f,
-                                                                   0f, true
-                                                                  )
+                                                                   0f, true)
                                           .Ease(Ease.BounceOut);
+        }
+
+        public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {
+            foreach (var attr in attributes) {
+                Console.WriteLine(attr.Name + " = " + attr.Value);
+            }
         }
 
     }

@@ -115,11 +115,11 @@ namespace Blish_HUD.Modules.EventTimers {
                     BasicTooltipText = meta.Category,
                     Text = meta.Name,
                     IconSize = DetailsIconSize.Small,
-                    Icon = string.IsNullOrWhiteSpace(meta.Icon) ? null : GameService.Content.GetTexture(meta.Icon),
+                    Icon = string.IsNullOrEmpty(meta.Icon) ? null : GameService.Content.GetTexture(meta.Icon),
                     ShowVignette = false
                 };
 
-                var nextTimeLabel = new LabelBase {
+                var nextTimeLabel = new Label() {
                     Size = new Point(65, es2.ContentRegion.Height),
                     Text = meta.NextTime.ToShortTimeString(),
                     HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
@@ -130,7 +130,7 @@ namespace Blish_HUD.Modules.EventTimers {
 
                 Adhesive.Binding.CreateOneWayBinding(() => nextTimeLabel.Height, () => es2.ContentRegion, (rectangle => rectangle.Height), true);
 
-                if (!string.IsNullOrWhiteSpace(meta.Wiki)) {
+                if (!string.IsNullOrEmpty(meta.Wiki)) {
                     var glowWikiBttn = new GlowButton {
                         Icon             = GameService.Content.GetTexture("102530"),
                         BasicTooltipText = "Read about this event on the wiki.",
@@ -145,7 +145,7 @@ namespace Blish_HUD.Modules.EventTimers {
                     };
                 }
 
-                if (!string.IsNullOrWhiteSpace(meta.Waypoint)) {
+                if (!string.IsNullOrEmpty(meta.Waypoint)) {
                     var glowWaypointBttn = new GlowButton {
                         Icon = GameService.Content.GetTexture("waypoint"),
                         BasicTooltipText = $"Nearby waypoint: {meta.Waypoint}",

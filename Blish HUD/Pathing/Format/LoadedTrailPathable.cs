@@ -49,7 +49,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // ITrail:Texture
             RegisterAttribute("texture", delegate(XmlAttribute attribute) {
-                                  if (!string.IsNullOrWhiteSpace(attribute.Value)) {
+                                  if (!string.IsNullOrEmpty(attribute.Value)) {
                                       this.TextureReferencePath = attribute.Value.Trim();
                                                                            //.Replace('\\', Path.DirectorySeparatorChar)
                                                                            //.Replace('/',  Path.DirectorySeparatorChar);
@@ -75,7 +75,7 @@ namespace Blish_HUD.Pathing.Format {
         }
 
         private void LoadTexture() {
-            if (!string.IsNullOrWhiteSpace(_textureReferencePath)) {
+            if (!string.IsNullOrEmpty(_textureReferencePath)) {
                 this.Texture = this.PackContext.LoadTexture(_textureReferencePath);
             }
         }

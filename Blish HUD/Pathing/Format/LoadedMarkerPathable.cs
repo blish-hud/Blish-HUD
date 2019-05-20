@@ -101,7 +101,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // IMarker:Icon
             RegisterAttribute("iconFile", delegate (XmlAttribute attribute) {
-                if (!string.IsNullOrWhiteSpace(attribute.Value)) {
+                if (!string.IsNullOrEmpty(attribute.Value)) {
                     this.IconReferencePath = attribute.Value.Trim();
                                                       //.Replace('\\', Path.DirectorySeparatorChar)
                                                       //.Replace('/',  Path.DirectorySeparatorChar);
@@ -128,7 +128,7 @@ namespace Blish_HUD.Pathing.Format {
             //});
 
             // IMarker:Text
-            RegisterAttribute("text", attribute => (!string.IsNullOrWhiteSpace(this.Text = attribute.Value)));
+            RegisterAttribute("text", attribute => (!string.IsNullOrEmpty(this.Text = attribute.Value)));
         }
 
         protected override bool FinalizeAttributes(Dictionary<string, LoadedPathableAttributeDescription> attributeLoaders) {
@@ -152,7 +152,7 @@ namespace Blish_HUD.Pathing.Format {
         }
 
         private void LoadIcon() {
-            if (!string.IsNullOrWhiteSpace(_iconReferencePath)) {
+            if (!string.IsNullOrEmpty(_iconReferencePath)) {
                 this.Icon = this.PackContext.LoadTexture(_iconReferencePath);
             }
         }

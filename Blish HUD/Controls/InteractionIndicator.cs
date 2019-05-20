@@ -26,6 +26,15 @@ namespace Blish_HUD.Controls {
         protected Keys[] _interactionKeys = new [] { Keys.F };
         protected int _verticalIndex = 1;
 
+
+        /// <summary>
+        /// The text this <see cref="InteractionIndicator"/> should show.
+        /// </summary>
+        public string Text {
+            get => _text;
+            set => SetProperty(ref _text, value, true);
+        }
+
         public int VerticalIndex {
             get => _verticalIndex;
             set {
@@ -40,11 +49,11 @@ namespace Blish_HUD.Controls {
         }
 
         public InteractionIndicator() {
-            this.Text = DEFAULT_INTERACT_TEXT;
-            this.VerticalAlignment = DrawUtil.VerticalAlignment.Middle;
-            this.ShowShadow = true;
-            this.StrokeText = true;
-            this.Font = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
+            _text = DEFAULT_INTERACT_TEXT;
+            _verticalAlignment = DrawUtil.VerticalAlignment.Middle;
+            _showShadow = true;
+            _strokeText = true;
+            _font = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
             this.Size = new Point((int)(CONTROL_WIDTH * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), (int)(CONTROL_HEIGHT * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)));
             this.Location = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
             this.Opacity = 0f;
@@ -59,7 +68,7 @@ namespace Blish_HUD.Controls {
             };
         }
 
-        public void Show() {
+        public override void Show() {
             _fadeAnimation?.Cancel();
 
             this.Visible = true;
@@ -67,7 +76,7 @@ namespace Blish_HUD.Controls {
             _fadeAnimation = Animation.Tweener.Tween(this, new {Opacity = 1f}, (1f - this.Opacity) / 2);
         }
 
-        public void Hide() {
+        public override void Hide() {
             _fadeAnimation?.Cancel();
             _fadeAnimation = Animation.Tweener.Tween(this, new { Opacity = 0f }, this.Opacity / 2).OnComplete(
                                                                                                           delegate {
@@ -85,7 +94,7 @@ namespace Blish_HUD.Controls {
                                                 (int)(bounds.Height * 0.13),
                                                 (int)(bounds.Width  * 0.78),
                                                 (int)(bounds.Height * 0.5)),
-                     $"{DrawUtil.WrapText(this.Font, this.Text, bounds.Width * 0.5f)} [{string.Join(" + ", this.InteractionKeys)}]");
+                     $"{DrawUtil.WrapText(_font, _text, bounds.Width * 0.5f)} [{string.Join(" + ", this.InteractionKeys)}]");
         }
 
     }

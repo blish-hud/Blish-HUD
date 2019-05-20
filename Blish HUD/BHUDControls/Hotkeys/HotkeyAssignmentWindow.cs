@@ -40,7 +40,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
         }
 
         private void BuildChildElements() {
-            var assignInputsLbl = new LabelBase() {
+            var assignInputsLbl = new Label() {
                 Text = $"Assign inputs to: {HotkeyDefinition.Name}",
                 Location = new Point(40, 35),
                 ShowShadow = true,

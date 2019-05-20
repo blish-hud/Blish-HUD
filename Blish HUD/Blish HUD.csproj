@@ -136,11 +136,14 @@
     <Compile Include="BHGw2Api\Settings.cs" />
     <Compile Include="BHUDControls\Hotkeys\HotkeyAssigner.cs" />
     <Compile Include="BHUDControls\Hotkeys\HotkeyAssignmentWindow.cs" />
+    <Compile Include="Content\CachedStringRender.cs" />
     <Compile Include="Controls\ContextMenuStripItem.cs" />
     <Compile Include="Controls\DetailsButton.cs" />
     <Compile Include="Controls\Effects\ControlEffect.cs" />
     <Compile Include="Controls\Effects\GlowEffect.cs" />
     <Compile Include="Controls\Effects\ScrollingHighlightEffect.cs" />
+    <Compile Include="Controls\Label.cs" />
+    <Compile Include="Controls\NullControl.cs" />
     <Compile Include="Controls\Resources\Checkable.cs" />
     <Compile Include="Controls\_Events\ChildChangedEventArgs.cs" />
     <Compile Include="Controls\_Events\MovedEventArgs.cs" />
@@ -152,7 +155,6 @@
     <Compile Include="Controls\InteractionIndicator.cs" />
     <Compile Include="Controls\InteractionInfo.cs" />
     <Compile Include="Controls\MultilineTextBox.cs" />
-    <Compile Include="Controls\ScrollingHighlight.cs" />
     <Compile Include="Controls\IMenuItem.cs" />
     <Compile Include="Controls\BackButton.cs" />
     <Compile Include="Controls\Checkbox.cs" />
@@ -173,7 +175,6 @@
     <Compile Include="Controls\Popup.cs" />
     <Compile Include="Controls\Screen.cs" />
     <Compile Include="Controls\Scrollbar.cs" />
-    <Compile Include="Controls\ScrollingButtonContainer.cs" />
     <Compile Include="Controls\SkillBox.cs" />
     <Compile Include="Controls\StandardButton.cs" />
     <Compile Include="Controls\TabbedWindow.cs" />
@@ -200,6 +201,9 @@
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\ITacOPathable.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Readers\TrlReader.cs" />
     <Compile Include="Modules\TestMefModule.cs" />
+    <Compile Include="Pathing\Behaviors\CopyLandmark.cs" />
+    <Compile Include="Pathing\Behaviors\IdentifyingBehaviorAttributePrefixAttribute.cs" />
+    <Compile Include="Pathing\Behaviors\ILoadableBehavior.cs" />
     <Compile Include="Pathing\Entities\Marker.cs" />
     <Compile Include="GameServices\PersistentStoreService.cs" />
     <Compile Include="Interfaces\IRenderable2D.cs" />
@@ -208,8 +212,7 @@
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Behavior\BasicTOBehavior.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\TacOMarkerPathable.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\TacOTrailPathable.cs" />
-    <Compile Include="Pathing\Behavior\BehaviorSet.cs" />
-    <Compile Include="Pathing\Behavior\DisplayInteractionInfo.cs" />
+    <Compile Include="Pathing\Behaviors\DisplayInteractionInfo.cs" />
     <Compile Include="Pathing\Entities\ScrollingTrail.cs" />
     <Compile Include="Pathing\Entities\Trail.cs" />
     <Compile Include="Pathing\Entities\ScrollingTrailSection.cs" />
@@ -218,7 +221,7 @@
     <Compile Include="Pathing\Format\LoadedTrailPathable.cs" />
     <Compile Include="Pathing\IPathable.cs" />
     <Compile Include="Pathing\ManagedPathable.cs" />
-    <Compile Include="Pathing\Behavior\PathingBehavior.cs" />
+    <Compile Include="Pathing\Behaviors\PathingBehavior.cs" />
     <Compile Include="Pathing\Markers\IMarker.cs" />
     <Compile Include="Pathing\Markers\BasicMarkerPathable.cs" />
     <Compile Include="Pathing\Trails\BasicTrailPathable.cs" />

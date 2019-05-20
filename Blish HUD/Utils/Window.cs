@@ -225,7 +225,7 @@ namespace Blish_HUD.Utils {
                 classText = new StringBuilder("", cls_max_length + 5);
                 GetClassName(hwnd, classText, cls_max_length + 2);
 
-                if (!string.IsNullOrEmpty(classText.ToString()) && !string.IsNullOrWhiteSpace(classText.ToString()))
+                if (!string.IsNullOrEmpty(classText.ToString()) && !string.IsNullOrEmpty(classText.ToString()))
                     className = classText.ToString();
             } catch (Exception ex) {
                 className = ex.Message;

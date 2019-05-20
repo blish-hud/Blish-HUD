@@ -7,7 +7,7 @@ using Blish_HUD.Controls;
 using Blish_HUD.Entities;
 using Microsoft.Xna.Framework;
 
-namespace Blish_HUD.Pathing.Behavior {
+namespace Blish_HUD.Pathing.Behaviors {
     public class DisplayInteractionInfo<TPathable, TEntity> : Interactable<TPathable, TEntity>
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {

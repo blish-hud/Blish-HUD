@@ -20,6 +20,7 @@ namespace Blish_HUD.Controls {
         public Screen() : base() {
             this.Location = new Point(0, 0);
             this.Size = new Point(GameService.Graphics.GraphicsDevice.Viewport.Width, GameService.Graphics.GraphicsDevice.Viewport.Height);
+            //this.ClipsToScale = false;
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {

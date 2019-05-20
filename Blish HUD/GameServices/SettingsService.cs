@@ -303,7 +303,7 @@ namespace Blish_HUD {
             var settingsMi_About = settingsListMenu.AddMenuItem("About", Content.GetTexture("440023"));
             var settingsMi_Exit = settingsListMenu.AddMenuItem("Close Blish HUD", Content.GetTexture("155049"));
 
-            //settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
+            settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
 
             GameService.Module.OnLoad += delegate {
                 foreach (var module in GameService.Module.AvailableModules) {
@@ -386,7 +386,7 @@ namespace Blish_HUD {
 
             var cleanNotice = ANET_COPYRIGHT_NOTICE_CLEAN;
 
-            var copyrightNotice1 = new LabelBase() {
+            var copyrightNotice1 = new Label() {
                 Text = cleanNotice.Split('|')[0],
                 AutoSizeHeight = true,
                 Width               = size.X,
@@ -394,7 +394,7 @@ namespace Blish_HUD {
                 Parent              = asPanel
             };
 
-            var copyrightNotice2 = new LabelBase() {
+            var copyrightNotice2 = new Label() {
                 Text = cleanNotice.Split('|')[1],
                 Location            = new Point(0, copyrightNotice1.Bottom + 5),
                 AutoSizeHeight      = true,
@@ -403,7 +403,7 @@ namespace Blish_HUD {
                 Parent              = asPanel
             };
 
-            var copyrightNotice3 = new LabelBase() {
+            var copyrightNotice3 = new Label() {
                 Text = cleanNotice.Split('|')[2],
                 Location            = new Point(0, copyrightNotice2.Bottom + 5),
                 AutoSizeHeight      = true,
@@ -412,7 +412,7 @@ namespace Blish_HUD {
                 Parent              = asPanel
             };
             
-            var copyrightNotice4 = new LabelBase() {
+            var copyrightNotice4 = new Label() {
                 Text = cleanNotice.Split('|')[3],
                 Location            = new Point(0, copyrightNotice3.Bottom + 5),
                 AutoSizeHeight      = true,
@@ -423,7 +423,7 @@ namespace Blish_HUD {
 
             // OSS
 
-            var ossNotice = new LabelBase() {
+            var ossNotice = new Label() {
                 Text           = "Blish HUD makes use of multiple open source libraries:",
                 Location       = new Point(20 + 3, copyrightNotice4.Bottom + 25),
                 AutoSizeHeight = true,
@@ -568,7 +568,7 @@ namespace Blish_HUD {
                                                    }
 
                                                    foreach (string licenseLine in rawLicense.Split('\n')) {
-                                                       var lineLbl = new LabelBase() {
+                                                       var lineLbl = new Label() {
                                                            Text = licenseLine,
                                                            Location = new Point(backButton.Left, lPos),
                                                            AutoSizeHeight = true,
@@ -602,7 +602,7 @@ namespace Blish_HUD {
                 Location = new Point(20, 20),
             };
 
-            var moduleSelectLbl = new LabelBase() {
+            var moduleSelectLbl = new Label() {
                 Text = "Module",
                 AutoSizeWidth = true,
                 AutoSizeHeight = true,
@@ -619,28 +619,28 @@ namespace Blish_HUD {
             moduleDropdown.Top -= moduleSelectLbl.Height - moduleDropdown.Height / 2;
 
             // Display module information
-            var lblModuleName = new LabelBase() {
+            var lblModuleName = new Label() {
                 Text = "Module Name: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 Location = new Point(moduleSelectLbl.Left + 15, moduleSelectLbl.Bottom + 15),
             };
-            var lblModuleAuthor = new LabelBase() {
+            var lblModuleAuthor = new Label() {
                 Text = "Author: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 Location = new Point(lblModuleName.Left, lblModuleName.Bottom + 3),
             };
-            var lblModuleVersion = new LabelBase() {
+            var lblModuleVersion = new Label() {
                 Text = "Version: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 Location = new Point(lblModuleAuthor.Left, lblModuleAuthor.Bottom + 3),
             };
-            var lblModuleDescription = new LabelBase() {
+            var lblModuleDescription = new Label() {
                 Text = "Description: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,
@@ -652,7 +652,7 @@ namespace Blish_HUD {
                 Parent = mPanel,
                 Location = new Point(moduleDropdown.Right + 10, moduleDropdown.Top)
             };
-            var lblModuleNamespace = new LabelBase() {
+            var lblModuleNamespace = new Label() {
                 Text = "Module Namespace: ",
                 Parent = mPanel,
                 AutoSizeHeight = true,

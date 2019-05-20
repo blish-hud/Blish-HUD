@@ -4,12 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Blish_HUD.Controls;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
-using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
-using Panel = Blish_HUD.Controls.Panel;
 
 namespace Blish_HUD {
 
@@ -59,7 +56,7 @@ namespace Blish_HUD {
                 Size = wndw.ContentRegion.Size
             };
 
-            var hi = new LabelBase() {
+            var hi = new Label() {
                 Text = Utils.DrawUtil.WrapText(Content.DefaultFont14, "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)", 50),
                 Parent = hPanel,
                 Location = Point.Zero,

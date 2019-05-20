@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules {
     public class DebugText : Module {
 
-        private Controls.LabelBase lblInfo;
+        private Controls.Label lblInfo;
 
         private Gw2MumbleService Gw2Mumble;
         private PlayerService Player;
@@ -69,7 +69,7 @@ namespace Blish_HUD.Modules {
             Gw2Mumble = GameService.Gw2Mumble;
             Player = GameService.Player;
 
-            lblInfo = new Controls.LabelBase {
+            lblInfo = new Controls.Label {
                 Font                = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size11, ContentService.FontStyle.Regular),
                 HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
                 VerticalAlignment   = Utils.DrawUtil.VerticalAlignment.Middle,

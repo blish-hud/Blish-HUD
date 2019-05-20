@@ -71,7 +71,7 @@ namespace Blish_HUD {
 
 #if DEBUG
             graphics.SynchronizeWithVerticalRetrace = false;
-            this.IsFixedTimeStep = false;
+            this.IsFixedTimeStep                    = false;
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
 #endif
 
@@ -159,14 +159,7 @@ namespace Blish_HUD {
 
             GameService.Debug.StartTimeFunc("UI Elements");
             if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
-                var screenBounds = new Rectangle(
-                                                 0,
-                                                 0,
-                                                 graphics.PreferredBackBufferWidth,
-                                                 graphics.PreferredBackBufferHeight
-                                                );
-
-                GameService.Graphics.SpriteScreen.Draw(spriteBatch, screenBounds, screenBounds);
+                GameService.Graphics.SpriteScreen.Draw(spriteBatch, GameService.Graphics.SpriteScreen.LocalBounds, GameService.Graphics.SpriteScreen.LocalBounds);
             }
             GameService.Debug.StopTimeFunc("UI Elements");
 
@@ -186,15 +179,15 @@ namespace Blish_HUD {
 
             int i = 0;
             foreach (KeyValuePair<string, DebugService.FuncClock> timedFuncPair in GameService.Debug.FuncTimes.Where(ft => ft.Value.AverageRuntime > 1).OrderByDescending(ft => ft.Value.AverageRuntime)) {
-                spriteBatch.DrawString(GameService.Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.AverageRuntime)} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+                spriteBatch.DrawString(GameService.Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.AverageRuntime)} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Orange);
                 i++;
             }
 
             spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Pathables Available: {GameService.Pathing.Pathables.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
             spriteBatch.DrawString(GameService.Content.DefaultFont14, $"3D Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
-            spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            //i++;
+            //spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
             spriteBatch.DrawString(GameService.Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
 

@@ -209,7 +209,7 @@ namespace Blish_HUD.Controls {
             _layoutRightTitleBarBounds = new Rectangle(_titleBarBounds.Right - titleBarRightWidth, titleBarDrawOffset, _textureTitleBarRight.Width,                                                                              _textureTitleBarRight.Height);
 
             // Title bar text bounds
-            if (!string.IsNullOrWhiteSpace(_title) && !string.IsNullOrWhiteSpace(_subtitle)) {
+            if (!string.IsNullOrEmpty(_title) && !string.IsNullOrEmpty(_subtitle)) {
                 int titleTextWidth = (int)Content.DefaultFont32.MeasureString(_title).Width;
 
                 _layoutSubtitleBounds = _layoutLeftTitleBarBounds.OffsetBy(TITLE_OFFSET + titleTextWidth + SUBTITLE_OFFSET, 0);
@@ -369,14 +369,14 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _layoutRightTitleBarBounds);
             }
 
-            if (!string.IsNullOrWhiteSpace(_title)) {
+            if (!string.IsNullOrEmpty(_title)) {
                 spriteBatch.DrawStringOnCtrl(this,
                                              _title,
                                              Content.DefaultFont32,
                                              _layoutLeftTitleBarBounds.OffsetBy(80, 0),
                                              ContentService.Colors.ColonialWhite);
 
-                if (!string.IsNullOrWhiteSpace(_subtitle)) {
+                if (!string.IsNullOrEmpty(_subtitle)) {
                     spriteBatch.DrawStringOnCtrl(this,
                                                  _subtitle,
                                                  Content.DefaultFont16,

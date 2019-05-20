@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Utils;
@@ -31,7 +30,7 @@ namespace Blish_HUD.Modules.EventTimers {
             this.BasicTooltipText = "Right click to dismiss";
 
             string wrappedTitle = DrawUtil.WrapText(Content.DefaultFont14, title, this.Width - NOTIFICATION_HEIGHT - 20 - 32);
-            var titleLbl = new LabelBase() {
+            var titleLbl = new Label() {
                 Parent            = this,
                 Location          = new Point(NOTIFICATION_HEIGHT                   + 10, 0),
                 Size              = new Point(this.Width - NOTIFICATION_HEIGHT - 10 - 32, this.Height / 2),
@@ -41,7 +40,7 @@ namespace Blish_HUD.Modules.EventTimers {
             };
 
             string wrapped = DrawUtil.WrapText(Content.DefaultFont14, message, this.Width - NOTIFICATION_HEIGHT - 20 - 32);
-            var messageLbl = new LabelBase() {
+            var messageLbl = new Label() {
                 Parent            = this,
                 Location          = new Point(NOTIFICATION_HEIGHT                   + 10, this.Height / 2),
                 Size              = new Point(this.Width - NOTIFICATION_HEIGHT - 10 - 32, this.Height / 2),

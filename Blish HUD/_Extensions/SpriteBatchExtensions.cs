@@ -150,7 +150,7 @@ namespace Blish_HUD {
                                             DrawUtil.HorizontalAlignment horizontalAlignment = DrawUtil.HorizontalAlignment.Left,
                                             DrawUtil.VerticalAlignment verticalAlignment = DrawUtil.VerticalAlignment.Middle) {
 
-            if (string.IsNullOrWhiteSpace(text)) return;
+            if (string.IsNullOrEmpty(text)) return;
 
             text = wrap ? DrawUtil.WrapText(font, text, destinationRectangle.Width) : text;
 

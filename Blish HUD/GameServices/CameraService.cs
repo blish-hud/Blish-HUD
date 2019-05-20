@@ -45,6 +45,8 @@ namespace Blish_HUD {
                 _projection = Matrix.CreatePerspectiveFieldOfView((float)Gw2Mumble.MumbleBacking.Identity.FieldOfView, this.AspectRatio, this.NearPlaneRenderDistance, this.FarPlaneRenderDistance);
 
                 _worldViewProjection = _view * _projection;
+
+                //Console.WriteLine(Vector3.Distance(_position, Player.Position));
             }
         }
 
