@@ -170,18 +170,15 @@ namespace Blish_HUD.Pathing.Format {
         }
 
         protected virtual void AssignBehaviors() {
+            var attrNames = _leftOverAttributes.Select(xmlAttr => xmlAttr.Name.ToLower());
+
             foreach (var autoBehavior in PathingBehavior.AllAvailableBehaviors) {
+                var checkBehavior = IdentifyingBehaviorAttributePrefixAttribute.GetAttributesOnType(autoBehavior);
 
-                var b = IdentifyingBehaviorAttributePrefixAttribute.GetAttributesOnType(autoBehavior);
+                if (attrNames.Any(sa => sa.StartsWith(checkBehavior.AttributePrefix))) {
+                    var loadedBehavior = Activator.CreateInstance(autoBehavior.MakeGenericType(this.GetType(), typeof(TEntity)), this) as ILoadableBehavior;
 
-                var idNames = b.Select(ab => ab.AttributePrefix).First();
-
-                var attrNames = _leftOverAttributes.Select(xmlAttr => xmlAttr.Name.ToLower());
-
-                if (attrNames.Any(sa => sa.StartsWith(idNames))) {
-                    var genAB = autoBehavior.MakeGenericType(this.GetType(), typeof(TEntity));
-                    var loadedBehavior = Activator.CreateInstance(genAB, this) as ILoadableBehavior;
-                    loadedBehavior.LoadWithAttributes(_leftOverAttributes.Where(sa => sa.Name.ToLower().StartsWith(idNames)));
+                    loadedBehavior.LoadWithAttributes(_leftOverAttributes.Where(sa => sa.Name.ToLower().StartsWith(checkBehavior.AttributePrefix)));
                     this.Behavior.Add((PathingBehavior)loadedBehavior);
                 }
             }

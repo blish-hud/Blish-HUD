@@ -201,7 +201,7 @@
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\ITacOPathable.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Readers\TrlReader.cs" />
     <Compile Include="Modules\TestMefModule.cs" />
-    <Compile Include="Pathing\Behaviors\CopyLandmark.cs" />
+    <Compile Include="Pathing\Behaviors\Clipboard.cs" />
     <Compile Include="Pathing\Behaviors\IdentifyingBehaviorAttributePrefixAttribute.cs" />
     <Compile Include="Pathing\Behaviors\ILoadableBehavior.cs" />
     <Compile Include="Pathing\Entities\Marker.cs" />
