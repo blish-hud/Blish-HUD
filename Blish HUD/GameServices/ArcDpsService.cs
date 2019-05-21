@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using ProtoBuf;
 
 namespace Blish_HUD
 {
     public class ArcDpsService : GameService
     {
-        public bool HudIsActive = false;
+        public bool ArcPresent;
+        private CancellationToken Cancel;
+        public bool HudIsActive;
+        private Mutex Mut;
         private NamedPipeServerStream Server;
         private Stopwatch Watch;
-        private CancellationToken Cancel;
-        private Mutex Mut;
 
         protected override void Initialize()
         {
@@ -29,31 +30,49 @@ namespace Blish_HUD
             Task.Run(() =>
             {
                 while (true)
-                {
                     try
                     {
                         Server.WaitForConnection();
-
-                        var reader = new StreamReader(Server);
-                        reader.ReadLine();
-
+                        var obj = Serializer.Deserialize<Arc>(Server);
                         Server.Disconnect();
-                        Mut.WaitOne();
-                        try
+
+                        if (obj.Msgtype == Mtype.Imgui)
                         {
-                            Watch.Restart();
+                            Mut.WaitOne();
+                            try
+                            {
+                                Watch.Restart();
+                            }
+                            finally
+                            {
+                                Mut.ReleaseMutex();
+                            }
                         }
-                        finally
+                        else
+
                         {
-                            Mut.ReleaseMutex();
+                            ProcessArc(obj);
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
                         // ignored
                     }
-                }
             }, Cancel);
+        }
+
+        private void ProcessArc(Arc obj)
+        {
+            switch (obj.Msgtype)
+            {
+                case Mtype.NoMsg:
+                    break;
+                case Mtype.Greeting:
+                    ArcPresent = obj.Greeting;
+                    break;
+                case Mtype.Imgui:
+                    break;
+            }
         }
 
         protected override void Unload()
