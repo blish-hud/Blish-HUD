@@ -187,6 +187,7 @@
     <Compile Include="Controls\_Types\Thickness.cs" />
     <Compile Include="CustomBlendStates.cs" />
     <Compile Include="Custom\ObservableKeyedCollection.cs" />
+    <Compile Include="Custom\Pipeline.cs" />
     <Compile Include="Entities\Cube.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityContainer.cs" />

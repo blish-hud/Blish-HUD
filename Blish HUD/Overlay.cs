@@ -153,7 +153,7 @@ namespace Blish_HUD {
 
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game
-            if (GameService.GameIntegration.IsInGame && GameService.ArcDps.HudIsActive)
+            if (GameService.GameIntegration.IsInGame && (!GameService.ArcDps.ArcPresent || GameService.ArcDps.HudIsActive))
                 GameService.Graphics.World.Draw(this.GraphicsDevice);
             GameService.Debug.StopTimeFunc("3D objects");
 
