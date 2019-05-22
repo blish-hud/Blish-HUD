@@ -153,7 +153,7 @@ namespace Blish_HUD {
 
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game
-            if (GameService.GameIntegration.IsInGame)
+            if (GameService.GameIntegration.IsInGame && (!GameService.ArcDps.ArcPresent || GameService.ArcDps.HudIsActive))
                 GameService.Graphics.World.Draw(this.GraphicsDevice);
             GameService.Debug.StopTimeFunc("3D objects");
 
@@ -190,6 +190,8 @@ namespace Blish_HUD {
             //spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
             spriteBatch.DrawString(GameService.Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, "IsHudActive: " + (GameService.ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
 
 #endif
 

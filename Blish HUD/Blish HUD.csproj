@@ -187,9 +187,11 @@
     <Compile Include="Controls\_Types\Thickness.cs" />
     <Compile Include="CustomBlendStates.cs" />
     <Compile Include="Custom\ObservableKeyedCollection.cs" />
+    <Compile Include="Custom\Pipeline.cs" />
     <Compile Include="Entities\Cube.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityContainer.cs" />
+    <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
     <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\LoadingScreenHints\Controls\GamingTip.cs" />
