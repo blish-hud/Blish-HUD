@@ -89,6 +89,18 @@
     "icon": "1769811"
   },
   {
+    "name": "Pinata",
+    "offset": "00:25Z",
+    "repeat": "02:00",
+    "difficulty": "Standard",
+    "category": "Meta Event",
+    "location": "Crystal Oasis",
+    "waypoint": "[&BLsKAAA=]",
+    "wiki": "https://wiki.guildwars2.com/wiki/Choya_Pinata",
+    "duration": "5",
+    "alert": 10,
+  },
+  {
     "name": "Claw of Jormag",
     "offset": "02:30Z",
     "repeat": "03:00",
@@ -529,6 +541,18 @@
     "alert": 10
   },
   {
+    "name": "Chak Gerent",
+    "offset": "01:30Z",
+    "repeat": "02:00",
+    "difficulty": "Standard",
+    "category": "Meta Event",
+    "location": "Tangled Depths",
+    "waypoint": "[&BPUHAAA=]",
+    "wiki": "https://wiki.guildwars2.com/wiki/Against_the_Chak_Gerent",
+    "duration": "",
+    "alert": 10
+  },
+  {
     "name": "Trial by Fire",
     "offset": "01:15Z",
     "repeat": "02:00",
@@ -626,5 +650,5 @@
     "wiki": "",
     "duration": "0",
     "alert": 30
-  }
+  },
 ]
