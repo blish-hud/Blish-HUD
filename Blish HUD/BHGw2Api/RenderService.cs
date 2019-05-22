@@ -42,7 +42,7 @@ namespace Blish_HUD.BHGw2Api {
         private static Texture2D TextureFromFile(string filepath) {
             if (File.Exists(filepath)) {
                 using (var fileStream = new FileStream(filepath, FileMode.Open)) {
-                    return Texture2D.FromStream(GameServices.GetService<GraphicsService>().GraphicsDevice, fileStream);
+                    return Texture2D.FromStream(GameService.Graphics.GraphicsDevice, fileStream);
                 }
             } else return null;
         }

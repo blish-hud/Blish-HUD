@@ -85,7 +85,7 @@ namespace Blish_HUD.Controls {
 
             bool stageOneComplete = false;
 
-            animFlipIcon = GameServices.GetService<AnimationService>().Tween(0, this.BoxScale == SkillBoxSize.Normal ? BOX_DIMENSIONSATSCALE_NORMAL : BOX_DIMENSIONSATSCALE_SMALL, 150, AnimationService.EasingMethod.Linear);
+            animFlipIcon = GameService.Animation.Tween(0, this.BoxScale == SkillBoxSize.Normal ? BOX_DIMENSIONSATSCALE_NORMAL : BOX_DIMENSIONSATSCALE_SMALL, 150, AnimationService.EasingMethod.Linear);
 
             animFlipIcon.AnimationCompleted += delegate {
                 if (!stageOneComplete) {
@@ -93,7 +93,7 @@ namespace Blish_HUD.Controls {
                     this.Icon = newIcon;
                     animFlipIcon.Reverse();
                 } else {
-                    GameServices.GetService<AnimationService>().RemoveAnim(animFlipIcon);
+                    GameService.Animation.RemoveAnim(animFlipIcon);
                     animFlipIcon = null;
                     this.BackgroundColor = Color.Black;
                     Invalidate();

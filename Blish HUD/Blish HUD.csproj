@@ -235,7 +235,6 @@
     <Compile Include="Entities\Primitives\Mesh.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="FrameCounter.cs" />
-    <Compile Include="GameServices.cs" />
     <Compile Include="GameServices\DirectorService.cs" />
     <Compile Include="GameServices\FileService.cs" />
     <Compile Include="GameServices\HotkeysService.cs" />

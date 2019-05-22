@@ -78,7 +78,7 @@ namespace Blish_HUD {
         }
 
         public void Dispose() {
-            GameServices.GetService<AnimationService>().RemoveAnim(this);
+            GameService.Animation.RemoveAnim(this);
         }
     }
 

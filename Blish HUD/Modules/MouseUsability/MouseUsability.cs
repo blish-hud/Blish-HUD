@@ -67,8 +67,8 @@ namespace Blish_HUD.Modules.MouseUsability {
             HorizontalHighlight = new MouseHighlight(MouseHighlight.Orientation.Horizontal);
             VerticalHighlight = new MouseHighlight(MouseHighlight.Orientation.Vertical);
 
-            HorizontalHighlight.Parent = GameServices.GetService<GraphicsService>().SpriteScreen;
-            VerticalHighlight.Parent = GameServices.GetService<GraphicsService>().SpriteScreen;
+            HorizontalHighlight.Parent = GameService.Graphics.SpriteScreen;
+            VerticalHighlight.Parent = GameService.Graphics.SpriteScreen;
 
             // Update features to match saved settings state
             HorizontalHighlight.Visible = setting_hl_showHighlight.Value;
@@ -102,7 +102,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular),
+                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular),
             };
 
             var colorPicker = new ColorPicker() {
@@ -135,7 +135,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
+                Font = GameService.Content.DefaultFont14,
             };
 
             var highlightColor = new ColorBox() {
@@ -164,7 +164,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
+                Font = GameService.Content.DefaultFont14,
             };
 
             var outlineColor = new ColorBox() {
@@ -198,7 +198,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
+                Font = GameService.Content.DefaultFont14,
             };
 
             var tbOpacity = new TrackBar() {
@@ -246,7 +246,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
+                Font = GameService.Content.DefaultFont14,
             };
 
             var tbOutlineThickness = new TrackBar() {
@@ -307,11 +307,10 @@ namespace Blish_HUD.Modules.MouseUsability {
         public override void Update(GameTime gameTime) {
             base.Update(gameTime);
 
-            //if (GameServices.GetService<GraphicsService>().SpriteScreen.MouseOver) {
-            if (GameServices.GetService<InputService>().MouseHidden) return;
+            if (GameService.Input.MouseHidden) return;
 
-            HorizontalHighlight.Top = GameServices.GetService<InputService>().MouseState.Position.Y - HorizontalHighlight.Height / 2;
-            VerticalHighlight.Left = GameServices.GetService<InputService>().MouseState.Position.X - VerticalHighlight.Width / 2;
+            HorizontalHighlight.Top = GameService.Input.MouseState.Position.Y - HorizontalHighlight.Height / 2;
+            VerticalHighlight.Left = GameService.Input.MouseState.Position.X - VerticalHighlight.Width / 2;
             //}
         }
 

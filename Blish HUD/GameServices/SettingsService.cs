@@ -731,7 +731,7 @@ namespace Blish_HUD {
             backButton.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.NavigateHome(); };
 
             // Populate data
-            foreach (var module in GameServices.GetService<ModuleService>().AvailableModules) {
+            foreach (var module in Module.AvailableModules) {
                 moduleDropdown.Items.Add(module.GetModuleInfo().Name);
             }
 

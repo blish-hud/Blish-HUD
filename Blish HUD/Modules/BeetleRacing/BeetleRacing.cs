@@ -39,7 +39,7 @@ namespace Blish_HUD.Modules.BeetleRacing {
             base.OnEnabled();
 
             speedometer = new Speedometer {
-                Parent = GameServices.GetService<GraphicsService>().SpriteScreen,
+                Parent = GameService.Graphics.SpriteScreen,
                 Speed = 0
             };
         }

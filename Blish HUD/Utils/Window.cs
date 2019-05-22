@@ -245,7 +245,7 @@ namespace Blish_HUD.Utils {
             ClientToScreen(processWindowHandle, ref procPos);
 
             if (procPos != prevProcPos || !procRect.Equals(prevProcRect)) {
-                GameServices.GetService<GraphicsService>().Resolution = new Point(
+                GameService.Graphics.Resolution = new Point(
                     procRect.Right - procRect.Left,
                     procRect.Bottom - procRect.Top
                 );
