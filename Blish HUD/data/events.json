@@ -9,7 +9,8 @@
     "waypoint": "[&BEwCAAA=]",
     "wiki": "https://wiki.guildwars2.com/wiki/Defeat_the_Ley-Line_Anomaly_to_disperse_its_destructive_energy_before_it_overloads#Walkthrough",
     "duration": "",
-    "alert": 10
+    "alert": 10,
+    "icon": "1769807"
   },
   {
     "name": "Ley-Line Anomaly (Iron Marches)",
@@ -21,7 +22,8 @@
     "waypoint": "[&BOYBAAA=]",
     "wiki": "https://wiki.guildwars2.com/wiki/Defeat_the_Ley-Line_Anomaly_to_disperse_its_destructive_energy_before_it_overloads#Walkthrough",
     "duration": "",
-    "alert": 10
+    "alert": 10,
+    "icon": "1769807"
   },
   {
     "name": "Ley-Line Anomaly (Gendarran Fields)",
@@ -33,7 +35,8 @@
     "waypoint": "[&BO0AAAA=]",
     "wiki": "https://wiki.guildwars2.com/wiki/Defeat_the_Ley-Line_Anomaly_to_disperse_its_destructive_energy_before_it_overloads#Walkthrough",
     "duration": "",
-    "alert": 10
+    "alert": 10,
+    "icon": "1769807"
   },
   {
     "name": "The Oil Floes",
@@ -88,7 +91,7 @@
     "alert": 5,
     "icon": "1769811"
   },
-  {
+    {
     "name": "Pinata",
     "offset": "00:25Z",
     "repeat": "02:00",
@@ -110,7 +113,8 @@
     "waypoint": "[&BHoCAAA=]",
     "wiki": "https://wiki.guildwars2.com/wiki/Claw_of_Jormag",
     "alert": 10,
-    "duration": "30"
+    "duration": "30",
+    "icon": "498983"
   },
   {
     "name": "Crash Site",
@@ -122,7 +126,8 @@
     "waypoint": "",
     "wiki": "https://wiki.guildwars2.com/wiki/Crash_Site_(meta_event)",
     "alert": 5,
-    "duration": "40"
+    "duration": "40",
+    "icon": "1302677"
   },
   {
     "name": "Evolved Jungle Wurm",
@@ -361,7 +366,8 @@
     "waypoint": "",
     "wiki": "https://wiki.guildwars2.com/wiki/Sandstorm!",
     "alert": 5,
-    "duration": "20"
+    "duration": "20",
+    "icon": "1302677"
   },
   {
     "name": "Shadow Behemoth",
@@ -477,7 +483,8 @@
     "waypoint": "[&BGsKAAA=]",
     "wiki": "https://wiki.guildwars2.com/wiki/The_Search_for_Buried_Treasure",
     "duration": "20",
-    "alert": 5
+    "alert": 5,
+    "icon": "1769809"
   },
   {
     "name": "The Shatterer",
@@ -502,7 +509,8 @@
     "waypoint": "[&BHQKAAA=]",
     "wiki": "https://wiki.guildwars2.com/wiki/Serpents%27_Ire",
     "duration": "",
-    "alert": 10
+    "alert": 10,
+    "icon": "1769812"
   },
   {
     "name": "Palawadan, Jewel of Istan",
@@ -538,9 +546,10 @@
     "waypoint": "",
     "wiki": "https://wiki.guildwars2.com/wiki/Defending_Tarir",
     "duration": "75",
-    "alert": 10
+    "alert": 10,
+    "icon": "1228221"
   },
-  {
+    {
     "name": "Chak Gerent",
     "offset": "01:30Z",
     "repeat": "02:00",
@@ -562,7 +571,8 @@
     "waypoint": "",
     "wiki": "https://wiki.guildwars2.com/wiki/Trial_by_Fire",
     "duration": "15",
-    "alert": 10
+    "alert": 10,
+    "icon": "1228221"
   },
   {
     "name": "Battle in Tarir",
