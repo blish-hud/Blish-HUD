@@ -302,11 +302,11 @@ namespace Blish_HUD.Controls {
                 Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
                                                      () => lastItem.Bottom, applyLeft: true);
 
-            ShouldShift = e.ResultingChildren.Any(mi => {
-                MenuItem cmi = (MenuItem)mi;
+            //ShouldShift = e.ResultingChildren.Any(mi => {
+            //    MenuItem cmi = (MenuItem)mi;
 
-                return cmi.CanCheck || cmi.Children.Any();
-            });
+            //    return cmi.CanCheck || cmi.Children.Any();
+            //});
 
             Invalidate();
         }
@@ -387,7 +387,7 @@ namespace Blish_HUD.Controls {
                 extension = !this.Enabled ? "-disabled" : extension;
 
                 firstItemSprite = _cbRegions.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
-            } else if (this.Icon != null) {
+            } else if (this.Icon != null && !this.Children.Any()) {
                 // performance?
                 firstItemSprite = new TextureRegion2D(this.Icon);
             }
@@ -399,7 +399,11 @@ namespace Blish_HUD.Controls {
                                        this.FirstItemBoxRegion.OffsetBy(currentLeftSidePadding, 0));
             }
 
-            if (((IMenuItem) this.Parent).ShouldShift || _canCheck || _icon != null || _children.Any()) {
+            if (_canCheck) {
+                currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
+            } else if (_children.Any()) {
+                currentLeftSidePadding += ICON_PADDING;
+            } else if (_icon != null) {
                 currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
             }
 

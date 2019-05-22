@@ -28,6 +28,14 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public override void DoUpdate(GameTime gameTime) {
+            base.DoUpdate(gameTime);
+
+            int totalItemHeight = _children.Where(c => c.Visible).Max(c => c.Bottom);
+
+            this.Height = totalItemHeight;
+        }
+
         protected bool _shouldShift = false;
         public bool ShouldShift {
             get => _shouldShift;

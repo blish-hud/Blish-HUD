@@ -294,15 +294,15 @@ namespace Blish_HUD {
 
             Panel cPanel = null;
 
-            var settingsMi_App = settingsListMenu.AddMenuItem("Application Settings");//, Content.GetTexture("156736"));
-            var settingsMi_Controls = settingsListMenu.AddMenuItem("Control Settings"); //, Content.GetTexture("156734"));
-            var settingsMi_Sound = settingsListMenu.AddMenuItem("Sound Settings"); //, Content.GetTexture("156738"));
-            var settingsMi_Modules = settingsListMenu.AddMenuItem("Manage Modules"); //, Content.GetTexture("156764-noarrow"));
-            var settingsMi_API = settingsListMenu.AddMenuItem("API Settings"); //, Content.GetTexture("156684"));
-            var settingsMi_Update = settingsListMenu.AddMenuItem("Check For Updates"); //, Content.GetTexture("156411"));
-            var settingsMi_SupportUs = settingsListMenu.AddMenuItem("Support the Project"); //, Content.GetTexture("156331"));
-            var settingsMi_About = settingsListMenu.AddMenuItem("About"); //, Content.GetTexture("440023"));
-            var settingsMi_Exit = settingsListMenu.AddMenuItem("Close Blish HUD"); //, Content.GetTexture("155049"));
+            var settingsMi_App = settingsListMenu.AddMenuItem("Application Settings", Content.GetTexture("156736"));
+            var settingsMi_Controls = settingsListMenu.AddMenuItem("Control Settings", Content.GetTexture("156734"));
+            var settingsMi_Sound = settingsListMenu.AddMenuItem("Sound Settings", Content.GetTexture("156738"));
+            var settingsMi_Modules = settingsListMenu.AddMenuItem("Manage Modules", Content.GetTexture("156764-noarrow"));
+            var settingsMi_API = settingsListMenu.AddMenuItem("API Settings", Content.GetTexture("156684"));
+            var settingsMi_Update = settingsListMenu.AddMenuItem("Check For Updates", Content.GetTexture("156411"));
+            var settingsMi_SupportUs = settingsListMenu.AddMenuItem("Support the Project", Content.GetTexture("156331"));
+            var settingsMi_About = settingsListMenu.AddMenuItem("About", Content.GetTexture("440023"));
+            var settingsMi_Exit = settingsListMenu.AddMenuItem("Close Blish HUD", Content.GetTexture("155049"));
 
             //settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
 

@@ -78,6 +78,8 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateContentRegionBounds(object sender, EventArgs e) {
+            UpdateScrollbar();
+
             //if (this.Children.Any()) {
             //    if (Math.Max(this.ContentRegion.Width, this.Children.Max(c => c.Right)) != this.ContentRenderCache.Width) {
             //        OnPropertyChanged(nameof(this.ContentRegion));
@@ -143,29 +145,23 @@ namespace Blish_HUD.Controls {
                 int psXOffset = this.ShowBorder ? -RIGHT_MARGIN - 2 : -20;
 
                 //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Parent == this.Parent));
-                _scrollbarBindings.Add(
-                                       Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Parent, () => this.Parent, applyLeft: true));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Parent, () => this.Parent, applyLeft: true));
 
                 //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Height == this.Height));
-                _scrollbarBindings.Add(
-                                       Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Height, () => this.Height, applyLeft: true));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Height, () => this.Height, (h) => this.ContentRegion.Height - 20, applyLeft: true));
 
                 //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Right == this.Right - _panelScrollbar.Width));
-                _scrollbarBindings.Add(
-                                        Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Right, () => this.Right, (r) => r - _panelScrollbar.Width + 5, applyLeft: true));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Right, () => this.Right, (r) => r - _panelScrollbar.Width / 2, applyLeft: true));
 
                 //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Top == this.Top));
-                _scrollbarBindings.Add(
-                                        Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Top, () => this.Top, applyLeft: true));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Top, () => this.Top, (t) => t + this.ContentRegion.Top + 10, applyLeft: true));
 
                 //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Visible == this.Visible));
-                _scrollbarBindings.Add(
-                                        Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Visible, () => this.Visible, applyLeft: true));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Visible, () => this.Visible, applyLeft: true));
 
                 // Ensure scrollbar is visible
                 //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.ZIndex == this.ZIndex + 2));
-                _scrollbarBindings.Add(
-                                       Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex, () => this.ZIndex, (z) => z + 2, applyLeft: true));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex, () => this.ZIndex, (z) => z + 2, applyLeft: true));
             } else {
                 // TODO: Switch to breaking these bindings once it is supported in Adhesive
                 _scrollbarBindings.ForEach((bind) => bind.Disable());
@@ -240,7 +236,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, Content.GetTexture("scrollbar-track"),
                                  new Rectangle(ContentRegion.Right - 2,
                                                ContentRegion.Top,
-                                               4,
+                                               Content.GetTexture("scrollbar-track").Width,
                                                ContentRegion.Height),
                                  Color.Black);
             }
