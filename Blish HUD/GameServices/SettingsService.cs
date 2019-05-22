@@ -12,6 +12,7 @@ using Flurl.Http;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Container = Blish_HUD.Controls.Container;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
@@ -293,25 +294,29 @@ namespace Blish_HUD {
 
             Panel cPanel = null;
 
-            var settingsMi_App = settingsListMenu.AddMenuItem("Application Settings", Content.GetTexture("156736"));
-            var settingsMi_Controls = settingsListMenu.AddMenuItem("Control Settings", Content.GetTexture("156734"));
-            var settingsMi_Sound = settingsListMenu.AddMenuItem("Sound Settings", Content.GetTexture("156738"));
-            var settingsMi_Modules = settingsListMenu.AddMenuItem("Manage Modules", Content.GetTexture("156764-noarrow"));
-            var settingsMi_API = settingsListMenu.AddMenuItem("API Settings", Content.GetTexture("156684"));
-            var settingsMi_Update = settingsListMenu.AddMenuItem("Check For Updates", Content.GetTexture("156411"));
-            var settingsMi_SupportUs = settingsListMenu.AddMenuItem("Support the Project", Content.GetTexture("156331"));
-            var settingsMi_About = settingsListMenu.AddMenuItem("About", Content.GetTexture("440023"));
-            var settingsMi_Exit = settingsListMenu.AddMenuItem("Close Blish HUD", Content.GetTexture("155049"));
+            var settingsMi_App = settingsListMenu.AddMenuItem("Application Settings");//, Content.GetTexture("156736"));
+            var settingsMi_Controls = settingsListMenu.AddMenuItem("Control Settings"); //, Content.GetTexture("156734"));
+            var settingsMi_Sound = settingsListMenu.AddMenuItem("Sound Settings"); //, Content.GetTexture("156738"));
+            var settingsMi_Modules = settingsListMenu.AddMenuItem("Manage Modules"); //, Content.GetTexture("156764-noarrow"));
+            var settingsMi_API = settingsListMenu.AddMenuItem("API Settings"); //, Content.GetTexture("156684"));
+            var settingsMi_Update = settingsListMenu.AddMenuItem("Check For Updates"); //, Content.GetTexture("156411"));
+            var settingsMi_SupportUs = settingsListMenu.AddMenuItem("Support the Project"); //, Content.GetTexture("156331"));
+            var settingsMi_About = settingsListMenu.AddMenuItem("About"); //, Content.GetTexture("440023"));
+            var settingsMi_Exit = settingsListMenu.AddMenuItem("Close Blish HUD"); //, Content.GetTexture("155049"));
 
-            settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
+            //settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
 
+            var moduleMi_Module_Repo = new MenuItem("Manage Sources") {
+                Parent = settingsMi_Modules,
+                Icon   = Content.GetTexture("156140")
+            };
             GameService.Module.OnLoad += delegate {
                 foreach (var module in GameService.Module.AvailableModules) {
                     var moduleInfo = module.GetModuleInfo();
 
                     var moduleMi = new MenuItem(moduleInfo.Name) {
                         BasicTooltipText = moduleInfo.Description,
-                        Icon             = module.GetModuleInfo().Icon,//module.Enabled ? Content.GetTexture("1234938") : Content.GetTexture("1234939"),
+                        Icon             = module.Enabled ? Content.GetTexture("156149") : Content.GetTexture("156142"),
                         Parent           = settingsMi_Modules
                     };
                 }
@@ -321,9 +326,18 @@ namespace Blish_HUD {
                 cPanel?.Hide();
                 cPanel?.Dispose();
 
-                cPanel = BuildAboutPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+                cPanel          = BuildAboutPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
                 cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
-                cPanel.Parent = baseSettingsPanel;
+                cPanel.Parent   = baseSettingsPanel;
+            };
+
+            settingsMi_Modules.Click += delegate {
+                cPanel?.Hide();
+                cPanel?.Dispose();
+
+                cPanel          = BuildModulePanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+                cPanel.Parent   = baseSettingsPanel;
             };
 
             //var settingsMenu = new Menu() {
@@ -592,22 +606,25 @@ namespace Blish_HUD {
 
         // TODO: Cleanup where this is stored
         private List<Control> LstSettings = new List<Control>();
-        private Panel BuildModulePanel(Controls.WindowBase wndw) {
-            var mPanel = new Panel();
-
-            var backButton = new BackButton(wndw) {
-                Text = "Settings",
-                NavTitle = "Modules",
-                Parent = mPanel,
-                Location = new Point(20, 20),
+        private Panel BuildModulePanel(Point destinationSize) {
+            var mPanel = new Panel() {
+                Size      = destinationSize,
+                CanScroll = true
             };
 
+            //var backButton = new BackButton(wndw) {
+            //    Text = "Settings",
+            //    NavTitle = "Modules",
+            //    Parent = mPanel,
+            //    Location = new Point(20, 20),
+            //};
+
             var moduleSelectLbl = new Label() {
-                Text = "Module",
-                AutoSizeWidth = true,
+                Text           = "Module",
+                AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent = mPanel,
-                Location = new Point(backButton.Left, backButton.Bottom + 25),
+                Parent         = mPanel,
+                Location       = new Point(20, 25),
             };
 
             var moduleDropdown = new Dropdown() {
@@ -662,7 +679,7 @@ namespace Blish_HUD {
             cbModuleEnabled.Top += -cbModuleEnabled.Height / 2 + moduleDropdown.Height / 2;
 
             lblModuleNamespace.Left = lblModuleDescription.Left;
-            lblModuleNamespace.Bottom = wndw.ContentRegion.Height - 5;
+            lblModuleNamespace.Bottom = mPanel.Height - 5;
             
             // Wire events
             // TODO: This should likely just have its value bound to the ModuleState setting (and the setting should be bound to the module's "Enabled" property)
@@ -685,7 +702,7 @@ namespace Blish_HUD {
             int lineLength = 115;
             moduleDropdown.ValueChanged += (Object sender, Dropdown.ValueChangedEventArgs e) => {
                 var selectedModule =
-                    GameService.Module.AvailableModules.First(m => m.GetModuleInfo().Name == moduleDropdown.SelectedItem);
+                    Module.AvailableModules.First(m => m.GetModuleInfo().Name == moduleDropdown.SelectedItem);
 
                 if (selectedModule != null) {
                     // Populate module info labels
@@ -701,19 +718,21 @@ namespace Blish_HUD {
                     LstSettings.ToList().ForEach(s => s.Dispose());
                     LstSettings.Clear();
 
-                    // Display settings registered by module
-                    foreach (KeyValuePair<string, SettingEntry> setting in selectedModule.Settings.Entries) {
-                        if (!setting.Value.ExposedAsSetting) continue;
+                    int lastControlBottom = lblModuleDescription.Bottom + 50;
 
+                    // Display settings registered by module
+                    foreach (KeyValuePair<string, SettingEntry> setting in selectedModule.Settings.Entries.Where(setting => setting.Value.ExposedAsSetting)) {
                         Control settingCtrl;
 
                         if (SettingTypeRenderers.ContainsKey(setting.Value.SettingType)) {
                             settingCtrl = SettingTypeRenderers[setting.Value.SettingType]
-                                .Invoke(setting.Key, setting.Value);
-                            settingCtrl.Parent = mPanel;
+                               .Invoke(setting.Key, setting.Value);
+                            settingCtrl.Parent  = mPanel;
                             settingCtrl.Enabled = cbModuleEnabled.Checked;
-                            // TODO: Y pos should not be a static multiple of 20 (needs to be dynamic)
-                            settingCtrl.Location = new Point(lblModuleDescription.Left, lblModuleDescription.Bottom + 50 + LstSettings.Count * 20);
+
+                            settingCtrl.Location = new Point(lblModuleDescription.Left, lastControlBottom + 10);
+
+                            lastControlBottom = settingCtrl.Bottom;
                         } else {
                             // This setting type is not supported for automatic display
                             // Write this out to the log so that devs can see
@@ -728,7 +747,7 @@ namespace Blish_HUD {
                 }
             };
 
-            backButton.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.NavigateHome(); };
+            //backButton.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.NavigateHome(); };
 
             // Populate data
             foreach (var module in Module.AvailableModules) {

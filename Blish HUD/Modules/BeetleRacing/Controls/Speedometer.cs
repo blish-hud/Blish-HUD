@@ -14,7 +14,7 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
     public class Speedometer:Control {
 
         public int MinSpeed = 0;
-        public float MaxSpeed = 50;
+        public float MaxSpeed = 2200;
         public float Speed { get; set; } = 0;
 
         public bool ShowSpeedValue { get; set; } = false;
@@ -46,9 +46,9 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
 
             spriteBatch.DrawOnCtrl(this,
                                    Content.GetTexture("speed-fill"),
-                                   new Rectangle(_size.X / 2, _size.Y, 150, 203),
+                                   new Rectangle(_size.X / 2, _size.Y + 15, 150, 203),
                                    null,
-                                   Color.GreenYellow,
+                                   Color.Lerp(Color.GreenYellow, Color.Red, this.Speed / MaxSpeed),
                                    ang,
                                    new Vector2(Content.GetTexture("speed-fill").Bounds.Width / 2, 141));
 
