@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO;
 using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables;
 using Microsoft.Scripting.Utils;
 
@@ -60,10 +61,10 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
         private const string ELEMENT_POITYPE_TRAIL = "trail";
         private const string ELEMENT_POITYPE_ROUTE = "route";
 
-        public static void UnpackPathable(XmlNode pathableNode, IPackFileSystemContext packContext) {
+        public static void UnpackPathable(XmlNode pathableNode, IPackFileSystemContext packContext, PathingCategory rootCategory) {
             switch (pathableNode.Name.ToLower()) {
                 case ELEMENT_POITYPE_POI:
-                    var newPoiMarker = new TacOMarkerPathable(pathableNode, packContext);
+                    var newPoiMarker = new TacOMarkerPathable(pathableNode, packContext, rootCategory);
 
                     if (newPoiMarker.SuccessfullyLoaded) {
                         GameService.Pathing.RegisterPathable(newPoiMarker);
@@ -73,7 +74,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
                     }
                     break;
                 case ELEMENT_POITYPE_TRAIL:
-                    var newPathTrail = new TacOTrailPathable(pathableNode, packContext);
+                    var newPathTrail = new TacOTrailPathable(pathableNode, packContext, rootCategory);
 
                     if (newPathTrail.SuccessfullyLoaded) {
                         GameService.Pathing.RegisterPathable(newPathTrail);

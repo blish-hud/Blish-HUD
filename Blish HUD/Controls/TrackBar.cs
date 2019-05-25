@@ -79,11 +79,9 @@ namespace Blish_HUD.Controls {
         }
 
         private void TrackBar_LeftMouseButtonPressed(object sender, MouseEventArgs e) {
-            var relMousePos = e.MouseState.Position - this.AbsoluteBounds.Location;
-
-            if (NubBounds.Contains(relMousePos)) {
+            if (NubBounds.Contains(this.RelativeMousePosition)) {
                 Dragging = true;
-                DraggingOffset = relMousePos.X - NubBounds.X;
+                DraggingOffset = this.RelativeMousePosition.X - NubBounds.X;
             }
         }
 
@@ -91,7 +89,7 @@ namespace Blish_HUD.Controls {
             base.DoUpdate(gameTime);
 
             if (Dragging) {
-                var relMousePos = Input.MouseState.Position - this.AbsoluteBounds.Location - new Point(DraggingOffset, 0);
+                var relMousePos = this.RelativeMousePosition - new Point(DraggingOffset, 0);
                 this.Value = ((float)relMousePos.X / (float)(this.Width - BUFFER_WIDTH * 2 - spriteNub.Width)) * (this.MaxValue - this.MinValue);
             }
         }
@@ -108,7 +106,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.DrawOnCtrl(this, spriteTrack, new Rectangle(Point.Zero, _size));
+            spriteBatch.DrawOnCtrl(this, spriteTrack, bounds);
             
             spriteBatch.DrawOnCtrl(this, spriteNub, NubBounds);
         }

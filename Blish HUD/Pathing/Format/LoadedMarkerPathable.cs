@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using System.IO;
 using Blish_HUD.Modules.MarkersAndPaths;
 using Blish_HUD.Pathing.Entities;
+using Blish_HUD.Utils;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing.Format {
@@ -31,7 +32,7 @@ namespace Blish_HUD.Pathing.Format {
 
     }
 
-    public class LoadedMarkerPathable : LoadedPathable<Entities.Marker>, IMarker {
+    public abstract class LoadedMarkerPathable : LoadedPathable<Entities.Marker>, IMarker {
         
         private float  _minimumSize = 1.0f;
         private float  _maximumSize = 1.0f;
@@ -78,7 +79,7 @@ namespace Blish_HUD.Pathing.Format {
             }
         }
 
-        public LoadedMarkerPathable(XmlNode sourceNode, IPackFileSystemContext packContext) : base(new Marker(), sourceNode, packContext) { }
+        public LoadedMarkerPathable(IPackFileSystemContext packContext) : base(new Marker(), packContext) { }
 
         protected override void PrepareAttributes() {
             base.PrepareAttributes();

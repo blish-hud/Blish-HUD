@@ -60,7 +60,7 @@ namespace Blish_HUD.Controls {
             this.Visible = true;
         }
 
-        public void Hide() {
+        public override void Hide() {
             this.Visible = false;
 
             foreach (var cmsiChild in this.Children.Select(otherChild => otherChild as ContextMenuStripItem)) {

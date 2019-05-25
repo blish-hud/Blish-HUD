@@ -14,12 +14,31 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
     public class TacOTrailPathable : LoadedTrailPathable, ITacOPathable {
 
-        private string _type;
-        private string _trlFilePath;
+        private const float DEFAULT_TRAILSCALE     = 1f;
+        private const float DEFAULT_ANIMATIONSPEED = 0.5f;
+
+        private string          _type;
+        private PathingCategory _category;
+        private string          _trlFilePath;
 
         public string Type {
             get => _type;
-            set => SetProperty(ref _type, value);
+            set {
+                if (SetProperty(ref _type, value)) {
+                    _category = _rootCategory.GetOrAddCategoryFromNamespace(_type);
+                    OnPropertyChanged(nameof(Category));
+                }
+            }
+        }
+
+        public PathingCategory Category {
+            get => _category;
+            set {
+                if (SetProperty(ref _category, value)) {
+                    _type = _category.Namespace;
+                    OnPropertyChanged(nameof(Type));
+                }
+            }
         }
 
         public float FadeNear {
@@ -37,7 +56,21 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             set => SetProperty(ref _trlFilePath, value);
         }
 
-        public TacOTrailPathable(XmlNode sourceNode, IPackFileSystemContext packContext) : base(sourceNode, packContext) { }
+        private readonly XmlNode         _sourceNode;
+        private          PathingCategory _rootCategory;
+
+        public TacOTrailPathable(XmlNode sourceNode, IPackFileSystemContext packContext, PathingCategory rootCategory) : base(packContext) {
+            _sourceNode   = sourceNode;
+            _rootCategory = rootCategory;
+
+            BeginLoad();
+        }
+
+        // TODO: Use this method as an opportunity to convert attributes to some sort of IPathingAttribute to keep things
+        // consistent between imported file formats
+        protected override void BeginLoad() {
+            LoadAttributes(_sourceNode);
+        }
 
         protected override void PrepareAttributes() {
             base.PrepareAttributes();
@@ -99,34 +132,34 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
 
         protected override bool FinalizeAttributes(Dictionary<string, LoadedPathableAttributeDescription> attributeLoaders) {
             // Process attributes from type category first
-            var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(this.Type);
-
-            if (refCategory?.SourceXmlNode?.Attributes != null) {
-                ProcessAttributes(refCategory.SourceXmlNode.Attributes);
+            if (_category?.SourceXmlNode?.Attributes != null) {
+                ProcessAttributes(_category.SourceXmlNode.Attributes);
             }
 
-            refCategory?.AddPathable(this);
+            _category?.AddPathable(this);
             
             // Load trl file
-            var sectionData = TrlReader.ReadStream(this.PackContext.LoadFileStream(this.TrlFilePath));
+            using (var trlStream = this.PackContext.LoadFileStream(this.TrlFilePath)) {
+                var sectionData = TrlReader.ReadStream(trlStream);
 
-            if (!sectionData.Any()) return false;
+                if (!sectionData.Any()) return false;
 
-            sectionData.ForEach(t => {
-                this.MapId = t.MapId;
-                this.ManagedEntity.AddSection(t.TrailPoints);
-            });
+                sectionData.ForEach(t => {
+                                        this.MapId = t.MapId;
+                                        this.ManagedEntity.AddSection(t.TrailPoints);
+                                    });
+            }
 
             // Finalize attributes
             if (attributeLoaders.ContainsKey("trailscale")) {
                 if (!attributeLoaders["trailscale"].Loaded) {
-                    this.Scale = 1f;
+                    this.Scale = DEFAULT_TRAILSCALE;
                 }
             }
 
             if (attributeLoaders.ContainsKey("animspeed")) {
                 if (!attributeLoaders["animspeed"].Loaded) {
-                    this.ManagedEntity.AnimationSpeed = 0.5f;
+                    this.ManagedEntity.AnimationSpeed = DEFAULT_ANIMATIONSPEED;
                 }
             }
 

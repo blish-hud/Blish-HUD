@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -11,7 +12,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
     public interface IPackFileSystemContext : IDisposable {
 
-        void LoadOnXmlPack(Action<string, IPackFileSystemContext> loadXmlFunc);
+        void LoadOnFileType(Action<string, IPackFileSystemContext> loadXmlFunc, string fileExtension, IProgress<string> progressIndicator = null);
 
         bool FileExists(string filePath);
 
@@ -25,6 +26,8 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
     }
 
     public class DirectoryPackContext : IPackFileSystemContext {
+
+        private static Dictionary<string, DirectoryPackContext> _cachedContexts = new Dictionary<string, DirectoryPackContext>();
 
         private readonly string _packDir;
 
@@ -40,19 +43,31 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             _isUsedOnNextMap       = new HashSet<string>();
         }
 
-        private void RunOnAllXmlPacks(string directory, Action<string, IPackFileSystemContext> loadXmlFunc) {
-            foreach (var mFile in Directory.EnumerateFiles(directory, "*.xml")) {
+        public static DirectoryPackContext GetCachedContext(string directoryRoot) {
+            if (!_cachedContexts.ContainsKey(directoryRoot)) {
+                _cachedContexts.Add(directoryRoot, new DirectoryPackContext(directoryRoot));
+            } else { Console.WriteLine("Returned existing Directory Context!"); }
+
+            return _cachedContexts[directoryRoot];
+        }
+
+        private void RunOnAllOfFileType(string directory, Action<string, IPackFileSystemContext> loadXmlFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+            foreach (var mFile in Directory.EnumerateFiles(directory, $"*.{fileExtension}")) {
+                if (progressIndicator != null) {
+                    progressIndicator.Report($"Loading pack file {mFile}");
+                }
+
                 Console.WriteLine($"[{nameof(DirectoryPackContext)}] Loading pack file {mFile}");
                 loadXmlFunc.Invoke(File.ReadAllText(mFile), this);
             }
 
             foreach (var mDir in Directory.EnumerateDirectories(directory)) {
-                RunOnAllXmlPacks(mDir, loadXmlFunc);
+                RunOnAllOfFileType(mDir, loadXmlFunc, fileExtension);
             }
         }
 
-        public void LoadOnXmlPack(Action<string, IPackFileSystemContext> loadXmlFunc) {
-            RunOnAllXmlPacks(_packDir, loadXmlFunc);
+        public void LoadOnFileType(Action<string, IPackFileSystemContext> loadXmlFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+            RunOnAllOfFileType(_packDir, loadXmlFunc, fileExtension, progressIndicator);
         }
 
         public bool FileExists(string filePath) {
@@ -126,6 +141,8 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
     public class ZipPackContext : IPackFileSystemContext {
 
+        private static Dictionary<string, ZipPackContext> _cachedContexts = new Dictionary<string, ZipPackContext>();
+
         private ZipArchive _packArchive;
 
         private Dictionary<string, Texture2D> _textureCache;
@@ -140,14 +157,27 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             _isUsedOnNextMap       = new HashSet<string>();
         }
 
-        public void LoadOnXmlPack(Action<string, IPackFileSystemContext> loadXmlFunc) {
-            foreach (var entry in _packArchive.Entries) {
-                if (entry.Name.ToLower().EndsWith(".xml")) {
-                    Console.WriteLine($"[{nameof(ZipPackContext)}] Loading pack file {entry.FullName}");
+        public static ZipPackContext GetCachedContext(string zipPackPath) {
+            if (!_cachedContexts.ContainsKey(zipPackPath)) {
+                _cachedContexts.Add(zipPackPath, new ZipPackContext(zipPackPath));
+            } else { Console.WriteLine("Returned existing Zip Context!"); }
 
-                    using (var entryReader = new StreamReader(entry.Open())) {
-                        string rawPackXml = entryReader.ReadToEnd();
-                        loadXmlFunc.Invoke(rawPackXml, this);
+            return _cachedContexts[zipPackPath];
+        }
+
+        public void LoadOnFileType(Action<string, IPackFileSystemContext> loadXmlFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+            foreach (var entry in _packArchive.Entries) {
+                if (entry.Name.ToLower().EndsWith($".{fileExtension.ToLower()}")) {
+                    if (progressIndicator != null) {
+                        progressIndicator.Report($"Loading pack file {entry.FullName}");
+                    }
+                    //Console.WriteLine($"[{nameof(ZipPackContext)}] Loading pack file {entry.FullName}");
+
+                    using (var entryStream = entry.Open().ToMemoryStream()) {
+                        using (var entryReader = new StreamReader(entryStream)) {
+                            string rawPackXml = entryReader.ReadToEnd();
+                            loadXmlFunc.Invoke(rawPackXml, this);
+                        }
                     }
                 }
             }

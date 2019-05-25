@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing.Format {
 
-    public class LoadedTrailPathable : LoadedPathable<Entities.ScrollingTrail> {
+    public abstract class LoadedTrailPathable : LoadedPathable<Entities.ScrollingTrail> {
 
         private string _textureReferencePath;
 
@@ -42,7 +42,7 @@ namespace Blish_HUD.Pathing.Format {
             }
         }
 
-        public LoadedTrailPathable(XmlNode sourceNode, IPackFileSystemContext packContext) : base(new ScrollingTrail(), sourceNode, packContext) { }
+        public LoadedTrailPathable(IPackFileSystemContext packContext) : base(new ScrollingTrail(), packContext) { }
 
         protected override void PrepareAttributes() {
             base.PrepareAttributes();

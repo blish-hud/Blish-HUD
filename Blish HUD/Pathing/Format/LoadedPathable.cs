@@ -40,10 +40,11 @@ namespace Blish_HUD.Pathing.Format {
         private Dictionary<string, LoadedPathableAttributeDescription> _attributeLoaders;
         private List<XmlAttribute> _leftOverAttributes;
 
-        public LoadedPathable(TEntity pathableEntity, XmlNode sourceNode, IPackFileSystemContext packContext) : base(pathableEntity) {
+        public LoadedPathable(TEntity pathableEntity, IPackFileSystemContext packContext) : base(pathableEntity) {
             this.PackContext = packContext;
-            LoadAttributes(sourceNode);
         }
+
+        protected abstract void BeginLoad();
 
         protected void LoadAttributes(XmlNode sourceNode) {
             _attributeLoaders = new Dictionary<string, LoadedPathableAttributeDescription>();

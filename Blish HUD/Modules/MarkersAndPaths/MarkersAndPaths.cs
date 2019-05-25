@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
+using Blish_HUD.Pathing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -36,20 +37,43 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             // Ensure both the marker and paths directory are available in the documents folder
             if (!Directory.Exists(this.MarkerDirectory)) Directory.CreateDirectory(this.MarkerDirectory);
             if (!Directory.Exists(this.PathsDirectory)) Directory.CreateDirectory(this.PathsDirectory);
-            
-            GameService.Debug.StartTimeFunc("LoadPacks");
-            LoadPacks();
-            GameService.Debug.StopTimeFuncAndOutput("LoadPacks");
 
             //AddSectionTab("Markers and Paths", GameService.Content.GetTexture("marker-pathing-icon"), GetPanel());
 
             // Could take a while to load in everything - offload it so that Blish HUD can finish starting
             // Load the markers and paths
-            //var loadPacks = new Task(LoadPacks);
-            //loadPacks.Start();
+            var prog = new Progress<string>((report) => GameService.Pathing.psIcon.LoadingMessage = report);
 
+            GameService.Debug.StartTimeFunc("Markers and Paths");
+            var loadPacks = new Task(() => LoadPacks(prog));
+            loadPacks.ContinueWith((result) => {
+                GameService.Pathing.psIcon.LoadingMessage = null;
+                GameService.Debug.StopTimeFuncAndOutput("Markers and Paths");
+            });
+            loadPacks.Start();
         }
 
+        private void LoadPacks(IProgress<string> progressIndicator) {
+            string[] packFiles = Directory.GetFiles(this.MarkerDirectory);
+
+            var standardDirPackContext = DirectoryPackContext.GetCachedContext(this.MarkerDirectory);
+            GameService.Pathing.RegisterPathContext(standardDirPackContext);
+            standardDirPackContext.LoadOnFileType(PackFormat.OverlayDataReader.ReadFromXmlPack, "xml", progressIndicator);
+
+            foreach (string packfile in packFiles) {
+                if (packfile.EndsWith(".xml")) {
+                    // Load single pack
+                    // NOOP - handled by DirectoryPackContext
+                } else if (packfile.EndsWith(".zip")) {
+                    // Potentially contains many packs within
+                    var zipPackContext = ZipPackContext.GetCachedContext(packfile);
+                    GameService.Pathing.RegisterPathContext(zipPackContext);
+                    zipPackContext.LoadOnFileType(PackFormat.OverlayDataReader.ReadFromXmlPack, "xml", progressIndicator);
+                }
+            }
+        }
+
+        /*
         private Panel GetPanel() {
             const string PC_THISMAP = "This Map";
             const string PC_ADVENTURES = "Adventures";
@@ -177,37 +201,6 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
             return mpPanel;
         }
-
-        private void LoadPacks() {
-            string[] packFiles = Directory.GetFiles(this.MarkerDirectory);
-
-            var standardDirPackContext = new DirectoryPackContext(this.MarkerDirectory);
-            GameService.Pathing.RegisterPathContext(standardDirPackContext);
-            standardDirPackContext.LoadOnXmlPack(PackFormat.OverlayDataReader.ReadFromXmlPack);
-
-            foreach (string packfile in packFiles) {
-                if (packfile.EndsWith(".xml")) {
-                    // Load single pack
-                    // NOOP
-                } else if (packfile.EndsWith(".zip")) {
-                    // Potentially contains many packs within
-                    var zipPackContext = new ZipPackContext(packfile);
-                    GameService.Pathing.RegisterPathContext(zipPackContext);
-                    zipPackContext.LoadOnXmlPack(PackFormat.OverlayDataReader.ReadFromXmlPack);
-                }
-            }
-
-            //PrintOutCategories(GameService.Pathing.Categories);
-        }
-
-        private void PrintOutCategories(PathingCategory curCategory, int depth = 0) {
-            Console.WriteLine($"{new String('\t', depth)}{curCategory.Name}");
-            //Console.WriteLine(curCategory.Namespace);
-
-            foreach (var childCategory in curCategory) {
-                PrintOutCategories(childCategory, depth + 1);
-            }
-        }
-
+        */
     }
 }
