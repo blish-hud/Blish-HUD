@@ -102,6 +102,8 @@ namespace Blish_HUD {
                 //    Console.WriteLine(controlName);
 
                 _activeControl = value;
+
+                Control.ActiveControl = _activeControl;
             }
         }
 

@@ -42,12 +42,6 @@ namespace Blish_HUD.Controls {
             Input.RightMouseButtonPressed += MouseButtonPressed;
         }
 
-        protected override void OnResized(ResizedEventArgs e) {
-            
-
-            base.OnResized(e);
-        }
-
         public void Show(Point position) {
             this.Location = position;
             this.Visible = true;
@@ -112,16 +106,16 @@ namespace Blish_HUD.Controls {
                 newChild.Height = ITEM_HEIGHT;
                 newChild.Left = BORDER_PADDING;
 
-                // Stop showing submenus if adjacent menu items are moused over
+                
                 newChild.MouseEntered += delegate {
-                    foreach (var ocCmsi in this.Children.Except(new[] { newChild }).Select(otherChild => otherChild as ContextMenuStripItem)) {
-                        ocCmsi?.Submenu?.Hide();
-                    }
+                    
                 };
 
-                newChild.Resized += ChildOnResized;
+                newChild.MouseEntered += ChildOnMouseEntered;
+                newChild.Resized      += ChildOnResized;
             } else {
-                e.ChangedChild.Resized -= ChildOnResized;
+                e.ChangedChild.MouseEntered -= ChildOnMouseEntered;
+                e.ChangedChild.Resized      -= ChildOnResized;
             }
 
             this.Invalidate();
@@ -135,6 +129,13 @@ namespace Blish_HUD.Controls {
             this.Height = lastBottom + BORDER_PADDING;
         }
 
+        private void ChildOnMouseEntered(object sender, MouseEventArgs e) {
+            // Stop showing submenus if adjacent menu items are moused over
+            foreach (var ocCmsi in _children.Except(new[] { sender }).Select(otherChild => otherChild as ContextMenuStripItem)) {
+                ocCmsi?.Submenu?.Hide();
+            }
+        }
+
         private void ChildOnResized(object sender, ResizedEventArgs e) {
             this.Invalidate();
         }
@@ -145,13 +146,15 @@ namespace Blish_HUD.Controls {
 
         public override void RecalculateLayout() {
             if (_children.Any()) {
-                this.Width = _children.Where(c => c.Visible).Max(c => c.Width) + BORDER_PADDING * 2;
+                int maxChildWidth = Math.Max(_children.Where(c => c.Visible).Max(c => c.Width), CONTROL_WIDTH);
+
+                this.Width = maxChildWidth + BORDER_PADDING * 2;
 
                 foreach (var childItem in this.Children) {
-                    childItem.Width = this.Width - BORDER_PADDING * 2;
+                    childItem.Width = maxChildWidth;
                 }
             } else {
-                this.Width = CONTROL_WIDTH;
+                this.Width = CONTROL_WIDTH + BORDER_PADDING * 2;
             }
         }
 

@@ -181,10 +181,16 @@ namespace Blish_HUD.Controls {
             // Render each visible child
             foreach (var childControl in zSortedChildren) {
                 if (childControl.Visible) {
+                    //if (childControl.LayoutIsInvalid) {
+                        // TODO: Need to figure out under what circumstances a control will be invalidated prior to a draw
+                        //childControl.RecalculateLayout();
+                    //}
+
                     var childBounds = new Rectangle(Point.Zero, childControl.Size);
 
-                    if (childControl.AbsoluteBounds.Intersects(contentScissor))
+                    if (childControl.AbsoluteBounds.Intersects(contentScissor)) {
                         childControl.Draw(spriteBatch, childBounds, contentScissor);
+                    }
                 }
             }
         }

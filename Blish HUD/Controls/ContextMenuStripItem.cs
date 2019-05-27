@@ -97,7 +97,11 @@ namespace Blish_HUD.Controls {
             var textSize = _font.MeasureString(_text);
             int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
 
-            this.Width = nWidth;
+            if (this.Parent != null) {
+                this.Width = Math.Max(this.Parent.Width - 4, nWidth);
+            } else {
+                this.Width = nWidth;
+            }
         }
 
         protected override void OnClick(MouseEventArgs e) {

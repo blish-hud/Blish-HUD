@@ -15,9 +15,9 @@ namespace Blish_HUD.Controls {
             Center,
         }
 
-        private const int ICON_POSITION = 10;
-        private const int ICON_SIZE = 32;
-        private const float ICON_TRANS = 0.4f;
+        private const int   ICON_POSITION = 10;
+        private const int   ICON_SIZE     = 32;
+        private const float ICON_TRANS    = 0.4f;
 
         private Texture2D _icon;
         public Texture2D Icon {
@@ -132,6 +132,10 @@ namespace Blish_HUD.Controls {
             };
 
             CornerIcons.Add(this);
+        }
+
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
         }
 
         protected override void OnClick(MouseEventArgs e) {
