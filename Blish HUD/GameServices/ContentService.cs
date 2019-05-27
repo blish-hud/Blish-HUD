@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -82,6 +83,7 @@ namespace Blish_HUD {
         private Dictionary<string, SoundEffect> _loadedSoundEffects;
         private Dictionary<string, BitmapFont> _loadedBitmapFonts;
         private Dictionary<string, Texture2D> _loadedTextures;
+        private Dictionary<string, Stream> _loadedFiles;
 
         private Dictionary<string, Texture2D> _mapLoadedTextures;
 
@@ -95,6 +97,7 @@ namespace Blish_HUD {
             _loadedSoundEffects = new Dictionary<string, SoundEffect>();
             _loadedBitmapFonts = new Dictionary<string, BitmapFont>();
             _loadedTextures = new Dictionary<string, Texture2D>();
+            _loadedFiles = new Dictionary<string, Stream>();
         }
 
         protected override void Load() {
@@ -108,7 +111,6 @@ namespace Blish_HUD {
             // TODO: Volume was 0.25f - changing to 0.125 until a setting can be exposed in the UI
             _loadedSoundEffects[soundName].Play(0.125f, 0, 0);
         }
-
         // Used while debugging since it's easier
         private static Texture2D TextureFromFile(GraphicsDevice gc, string filepath) {
             if (File.Exists(filepath)) {
@@ -117,7 +119,6 @@ namespace Blish_HUD {
                 }
             } else return null;
         }
-
         private static Texture2D TextureFromFileSystem(GraphicsDevice gc, string filepath) {
             if (!File.Exists(REF_PATH)) {
                 Console.WriteLine($"{REF_PATH} is missing!  Lots of assets will be missing!");
@@ -222,11 +223,59 @@ namespace Blish_HUD {
 
             return _loadedBitmapFonts[fullFontName];
         }
+        private static Stream FileFromSystem(string filepath)
+        {
+            if (!File.Exists(REF_PATH))
+            {
+                Console.WriteLine($"{REF_PATH} is missing!  Lots of assets will be missing!");
+                return null;
+            }
 
+            using (var refFs = new FileStream(REF_PATH, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read))
+                {
+                    var refEntry = refArchive.GetEntry(filepath);
+
+                    if (refEntry != null)
+                    {
+                        using (var fileStream = refEntry.Open())
+                        {
+                            var fileCanSeek = new MemoryStream();
+                            fileStream.CopyTo(fileCanSeek);
+
+                            return fileCanSeek;
+                        }
+                    }
+                    else
+                    {
+#if DEBUG
+                        Directory.CreateDirectory(@"ref\to-include");
+
+                        // Makes it easy to know what's in use so that it can be added to the ref archive later
+                        if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
+#endif
+                    }
+                    return null;
+                }
+            }
+        }
+        public Stream GetFile(string fileName)
+        {
+            if (_loadedFiles.TryGetValue(fileName, out var cachedFile))
+                return cachedFile;
+
+            cachedFile = FileFromSystem($"{fileName}");
+
+            _loadedFiles.Add(fileName, cachedFile);
+
+            return cachedFile;
+        }
         protected override void Unload() {
             _loadedTextures.Clear();
             _loadedBitmapFonts.Clear();
             _loadedSoundEffects.Clear();
+            _loadedFiles.Clear();
         }
 
         protected override void Update(GameTime gameTime) {
