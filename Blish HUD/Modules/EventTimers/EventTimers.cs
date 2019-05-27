@@ -110,6 +110,10 @@ namespace Blish_HUD.Modules.EventTimers {
             };
 
             foreach (var meta in Meta.Events) {
+                var setting = allSettings.DefineSetting("watchEvent:" + meta.Name, true, true, false, "");
+
+                meta.IsWatched = setting.Value;
+
                 var es2 = new DetailsButton {
                     Parent = eventPanel,
                     BasicTooltipText = meta.Category,
@@ -173,7 +177,10 @@ namespace Blish_HUD.Modules.EventTimers {
                     Parent = es2,
                 };
 
-                toggleFollowBttn.Click += delegate { meta.IsWatched = toggleFollowBttn.Checked; };
+                toggleFollowBttn.Click += delegate {
+                    meta.IsWatched = toggleFollowBttn.Checked;
+                    setting.Value  = toggleFollowBttn.Checked;
+                };
 
                 meta.OnNextRunTimeChanged += delegate {
                     UpdateSort(ddSortMethod, EventArgs.Empty);
