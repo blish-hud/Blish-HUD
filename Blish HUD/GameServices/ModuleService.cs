@@ -90,6 +90,7 @@ namespace Blish_HUD {
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
             RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
             //RegisterModule(new Modules.LoadingScreenHints.LoadingScreenHints());
+            RegisterModule(new Modules.Musician.Musician());
 
             //ComposeModulesFromNamespace();
             //ComposeModulesFromDirectory(this.ModulesDirectory);
