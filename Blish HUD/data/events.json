@@ -91,7 +91,7 @@
     "alert": 5,
     "icon": "1769811"
   },
-    {
+  {
     "name": "Choya Pinata",
     "offset": "00:25Z",
     "repeat": "02:00",
@@ -102,6 +102,7 @@
     "wiki": "https://wiki.guildwars2.com/wiki/Choya_Pinata",
     "duration": "5",
     "alert": 10,
+    "icon": "1769811"
   },
   {
     "name": "Claw of Jormag",
