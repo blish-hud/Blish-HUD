@@ -39,11 +39,10 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this, Content.GetTexture(DRAWATLAS), bounds, _activeAtlasRegion);
         }
 
-        protected override void Dispose(bool disposing) {
-            _spinAnimation.Cancel();
+        protected override void DisposeControl() {
             _spinAnimation = null;
 
-            base.Dispose(disposing);
+            base.DisposeControl();
         }
 
     }

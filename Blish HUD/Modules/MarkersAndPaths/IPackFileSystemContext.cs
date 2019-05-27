@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,7 +13,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
     public interface IPackFileSystemContext : IDisposable {
 
-        void LoadOnFileType(Action<string, IPackFileSystemContext> loadXmlFunc, string fileExtension, IProgress<string> progressIndicator = null);
+        void LoadOnFileType(Action<Stream, IPackFileSystemContext> loadFileFunc, string fileExtension, IProgress<string> progressIndicator = null);
 
         bool FileExists(string filePath);
 
@@ -51,23 +52,21 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             return _cachedContexts[directoryRoot];
         }
 
-        private void RunOnAllOfFileType(string directory, Action<string, IPackFileSystemContext> loadXmlFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+        private void RunOnAllOfFileType(string directory, Action<Stream, IPackFileSystemContext> loadFileFunc, string fileExtension, IProgress<string> progressIndicator = null) {
             foreach (var mFile in Directory.EnumerateFiles(directory, $"*.{fileExtension}")) {
-                if (progressIndicator != null) {
-                    progressIndicator.Report($"Loading pack file {mFile}");
-                }
+                progressIndicator?.Report($"Loading pack file {mFile}");
 
-                Console.WriteLine($"[{nameof(DirectoryPackContext)}] Loading pack file {mFile}");
-                loadXmlFunc.Invoke(File.ReadAllText(mFile), this);
+                Console.WriteLine($"[{nameof(DirectoryPackContext)}] Loading file {mFile}");
+                loadFileFunc.Invoke(LoadFileStream(mFile), this);
             }
 
             foreach (var mDir in Directory.EnumerateDirectories(directory)) {
-                RunOnAllOfFileType(mDir, loadXmlFunc, fileExtension);
+                RunOnAllOfFileType(mDir, loadFileFunc, fileExtension);
             }
         }
 
-        public void LoadOnFileType(Action<string, IPackFileSystemContext> loadXmlFunc, string fileExtension, IProgress<string> progressIndicator = null) {
-            RunOnAllOfFileType(_packDir, loadXmlFunc, fileExtension, progressIndicator);
+        public void LoadOnFileType(Action<Stream, IPackFileSystemContext> loadFileFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+            RunOnAllOfFileType(_packDir, loadFileFunc, fileExtension, progressIndicator);
         }
 
         public bool FileExists(string filePath) {
@@ -145,12 +144,16 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
         private ZipArchive _packArchive;
 
+        private Mutex _exclusiveStreamAccessMutex;
+
         private Dictionary<string, Texture2D> _textureCache;
         private HashSet<string>               _pendingTextureRemoval;
         private HashSet<string>               _isUsedOnNextMap;
 
         public ZipPackContext(string zipPackPath) {
             _packArchive = ZipFile.OpenRead(zipPackPath);
+
+            _exclusiveStreamAccessMutex = new Mutex(false);
 
             _textureCache          = new Dictionary<string, Texture2D>();
             _pendingTextureRemoval = new HashSet<string>();
@@ -165,20 +168,13 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             return _cachedContexts[zipPackPath];
         }
 
-        public void LoadOnFileType(Action<string, IPackFileSystemContext> loadXmlFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+        public void LoadOnFileType(Action<Stream, IPackFileSystemContext> loadFileFunc, string fileExtension, IProgress<string> progressIndicator = null) {
             foreach (var entry in _packArchive.Entries) {
-                if (entry.Name.ToLower().EndsWith($".{fileExtension.ToLower()}")) {
-                    if (progressIndicator != null) {
-                        progressIndicator.Report($"Loading pack file {entry.FullName}");
-                    }
-                    //Console.WriteLine($"[{nameof(ZipPackContext)}] Loading pack file {entry.FullName}");
+                if (entry.Name.EndsWith($".{fileExtension}", StringComparison.OrdinalIgnoreCase)) {
+                    progressIndicator?.Report($"Loading {entry.FullName}");
 
-                    using (var entryStream = entry.Open().ToMemoryStream()) {
-                        using (var entryReader = new StreamReader(entryStream)) {
-                            string rawPackXml = entryReader.ReadToEnd();
-                            loadXmlFunc.Invoke(rawPackXml, this);
-                        }
-                    }
+                    var entryStream = LoadFileStream(entry.FullName);
+                    loadFileFunc.Invoke(entryStream, this);
                 }
             }
         }
@@ -218,7 +214,6 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         public Texture2D LoadTexture(string texturePath, Texture2D fallbackTexture) {
-            
             _isUsedOnNextMap.Add(texturePath);
 
             if (!_textureCache.ContainsKey(texturePath)) {
@@ -238,11 +233,17 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             ZipArchiveEntry fileEntry;
 
             if ((fileEntry = _packArchive.GetEntry(filePath.Replace(@"\", "/"))) != null) {
-                try {
-                    return fileEntry.Open().ToMemoryStream();
-                } catch (Exception ex) {
-                    return Stream.Null;
+                _exclusiveStreamAccessMutex.WaitOne();
+
+                var memStream = new MemoryStream();
+                using (var entryStream = fileEntry.Open()) {
+                    entryStream.CopyTo(memStream);
                 }
+
+                memStream.Position = 0;
+
+                _exclusiveStreamAccessMutex.ReleaseMutex();
+                return memStream;
             }
 
             // Can't find it, so just send back an empty stream

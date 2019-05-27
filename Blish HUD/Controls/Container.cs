@@ -148,7 +148,7 @@ namespace Blish_HUD.Controls {
 
         public override void DoUpdate(GameTime gameTime) {
             foreach (var childControl in _children.ToList()) {
-                if (childControl.Visible)
+                if (childControl.Visible || childControl.LayoutIsInvalid)
                     childControl.Update(gameTime);
             }
         }

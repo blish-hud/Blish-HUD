@@ -47,25 +47,23 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            //GameService.Director.BlishHudWindow.AddTab("Markers and Paths", "marker-pathing-icon", BuildPanel(GameService.Director.BlishHudWindow.ContentRegion), int.MaxValue - 5);
-
-            // We will actually just be using a CornerIcon for now
-           BuildPanel(Rectangle.Empty);
+           BuildCornerIcon();
         }
 
-        public CornerIcon psIcon;
-        public ContextMenuStrip psContextMenu;
+        public CornerIcon Icon;
+        public ContextMenuStrip IconContextMenu;
 
-        private Panel BuildPanel(Rectangle bounds) {
-            const string PC_THISMAP = "This Map";
-
-            psIcon = new CornerIcon() {
+        private Panel BuildCornerIcon() {
+            Icon = new CornerIcon() {
                 BasicTooltipText = "Pathing",
                 Icon             = Content.GetTexture("marker-pathing-icon")
             };
 
-            psContextMenu = new ContextMenuStrip();
-            var thisMap = psContextMenu.AddMenuItem(PC_THISMAP);
+            IconContextMenu = new ContextMenuStrip();
+
+            Icon.Click += delegate {
+                IconContextMenu.Show(Icon.Location + Icon.Size);
+            };
 
             return null;
         }

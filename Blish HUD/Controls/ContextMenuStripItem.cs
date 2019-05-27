@@ -15,58 +15,50 @@ namespace Blish_HUD.Controls {
 
         private const int TEXT_LEFTPADDING = HORIZONTAL_PADDING + BULLET_SIZE + HORIZONTAL_PADDING;
 
+        #region Load Static
+
+        private static Texture2D _textureBullet;
+        private static Texture2D _textureArrow;
+
+        static ContextMenuStripItem() {
+            _textureBullet = Content.GetTexture("155038");
+            _textureArrow  = Content.GetTexture("context-menu-strip-submenu");
+        }
+
+        #endregion
+
         public event EventHandler<CheckChangedEvent> CheckedChanged;
         protected virtual void OnCheckedChanged(CheckChangedEvent e) {
             this.CheckedChanged?.Invoke(this, e);
         }
 
-        private static Texture2D _bulletSprite;
-        private static Texture2D _arrowSprite;
+        private BitmapFont _font = GameService.Content.DefaultFont14;
 
         private string _text;
         public string Text {
             get => _text;
-            set {
-                if (_text == value) return;
-
-                _text = value;
-                UpdateControlWidth(_text);
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _text, value, true);
         }
 
         private ContextMenuStrip _submenu;
         public ContextMenuStrip Submenu {
             get => _submenu;
-            set {
-                if (_submenu == value) return;
-
-                _submenu = value;
-                UpdateControlWidth(_text);
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _submenu, value, true);
         }
 
         private bool _canCheck = false;
         public bool CanCheck {
             get => _canCheck;
-            set {
-                if (_canCheck == value) return;
-
-                _canCheck = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _canCheck, value);
         }
 
         private bool _checked = false;
         public bool Checked {
             get => _checked;
             set {
-                if (_checked == value) return;
-
-                _checked = value;
-                OnPropertyChanged();
-                OnCheckedChanged(new CheckChangedEvent(_checked));
+                if (SetProperty(ref _checked, value)) {
+                    OnCheckedChanged(new CheckChangedEvent(_checked));
+                }
             }
         }
 
@@ -96,23 +88,16 @@ namespace Blish_HUD.Controls {
         #endregion
         
         public ContextMenuStripItem() {
-            _bulletSprite = _bulletSprite ?? Content.GetTexture("155038");
-            _arrowSprite = _arrowSprite ?? Content.GetTexture("context-menu-strip-submenu");
-
             LoadCheckboxSprites();
 
             this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
         }
 
-        private void UpdateControlWidth(string newText) {
-            var textSize = Content.DefaultFont14.MeasureString(newText);
+        public override void RecalculateLayout() {
+            var textSize = _font.MeasureString(_text);
             int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
 
-            if (this.Parent == null) {
-                this.Width = nWidth;
-            } else {
-                this.Parent.Width = Math.Max(nWidth, this.Parent.Width);
-            }
+            this.Width = nWidth;
         }
 
         protected override void OnClick(MouseEventArgs e) {
@@ -159,7 +144,7 @@ namespace Blish_HUD.Controls {
 
             } else {
                 spriteBatch.DrawOnCtrl(this,
-                                 _bulletSprite,
+                                 _textureBullet,
                                  new Rectangle(
                                                HORIZONTAL_PADDING,
                                                _size.Y / 2 - BULLET_SIZE / 2,
@@ -191,11 +176,11 @@ namespace Blish_HUD.Controls {
             // Indicate submenu, if there is one
             if (_submenu != null) {
                 spriteBatch.DrawOnCtrl(this,
-                                 _arrowSprite,
-                                 new Rectangle(_size.X - HORIZONTAL_PADDING - _arrowSprite.Width,
-                                               _size.Y / 2 - _arrowSprite.Height / 2,
-                                               _arrowSprite.Width,
-                                               _arrowSprite.Height),
+                                 _textureArrow,
+                                 new Rectangle(_size.X - HORIZONTAL_PADDING - _textureArrow.Width,
+                                               _size.Y / 2 - _textureArrow.Height / 2,
+                                               _textureArrow.Width,
+                                               _textureArrow.Height),
                                  this.MouseOver ? StandardColors.Tinted : StandardColors.Default);
             }
         }

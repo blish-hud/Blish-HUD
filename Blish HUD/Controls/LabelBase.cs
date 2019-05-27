@@ -12,9 +12,9 @@ using MonoGame.Extended.BitmapFonts;
 namespace Blish_HUD.Controls {
     public class LabelBase:Control {
 
-        private CachedStringRender labelRender;
+        private CachedStringRender _labelRender;
 
-        protected bool _cacheLabel = true;
+        protected bool _cacheLabel = false;
 
         protected string _text;
 
@@ -72,7 +72,7 @@ namespace Blish_HUD.Controls {
             this.Size = LabelRegion;
 
             if (_cacheLabel) {
-                labelRender = CachedStringRender.GetCachedStringRender(_text,
+                _labelRender = CachedStringRender.GetCachedStringRender(_text,
                                                                        _font,
                                                                        new Rectangle(Point.Zero, LabelRegion),
                                                                        _textColor,
@@ -92,14 +92,18 @@ namespace Blish_HUD.Controls {
             if (_showShadow && !_strokeText)
                 spriteBatch.DrawStringOnCtrl(this, text, _font, bounds.OffsetBy(1, 1), _shadowColor, false, _horizontalAlignment, _verticalAlignment);
             
-            if (_cacheLabel && labelRender != null)
-                spriteBatch.DrawOnCtrl(this, labelRender.CachedRender, bounds);
+            if (_cacheLabel && _labelRender != null)
+                spriteBatch.DrawOnCtrl(this, _labelRender.CachedRender, bounds);
             else
                 spriteBatch.DrawStringOnCtrl(this, text, _font, bounds, _textColor, false, _strokeText, 1, _horizontalAlignment, _verticalAlignment);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             DrawText(spriteBatch, bounds, _text);
+        }
+
+        protected override void DisposeControl() {
+            
         }
 
     }

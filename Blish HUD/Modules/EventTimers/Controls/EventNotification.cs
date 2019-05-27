@@ -87,10 +87,11 @@ namespace Blish_HUD.Modules.EventTimers {
             notif.Show(duration);
         }
 
-        protected override void Dispose(bool disposing) {
-            base.Dispose(disposing);
+        protected override void DisposeControl() {
             _notificationLifecycle = null;
             VisibleNotifications--;
+
+            base.DisposeControl();
         }
 
     }

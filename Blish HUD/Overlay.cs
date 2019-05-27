@@ -191,6 +191,8 @@ namespace Blish_HUD {
             i++;
             spriteBatch.DrawString(GameService.Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, "ArcDPS Bridge: " + (GameService.ArcDps.ArcPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
             spriteBatch.DrawString(GameService.Content.DefaultFont14, "IsHudActive: " + (GameService.ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
 
 #endif

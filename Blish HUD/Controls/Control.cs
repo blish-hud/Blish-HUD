@@ -513,7 +513,7 @@ namespace Blish_HUD.Controls {
         #region Render Properties
         
         [JsonIgnore]
-        protected bool LayoutIsInvalid { get; private set; } = true;
+        public bool LayoutIsInvalid { get; private set; } = true;
 
         protected SpriteBatchParameters _spriteBatchParameters;
 
@@ -723,10 +723,12 @@ namespace Blish_HUD.Controls {
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
+        protected virtual void DisposeControl() { /* NOOP */ }
+
+        private void Dispose(bool disposing) {
+            if (!_disposedValue) {
                 if (disposing) {
                     // Let everything know we're disposing (esp. Data Bindings)
                     this.Disposed?.Invoke(this, EventArgs.Empty);
@@ -754,26 +756,19 @@ namespace Blish_HUD.Controls {
 
                     // Remove self from parent object
                     this.Parent = null;
+
+                    this.DisposeControl();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~Control() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
         public void Dispose() {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
         #endregion
 

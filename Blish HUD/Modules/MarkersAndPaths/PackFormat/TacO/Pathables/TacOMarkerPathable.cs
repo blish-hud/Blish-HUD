@@ -17,7 +17,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
     public class TacOMarkerPathable : LoadedMarkerPathable, ITacOPathable {
 
         private const float DEFAULT_HEIGHTOFFSET = 1.5f;
-        private const float DEFAULT_ICONSIZE = 2f;
+        private const float DEFAULT_ICONSIZE     = 2f;
 
         private string          _type;
         private PathingCategory _category;

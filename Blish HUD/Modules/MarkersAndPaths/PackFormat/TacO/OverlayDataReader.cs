@@ -16,7 +16,13 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
 
         internal static readonly PathingCategory Categories = new PathingCategory("root") { Visible = true };
 
-        public static void ReadFromXmlPack(string xmlPackContents, IPackFileSystemContext packContext) {
+        public static void ReadFromXmlPack(Stream xmlPackStream, IPackFileSystemContext packContext) {
+            string xmlPackContents;
+
+            using (var xmlReader = new StreamReader(xmlPackStream)) {
+                xmlPackContents = xmlReader.ReadToEnd();
+            }
+
             var    packDocument = new XmlDocument();
             string packSrc      = SanitizeXml(xmlPackContents);
             bool   packLoaded   = false;

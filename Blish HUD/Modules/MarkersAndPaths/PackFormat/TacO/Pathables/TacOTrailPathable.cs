@@ -137,7 +137,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             }
 
             _category?.AddPathable(this);
-            
+
             // Load trl file
             using (var trlStream = this.PackContext.LoadFileStream(this.TrlFilePath)) {
                 var sectionData = TrlReader.ReadStream(trlStream);
@@ -145,9 +145,9 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
                 if (!sectionData.Any()) return false;
 
                 sectionData.ForEach(t => {
-                                        this.MapId = t.MapId;
-                                        this.ManagedEntity.AddSection(t.TrailPoints);
-                                    });
+                    this.MapId = t.MapId;
+                    this.ManagedEntity.AddSection(t.TrailPoints);
+                });
             }
 
             // Finalize attributes

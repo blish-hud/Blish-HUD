@@ -42,12 +42,12 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
             // Could take a while to load in everything - offload it so that Blish HUD can finish starting
             // Load the markers and paths
-            var prog = new Progress<string>((report) => GameService.Pathing.psIcon.LoadingMessage = report);
+            var prog = new Progress<string>((report) => GameService.Pathing.Icon.LoadingMessage = report);
 
             GameService.Debug.StartTimeFunc("Markers and Paths");
             var loadPacks = new Task(() => LoadPacks(prog));
             loadPacks.ContinueWith((result) => {
-                GameService.Pathing.psIcon.LoadingMessage = null;
+                GameService.Pathing.Icon.LoadingMessage = null;
                 GameService.Debug.StopTimeFuncAndOutput("Markers and Paths");
             });
             loadPacks.Start();
@@ -60,147 +60,53 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             GameService.Pathing.RegisterPathContext(standardDirPackContext);
             standardDirPackContext.LoadOnFileType(PackFormat.OverlayDataReader.ReadFromXmlPack, "xml", progressIndicator);
 
-            foreach (string packfile in packFiles) {
-                if (packfile.EndsWith(".xml")) {
-                    // Load single pack
-                    // NOOP - handled by DirectoryPackContext
-                } else if (packfile.EndsWith(".zip")) {
+            foreach (string packFile in packFiles) {
+                if (packFile.EndsWith(".zip")) {
                     // Potentially contains many packs within
-                    var zipPackContext = ZipPackContext.GetCachedContext(packfile);
+                    var zipPackContext = ZipPackContext.GetCachedContext(packFile);
                     GameService.Pathing.RegisterPathContext(zipPackContext);
                     zipPackContext.LoadOnFileType(PackFormat.OverlayDataReader.ReadFromXmlPack, "xml", progressIndicator);
                 }
             }
+
+            GameService.Pathing.Icon.LoadingMessage = "Building category menues...";
+            BuildCategoryMenus();
         }
 
-        /*
-        private Panel GetPanel() {
-            const string PC_THISMAP = "This Map";
-            const string PC_ADVENTURES = "Adventures";
-            const string PC_ACHIEVEMENTS = "Achievements";
-            const string PC_FESTIVALS = "Festivals";
+        private void AddCategoryToMenuStrip(ContextMenuStrip parentMenuStrip, PackFormat.TacO.PathingCategory newCategory) {
+            var newCategoryMenuItem = parentMenuStrip.AddMenuItem(newCategory.DisplayName);
+            newCategoryMenuItem.CanCheck = true;
+            newCategoryMenuItem.Checked  = newCategory.Visible;
 
-            //var tInteract = new InteractionIndicator();
-            //tInteract.Text = "Leatherworking Station";
-            //tInteract.Show();
+            newCategoryMenuItem.CheckedChanged += delegate(object sender, CheckChangedEvent e) { newCategory.Visible = e.Checked; };
 
-            var mpPanel = new Panel() {
-                Size      = GameService.Director.BlishHudWindow.ContentRegion.Size,
-                CanScroll = false
-            };
+            if (newCategory.Any()) {
+                var childMenuStrip = new ContextMenuStrip();
+                newCategoryMenuItem.Submenu = childMenuStrip;
 
-            var mpItemsPanel = new FlowPanel() {
-                FlowDirection  = ControlFlowDirection.LeftToRight,
-                ControlPadding = new Vector2(8f, 8f),
-                Location       = new Point(mpPanel.Width - 630, 50),
-                Size           = new Point(630,                 mpPanel.Height - 50 - Panel.BOTTOM_MARGIN),
-                Parent         = mpPanel,
-                CanScroll      = true
-            };
-
-            var categoryMenuPanel = new Panel() {
-                ShowBorder = true,
-                Size       = new Point(mpPanel.Width - mpItemsPanel.Width - 15, mpItemsPanel.Height + Panel.BOTTOM_MARGIN),
-                Location   = new Point(5,                                       50),
-                CanScroll  = true,
-                Title      = "Marker and Path Categories",
-                Parent     = mpPanel
-            };
-
-            var mpCategories = new Menu() {
-                Size           = categoryMenuPanel.ContentRegion.Size,
-                MenuItemHeight = 40,
-                Parent         = categoryMenuPanel
-            };
-
-            var recats = ReCatReader.FromFile(@"data\recategory.inf");
-
-            var foldedCats = recats.GroupBy(section => section.SectionName.Split('.')[0])
-                                   .Select(group => new {Category = group.Key, Sections = group.ToList()})
-                                   .ToList();
-
-            var thisMapMenuItem = new MenuItem() {
-                Text     = PC_THISMAP,
-                Icon     = GameService.Content.GetTexture("1431767"),
-                CanCheck = true,
-                Parent   = mpCategories
-            };
-
-            var allCats = new List<PathingCategory>();
-
-            var dispPacks = new List<DetailsButton>();
-
-            foreach (var tSec in foldedCats) {
-                var nMenuItem = new MenuItem() {
-                    Text     = tSec.Category,
-                    CanCheck = true,
-                    Parent   = mpCategories
-                };
-
-                foreach (var sSec in tSec.Sections) {
-                    var refCats = new List<PathingCategory>();
-
-                    foreach (string sVal in sSec.Values) {
-                        refCats.Add(GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(sVal));
-                    }
-
-                    if (refCats.Any()) {
-                        var sMenuItem = new MenuItem() {
-                            Text     = sSec.SectionName.Split('.')[1],
-                            CanCheck = true,
-                            Parent   = nMenuItem
-                        };
-
-                        sMenuItem.Click += delegate {
-                            dispPacks.ForEach(pack => pack.Visible = sSec.Values.Contains(pack.BasicTooltipText));
-                            //refCats.ForEach(c => c.Visible = !c.Visible);
-                        };
-
-                        allCats.AddRange(refCats);
-                    }
+                foreach (var childCategory in newCategory) {
+                    AddCategoryToMenuStrip(childMenuStrip, childCategory);
                 }
             }
-
-            foreach (var cat in allCats) {
-                //var ficon = cat.Pathables.FirstOrDefault()?.Texture;
-                //ficon = ficon ?? cat.Paths.FirstOrDefault()?.PathTexture;
-
-                //var ficon = cat.Pathables.FirstOrDefault()?.Icon;
-
-                var pack = new DetailsButton() {
-                    Parent           = mpItemsPanel,
-                    BasicTooltipText = cat.Namespace,
-                    Text             = cat.DisplayName,
-                    //Icon             = ficon
-                };
-
-                dispPacks.Add(pack);
-            }
-
-            void AddCategoryToMenu(PathingCategory category, MenuItem parentMenuItem) {
-                var newCat = new MenuItem(category.DisplayName) {
-                    CanCheck = true,
-                    Parent   = parentMenuItem
-                };
-
-                foreach (var subCategory in category) {
-                    AddCategoryToMenu(subCategory, newCat);
-                }
-            }
-
-            foreach (var cat in GameService.Pathing.Categories) {
-                var newCat = new MenuItem(cat.DisplayName) {
-                    CanCheck = true,
-                    Parent = mpCategories
-                };
-
-                foreach (var subCategory in cat) {
-                    AddCategoryToMenu(subCategory, newCat);
-                }
-            }
-
-            return mpPanel;
         }
-        */
+
+        private void BuildCategoryMenus() {
+            GameService.Director.QueueAdHocUpdate((gameTime) => {
+                                                      var rootCategoryMenu = new ContextMenuStrip();
+
+                                                      var allMarkersCMS = new ContextMenuStripItem() {
+                                                          Text     = "All markers",
+                                                          Submenu  = rootCategoryMenu,
+                                                          CanCheck = false
+                                                      };
+
+                                                      foreach (var childCategory in PackFormat.OverlayDataReader.Categories) {
+                                                          AddCategoryToMenuStrip(rootCategoryMenu, childCategory);
+                                                      }
+
+                                                      allMarkersCMS.Parent = GameService.Pathing.IconContextMenu;
+                                                  });
+        }
+
     }
 }

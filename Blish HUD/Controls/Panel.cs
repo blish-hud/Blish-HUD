@@ -242,10 +242,10 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected override void Dispose(bool disposing) {
+        protected override void DisposeControl() {
             _panelScrollbar?.Dispose();
 
-            base.Dispose(disposing);
+            base.DisposeControl();
         }
 
     }

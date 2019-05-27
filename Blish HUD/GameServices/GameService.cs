@@ -11,7 +11,7 @@ using Blish_HUD.Annotations;
 using Microsoft.Scripting.Utils;
 
 namespace Blish_HUD {
-    public abstract class GameService :INotifyPropertyChanged {
+    public abstract class GameService : INotifyPropertyChanged {
 
         private static readonly GameService[] AllServices;
         public static IReadOnlyList<GameService> All => AllServices;
@@ -101,7 +101,7 @@ namespace Blish_HUD {
                 Pathing,
                 Module,
                 Store,
-                ArcDps
+                //ArcDps
             };
 
         }
