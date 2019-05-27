@@ -89,16 +89,16 @@ namespace Blish_HUD {
             RegisterModule(new Modules.PoiLookup.PoiLookup());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
             RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
-            //RegisterModule(new Modules.LoadingScreenHints.LoadingScreenHints());
+            RegisterModule(new Modules.LoadingScreenHints.LoadingScreenHints());
 
             //ComposeModulesFromNamespace();
-            ComposeModulesFromDirectory(this.ModulesDirectory);
+            //ComposeModulesFromDirectory(this.ModulesDirectory);
             //ComposeModuleFromArchive(Path.Combine(this.ModulesDirectory, "ExampleBHUDModule.zip"));
 
-            foreach (var externalModule in this.ExternalModules) {
-                Console.WriteLine($"Registering external module: {externalModule.GetModuleInfo().Name}");
-                RegisterModule(externalModule);
-            }
+            //foreach (var externalModule in this.ExternalModules) {
+            //    Console.WriteLine($"Registering external module: {externalModule.GetModuleInfo().Name}");
+            //    RegisterModule(externalModule);
+            //}
         }
 
         protected override void Unload() {

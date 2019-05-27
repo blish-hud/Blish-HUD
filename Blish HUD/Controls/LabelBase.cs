@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    public class LabelBase:Control {
+    public abstract class LabelBase:Control {
 
         private CachedStringRender _labelRender;
 

@@ -95,6 +95,8 @@ namespace Blish_HUD.Controls {
         private Color                _fillColor           = Color.LightGray;
         private DetailsHighlightType _highlightType       = DetailsHighlightType.ScrollingHighlight;
         private int                  _bottomSectionHeight = DEFAULT_BOTTOMSECTION_HEIGHT;
+        private bool                 _showToggleButton    = false;
+        private bool                 _toggleState         = false;
 
         /// <summary>
         /// Determines the way the <see cref="DetailsButton"/> will render.
@@ -169,6 +171,22 @@ namespace Blish_HUD.Controls {
                     _fillAnim = Animation.Tweener.Tween(this, new { DisplayedFill = _currentFill }, 0.65f, 0, true).Ease(Glide.Ease.QuintIn);
                 }
             }
+        }
+
+        /// <summary>
+        /// If enabled, the last child control will be aligned to the right side.
+        /// </summary>
+        public bool ShowToggleButton {
+            get => _showToggleButton;
+            set => SetProperty(ref _showToggleButton, value, true);
+        }
+
+        /// <summary>
+        /// Normally paired with <see cref="ShowToggleButton"/>.  If enabled, a glow will be shown in the bottom right.
+        /// </summary>
+        public bool ToggleState {
+            get => _toggleState;
+            set => SetProperty(ref _toggleState, value);
         }
 
         /// <summary>
@@ -261,9 +279,17 @@ namespace Blish_HUD.Controls {
                                                this.Height - _bottomSectionHeight,
                                                this.Width - bottomRegionLeft,
                                                _bottomSectionHeight);
+
+            if (_showToggleButton && _children.Any(c => c.Visible)) {
+                var lastControl = _children.FindLast(c => c.Visible);
+
+                lastControl.Right = this.ContentRegion.Width - 4;
+            }
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            // TODO: Move all calculations into RecalculateLayout()
+
             float backgroundOpacity = (this.MouseOver && _highlightType == DetailsHighlightType.LightHighlight) ? 0.1f : 0.25f;
 
             // Draw background
@@ -358,6 +384,22 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this,
                                        _textureVignette,
                                        new Rectangle(0, 0, iconSize, iconSize));
+
+            // Draw toggle icon background
+            if (_showToggleButton && _children.Any(c => c.Visible)) {
+                var lastControl = _children.FindLast(c => c.Visible);
+
+                var cornerStart = new Point(lastControl.Left - 4 + this.ContentRegion.X,
+                                            _size.Y - _bottomSectionHeight);
+
+                spriteBatch.DrawOnCtrl(this,
+                                       _textureCornerButton,
+                                       new Rectangle(cornerStart.X,
+                                                     cornerStart.Y,
+                                                     _size.X - cornerStart.X,
+                                                     _size.Y - cornerStart.Y),
+                                       Color.Black);
+            }
 
             // Draw bottom section seperator
             spriteBatch.DrawOnCtrl(this,
