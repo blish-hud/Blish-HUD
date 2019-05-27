@@ -15,7 +15,7 @@ namespace Blish_HUD {
     /// </summary>
     public static class Program {
 
-        public const string APP_VERSION = "blish_hud@0.3.4-alpha.9_DEV";
+        public const string APP_VERSION = "blish_hud@0.4.0-alpha.10_DEV";
 
         /// <summary>
         /// The main entry point for the application.
