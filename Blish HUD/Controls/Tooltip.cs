@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,14 +34,29 @@ namespace Blish_HUD.Controls {
             };
         }
 
+        private static Control prevControl;
+
         private static void ControlOnActiveControlChanged(object sender, ControlChangedEventArgs e) {
             foreach (var tooltip in _allTooltips) {
                 tooltip.Hide();
             }
 
-            if (e.ActivatedControl?.Tooltip != null) {
-                UpdateTooltipPosition(e.ActivatedControl.Tooltip);
-                e.ActivatedControl.Tooltip.Visible = true;
+            if (prevControl != null) {
+                prevControl.Hidden -= ActivatedControlOnHidden;
+                prevControl.Disposed -= ActivatedControlOnHidden;
+            }
+
+            prevControl = e.ActivatedControl;
+
+            if (prevControl != null) {
+                e.ActivatedControl.Hidden += ActivatedControlOnHidden;
+                e.ActivatedControl.Disposed += ActivatedControlOnHidden;
+            }
+        }
+
+        private static void ActivatedControlOnHidden(object sender, EventArgs e) {
+            foreach (var tooltip in _allTooltips) {
+                tooltip.Hide();
             }
         }
 

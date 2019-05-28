@@ -307,7 +307,6 @@
     <Compile Include="GameServices\PathingService.cs" />
     <Compile Include="GameServices\ModuleService.cs" />
     <Compile Include="GameServices\GameIntegrationService.cs" />
-    <Compile Include="Library\Bind\Bind.cs" />
     <Compile Include="Library\Glide\Ease.cs" />
     <Compile Include="Library\Glide\MemberAccessor.cs" />
     <Compile Include="Library\Glide\MemberLerper.cs" />
