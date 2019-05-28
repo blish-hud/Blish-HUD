@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
+using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -15,9 +16,17 @@ namespace Blish_HUD.Modules.PoiLookup {
         private const int WINDOW_WIDTH = 256; //196;
         private const int WINDOW_HEIGHT = 178;
 
-        private const ContentService.FontFace TOOLTIP_FONT_FAMILY = ContentService.FontFace.Menomonia;
-        private const ContentService.FontSize TOOLTIP_FONT_SIZE = ContentService.FontSize.Size14;
-        private const ContentService.FontSize TOOLTIP_SMALLFONT_SIZE = ContentService.FontSize.Size12;
+        private const int TITLEBAR_HEIGHT = 32;
+
+        #region Load Static
+
+        private static Texture2D _textureWindowBackground;
+
+        static PoiLookupWindow() {
+            _textureWindowBackground = Content.GetTexture("156390");
+        }
+
+        #endregion
 
         public struct WordScoreResult {
             public BHGw2Api.Landmark Landmark { get; set; }
@@ -56,15 +65,22 @@ namespace Blish_HUD.Modules.PoiLookup {
         public PoiLookupWindow(PoiLookup module) : base() {
             Module = module;
 
-            TitleBarHeight = 32;
-            this.Size = new Point(WINDOW_WIDTH, WINDOW_HEIGHT);
-            this.Title = "";
+            //this.Size = new Point(WINDOW_WIDTH, WINDOW_HEIGHT);
+            this.Title = "Landmark Search";
             this.ZIndex = Controls.Screen.TOOLWINDOW_BASEZINDEX;
-            ExitBounds = new Rectangle(this.Width - 32, 0, 32, 32);
+
+            ConstructWindow(_textureWindowBackground,
+                            new Vector2(0, TITLEBAR_HEIGHT),
+                            new Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT),
+                            Thickness.Zero,
+                            TITLEBAR_HEIGHT,
+                            false);
+
+            ContentRegion = new Rectangle(0, TITLEBAR_HEIGHT, _size.X, _size.Y - TITLEBAR_HEIGHT);
 
             Searchbox = new Controls.TextBox();
             Searchbox.PlaceholderText = "Search";
-            Searchbox.Location = new Point(0, TitleBarHeight);
+            Searchbox.Location = new Point(0, 0);
             Searchbox.Size = new Point(this.Width, Searchbox.Height);
             Searchbox.Parent = this;
 
@@ -143,7 +159,7 @@ namespace Blish_HUD.Modules.PoiLookup {
             _result1 = new PoiItem {
                 Icon     = Content.GetTexture("60976"),
                 Visible  = false,
-                Location = new Point(2, TitleBarHeight + Searchbox.Height),
+                Location = new Point(2, Searchbox.Bottom),
                 Size     = new Point(this.Width        - 4, 37),
                 Tooltip  = ttDetails1,
                 Parent   = this
@@ -152,7 +168,7 @@ namespace Blish_HUD.Modules.PoiLookup {
             _result2 = new PoiItem {
                 Icon     = Content.GetTexture("60976"),
                 Visible  = false,
-                Location = new Point(2, TitleBarHeight + Searchbox.Height + 39),
+                Location = new Point(2, _result1.Bottom + 2),
                 Size     = new Point(this.Width                           - 4, 37),
                 Tooltip  = ttDetails1,
                 Parent   = this
@@ -161,7 +177,7 @@ namespace Blish_HUD.Modules.PoiLookup {
             _result3 = new PoiItem {
                 Icon     = Content.GetTexture("60976"),
                 Visible  = false,
-                Location = new Point(2, TitleBarHeight + Searchbox.Height + 78),
+                Location = new Point(2, _result2.Bottom + 2),
                 Size     = new Point(this.Width                           - 4, 37),
                 Tooltip  = ttDetails1,
                 Parent   = this
@@ -181,10 +197,10 @@ namespace Blish_HUD.Modules.PoiLookup {
                         var closestLandmark = Module.GetClosestWaypoint(currItem.Landmark);
 
                         if (closestLandmark != null) {
-                            ttDetailsInfRes1.Font = Content.GetFont(TOOLTIP_FONT_FAMILY, TOOLTIP_FONT_SIZE, ContentService.FontStyle.Regular);
+                            ttDetailsInfRes1.Font = Content.DefaultFont14;
                             ttDetailsInfRes1.Text = closestLandmark.Name;
                         } else {
-                            ttDetailsInfRes1.Font = Content.GetFont(TOOLTIP_FONT_FAMILY, TOOLTIP_FONT_SIZE, ContentService.FontStyle.Italic);
+                            ttDetailsInfRes1.Font = Content.DefaultFont14;
                             ttDetailsInfRes1.Text = "none found";
                         }
 
@@ -282,16 +298,19 @@ namespace Blish_HUD.Modules.PoiLookup {
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureWindowBackground,
+                                   bounds);
+
+            // Paints exit button
             base.PaintBeforeChildren(spriteBatch, bounds);
 
-            spriteBatch.DrawOnCtrl(this, Content.GetTexture("156390"), new Rectangle(Point.Zero, _size));
-            spriteBatch.DrawStringOnCtrl(this, 
+            spriteBatch.DrawStringOnCtrl(this,
                                            "Landmark Search",
                                            Content.DefaultFont14,
-                                           new Rectangle(8, 0, ExitBounds.Left - 16, TitleBarHeight),
+                                           new Rectangle(8, 0, 32, TITLEBAR_HEIGHT),
                                            Color.White);
 
-            base.PaintBeforeChildren(spriteBatch, bounds);
         }
 
         private void ResultCtrl_Submitted(PoiItem item, bool copyAlt) {

@@ -131,7 +131,6 @@
     <Compile Include="Controls\CounterBox.cs" />
     <Compile Include="Controls\DetailsButton.cs" />
     <Compile Include="Controls\Effects\ControlEffect.cs" />
-    <Compile Include="Controls\Effects\GlowEffect.cs" />
     <Compile Include="Controls\Effects\ScrollingHighlightEffect.cs" />
     <Compile Include="Controls\Extern\HardwareInput.cs" />
     <Compile Include="Controls\Extern\Input.cs" />

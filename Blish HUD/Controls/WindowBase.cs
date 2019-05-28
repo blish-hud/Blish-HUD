@@ -15,9 +15,6 @@ namespace Blish_HUD.Controls {
         private const int TITLE_OFFSET = 80;
         private const int SUBTITLE_OFFSET = 20;
 
-        private const int CORNERRIGHT_MARGIN  = 5;
-        private const int CORNERBOTTOM_MARGIN = -5;
-
         #region Load Static
 
         private static Texture2D _textureTitleBarLeft;
@@ -102,7 +99,6 @@ namespace Blish_HUD.Controls {
         public Panel ActivePanel {
             get => _activePanel;
             set {
-                // TODO: All controls should have a `Hide()` and `Show()` method
                 if (_activePanel != null) {
                     _activePanel.Hide();
                     _activePanel.Parent = null;
@@ -133,10 +129,6 @@ namespace Blish_HUD.Controls {
         }
 
         #region Window Construction
-
-        protected Rectangle ExitBounds;
-
-        protected int TitleBarHeight = 0;
 
         protected Texture2D _windowBackground;
         protected Vector2   _windowBackgroundOrigin;
@@ -189,11 +181,11 @@ namespace Blish_HUD.Controls {
             _windowBackground = background;
             _windowBackgroundOrigin = backgroundOrigin; //.OffsetBy(0, -titleBarHeight);
 
-            Rectangle tempBounds = (windowBackgroundBounds ?? background.Bounds).Add(0, 0, 0, titleBarHeight);
+            Rectangle tempBounds = windowBackgroundBounds ?? background.Bounds;
 
             _titleBarBounds = new Rectangle(0, 0, tempBounds.Width, titleBarHeight);
 
-            this.Size = tempBounds.Size + new Point(0, titleBarHeight);
+            this.Size = tempBounds.Size;
 
             this.Padding = outerPadding;
 
@@ -342,7 +334,7 @@ namespace Blish_HUD.Controls {
         protected virtual void PaintWindowBackground(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this,
                                    _windowBackground,
-                                   bounds.Subtract(new Rectangle(0, -4, 0, 0)),
+                                   bounds,
                                    null,
                                    Color.White,
                                    0f,
@@ -410,12 +402,11 @@ namespace Blish_HUD.Controls {
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             if (StandardWindow) {
-                PaintWindowBackground(spriteBatch, _windowBackgroundBounds);
-
+                PaintWindowBackground(spriteBatch, _windowBackgroundBounds.Subtract(new Rectangle(0, -4, 0, 0)));
                 PaintTitleBar(spriteBatch, bounds);
-
-                PaintExitButton(spriteBatch, _layoutExitButtonBounds);
             }
+
+            PaintExitButton(spriteBatch, _layoutExitButtonBounds);
         }
 
         public override void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds) {

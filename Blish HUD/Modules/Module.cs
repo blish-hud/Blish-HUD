@@ -79,7 +79,6 @@ namespace Blish_HUD.Modules {
         }
 
         public virtual void OnDisabled() {
-
             // Clear out any tabs that were made (that the module didn't clean up)
             foreach (var windowTab2 in TabsAdded) {
                 GameService.Director.BlishHudWindow.RemoveTab(windowTab2);

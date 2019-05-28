@@ -50,8 +50,7 @@ namespace Blish_HUD.Controls {
             get => _selectedTabIndex;
             set {
                 if (SetProperty(ref _selectedTabIndex, value)) {
-                    this.Subtitle = SelectedTab.Name;
-                    this.TabChanged?.Invoke(this, EventArgs.Empty);
+                    OnTabChanged(EventArgs.Empty);
                 }
             }
         }
@@ -64,52 +63,41 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _hoveredTabIndex, value);
         }
 
-        private Point Padding2 = new Point(LEFT_PADDING, TOP_PADDING);
-
-        private Rectangle BackgroundBounds;
-        private Rectangle WindowBounds;
-        private Rectangle LeftTitleBarBounds;
-        private Rectangle RightTitleBarBounds;
-
         public TabbedWindow() {
-            TitleBarHeight = 64;
-
-            Size = new Point(WINDOW_WIDTH + LEFT_PADDING, WINDOW_HEIGHT + TOP_PADDING);
-            ExitBounds = new Rectangle(this.Width - 32 - 32, 16, 32, 32).OffsetBy(0, Padding2.Y);
-
             var tabWindowTexture = _textureDefaultBackround;
             tabWindowTexture = tabWindowTexture.Duplicate().SetRegion(0, 0, 64, _textureDefaultBackround.Height, Color.Transparent);   
 
-            ConstructWindow(tabWindowTexture, new Vector2(25, 35), new Rectangle(0, 0, 1100, 700), new Thickness(60, 75, 45, 25), 40);
-
-            WindowBounds = new Rectangle(Padding2, _size - Padding2);
-            //BackgroundBounds = WindowBounds.OffsetBy(44, 64 - 36);
-            //TitleBarBounds = new Rectangle(0, 0, 1024, 64).OffsetBy(WindowBounds.Location);
-            //LeftTitleBarBounds = new Rectangle(TitleBarBounds.X, TitleBarBounds.Y, Math.Min(TitleBarBounds.Width - 128, 1024), 64);
-            //RightTitleBarBounds = new Rectangle(TitleBarBounds.Right - 128, TitleBarBounds.Y, 128, 64);
-
-            //ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, Width - TAB_WIDTH / 2, Height - 128);
+            ConstructWindow(tabWindowTexture, new Vector2(25, 33), new Rectangle(0, 0, 1100, 745), new Thickness(60, 75, 45, 25), 40);
 
             ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, WINDOWCONTENT_WIDTH, WINDOWCONTENT_HEIGHT);
 
-            this.MouseMoved += TabbedWindow_MouseMoved;
-            this.LeftMouseButtonPressed += TabbedWindow_LeftMouseButtonPressed;
-
-            this.MouseLeft += delegate { Invalidate(); };
-
             this.TabChanged += delegate {
-                if (_visible)
-                    Content.PlaySoundEffectByName($"audio\\tab-swap-{Utils.Calc.GetRandom(1, 5)}");
-
-                Navigate(Panels[this.SelectedTab], false);
             };
+        }
+
+        protected virtual void OnTabChanged(EventArgs e) {
+            if (_visible) {
+                Content.PlaySoundEffectByName($"audio\\tab-swap-{Utils.Calc.GetRandom(1, 5)}");
+            }
+
+            this.Subtitle = SelectedTab.Name;
+
+            Navigate(Panels[this.SelectedTab], false);
+
+            this.TabChanged?.Invoke(this, e);
         }
 
         protected override CaptureType CapturesInput() {
             return CaptureType.Mouse | CaptureType.MouseWheel | CaptureType.Filter;
         }
 
-        private void TabbedWindow_MouseMoved(object sender, MouseEventArgs e) {
+        protected override void OnMouseLeft(MouseEventArgs e) {
+            this.HoveredTabIndex = -1;
+
+            base.OnMouseLeft(e);
+        }
+
+        protected override void OnMouseMoved(MouseEventArgs e) {
             bool newSet = false;
 
             if (RelativeMousePosition.X < StandardTabBounds.Right && RelativeMousePosition.Y > StandardTabBounds.Y) {
@@ -128,12 +116,14 @@ namespace Blish_HUD.Controls {
             }
 
             if (!newSet) {
-                this.HoveredTabIndex = -1;
+                this.HoveredTabIndex  = -1;
                 this.BasicTooltipText = null;
             }
+
+            base.OnMouseMoved(e);
         }
 
-        private void TabbedWindow_LeftMouseButtonPressed(object sender, MouseEventArgs e) {
+        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             if (RelativeMousePosition.X < StandardTabBounds.Right && RelativeMousePosition.Y > StandardTabBounds.Y) {
                 var tabList = Tabs.ToList();
                 for (int tabIndex = 0; tabIndex < Tabs.Count; tabIndex++) {
@@ -146,6 +136,8 @@ namespace Blish_HUD.Controls {
                 }
                 tabList.Clear();
             }
+
+            base.OnLeftMouseButtonPressed(e);
         }
 
         #region Tab Handling
@@ -217,14 +209,12 @@ namespace Blish_HUD.Controls {
 
             Invalidate();
         }
-
-        #endregion
-        
-
         private Rectangle TabBoundsFromIndex(int index) {
             return StandardTabBounds.OffsetBy(-TAB_WIDTH, ContentRegion.Y + index * TAB_HEIGHT);
         }
 
+        #endregion
+        
         #region Calculated Layout
 
         private Rectangle _layoutTopTabBarBounds;
