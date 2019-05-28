@@ -1,7 +1,7 @@
 # Blish HUD
 [![Build status](https://ci.appveyor.com/api/projects/status/e0wbwpua7hsnvs00?svg=true)](https://ci.appveyor.com/project/dlamkins/blishhud)
-![Discord](https://img.shields.io/discord/531175899588984842.svg?logo=discord&logoColor=%237289DA)
-![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/blishhud.svg?color=%2340BA12&logo=reddit&logoColor=white)
+[![Discord](https://img.shields.io/discord/531175899588984842.svg?logo=discord&logoColor=%237289DA)](https://discord.gg/FYKN3qh)
+[![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/blishhud.svg?color=%2340BA12&logo=reddit&logoColor=white)](https://www.reddit.com/r/BlishHUD/)
 
 
 _A more structured readme will come in the future._
