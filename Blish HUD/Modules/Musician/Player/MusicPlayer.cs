@@ -9,9 +9,14 @@ namespace Blish_HUD.Modules.Musician.Player
     public class MusicPlayer
     {
         public Thread Worker { get; private set; }
-
+        public IPlayAlgorithm Algorithm { get; private set; }
+        public void Dispose()
+        {
+            Algorithm.Dispose();
+        }
         public MusicPlayer(MusicSheet musicSheet, InstrumentType instrument, IPlayAlgorithm algorithm)
         {
+            Algorithm = algorithm;
             Worker = new Thread(() => algorithm.Play(instrument, musicSheet.MetronomeMark, musicSheet.Melody.ToArray()));
         }
     }

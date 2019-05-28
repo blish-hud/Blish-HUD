@@ -8,6 +8,8 @@ namespace Blish_HUD.Modules.Musician.Player.Algorithms
 {
     public class FavorChordsAlgorithm : IPlayAlgorithm
     {
+        private bool Abort = false;
+        public void Dispose() { this.Abort = true; }
         public void Play(InstrumentType instrument, MetronomeMark metronomeMark, ChordOffset[] melody)
         {
             var stopwatch = new Stopwatch();
@@ -15,6 +17,8 @@ namespace Blish_HUD.Modules.Musician.Player.Algorithms
 
             for (var strumIndex = 0; strumIndex < melody.Length;)
             {
+                if (this.Abort) return;
+
                 var strum = melody[strumIndex];
 
                 if (stopwatch.ElapsedMilliseconds > metronomeMark.WholeNoteLength.Multiply(strum.Offest).TotalMilliseconds)

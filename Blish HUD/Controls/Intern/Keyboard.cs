@@ -2,11 +2,25 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Blish_HUD.Controls.Extern;
 namespace Blish_HUD.Controls.Intern
 {
     public class Keyboard : IKeyboard
     {
+        public bool HardwareInput = false; // If true, uses normal key input instead of sending messages to GW2's window handle.
+
+        private const uint WM_KEYDOWN = 0x0100;
+        private const uint WM_KEYUP = 0x0101;
+        private const uint WM_CHAR = 0x0102;
+        private const uint MAPVK_VK_TO_VSC = 0x00;
+        private const uint MAPVK_VSC_TO_VK = 0x01;
+        private const uint MAPVK_VK_TO_CHAR = 0x02;
+        private const uint MAPVK_VSC_TO_VK_EX = 0x03;
+        private const uint MAPVK_VK_TO_VSC_EX = 0x04;
+
+        private IntPtr Gw2WndHandle = GameService.GameIntegration.Gw2Process.MainWindowHandle;
+
         private static readonly Dictionary<GuildWarsControls, ScanCodeShort> ScanCodeShorts = new Dictionary<GuildWarsControls, ScanCodeShort>
         {
             {GuildWarsControls.WeaponSkill1, ScanCodeShort.KEY_1},
@@ -57,8 +71,18 @@ namespace Blish_HUD.Controls.Intern
                     }
                 }
             };
-
-            PInvoke.SendInput((uint) nInputs.Length, nInputs, Input.Size);
+            if (HardwareInput || !GameService.GameIntegration.Gw2IsRunning)
+            {
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, Input.Size);
+            }
+            else
+            {
+                uint vkCode = (uint)VirtualKeyShorts[key];
+                ExtraKeyInfo lParam = new ExtraKeyInfo(){
+                    scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
+                };
+                PInvoke.PostMessage(Gw2WndHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
+            }
         }
 
         public void Release(GuildWarsControls key)
@@ -79,8 +103,34 @@ namespace Blish_HUD.Controls.Intern
                     }
                 }
             };
-
-            PInvoke.SendInput((uint) nInputs.Length, nInputs, Input.Size);
+            if (HardwareInput || !GameService.GameIntegration.Gw2IsRunning)
+            {
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, Input.Size);
+            }
+            else
+            {
+                uint vkCode = (uint)VirtualKeyShorts[key];
+                ExtraKeyInfo lParam = new ExtraKeyInfo()
+                {
+                    scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
+                    repeatCount = 1,
+                    prevKeyState = 1,
+                    transitionState = 1
+                };
+                PInvoke.PostMessage(Gw2WndHandle, WM_KEYUP, vkCode, lParam.GetInt());
+            }
         }
     }
+    class ExtraKeyInfo
+    {
+        public ushort repeatCount;
+        public char scanCode;
+        public ushort extendedKey, prevKeyState, transitionState;
+
+        public int GetInt()
+        {
+            return repeatCount | (scanCode << 16) | (extendedKey << 24) |
+                (prevKeyState << 30) | (transitionState << 31);
+        }
+    };
 }
