@@ -98,20 +98,24 @@ namespace Blish_HUD.Pathing.Entities {
 
                 currPoint = nextPoint;
 
-                #if DEBUG
-                //var leftBoxPoint = new Cube() {
-                //    Color    = Color.Red,
-                //    Size     = new Vector3(0.25f),
-                //    Position = leftPoint
-                //};
-                //var rightBoxPoint = new Cube() {
-                //    Color    = Color.Red,
-                //    Size     = new Vector3(0.25f),
-                //    Position = rightPoint
-                //};
-                //GameService.Graphics.World.Entities.Add(leftBoxPoint);
-                //GameService.Graphics.World.Entities.Add(rightBoxPoint);
-                #endif
+#if DEBUG
+//GameService.Director.QueueAdHocUpdate((gameTime) => {
+//                                          var leftBoxPoint = new Cube() {
+//                                              Color    = Color.Red,
+//                                              Size     = new Vector3(0.25f),
+//                                              Position = leftPoint
+//                                          };
+
+//                                          var rightBoxPoint = new Cube() {
+//                                              Color    = Color.Red,
+//                                              Size     = new Vector3(0.25f),
+//                                              Position = rightPoint
+//                                          };
+
+//                                          GameService.Graphics.World.Entities.Add(leftBoxPoint);
+//                                          GameService.Graphics.World.Entities.Add(rightBoxPoint);
+//                                      });
+#endif
             }
 
             var fleftPoint  = currPoint + (offset * imgScale);
