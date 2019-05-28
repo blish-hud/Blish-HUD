@@ -63,8 +63,36 @@ namespace Blish_HUD.Pathing.Entities {
 
         public ScrollingTrailSection([CanBeNull] List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
 
+        private List<Vector3> SetTrailResolution(List<Vector3> trailPoints, float pointResolution) {
+            List<Vector3> tempTrail = new List<Vector3>();
+
+            var lstPoint = trailPoints[0];
+
+            for (int i = 0; i < trailPoints.Count; i++) {
+                var dist = Vector3.Distance(lstPoint, trailPoints[i]);
+
+                var s   = dist / pointResolution;
+                var inc = 1    / s;
+
+                for (float v = inc; v < s - inc; v += inc) {
+                    var nPoint = Vector3.Lerp(lstPoint, _trailPoints[i], v / s);
+
+                    tempTrail.Add(nPoint);
+                }
+
+                tempTrail.Add(trailPoints[i]);
+
+                lstPoint = trailPoints[i];
+            }
+
+            return tempTrail;
+        }
+
         public override void OnTrailPointsChanged() {
             if (!_trailPoints.Any()) return;
+
+            // TacO has a minimum of 30, so we'll use 30
+            _trailPoints = SetTrailResolution(_trailPoints, 30f);
 
             //SmoothTrail(ref _trailPoints);
 
@@ -99,22 +127,22 @@ namespace Blish_HUD.Pathing.Entities {
                 currPoint = nextPoint;
 
 #if DEBUG
-//GameService.Director.QueueAdHocUpdate((gameTime) => {
-//                                          var leftBoxPoint = new Cube() {
-//                                              Color    = Color.Red,
-//                                              Size     = new Vector3(0.25f),
-//                                              Position = leftPoint
-//                                          };
+                //GameService.Director.QueueAdHocUpdate((gameTime) => {
+                //    var leftBoxPoint = new Cube() {
+                //        Color    = Color.Red,
+                //        Size     = new Vector3(0.25f),
+                //        Position = leftPoint
+                //    };
 
-//                                          var rightBoxPoint = new Cube() {
-//                                              Color    = Color.Red,
-//                                              Size     = new Vector3(0.25f),
-//                                              Position = rightPoint
-//                                          };
+                //    var rightBoxPoint = new Cube() {
+                //        Color = Color.Red,
+                //        Size = new Vector3(0.25f),
+                //        Position = rightPoint
+                //    };
 
-//                                          GameService.Graphics.World.Entities.Add(leftBoxPoint);
-//                                          GameService.Graphics.World.Entities.Add(rightBoxPoint);
-//                                      });
+                //    GameService.Graphics.World.Entities.Add(leftBoxPoint);
+                //    GameService.Graphics.World.Entities.Add(rightBoxPoint);
+                //});
 #endif
             }
 
@@ -142,7 +170,7 @@ namespace Blish_HUD.Pathing.Entities {
             for (int i = 1; i < pointList.Count - 2; i++) {
                 smoothedPoints.Add(pointList[i]);
 
-                smoothedPoints.Add(Vector3.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .9f));
+                smoothedPoints.Add(Vector3.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .2f));
                 //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .2f));
                 //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .3f));
                 //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .7f));
