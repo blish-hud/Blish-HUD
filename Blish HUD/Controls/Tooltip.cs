@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -13,10 +14,46 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
+        private static List<Tooltip> _allTooltips;
+
         private static Texture2D _textureTooltip;
 
         static Tooltip() {
             _textureTooltip = Content.GetTexture("tooltip");
+
+            _allTooltips = new List<Tooltip>();
+
+            Control.ActiveControlChanged += ControlOnActiveControlChanged;
+
+            Input.MouseMoved += delegate(object sender, MouseEventArgs args) {
+                if (Control.ActiveControl?.Tooltip != null) {
+                    UpdateTooltipPosition(Control.ActiveControl.Tooltip);
+                    Control.ActiveControl.Tooltip.Visible = true;
+                }
+            };
+        }
+
+        private static void ControlOnActiveControlChanged(object sender, ControlChangedEventArgs e) {
+            foreach (var tooltip in _allTooltips) {
+                tooltip.Hide();
+            }
+
+            if (e.ActivatedControl?.Tooltip != null) {
+                UpdateTooltipPosition(e.ActivatedControl.Tooltip);
+                e.ActivatedControl.Tooltip.Visible = true;
+            }
+        }
+
+        private static void UpdateTooltipPosition(Tooltip tooltip) {
+            int topPos = Input.MouseState.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height > 0
+                             ? -Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height
+                             : Tooltip.MOUSE_VERTICAL_MARGIN * 2;
+
+            int leftPos = Input.MouseState.Position.X + tooltip.Width < Graphics.SpriteScreen.Width
+                              ? 0
+                              : -tooltip.Width;
+
+            tooltip.Location = Input.MouseState.Position + new Point(leftPos, topPos);
         }
 
         #endregion
@@ -32,11 +69,13 @@ namespace Blish_HUD.Controls {
             this.ChildAdded   += Tooltip_ChildChanged;
             this.ChildRemoved += Tooltip_ChildChanged;
 
-            Input.MouseMoved += delegate {
-                if (this.Visible && !this.CurrentControl.MouseOver) {
-                    this.Visible = false;
-                }
-            };
+            //Input.MouseMoved += delegate {
+            //    if (this.Visible && !this.CurrentControl.MouseOver) {
+            //        this.Visible = false;
+            //    }
+            //};
+
+            _allTooltips.Add(this);
         }
 
         private void Tooltip_ChildChanged(object sender, ChildChangedEventArgs e) {
@@ -46,6 +85,8 @@ namespace Blish_HUD.Controls {
             if (e.Added) {
                 e.ChangedChild.Resized += delegate { Invalidate(); };
                 e.ChangedChild.Moved += delegate { Invalidate(); };
+            } else {
+                // TODO: Remove handlers
             }
         }
 

@@ -11,9 +11,9 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Content {
-    public class CachedStringRender {
+    public class CachedStringRender : IDisposable {
 
-        private static Dictionary<int, CachedStringRender> _cachedStringRenders = new Dictionary<int, CachedStringRender>();
+        private static readonly Dictionary<int, CachedStringRender> _cachedStringRenders = new Dictionary<int, CachedStringRender>();
         private static readonly NullControl _proxyControl = new NullControl();
 
         private RenderTarget2D _cachedRender;
@@ -142,6 +142,10 @@ namespace Blish_HUD.Content {
             }
 
             return _cachedStringRenders[csrHash];
+        }
+
+        public void Dispose() {
+            _cachedRender?.Dispose();
         }
 
     }

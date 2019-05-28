@@ -16,21 +16,39 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
     public class TacOMarkerPathable : LoadedMarkerPathable, ITacOPathable {
 
-        private string _type;
-        private float  _fadeNear     = -1;
-        private float  _fadeFar      = -1;
-        private float  _heightOffset = 1.5f;
-        private int    _resetLength;
-        private bool   _autoTrigger;
-        private bool   _hasCountdown;
-        private float  _triggerRange;
-        private int    _tacOBehaviorId;
+        private const float DEFAULT_HEIGHTOFFSET = 1.5f;
+        private const float DEFAULT_ICONSIZE     = 2f;
+
+        private string          _type;
+        private PathingCategory _category;
+        private float           _fadeNear     = -1;
+        private float           _fadeFar      = -1;
+        private int             _resetLength;
+        private bool            _autoTrigger;
+        private bool            _hasCountdown;
+        private float           _triggerRange;
+        private int             _tacOBehaviorId;
 
         private BasicTOBehavior<ManagedPathable<Marker>, Marker> _tacOBehavior;
 
         public string Type {
             get => _type;
-            set => SetProperty(ref _type, value);
+            set {
+                if (SetProperty(ref _type, value)) {
+                    _category = _rootCategory.GetOrAddCategoryFromNamespace(_type);
+                    OnPropertyChanged(nameof(Category));
+                }
+            }
+        }
+
+        public PathingCategory Category {
+            get => _category;
+            set {
+                if (SetProperty(ref _category, value)) {
+                    _type = _category.Namespace;
+                    OnPropertyChanged(nameof(Type));
+                }
+            }
         }
 
         public float FadeNear {
@@ -81,13 +99,25 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             }
         }
 
-        public TacOMarkerPathable(XmlNode sourceNode, IPackFileSystemContext packContext) : base(sourceNode, packContext) { }
+        private readonly XmlNode         _sourceNode;
+        private readonly PathingCategory _rootCategory;
+
+        public TacOMarkerPathable(XmlNode sourceNode, IPackFileSystemContext packContext, PathingCategory rootCategory) : base(packContext) {
+            _sourceNode   = sourceNode;
+            _rootCategory = rootCategory;
+
+            BeginLoad();
+        }
+
+        // TODO: Use this method as an opportunity to convert attributes to some sort of IPathingAttribute to keep things
+        // consistent between imported file formats
+        protected override void BeginLoad() {
+            LoadAttributes(_sourceNode);
+        }
 
         protected override void PrepareAttributes() {
             // Type
-            RegisterAttribute("type",
-                              attribute => (!string.IsNullOrEmpty(this.Type = attribute.Value.Trim())),
-                              false);
+            RegisterAttribute("type", attribute => (!string.IsNullOrEmpty(this.Type = attribute.Value.Trim())));
 
             // Alpha (alias:Opacity)
             RegisterAttribute("alpha", delegate (XmlAttribute attribute) {
@@ -171,24 +201,22 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
 
         protected override bool FinalizeAttributes(Dictionary<string, LoadedPathableAttributeDescription> attributeLoaders) {
             // Process attributes from type category first
-            var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(this.Type);
-
-            if (refCategory?.SourceXmlNode?.Attributes != null) {
-                ProcessAttributes(refCategory.SourceXmlNode.Attributes);
+            if (_category?.SourceXmlNode?.Attributes != null) {
+                ProcessAttributes(_category.SourceXmlNode.Attributes);
             }
 
-            refCategory?.AddPathable(this);
+            _category?.AddPathable(this);
 
             // Finalize attributes
             if (attributeLoaders.ContainsKey("heightoffset")) {
                 if (!attributeLoaders["heightoffset"].Loaded) {
-                    this.HeightOffset = 1.5f;
+                    this.HeightOffset = DEFAULT_HEIGHTOFFSET;
                     this.ManagedEntity.VerticalConstraint = BillboardVerticalConstraint.CameraPosition;
                 }
             }
             if (attributeLoaders.ContainsKey("iconsize")) {
                 if (!attributeLoaders["iconsize"].Loaded) {
-                    this.ManagedEntity.Size = new Vector2(2f);
+                    this.ManagedEntity.Size = new Vector2(DEFAULT_ICONSIZE);
                 }
             }
 

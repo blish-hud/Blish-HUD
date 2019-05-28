@@ -39,10 +39,6 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _flowDirection, value, true);
         }
 
-        protected override void OnContentResized(RegionChangedEventArgs e) {
-            base.OnContentResized(e);
-        }
-
         protected override void OnChildAdded(ChildChangedEventArgs e) {
             base.OnChildAdded(e);
             OnChildrenChanged(e);

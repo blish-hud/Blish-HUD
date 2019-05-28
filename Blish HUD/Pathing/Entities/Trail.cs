@@ -74,12 +74,10 @@ namespace Blish_HUD.Pathing.Entities {
             foreach (var basicPass in this.EntityEffect.CurrentTechnique.Passes) {
                 basicPass.Apply();
 
-                graphicsDevice.DrawUserPrimitives(
-                                                  PrimitiveType.LineStrip,
+                graphicsDevice.DrawUserPrimitives(PrimitiveType.LineStrip,
                                                   this.VertexData,
                                                   0,
-                                                  this.VertexData.Length - 1
-                                                  );
+                                                  this.VertexData.Length - 1);
             }
         }
 

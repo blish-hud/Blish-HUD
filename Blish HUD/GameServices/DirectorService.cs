@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,6 +16,16 @@ namespace Blish_HUD {
         public TabbedWindow BlishHudWindow { get; protected set; }
         public CornerIcon BlishMenuIcon { get; protected set; }
         public ContextMenuStrip BlishContextMenu { get; protected set; }
+
+        private ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
+
+        /// <summary>
+        /// Allows you to enqueue a call that will occur during the next time the Update loop executes.
+        /// </summary>
+        /// <param name="call">A method accepting <see="GameTime" /> as a parameter.</param>
+        public void QueueAdHocUpdate(Action<GameTime> call) {
+            _queuedUpdates.Enqueue(call);
+        }
 
         protected override void Initialize() {
         }
@@ -80,7 +91,15 @@ namespace Blish_HUD {
         // TODO: Move into a TacO compatibility module
         private double lastTacoCheckTime = 5;
 
+        private void HandleEnqueuedUpdates(GameTime gameTime) {
+            while (_queuedUpdates.TryDequeue(out Action<GameTime> updateCall)) {
+                updateCall.Invoke(gameTime);
+            }
+        }
+
         protected override void Update(GameTime gameTime) {
+            HandleEnqueuedUpdates(gameTime);
+
             if (GameService.GameIntegration.IsInGame) {
                 CornerIcon.Alignment = CornerIcon.CornerIconAlignment.Left;
 

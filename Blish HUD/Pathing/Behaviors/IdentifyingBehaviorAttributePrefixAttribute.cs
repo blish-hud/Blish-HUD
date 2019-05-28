@@ -18,8 +18,8 @@ namespace Blish_HUD.Pathing.Behaviors {
             }
         }
 
-        public static List<IdentifyingBehaviorAttributePrefixAttribute> GetAttributesOnType(Type type) {
-            return type.GetCustomAttributes(typeof(IdentifyingBehaviorAttributePrefixAttribute), true).Cast<IdentifyingBehaviorAttributePrefixAttribute>().ToList();
+        public static IdentifyingBehaviorAttributePrefixAttribute GetAttributesOnType(Type type) {
+            return (IdentifyingBehaviorAttributePrefixAttribute)type.GetCustomAttribute(typeof(IdentifyingBehaviorAttributePrefixAttribute), true);
         }
 
         public string AttributePrefix { get; }

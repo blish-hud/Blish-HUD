@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Readers {
 
@@ -25,7 +25,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Readers {
             var trlSections = new List<TrlSection>();
 
             // Ensure this stream can seek
-            using (var srcStream = trlStream.CanSeek ? trlStream : trlStream.ToMemoryStream()) {
+            using (var srcStream = trlStream.CanSeek ? trlStream : trlStream.ReplaceWithMemoryStream()) {
                 // 32 bit, little-endian
                 using (var trlReader = new BinaryReader(srcStream, Encoding.ASCII)) {
                     // If at end of stream, or if stream is 0 length, give up

@@ -11,7 +11,7 @@ using Blish_HUD.Annotations;
 using Microsoft.Scripting.Utils;
 
 namespace Blish_HUD {
-    public abstract class GameService :INotifyPropertyChanged {
+    public abstract class GameService : INotifyPropertyChanged {
 
         private static readonly GameService[] AllServices;
         public static IReadOnlyList<GameService> All => AllServices;
@@ -60,6 +60,7 @@ namespace Blish_HUD {
         public static readonly PathingService Pathing;
         public static readonly ModuleService Module;
         public static readonly PersistentStoreService Store;
+        public static readonly ArcDpsService ArcDps;
 
         #endregion
 
@@ -81,6 +82,7 @@ namespace Blish_HUD {
             Hotkeys = new HotkeysService();
             Pathing = new PathingService();
             Module = new ModuleService();
+            ArcDps = new ArcDpsService();
 
             AllServices = new GameService[] {
                 Debug,
@@ -98,24 +100,10 @@ namespace Blish_HUD {
                 Hotkeys,
                 Pathing,
                 Module,
-                Store
+                Store,
+                //ArcDps
             };
 
-            GameServices.AddService<DebugService>(AllServices[0]);
-            GameServices.AddService<FileService>(AllServices[1]);
-            GameServices.AddService<SettingsService>(AllServices[2]);
-            GameServices.AddService<ContentService>(AllServices[3]);
-            GameServices.AddService<AnimationService>(AllServices[4]);
-            GameServices.AddService<GraphicsService>(AllServices[5]);
-            GameServices.AddService<Gw2MumbleService>(AllServices[6]);
-            GameServices.AddService<PlayerService>(AllServices[7]);
-            GameServices.AddService<CameraService>(AllServices[8]);
-            GameServices.AddService<InputService>(AllServices[9]);
-            GameServices.AddService<DirectorService>(AllServices[10]);
-            GameServices.AddService<GameIntegrationService>(AllServices[11]);
-            GameServices.AddService<HotkeysService>(AllServices[12]);
-            GameServices.AddService<ModuleService>(AllServices[14]);
-            GameServices.AddService<PersistentStoreService>(AllServices[15]);
         }
 
         #region Property Binding

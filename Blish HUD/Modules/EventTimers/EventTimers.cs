@@ -110,22 +110,28 @@ namespace Blish_HUD.Modules.EventTimers {
             };
 
             foreach (var meta in Meta.Events) {
+                var setting = allSettings.DefineSetting("watchEvent:" + meta.Name, true, true, false, "");
+
+                meta.IsWatched = setting.Value;
+
                 var es2 = new DetailsButton {
                     Parent = eventPanel,
                     BasicTooltipText = meta.Category,
                     Text = meta.Name,
                     IconSize = DetailsIconSize.Small,
                     Icon = string.IsNullOrEmpty(meta.Icon) ? null : GameService.Content.GetTexture(meta.Icon),
-                    ShowVignette = false
+                    ShowVignette = false,
+                    HighlightType = DetailsHighlightType.LightHighlight,
+                    ShowToggleButton = true
                 };
 
                 var nextTimeLabel = new Label() {
                     Size = new Point(65, es2.ContentRegion.Height),
                     Text = meta.NextTime.ToShortTimeString(),
+                    BasicTooltipText = GetTimeDetails(meta),
                     HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
                     VerticalAlignment = DrawUtil.VerticalAlignment.Middle,
                     Parent = es2,
-                    BasicTooltipText = GetTimeDetails(meta)
                 };
 
                 Adhesive.Binding.CreateOneWayBinding(() => nextTimeLabel.Height, () => es2.ContentRegion, (rectangle => rectangle.Height), true);
@@ -133,6 +139,7 @@ namespace Blish_HUD.Modules.EventTimers {
                 if (!string.IsNullOrEmpty(meta.Wiki)) {
                     var glowWikiBttn = new GlowButton {
                         Icon             = GameService.Content.GetTexture("102530"),
+                        ActiveIcon       = GameService.Content.GetTexture("glow-wiki"),
                         BasicTooltipText = "Read about this event on the wiki.",
                         Parent           = es2,
                         GlowColor        = Color.White * 0.1f
@@ -147,10 +154,11 @@ namespace Blish_HUD.Modules.EventTimers {
 
                 if (!string.IsNullOrEmpty(meta.Waypoint)) {
                     var glowWaypointBttn = new GlowButton {
-                        Icon = GameService.Content.GetTexture("waypoint"),
+                        Icon             = GameService.Content.GetTexture("waypoint"),
+                        ActiveIcon       = GameService.Content.GetTexture("glow-waypoint"),
                         BasicTooltipText = $"Nearby waypoint: {meta.Waypoint}",
-                        Parent = es2,
-                        GlowColor = Color.White * 0.1f
+                        Parent           = es2,
+                        GlowColor        = Color.White * 0.1f
                     };
 
                     glowWaypointBttn.Click += delegate {
@@ -160,8 +168,25 @@ namespace Blish_HUD.Modules.EventTimers {
                     };
                 }
 
+                var toggleFollowBttn = new GlowButton() {
+                    Icon = GameService.Content.GetTexture("605021"),
+                    ActiveIcon = GameService.Content.GetTexture("605019"),
+                    BasicTooltipText = "Click to toggle tracking for this event.",
+                    ToggleGlow = true,
+                    Checked = meta.IsWatched,
+                    Parent = es2,
+                };
+
+                toggleFollowBttn.Click += delegate {
+                    meta.IsWatched = toggleFollowBttn.Checked;
+                    setting.Value  = toggleFollowBttn.Checked;
+                };
+
                 meta.OnNextRunTimeChanged += delegate {
                     UpdateSort(ddSortMethod, EventArgs.Empty);
+
+                    nextTimeLabel.Text = meta.NextTime.ToShortTimeString();
+                    nextTimeLabel.BasicTooltipText = GetTimeDetails(meta);
                 };
 
                 displayedEvents.Add(es2);

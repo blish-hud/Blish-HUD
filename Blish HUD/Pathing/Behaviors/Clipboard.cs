@@ -9,21 +9,23 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Behaviors {
 
-    [IdentifyingBehaviorAttributePrefix("landmark")]
-    public class CopyLandmark<TPathable, TEntity> : InZone<TPathable, TEntity>, ILoadableBehavior
+    [IdentifyingBehaviorAttributePrefix("clipboard")]
+    public class Clipboard<TPathable, TEntity> : InZone<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
 
-        public string LandmarkCode { get; set; }
+        public string CopyValue { get; set; }
 
-        public CopyLandmark(TPathable managedPathable) : base(managedPathable) {
+        public int CopyRadius { get; set; }
+        
+        public Clipboard(TPathable managedPathable) : base(managedPathable) {
             this.ZoneRadius = 5;
         }
 
         public override void OnEnterZoneRadius(GameTime gameTime) {
             this.ManagedPathable.Active = false;
 
-            System.Windows.Forms.Clipboard.SetText(LandmarkCode);
+            System.Windows.Forms.Clipboard.SetText(this.CopyValue);
 
             Controls.Notification.ShowNotification(GameService.Content.GetTexture("waypoint"), "Landmark copied to clipboard.", 2);
         }
@@ -32,7 +34,7 @@ namespace Blish_HUD.Pathing.Behaviors {
             foreach (var attr in attributes) {
                 switch (attr.Name.ToLower()) {
                     case "landmark":
-                        this.LandmarkCode = attr.Value;
+                        this.CopyValue = attr.Value;
                         break;
                 }
             }

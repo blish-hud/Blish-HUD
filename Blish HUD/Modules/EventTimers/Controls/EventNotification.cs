@@ -53,19 +53,24 @@ namespace Blish_HUD.Modules.EventTimers {
             this.RightMouseButtonReleased += delegate { this.Dispose(); };
         }
 
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
+        }
+
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(Content.GetTexture("ns-button"),
-                             this.AbsoluteBounds,
-                             Color.White * 0.85f);
+            spriteBatch.DrawOnCtrl(this,
+                                   Content.GetTexture("ns-button"),
+                                   bounds,
+                                   Color.White * 0.85f);
 
             int icoSize = Math.Min(Icon.Width, 52);
 
-            spriteBatch.Draw(Icon,
-                             new Rectangle(NOTIFICATION_HEIGHT / 2 - icoSize / 2,
-                                           NOTIFICATION_HEIGHT / 2 - icoSize / 2,
-                                           icoSize,
-                                           icoSize).OffsetBy(bounds.Location),
-                             Color.White);
+            spriteBatch.DrawOnCtrl(this,
+                                   Icon,
+                                 new Rectangle(NOTIFICATION_HEIGHT / 2 - icoSize / 2,
+                                               NOTIFICATION_HEIGHT / 2 - icoSize / 2,
+                                               icoSize,
+                                               icoSize));
         }
 
         private void Show(float duration) {
@@ -87,10 +92,11 @@ namespace Blish_HUD.Modules.EventTimers {
             notif.Show(duration);
         }
 
-        protected override void Dispose(bool disposing) {
-            base.Dispose(disposing);
+        protected override void DisposeControl() {
             _notificationLifecycle = null;
             VisibleNotifications--;
+
+            base.DisposeControl();
         }
 
     }

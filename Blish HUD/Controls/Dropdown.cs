@@ -105,7 +105,7 @@ namespace Blish_HUD.Controls {
                 }
             }
 
-            protected override void Dispose(bool disposing) {
+            protected override void DisposeControl() {
                 if (_assocDropdown != null) {
                     _assocDropdown._lastPanel = null;
                     _assocDropdown = null;
@@ -114,7 +114,7 @@ namespace Blish_HUD.Controls {
                 Input.LeftMouseButtonPressed -= Input_MousedOffDropdownPanel;
                 Input.RightMouseButtonPressed -= Input_MousedOffDropdownPanel;
 
-                base.Dispose(disposing);
+                base.DisposeControl();
             }
 
         }

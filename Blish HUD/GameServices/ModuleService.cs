@@ -54,7 +54,7 @@ namespace Blish_HUD {
             using (var archiveReader = ZipFile.OpenRead(archivePath)) {
                 ZipArchiveEntry moduleEntry = archiveReader.GetEntry("ExampleBHUDModule.dll");
 
-                var assemblyStream = moduleEntry.Open().ToMemoryStream();
+                var assemblyStream = moduleEntry.Open().ReplaceWithMemoryStream();
                 var assemblyData = assemblyStream.ToArray();
 
                 catalog.Catalogs.Add(new AssemblyCatalog(Assembly.Load(assemblyData)));
@@ -86,20 +86,20 @@ namespace Blish_HUD {
             RegisterModule(new Modules.EventTimers.EventTimers());
             RegisterModule(new Modules.Compass());
             // RegisterModule(new Modules.RangeCircles());
-            // RegisterModule(new Modules.PoiLookup.PoiLookup());
+            RegisterModule(new Modules.PoiLookup.PoiLookup());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
             RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
             //RegisterModule(new Modules.LoadingScreenHints.LoadingScreenHints());
             RegisterModule(new Modules.Musician.Musician());
 
             //ComposeModulesFromNamespace();
-            ComposeModulesFromDirectory(this.ModulesDirectory);
+            //ComposeModulesFromDirectory(this.ModulesDirectory);
             //ComposeModuleFromArchive(Path.Combine(this.ModulesDirectory, "ExampleBHUDModule.zip"));
 
-            foreach (var externalModule in this.ExternalModules) {
-                Console.WriteLine($"Registering external module: {externalModule.GetModuleInfo().Name}");
-                RegisterModule(externalModule);
-            }
+            //foreach (var externalModule in this.ExternalModules) {
+            //    Console.WriteLine($"Registering external module: {externalModule.GetModuleInfo().Name}");
+            //    RegisterModule(externalModule);
+            //}
         }
 
         protected override void Unload() {

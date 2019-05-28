@@ -64,6 +64,8 @@ namespace Blish_HUD.Modules.Musician
         {
             base.OnEnabled();
 
+            Directory.CreateDirectory(Path.Combine(GameService.FileSrv.BasePath, "musician"));
+
             xmlParser = new XmlMusicSheetReader();
             displayedSheets = new List<SheetButton>();
             MusicianTab = GameService.Director.BlishHudWindow.AddTab("Musician", ICON, BuildHomePanel(GameService.Director.BlishHudWindow), 0);

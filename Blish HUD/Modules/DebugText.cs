@@ -86,8 +86,8 @@ namespace Blish_HUD.Modules {
         }
 
         private void UpdateSizeAndLocation(object sender, EventArgs e) {
-            lblInfo.Size = new Point(GameServices.GetService<GraphicsService>().SpriteScreen.Width, 14);
-            lblInfo.Location = new Point(0, GameServices.GetService<GraphicsService>().SpriteScreen.Height - 15);
+            lblInfo.Size = new Point(GameService.Graphics.SpriteScreen.Width, 14);
+            lblInfo.Location = new Point(0, GameService.Graphics.SpriteScreen.Height - 15);
         }
 
         public override void OnEnabled() {

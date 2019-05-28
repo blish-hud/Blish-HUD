@@ -107,18 +107,14 @@ namespace Blish_HUD.Entities.Primitives {
             _billboardEffect.View = GameService.Camera.View;
             _billboardEffect.Projection = GameService.Camera.Projection;
             _billboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2 * _scale, this.Size.Y / -2 * _scale, 0))
-                                   * Matrix.CreateBillboard(
-                                                            this.Position + this.RenderOffset,
-                                                            new Vector3(
-                                                                        GameService.Camera.Position.X,
+                                   * Matrix.CreateBillboard(this.Position + this.RenderOffset,
+                                                            new Vector3(GameService.Camera.Position.X,
                                                                         GameService.Camera.Position.Y,
                                                                         _verticalConstraint == BillboardVerticalConstraint.CameraPosition
                                                                             ? GameService.Camera.Position.Z
-                                                                            : GameService.Player.Position.Z
-                                                                       ),
+                                                                            : GameService.Player.Position.Z),
                                                             new Vector3(0, 0, 1),
-                                                            GameService.Camera.Forward
-                                                           );
+                                                            GameService.Camera.Forward);
 
             _billboardEffect.Alpha = this.Opacity;
             _billboardEffect.Texture = this.Texture;
