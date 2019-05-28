@@ -10,41 +10,27 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Controls {
 
-    public class ChildChangedEventArgs:CancelEventArgs {
-        public Control ChangedChild { get; }
-        public bool Added { get; }
-        public List<Control> ResultingChildren { get; }
-
-        public ChildChangedEventArgs(Container sender, Control changedChild, bool adding) {
-            this.ChangedChild = changedChild;
-            this.Added = adding;
-
-            this.ResultingChildren = new List<Control>(sender.Children.ToList());
-
-            if (adding)
-                this.ResultingChildren.Add(changedChild);
-            else
-                this.ResultingChildren.Remove(changedChild);
-        }
-    }
-
     // TODO: Ensure that container objects, when disposed, first dispose of their children
-    public abstract class Container : Control, IEnumerable<Control> { // : Control where T : Control {
+
+    /// <summary>
+    /// A control that is capable of having child controls that are drawn when the container is drawn.
+    /// Classes that inherit should be packaged controls that that manage their own controls internally.
+    /// For a Container with accessible children for non-packaged controls, use <see cref="AccessibleContainer"/>.
+    /// </summary>
+    public abstract class Container:Control, IEnumerable<Control> {
 
         public event EventHandler<ChildChangedEventArgs> ChildAdded;
         public event EventHandler<ChildChangedEventArgs> ChildRemoved;
 
-
-        public class RegionChangedEventArgs:EventArgs {
-            public Rectangle PreviousRegion { get; }
-            public Rectangle CurrentRegion  { get; }
-
-            public RegionChangedEventArgs(Rectangle previousRegion, Rectangle currentRegion) {
-                this.PreviousRegion = previousRegion;
-                this.CurrentRegion  = currentRegion;
-            }
-        }
         public event EventHandler<RegionChangedEventArgs> ContentResized;
+
+        protected List<Control> _children;
+        [Newtonsoft.Json.JsonIgnore]
+        public IReadOnlyCollection<Control> Children => _children.AsReadOnly();
+
+        protected Container() {
+            _children = new List<Control>();
+        }
 
         protected virtual void OnChildAdded(ChildChangedEventArgs e) {
             this.ChildAdded?.Invoke(this, e);
@@ -58,17 +44,9 @@ namespace Blish_HUD.Controls {
             this.ContentResized?.Invoke(this, e);
         }
 
-        private List<Control> _children;
-        [Newtonsoft.Json.JsonIgnore]
-        public IReadOnlyCollection<Control> Children => _children.AsReadOnly();
-
-        protected Container() {
-            _children = new List<Control>();
-        }
-
         protected override void OnResized(ResizedEventArgs e) {
             base.OnResized(e);
-            
+
             /* ContentRegion defaults to match our control size until one is manually set,
                so we do squeeze in OnPropertyChanged for it if the control hasn't had a
                ContentRegion specified and then resizes */
@@ -77,61 +55,63 @@ namespace Blish_HUD.Controls {
         }
 
         public void AddChild(Control child) {
-            if (this.Children.Contains(child)) return;
+            if (_children.Contains(child)) return;
 
-            var evRes = new ChildChangedEventArgs(this, child, true);
+            var resultingChildren = _children.ToList();
+            resultingChildren.Add(child);
+
+            var evRes = new ChildChangedEventArgs(this, child, true, resultingChildren);
             OnChildAdded(evRes);
 
-            if (!evRes.Cancel) {
-                _children.Add(child);
-                Invalidate();
-            }
+            if (evRes.Cancel) return;
+
+            _children.Add(child);
+            Invalidate();
         }
 
         public void RemoveChild(Control child) {
-            if (!this.Children.Contains(child)) return;
+            if (!_children.Contains(child)) return;
 
-            var evRes = new ChildChangedEventArgs(this, child, false);
+            var resultingChildren = _children.ToList();
+            resultingChildren.Remove(child);
+
+            var evRes = new ChildChangedEventArgs(this, child, false, resultingChildren);
             OnChildRemoved(evRes);
 
-            if (!evRes.Cancel) {
-                _children.Remove(child);
-                Invalidate();
-            }
+            if (evRes.Cancel) return;
+
+            _children.Remove(child);
+            Invalidate();
         }
 
         private Rectangle? _contentRegion;
         public Rectangle ContentRegion {
-            get => (Rectangle) (_contentRegion ?? new Rectangle(Point.Zero, this.Size));
+            get => _contentRegion ?? new Rectangle(Point.Zero, this.Size);
             protected set {
-                if (_contentRegion == value) return;
+                var previousRegion = this.ContentRegion;
 
-                var _previousRegion = this.ContentRegion;
-
-                _contentRegion = value;
-                OnPropertyChanged();
-
-                OnContentResized(new RegionChangedEventArgs(_previousRegion, this.ContentRegion));
+                if (SetProperty(ref _contentRegion, value, true)) {
+                    OnContentResized(new RegionChangedEventArgs(previousRegion, this.ContentRegion));
+                }
             }
         }
-
+        
         private int _verticalScrollOffset;
         public int VerticalScrollOffset {
             get => _verticalScrollOffset;
-            set {
-                if (_verticalScrollOffset == value) return;
-
-                _verticalScrollOffset = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _verticalScrollOffset, value);
         }
 
-        public RenderTarget2D ContentRenderCache;
+        private int _horizontalScrollOffset;
+        public int HorizontalScrollOffset {
+            get => _horizontalScrollOffset;
+            set => SetProperty(ref _horizontalScrollOffset, value);
+        }
 
         public List<Control> GetDescendants() {
-            var allDescendants = new List<Control>(this.Children);
+            var allDescendants = _children.ToList();
 
-            foreach (var child in this.Children) {
+            foreach (var child in _children) {
                 if (!(child is Container container)) continue;
 
                 allDescendants.AddRange(container.GetDescendants());
@@ -140,186 +120,94 @@ namespace Blish_HUD.Controls {
             return allDescendants;
         }
 
-        public abstract void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds);
-
-        public override bool TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            List<Control> zSortedChildren = this.Children.OrderByDescending(i => i.ZIndex).ToList();
+        public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
+            List<Control> zSortedChildren = _children.OrderByDescending(i => i.ZIndex).ToList();
 
             if (mouseEventType == MouseEventType.MouseMoved) base.TriggerMouseInput(mouseEventType, ms);
 
-            bool mouseCheck = false;
+            Control childResult = null;
 
             foreach (var childControl in zSortedChildren) {
-                if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible && childControl.TriggerMouseInput(mouseEventType, ms)) {
-                    mouseCheck = true;
-                    break;
+                if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
+                    childResult = childControl.TriggerMouseInput(mouseEventType, ms);
+
+                    if (childResult != null) {
+                        break;
+                    }
                 }
             }
 
             if (mouseEventType == MouseEventType.MouseMoved) {
-                return mouseCheck | base.TriggerMouseInput(mouseEventType, ms);
+                var overResult = base.TriggerMouseInput(mouseEventType, ms);
+
+                return childResult ?? overResult;
             }
-            
-            return mouseCheck || base.TriggerMouseInput(mouseEventType, ms);
+
+            return childResult ?? base.TriggerMouseInput(mouseEventType, ms);
         }
 
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
-
-            foreach (var childControl in this.Children.ToList()) {
-                if (childControl.Visible)
+        public override void DoUpdate(GameTime gameTime) {
+            foreach (var childControl in _children.ToList()) {
+                if (childControl.Visible || childControl.LayoutIsInvalid)
                     childControl.Update(gameTime);
             }
         }
 
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            // NOOP
+        protected sealed override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            var controlScissor = Graphics.GraphicsDevice.ScissorRectangle.ScaleBy(1 / Graphics.GetScaleRatio(Graphics.UIScale));
+
+            // Draw container background
+            PaintBeforeChildren(spriteBatch, bounds);
+
+            spriteBatch.End();
+
+            PaintChildren(spriteBatch, bounds, controlScissor);
+
+            // Restore scissor
+            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
+
+            spriteBatch.Begin(this.SpriteBatchParameters);
+
+            PaintAfterChildren(spriteBatch, bounds);
         }
 
-        private Rectangle LastContentBounds = Rectangle.Empty;
+        public virtual void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
-        private void PaintContent(GraphicsDevice graphicsDevice, IEnumerable<Control> sortedChildren) {
-            var contentBounds = this.ContentRegion;
+        public void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
+            var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
 
-            if (this.Children.Any()) {
-                contentBounds.Width  = Math.Max(this.ContentRegion.Width,  this.Children.Max(c => c.Right));
-                contentBounds.Height = Math.Max(this.ContentRegion.Height, this.Children.Max(c => c.Bottom));
-            }
+            List<Control> zSortedChildren = _children.OrderBy(i => i.ZIndex).ToList();
 
-            if (ContentRenderCache != null) {
-                if (ContentRenderCache.Width != contentBounds.Width || ContentRenderCache.Height != contentBounds.Height) {
-                    ContentRenderCache?.Dispose();
-                    ContentRenderCache = null;
-                }
-            }
-
-            if (LastContentBounds != contentBounds) OnContentResized(new RegionChangedEventArgs(LastContentBounds, contentBounds ));
-
-            LastContentBounds = contentBounds;
-
-            if (ContentRenderCache == null && contentBounds.Width * contentBounds.Height > 0) {
-                ContentRenderCache = new RenderTarget2D(
-                    graphicsDevice,
-                    contentBounds.Width,
-                    contentBounds.Height,
-                    false,
-                    SurfaceFormat.Color,
-                    DepthFormat.None,
-                    graphicsDevice.PresentationParameters.MultiSampleCount,
-                    RenderTargetUsage.PreserveContents
-                );
-            }
-
-            var contentSpritebatch = new SpriteBatch(graphicsDevice);
-            graphicsDevice.SetRenderTarget(ContentRenderCache);
-
-            graphicsDevice.Clear(Color.Transparent);
-
-            // Paint children
-            foreach (var childControl in sortedChildren) {
+            // Render each visible child
+            foreach (var childControl in zSortedChildren) {
                 if (childControl.Visible) {
-                    contentSpritebatch.Begin(
-                                             SpriteSortMode.Immediate,
-                                             childControl.BlendState,
-                                             null,
-                                             null,
-                                             null,
-                                             childControl.DrawEffect
-                                            );
+                    //if (childControl.LayoutIsInvalid) {
+                        // TODO: Need to figure out under what circumstances a control will be invalidated prior to a draw
+                        //childControl.RecalculateLayout();
+                    //}
 
-                    var childRender = childControl.GetRender();
+                    var childBounds = new Rectangle(Point.Zero, childControl.Size);
 
-                    if (childRender != null)
-                        contentSpritebatch.Draw(
-                                            childControl.GetRender(),
-                                            childControl.OuterBounds.OffsetBy(this.Padding),
-                                            Color.White * childControl.Opacity
-                                           );
-                    else 
-                        Console.WriteLine($"Child control {childControl.GetType().FullName} did not provide anything to render.");
-
-                    contentSpritebatch.End();
-                }
-            }
-
-            graphicsDevice.SetRenderTarget(null);
-            //graphicsDevice.Clear(Color.Transparent);
-
-            contentSpritebatch.Dispose();
-        }
-
-        public override void Draw(GraphicsDevice graphicsDevice, Rectangle bounds) {
-            if (this.NeedsRedraw || RenderCache == null) {
-                //if (RenderCache != null && (RenderCache.Width != this.Width || RenderCache.Height != this.Height))
-                    RenderCache?.Dispose();
-
-                //if (RenderCache == null) {
-                    try {
-                        RenderCache = new RenderTarget2D(
-                                                         graphicsDevice, this.Width + this.Padding.X * 2, this.Height + this.Padding.Y * 2,
-                                                         false,
-                                                         SurfaceFormat.Color,
-                                                         DepthFormat.None,
-                                                         graphicsDevice.PresentationParameters.MultiSampleCount,
-                                                         RenderTargetUsage.PreserveContents
-                                                        );
-                    } catch (ArgumentOutOfRangeException aoorEx) {
-                        // TODO: Use debug service to write to log that we are trying to create a render target that is too small
-                        Console.WriteLine($"{this.GetType().FullName} attempted to render at an invalid size: {this.Width}x{this.Height}");
-
-                        return;
-                    } catch (Exception generalEx) {
-                        // TODO: Use debug service to write to log that we had an unexpected error
-                        Console.WriteLine($"{this.GetType().FullName} had an unexpected error when attempting to render:");
-                        Console.WriteLine(generalEx.Message);
-
-                        return;
+                    if (childControl.AbsoluteBounds.Intersects(contentScissor)) {
+                        childControl.Draw(spriteBatch, childBounds, contentScissor);
                     }
-                //}
-
-                // Allow children to have a chance to render if they need to
-                List<Control> zSortedChildren = this.Children.OrderBy(i => i.ZIndex).ToList();
-
-                foreach (var childControl in zSortedChildren) {
-                    if (childControl.Visible)
-                        childControl.Draw(graphicsDevice, new Rectangle(childControl.Padding, childControl.Size));
                 }
-
-                PaintContent(graphicsDevice, zSortedChildren);
-
-                var ctrlSpritebatch = new SpriteBatch(graphicsDevice);
-                graphicsDevice.SetRenderTarget(RenderCache);
-
-                graphicsDevice.Clear(Color.Transparent);
-
-                ctrlSpritebatch.Begin();
-
-                // Paint container background
-                PaintContainer(ctrlSpritebatch, bounds);
-                //Paint(ctrlSpritebatch, Bounds);
-
-                // TODO: Only if debugging
-                //ctrlSpritebatch.Draw(ContentService.Textures.Pixel, this.ContentRegion, Color.Blue);
-                if (ContentRenderCache != null)
-                    ctrlSpritebatch.Draw(ContentRenderCache, this.ContentRegion, new Rectangle(0, this.VerticalScrollOffset, this.ContentRegion.Width, this.ContentRegion.Height), Color.White);
-
-                ctrlSpritebatch.End();
-                graphicsDevice.SetRenderTarget(null);
-
-                ctrlSpritebatch.Dispose();
-                graphicsDevice.Clear(Color.Transparent);
             }
-
-            this.NeedsRedraw = false;
         }
+
+        public virtual void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
+
+        #region IEnumerable Implementation
 
         public IEnumerator<Control> GetEnumerator() {
             return this.Children.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
-            return this.Children.GetEnumerator();
+            return this.GetEnumerator();
         }
+
+        #endregion
 
     }
 }

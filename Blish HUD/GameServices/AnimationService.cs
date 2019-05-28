@@ -78,7 +78,7 @@ namespace Blish_HUD {
         }
 
         public void Dispose() {
-            GameServices.GetService<AnimationService>().RemoveAnim(this);
+            GameService.Animation.RemoveAnim(this);
         }
     }
 
@@ -116,11 +116,13 @@ namespace Blish_HUD {
         private List<EaseAnimation> CurrentAnimations;
 
         private Glide.Tweener _tweener;
-        public Glide.Tweener Tweener { get { return _tweener; } }
+        public Glide.Tweener Tweener => _tweener;
 
         protected override void Initialize() {
             CurrentAnimations = new List<EaseAnimation>();
             EaseFuncs = new Dictionary<EasingMethod, EasingFunctionDelegate>();
+
+            Glide.Tweener.SetLerper<Library.Glide.CustomLerpers.PointLerper>(typeof(Point));
 
             _tweener = new Glide.Tweener();
 

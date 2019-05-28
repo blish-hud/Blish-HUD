@@ -16,19 +16,9 @@ namespace Blish_HUD.WinApi {
         public LowLevelKeyboardProc _proc;
         public static IntPtr               _hookID        = IntPtr.Zero;
 
-        //public static void Main() {
-        //    _hookID = SetHook(_proc);
-        //    Application.Run();
-        //    UnhookWindowsHookEx(_hookID);
-        //}
-
-        private InputService input;
-
         public KeyboardHook() { _proc = HookCallback; }
 
         public IntPtr HookKeyboard() {
-            input = GameServices.GetService<InputService>();
-
             using (var curProcess = Process.GetCurrentProcess())
             using (var curModule = curProcess.MainModule) {
                 return SetWindowsHookEx(WH_KEYBOARD_LL,                        _proc,
@@ -44,10 +34,10 @@ namespace Blish_HUD.WinApi {
 
         public IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
             // Priority is to get the event into the queue so that Windows doesn't give up waiting on us
-            input.KeyboardMessages.Enqueue(new KeyboardMessage(nCode, wParam, Marshal.ReadInt32(lParam)));
+            GameService.Input.KeyboardMessages.Enqueue(new KeyboardMessage(nCode, wParam, Marshal.ReadInt32(lParam)));
 
             // If we are sending input to a control, try to prevent GW2 from getting any keypresses
-            if (nCode >= 0 && input.BlockInput)
+            if (nCode >= 0 && GameService.Input.BlockInput)
                 return (IntPtr) 1;
 
             return CallNextHookEx(_hookID, nCode, wParam, lParam);

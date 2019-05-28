@@ -16,7 +16,7 @@ using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Blish_HUD.Controls {
-    public class Textbox:Control {
+    public class TextBox:Control {
 
         public event EventHandler<EventArgs> OnTextChanged;
         public event EventHandler<EventArgs> OnEnterPressed;
@@ -24,50 +24,54 @@ namespace Blish_HUD.Controls {
         public event EventHandler<Microsoft.Xna.Framework.Input.Keys> OnKeyDown;
         public event EventHandler<Microsoft.Xna.Framework.Input.Keys> OnKeyUp;
 
-        private System.Windows.Forms.TextBox _mttb;
-        private System.Windows.Forms.Form _focusForm;
+        protected System.Windows.Forms.TextBox _mttb;
+        protected Form _focusForm;
 
         public string Text {
-            get { return _mttb.Text; }
-            set { _mttb.Text = value; }
+            get => _mttb.Text;
+            set => _mttb.Text = value;
         }
 
-        private string _placeholderText = "";
-        public string PlaceholderText { get { return _placeholderText; } set { if (_placeholderText != value) { _placeholderText = value; Invalidate(); } } }
+        protected string _placeholderText;
+        public string PlaceholderText {
+            get => _placeholderText;
+            set => SetProperty(ref _placeholderText, value);
+        }
 
-        private Color _foreColor = Color.FromNonPremultiplied(239, 240, 239, 255);
-        public Color ForeColor { get { return _foreColor; } set { if (_foreColor != value) { _foreColor = value; Invalidate(); } } }
+        protected Color _foreColor = Color.FromNonPremultiplied(239, 240, 239, 255);
+        public Color ForeColor {
+            get => _foreColor;
+            set => SetProperty(ref _foreColor, value);
+        }
 
-        private TimeSpan lastInvalidate;
-        private bool textWasChanged = false;
+        private TimeSpan _lastInvalidate;
+        private bool _textWasChanged = false;
 
-        private bool _caretVisible = false;
-        private bool CaretVisible { get { return _caretVisible; } set { if (_caretVisible != value) { _caretVisible = value; Invalidate(); } } }
+        protected bool _caretVisible = false;
+        private bool CaretVisible {
+            get => _caretVisible;
+            set => SetProperty(ref _caretVisible, value);
+        }
 
-        private BitmapFont _font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular);
+        protected BitmapFont _font = Content.DefaultFont14;
         public BitmapFont Font {
             get => _font;
-            set {
-                if (_font == value) return;
-
-                _font = value;
-
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _font, value);
         }
 
-        public Textbox() {
-            lastInvalidate = DateTime.MinValue.TimeOfDay;
+        public TextBox() {
+            _lastInvalidate = DateTime.MinValue.TimeOfDay;
 
-            _mttb = new System.Windows.Forms.TextBox();
-            _mttb.Parent = Overlay.Form;
-            _mttb.Size = new System.Drawing.Size(300, 20);
-            _mttb.Location = new System.Drawing.Point(Overlay.Form.Left - 500);
-            _mttb.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
-            _mttb.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            _mttb.AutoCompleteCustomSource = new System.Windows.Forms.AutoCompleteStringCollection();
-            _mttb.ShortcutsEnabled = true;
-            _mttb.TabStop = false;
+            _mttb = new System.Windows.Forms.TextBox() {
+                Parent = Overlay.Form,
+                Size = new Size(300, 20),
+                Location = new System.Drawing.Point(Overlay.Form.Left - 500),
+                AutoCompleteMode = AutoCompleteMode.Append,
+                AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource,
+                AutoCompleteCustomSource = new System.Windows.Forms.AutoCompleteStringCollection(),
+                ShortcutsEnabled = true,
+                TabStop = false
+            };
 
             _focusForm = new Form {
                 TopMost           = true,
@@ -81,14 +85,16 @@ namespace Blish_HUD.Controls {
             };
 
             #if DEBUG
-                /* This method is pretty hacked up, so I want to make sure we can keep tabs on
-                   it as the application evolves. */
+                /* This method is pretty hacked up, so I want to make
+                   sure we can keep tabs on it as the application evolves. */
                 _focusForm.Opacity   = 0.2f;
                 _focusForm.BackColor = System.Drawing.Color.Magenta;
             #endif
+
             _focusForm.Hide();
             _focusForm.Click += delegate { Textbox_LeftMouseButtonReleased(null, null); };
-
+            _focusForm.MouseLeave += delegate { _focusForm.Hide(); };
+            
             _mttb.TextChanged += _mttb_TextChanged;
             _mttb.KeyDown += _mttb_KeyDown;
             _mttb.KeyUp += _mttb_KeyUp;
@@ -117,13 +123,13 @@ namespace Blish_HUD.Controls {
 
         private void _mttb_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
             /* Supress up and down keys because they move the cursor left and
-               right (for some silly reason) */
+               right for some silly reason */
             if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
                 e.SuppressKeyPress = true;
             
             this.OnKeyDown?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
 
-            textWasChanged = true;
+            _textWasChanged = true;
             Invalidate();
         }
 
@@ -131,8 +137,8 @@ namespace Blish_HUD.Controls {
             if (e.KeyCode == Keys.Enter) {
                 this.OnEnterPressed?.Invoke(this, new EventArgs());
             } else {
-                // Supress up and down keys because they move the cursor left and
-                // right (for some silly reason)
+                /* Supress up and down keys because they move the cursor left and
+               right for some silly reason */
                 if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
                     e.SuppressKeyPress = true;
 
@@ -140,7 +146,7 @@ namespace Blish_HUD.Controls {
                 this.OnKeyPressed?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
             }
 
-            textWasChanged = true;
+            _textWasChanged = true;
             Invalidate();
         }
 
@@ -161,10 +167,10 @@ namespace Blish_HUD.Controls {
             }
 
             // TODO: Make sure to prevent this from looping forever if the textbox is too skinny for any characters (need to evaluate all cases)
-            float textWidth = this.Font.MeasureString(finalText).Width;
-            while (this.Width - 20 > 0 && textWidth > this.Width - 20) {
+            float textWidth = _font.MeasureString(finalText).Width;
+            while (_size.X - 20 > 0 && textWidth > _size.X - 20) {
                 finalText = finalText.Substring(0, finalText.Length - 1);
-                textWidth = this.Font.MeasureString(finalText).Width;
+                textWidth = _font.MeasureString(finalText).Width;
             }
 
             if (_mttb.Text != finalText) {
@@ -176,7 +182,7 @@ namespace Blish_HUD.Controls {
 
             Invalidate();
 
-            textWasChanged = true;
+            _textWasChanged = true;
 
             this.OnTextChanged?.Invoke(this, e);
         }
@@ -189,48 +195,68 @@ namespace Blish_HUD.Controls {
             this.CaretVisible = true;
         }
 
-        public override void Update(GameTime gameTime) {
-            _focusForm.Location = this.AbsoluteBounds.Location.ScaleToUi().ToSystemDrawingPoint();
+        public override void DoUpdate(GameTime gameTime) {
+            var focusLocation = this.AbsoluteBounds.Location.ScaleToUi().ToSystemDrawingPoint();
+            focusLocation.Offset(Overlay.Form.Location);
+
+            _focusForm.Location = focusLocation;
             _focusForm.Size = this.AbsoluteBounds.Size.ScaleToUi().ToSystemDrawingSize();
 
-            this.CaretVisible = _mttb.Focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(lastInvalidate).TotalSeconds < 0.75);
+            // Determines if the blinking caret is currently visible
+            this.CaretVisible = _mttb.Focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75);
 
-            if (this.NeedsRedraw && textWasChanged) {
-                lastInvalidate = gameTime.TotalGameTime;
-                textWasChanged = false;
+            if (this.LayoutIsInvalid && _textWasChanged) {
+                _lastInvalidate = gameTime.TotalGameTime;
+                _textWasChanged = false;
             }
 
-            base.Update(gameTime);
+            base.DoUpdate(gameTime);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(Content.GetTexture("textbox"), bounds.Subtract(new Rectangle(0, 0, 5, 0)), new Rectangle(0, 0, Math.Min(Content.GetTexture("textbox").Width - 5, this.Width - 5), Content.GetTexture("textbox").Height), Color.White);
-            spriteBatch.Draw(Content.GetTexture("textbox"), new Rectangle(bounds.Right - 5, bounds.Y, 5, bounds.Height), new Rectangle(Content.GetTexture("textbox").Width - 5, 0, 5, Content.GetTexture("textbox").Height), Color.White);
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   Content.GetTexture("textbox"),
+                                   new Rectangle(Point.Zero, _size - new Point(5, 0)),
+                                   new Rectangle(0, 0, Math.Min(Content.GetTexture("textbox").Width - 5, _size.X - 5), Content.GetTexture("textbox").Height)
+                                  );
 
-            bounds.Inflate(-10, -2);
+            spriteBatch.DrawOnCtrl(
+                                   this, Content.GetTexture("textbox"),
+                                   new Rectangle(_size.X - 5, 0, 5, _size.Y),
+                                   new Rectangle(
+                                                 Content.GetTexture("textbox").Width - 5, 0,
+                                                 5, Content.GetTexture("textbox").Height
+                                                )
+                                  );
+
+            var textBounds = new Rectangle(Point.Zero, _size);
+            textBounds.Inflate(-10, -2);
 
             var phFont = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic);
-            
 
+            // Draw the Textbox placeholder text
             if (!_mttb.Focused && this.Text.Length == 0)
-                Utils.DrawUtil.DrawAlignedText(spriteBatch, phFont, this.PlaceholderText, bounds, Color.LightGray, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+                spriteBatch.DrawStringOnCtrl(this, _placeholderText, phFont, textBounds, Color.LightGray);
 
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, this.Font, this.Text, bounds, Color.FromNonPremultiplied(239, 240, 239, 255), Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-
-            if (_mttb.SelectionLength > 0 || _mttb.Focused && this.CaretVisible) {
+            // Draw the Textbox text
+            spriteBatch.DrawStringOnCtrl(this, this.Text, _font, textBounds, Color.FromNonPremultiplied(239, 240, 239, 255));
+            
+            if (_mttb.SelectionLength > 0 ) {
+                float highlightLeftOffset = _font.MeasureString(_mttb.Text.Substring(0, _mttb.SelectionStart)).Width + textBounds.Left;
+                float highlightRightOffset = _font.MeasureString(_mttb.Text.Substring(0, _mttb.SelectionStart + _mttb.SelectionLength)).Width;
+                    
+                spriteBatch.DrawOnCtrl(
+                                        this,
+                                        ContentService.Textures.Pixel,
+                                        new Rectangle((int) highlightLeftOffset - 1, 3, (int) highlightRightOffset, _size.Y - 9),
+                                        new Color(92, 80, 103, 150)
+                                        );
+            } else if (_mttb.Focused && this.CaretVisible) {
                 int cursorPos = _mttb.SelectionStart;
                 float textOffset = this.Font.MeasureString(_mttb.Text.Substring(0, cursorPos)).Width;
-                var caretOffset = new Rectangle(bounds.X + (int)textOffset - 2, bounds.Y, bounds.Width, bounds.Height);
-                Utils.DrawUtil.DrawAlignedText(spriteBatch, this.Font, "|", caretOffset, this.ForeColor, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-
-                if (_mttb.SelectionLength > 0) {
-                    float highlightLeftOffset = this.Font.MeasureString(_mttb.Text.Substring(0, cursorPos)).Width;
-                    float highlightRightOffset = this.Font.MeasureString(_mttb.Text.Substring(0, _mttb.SelectionStart + _mttb.SelectionLength)).Width;
-
-                    var selectRegion = new Rectangle(bounds.Left + (int)highlightLeftOffset + 1, bounds.Top + 3, (int)(highlightRightOffset - highlightLeftOffset), bounds.Height - 9);
-
-                    spriteBatch.Draw(ContentService.Textures.Pixel, selectRegion, new Color(92, 80, 103, 150));
-                }
+                var caretOffset = new Rectangle(textBounds.X + (int)textOffset - 2, textBounds.Y, textBounds.Width, textBounds.Height);
+                spriteBatch.DrawStringOnCtrl(this, "|", _font, caretOffset, this.ForeColor);
             }
         }
 

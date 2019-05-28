@@ -12,29 +12,32 @@ namespace Blish_HUD.Modules.PoiLookup {
         private const int ICON_SIZE = 32;
 
         private Texture2D _icon;
-        public Texture2D Icon { get { return _icon; } set { if (_icon != value) { _icon = value; Invalidate(); } } }
+        public Texture2D Icon {
+            get => _icon;
+            set => SetProperty(ref _icon, value);
+        }
 
         private string _name;
-        public string Name { get { return _name; } set { if (_name != value) { _name = value; Invalidate(); } } }
+        public string Name {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
 
         private string _description;
-        public string Description { get { return _description; } set { if (_description != value) { _description = value; Invalidate(); } } }
+        public string Description {
+            get => _description;
+            set => SetProperty(ref _description, value);
+        }
 
         private bool _active;
         public bool Active {
             get => _active;
-            set {
-                if (_active == value) return;
-
-                _active = value;
-
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _active, value);
         }
 
         private BHGw2Api.Landmark _landmark;
         public BHGw2Api.Landmark Landmark {
-            get { return _landmark; }
+            get => _landmark;
             set {
                 if (_landmark != value && value != null) {
                     _landmark = value;
@@ -76,11 +79,11 @@ namespace Blish_HUD.Modules.PoiLookup {
             double iconPadding = (this.Height - ICON_SIZE) / 2f;
 
             if (this.Active)
-                spriteBatch.Draw(Content.GetTexture("item-hover"), bounds, Color.White * 0.5f);
+                spriteBatch.DrawOnCtrl(this, Content.GetTexture("item-hover"), new Rectangle(Point.Zero, _size), Color.White * 0.5f);
 
-            spriteBatch.Draw(this.Icon, new Rectangle((int)iconPadding, (int)iconPadding, ICON_SIZE, ICON_SIZE), Color.White);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular), this.Name, new Rectangle((int)(iconPadding * 2 + ICON_SIZE), 0, this.Width - (int)(iconPadding * 2) - ICON_SIZE, 20), Color.White, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Bottom);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size11, ContentService.FontStyle.Regular), this.Description, new Rectangle((int)(iconPadding * 2 + ICON_SIZE), 20, this.Width - (int)(iconPadding * 2) - ICON_SIZE, 16), ContentService.Colors.Chardonnay, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Top);
+            spriteBatch.DrawOnCtrl(this, _icon, new Rectangle((int)iconPadding, (int)iconPadding, ICON_SIZE, ICON_SIZE));
+            spriteBatch.DrawStringOnCtrl(this, _name, Content.DefaultFont14, new Rectangle((int)(iconPadding * 2 + ICON_SIZE), 0, _size.X - (int)(iconPadding * 2) - ICON_SIZE, 20), Color.White, false, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Bottom);
+            spriteBatch.DrawStringOnCtrl(this, _description, Content.DefaultFont14, new Rectangle((int)(iconPadding * 2 + ICON_SIZE), 20, _size.X - (int)(iconPadding * 2) - ICON_SIZE, 16), ContentService.Colors.Chardonnay, false, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Top);
         }
 
     }

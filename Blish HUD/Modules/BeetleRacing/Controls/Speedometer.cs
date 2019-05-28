@@ -14,12 +14,13 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
     public class Speedometer:Control {
 
         public int MinSpeed = 0;
-        public float MaxSpeed = 50;
+        public float MaxSpeed = 2200;
         public float Speed { get; set; } = 0;
 
         public bool ShowSpeedValue { get; set; } = false;
 
         public Speedometer() {
+            this.ClipsBounds = false;
             this.Size = new Point(128, 128);
 
             UpdateLocation(null, null);
@@ -34,8 +35,8 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
             return CaptureType.None;
         }
 
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
+        public override void DoUpdate(GameTime gameTime) {
+            base.DoUpdate(gameTime);
 
             Invalidate();
         }
@@ -43,13 +44,31 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             float ang = (float)((4 + this.Speed / MaxSpeed * 2));
 
-            spriteBatch.Draw(Content.GetTexture("speed-fill"), new Rectangle(bounds.Width / 2, bounds.Y + 140, 150, 203), null, Color.GreenYellow, ang, new Vector2(Content.GetTexture("speed-fill").Bounds.Width / 2, 141), SpriteEffects.None, 1); // new Vector2(64, 203), SpriteEffects.None, 0);
-            spriteBatch.Draw(Content.GetTexture("1060345-2"), bounds, bounds, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0);
+            spriteBatch.DrawOnCtrl(this,
+                                   Content.GetTexture("speed-fill"),
+                                   new Rectangle(_size.X / 2, _size.Y + 15, 150, 203),
+                                   null,
+                                   Color.Lerp(Color.GreenYellow, Color.Red, this.Speed / MaxSpeed),
+                                   ang,
+                                   new Vector2(Content.GetTexture("speed-fill").Bounds.Width / 2, 141));
+
+            spriteBatch.DrawOnCtrl(this,
+                                   Content.GetTexture("1060345-2"),
+                                   _size.InBounds(bounds),
+                                   null,
+                                   Color.White,
+                                   0f,
+                                   Vector2.Zero);
 
             if (this.ShowSpeedValue) {
-                Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14,
-                    ((int) Math.Round(this.Speed * 8, 0)).ToString(), new Rectangle(0, 0, this.Width, 50),
-                    Color.White, DrawUtil.HorizontalAlignment.Center, DrawUtil.VerticalAlignment.Bottom);
+                spriteBatch.DrawStringOnCtrl(this,
+                                         Math.Round(this.Speed).ToString(),
+                                         Content.DefaultFont14,
+                                         new Rectangle(0, 0, _size.X, 50),
+                                         Color.White,
+                                         false,
+                                         DrawUtil.HorizontalAlignment.Center,
+                                         DrawUtil.VerticalAlignment.Bottom);
             }
         }
 

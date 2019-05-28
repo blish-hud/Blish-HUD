@@ -14,13 +14,19 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<EventArgs> ValueChanged;
 
-        private int _maxValue = 100;
-        public int MaxValue { get { return _maxValue; } set { if (_maxValue != value) { _maxValue = value; Invalidate(); } } }
+        protected int _maxValue = 100;
+        public int MaxValue {
+            get => _maxValue;
+            set => SetProperty(ref _maxValue, value);
+        }
 
-        private int _minValue = 0;
-        public int MinValue { get { return _minValue; } set { if (_minValue != value) { _minValue = value; Invalidate(); } } }
+        protected int _minValue = 0;
+        public int MinValue {
+            get => _minValue;
+            set => SetProperty(ref _minValue, value);
+        }
 
-        private float _value = 50;
+        protected float _value = 50;
         public float Value {
             get => _value;
             set {
@@ -34,8 +40,8 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public int IntValue { get { return (int)Math.Round(_value, 0); } }
-        
+        public int RoundedValue => (int)Math.Round(_value, 0);
+
         private bool Dragging = false;
         private int DraggingOffset = 0;
 
@@ -73,19 +79,17 @@ namespace Blish_HUD.Controls {
         }
 
         private void TrackBar_LeftMouseButtonPressed(object sender, MouseEventArgs e) {
-            var relMousePos = e.MouseState.Position - this.AbsoluteBounds.Location;
-
-            if (NubBounds.Contains(relMousePos)) {
+            if (NubBounds.Contains(this.RelativeMousePosition)) {
                 Dragging = true;
-                DraggingOffset = relMousePos.X - NubBounds.X;
+                DraggingOffset = this.RelativeMousePosition.X - NubBounds.X;
             }
         }
 
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
+        public override void DoUpdate(GameTime gameTime) {
+            base.DoUpdate(gameTime);
 
             if (Dragging) {
-                var relMousePos = Input.MouseState.Position - this.AbsoluteBounds.Location - new Point(DraggingOffset, 0);
+                var relMousePos = this.RelativeMousePosition - new Point(DraggingOffset, 0);
                 this.Value = ((float)relMousePos.X / (float)(this.Width - BUFFER_WIDTH * 2 - spriteNub.Width)) * (this.MaxValue - this.MinValue);
             }
         }
@@ -102,9 +106,9 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(spriteTrack, bounds, Color.White);
+            spriteBatch.DrawOnCtrl(this, spriteTrack, bounds);
             
-            spriteBatch.Draw(spriteNub, NubBounds.OffsetBy(bounds.Location), Color.White);
+            spriteBatch.DrawOnCtrl(this, spriteNub, NubBounds);
         }
 
     }

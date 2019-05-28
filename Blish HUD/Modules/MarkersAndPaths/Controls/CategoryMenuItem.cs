@@ -10,8 +10,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Modules.MarkersAndPaths.Controls {
     public class CategoryMenuItem : Blish_HUD.Controls.MenuItem {
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
-            base.PaintContainer(spriteBatch, bounds);
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            base.PaintBeforeChildren(spriteBatch, bounds);
 
             Utils.DrawUtil.DrawAlignedText(
                                            spriteBatch,

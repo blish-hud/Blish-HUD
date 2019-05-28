@@ -115,26 +115,26 @@ namespace Blish_HUD.Utils {
         }
 
         internal static void SetupOverlay(IntPtr winHandle) {
-            int width = 600;
-            int height = 600;
+            //int width = 600;
+            //int height = 600;
 
-            var marg = new MARGINS() {
-                cxLeftWidth = 0,
-                cyTopHeight = 0,
-                cxRightWidth = width,
-                cyBottomHeight = height
-            };
+            //var marg = new MARGINS() {
+            //    cxLeftWidth = 0,
+            //    cyTopHeight = 0,
+            //    cxRightWidth = width,
+            //    cyBottomHeight = height
+            //};
 
-            DwmExtendFrameIntoClientArea(winHandle, ref marg);
+            //DwmExtendFrameIntoClientArea(winHandle, ref marg);
 
-            var windowRect = new RECT();
-            GetWindowRect(winHandle, ref windowRect);
-            windowRect.Right = windowRect.Left + width;
-            windowRect.Bottom = windowRect.Top + height;
+            //var windowRect = new RECT();
+            //GetWindowRect(winHandle, ref windowRect);
+            //windowRect.Right = windowRect.Left + width;
+            //windowRect.Bottom = windowRect.Top + height;
 
-            AdjustWindowRect(ref windowRect, CS_HREDRAW | CS_VREDRAW, false);
+            //AdjustWindowRect(ref windowRect, CS_HREDRAW | CS_VREDRAW, false);
 
-            SetWindowPos(winHandle, IntPtr.Zero, windowRect.Top, windowRect.Left, width, height, 0);
+            //SetWindowPos(winHandle, IntPtr.Zero, windowRect.Top, windowRect.Left, width, height, 0);
             SetWindowLong(winHandle, GWL.STYLE, CS_HREDRAW | CS_VREDRAW);
 
             SetWindowLong(winHandle, GWL.EXSTYLE, (uint)GetWindowLong(winHandle, GWL.EXSTYLE) | WindowStyles.WS_EX_LAYERED | WindowStyles.WS_EX_TRANSPARENT);
@@ -144,16 +144,17 @@ namespace Blish_HUD.Utils {
         }
 
         private static Rectangle pos;
-        public static bool onTop = false;
+        public static bool OnTop = true; // Used to force a SetWindowPos with HWND_TOPMOST when GW2 becomes active again
 
-        internal static void UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle) {
-
-            GameService.Debug.StartTimeFunc("Update overlay");
+        internal static bool UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle) {
             var clientRect = new RECT();
-            GetClientRect(gw2WindowHandle, ref clientRect);
+            bool errGetClientRectResult = GetClientRect(gw2WindowHandle, ref clientRect);
 
-            // Probably errors caused by gw2 closing at the time of the call
-            if (Marshal.GetLastWin32Error() > 0) return;
+            // Probably errors caused by gw2 closing at the time of the call or the call is super early and has the wrong handle somehow
+            if (!errGetClientRectResult) {
+                Console.WriteLine($"{nameof(GetClientRect)} failed with error code {Marshal.GetLastWin32Error()}.");
+                return false;
+            }
 
             var marg = new MARGINS {
                 cxLeftWidth = 0,
@@ -162,31 +163,38 @@ namespace Blish_HUD.Utils {
                 cyBottomHeight = clientRect.Bottom
             };
 
-            var p = System.Drawing.Point.Empty;
-            ClientToScreen(gw2WindowHandle, ref p);
+            var screenPoint = System.Drawing.Point.Empty;
+            bool errClientToScreen = ClientToScreen(gw2WindowHandle, ref screenPoint);
 
             // Probably errors caused by gw2 closing at the time of the call
-            if (Marshal.GetLastWin32Error() > 0) return;
-
+            if (!errClientToScreen) {
+                Console.WriteLine($"{nameof(ClientToScreen)} failed with error code {Marshal.GetLastWin32Error()}.");
+                return false;
+            }
 
             GameService.Debug.StartTimeFunc("GetForegroundWindow");
             var activeWindowHandle = GetForegroundWindow();
             GameService.Debug.StopTimeFunc("GetForegroundWindow");
 
-            // If neither gw2 nor Blish HUD are the focused application, stop being
+            // If gw2 is not the focused application, stop being
             // topmost so that whatever is active can render on top
-            if ((activeWindowHandle != gw2WindowHandle)) { //} && (activeWindowHandle != MainLoop.Form.Handle)) {
-                onTop = false;
+            if (activeWindowHandle != gw2WindowHandle) {
+                if (OnTop) {
+                    Console.WriteLine("GW2 is no longer the active window.");
+                    SetWindowPos(winHandle,  HWND_NOTOPMOST, pos.X, pos.Y, pos.Width, pos.Height, 0);
 
-                SetWindowPos(winHandle, HWND_NOTOPMOST, pos.X, pos.Y, pos.Width, pos.Height, 0);
-
-                return;
+                    OnTop = false;
+                }
+                return true;
             }
 
-            if (clientRect.Left + p.X != pos.X || clientRect.Top + p.Y != pos.Y || clientRect.Right - clientRect.Left != pos.Width || clientRect.Bottom - clientRect.Top != pos.Height || onTop == false) {
+            if (!OnTop)
+                Console.WriteLine("GW2 is now the active window - reactivating the overlay.");
+
+            if (clientRect.Left + screenPoint.X != pos.X || clientRect.Top + screenPoint.Y != pos.Y || clientRect.Right - clientRect.Left != pos.Width || clientRect.Bottom - clientRect.Top != pos.Height || OnTop == false) {
                 pos = new Rectangle(
-                    clientRect.Left + p.X,
-                    clientRect.Top + p.Y,
+                    clientRect.Left + screenPoint.X,
+                    clientRect.Top + screenPoint.Y,
                     clientRect.Right - clientRect.Left,
                     clientRect.Bottom - clientRect.Top
                 );
@@ -196,15 +204,17 @@ namespace Blish_HUD.Utils {
                     pos.Height
                 );
 
-                SetWindowPos(winHandle, HWND_TOPMOST, clientRect.Left + p.X, clientRect.Top + p.Y, clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top, 0);
-
+                SetWindowPos(winHandle, HWND_TOPMOST, clientRect.Left + screenPoint.X, clientRect.Top + screenPoint.Y, clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top, 0);
+                
                 DwmExtendFrameIntoClientArea(winHandle, ref marg);
+                
+                //SetLayeredWindowAttributes(winHandle, 0, 0,   1);
+                //SetLayeredWindowAttributes(winHandle, 0, 255, 2);
 
-                onTop = true;
+                OnTop = true;
             }
 
-
-            GameService.Debug.StopTimeFunc("Update overlay");
+            return true;
         }
 
         public static string GetClassNameOfWindow(IntPtr hwnd) {
@@ -215,48 +225,12 @@ namespace Blish_HUD.Utils {
                 classText = new StringBuilder("", cls_max_length + 5);
                 GetClassName(hwnd, classText, cls_max_length + 2);
 
-                if (!string.IsNullOrEmpty(classText.ToString()) && !string.IsNullOrWhiteSpace(classText.ToString()))
+                if (!string.IsNullOrEmpty(classText.ToString()) && !string.IsNullOrEmpty(classText.ToString()))
                     className = classText.ToString();
             } catch (Exception ex) {
                 className = ex.Message;
-            } finally {
-                classText = null;
             }
             return className;
-        }
-
-        public static IntPtr ActiveWindowHandle { get; } = GetActiveWindow();
-
-        public static void ActivateOverlay(IntPtr thisWindowHandle, Process process) {
-            //IntPtr processWindowHandle = process.MainWindowHandle;
-
-            //System.Windows.Forms.Control ctrl = System.Windows.Forms.Control.FromHandle(thisWindowHandle);
-            //System.Windows.Forms.Form thisForm = ctrl.FindForm();
-
-            //RECT procRect = new RECT();
-            //GetClientRect(processWindowHandle, ref procRect);
-
-            //System.Drawing.Point procPos = new System.Drawing.Point();
-            //ClientToScreen(processWindowHandle, ref procPos);
-
-            //SetWindowPos(
-            //    thisWindowHandle,
-            //    HWND_TOPMOST,
-            //    procPos.X,
-            //    procPos.Y,
-            //    procRect.Right - procRect.Left,
-            //    procRect.Bottom - procRect.Top,
-            //    SWP_SHOWWINDOW
-            //);
-
-            SetWindowLong(thisWindowHandle, -20, 524288U | 32U | 8U);
-
-            var pMarInset = new MARGINS() {
-                cxLeftWidth = -1
-            };
-            DwmExtendFrameIntoClientArea(thisWindowHandle, ref pMarInset);
-
-            // UpdateOverlayPositionAndSize(thisWindowHandle, process);
         }
 
         private static RECT prevProcRect;
@@ -271,7 +245,7 @@ namespace Blish_HUD.Utils {
             ClientToScreen(processWindowHandle, ref procPos);
 
             if (procPos != prevProcPos || !procRect.Equals(prevProcRect)) {
-                GameServices.GetService<GraphicsService>().Resolution = new Point(
+                GameService.Graphics.Resolution = new Point(
                     procRect.Right - procRect.Left,
                     procRect.Bottom - procRect.Top
                 );

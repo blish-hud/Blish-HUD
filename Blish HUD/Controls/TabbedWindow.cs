@@ -8,87 +8,61 @@ using System.Threading.Tasks;
 
 namespace Blish_HUD.Controls {
 
-    public struct WindowTab2 {
-        public string Name { get; set; }
-        public Texture2D Icon { get; set; }
-        public int Priority { get; set; }
-
-        public WindowTab2(string name, string icon) {
-            this.Name = name;
-            this.Icon = GameService.Content.GetTexture(icon);
-            // Something arbitrary that will be consistent
-            this.Priority = name.Length;
-        }
-
-        public WindowTab2(string name, Texture2D icon) {
-            this.Name = name;
-            this.Icon = icon;
-            // Something arbitrary that will be consistent
-            this.Priority = name.Length;
-        }
-
-        public WindowTab2(string name, string icon, int priority) {
-            this.Name = name;
-            this.Icon = GameService.Content.GetTexture(icon);
-            this.Priority = priority;
-        }
-
-        public WindowTab2(string name, Texture2D icon, int priority) {
-            this.Name = name;
-            this.Icon = icon;
-            this.Priority = priority;
-        }
-
-        public static bool operator ==(WindowTab2 tab1, WindowTab2 tab2) {
-            return tab1.Name == tab2.Name && tab1.Icon == tab2.Icon;
-        }
-
-        public static bool operator !=(WindowTab2 tab1, WindowTab2 tab2) {
-            return !(tab1 == tab2);
-        }
-    }
-
-    public class TabbedWindow : Window {
+    public class TabbedWindow : WindowBase {
 
         private const int TAB_HEIGHT = 52;
         private const int TAB_WIDTH = 104;
         private const int TAB_ICON_SIZE = 32;
 
-        private const int TOP_PADDING = 16;
-        private const int LEFT_PADDING = TAB_WIDTH;
+        private const int TAB_SECTION_WIDTH = 46;
+
+        private const int TOP_PADDING = 0;
+        private const int LEFT_PADDING = 0;
 
         private const int WINDOW_WIDTH = 1024;
         private const int WINDOW_HEIGHT = 780;
 
+        private const int WINDOWCONTENT_WIDTH = 1024;
+        private const int WINDOWCONTENT_HEIGHT = 700;
+
+        #region Load Static
+
+        private static Texture2D _textureDefaultBackround;
+        private static Texture2D _textureSplitLine;
+        private static Texture2D _textureBlackFade;
+        private static Texture2D _textureTabActive;
+
+        static TabbedWindow() {
+            _textureDefaultBackround = Content.GetTexture("502049");
+            _textureSplitLine        = Content.GetTexture("605024");
+            _textureBlackFade        = Content.GetTexture("fade-down-46");
+            _textureTabActive        = Content.GetTexture("window-tab-active");
+        }
+
+        #endregion
+
+        private static readonly Rectangle StandardTabBounds = new Rectangle(TAB_SECTION_WIDTH, 24, TAB_WIDTH, TAB_HEIGHT);
+
         public event EventHandler<EventArgs> TabChanged;
 
-        private int _selectedTabIndex = -1;
+        protected int _selectedTabIndex = -1;
         public int SelectedTabIndex {
-            get { return _selectedTabIndex; }
+            get => _selectedTabIndex;
             set {
-                if (_selectedTabIndex != value) {
-                    _selectedTabIndex = value;
-                    Invalidate();
-                    this.TabChanged?.Invoke(this, new EventArgs());
+                if (SetProperty(ref _selectedTabIndex, value)) {
+                    this.Subtitle = SelectedTab.Name;
+                    this.TabChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
 
-        public WindowTab2 SelectedTab { get { return Tabs[_selectedTabIndex]; } }
+        public WindowTab SelectedTab => Tabs[_selectedTabIndex];
 
         private int _hoveredTabIndex = 0;
         private int HoveredTabIndex {
-            get { return _hoveredTabIndex; }
-            set {
-                if (_hoveredTabIndex != value) {
-                    _hoveredTabIndex = value;
-                    Invalidate();
-                }
-            }
+            get => _hoveredTabIndex;
+            set => SetProperty(ref _hoveredTabIndex, value);
         }
-
-        private Tooltip TabTooltip;
-        private Label TabTooltipLabel;
 
         private Point Padding2 = new Point(LEFT_PADDING, TOP_PADDING);
 
@@ -99,36 +73,24 @@ namespace Blish_HUD.Controls {
 
         public TabbedWindow() {
             TitleBarHeight = 64;
-            //this.Size = new Point(988, 761);
-            //this.Size = new Point(630 + LEFT_PADDING, 761 + TOP_PADDING);
-            this.Size = new Point(WINDOW_WIDTH + LEFT_PADDING, WINDOW_HEIGHT + TOP_PADDING);
+
+            Size = new Point(WINDOW_WIDTH + LEFT_PADDING, WINDOW_HEIGHT + TOP_PADDING);
             ExitBounds = new Rectangle(this.Width - 32 - 32, 16, 32, 32).OffsetBy(0, Padding2.Y);
 
-            WindowBounds = new Rectangle(Padding2, this.Size - Padding2);
-            BackgroundBounds = WindowBounds.OffsetBy(46, 64 - 36);
-            TitleBarBounds = new Rectangle(0, 0, 1024, 64).OffsetBy(WindowBounds.Location);
-            LeftTitleBarBounds = new Rectangle(TitleBarBounds.X, TitleBarBounds.Y, Math.Min(TitleBarBounds.Width - 128, 1024), 64);
-            RightTitleBarBounds = new Rectangle(TitleBarBounds.Right - 128, TitleBarBounds.Y, 128, 64);
+            var tabWindowTexture = _textureDefaultBackround;
+            tabWindowTexture = tabWindowTexture.Duplicate().SetRegion(0, 0, 64, _textureDefaultBackround.Height, Color.Transparent);   
 
-            this.ContentRegion = WindowBounds.Add(50, 74, -88, -92);
+            ConstructWindow(tabWindowTexture, new Vector2(25, 35), new Rectangle(0, 0, 1100, 700), new Thickness(60, 75, 45, 25), 40);
 
+            WindowBounds = new Rectangle(Padding2, _size - Padding2);
+            //BackgroundBounds = WindowBounds.OffsetBy(44, 64 - 36);
+            //TitleBarBounds = new Rectangle(0, 0, 1024, 64).OffsetBy(WindowBounds.Location);
+            //LeftTitleBarBounds = new Rectangle(TitleBarBounds.X, TitleBarBounds.Y, Math.Min(TitleBarBounds.Width - 128, 1024), 64);
+            //RightTitleBarBounds = new Rectangle(TitleBarBounds.Right - 128, TitleBarBounds.Y, 128, 64);
 
-            TabTooltip = new Tooltip() {
-                Parent = GameServices.GetService<GraphicsService>().SpriteScreen,
-                Visible = false,
-            };
-            TabTooltipLabel = new Label() {
-                Text = "unknown",
-                Font = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
-                Location = new Point(10, 10),
-                TextColor = Color.White,
-                ShadowColor = Color.Black,
-                ShowShadow = true,
-                Height = 20,
-                AutoSizeWidth = true,
-                VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle,
-                Parent = TabTooltip,
-            };
+            //ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, Width - TAB_WIDTH / 2, Height - 128);
+
+            ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, WINDOWCONTENT_WIDTH, WINDOWCONTENT_HEIGHT);
 
             this.MouseMoved += TabbedWindow_MouseMoved;
             this.LeftMouseButtonPressed += TabbedWindow_LeftMouseButtonPressed;
@@ -136,40 +98,29 @@ namespace Blish_HUD.Controls {
             this.MouseLeft += delegate { Invalidate(); };
 
             this.TabChanged += delegate {
-                Content.PlaySoundEffectByName($"audio\\tab-swap-{Utils.Calc.GetRandom(1, 5)}");
+                if (_visible)
+                    Content.PlaySoundEffectByName($"audio\\tab-swap-{Utils.Calc.GetRandom(1, 5)}");
 
                 Navigate(Panels[this.SelectedTab], false);
             };
         }
 
-        // TODO: Cleanup window bounds
-        // Stop-gap until window padding can be tightened up to match actual bounds better
-        private bool inPaddingZone = false;
         protected override CaptureType CapturesInput() {
-            // Stop-gap until window padding can be tightened up to match actual bounds better
-            if (!inPaddingZone)
-                return CaptureType.Mouse | CaptureType.MouseWheel | CaptureType.Filter;
-
-            return CaptureType.None;
+            return CaptureType.Mouse | CaptureType.MouseWheel | CaptureType.Filter;
         }
 
         private void TabbedWindow_MouseMoved(object sender, MouseEventArgs e) {
-            var relMousePos = e.MouseState.Position - this.AbsoluteBounds.Location;
             bool newSet = false;
 
-            inPaddingZone = relMousePos.X < 105 || relMousePos.X > 1100;
-            inPaddingZone = inPaddingZone || relMousePos.Y < 30 || relMousePos.Y > 785;
-            if (inPaddingZone) return;
-
-            if (relMousePos.X < standardTabBounds.Right && relMousePos.Y > standardTabBounds.Y) {
+            if (RelativeMousePosition.X < StandardTabBounds.Right && RelativeMousePosition.Y > StandardTabBounds.Y) {
                 var tabList = TabRegions.ToList();
-                for (var tabIndex = 0; tabIndex < Tabs.Count; tabIndex++) {
+                for (int tabIndex = 0; tabIndex < Tabs.Count; tabIndex++) {
                     var tab = Tabs[tabIndex];
-                    if (TabRegions[tab].Contains(relMousePos)) {
-                        this.HoveredTabIndex = tabIndex;
-                        newSet = true;
-                        TabTooltipLabel.Text = tab.Name;
-                        this.Tooltip = TabTooltip;
+                    if (TabRegions[tab].Contains(RelativeMousePosition)) {
+                        HoveredTabIndex       = tabIndex;
+                        newSet                = true;
+                        this.BasicTooltipText = tab.Name;
+
                         break;
                     }
                 }
@@ -178,21 +129,18 @@ namespace Blish_HUD.Controls {
 
             if (!newSet) {
                 this.HoveredTabIndex = -1;
-                if (this.Tooltip != null)
-                    this.Tooltip.Visible = false;
-                this.Tooltip = null;
+                this.BasicTooltipText = null;
             }
         }
 
         private void TabbedWindow_LeftMouseButtonPressed(object sender, MouseEventArgs e) {
-            var relMousePos = e.MouseState.Position - this.AbsoluteBounds.Location;
-
-            if (relMousePos.X < standardTabBounds.Right && relMousePos.Y > standardTabBounds.Y) {
+            if (RelativeMousePosition.X < StandardTabBounds.Right && RelativeMousePosition.Y > StandardTabBounds.Y) {
                 var tabList = Tabs.ToList();
-                for (var tabIndex = 0; tabIndex < Tabs.Count; tabIndex++) {
+                for (int tabIndex = 0; tabIndex < Tabs.Count; tabIndex++) {
                     var tab = tabList[tabIndex];
-                    if (TabRegions[tab].Contains(relMousePos)) {
-                        this.SelectedTabIndex = tabIndex;
+                    if (TabRegions[tab].Contains(RelativeMousePosition)) {
+                        SelectedTabIndex = tabIndex;
+
                         break;
                     }
                 }
@@ -200,35 +148,25 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public Dictionary<WindowTab2, Rectangle> TabRegions = new Dictionary<WindowTab2, Rectangle>();
-        public Dictionary<WindowTab2, Panel> Panels = new Dictionary<WindowTab2, Panel>();
-        public List<WindowTab2> Tabs = new List<WindowTab2>();
+        #region Tab Handling
 
-        public WindowTab2 AddTab(string name, string icon, Panel panel, int priority) {
-            var tab = new WindowTab2(name, icon, priority);
+        public Dictionary<WindowTab, Rectangle> TabRegions = new Dictionary<WindowTab, Rectangle>();
+        public Dictionary<WindowTab, Panel> Panels = new Dictionary<WindowTab, Panel>();
+        public List<WindowTab> Tabs = new List<WindowTab>();
+
+        public WindowTab AddTab(string name, Texture2D icon, Panel panel, int priority) {
+            var tab = new WindowTab(name, icon, priority);
             AddTab(tab, panel);
             return tab;
         }
 
-        public WindowTab2 AddTab(string name, Texture2D icon, Panel panel, int priority) {
-            var tab = new WindowTab2(name, icon, priority);
+        public WindowTab AddTab(string name, Texture2D icon, Panel panel) {
+            var tab = new WindowTab(name, icon);
             AddTab(tab, panel);
             return tab;
         }
 
-        public WindowTab2 AddTab(string name, string icon, Panel panel) {
-            var tab = new WindowTab2(name, icon);
-            AddTab(tab, panel);
-            return tab;
-        }
-
-        public WindowTab2 AddTab(string name, Texture2D icon, Panel panel) {
-            var tab = new WindowTab2(name, icon);
-            AddTab(tab, panel);
-            return tab;
-        }
-
-        public void AddTab(WindowTab2 tab, Panel panel) {
+        public void AddTab(WindowTab tab, Panel panel) {
             if (!Tabs.Contains(tab)) {
                 var prevTab = Tabs.Count > 0 ? Tabs[this.SelectedTabIndex] : tab;
 
@@ -247,16 +185,16 @@ namespace Blish_HUD.Controls {
                     i++;
                 }
 
-                if (this._selectedTabIndex > -1)
-                    this._selectedTabIndex = Tabs.IndexOf(prevTab);
+                if (_selectedTabIndex > -1)
+                    _selectedTabIndex = Tabs.IndexOf(prevTab);
                 else
-                    this.SelectedTabIndex = Tabs.IndexOf(prevTab);
+                    SelectedTabIndex = Tabs.IndexOf(prevTab);
 
                 Invalidate();
             }
         }
 
-        public void RemoveTab(WindowTab2 tab) {
+        public void RemoveTab(WindowTab tab) {
             // TODO: If the last tab is for some reason removed, this will crash the application
             var prevTab = Tabs.Count > 0 ? Tabs[this.SelectedTabIndex] : Tabs[0];
 
@@ -279,83 +217,106 @@ namespace Blish_HUD.Controls {
 
             Invalidate();
         }
+
+        #endregion
         
-        private static Rectangle standardTabBounds = new Rectangle(TAB_WIDTH / 2 - 6, 88, TAB_WIDTH, TAB_HEIGHT);
 
         private Rectangle TabBoundsFromIndex(int index) {
-            return standardTabBounds.OffsetBy(WindowBounds.Location.X - TAB_WIDTH, WindowBounds.Location.Y + index * TAB_HEIGHT);
+            return StandardTabBounds.OffsetBy(-TAB_WIDTH, ContentRegion.Y + index * TAB_HEIGHT);
         }
 
-        public override void Invalidate() {
-            base.Invalidate();
+        #region Calculated Layout
 
-            // TODO: Cleanup -- too many magic numbers
-            //this.ContentRegion = WindowBounds.Add(60, 74, -88, -92); // new Rectangle(60 + Padding2.X, this.TitleBarHeight + 10 + Padding.Y, Width - 20 - Padding.X, Height - 20 - 64 - Padding.Y);
+        private Rectangle _layoutTopTabBarBounds;
+        private Rectangle _layoutBottomTabBarBounds;
+
+        private Rectangle _layoutTopSplitLineBounds;
+        private Rectangle _layoutBottomSplitLineBounds;
+
+        private Rectangle _layoutTopSplitLineSourceBounds;
+        private Rectangle _layoutBottomSplitLineSourceBounds;
+
+        #endregion
+
+        public override void RecalculateLayout() {
+            base.RecalculateLayout();
+
+            var firstTabBounds = TabBoundsFromIndex(0);
+            var selectedTabBounds = TabRegions[this.SelectedTab];
+            var lastTabBounds = TabBoundsFromIndex(TabRegions.Count - 1);
+
+            _layoutTopTabBarBounds = new Rectangle(0, 0, TAB_SECTION_WIDTH, firstTabBounds.Top);
+            _layoutBottomTabBarBounds = new Rectangle(0, lastTabBounds.Bottom, TAB_SECTION_WIDTH, _size.Y - lastTabBounds.Bottom);
+
+            int topSplitHeight = selectedTabBounds.Top - ContentRegion.Top;
+            int bottomSplitHeight = ContentRegion.Bottom - selectedTabBounds.Bottom;
+
+            _layoutTopSplitLineBounds = new Rectangle(ContentRegion.X - _textureSplitLine.Width + 1,
+                                                      ContentRegion.Y,
+                                                      _textureSplitLine.Width,
+                                                      topSplitHeight);
+            _layoutTopSplitLineSourceBounds = new Rectangle(0, 0, _textureSplitLine.Width, topSplitHeight);
+
+
+            _layoutBottomSplitLineBounds = new Rectangle(ContentRegion.X - _textureSplitLine.Width + 1,
+                                                         selectedTabBounds.Bottom,
+                                                         _textureSplitLine.Width,
+                                                         bottomSplitHeight);
+            _layoutBottomSplitLineSourceBounds = new Rectangle(0, _textureSplitLine.Height - bottomSplitHeight, _textureSplitLine.Width, bottomSplitHeight);
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
-            string bkgtxt = "502049";
-
-            //spriteBatch.Draw(Content.GetTexture("hero-background2"), bounds.OffsetBy(43, 0).Add(0, 0, -43, 0), new Rectangle(43, 0, Content.GetTexture("hero-background2").Width - 43, Content.GetTexture("hero-background2").Height), Color.White);
-            //spriteBatch.Draw(Content.GetTexture(bkgtxt), bounds.OffsetBy(0, 0).Add(0, 0, Content.GetTexture(bkgtxt).Width - Width, 0), Color.White);
-            // Draw window background
-            var srcrec = Content.GetTexture(bkgtxt).Bounds.Add(50, 0, -50, 0);
-            spriteBatch.Draw(Content.GetTexture(bkgtxt), BackgroundBounds, srcrec, Color.White);
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            base.PaintBeforeChildren(spriteBatch, bounds);
 
             // Draw black block for tab bar
-            spriteBatch.Draw(ContentService.Textures.Pixel, new Rectangle(0, 38, 44, 52).OffsetBy(Padding2), Color.Black);
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel,
+                                   _layoutTopTabBarBounds,
+                                   Color.Black);
 
-            if (this.MouseOver && Input.MouseState.Position.Y < this.Top + TitleBarHeight && Input.MouseState.Position.Y > TOP_PADDING && !this.HoverClose) {
-                spriteBatch.Draw(Content.GetTexture("titlebar-active"), LeftTitleBarBounds, Color.White);
-                spriteBatch.Draw(Content.GetTexture("titlebar-active"), LeftTitleBarBounds, Color.White);
-                spriteBatch.Draw(Content.GetTexture("window-topright-active"), RightTitleBarBounds, Color.White);
-                spriteBatch.Draw(Content.GetTexture("window-topright-active"), RightTitleBarBounds, Color.White);
-            } else {
-                spriteBatch.Draw(Content.GetTexture("titlebar-inactive"), LeftTitleBarBounds, Color.White);
-                spriteBatch.Draw(Content.GetTexture("titlebar-inactive"), LeftTitleBarBounds, Color.White);
-                spriteBatch.Draw(Content.GetTexture("window-topright"), RightTitleBarBounds, Color.White);
-                spriteBatch.Draw(Content.GetTexture("window-topright"), RightTitleBarBounds, Color.White);
-            }
-
-            var windowBadge = Content.GetTexture("test-window-icon9");
-            spriteBatch.Draw(windowBadge, windowBadge.Bounds.OffsetBy(Padding2).OffsetBy(-16, -16), Color.White);
-            
-            var fadeTexture = Content.GetTexture("fade-down-46");
-            spriteBatch.Draw(fadeTexture, new Rectangle(WindowBounds.X, WindowBounds.Y + 52 * TabRegions.Count + 60 + 28, fadeTexture.Width, this.Height - 52 * TabRegions.Count - WindowBounds.Y - 64 - 24), Color.White);
-
-            var splitTexture = Content.GetTexture("605024");
-            spriteBatch.Draw(splitTexture, new Rectangle(WindowBounds.X + 52 - 16, WindowBounds.Y + 70, splitTexture.Width, splitTexture.Height), Color.White);
-            spriteBatch.Draw(splitTexture, new Rectangle(WindowBounds.X + 52 - 16, WindowBounds.Y + 200, splitTexture.Width, splitTexture.Height), Color.White);
+            // Draw black fade for tab bar
+            spriteBatch.DrawOnCtrl(this, _textureBlackFade, _layoutBottomTabBarBounds);
 
             // Draw tabs
-
             int i = 0;
             foreach (var tab in Tabs) {
                 bool active = (i == this.SelectedTabIndex);
                 bool hovered = (i == this.HoveredTabIndex);
 
-                var destBounds = TabRegions[tab];
-                var subBounds = new Rectangle(destBounds.X + destBounds.Width / 2, destBounds.Y, TAB_WIDTH / 2, destBounds.Height).OffsetBy(bounds.Location);
+                var tabBounds = TabRegions[tab];
+                var subBounds = new Rectangle(tabBounds.X + tabBounds.Width / 2, tabBounds.Y, TAB_WIDTH / 2, tabBounds.Height);
 
                 if (active) {
-                    spriteBatch.Draw(Content.GetTexture(bkgtxt), destBounds.OffsetBy(bounds.Location), destBounds.Add(-TAB_WIDTH, 0, 110, 0).OffsetBy(bounds.Location), Color.White);
-                    spriteBatch.Draw(Content.GetTexture("window-tab-active"), destBounds.OffsetBy(bounds.Location), Color.White);
+                    spriteBatch.DrawOnCtrl(this, _textureDefaultBackround,
+                                           tabBounds,
+                                           tabBounds.OffsetBy(_windowBackgroundOrigin.ToPoint()).Add(0, -35, 0, 0).Add(tabBounds.Width / 3, 0, -tabBounds.Width / 3, 0),
+                                     Color.White);
+
+                    spriteBatch.DrawOnCtrl(this, _textureTabActive, tabBounds);
                 } else {
-                    spriteBatch.Draw(Content.GetTexture("black-46x52"), subBounds.OffsetBy(6, 0).Add(0, 0, -6, 0), Color.White);
+                    spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, tabBounds.Y, TAB_SECTION_WIDTH, tabBounds.Height), Color.Black);
                 }
 
-                spriteBatch.Draw(tab.Icon, new Rectangle(TAB_WIDTH / 4 - TAB_ICON_SIZE / 2 + 2, TAB_HEIGHT / 2 - TAB_ICON_SIZE / 2, TAB_ICON_SIZE, TAB_ICON_SIZE).OffsetBy(subBounds.Location), active || hovered ? Color.White : ContentService.Colors.DullColor);
-                //spriteBatch.Draw(tab.Icon, subBounds, active ? Color.White : ContentService.Colors.DullColor);
+                spriteBatch.DrawOnCtrl(this, tab.Icon,
+                                 new Rectangle(TAB_WIDTH / 4 - TAB_ICON_SIZE / 2 + 2,
+                                               TAB_HEIGHT / 2 - TAB_ICON_SIZE / 2,
+                                               TAB_ICON_SIZE,
+                                               TAB_ICON_SIZE).OffsetBy(subBounds.Location),
+                                 active || hovered
+                                     ? Color.White
+                                     : ContentService.Colors.DullColor);
 
                 i++;
             }
 
-            // End drawing tabs
+            // Draw top of split
+            spriteBatch.DrawOnCtrl(this, _textureSplitLine,
+                                   _layoutTopSplitLineBounds,
+                                   _layoutTopSplitLineSourceBounds);
 
-            var cornerTexture = Content.GetTexture("156008");
-            spriteBatch.Draw(cornerTexture, new Rectangle(this.Width - cornerTexture.Width, this.Height - cornerTexture.Height, cornerTexture.Width, cornerTexture.Height).OffsetBy(Padding2.X - 15, 0), Color.White);
-            
-            base.PaintContainer(spriteBatch, bounds);
+            // Draw bottom of split
+            spriteBatch.DrawOnCtrl(this, _textureSplitLine,
+                                   _layoutBottomSplitLineBounds,
+                                   _layoutBottomSplitLineSourceBounds);
         }
 
     }

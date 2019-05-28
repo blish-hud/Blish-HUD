@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
 
-    // TODO: The ColorPicker needs updates for events, it should probably inherit from FlowPanel, and needs to get reconnected once we have Gorrik.NET included in the project
+    // TODO: The ColorPicker needs updates for events, it should probably inherit from FlowPanel,
+    // and needs to get reconnected once we have Gorrik.NET included in the project
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class ColorPicker:Container {
 
         private const int COLOR_SIZE = 32;
@@ -107,7 +107,7 @@ namespace Blish_HUD.Controls {
             this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw background
             spriteBatch.Draw(Content.GetTexture(@"common\solid"), bounds, Color.Black * 0.3f);
         }

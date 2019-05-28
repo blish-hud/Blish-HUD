@@ -16,7 +16,8 @@ namespace Blish_HUD.Modules {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Debug Module",
+                "Debug Module",
+                GameService.Content.GetTexture("155018"),
                 "bh.general.debug",
                 "Allows you to show basic 'debug' details such as your xyz coordinates, server IP address, shard ID, and a few other minor details.",
                 "LandersXanders.1235",
@@ -62,20 +63,20 @@ namespace Blish_HUD.Modules {
             //DebugValueRenderers.Add(settingShowOverlayFPS, time => $"BHUD FPS: {0}");
         }
 
-        protected override void OnLoad() {
+        public override void OnLoad() {
             base.OnLoad();
 
             Gw2Mumble = GameService.Gw2Mumble;
             Player = GameService.Player;
 
             lblInfo = new Controls.Label {
-                Font                = Overlay.font_consolas,
+                Font                = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size11, ContentService.FontStyle.Regular),
                 HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
                 VerticalAlignment   = Utils.DrawUtil.VerticalAlignment.Middle,
                 ShowShadow          = true,
                 ShadowColor         = Color.Black,
                 TextColor           = Color.White,
-                StrokeShadow        = true
+                StrokeText        = true
             };
 
             //lblInfo.Location = new Point(0, 2);
@@ -85,17 +86,17 @@ namespace Blish_HUD.Modules {
         }
 
         private void UpdateSizeAndLocation(object sender, EventArgs e) {
-            lblInfo.Size = new Point(GameServices.GetService<GraphicsService>().SpriteScreen.Width, 14);
-            lblInfo.Location = new Point(0, GameServices.GetService<GraphicsService>().SpriteScreen.Height - 15);
+            lblInfo.Size = new Point(GameService.Graphics.SpriteScreen.Width, 14);
+            lblInfo.Location = new Point(0, GameService.Graphics.SpriteScreen.Height - 15);
         }
 
-        protected override void OnEnabled() {
+        public override void OnEnabled() {
             base.OnEnabled();
 
             lblInfo.Parent = GameService.Graphics.SpriteScreen;
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             base.OnDisabled();
 
             lblInfo.Parent = null;

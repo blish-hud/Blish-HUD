@@ -8,7 +8,6 @@ using Blish_HUD.BHGw2Api;
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Humanizer;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Modules.MouseUsability {
     public class MouseUsability : Module {
@@ -21,7 +20,8 @@ namespace Blish_HUD.Modules.MouseUsability {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Mouse Module",
+                "Mouse Usability",
+                null,
                 "bh.general.mouse",
                 "Provides various mouse QoL features.",
                 "LandersXanders.1235",
@@ -58,7 +58,7 @@ namespace Blish_HUD.Modules.MouseUsability {
 
         #endregion
 
-        protected override void OnLoad() {
+        public override void OnLoad() {
             base.OnLoad();
 
             HorizontalHighlight?.Dispose();
@@ -67,8 +67,8 @@ namespace Blish_HUD.Modules.MouseUsability {
             HorizontalHighlight = new MouseHighlight(MouseHighlight.Orientation.Horizontal);
             VerticalHighlight = new MouseHighlight(MouseHighlight.Orientation.Vertical);
 
-            HorizontalHighlight.Parent = GameServices.GetService<GraphicsService>().SpriteScreen;
-            VerticalHighlight.Parent = GameServices.GetService<GraphicsService>().SpriteScreen;
+            HorizontalHighlight.Parent = GameService.Graphics.SpriteScreen;
+            VerticalHighlight.Parent = GameService.Graphics.SpriteScreen;
 
             // Update features to match saved settings state
             HorizontalHighlight.Visible = setting_hl_showHighlight.Value;
@@ -89,7 +89,7 @@ namespace Blish_HUD.Modules.MouseUsability {
             AllColors = await ApiItem.CallForManyAsync<DyeColor>("/v2/colors?ids=all", 5.Days(), true);
 
             // Add tab with settings in the main Blish HUD window
-            GameServices.GetService<DirectorService>().BlishHudWindow.AddTab("Mouse Usability", "mouse-icon", BuildSettingPanel());
+            GameService.Director.BlishHudWindow.AddTab("Mouse Usability", GameService.Content.GetTexture("mouse-icon"), BuildSettingPanel());
         }
 
         private Panel BuildSettingPanel() {
@@ -102,7 +102,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular),
+                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular),
             };
 
             var colorPicker = new ColorPicker() {
@@ -135,7 +135,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
+                Font = GameService.Content.DefaultFont14,
             };
 
             var highlightColor = new ColorBox() {
@@ -150,7 +150,10 @@ namespace Blish_HUD.Modules.MouseUsability {
             // highlightColor, "ColorId"
             //);
 
-            Binding.Create(() => setting_hl_highlightColorId.Value == highlightColor.ColorId);
+            //Binding.Create(() => setting_hl_highlightColorId.Value == highlightColor.ColorId);
+
+            Adhesive.Binding.CreateTwoWayBinding(() => setting_hl_highlightColorId.Value,
+                                                 () => highlightColor.ColorId);
 
             var lblOutlineColor = new Label() {
                 Parent = muPanel,
@@ -161,7 +164,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
+                Font = GameService.Content.DefaultFont14,
             };
 
             var outlineColor = new ColorBox() {
@@ -176,7 +179,6 @@ namespace Blish_HUD.Modules.MouseUsability {
                 Top = highlightColor.Bottom + 10,
                 Left = colorPicker.Left,
                 Text = "Enable Mouse Highlight",
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
                 Checked = setting_hl_showHighlight.Value,
             };
 
@@ -185,7 +187,6 @@ namespace Blish_HUD.Modules.MouseUsability {
                 Top = cbMouseHighlight.Bottom + 5,
                 Left = cbMouseHighlight.Left,
                 Text = "Show Mouse Highlight Over Blish HUD UI",
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
                 Checked = setting_hl_showOverBlishHud.Value,
             };
 
@@ -197,7 +198,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
+                Font = GameService.Content.DefaultFont14,
             };
 
             var tbOpacity = new TrackBar() {
@@ -217,7 +218,6 @@ namespace Blish_HUD.Modules.MouseUsability {
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
             };
 
             var tbHighlightThickness = new TrackBar() {
@@ -246,7 +246,7 @@ namespace Blish_HUD.Modules.MouseUsability {
                 AutoSizeHeight = true,
                 AutoSizeWidth = true,
                 TextColor = Color.White,
-                Font = GameServices.GetService<ContentService>().GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
+                Font = GameService.Content.DefaultFont14,
             };
 
             var tbOutlineThickness = new TrackBar() {
@@ -307,15 +307,14 @@ namespace Blish_HUD.Modules.MouseUsability {
         public override void Update(GameTime gameTime) {
             base.Update(gameTime);
 
-            //if (GameServices.GetService<GraphicsService>().SpriteScreen.MouseOver) {
-            if (GameServices.GetService<InputService>().MouseHidden) return;
+            if (GameService.Input.MouseHidden) return;
 
-            HorizontalHighlight.Top = GameServices.GetService<InputService>().MouseState.Position.Y - HorizontalHighlight.Height / 2;
-            VerticalHighlight.Left = GameServices.GetService<InputService>().MouseState.Position.X - VerticalHighlight.Width / 2;
+            HorizontalHighlight.Top = GameService.Input.MouseState.Position.Y - HorizontalHighlight.Height / 2;
+            VerticalHighlight.Left = GameService.Input.MouseState.Position.X - VerticalHighlight.Width / 2;
             //}
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             base.OnDisabled();
 
             HorizontalHighlight?.Dispose();

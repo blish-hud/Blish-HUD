@@ -11,7 +11,8 @@ namespace Blish_HUD.Modules.BeetleRacing {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Beetle Racing Module",
+                "Racing",
+                GameService.Content.GetTexture("347218"),
                 "bh.general.speed",
                 "Currently only provides the speedometer feature.  Additional features are planned for future releases.",
                 "LandersXanders.1235",
@@ -34,16 +35,16 @@ namespace Blish_HUD.Modules.BeetleRacing {
 
         private Speedometer speedometer;
 
-        protected override void OnEnabled() {
+        public override void OnEnabled() {
             base.OnEnabled();
 
             speedometer = new Speedometer {
-                Parent = GameServices.GetService<GraphicsService>().SpriteScreen,
+                Parent = GameService.Graphics.SpriteScreen,
                 Speed = 0
             };
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             sampleBuffer.Clear();
             lastPos = Vector3.Zero;
             speedometer.Dispose();
@@ -52,6 +53,7 @@ namespace Blish_HUD.Modules.BeetleRacing {
         
         private Vector3 lastPos = Vector3.Zero;
         private long lastUpdate = 0;
+        private double leftOverTime = 0;
         private Queue<double> sampleBuffer = new Queue<double>();
 
         public override void Update(GameTime gameTime) {
@@ -65,9 +67,12 @@ namespace Blish_HUD.Modules.BeetleRacing {
                 return;
             }
 
+            leftOverTime += gameTime.ElapsedGameTime.TotalSeconds;
+
             // TODO: Ignore same tick for speed updates
-            if (lastPos != Vector3.Zero) { // && lastUpdate != GameService.Gw2Mumble.UiTick) {
-                double velocity = Vector3.Distance(GameService.Player.Position, lastPos) / gameTime.ElapsedGameTime.TotalSeconds;
+            if (lastPos != Vector3.Zero && lastUpdate != GameService.Gw2Mumble.UiTick) {
+                double velocity = Vector3.Distance(GameService.Player.Position, lastPos) * 39.3700787f / leftOverTime;
+                leftOverTime = 0;
 
                 // TODO: Make the sample buffer a setting
                 if (sampleBuffer.Count > 50) {

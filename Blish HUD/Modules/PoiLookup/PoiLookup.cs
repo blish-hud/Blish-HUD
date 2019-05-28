@@ -17,7 +17,8 @@ namespace Blish_HUD.Modules.PoiLookup {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Landmark Lookup Module",
+                "Landmark Lookup",
+                null,
                 "bh.general.landmarklookup",
                 "Allows you to search for in game landmarks (waypoints, POIs, vistas, etc.) and copy the chat codes into your clipboard.",
                 "LandersXanders.1235",
@@ -34,7 +35,7 @@ namespace Blish_HUD.Modules.PoiLookup {
             settingHideWindowAfterSelection = settings.DefineSetting("Hide Window After Selection", true, true, true, "If enabled, the landmark search window will automatically hide after a landmark is selected from the results.");
         }
 
-        protected override void OnEnabled() {
+        public override void OnEnabled() {
             LandmarkSearchWindow = new PoiLookupWindow(this) {
                 Parent   = GameService.Graphics.SpriteScreen,
                 Location = GameService.Graphics.SpriteScreen.Size / new Point(2)
@@ -94,7 +95,7 @@ namespace Blish_HUD.Modules.PoiLookup {
             }
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             base.OnDisabled();
 
             LandmarkSearch?.Dispose();

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pipeline;
+
+message arc {
+    mtype msgtype = 2;
+    oneof msg {
+        bool greeting = 16; // true -> hello, false -> bye
+        bool imgui = 1;     // value doesnt matter
+    }
+}
+
+enum mtype {
+    NoMsg = 0;
+    Imgui = 1;
+    Greeting = 2;
+}

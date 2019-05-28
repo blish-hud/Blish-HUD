@@ -15,32 +15,38 @@ namespace Blish_HUD.Controls {
         private Rectangle _activeAtlasRegion = new Rectangle(0, 416, 256, 32);
         private Rectangle ActiveAtlasRegion {
             get => _activeAtlasRegion;
-            set {
-                _activeAtlasRegion = value;
-                Invalidate();
-            }
+            set => SetProperty(ref _activeAtlasRegion, value);
         }
 
         public int Rotation { get; set; } = 0;
-
-        private EaseAnimation SpinAnimation;
-        private Glide.Tween SpinAnimation2;
+        
+        private Glide.Tween _spinAnimation;
 
         public LoadingSpinner() {
             this.Size = new Point(DRAWLENGTH, DRAWLENGTH);
 
-            SpinAnimation2 = Animation.Tweener.Tween(this, new { Rotation = 64 }, 3).Repeat().Round();
+            _spinAnimation = Animation.Tweener.Tween(this, new { Rotation = 64 }, 3).Repeat().Round();
         }
 
-        public override void Update(GameTime gameTime) {
-            this.ActiveAtlasRegion = new Rectangle(DRAWLENGTH * this.Rotation, 0, DRAWLENGTH, DRAWLENGTH); //SpinAnimation.CurrentValueInt, 0, DRAWLENGTH, DRAWLENGTH);
+        public override void DoUpdate(GameTime gameTime) {
+            this.ActiveAtlasRegion = new Rectangle(DRAWLENGTH * this.Rotation, 0, DRAWLENGTH, DRAWLENGTH);
 
-            base.Update(gameTime);
+            base.DoUpdate(gameTime);
+        }
+
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // TODO: Add this texture in with the rest of the UI elements in the ControlUI atlas
-            spriteBatch.Draw(Content.GetTexture(DRAWATLAS), bounds, this.ActiveAtlasRegion, Color.White);
+            spriteBatch.DrawOnCtrl(this, Content.GetTexture(DRAWATLAS), bounds, _activeAtlasRegion);
+        }
+
+        protected override void DisposeControl() {
+            _spinAnimation = null;
+
+            base.DisposeControl();
         }
 
     }

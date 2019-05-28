@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Blish_HUD.Controls;
+using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
-using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
-using Label = Blish_HUD.Controls.Label;
-using Panel = Blish_HUD.Controls.Panel;
 
 namespace Blish_HUD {
 
@@ -19,46 +17,36 @@ namespace Blish_HUD {
         public CornerIcon BlishMenuIcon { get; protected set; }
         public ContextMenuStrip BlishContextMenu { get; protected set; }
 
+        private ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
+
+        /// <summary>
+        /// Allows you to enqueue a call that will occur during the next time the Update loop executes.
+        /// </summary>
+        /// <param name="call">A method accepting <see="GameTime" /> as a parameter.</param>
+        public void QueueAdHocUpdate(Action<GameTime> call) {
+            _queuedUpdates.Enqueue(call);
+        }
+
         protected override void Initialize() {
         }
 
         protected override void Load() {
             this.BlishMenuIcon = new CornerIcon() {
-                Icon = GameService.Content.GetTexture("logo"),
-                HoverIcon = GameService.Content.GetTexture("logo-big"),
-                Menu = new ContextMenuStrip(),
-                Tooltip = new Tooltip(),
-                Priority = int.MinValue,
+                Icon             = Content.GetTexture("logo"),
+                HoverIcon        = Content.GetTexture("logo-big"),
+                Menu             = new ContextMenuStrip(),
+                BasicTooltipText = Properties.Strings.General_BlishHUD,
+                Priority         = int.MinValue,
             };
 
-            this.BlishMenuIcon.Tooltip.AddChild(new Label() {
-                Text = "Blish HUD",
-                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular),
-                Location = new Point(10, 8),
-                Height = 12,
-                TextColor = Color.White,
-                ShadowColor = Color.Black,
-                ShowShadow = true,
-                AutoSizeWidth = true,
-                VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle,
-            });
-
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem("Close Blish HUD").Click += delegate { Overlay.Exit(); };
+            this.BlishContextMenu.AddMenuItem($"{Properties.Strings.General_Close} {Properties.Strings.General_BlishHUD}").Click += delegate { Overlay.Exit(); };
 
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
-                Title = "Blish HUD"
+                Title  = Properties.Strings.General_BlishHUD,
+                Emblem = Content.GetTexture("test-window-icon9")
             };
-
-            //var iconHoverRegion = new MouseZone() {
-            //    Size = new Point(32 * 10, 32),
-            //    Location = new Point(0, 0),
-            //    Parent = GameService.Graphics.SpriteScreen,
-            //};
-
-            //iconHoverRegion.MouseEntered += delegate { this.BlishMenuIcon.MouseInHouse = true; };
-            //iconHoverRegion.MouseLeft += delegate { this.BlishMenuIcon.MouseInHouse = false; };
 
             this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
                 this.BlishHudWindow.ToggleWindow();
@@ -71,21 +59,23 @@ namespace Blish_HUD {
                     this.BlishHudWindow.Location = new Point(Graphics.WindowWidth / 2 - this.BlishHudWindow.Width / 2, Graphics.WindowHeight / 2 - this.BlishHudWindow.Height / 2);
             };
 
-            this.BlishHudWindow.AddTab("Home", "255369", BuildHomePanel(this.BlishHudWindow), int.MinValue);
+            this.BlishHudWindow.AddTab(Properties.Strings.Service_DirectorService_Tab_Home, Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);
         }
 
-        private Panel BuildHomePanel(Window wndw) {
+        private Panel BuildHomePanel(WindowBase wndw) {
             var hPanel = new Panel() {
                 Size = wndw.ContentRegion.Size
             };
 
             var hi = new Label() {
-                Text = "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)",
+                Text = Utils.DrawUtil.WrapText(Content.DefaultFont14, "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)", 50),
                 Parent = hPanel,
                 Location = Point.Zero,
-                AutoSizeHeight = true,
+                Height = 128,
                 AutoSizeWidth = true,
-                StrokeShadow = true
+                StrokeText = true,
+                HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
+                BackgroundColor = Color.Magenta
             };
 
             hi.Location = new Point(hPanel.Width / 2 - hi.Width / 2, hPanel.Height / 2 - hi.Height / 2);
@@ -101,7 +91,15 @@ namespace Blish_HUD {
         // TODO: Move into a TacO compatibility module
         private double lastTacoCheckTime = 5;
 
+        private void HandleEnqueuedUpdates(GameTime gameTime) {
+            while (_queuedUpdates.TryDequeue(out Action<GameTime> updateCall)) {
+                updateCall.Invoke(gameTime);
+            }
+        }
+
         protected override void Update(GameTime gameTime) {
+            HandleEnqueuedUpdates(gameTime);
+
             if (GameService.GameIntegration.IsInGame) {
                 CornerIcon.Alignment = CornerIcon.CornerIconAlignment.Left;
 

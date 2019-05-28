@@ -34,7 +34,6 @@ namespace Blish_HUD {
         }
 
         private UiScale _uiScale = UiScale.Normal;
-
         public UiScale UIScale {
             get => _uiScale;
             set {
@@ -44,7 +43,15 @@ namespace Blish_HUD {
 
                 float uiScale = GetScaleRatio(value);
                 this.SpriteScreen.Size = new Point((int)(Overlay.graphics.PreferredBackBufferWidth / uiScale), (int)(Overlay.graphics.PreferredBackBufferHeight / uiScale));
+
+                _uiScaleTransform = Matrix.CreateScale(uiScale);
+
             }
+        }
+
+        private Matrix _uiScaleTransform = Matrix.Identity;
+        public Matrix UIScaleTransform {
+            get => _uiScaleTransform;
         }
 
         private Controls.Screen _screen;
@@ -81,6 +88,8 @@ namespace Blish_HUD {
             // Might do better error handling later on
             Overlay.GraphicsDevice.DeviceLost += delegate { Application.Restart(); };
             //MainLoop.Form.Resize += delegate { this.Resolution = new Point(MainLoop.Form.Size.Width, MainLoop.Form.Size.Height); };
+
+            _uiScaleTransform = Matrix.CreateScale(GetScaleRatio(this.UIScale));
         }
 
         protected override void Load() { /* NOOP */ }
@@ -88,8 +97,6 @@ namespace Blish_HUD {
         protected override void Unload() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) {
-            //this.Resolution = GameService.GameIntegration.Gw2WindowSize;
-
             this.SpriteScreen.Update(gameTime);
             this.World.Update(gameTime);
         }

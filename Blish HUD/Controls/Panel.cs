@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Controls {
-    public class Panel:Container {
+
+    /// <summary>
+    /// Used to group collections of controls. Can have an accented border and title, if enabled.
+    /// </summary>
+    public class Panel : Container {
 
         // Used when border is enabled
         public const int TOP_MARGIN    = 0;
@@ -17,44 +20,32 @@ namespace Blish_HUD.Controls {
         public const int BOTTOM_MARGIN = 10;
         public const int LEFT_MARGIN   = 8;
 
-        private bool _canScroll = false;
+        protected bool _canScroll = false;
         public bool CanScroll {
             get => _canScroll;
             set {
-                if (_canScroll == value) return;
-
-                _canScroll = value;
+                if (!SetProperty(ref _canScroll, value)) return;
 
                 UpdateRegions();
                 UpdateScrollbar();
-
-                OnPropertyChanged(nameof(this.CanScroll), true);
             }
         }
         
-        private string _title;
+        protected string _title;
         public string Title {
             get => _title;
             set {
-                if (_title == value) return;
-
-                _title = value;
-                OnPropertyChanged();
-
-                UpdateRegions();
+                if (SetProperty(ref _title, value))
+                    UpdateRegions();
             }
         }
 
-        private bool _showBorder;
+        protected bool _showBorder;
         public bool ShowBorder {
             get => _showBorder;
             set {
-                if (_showBorder == value) return;
-
-                _showBorder = value;
-                OnPropertyChanged();
-
-                UpdateRegions();
+                if (SetProperty(ref _showBorder, value))
+                    UpdateRegions();
             }
         }
 
@@ -87,6 +78,8 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateContentRegionBounds(object sender, EventArgs e) {
+            UpdateScrollbar();
+
             //if (this.Children.Any()) {
             //    if (Math.Max(this.ContentRegion.Width, this.Children.Max(c => c.Right)) != this.ContentRenderCache.Width) {
             //        OnPropertyChanged(nameof(this.ContentRegion));
@@ -106,13 +99,13 @@ namespace Blish_HUD.Controls {
         private Rectangle _headerRegion;
 
         private void UpdateRegions() {
-            int topOffset = !string.IsNullOrEmpty(this.Title) ? 36 : 0;
+            int topOffset = !string.IsNullOrEmpty(_title) ? 36 : 0;
             int rightOffset = 0;
             int bottomOffset = 0;
             int leftOffset = 0;
 
             if (this.ShowBorder) {
-                // If we have a title, then we don't need an offset (as the title region will be that offset)
+                // If we have a title, then we don't need an margin (as the title region will be that offset)
                 topOffset = Math.Max(topOffset, TOP_MARGIN);
                 
                 rightOffset += RIGHT_MARGIN;
@@ -123,22 +116,18 @@ namespace Blish_HUD.Controls {
             if (this.CanScroll)
                 rightOffset += (this.ShowBorder ? 0 : 20);
 
-            this.ContentRegion = new Rectangle(
-                                               leftOffset,
+            this.ContentRegion = new Rectangle(leftOffset,
                                                topOffset,
-                                               this.Width - leftOffset - rightOffset, 
-                                               this.Height - topOffset - bottomOffset
-                                               );
+                                               _size.X - leftOffset - rightOffset, 
+                                               _size.Y - topOffset - bottomOffset);
 
-            _headerRegion = new Rectangle(
-                                          leftOffset,
+            _headerRegion = new Rectangle(leftOffset,
                                           0,
-                                          this.ContentRegion.Width,
-                                          this.ContentRegion.Top
-                                         );
+                                          ContentRegion.Width,
+                                          ContentRegion.Top);
         }
 
-        private readonly List<Binding> _scrollbarBindings = new List<Binding>();
+        private readonly List<Adhesive.Binding> _scrollbarBindings = new List<Adhesive.Binding>();
 
         private void UpdateScrollbar() {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
@@ -147,117 +136,116 @@ namespace Blish_HUD.Controls {
                 if (_panelScrollbar == null) 
                     _panelScrollbar = new Scrollbar(this);
 
-                _scrollbarBindings.ForEach((bind) => bind.Unbind());
+                // TODO: Switch to breaking these bindings once it is supported in Adhesive
+                _scrollbarBindings.ForEach((bind) => bind.Disable());
                 _scrollbarBindings.Clear();
 
                 int psHOffset = this.ShowBorder ? -20 : 0;
                 int psYOffset = this.ShowBorder ? 10 : 0;
                 int psXOffset = this.ShowBorder ? -RIGHT_MARGIN - 2 : -20;
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Parent == this.Parent));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Parent == this.Parent));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Parent, () => this.Parent, applyLeft: true));
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Height == this.Height));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Height == this.Height));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Height, () => this.Height, (h) => this.ContentRegion.Height - 20, applyLeft: true));
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Right == this.Right - _panelScrollbar.Width));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Right == this.Right - _panelScrollbar.Width));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Right, () => this.Right, (r) => r - _panelScrollbar.Width / 2, applyLeft: true));
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Top == this.Top));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Top == this.Top));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Top, () => this.Top, (t) => t + this.ContentRegion.Top + 10, applyLeft: true));
 
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Visible == this.Visible));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.Visible == this.Visible));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Visible, () => this.Visible, applyLeft: true));
 
                 // Ensure scrollbar is visible
-                _scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.ZIndex == this.ZIndex + 2));
+                //_scrollbarBindings.Add(Binding.Create(() => _panelScrollbar.ZIndex == this.ZIndex + 2));
+                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex, () => this.ZIndex, (z) => z + 2, applyLeft: true));
             } else {
-                _scrollbarBindings.ForEach((bind) => bind.Unbind());
+                // TODO: Switch to breaking these bindings once it is supported in Adhesive
+                _scrollbarBindings.ForEach((bind) => bind.Disable());
                 _scrollbarBindings.Clear();
 
                 _panelScrollbar?.Dispose();
                 _panelScrollbar = null;
             }
         }
-
-
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
+        
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             var headerRect = _headerRegion;
 
-            if (!string.IsNullOrEmpty(this.Title)) {
-                spriteBatch.Draw(
-                                 Content.GetTexture("accordion-header-standard"),
-                                 headerRect,
-                                 Color.White
-                                );
+            if (!string.IsNullOrEmpty(_title)) {
+                spriteBatch.DrawOnCtrl(
+                                       this,
+                                       Content.GetTexture("accordion-header-standard"),
+                                       headerRect
+                                      );
 
-                Utils.DrawUtil.DrawAlignedText(
-                                               spriteBatch,
-                                               Content.GetFont(
-                                                               ContentService.FontFace.Menomonia,
-                                                               ContentService.FontSize.Size16,
-                                                               ContentService.FontStyle.Regular
-                                                              ),
-                                               this.Title,
-                                               headerRect.OffsetBy(10, 0),
-                                               Color.White,
-                                               DrawUtil.HorizontalAlignment.Left,
-                                               DrawUtil.VerticalAlignment.Middle
-                                              );
+                spriteBatch.DrawStringOnCtrl(this,
+                                         _title,
+                                         Content.DefaultFont16,
+                                         headerRect.OffsetBy(10, 0),
+                                         Color.White);
             }
 
             headerRect.Inflate(-10, 0);
 
             if (this.ShowBorder) {
                 // Lightly tint the background of the panel
-                spriteBatch.Draw(ContentService.Textures.Pixel, this.ContentRegion, Color.Black * 0.1f);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, ContentRegion, Color.Black * 0.1f);
 
                 // Top left accent
-                spriteBatch.Draw(
-                                 Content.GetTexture("1002144"),
-                                 new Rectangle(this.ContentRegion.Left - 6, headerRect.Bottom - 12, Math.Min(this.ContentRegion.Width, 256), 64),
+                spriteBatch.DrawOnCtrl(this, Content.GetTexture("1002144"),
+                                 new Rectangle(ContentRegion.Left - 6,
+                                               headerRect.Bottom - 12,
+                                               Math.Min(ContentRegion.Width, 256),
+                                               64),
                                  null,
                                  Color.White,
                                  0,
                                  Vector2.Zero,
-                                 SpriteEffects.FlipHorizontally,
-                                 0
-                                );
+                                 SpriteEffects.FlipHorizontally);
 
                 // Bottom right accent
-                spriteBatch.Draw(
-                                 Content.GetTexture("1002142"),
-                                 new Rectangle(this.ContentRegion.Right - 249, this.ContentRegion.Bottom - 53, Math.Min(this.ContentRegion.Width, 256), 64),
+                spriteBatch.DrawOnCtrl(this, Content.GetTexture("1002142"),
+                                 new Rectangle(ContentRegion.Right - 249,
+                                               ContentRegion.Bottom - 53,
+                                               Math.Min(ContentRegion.Width, 256),
+                                               64),
                                  null,
                                  Color.White,
                                  0,
-                                 Vector2.Zero,
-                                 SpriteEffects.None,
-                                 0
-                                );
+                                 Vector2.Zero);
 
                 // Left side accent
-                spriteBatch.Draw(
-                                 Content.GetTexture("605025"),
-                                 new Rectangle(this.ContentRegion.Left - 8, this.ContentRegion.Top, 16, this.ContentRegion.Height),
+                spriteBatch.DrawOnCtrl(this, Content.GetTexture("605025"),
+                                 new Rectangle(ContentRegion.Left - 8,
+                                               ContentRegion.Top,
+                                               16,
+                                               ContentRegion.Height),
                                  null,
                                  Color.Black,
                                  0,
                                  Vector2.Zero,
-                                 SpriteEffects.FlipVertically,
-                                 0
-                                );
+                                 SpriteEffects.FlipVertically);
             }
 
             // Right side accent (if scrollbar isn't visible)
             if (this.CanScroll && !_panelScrollbar.Visible) {
-                spriteBatch.Draw(
-                                 Content.GetTexture("scrollbar-track"),
-                                 new Rectangle(this.ContentRegion.Right - 2, this.ContentRegion.Top, 4, this.ContentRegion.Height),
-                                 Color.Black
-                                );
+                spriteBatch.DrawOnCtrl(this, Content.GetTexture("scrollbar-track"),
+                                 new Rectangle(ContentRegion.Right - 2,
+                                               ContentRegion.Top,
+                                               Content.GetTexture("scrollbar-track").Width,
+                                               ContentRegion.Height),
+                                 Color.Black);
             }
         }
 
-        protected override void Dispose(bool disposing) {
+        protected override void DisposeControl() {
             _panelScrollbar?.Dispose();
 
-            base.Dispose(disposing);
+            base.DisposeControl();
         }
 
     }

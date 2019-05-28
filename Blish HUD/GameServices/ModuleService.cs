@@ -1,26 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Blish_HUD.Modules;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
     public class ModuleService : GameService {
 
+        private const string MODULESTATES_CORE_SETTING = "ModuleStates";
+
+        private const string MODULES_DIRECTORY = "modules";
+
+        private string ModulesDirectory => Path.Combine(GameService.FileSrv.BasePath, MODULES_DIRECTORY);
+
         public SettingEntry<Dictionary<string, bool>> ModuleStates { get; private set; }
 
-        private List<Modules.Module> _availableModules;
-        public List<Modules.Module> AvailableModules => _availableModules;
+        public List<IModule> AvailableModules { get; private set; }
+
+        [ImportMany]
+        public List<IModule> ExternalModules { get; set; }
 
         protected override void Initialize() {
-            _availableModules = new List<Modules.Module>();
+            this.AvailableModules = new List<IModule>();
 
-            this.ModuleStates = GameService.Settings.CoreSettings.DefineSetting("ModuleStates",
-                new Dictionary<string, bool>(), new Dictionary<string, bool>());
+            this.ModuleStates = Settings.CoreSettings.DefineSetting(
+                                                                    MODULESTATES_CORE_SETTING,
+                                                                    new Dictionary<string, bool>(), 
+                                                                    new Dictionary<string, bool>()
+                                                                   );
         }
 
-        public void RegisterModule(Modules.Module module) {
+        public void RegisterModule(IModule module) {
             this.AvailableModules.Add(module);
 
             // All modules are disabled by default, currently to allow for users to select which modules they would like to enable
@@ -31,7 +48,37 @@ namespace Blish_HUD {
             }
         }
 
+        public void ComposeModuleFromArchive(string archivePath) {
+            var catalog = new AggregateCatalog();
+
+            using (var archiveReader = ZipFile.OpenRead(archivePath)) {
+                ZipArchiveEntry moduleEntry = archiveReader.GetEntry("ExampleBHUDModule.dll");
+
+                var assemblyStream = moduleEntry.Open().ReplaceWithMemoryStream();
+                var assemblyData = assemblyStream.ToArray();
+
+                catalog.Catalogs.Add(new AssemblyCatalog(Assembly.Load(assemblyData)));
+            }
+
+            var container = new CompositionContainer(catalog);
+            container.SatisfyImportsOnce(this);
+        }
+
+        private void ComposeModulesFromNamespace() {
+            AssemblyCatalog      catalog   = new AssemblyCatalog(System.Reflection.Assembly.GetExecutingAssembly());
+            CompositionContainer container = new CompositionContainer(catalog);
+            container.SatisfyImportsOnce(this);
+        }
+
+        private void ComposeModulesFromDirectory(string directory) {
+            DirectoryCatalog catalog = new DirectoryCatalog(directory);
+            CompositionContainer container = new CompositionContainer(catalog);
+            container.SatisfyImportsOnce(this);
+        }
+
         protected override void Load() {
+            if (!Directory.Exists(this.ModulesDirectory)) Directory.CreateDirectory(this.ModulesDirectory);
+
             // TODO: Load modules dynamically
             RegisterModule(new Modules.DebugText());
             RegisterModule(new Modules.DiscordRichPresence());
@@ -41,7 +88,18 @@ namespace Blish_HUD {
             // RegisterModule(new Modules.RangeCircles());
             RegisterModule(new Modules.PoiLookup.PoiLookup());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
-            // RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
+            RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
+            //RegisterModule(new Modules.LoadingScreenHints.LoadingScreenHints());
+            RegisterModule(new Modules.Musician.Musician());
+
+            //ComposeModulesFromNamespace();
+            //ComposeModulesFromDirectory(this.ModulesDirectory);
+            //ComposeModuleFromArchive(Path.Combine(this.ModulesDirectory, "ExampleBHUDModule.zip"));
+
+            //foreach (var externalModule in this.ExternalModules) {
+            //    Console.WriteLine($"Registering external module: {externalModule.GetModuleInfo().Name}");
+            //    RegisterModule(externalModule);
+            //}
         }
 
         protected override void Unload() {
@@ -50,12 +108,15 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             this.AvailableModules.ForEach(s => {
-                //try {
+                try {
                     if (s.Enabled) s.Update(gameTime);
-                //} catch (Exception ex) {
-                //    Console.WriteLine($"{s.GetModuleInfo().Name} module had an error:");
-                //    Console.WriteLine(ex.Message);
-                //}
+                } catch (Exception ex) {
+#if DEBUG
+                    throw;
+#endif
+                    Console.WriteLine($"{s.GetModuleInfo().Name} module had an error:");
+                    Console.WriteLine(ex.Message);
+                }
             });
         }
     }

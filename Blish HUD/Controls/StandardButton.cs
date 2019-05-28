@@ -28,7 +28,7 @@ namespace Blish_HUD.Controls {
             public static Texture2D SpriteButtonBorder;
 
             public static void Load() {
-                _ButtonIdle = _ButtonIdle ?? GameService.Content.GetTexture(@"common\button-states");
+                _ButtonIdle = _ButtonIdle ?? Content.GetTexture(@"common\button-states");
 
                 SpriteButtonBorder = SpriteButtonBorder ?? Content.GetTexture("button-border");
 
@@ -42,15 +42,10 @@ namespace Blish_HUD.Controls {
 
         }
 
-        private string _text = "button";
+        protected string _text = "button";
         public string Text {
             get => _text;
-            set {
-                if (_text == value) return;
-
-                _text = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _text, value);
         }
 
         protected override CaptureType CapturesInput() {
@@ -64,74 +59,94 @@ namespace Blish_HUD.Controls {
         }
 
         private void InitAnim() {
-            anim = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9, AnimationService.EasingMethod.Linear);
+            // TODO: Convert button animation from old animation service to glide library
+            _anim = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9, AnimationService.EasingMethod.Linear);
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            base.OnMouseEntered(e);
+            _anim?.Start();
 
-            anim?.Start();
+            base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            base.OnMouseLeft(e);
-
-            if (anim != null) {
-                anim.Reverse();
-                anim.AnimationCompleted += delegate { InitAnim(); };
+            if (_anim != null) {
+                _anim.Reverse();
+                _anim.AnimationCompleted += delegate { InitAnim(); };
             }
+
+            base.OnMouseLeft(e);
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            base.OnClick(e);
-
             Content.PlaySoundEffectByName(@"audio\button-click");
+
+            base.OnClick(e);
         }
 
-        private int AnimFrame = -1;
-        private double AnimEllapsedTime = 0;
+        private int _animFrame = -1;
+        private double _animEllapsedTime = 0;
 
         private const int ATLAS_SPRITE_WIDTH = 350;
         private const int ATLAS_SPRITE_HEIGHT = 20;
         private const int ANIM_FRAME_TIME = 300 / 9;
 
-        private EaseAnimation anim;
+        private EaseAnimation _anim;
 
-        public override void Update(GameTime gameTime) {
+        public override void DoUpdate(GameTime gameTime) {
             if (this.MouseOver) {
-                if (anim == null)
-                    anim = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9 * (this.Width / ATLAS_SPRITE_WIDTH), AnimationService.EasingMethod.Linear);
+                if (_anim == null)
+                    _anim = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9 * (this.Width / ATLAS_SPRITE_WIDTH), AnimationService.EasingMethod.Linear);
             }
 
-            if (anim != null) {
-                ActiveAtlasRegion = new Rectangle(anim.CurrentValueInt * ATLAS_SPRITE_WIDTH, 0, ATLAS_SPRITE_WIDTH, ATLAS_SPRITE_HEIGHT);
+            if (_anim != null) {
+                _activeAtlasRegion = new Rectangle(_anim.CurrentValueInt * ATLAS_SPRITE_WIDTH, 0, ATLAS_SPRITE_WIDTH, ATLAS_SPRITE_HEIGHT);
                 
-                if (anim.Active) Invalidate();
+                if (_anim.Active) Invalidate();
             }
 
-            base.Update(gameTime);
+            base.DoUpdate(gameTime);
         }
 
-        private Rectangle ActiveAtlasRegion = new Rectangle(0, 0, 350, 20);
+        private Rectangle _activeAtlasRegion = new Rectangle(0, 0, 350, 20);
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Button Texture
-            spriteBatch.Draw(CachedButtonTextures.ButtonIdle, bounds.Add(3, 3, -6, -5), ActiveAtlasRegion, Color.White);
+            spriteBatch.DrawOnCtrl(this,
+                                   CachedButtonTextures.ButtonIdle,
+                             new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
+                             _activeAtlasRegion);
 
             // Top Shadow
-            spriteBatch.Draw(CachedButtonTextures.SpriteButtonBorder, new Rectangle(2, 0, this.Width - 5, 4), new Rectangle(0, 0, 1, 4), Color.White);
+            spriteBatch.DrawOnCtrl(this, CachedButtonTextures.SpriteButtonBorder,
+                             new Rectangle(2, 0, this.Width - 5, 4),
+                             new Rectangle(0, 0, 1, 4));
 
             // Right Shadow
-            spriteBatch.Draw(CachedButtonTextures.SpriteButtonBorder, new Rectangle(this.Width - 4, 2, 4, this.Height - 3), new Rectangle(0, 1, 4, 1), Color.White);
+            spriteBatch.DrawOnCtrl(this, CachedButtonTextures.SpriteButtonBorder,
+                             new Rectangle(this.Width - 4, 2, 4, this.Height - 3),
+                             new Rectangle(0, 1, 4, 1));
 
             // Bottom Shadow
-            spriteBatch.Draw(CachedButtonTextures.SpriteButtonBorder, new Rectangle(3, this.Height - 4, this.Width - 6, 4), new Rectangle(1, 0, 1, 4), Color.White);
+            spriteBatch.DrawOnCtrl(this, CachedButtonTextures.SpriteButtonBorder,
+                             new Rectangle(3, this.Height - 4, this.Width - 6, 4), 
+                             new Rectangle(1, 0, 1, 4));
 
             // Left Shadow
-            spriteBatch.Draw(CachedButtonTextures.SpriteButtonBorder, new Rectangle(0, 2, 4, this.Height - 3), new Rectangle(0, 3, 4, 1), Color.White);
+            spriteBatch.DrawOnCtrl(this, CachedButtonTextures.SpriteButtonBorder,
+                             new Rectangle(0, 2, 4, this.Height - 3),
+                             new Rectangle(0, 3, 4, 1));
 
             // Button Text
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size14, ContentService.FontStyle.Regular), this.Text, bounds, Color.Black, Utils.DrawUtil.HorizontalAlignment.Center, Utils.DrawUtil.VerticalAlignment.Middle);
+            spriteBatch.DrawStringOnCtrl(
+                                         this,
+                                         _text,
+                                         Content.DefaultFont14,
+                                         new Rectangle(Point.Zero, _size), 
+                                         Color.Black,
+                                         false,
+                                         Utils.DrawUtil.HorizontalAlignment.Center
+                                        );
         }
 
     }

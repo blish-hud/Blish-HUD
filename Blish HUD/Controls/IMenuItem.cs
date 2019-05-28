@@ -13,6 +13,8 @@ namespace Blish_HUD.Controls {
 
         bool Selected { get; set; }
 
+        bool ShouldShift { get; set; }
+
     }
 
 }

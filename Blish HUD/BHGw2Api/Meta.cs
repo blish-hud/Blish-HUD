@@ -98,7 +98,7 @@ namespace Blish_HUD.BHGw2Api {
                 double timeUntil = (e.NextTime - DateTime.Now).TotalMinutes;
                 if (timeUntil < (e.Reminder ?? -1) && e.IsWatched) {
                     if (!e.HasAlerted) {
-                        Blish_HUD.Modules.EventTimers.EventNotification.ShowNotification(e.Name, string.IsNullOrEmpty(e.Icon) ? GameServices.GetService<ContentService>().GetTexture("102377") : GameServices.GetService<ContentService>().GetTexture(e.Icon), $"Starts in {timeUntil.Minutes().Humanize()}", 10f);
+                        Modules.EventTimers.EventNotification.ShowNotification(e.Name, string.IsNullOrEmpty(e.Icon) ? GameService.Content.GetTexture("102377") : GameService.Content.GetTexture(e.Icon), $"Starts in {timeUntil.Minutes().Humanize()}", 10f);
                         e.HasAlerted = true;
                     }
                 } else {
@@ -143,6 +143,8 @@ namespace Blish_HUD.BHGw2Api {
             //uniqueEvents.ForEach(x => Console.WriteLine($"{x.Category}: {x.Name} will start at {String.Join(", ", x.Times)}."));
 
             Events = uniqueEvents;
+
+            UpdateEventSchedules();
         }
 
     }

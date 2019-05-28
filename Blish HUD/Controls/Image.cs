@@ -10,19 +10,11 @@ using Control = Blish_HUD.Controls.Control;
 namespace Blish_HUD.Controls {
     public class Image : Control {
 
-        private Texture2D _texture;
+        protected Texture2D _texture;
         public Texture2D Texture {
             get => _texture;
-            set {
-                if (_texture == value) return;
-
-                _texture = value;
-
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _texture, value);
         }
-
-        public Image() { /* NOOP */ }
 
         public Image(Texture2D texture) {
             this.Texture = texture;
@@ -32,7 +24,12 @@ namespace Blish_HUD.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_texture == null) return;
 
-            spriteBatch.Draw(this.Texture, bounds, Color.White);
+            // Draw the texture
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   _texture,
+                                   new Rectangle(Point.Zero, _size)
+                                  );
         }
 
     }

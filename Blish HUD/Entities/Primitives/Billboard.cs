@@ -8,77 +8,120 @@ using System.Threading.Tasks;
 
 namespace Blish_HUD.Entities.Primitives {
 
-    public enum BillboardConstraint {
-        None,
-        XAxis,
-        YAxis,
-        ZAxis
+    public enum BillboardVerticalConstraint {
+        CameraPosition,
+        PlayerPosition,
     }
 
     public class Billboard : Entity {
 
         private VertexPositionTexture[] _verts;
-        
-        public Texture2D Texture { get; set; }
 
-        private Vector2 _size = Vector2.One;
+        private bool                        _autoResizeBillboard = true;
+        private Vector2                     _size                = Vector2.One;
+        private float                       _scale               = 1f;
+        private Texture2D                   _texture;
+        private BillboardVerticalConstraint _verticalConstraint = BillboardVerticalConstraint.CameraPosition;
+
+        /// <summary>
+        /// If set to true, the <see cref="Size"/> will automatically
+        /// update if a new <see cref="Texture"/> is set.
+        /// </summary>
+        public bool AutoResizeBillboard {
+            get => _autoResizeBillboard;
+            set => SetProperty(ref _autoResizeBillboard, value);
+        }
+
+        public BillboardVerticalConstraint VerticalConstraint {
+            get => _verticalConstraint;
+            set => SetProperty(ref _verticalConstraint, value);
+        }
+
         public Vector2 Size {
             get => _size;
             set {
-                _size = value;
-                UpdateSize(value);
-
-                OnPropertyChanged();
+                if (SetProperty(ref _size, value))
+                    RecalculateSize(_size, _scale);
             }
         }
 
-        private static BasicEffect BillboardEffect;
+        /// <summary>
+        /// Scales the render size of the <see cref="Billboard"/>.
+        /// </summary>
+        public float Scale {
+            get => _scale;
+            set {
+                if (SetProperty(ref _scale, value))
+                    RecalculateSize(_size, _scale);
+            }
+        }
+
+        public Texture2D Texture {
+            get => _texture;
+            set {
+                if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture != null)
+                    this.Size = new Vector2(
+                                            Utils.World.GameToWorldCoord(_texture.Width),
+                                            Utils.World.GameToWorldCoord(_texture.Height)
+                                            );
+            }
+        }
+
+        private static BasicEffect _billboardEffect;
 
         public Billboard() :
-            this(null, Vector3.Zero, Vector2.One) { }
+            this(null, Vector3.Zero, Vector2.Zero) { }
 
         public Billboard(Texture2D image) :
             this(image, Vector3.Zero) { }
 
         public Billboard(Texture2D image, Vector3 position) :
-            this(image, position, new Vector2(image.Width / 100f, image.Height / 100f)) { }
+            this(image, position, Vector2.Zero) { }
 
         public Billboard(Texture2D image, Vector3 position, Vector2 size) : base() {
             Initialize();
 
-            this.Texture = image;
+            this.AutoResizeBillboard = (size == Vector2.Zero);
             this.Size = size;
+            this.Texture = image;
             this.Position = position;
         }
 
         private void Initialize() {
             _verts = new VertexPositionTexture[4];
 
-            BillboardEffect = BillboardEffect ?? new BasicEffect(GameService.Graphics.GraphicsDevice);
-            BillboardEffect.TextureEnabled = true;
+            _billboardEffect = _billboardEffect ?? new BasicEffect(GameService.Graphics.GraphicsDevice);
+            _billboardEffect.TextureEnabled = true;
         }
 
-        private void UpdateSize(Vector2 newSize) {
-            _verts[0] = new VertexPositionTexture(new Vector3(0, 0, 0), new Vector2(1, 1));
-            _verts[1] = new VertexPositionTexture(new Vector3(newSize.X, 0, 0), new Vector2(0, 1));
-            _verts[2] = new VertexPositionTexture(new Vector3(0, newSize.Y, 0), new Vector2(1, 0));
-            _verts[3] = new VertexPositionTexture(new Vector3(newSize.X, newSize.Y, 0), new Vector2(0, 0));
+        private void RecalculateSize(Vector2 newSize, float scale) {
+            _verts[0] = new VertexPositionTexture(new Vector3(0,                 0,                 0),                    new Vector2(1, 1));
+            _verts[1] = new VertexPositionTexture(new Vector3(newSize.X * scale, 0,                 0),                    new Vector2(0, 1));
+            _verts[2] = new VertexPositionTexture(new Vector3(0,                 newSize.Y * scale, 0),                    new Vector2(1, 0));
+            _verts[3] = new VertexPositionTexture(new Vector3(newSize.X                    * scale, newSize.Y * scale, 0), new Vector2(0, 0));
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
-            BillboardEffect.View = GameService.Camera.View;
-            BillboardEffect.Projection = GameService.Camera.Projection;
-            BillboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2, this.Size.Y / -2, 0)) * Matrix.CreateBillboard(this.Position, GameService.Camera.Position, new Vector3(0, 0, 1), GameService.Camera.Forward); 
+            if (this.Texture == null) return;
 
-            BillboardEffect.Alpha = this.Opacity;
-            BillboardEffect.Texture = this.Texture;
+            _billboardEffect.View = GameService.Camera.View;
+            _billboardEffect.Projection = GameService.Camera.Projection;
+            _billboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2 * _scale, this.Size.Y / -2 * _scale, 0))
+                                   * Matrix.CreateBillboard(this.Position + this.RenderOffset,
+                                                            new Vector3(GameService.Camera.Position.X,
+                                                                        GameService.Camera.Position.Y,
+                                                                        _verticalConstraint == BillboardVerticalConstraint.CameraPosition
+                                                                            ? GameService.Camera.Position.Z
+                                                                            : GameService.Player.Position.Z),
+                                                            new Vector3(0, 0, 1),
+                                                            GameService.Camera.Forward);
 
-            foreach (var pass in BillboardEffect.CurrentTechnique.Passes) {
+            _billboardEffect.Alpha = this.Opacity;
+            _billboardEffect.Texture = this.Texture;
+
+            foreach (var pass in _billboardEffect.CurrentTechnique.Passes) {
                 pass.Apply();
 
-                if (this.DistanceFromPlayer < 10) {
-                    //Console.WriteLine(this.Position + " vs. " + BillboardEffect.World.Translation);
-                }
                 graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, _verts, 0, 2);
             }
         }

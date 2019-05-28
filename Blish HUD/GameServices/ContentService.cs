@@ -4,11 +4,15 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Content.Pipeline;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using MonoGame.Framework.Content;
 
 namespace Blish_HUD {
     public class ContentService:GameService {
@@ -26,18 +30,6 @@ namespace Blish_HUD {
                 return Color.FromNonPremultiplied((int)(amt * 255), (int)(amt * 255), (int)(amt * 255), 255);
             }
 
-            public static class GW2Colors {
-                public static readonly Color White = Color.FromNonPremultiplied(189, 186, 185, 255);
-                public static readonly Color Red = Color.FromNonPremultiplied(135, 0, 10, 255);
-                public static readonly Color Blueberry = Color.FromNonPremultiplied(36, 65, 122, 255);
-                public static readonly Color AncientSilver = Color.FromNonPremultiplied(157, 142, 108, 255);
-                public static readonly Color Abyss = Color.FromNonPremultiplied(26, 24, 27, 255);
-                public static readonly Color Green = Color.FromNonPremultiplied(28, 90, 45, 255);
-                public static readonly Color Gray = Color.FromNonPremultiplied(72, 69, 70, 255);
-                public static readonly Color Fuchsia = Color.FromNonPremultiplied(117, 25, 67, 255);
-                public static readonly Color Oxblood = Color.FromNonPremultiplied(55, 4, 0, 255);
-                public static readonly Color Orange = Color.FromNonPremultiplied(152, 63, 23, 255);
-            }
         }
 
         public static class Textures {
@@ -52,8 +44,17 @@ namespace Blish_HUD {
             }
         }
 
-        public BitmapFont DefaultFont12 => GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular);
-        public BitmapFont DefaultFont14 => GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular);
+        private BitmapFont _defaultFont12;
+        public BitmapFont DefaultFont12 => _defaultFont12 ?? (_defaultFont12 = GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular));
+
+        private BitmapFont _defaultFont14;
+        public BitmapFont DefaultFont14 => _defaultFont14 ?? (_defaultFont14 = GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular));
+
+        private BitmapFont _defaultFont16;
+        public BitmapFont DefaultFont16 => _defaultFont16 ?? (_defaultFont16 = GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular));
+
+        private BitmapFont _defaultFont32;
+        public BitmapFont DefaultFont32 => _defaultFont32 ?? (_defaultFont32 = GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular));
 
         public enum FontFace {
             Menomonia
@@ -76,13 +77,15 @@ namespace Blish_HUD {
 
         public enum FontStyle {
             Regular,
-            Bold,
             Italic
         }
 
         private Dictionary<string, SoundEffect> _loadedSoundEffects;
         private Dictionary<string, BitmapFont> _loadedBitmapFonts;
         private Dictionary<string, Texture2D> _loadedTextures;
+        private Dictionary<string, Stream> _loadedFiles;
+
+        private Dictionary<string, Texture2D> _mapLoadedTextures;
 
         //private IAppCache contentCache = new CachingService();
 
@@ -94,6 +97,7 @@ namespace Blish_HUD {
             _loadedSoundEffects = new Dictionary<string, SoundEffect>();
             _loadedBitmapFonts = new Dictionary<string, BitmapFont>();
             _loadedTextures = new Dictionary<string, Texture2D>();
+            _loadedFiles = new Dictionary<string, Stream>();
         }
 
         protected override void Load() {
@@ -107,7 +111,6 @@ namespace Blish_HUD {
             // TODO: Volume was 0.25f - changing to 0.125 until a setting can be exposed in the UI
             _loadedSoundEffects[soundName].Play(0.125f, 0, 0);
         }
-
         // Used while debugging since it's easier
         private static Texture2D TextureFromFile(GraphicsDevice gc, string filepath) {
             if (File.Exists(filepath)) {
@@ -116,7 +119,6 @@ namespace Blish_HUD {
                 }
             } else return null;
         }
-
         private static Texture2D TextureFromFileSystem(GraphicsDevice gc, string filepath) {
             if (!File.Exists(REF_PATH)) {
                 Console.WriteLine($"{REF_PATH} is missing!  Lots of assets will be missing!");
@@ -150,6 +152,7 @@ namespace Blish_HUD {
             }
         }
 
+
         public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas2(string textureAtlasName) {
             return _contentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
         }
@@ -162,6 +165,23 @@ namespace Blish_HUD {
             return GetTexture(textureName, Textures.Error);
         }
 
+        public void CacheTexture(string texturePath) {
+            string cacheFolder = Path.Combine(FileSrv.BasePath, "cache");
+            string spritesFolder = Path.Combine(cacheFolder, "sprites");
+            string tempFolder = Path.Combine(cacheFolder, "_temp");
+            Directory.CreateDirectory(spritesFolder);
+            Directory.CreateDirectory(tempFolder);
+
+            var pm = new MonoGame.Framework.Content.Pipeline.Builder.PipelineManager(spritesFolder, tempFolder, @"Path\_temp");
+            pm.Profile = GraphicsProfile.HiDef;
+            pm.CompressContent = false;
+            pm.Platform = TargetPlatform.Windows;
+            var builtContent = pm.BuildContent(texturePath);
+            var processedContent = pm.ProcessContent(builtContent);
+
+            //Console.WriteLine($"{texturePath} => {processedContent.GetType().Name}");
+        }
+
         public Texture2D GetTexture(string textureName, Texture2D defaultTexture) {
             if (textureName == null) return defaultTexture;
 
@@ -169,6 +189,7 @@ namespace Blish_HUD {
                 return cachedTexture;
 
             if (File.Exists(textureName)) {
+                CacheTexture(textureName);
                 return TextureFromFile(GameService.Graphics.GraphicsDevice, textureName);
             }
 
@@ -178,7 +199,7 @@ namespace Blish_HUD {
                 try {
                     cachedTexture = _contentManager.Load<Texture2D>(textureName);
                 } catch (ContentLoadException e) {
-                    GameService.Debug.WriteInfoLine($"Could not find '{textureName}' precompiled or in include directory. Full: {e.Message}");
+                    GameService.Debug.WriteInfoLine($"Could not find '{textureName}' precompiled or in include directory. Full error message: {e.ToString()}");
                 }
             }
 
@@ -192,16 +213,69 @@ namespace Blish_HUD {
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
             string fullFontName = $"{font.ToString().ToLower()}-{((int)size).ToString()}-{style.ToString().ToLower()}";
 
-            if (!_loadedBitmapFonts.ContainsKey(fullFontName))
-                _loadedBitmapFonts.Add(fullFontName, _contentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}"));
+            if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
+                var loadedFont = _contentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}");
+                loadedFont.LetterSpacing = -1;
+                _loadedBitmapFonts.Add(fullFontName, loadedFont);
+
+                return loadedFont;
+            }
 
             return _loadedBitmapFonts[fullFontName];
         }
+        private static Stream FileFromSystem(string filepath)
+        {
+            if (!File.Exists(REF_PATH))
+            {
+                Console.WriteLine($"{REF_PATH} is missing!  Lots of assets will be missing!");
+                return null;
+            }
 
+            using (var refFs = new FileStream(REF_PATH, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read))
+                {
+                    var refEntry = refArchive.GetEntry(filepath);
+
+                    if (refEntry != null)
+                    {
+                        using (var fileStream = refEntry.Open())
+                        {
+                            var fileCanSeek = new MemoryStream();
+                            fileStream.CopyTo(fileCanSeek);
+
+                            return fileCanSeek;
+                        }
+                    }
+                    else
+                    {
+#if DEBUG
+                        Directory.CreateDirectory(@"ref\to-include");
+
+                        // Makes it easy to know what's in use so that it can be added to the ref archive later
+                        if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
+#endif
+                    }
+                    return null;
+                }
+            }
+        }
+        public Stream GetFile(string fileName)
+        {
+            if (_loadedFiles.TryGetValue(fileName, out var cachedFile))
+                return cachedFile;
+
+            cachedFile = FileFromSystem($"{fileName}");
+
+            _loadedFiles.Add(fileName, cachedFile);
+
+            return cachedFile;
+        }
         protected override void Unload() {
             _loadedTextures.Clear();
             _loadedBitmapFonts.Clear();
             _loadedSoundEffects.Clear();
+            _loadedFiles.Clear();
         }
 
         protected override void Update(GameTime gameTime) {

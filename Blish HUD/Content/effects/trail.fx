@@ -8,15 +8,18 @@
 #endif
 
 float TotalMilliseconds;
-int FlowSpeed;
-float4 PlayerPosition;
+float FlowSpeed;
+float3 PlayerPosition;
 
-float FadeOutDistance;
-float FullClip;
+float Opacity;
+
+float FadeNear;
+float FadeFar;
 
 float TotalLength;
 float FadeDistance;
 
+float4x4 PlayerViewProjection;
 float4x4 WorldViewProjection;
 Texture2D Texture : register(t0);
 sampler TextureSampler : register(s0)
@@ -36,7 +39,7 @@ struct VertexShaderOutput
     float4 Position : SV_Position;
     float4 Color : COLOR0;
     float2 TextureCoordinate : TEXCOORD0;
-	float Distance : float;
+	float  Distance : float;
 };
 
 struct PixelShaderOutput
@@ -49,25 +52,16 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
     VertexShaderOutput output;
     output.Position = mul(input.Position, WorldViewProjection);
-	
+    
 	// Get distance player is from current spot in trail (so that we can fade it out a bit)
-	output.Distance = distance(input.Position, PlayerPosition);
+	output.Distance = distance(input.Position.xyz, PlayerPosition) / 0.0254f;
+
+	// Pass on to PS (some redundant for later)
+    output.Color = input.Color * Opacity;
 	
-	// Fade the trail out at the end
-    output.Color = input.Color * clamp(input.TextureCoordinate.y / FadeDistance, 0.0, 1.0);
-	
-	// TODO: Fade the trail in at the beginning
-	// output.Color = output.Color * clamp((input.TextureCoordinate.y - FadeDistance) / TotalLength, 0.0, 1.0);
-	
-	// Fade the trail out when the character is close to it
-	output.Color = output.Color * clamp(output.Distance / FadeDistance, 0.0, 1.0);
-	
-	// Fade the trail when it is far away from the character
-	output.Color = output.Color * clamp(1.0 - (output.Distance - FadeOutDistance) / FullClip, 0.0, 1.0);
-	
-	// makes the trail move (don't remember why these particular numbers were chosen...)
-    output.TextureCoordinate = float2(input.TextureCoordinate.x, input.TextureCoordinate.y + TotalMilliseconds / (800.0 * (11 - FlowSpeed)));
-	
+	// make the trail slowly move along the path
+    output.TextureCoordinate = float2(input.TextureCoordinate.x, input.TextureCoordinate.y + (TotalMilliseconds / 1000) * FlowSpeed);
+
     return output;
 }
 
@@ -75,17 +69,17 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 {
     PixelShaderOutput output;
 	
-	// Handle far clip (first since it'll clip and can skip the rest of this if it's too far away)
-	// float farDist = farClip - distance(input.VrtPos, PlayerPosition);
-	// clip(farDist);
+	// Handle fade far (first since it'll clip and can skip the rest of this if it's too far away)
+	clip(FadeFar - input.Distance);
+
+    float nearDist = input.Distance - FadeNear; // (input.TextureCoordinate.y * 0.0254f + input.Distance)
 	
-	// Handle near clip
-	// float nearDist = clamp(input.Distance / nearClip, 0.0, 1.0);
+	// Handle fade near
+	float nearDistFade = 1.0 - clamp(nearDist / (FadeFar - FadeNear), 0.0, 1.0);
+    
+    output.Color = tex2D(TextureSampler, input.TextureCoordinate) * nearDistFade * input.Color * Opacity;
 	
-	//float startOne = Length - 1;
-	//float sdist = clamp((input.TextureCoordinate.y - startOne) / Length, 0.0, 1.0);
-		
-    output.Color = tex2D(TextureSampler, input.TextureCoordinate) * input.Color; // * nearDist;
+    //clip(output.Color.a - 0.02);
 	
     return output;
 }

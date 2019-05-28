@@ -49,7 +49,7 @@ namespace Blish_HUD {
                                              if (!mapTsk.IsFaulted) {
                                                  this._map = mapTsk.Result;
 
-                                                 OnPropertyChanged("Map");
+                                                 OnPropertyChanged(nameof(this.Map));
                                                  this.OnMapChanged?.Invoke(this, EventArgs.Empty);
                                              }
                                          });

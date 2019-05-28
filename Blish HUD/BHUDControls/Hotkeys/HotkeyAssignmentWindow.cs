@@ -79,7 +79,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
             };
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.Draw(Content.GetTexture("hotkey-window"), bounds, Color.White);
 
             // Easy way to get a string representation of the hotkeys

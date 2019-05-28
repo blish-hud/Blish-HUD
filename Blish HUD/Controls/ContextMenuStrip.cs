@@ -8,7 +8,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-    public class ContextMenuStrip:Container {
+
+    /// <summary>
+    /// Represents a right-click shortcut menu.  Can be assigned to <see cref="Control.Menu"/>.
+    /// </summary>
+    public class ContextMenuStrip : Container {
 
         private const int BORDER_PADDING = 2;
 
@@ -18,11 +22,17 @@ namespace Blish_HUD.Controls {
 
         private const int CONTROL_WIDTH = BORDER_PADDING + ITEM_WIDTH + BORDER_PADDING;
 
-        private static Texture2D _edgeSprite;
+        #region Load Static
+
+        private static Texture2D _textureMenuEdge;
+
+        static ContextMenuStrip() {
+            _textureMenuEdge = Content.GetTexture("scrollbar-track");
+        }
+
+        #endregion
 
         public ContextMenuStrip() {
-            _edgeSprite = _edgeSprite ?? Content.GetTexture("scrollbar-track");
-            
             this.Visible = false;
             this.Width = CONTROL_WIDTH;
             this.ZIndex = Screen.CONTEXTMENU_BASEINDEX;
@@ -30,6 +40,30 @@ namespace Blish_HUD.Controls {
 
             Input.LeftMouseButtonPressed += MouseButtonPressed;
             Input.RightMouseButtonPressed += MouseButtonPressed;
+        }
+
+        public void Show(Point position) {
+            this.Location = position;
+            this.Visible = true;
+        }
+
+        public void Show(Control activeControl) {
+            if (activeControl is ContextMenuStripItem parentMenu) {
+                this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top);
+                this.ZIndex = parentMenu.ZIndex - 1;
+            } else {
+                this.Location = activeControl.Location + activeControl.Size;
+            }
+
+            this.Visible = true;
+        }
+
+        public override void Hide() {
+            this.Visible = false;
+
+            foreach (var cmsiChild in this.Children.Select(otherChild => otherChild as ContextMenuStripItem)) {
+                cmsiChild?.Submenu?.Hide();
+            }
         }
 
         protected override void OnChildAdded(ChildChangedEventArgs e) {
@@ -43,6 +77,14 @@ namespace Blish_HUD.Controls {
         }
 
         private void MouseButtonPressed(object sender, MouseEventArgs e) {
+            if (!this.Visible) return;
+
+            if (Input.ActiveControl is ContextMenuStripItem menuStrip) {
+                if (menuStrip.CanCheck) {
+                    return;
+                }
+            }
+
             if (!this.MouseOver)
                 this.Visible = false;
         }
@@ -62,64 +104,102 @@ namespace Blish_HUD.Controls {
                 }
 
                 newChild.Height = ITEM_HEIGHT;
-                newChild.Width = this.Width - BORDER_PADDING * 2;
                 newChild.Left = BORDER_PADDING;
 
-                newChild.Click += delegate { this.Visible = false; };
+                
+                newChild.MouseEntered += delegate {
+                    
+                };
+
+                newChild.MouseEntered += ChildOnMouseEntered;
+                newChild.Resized      += ChildOnResized;
+            } else {
+                e.ChangedChild.MouseEntered -= ChildOnMouseEntered;
+                e.ChangedChild.Resized      -= ChildOnResized;
             }
 
+            this.Invalidate();
+
             int lastBottom = -4;
-            e.ResultingChildren.ForEach(child => {
+            e.ResultingChildren.Where(c => c.Visible).ToList().ForEach(child => {
                                             child.Top = lastBottom + ITEM_VERTICALMARGIN;
                                             lastBottom = child.Bottom;
-                                        });
+            });
 
             this.Height = lastBottom + BORDER_PADDING;
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
+        private void ChildOnMouseEntered(object sender, MouseEventArgs e) {
+            // Stop showing submenus if adjacent menu items are moused over
+            foreach (var ocCmsi in _children.Except(new[] { sender }).Select(otherChild => otherChild as ContextMenuStripItem)) {
+                ocCmsi?.Submenu?.Hide();
+            }
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(ContentService.Textures.Pixel, 
-                             new Rectangle(BORDER_PADDING,
-                                           BORDER_PADDING,
-                                           this.Width - BORDER_PADDING * 2,
-                                           this.Height - BORDER_PADDING * 2),
-                             Color.FromNonPremultiplied(33, 32, 33, 255));
+        private void ChildOnResized(object sender, ResizedEventArgs e) {
+            this.Invalidate();
+        }
+
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Filter;
+        }
+
+        public override void RecalculateLayout() {
+            if (_children.Any()) {
+                int maxChildWidth = Math.Max(_children.Where(c => c.Visible).Max(c => c.Width), CONTROL_WIDTH);
+
+                this.Width = maxChildWidth + BORDER_PADDING * 2;
+
+                foreach (var childItem in this.Children) {
+                    childItem.Width = maxChildWidth;
+                }
+            } else {
+                this.Width = CONTROL_WIDTH + BORDER_PADDING * 2;
+            }
+        }
+
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            spriteBatch.DrawOnCtrl(this,
+                                   ContentService.Textures.Pixel,
+                                   new Rectangle(
+                                                 BORDER_PADDING,
+                                                 BORDER_PADDING,
+                                                 _size.X - BORDER_PADDING * 2,
+                                                 _size.Y - BORDER_PADDING * 2
+                                                ),
+                                   Color.FromNonPremultiplied(33, 32, 33, 255));
 
             // Left line
-            spriteBatch.Draw(_edgeSprite,
-                             new Rectangle(0, 1, _edgeSprite.Width, this.Height - BORDER_PADDING),
-                             new Rectangle(0, 1, _edgeSprite.Width, this.Height - BORDER_PADDING),
-                             Color.White * 0.8f);
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureMenuEdge,
+                                   new Rectangle(0, 1, _textureMenuEdge.Width, _size.Y - BORDER_PADDING),
+                                   new Rectangle(0, 1, _textureMenuEdge.Width, _size.Y - BORDER_PADDING),
+                                   Color.White * 0.8f);
 
             // Top line
-            spriteBatch.Draw(_edgeSprite,
-                             new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             new Rectangle(1, BORDER_PADDING, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             Color.White * 0.8f,
-                             -MathHelper.PiOver2,
-                             Vector2.Zero,
-                             SpriteEffects.None,
-                             0f);
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureMenuEdge,
+                                   new Rectangle(1, BORDER_PADDING, _textureMenuEdge.Width, _size.X - BORDER_PADDING),
+                                   new Rectangle(1, BORDER_PADDING, _textureMenuEdge.Width, _size.X - BORDER_PADDING),
+                                   Color.White * 0.8f,
+                                   -MathHelper.PiOver2,
+                                   Vector2.Zero);
 
             // Bottom line
-            spriteBatch.Draw(_edgeSprite,
-                             new Rectangle(1, this.Height, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             new Rectangle(1, _edgeSprite.Height / 2, _edgeSprite.Width, this.Width - BORDER_PADDING),
-                             Color.White * 0.8f,
-                             -MathHelper.PiOver2,
-                             Vector2.Zero,
-                             SpriteEffects.None,
-                             0f);
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureMenuEdge,
+                                   new Rectangle(1, _size.Y, _textureMenuEdge.Width, _size.X - BORDER_PADDING),
+                                   new Rectangle(1, BORDER_PADDING, _textureMenuEdge.Width, _size.X - BORDER_PADDING),
+                                   Color.White * 0.8f,
+                                   -MathHelper.PiOver2,
+                                   Vector2.Zero);
 
             // Right line
-            spriteBatch.Draw(_edgeSprite,
-                             new Rectangle(this.Width - _edgeSprite.Width, 1, _edgeSprite.Width, this.Height - 2),
-                             new Rectangle(0, 1, _edgeSprite.Width, this.Height - 2),
-                             Color.White * 0.8f);
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureMenuEdge,
+                                   new Rectangle(_size.X - _textureMenuEdge.Width, 1, _textureMenuEdge.Width, _size.Y - 2),
+                                   new Rectangle(0,                           1, _textureMenuEdge.Width, _size.Y - 2),
+                                   Color.White * 0.8f);
         }
     }
 

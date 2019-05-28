@@ -5,163 +5,89 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    public class Label:Control {
+    public class Label : LabelBase {
 
-        private string _text = "";
+        /// <summary>
+        /// The text this <see cref="Label"/> should show.
+        /// </summary>
         public string Text {
             get => _text;
-            set {
-                if (_text == value) return;
-
-                _text = value;
-
-                OnPropertyChanged(nameof(this.Text));
-            }
+            set => SetProperty(ref _text, value, true);
         }
 
-        private BitmapFont _font;
+        /// <summary>
+        /// The font the <see cref="Text"/> will be rendered in.
+        /// </summary>
         public BitmapFont Font {
             get => _font;
-            set {
-                if (_font == value) return;
-
-                _font = value;
-
-                OnPropertyChanged(nameof(this.Font));
-            }
+            set => SetProperty(ref _font, value, true);
         }
 
-        private Color _textColor = Color.White;
+        /// <summary>
+        /// The color of the <see cref="Text"/>.
+        /// </summary>
         public Color TextColor {
             get => _textColor;
-            set {
-                if (_textColor == value) return;
-
-                _textColor = value;
-
-                OnPropertyChanged(nameof(this.TextColor));
-            }
+            set => SetProperty(ref _textColor, value);
         }
 
-        private Utils.DrawUtil.HorizontalAlignment _horizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Left;
         public Utils.DrawUtil.HorizontalAlignment HorizontalAlignment {
             get => _horizontalAlignment;
-            set {
-                if (_horizontalAlignment == value) return;
-
-                _horizontalAlignment = value; 
-
-                OnPropertyChanged(nameof(this.HorizontalAlignment));
-            }
+            set => SetProperty(ref _horizontalAlignment, value);
         }
 
-        private Utils.DrawUtil.VerticalAlignment _verticalAlignment = Utils.DrawUtil.VerticalAlignment.Top;
         public Utils.DrawUtil.VerticalAlignment VerticalAlignment {
             get => _verticalAlignment;
-            set {
-                if (_verticalAlignment == value) return;
-
-                _verticalAlignment = value;
-
-                OnPropertyChanged(nameof(this.VerticalAlignment));
-            }
+            set => SetProperty(ref _verticalAlignment, value);
         }
 
-        private bool _showShadow = false;
+        /// <summary>
+        /// If enabled, a 1px offset shadow will be applied behind the rendered text.
+        /// </summary>
         public bool ShowShadow {
             get => _showShadow;
-            set {
-                if (_showShadow == value) return;
-
-                _showShadow = value;
-
-                OnPropertyChanged(nameof(this.ShowShadow));
-            }
+            set => SetProperty(ref _showShadow, value, true);
         }
 
-        private bool _strokeShadow = false;
-        public bool StrokeShadow {
-            get => _strokeShadow;
-            set {
-                _strokeShadow = value;
-
-                OnPropertyChanged(nameof(this.StrokeShadow));
-            }
+        /// <summary>
+        /// If enabled, a stroke effect will be applied to the text to make it more visible.
+        /// <see cref="ShadowColor"/> will set the color of the stroke.
+        /// </summary>
+        public bool StrokeText {
+            get => _strokeText;
+            set => SetProperty(ref _strokeText, value, true);
         }
 
-        private Color _shadowColor = Color.Black;
+        /// <summary>
+        /// If either <see cref="ShowShadow"/> or <see cref="StrokeText"/> is enabled, they will
+        /// be drawn in this color.
+        /// </summary>
         public Color ShadowColor {
             get => _shadowColor;
-            set {
-                if (_shadowColor == value) return;
-
-                _shadowColor = value;
-                
-                OnPropertyChanged(nameof(this.ShadowColor));
-            }
+            set => SetProperty(ref _shadowColor, value);
         }
 
-        private bool _autoSizeWidth = false;
+        /// <summary>
+        /// If enabled, the <see cref="Control.Width"/> of this control will change to match the width of the text.
+        /// </summary>
         public bool AutoSizeWidth {
             get => _autoSizeWidth;
-            set {
-                if (_autoSizeWidth == value) return;
-
-                _autoSizeWidth = value;
-
-                OnPropertyChanged(nameof(this.AutoSizeWidth));
-            }
+            set => SetProperty(ref _autoSizeWidth, value);
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.None;
-        }
-
-        private bool _autoSizeHeight = false;
+        /// <summary>
+        /// If enabled, the <see cref="Control.Height"/> of this control will change to match the height of the text.
+        /// </summary>
         public bool AutoSizeHeight {
             get => _autoSizeHeight;
-            set {
-                if (_autoSizeHeight == value) return;
-
-                _autoSizeHeight = value; 
-
-                OnPropertyChanged(nameof(this.AutoSizeHeight));
-            }
+            set => SetProperty(ref _autoSizeHeight, value);
         }
-
-        protected int LeftOffset = 0;
-
-        // TODO: Control can fail if no size is specified, it's set to auto-size, and no text is provided
 
         public Label() : base() {
-            this.Font = Content.DefaultFont14;
-        }
-
-        public override void Invalidate() {
-            if (this.AutoSizeWidth) this.Width = (int)Math.Ceiling(this.Font.MeasureString(this.Text).Width) + LeftOffset;
-
-            if (this.AutoSizeHeight) this.Height = (int)Math.Ceiling(this.Font.MeasureString(this.Text).Height) + LeftOffset;
-
-            base.Invalidate();
-        }
-
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (this.Font == null) { return; }
-
-            if (this.ShowShadow)
-                Utils.DrawUtil.DrawAlignedText(spriteBatch, this.Font, this.Text, bounds.OffsetBy(1, 1).OffsetBy(LeftOffset, 0), this.ShadowColor, this.HorizontalAlignment, this.VerticalAlignment);
-
-            if (this.ShowShadow && this.StrokeShadow) {
-                Utils.DrawUtil.DrawAlignedText(spriteBatch, this.Font, this.Text, bounds.OffsetBy(-1, -1).OffsetBy(LeftOffset, 0), this.ShadowColor, this.HorizontalAlignment, this.VerticalAlignment);
-                Utils.DrawUtil.DrawAlignedText(spriteBatch, this.Font, this.Text, bounds.OffsetBy(-1, 1).OffsetBy(LeftOffset, 0), this.ShadowColor, this.HorizontalAlignment, this.VerticalAlignment);
-                Utils.DrawUtil.DrawAlignedText(spriteBatch, this.Font, this.Text, bounds.OffsetBy(1, -1).OffsetBy(LeftOffset, 0), this.ShadowColor, this.HorizontalAlignment, this.VerticalAlignment);
-            }
-            
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, this.Font, this.Text, bounds.OffsetBy(LeftOffset, 0), this.TextColor, this.HorizontalAlignment, this.VerticalAlignment);
+            _cacheLabel = false;
         }
 
     }

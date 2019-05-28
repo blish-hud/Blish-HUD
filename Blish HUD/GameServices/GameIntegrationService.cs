@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using Color = System.Drawing.Color;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
@@ -24,6 +25,10 @@ namespace Blish_HUD {
 
         public event EventHandler<EventArgs> OnGw2Closed;
         public event EventHandler<EventArgs> OnGw2Started;
+
+        // How long, in seconds, between each
+        // check to see if GW2 is running
+        private const int GW2_EXE_CHECKRATE = 15;
 
         private const string GW2_REGISTRY_KEY = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
@@ -34,12 +39,13 @@ namespace Blish_HUD {
         private const string GW2_32_BIT_PROCESSNAME = "Gw2";
 
         private const string GW2_PATCHWINDOW_NAME = "ArenaNet";
+        private const string GW2_GAMEWINDOW_NAME = "ArenaNet_Dx_Window_Class";
 
         public NotifyIcon TrayIcon { get; private set; }
         public ContextMenuStrip TrayIconMenu { get; private set; }
 
         public bool IsInGame { get; private set; } = false;
-
+        
         private bool _gw2IsRunning = false;
         public bool Gw2IsRunning {
             get => _gw2IsRunning;
@@ -65,15 +71,17 @@ namespace Blish_HUD {
 
                 _gw2Process = value;
 
-                if (value == null) {
+                if (value == null || _gw2Process.MainWindowHandle == IntPtr.Zero) {
                     Overlay.Form.Invoke((MethodInvoker)(() => {
                                                                 Overlay.Form.Hide();
                                                             }));
+
+                    _gw2Process = null;
                 } else {
                     this.Gw2WindowHandle = _gw2Process.MainWindowHandle;
                 }
 
-                this.Gw2IsRunning = value != null && Utils.Window.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) != GW2_PATCHWINDOW_NAME;
+                this.Gw2IsRunning = _gw2Process != null && Utils.Window.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
             }
         }
 
@@ -109,11 +117,11 @@ namespace Blish_HUD {
             Overlay.Form.Shown += delegate {
                 Utils.Window.SetupOverlay(Overlay.WinHandle);
 
-                if (!this.Gw2IsRunning) {
-                    Overlay.Form.Hide();
-                }
+                //Overlay.Form.TopMost = true;
 
-                Overlay.Form.TopMost = true;
+                //if (!this.Gw2IsRunning) {
+                //    Overlay.Form.Hide();
+                //}
             };
 
             CreateTrayIcon();
@@ -146,10 +154,13 @@ namespace Blish_HUD {
                 ts_launchGw2Auto = this.TrayIconMenu.Items.Add("Launch Guild Wars 2 - Autologin");
                 ts_launchGw2     = this.TrayIconMenu.Items.Add("Launch Guild Wars 2");
 
-                ts_launchGw2Auto.Click += delegate { LaunchGw2(false); };
-                ts_launchGw2.Click += delegate { LaunchGw2(true); };
+                ts_launchGw2Auto.Click += delegate { LaunchGw2(true); };
+                ts_launchGw2.Click += delegate { LaunchGw2(false); };
 
-                this.TrayIcon.DoubleClick += delegate { LaunchGw2(true); };
+                this.TrayIcon.DoubleClick += delegate {
+                    if (!this.Gw2IsRunning)
+                        LaunchGw2(true);
+                };
             } else {
                 var nogw2 = this.TrayIconMenu.Items.Add("Could not locate the gw2 executable!");
                 nogw2.Enabled = false;
@@ -160,6 +171,11 @@ namespace Blish_HUD {
             ts_exit = this.TrayIconMenu.Items.Add("Close Blish HUD");
 
             ts_exit.Click += delegate { Overlay.Exit(); };
+
+            this.TrayIconMenu.Opening += delegate {
+                ts_launchGw2.Enabled = !this.Gw2IsRunning;
+                ts_launchGw2Auto.Enabled = !this.Gw2IsRunning;
+            };
         }
 
         // TODO: At some point it would be nice to pull all of this into just Program.cs so that we can dispose of the
@@ -169,7 +185,7 @@ namespace Blish_HUD {
 
             if (this.Gw2IsRunning) {
                 try {
-                    this.Gw2Process.EnableRaisingEvents  =  true;
+                    this.Gw2Process.EnableRaisingEvents =  true;
                     this.Gw2Process.Exited              += OnGw2Exit;
                 } catch (Win32Exception ex) /* [BLISHHUD-W] */ {
                     // We should probably switch methods of determining when the application has closed
@@ -178,13 +194,15 @@ namespace Blish_HUD {
                     // Access is denied
 
                     Console.WriteLine(ex.Message);
+                } catch (InvalidOperationException ex) /* [BLISHHUD-1H] */ {
+                    // Can get thrown if the game is closed if we just launched it
+
+                    Console.WriteLine(ex.Message);
                 }
 
                 Overlay.Form.Invoke((MethodInvoker) (() => {
                                                              Overlay.Form.Show();
                                                          }));
-            } else {
-                //MainLoop.Form.Hide();
             }
         }
 
@@ -219,42 +237,22 @@ namespace Blish_HUD {
                 this.TrayIcon.Dispose();
             }
         }
-
-        // Keep overlay updates in a separate thread
-        private Thread overlayUpdate;
         
         // Keeps track of how long it's been since we last checked for the gw2 process
         private double lastGw2Check = 0;
 
-        private int updateRan = 0;
-        private int updateSkip = 0;
-
-        public double UpdateRatio => (double)updateRan / ((double)updateRan + (double)updateSkip);
-
         protected override void Update(GameTime gameTime) {
             // Determine if we are in game or not
-            this.IsInGame = !(GameService.Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5); // || gameTime.IsRunningSlowly && GameService.Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5);
+            this.IsInGame = !(Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5); // || gameTime.IsRunningSlowly && GameService.Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5);
 
             if (this.Gw2IsRunning) {
-                Utils.Window.UpdateOverlay(Overlay.WinHandle, this.Gw2WindowHandle);
-                //if (overlayUpdate == null || !overlayUpdate.IsAlive) {
-                //    overlayUpdate = new Thread(
-                //                               () => {
-                //                                   while (this.Gw2IsRunning) Utils.Window.UpdateOverlay(MainLoop.WinHandle, this.Gw2WindowHandle);
-                //                               }
-                //                              );
-                //    overlayUpdate.IsBackground = true;
-                //    overlayUpdate.Start();
-                //    updateRan++;
-                //} else {
-                //    updateSkip++;
-                //}
+                if (!Utils.Window.UpdateOverlay(Overlay.WinHandle, this.Gw2WindowHandle)) {
+                    this.Gw2Process = null;
+                }
             } else {
                 lastGw2Check += gameTime.ElapsedGameTime.TotalSeconds;
-
-                // Takes a while before you're in game anyways -
-                // 20 seconds shouldn't be too long for anyone
-                if (lastGw2Check > 20) {
+                
+                if (lastGw2Check > GW2_EXE_CHECKRATE) {
                     TryAttachToGw2();
 
                     lastGw2Check = 0;
@@ -269,7 +267,6 @@ namespace Blish_HUD {
                     Utils.Window.SetForegroundWindow(gw2WindowHandle);
                 } catch (NullReferenceException ex) {
                     Console.WriteLine("gw2Process.MainWindowHandle > NullReferenceException: Ignored and skipping gw2 focus.");
-                    return;
                 }
             }
         }

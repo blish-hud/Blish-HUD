@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Blish_HUD.Modules {
     public class Compass : Module {
@@ -17,7 +18,8 @@ namespace Blish_HUD.Modules {
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                "(General) Tactical Compass Module",
+                "Compass",
+                null,
                 "bh.general.compass",
                 "Displays a basic indicator at your feet that shows you North, East, South, and West.",
                 "LandersXanders.1235",
@@ -29,9 +31,9 @@ namespace Blish_HUD.Modules {
 
         }
 
-        private float compassSize = 0.5f;
+        private readonly float compassSize = 0.5f;
 
-        protected override void OnEnabled() {
+        public override void OnEnabled() {
             base.OnEnabled();
 
             northBb = new Entities.Primitives.Billboard(GameService.Content.GetTexture("north"), GameService.Player.Position + new Vector3(0, 1, 0), new Vector2(compassSize, compassSize));
@@ -45,7 +47,7 @@ namespace Blish_HUD.Modules {
             GameService.Graphics.World.Entities.Add(westBb);
         }
 
-        protected override void OnDisabled() {
+        public override void OnDisabled() {
             base.OnDisabled();
 
             GameService.Graphics.World.Entities.Remove(northBb);
@@ -55,10 +57,10 @@ namespace Blish_HUD.Modules {
         }
 
         public override void Update(GameTime gameTime) {
-            northBb.Position = GameServices.GetService<PlayerService>().Position + new Vector3(0, 1, 0);
-            eastBb.Position = GameServices.GetService<PlayerService>().Position + new Vector3(1, 0, 0);
-            southBb.Position = GameServices.GetService<PlayerService>().Position + new Vector3(0, -1, 0);
-            westBb.Position = GameServices.GetService<PlayerService>().Position + new Vector3(-1, 0, 0);
+            northBb.Position = GameService.Player.Position + new Vector3(0, 1, 0);
+            eastBb.Position = GameService.Player.Position + new Vector3(1, 0, 0);
+            southBb.Position = GameService.Player.Position + new Vector3(0, -1, 0);
+            westBb.Position = GameService.Player.Position + new Vector3(-1, 0, 0);
 
             northBb.Opacity = Math.Min(1 - GameService.Camera.Forward.Y, 1f);
             eastBb.Opacity = Math.Min(1 - GameService.Camera.Forward.X, 1f);

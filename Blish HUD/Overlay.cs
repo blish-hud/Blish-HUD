@@ -3,21 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
-using Blish_HUD.Controls;
-using Blish_HUD.Modules.Compatibility.TacO;
-using Blish_HUD;
-using Humanizer;
 using Microsoft.Xna.Framework.Content;
 
 namespace Blish_HUD {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
+
     public class Overlay : Game {
 
         public readonly GraphicsDeviceManager graphics;
@@ -39,6 +29,7 @@ namespace Blish_HUD {
             cm = this.Content;
 
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            graphics.PreferMultiSampling = true;
 
             this.IsMouseVisible = true;
         }
@@ -52,8 +43,6 @@ namespace Blish_HUD {
 
         //private GameService[] gameServices;
         
-        public static Effect TrailEffect;
-
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -65,13 +54,10 @@ namespace Blish_HUD {
 
             ///  ///
 
-            font_def12 = this.Content.Load<SpriteFont>("common\\menomonia");
-            font_consolas = this.Content.Load<BitmapFont>("fonts\\menomonia\\menomonia-11-regular");
-            TrailEffect = this.Content.Load<Effect>("effects\\trail");
-
             WinHandle = this.Window.Handle;
             var ctrl = System.Windows.Forms.Control.FromHandle(WinHandle);
             Form = ctrl.FindForm();
+            //Form.ShowInTaskbar = false;
 
             // TODO: Move this into the "Textbox" control class as a lazy-loaded static var
             // This is needed to ensure that the textbox is *actually* unfocused
@@ -83,77 +69,28 @@ namespace Blish_HUD {
             this.Window.IsBorderless = true;
             this.Window.AllowAltF4 = false;
 
-            //Form.ShowInTaskbar = false;
-
-            //var js = Newtonsoft.Json.JsonSerializer.Create(new Newtonsoft.Json.JsonSerializerSettings { Formatting = Newtonsoft.Json.Formatting.Indented });
-            //var sw = new Newtonsoft.Json.JsonTextWriter()
-            //js.Serialize(sw, Blish_HUD.Services.Services.UI.Screen);
-
-            //Newtonsoft.Json.JsonSerializerSettings d = new Newtonsoft.Json.JsonSerializerSettings() {
-            //    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
-            //    PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects,
-            //    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-            //};
-
-            //var j = Newtonsoft.Json.JsonConvert.SerializeObject(Blish_HUD.Services.Services.UI.Screen.GetDescendants(), Newtonsoft.Json.Formatting.Indented, d);
-            //File.WriteAllText("views\\screen.json", j);
-
-            //var s = File.ReadAllText("views\\screen.json");
-            //Blish_HUD.Services.Services.UI.Screen.Children.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<List<Control>>(s, d));
-
 #if DEBUG
             graphics.SynchronizeWithVerticalRetrace = false;
-            this.IsFixedTimeStep = false;
+            this.IsFixedTimeStep                    = false;
+            //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
 #endif
-            //TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
-
-            //QueensdaleRoute = Markers.AugTyrRoute.FromFile("15.json");
-
-            //List<VertexPositionColor> tempAug = new List<VertexPositionColor>();
-
-            //foreach (Markers.AugTyrNode node in QueensdaleRoute.Nodes) {
-            //    tempAug.Add(new VertexPositionColor(new Vector3(node.X, node.Z, node.Y), Color.Magenta));
-            //}
-
-            //routeTest = tempAug.ToArray();
-
-            //qdbuff = new VertexBuffer(GraphicsDevice, VertexPositionColor.VertexDeclaration, routeTest.Length, BufferUsage.WriteOnly);
-            //qdbuff.SetData(routeTest);
 
             // Initialize all game services
             foreach (var service in GameService.All)
                 service.DoInitialize(this);
 
-
             base.Initialize();
         }
 
-        private List<OverlayData> testData;
-
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent() {
+            _uiRasterizer = new RasterizerState() {
+                ScissorTestEnable = true
+            };
 
             BHGw2Api.Settings.Load();
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(this.GraphicsDevice);
-
-            // TODO: Move to TacO module
-            // TODO: Add to markers & pathing module and ensure directory exists before attempting to get files
-            //testData = new List<OverlayData>();
-            //foreach (string markerFile in Directory.GetFiles("taco")) {
-            //    testData.Add(Modules.Compatibility.TacO.OverlayData.FromFile(markerFile));
-            //}
-
-            //SunkenChestMarkers = Modules.Compatibility.TacO.OverlayData.FromFile("tw_core_sunkenchests.xml");
-
-            
-
-            b.DepthBufferEnable = true;
-            b.DepthBufferWriteEnable = false;
         }
 
         /// <summary>
@@ -165,8 +102,6 @@ namespace Blish_HUD {
             foreach (var service in GameService.All)
                 service.DoUnload();
         }
-
-        public static SpriteFont font_def12;
 
         protected override void BeginRun() {
             base.BeginRun();
@@ -191,13 +126,16 @@ namespace Blish_HUD {
             }
 
             // Update all game services
-            foreach (var service in GameService.All)
+            foreach (var service in GameService.All) {
+                GameService.Debug.StartTimeFunc($"Service: {service.GetType().Name}");
                 service.DoUpdate(gameTime);
+                GameService.Debug.StopTimeFunc($"Service: {service.GetType().Name}");
+            }
 
             base.Update(gameTime);
         }
 
-        private DepthStencilState b = new DepthStencilState();
+        public static RasterizerState _uiRasterizer;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -205,78 +143,29 @@ namespace Blish_HUD {
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime) {
             if (!GameService.GameIntegration.Gw2IsRunning) return;
-
-            var rasterizerState = new RasterizerState();
-            //rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
-            // TODO: We need to be culling in production builds
-            rasterizerState.CullMode = CullMode.None;
-            //rasterizerState.FillMode = FillMode.WireFrame;
-            this.GraphicsDevice.RasterizerState = rasterizerState;
+            
+            this.GraphicsDevice.BlendState = BlendState.Opaque;
+            this.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            this.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+            this.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
 
             this.GraphicsDevice.Clear(Color.Transparent);
-            
-            float aspectRatio = this.GraphicsDevice.Viewport.Width / (float) this.GraphicsDevice.Viewport.Height;
 
-            this.GraphicsDevice.SamplerStates[0] = SamplerState.AnisotropicWrap;
-
-            this.GraphicsDevice.DepthStencilState = b;
-            
-            spriteBatch.Begin();
-
-            GameService.Debug.StartTimeFunc("UI Elements");
-            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible)
-                GameService.Graphics.SpriteScreen.Draw(this.GraphicsDevice, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
-            GameService.Debug.StopTimeFunc("UI Elements");
-
-            
-            //GameService.Debug.StartTimeFunc("Trails");
-            //TrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.View * GameService.Camera.Projection * Matrix.Identity);
-
-            //foreach (OverlayData data in testData) {
-            //    if (data == null || data.Trails == null) continue;
-            //    foreach (Trail trail in data.Trails) {
-            //        if (trail.MapId != GameService.Player.MapId) continue;
-                    
-            //        TrailEffect.Parameters["Texture"].SetValue(trail.Texture);
-            //        TrailEffect.Parameters["TotalMilliseconds"]
-            //            .SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
-            //        TrailEffect.Parameters["FlowSpeed"].SetValue(10);
-            //        TrailEffect.Parameters["PlayerPosition"]
-            //            .SetValue(GameService.Player.Position);
-            //        TrailEffect.Parameters["FadeOutDistance"].SetValue((float)trail.FadeNear);
-            //        TrailEffect.Parameters["FullClip"].SetValue((float)trail.FadeFar);
-            //        TrailEffect.Parameters["FadeDistance"].SetValue((float)trail.Texture.Height / 256.0f / 2f);
-
-            //        foreach (TrailSection trlSection in trail.Sections) {
-            //            // TODO: See if we can remove this - it's not currently in use by the shader
-            //            TrailEffect.Parameters["TotalLength"].SetValue(trlSection.Distance / trail.Texture.Height);
-
-            //            foreach (EffectPass pass in TrailEffect.CurrentTechnique.Passes) {
-            //                pass.Apply();
-
-            //                graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, trlSection.VertexData, 0,
-            //                    trlSection.VertexData.Length - 2);
-            //            }
-            //        }
-            //    }
-            //}
-            //GameService.Debug.StopTimeFunc("Trails"); 
-            
-
-            // Only draw 3D elements if we are in game
             GameService.Debug.StartTimeFunc("3D objects");
-            if (GameService.GameIntegration.IsInGame)
+            // Only draw 3D elements if we are in game
+            if (GameService.GameIntegration.IsInGame && (!GameService.ArcDps.ArcPresent || GameService.ArcDps.HudIsActive))
                 GameService.Graphics.World.Draw(this.GraphicsDevice);
             GameService.Debug.StopTimeFunc("3D objects");
-            
 
+            GameService.Debug.StartTimeFunc("UI Elements");
             if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
-                if (GameService.Graphics.SpriteScreen.GetRender() != null)
-                    spriteBatch.Draw(GameService.Graphics.SpriteScreen.GetRender(), new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
+                GameService.Graphics.SpriteScreen.Draw(spriteBatch, GameService.Graphics.SpriteScreen.LocalBounds, GameService.Graphics.SpriteScreen.LocalBounds);
             }
+            GameService.Debug.StopTimeFunc("UI Elements");
+
 
 #if DEBUG
-
+            spriteBatch.Begin();
 
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -286,21 +175,25 @@ namespace Blish_HUD {
 
             int debugLeft = GameService.Graphics.WindowWidth - 750;
 
-            spriteBatch.DrawString(font_def12, fps, new Vector2(debugLeft, 25), Color.Red);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, fps, new Vector2(debugLeft, 25), Color.Red);
 
             int i = 0;
-            foreach (KeyValuePair<string, DebugService.FuncClock> timedFuncPair in GameService.Debug.FuncTimes) {
-                spriteBatch.DrawString(font_def12, $"{timedFuncPair.Key} {timedFuncPair.Value.AverageRuntime} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            foreach (KeyValuePair<string, DebugService.FuncClock> timedFuncPair in GameService.Debug.FuncTimes.Where(ft => ft.Value.AverageRuntime > 1).OrderByDescending(ft => ft.Value.AverageRuntime)) {
+                spriteBatch.DrawString(GameService.Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.AverageRuntime)} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Orange);
                 i++;
             }
 
-            spriteBatch.DrawString(font_def12, $"Markers Available: {GameService.Pathing.Markers.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Pathables Available: {GameService.Pathing.Pathables.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
-            spriteBatch.DrawString(font_def12, $"Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, $"3D Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            //i++;
+            //spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
-            spriteBatch.DrawString(font_def12, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-
-            //spriteBatch.DrawString(font_def12, $"{GameService.GameIntegration.UpdateRatio}%", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, "ArcDPS Bridge: " + (GameService.ArcDps.ArcPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(GameService.Content.DefaultFont14, "IsHudActive: " + (GameService.ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
 
 #endif
 

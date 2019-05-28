@@ -8,72 +8,101 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Annotations;
+using MonoGame.Extended;
+using MonoGame.Extended.Sprites;
 
 namespace Blish_HUD.Entities {
-    public abstract class Entity : INotifyPropertyChanged {
+    public abstract class Entity : INotifyPropertyChanged, IUpdatable, IRenderable3D {
 
         private static BasicEffect _standardEffect;
-        private static BasicEffect StandardEffect {
-            get {
-                // Lazy load basic effect for all entities
-                return _standardEffect ?? (_standardEffect = new BasicEffect(GameService.Graphics.GraphicsDevice) {
-                        TextureEnabled = true
-                    });
+        private static BasicEffect StandardEffect =>
+            _standardEffect ?? 
+            (_standardEffect = new BasicEffect(GameService.Graphics.GraphicsDevice) { TextureEnabled = true });
 
-                return _standardEffect;
-            }
-        }
+        private Vector3 _position         = Vector3.Zero;
+        private Vector3 _renderOffset     = Vector3.Zero;
+        private float   _opacity          = 1.0f;
+        private bool    _visible          = true;
 
         private Effect _entityEffect;
-        public Effect EntityEffect {
+        public virtual Effect EntityEffect {
             get => _entityEffect ?? StandardEffect;
             set => _entityEffect = value;
         }
 
-        public Vector3 Position { get; set; } = Vector3.Zero;
+        public virtual Vector3 Position {
+            get => _position;
+            set => SetProperty(ref _position, value);
+        }
 
-        // FadeStart needs to be less than ClipDistance
-        public float FadeStart { get; set; } = 0;
-        public float ClipDistance { get; set; } = 0;
-        
-        // TODO: Include FadeStart/ClipDistance into the get call
-        public float Opacity { get; set; } = 1.0f;
+        /// <summary>
+        /// The offset that this entity is rendered from its origin.
+        /// </summary>
+        public virtual Vector3 RenderOffset {
+            get => _renderOffset;
+            set => SetProperty(ref _renderOffset, value);
+        }
 
-        public float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Player.Position);
-        public float DistanceFromCamera => Vector3.Distance(this.Position, GameService.Camera.Position);
-
-        private bool _visible = true;
-        public bool Visible {
-            get => _visible;
+        public virtual float VerticalOffset {
+            get => _renderOffset.Z;
             set {
-                if (_visible == value) return;
-
-                _visible = value;
-                OnPropertyChanged();
+                if (SetProperty(ref _renderOffset, new Vector3(_renderOffset.X, _renderOffset.Y, value), nameof(this.RenderOffset)))
+                    OnPropertyChanged();
             }
         }
 
-        protected Entity() {
-        }
-
-        public abstract void Update(GameTime gameTime);
-        public void DoUpdate(GameTime gameTime) {
-            Update(gameTime);
-        }
-
-        public abstract void Draw(GraphicsDevice graphicsDevice);
-        public void DoDraw(GraphicsDevice graphicsDevice) {
-            if (this.EntityEffect == StandardEffect) {
-                StandardEffect.View = GameService.Camera.View;
-                StandardEffect.Projection = GameService.Camera.Projection;
-
-                StandardEffect.Alpha = this.Opacity;
+        public virtual float HorizontalOffset {
+            get => _renderOffset.X;
+            set {
+                if (SetProperty(ref _renderOffset, new Vector3(value, _renderOffset.Y, _renderOffset.Z), nameof(this.RenderOffset)))
+                    OnPropertyChanged();
             }
-
-            Draw(graphicsDevice);
         }
 
-        #region Property Binding
+        public virtual float DepthOffset {
+            get => _renderOffset.Y;
+            set {
+                if (SetProperty(ref _renderOffset, new Vector3(_renderOffset.X, value, _renderOffset.Y), nameof(this.RenderOffset)))
+                    OnPropertyChanged();
+            }
+        }
+
+        public virtual float Opacity {
+            get => _opacity;
+            set => SetProperty(ref _opacity, value);
+        }
+
+        // TODO: Consider calling 'OnPropertyChanged' for 'DistanceFromPlayer' and 'DistanceFromCamera' somehow reasonable
+        public virtual float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Player.Position);
+        public virtual float DistanceFromCamera => Vector3.Distance(this.Position, GameService.Camera.Position);
+
+        public virtual bool Visible {
+            get => _visible;
+            set => SetProperty(ref _visible, value);
+        }
+
+        public virtual void Update(GameTime gameTime) { /* NOOP */ }
+
+        public virtual void Draw(GraphicsDevice graphicsDevice) {
+            if (this.EntityEffect != StandardEffect) return;
+
+            StandardEffect.View = GameService.Camera.View;
+            StandardEffect.Projection = GameService.Camera.Projection;
+
+            StandardEffect.Alpha = this.Opacity;
+        }
+
+        #region Property Management and Binding
+
+        protected bool SetProperty<T>(ref T property, T newValue, [CallerMemberName] string propertyName = null) {
+            if (Equals(property, newValue) || propertyName == null) return false;
+
+            property = newValue;
+
+            OnPropertyChanged(propertyName);
+
+            return true;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -85,4 +114,5 @@ namespace Blish_HUD.Entities {
         #endregion
 
     }
+
 }

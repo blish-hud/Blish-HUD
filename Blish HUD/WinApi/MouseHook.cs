@@ -22,8 +22,8 @@ namespace Blish_HUD.WinApi {
 
             public Int32 wheelDelta {
                 get {
-                    int v                                              = Convert.ToInt32((mouseData & 0xFFFF0000) >> 16);
-                    if (v > SystemInformation.MouseWheelScrollDelta) v = v - (ushort.MaxValue + 1);
+                    int v = Convert.ToInt32((mouseData & 0xFFFF0000) >> 16);
+                    if (v > SystemInformation.MouseWheelScrollDelta) v -= (ushort.MaxValue + 1);
                     return v;
                 }
             }
@@ -38,7 +38,6 @@ namespace Blish_HUD.WinApi {
         [MarshalAs(UnmanagedType.FunctionPtr)] private MouseHookDelegate _mouseProc;
 
         public enum MouseMessages {
-
             WM_MouseMove            = 512,
             WM_LeftButtonDown       = 513,
             WM_LeftButtonUp         = 514,
@@ -59,15 +58,11 @@ namespace Blish_HUD.WinApi {
         [DllImport("kernel32.dll")] private static extern int    GetCurrentThreadId();
         [DllImport("kernel32.dll")] private static extern IntPtr GetModuleHandleW(IntPtr fakezero);
 
-        private InputService input;
-
         public bool HookMouse() {
             if (_mouseHook == IntPtr.Zero) {
                 _mouseProc = new MouseHookDelegate(MouseHookProc);
                 _mouseHook = SetWindowsHookExW(WH_MOUSE_LL, _mouseProc, GetModuleHandleW(IntPtr.Zero), 0);
             }
-
-            input = GameServices.GetService<InputService>();
 
             return _mouseHook != IntPtr.Zero;
         }
@@ -86,8 +81,8 @@ namespace Blish_HUD.WinApi {
             if (this.NonClick && action == 517) {
                 this.NonClick = false;
 
-            } else if (action > 512 && input.HudFocused && action < 523 && !input.HookOverride) {
-                input.ClickState = new InputService.MouseEvent((MouseMessages)action, lParam);
+            } else if (action > 512 && GameService.Input.HudFocused && action < 523 && !GameService.Input.HookOverride) {
+                GameService.Input.ClickState = new InputService.MouseEvent((MouseMessages)action, lParam);
 
                 if (action != 514)
                     return 1;

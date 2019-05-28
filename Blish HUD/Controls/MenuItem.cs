@@ -8,12 +8,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
 using Newtonsoft.Json;
-using Praeclarum.Bind;
 
 namespace Blish_HUD.Controls {
 
     // TODO: Decide if we should split this into two classes, MenuItem and an inheriting MenuItem meant for accordion menus
-    public class MenuItem : ScrollingButtonContainer, IMenuItem, ICheckable {
+    public class MenuItem : Container, IMenuItem, ICheckable {
 
         public enum AccordionState {
             Expanded,
@@ -37,104 +36,88 @@ namespace Blish_HUD.Controls {
             this.CheckedChanged?.Invoke(this, e);
         }
 
-        private int _menuItemHeight = DEFAULT_ITEM_HEIGHT;
+        protected int _menuItemHeight = DEFAULT_ITEM_HEIGHT;
         public int MenuItemHeight {
             get => _menuItemHeight;
             set {
-                if (_menuItemHeight == value) return;
-
-                _menuItemHeight = value;
-                UpdateContentRegion();
-
-                foreach (var control in this.Children) {
-                    var childMenuItem = (IMenuItem)control;
-
-                    childMenuItem.MenuItemHeight = value;
+                if (SetProperty(ref _menuItemHeight, value, true)) {
+                    // Update all children to ensure they match in height
+                    foreach (var childMenuItem in _children.Cast<IMenuItem>()) {
+                        childMenuItem.MenuItemHeight = value;
+                    }
                 }
-
-                OnPropertyChanged();
             }
+        }
+
+        protected bool _shouldShift = false;
+        public bool ShouldShift {
+            get => _shouldShift;
+            set => SetProperty(ref _shouldShift, value, true);
+        }
+
+        protected int _menuDepth = 0;
+        protected int MenuDepth {
+            get => _menuDepth;
+            set => SetProperty(ref _menuDepth, value);
         }
 
         private bool _selected = false;
         public bool Selected {
             get => _selected;
             set {
-                if (_selected == value) return;
-
-                _selected = value;
-                OnPropertyChanged();
-
-                OnItemSelected(EventArgs.Empty);
+                if (SetProperty(ref _selected, value))
+                    OnItemSelected(EventArgs.Empty);
             }
         }
 
-        private string _text = "";
+        protected string _text = "";
         public string Text {
             get => _text;
-            set {
-                _text = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _text, value);
         }
 
-        private Texture2D _icon;
+        protected Texture2D _icon;
         public Texture2D Icon {
             get => _icon;
-            set {
-                if (_icon == value) return;
-
-                _icon = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _icon, value);
         }
 
-        private bool _canCheck = false;
+        protected bool _canCheck = false;
         public bool CanCheck {
             get => _canCheck;
-            set {
-                if (_canCheck == value) return;
-
-                _canCheck = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _canCheck, value);
         }
 
-        private AccordionState _state = AccordionState.Collapsed;
+        protected AccordionState _state = AccordionState.Collapsed;
         [JsonIgnore]
         public AccordionState State {
             get => _state;
             set {
-                if (_state == value) return;
-
-                switch (_state) {
-                    case AccordionState.Expanded:
-                        Collapse();
-                        break;
-                    case AccordionState.Collapsed:
-                        Expand();
-                        break;
+                if (SetProperty(ref _state, value)) {
+                    switch (_state) {
+                        case AccordionState.Expanded:
+                            Collapse();
+                            break;
+                        case AccordionState.Collapsed:
+                            Expand();
+                            break;
+                    }
                 }
-
-                OnPropertyChanged();
             }
         }
 
-        private bool _checked = false;
+        protected bool _checked = false;
         public bool Checked {
             get => _checked;
             set {
-                if (_checked == value) return;
-
-                _checked = value;
-                OnPropertyChanged();
-                OnCheckedChanged(new CheckChangedEvent(_checked));
+                if (SetProperty(ref _checked, value)) 
+                    OnCheckedChanged(new CheckChangedEvent(_checked));
             }
         }
 
         #region "Internal" Properties
 
-        private bool _overSection = false;
+        protected bool _overSection = false;
         [JsonIgnore]
         private bool OverSection {
             get => _overSection;
@@ -159,41 +142,26 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private bool _mouseOverIconBox = false;
         [JsonIgnore]
-        private bool MouseOverIconBox {
-            get => _mouseOverIconBox;
-            set {
-                if (_mouseOverIconBox == value) return;
-
-                _mouseOverIconBox = value;
-
-                // This property is not publicly exposed, so we won't call OnPropertyChanged
-                Invalidate();
-            }
-        }
+        private bool MouseOverIconBox { get; set; } = false;
 
         private int LeftSidePadding {
             get {
                 int leftSideBuilder = ICON_PADDING;
 
                 // Add space if we need to render dropdown arrow
-                if (this.Children.Any())
+                //if (_children.Any())
                     leftSideBuilder += ARROW_SIZE;
-
-                //if (this.CanCheck || this.Icon != null)
 
                 return leftSideBuilder;
             }
         }
 
         private Rectangle FirstItemBoxRegion =>
-            new Rectangle(
-                          this.LeftSidePadding,
+            new Rectangle(0,
                           this.MenuItemHeight / 2 - ICON_SIZE / 2,
                           ICON_SIZE,
-                          ICON_SIZE
-                         );
+                          ICON_SIZE);
 
         #endregion
 
@@ -203,7 +171,7 @@ namespace Blish_HUD.Controls {
 
         private static List<TextureRegion2D> _cbRegions;
 
-        private static void LoadSprites() {
+        private static void LoadCheckboxSprites() {
             if (_cbRegions != null) return;
 
             _cbRegions = new List<TextureRegion2D>();
@@ -225,7 +193,7 @@ namespace Blish_HUD.Controls {
         private static Texture2D _spriteArrow;
         private Glide.Tween _slideAnim;
 
-        public MenuItem() { Initialize();  }
+        public MenuItem() { Initialize(); }
 
         public MenuItem(string text) {
             _text = text;
@@ -234,100 +202,120 @@ namespace Blish_HUD.Controls {
         }
 
         private void Initialize() {
+            this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
+
             this.Height = this.MenuItemHeight;
 
             _spriteArrow = _spriteArrow ?? (_spriteArrow = Content.GetTexture("156057"));
 
-            this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, this.Height - this.MenuItemHeight);
+            this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, 0);
 
-            LoadSprites();
+            LoadCheckboxSprites();
+        }
+
+        public override void RecalculateLayout() {
+            if (this.EffectBehind != null) {
+                this.EffectBehind.Size = new Vector2(_size.X, _menuItemHeight);
+                this.EffectBehind.Location = Vector2.Zero;
+            }
+
+            UpdateContentRegion();
+        }
+
+        private void UpdateContentRegion() {
+            if (_children.Any()) {
+                this.ContentRegion = new Rectangle(0, MenuItemHeight, _size.X, _children.Where(c => c.Visible).Max(c => c.Bottom));
+            } else {
+                this.ContentRegion = new Rectangle(0, MenuItemHeight, _size.X, 0);
+            }
+
+            this.Height = this.State == AccordionState.Expanded
+                              ? this.ContentRegion.Bottom
+                              : this.MenuItemHeight;
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            base.OnClick(e);
-
-            if (this.Enabled
-             && this.CanCheck
+            if (_enabled
+             && _canCheck
              && this.MouseOverIconBox) { /* Mouse was clicked inside of the checkbox */
 
-                this.Checked = !this.Checked;
-            } else if (this.Enabled
-                    && this.OverSection
-                    && this.Children.Any()) { /* Mouse was clicked inside of the mainbody of the MenuItem */
+                Checked = !Checked;
+            } else if (_enabled
+                    && _overSection
+                    && _children.Any()) { /* Mouse was clicked inside of the mainbody of the MenuItem */
 
                 ToggleSection();
-            } else if (this.Enabled
-                    && this.OverSection
-                    && this.CanCheck) { /* Mouse was clicked inside of the mainbody of the MenuItem,
+            } else if (_enabled
+                    && _overSection
+                    && _canCheck) { /* Mouse was clicked inside of the mainbody of the MenuItem,
                                            but we have no children, so we toggle checkbox */
 
-                this.Checked = !this.Checked;
+                Checked = !Checked;
             }
+
+            base.OnClick(e);
         }
 
         protected override void OnMouseMoved(MouseEventArgs e) {
             base.OnMouseMoved(e);
 
-            // Used if this menu item has its checkbox enabled
-            this.MouseOverIconBox = this.MouseOver && this.FirstItemBoxRegion.Contains(this.RelativeMousePosition);
-
             // Helps us know when the mouse is over the MenuItem itself, or actually over its children
-            this.OverSection = this.RelativeMousePosition.Y <= this.MenuItemHeight;
+            OverSection = RelativeMousePosition.Y <= MenuItemHeight;
+
+            if (OverSection)
+                this.EffectBehind?.Enable();
+            else
+                this.EffectBehind?.Disable();
+
+            // Used if this menu item has its checkbox enabled
+            MouseOverIconBox = _canCheck
+                            && _overSection
+                            && FirstItemBoxRegion
+                              .OffsetBy(LeftSidePadding, 0)
+                              .Contains(RelativeMousePosition);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
             base.OnMouseLeft(e);
 
-            this.OverSection = false;
+            OverSection = false;
         }
 
         protected override CaptureType CapturesInput() => CaptureType.Mouse;
 
         protected override void OnChildAdded(ChildChangedEventArgs e) { 
-            if (!(e.ChangedChild is IMenuItem newChild)) {
+            if (!(e.ChangedChild is MenuItem newChild)) {
                 e.Cancel = true;
                 return;
             }
 
             newChild.MenuItemHeight = this.MenuItemHeight;
+            newChild.MenuDepth = this.MenuDepth + 1;
 
             // Ensure child items remains the same width as us
-            Binding.Create(() => e.ChangedChild.Width  == this.Width);
+            Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Width,
+                                                 () => this.Width, applyLeft: true);
 
-            // We'll bind the top of the control to the bottom of the last control we added
-            var lastItem = this.Children.LastOrDefault();
+            // We'll bind the top of the new control to the bottom of the last control we added
+            var lastItem = _children.LastOrDefault();
             if (lastItem != null)
-                Binding.Create(() => e.ChangedChild.Top == lastItem.Top + lastItem.Height /* complex binding to break 2-way bind */);
+                Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
+                                                     () => lastItem.Bottom, applyLeft: true);
 
-            e.ChangedChild.Resized += delegate { UpdateContentRegion(); };
+            //ShouldShift = e.ResultingChildren.Any(mi => {
+            //    MenuItem cmi = (MenuItem)mi;
 
-            UpdateContentRegion();    
-        }
+            //    return cmi.CanCheck || cmi.Children.Any();
+            //});
 
-        private void UpdateContentRegion(IEnumerable<MenuItem> extraChildren = null) {
-            var allChildItems = new List<IMenuItem>(this.Children.Select(c => (IMenuItem) c).ToList<IMenuItem>());
-
-            // Allows OnChildAdded to include the pending child item that was added
-            if (extraChildren != null)
-                allChildItems.AddRange(extraChildren);
-
-            if (allChildItems.Any()) {
-                this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, allChildItems.Max(c => ((Control) c).Bottom));
-            } else {
-                this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, 1);
-            }
-
-            this.Height = this.State == AccordionState.Expanded ? this.ContentRegion.Bottom : this.MenuItemHeight;
+            Invalidate();
         }
 
         public void ToggleSection() {
-            switch (this.State) {
-                case AccordionState.Collapsed:
-                    Expand();
-                    break;
-                case AccordionState.Expanded:
-                    Collapse();
-                    break;
+            if (this.State == AccordionState.Collapsed) {
+                Expand();
+            } else {
+                Collapse();
             }
         }
 
@@ -339,14 +327,9 @@ namespace Blish_HUD.Controls {
             _state = AccordionState.Expanded;
 
             _slideAnim = Animation.Tweener
-                                 .Tween(
-                                        this,
-                                        new {
-                                            //Height = this.ContentRegion.Bottom,
-                                            ArrowRotation = 0f
-                                        },
-                                        0.3f
-                                       )
+                                 .Tween(this,
+                                        new { ArrowRotation = 0f },
+                                        0.3f)
                                  .Ease(Glide.Ease.QuadOut);
 
             this.Height = this.ContentRegion.Bottom;
@@ -360,48 +343,38 @@ namespace Blish_HUD.Controls {
             _state = AccordionState.Collapsed;
 
             _slideAnim = Animation.Tweener
-                                 .Tween(
-                                        this,
-                                        new {
-                                            //Height = AccordionMenu.ITEM_HEIGHT,
-                                            ArrowRotation = -MathHelper.PiOver2
-                                        },
-                                        0.3f
-                                       )
+                                 .Tween(this,
+                                        new { ArrowRotation = -MathHelper.PiOver2 },
+                                        0.3f)
                                  .Ease(Glide.Ease.QuadOut);
 
             this.Height = this.MenuItemHeight;
         }
 
-        protected override float GetVerticalDrawPercent() {
-            return (float)this.MenuItemHeight / this.Height;
-        }
-        
-
         private void DrawDropdownArrow(SpriteBatch spriteBatch, Rectangle bounds) {
             var arrowOrigin = new Vector2((float)ARROW_SIZE / 2, (float)ARROW_SIZE / 2);
 
-            var arrowDest = new Rectangle(
-                                                5 + ARROW_SIZE / 2,
-                                                this.MenuItemHeight / 2,
-                                                ARROW_SIZE,
-                                                ARROW_SIZE
-                                               );
+            var arrowDest = new Rectangle(5 + ARROW_SIZE / 2,
+                                          this.MenuItemHeight / 2,
+                                          ARROW_SIZE,
+                                          ARROW_SIZE);
 
-            spriteBatch.Draw(_spriteArrow,
-                             arrowDest,
-                             null,
-                             Color.White,
-                             this.ArrowRotation,
-                             arrowOrigin,
-                             SpriteEffects.None,
-                             0);
+            spriteBatch.DrawOnCtrl(
+                                   this,
+                                   _spriteArrow,
+                                   arrowDest,
+                                   null,
+                                   Color.White,
+                                   this.ArrowRotation,
+                                   arrowOrigin
+                                  );
         }
 
-        public override void PaintContainer(SpriteBatch spriteBatch, Rectangle bounds) {
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             int currentLeftSidePadding = this.LeftSidePadding;
 
-            if (this.Children.Any())
+            // If MenuItem has children, show dropdown arrow
+            if (_children.Any())
                 DrawDropdownArrow(spriteBatch, bounds);
 
             TextureRegion2D firstItemSprite = null;
@@ -414,27 +387,30 @@ namespace Blish_HUD.Controls {
                 extension = !this.Enabled ? "-disabled" : extension;
 
                 firstItemSprite = _cbRegions.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
-            } else if (this.Icon != null) {
+            } else if (this.Icon != null && !this.Children.Any()) {
                 // performance?
                 firstItemSprite = new TextureRegion2D(this.Icon);
             }
 
             // Draw either the checkbox or the icon, if one or the either is available
             if (firstItemSprite != null) {
-                spriteBatch.Draw(
-                                 firstItemSprite,
-                                 this.FirstItemBoxRegion,
-                                 Color.White
-                                );
-                
+                spriteBatch.DrawOnCtrl(this,
+                                       firstItemSprite,
+                                       this.FirstItemBoxRegion.OffsetBy(currentLeftSidePadding, 0));
+            }
+
+            if (_canCheck) {
+                currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
+            } else if (_children.Any()) {
+                currentLeftSidePadding += ICON_PADDING;
+            } else if (_icon != null) {
                 currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
             }
 
-            DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.Text, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight).OffsetBy(bounds.Location).OffsetBy(-1, 0), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.Text, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight).OffsetBy(bounds.Location).OffsetBy(1, 0), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.Text, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight).OffsetBy(bounds.Location).OffsetBy(0, -1), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.Text, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight).OffsetBy(bounds.Location).OffsetBy(0, 1), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.Text, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight).OffsetBy(bounds.Location), Color.White, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+            // TODO: Evaluate menu item text color
+            // Technically, this text color should be Color.FromNonPremultiplied(255, 238, 187, 255),
+            // but it doesn't look good on the purple background of the main window
+            spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont16, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight), Color.White, true, true);
         }
 
     }

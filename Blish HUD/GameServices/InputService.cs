@@ -19,6 +19,11 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 public class MouseEventArgs : EventArgs {
     public MouseState MouseState { get; }
 
+    /// <summary>
+    /// The relative mouse position when the event was fired.
+    /// </summary>
+    public Point MousePosition { get; }
+
     public MouseEventArgs(MouseState ms) {
         this.MouseState = ms;
     }
@@ -75,13 +80,6 @@ namespace Blish_HUD {
         public MouseState MouseState { get; private set; }
         public KeyboardState KeyboardState { get; private set; }
 
-        // TODO: Probably can get rid of this
-        public Vector2 MousePosition {
-            get {
-                return new Vector2(this.MouseState.X, this.MouseState.Y);
-            }
-        }
-
         // TODO: Rename this to prevent confusion with the (Thread) "thrdMouseHook"
         internal static WinApi.MouseHook mouseHook;
         internal static WinApi.KeyboardHook keyboardHook;
@@ -96,9 +94,16 @@ namespace Blish_HUD {
         public Controls.Control ActiveControl {
             get => _activeControl;
             set {
+                this.HudFocused = value != null;
                 this.HookOverride = (value != null && value.Captures.HasFlag(CaptureType.ForceNone));
-                
+
+                //string controlName = value?.GetType().Name;
+                //if (!string.IsNullOrWhiteSpace(controlName))
+                //    Console.WriteLine(controlName);
+
                 _activeControl = value;
+
+                Control.ActiveControl = _activeControl;
             }
         }
 
@@ -111,8 +116,6 @@ namespace Blish_HUD {
         public ConcurrentQueue<KeyboardMessage> KeyboardMessages = new ConcurrentQueue<KeyboardMessage>();
 
         public MouseEvent ClickState { get; set; } = null;
-
-        private GraphicsService graphics;
 
         private Thread thrdMouseHook;
         private Thread thrdKeyboardHook;
@@ -136,8 +139,6 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            graphics = GameServices.GetService<GraphicsService>();
-
 #if !NOMOUSEHOOK
             thrdMouseHook = new Thread(HookMouse);
             thrdMouseHook.IsBackground = true;
@@ -161,7 +162,7 @@ namespace Blish_HUD {
         }
 
         private void HandleMouse() {
-            if (!GameService.GameIntegration.Gw2IsRunning || (this.FocusedControl == null & !Utils.Window.onTop)) {
+            if (!GameIntegration.Gw2IsRunning || (this.FocusedControl == null & !Utils.Window.OnTop)) {
                 this.HudFocused = false;
                 return;
             }
@@ -183,18 +184,18 @@ namespace Blish_HUD {
                 if (this.HookOverride)
                     this.ActiveControl = this.ActiveControl.MouseOver ? this.ActiveControl : null;
 
+                this.ActiveControl = GameService.Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseMoved, newMouseState);
                 this.MouseMoved?.Invoke(null, new MouseEventArgs(newMouseState));
-                this.HudFocused = GameServices.GetService<GraphicsService>().SpriteScreen.TriggerMouseInput(MouseEventType.MouseMoved, newMouseState);
             }
 
             // Handle mouse left pressed/released
             if (this.MouseState.LeftButton != newMouseState.LeftButton) {
                 if (newMouseState.LeftButton == ButtonState.Pressed) {
                     this.LeftMouseButtonPressed?.Invoke(null, new MouseEventArgs(newMouseState));
-                    GameServices.GetService<GraphicsService>().SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonPressed, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonPressed, newMouseState);
                 } else if (newMouseState.LeftButton == ButtonState.Released) {
                     this.LeftMouseButtonReleased?.Invoke(null, new MouseEventArgs(newMouseState));
-                    GameServices.GetService<GraphicsService>().SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonReleased, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonReleased, newMouseState);
                 }
             }
 
@@ -202,19 +203,19 @@ namespace Blish_HUD {
             if (this.ClickState != null) {
                 if (this.ClickState.EventMessage == WinApi.MouseHook.MouseMessages.WM_LeftButtonDown) {
                     this.LeftMouseButtonPressed?.Invoke(null, new MouseEventArgs(newMouseState));
-                    graphics.SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonPressed, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonPressed, newMouseState);
                 } else if (this.ClickState.EventMessage == WinApi.MouseHook.MouseMessages.WM_LeftButtonUp) {
                     this.LeftMouseButtonReleased?.Invoke(null, new MouseEventArgs(newMouseState));
-                    graphics.SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonReleased, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonReleased, newMouseState);
                 } else if (this.ClickState.EventMessage == WinApi.MouseHook.MouseMessages.WM_RightButtonDown) {
                     this.RightMouseButtonPressed?.Invoke(null, new MouseEventArgs(newMouseState));
-                    graphics.SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonPressed, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonPressed, newMouseState);
                 } else if (this.ClickState.EventMessage == WinApi.MouseHook.MouseMessages.WM_RightButtonUp) {
                     this.RightMouseButtonReleased?.Invoke(null, new MouseEventArgs(newMouseState));
-                    graphics.SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonReleased, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonReleased, newMouseState);
                 } else if (this.ClickState.EventMessage == WinApi.MouseHook.MouseMessages.WM_MouseWheel) {
                     this.MouseWheelScrolled?.Invoke(null, new MouseEventArgs(newMouseState));
-                    graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseWheelScrolled, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseWheelScrolled, newMouseState);
                 }
 
                 this.ClickState = null;
@@ -224,20 +225,20 @@ namespace Blish_HUD {
             if (this.MouseState.RightButton != newMouseState.RightButton) {
                 if (newMouseState.RightButton == ButtonState.Pressed) {
                     this.RightMouseButtonPressed?.Invoke(null, new MouseEventArgs(newMouseState));
-                    GameServices.GetService<GraphicsService>().SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonPressed, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonPressed, newMouseState);
                 } else if (newMouseState.RightButton == ButtonState.Released) {
                     this.RightMouseButtonReleased?.Invoke(null, new MouseEventArgs(newMouseState));
-                    GameServices.GetService<GraphicsService>().SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonReleased, newMouseState);
+                    Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonReleased, newMouseState);
                 }
             }
 
             // Handle mouse scroll
             if (this.MouseState.ScrollWheelValue != newMouseState.ScrollWheelValue) {
                 this.MouseWheelScrolled?.Invoke(null, new MouseEventArgs(newMouseState));
-                GameServices.GetService<GraphicsService>().SpriteScreen.TriggerMouseInput(MouseEventType.MouseWheelScrolled, newMouseState);
+                Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseWheelScrolled, newMouseState);
             }
 
-            // Check to see if mouse is over any 3D entities
+            // TODO: Check to see if mouse is over any 3D entities
             if (!this.HudFocused) {
 
             }

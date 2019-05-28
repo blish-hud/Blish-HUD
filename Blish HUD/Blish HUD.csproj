@@ -47,7 +47,7 @@
     <ManifestKeyFile>Blish HUD_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <TargetZone>Internet</TargetZone>
@@ -58,7 +58,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;NOMOUSEHOOK</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -68,18 +68,8 @@
     <Prefer32Bit>true</Prefer32Bit>
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
   <PropertyGroup>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - Sentry|x64'">
     <OutputPath>bin\x64\Release - Sentry\</OutputPath>
@@ -110,6 +100,9 @@
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Blish_HUD.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="BHGw2Api\ApiCache.cs" />
     <Compile Include="BHGw2Api\ApiExtensions.cs" />
@@ -133,16 +126,42 @@
     <Compile Include="BHGw2Api\Settings.cs" />
     <Compile Include="BHUDControls\Hotkeys\HotkeyAssigner.cs" />
     <Compile Include="BHUDControls\Hotkeys\HotkeyAssignmentWindow.cs" />
-    <Compile Include="BHUDControls\Pathing\Category.cs" />
+    <Compile Include="Content\CachedStringRender.cs" />
     <Compile Include="Controls\ContextMenuStripItem.cs" />
+    <Compile Include="Controls\CounterBox.cs" />
     <Compile Include="Controls\DetailsButton.cs" />
+    <Compile Include="Controls\Effects\ControlEffect.cs" />
+    <Compile Include="Controls\Effects\GlowEffect.cs" />
+    <Compile Include="Controls\Effects\ScrollingHighlightEffect.cs" />
+    <Compile Include="Controls\Extern\HardwareInput.cs" />
+    <Compile Include="Controls\Extern\Input.cs" />
+    <Compile Include="Controls\Extern\InputType.cs" />
+    <Compile Include="Controls\Extern\InputUnion.cs" />
+    <Compile Include="Controls\Extern\KeybdInput.cs" />
+    <Compile Include="Controls\Extern\KeyEventF.cs" />
+    <Compile Include="Controls\Extern\MouseEventF.cs" />
+    <Compile Include="Controls\Extern\MouseInput.cs" />
+    <Compile Include="Controls\Extern\PInvoke.cs" />
+    <Compile Include="Controls\Extern\ScanCodeShort.cs" />
+    <Compile Include="Controls\Extern\VirtualKeyShort.cs" />
+    <Compile Include="Controls\HealthPoolButton.cs" />
+    <Compile Include="Controls\Intern\GuildWarsControls.cs" />
+    <Compile Include="Controls\Intern\Keyboard.cs" />
+    <Compile Include="Controls\Label.cs" />
+    <Compile Include="Controls\NullControl.cs" />
+    <Compile Include="Controls\Resources\Checkable.cs" />
+    <Compile Include="Controls\_Events\ChildChangedEventArgs.cs" />
+    <Compile Include="Controls\_Events\MovedEventArgs.cs" />
+    <Compile Include="Controls\_Events\RegionChangedEventArgs.cs" />
+    <Compile Include="Controls\_Events\ResizedEventArgs.cs" />
     <Compile Include="Controls\FlowPanel.cs" />
     <Compile Include="Controls\GlowButton.cs" />
     <Compile Include="Controls\ICheckable.cs" />
-    <Compile Include="Controls\ScrollingButton.cs" />
+    <Compile Include="Controls\InteractionIndicator.cs" />
+    <Compile Include="Controls\InteractionInfo.cs" />
+    <Compile Include="Controls\MultilineTextBox.cs" />
     <Compile Include="Controls\IMenuItem.cs" />
     <Compile Include="Controls\BackButton.cs" />
-    <Compile Include="Controls\Chat.cs" />
     <Compile Include="Controls\Checkbox.cs" />
     <Compile Include="Controls\ColorBox.cs" />
     <Compile Include="Controls\ColorPicker.cs" />
@@ -152,7 +171,7 @@
     <Compile Include="Controls\CornerIcon.cs" />
     <Compile Include="Controls\Dropdown.cs" />
     <Compile Include="Controls\Image.cs" />
-    <Compile Include="Controls\Label.cs" />
+    <Compile Include="Controls\LabelBase.cs" />
     <Compile Include="Controls\LoadingSpinner.cs" />
     <Compile Include="Controls\Menu.cs" />
     <Compile Include="Controls\MenuItem.cs" />
@@ -161,30 +180,128 @@
     <Compile Include="Controls\Popup.cs" />
     <Compile Include="Controls\Screen.cs" />
     <Compile Include="Controls\Scrollbar.cs" />
-    <Compile Include="Controls\ScrollingButtonContainer.cs" />
     <Compile Include="Controls\SkillBox.cs" />
     <Compile Include="Controls\StandardButton.cs" />
     <Compile Include="Controls\TabbedWindow.cs" />
-    <Compile Include="Controls\Textbox.cs" />
+    <Compile Include="Controls\TextBox.cs" />
     <Compile Include="Controls\TintedPanel.cs" />
     <Compile Include="Controls\Tooltip.cs" />
     <Compile Include="Controls\TrackBar.cs" />
-    <Compile Include="Controls\Window.cs" />
+    <Compile Include="Controls\WindowBase.cs" />
     <Compile Include="Controls\WindowTab.cs" />
+    <Compile Include="Controls\_Types\Thickness.cs" />
     <Compile Include="CustomBlendStates.cs" />
     <Compile Include="Custom\ObservableKeyedCollection.cs" />
+    <Compile Include="Custom\Pipeline.cs" />
+    <Compile Include="Entities\Cube.cs" />
     <Compile Include="Entities\Entity.cs" />
-    <Compile Include="Entities\IInteractable.cs" />
-    <Compile Include="Entities\Marker.cs" />
-    <Compile Include="Entities\Paths\Path.cs" />
-    <Compile Include="Entities\Paths\Route.cs" />
-    <Compile Include="Entities\Paths\Trail.cs" />
+    <Compile Include="Entities\EntityContainer.cs" />
+    <Compile Include="GameServices\ArcDpsService.cs" />
+    <Compile Include="Interfaces\IKeyboard.cs" />
+    <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
+    <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\GamingTip.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\GuessCharacter.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\LoadScreenPanel.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\Narration.cs" />
+    <Compile Include="Modules\LoadingScreenHints\LoadingScreenHints.cs" />
+    <Compile Include="Modules\MarkersAndPaths\IPackFileSystemContext.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\ITacOPathable.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PathingCategory.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Readers\TrlReader.cs" />
+    <Compile Include="Modules\Musician\Controls\Conveyor.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bass\Bass.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bass\BassNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bass\BassPreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bass\BassSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell2\Bell2.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell2\Bell2Note.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell2\Bell2Preview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell2\Bell2SoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell\Bell.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell\BellNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell\BellPreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell\BellSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Flute\Flute.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Flute\FluteNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Flute\FlutePreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Flute\FluteSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Harp\Harp.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Harp\HarpNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Harp\HarpPreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Harp\HarpSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Horn\Horn.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Horn\HornNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Horn\HornPreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Horn\HornSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Instrument.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\KeyboardPractice.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Lute\Lute.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Lute\LuteNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Lute\LutePreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Lute\LuteSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\NoteBlock.cs" />
+    <Compile Include="Modules\Musician\Controls\SheetButton.cs" />
+    <Compile Include="Modules\Musician\Domain\MusicSheet.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\Beat.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\Chord.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\ChordOffset.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\Fraction.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\MetronomeMark.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\Note.cs" />
+    <Compile Include="Modules\Musician\Musician.cs" />
+    <Compile Include="Modules\Musician\Notation\Parsers\ChordParser.cs" />
+    <Compile Include="Modules\Musician\Notation\Parsers\MusicSheetParser.cs" />
+    <Compile Include="Modules\Musician\Notation\Parsers\NoteParser.cs" />
+    <Compile Include="Modules\Musician\Notation\Persistance\RawMusicSheet.cs" />
+    <Compile Include="Modules\Musician\Notation\Persistance\XmlMusicSheetReader.cs" />
+    <Compile Include="Modules\Musician\Notation\Persistance\XmlMusicSheetWriter.cs" />
+    <Compile Include="Modules\Musician\Notation\Serializer\ChordOffsetSerializer.cs" />
+    <Compile Include="Modules\Musician\Notation\Serializer\ChordSerializer.cs" />
+    <Compile Include="Modules\Musician\Notation\Serializer\MusicSheetSerializer.cs" />
+    <Compile Include="Modules\Musician\Notation\Serializer\NoteSerializer.cs" />
+    <Compile Include="Modules\Musician\Player\Algorithms\FavorChordsAlgorithm.cs" />
+    <Compile Include="Modules\Musician\Player\Algorithms\FavorNotesAlgorithm.cs" />
+    <Compile Include="Modules\Musician\Player\Algorithms\IPlayAlgorithm.cs" />
+    <Compile Include="Modules\Musician\Player\MusicPlayer.cs" />
+    <Compile Include="Modules\Musician\Player\MusicPlayerFactory.cs" />
+    <Compile Include="Modules\Musician\Player\Sound\AudioPlaybackEngine.cs" />
+    <Compile Include="Modules\Musician\Player\Sound\AutoDisposeFileReader.cs" />
+    <Compile Include="Modules\Musician\Player\Sound\CachedSound.cs" />
+    <Compile Include="Modules\Musician\Player\Sound\CachedSoundSampleProvider.cs" />
+    <Compile Include="Modules\TestMefModule.cs" />
+    <Compile Include="Pathing\Behaviors\Clipboard.cs" />
+    <Compile Include="Pathing\Behaviors\IdentifyingBehaviorAttributePrefixAttribute.cs" />
+    <Compile Include="Pathing\Behaviors\ILoadableBehavior.cs" />
+    <Compile Include="Pathing\Entities\Marker.cs" />
+    <Compile Include="GameServices\PersistentStoreService.cs" />
+    <Compile Include="Interfaces\IRenderable2D.cs" />
+    <Compile Include="Interfaces\IRenderable3D.cs" />
+    <Compile Include="Interfaces\IUpdatable.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Behavior\BasicTOBehavior.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\TacOMarkerPathable.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\TacOTrailPathable.cs" />
+    <Compile Include="Pathing\Behaviors\DisplayInteractionInfo.cs" />
+    <Compile Include="Pathing\Entities\ScrollingTrail.cs" />
+    <Compile Include="Pathing\Entities\Trail.cs" />
+    <Compile Include="Pathing\Entities\ScrollingTrailSection.cs" />
+    <Compile Include="Pathing\Format\LoadedMarkerPathable.cs" />
+    <Compile Include="Pathing\Format\LoadedPathable.cs" />
+    <Compile Include="Pathing\Format\LoadedTrailPathable.cs" />
+    <Compile Include="Pathing\IPathable.cs" />
+    <Compile Include="Pathing\ManagedPathable.cs" />
+    <Compile Include="Pathing\Behaviors\PathingBehavior.cs" />
+    <Compile Include="Pathing\Markers\IMarker.cs" />
+    <Compile Include="Pathing\Markers\BasicMarkerPathable.cs" />
+    <Compile Include="Pathing\Trails\BasicTrailPathable.cs" />
+    <Compile Include="Pathing\Trails\ITrail.cs" />
+    <Compile Include="Pathing\Trails\Route.cs" />
+    <Compile Include="Modules\MarkersAndPaths\Entities\Trail.cs" />
     <Compile Include="Entities\Primitives\Cuboid.cs" />
     <Compile Include="Entities\Primitives\Face.cs" />
     <Compile Include="Entities\Primitives\Mesh.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="FrameCounter.cs" />
-    <Compile Include="GameServices.cs" />
     <Compile Include="GameServices\DirectorService.cs" />
     <Compile Include="GameServices\FileService.cs" />
     <Compile Include="GameServices\HotkeysService.cs" />
@@ -199,17 +316,17 @@
     <Compile Include="Library\Glide\Tweener.cs" />
     <Compile Include="Modules\BeetleRacing\BeetleRacing.cs" />
     <Compile Include="Modules\BeetleRacing\Controls\Speedometer.cs" />
-    <Compile Include="Modules\Compatibility\TacO\Route.cs" />
     <Compile Include="Modules\EventTimers\Controls\EventNotification.cs" />
     <Compile Include="Modules\EventTimers\Controls\EventSummary.cs" />
-    <Compile Include="Modules\EventTimers\Controls\EventView.cs" />
-    <Compile Include="Modules\EventTimers\Controls\MenuSection.cs" />
     <Compile Include="Modules\EventTimers\EventTimers.cs" />
     <Compile Include="Modules\MarkersAndPaths\Controls\CategoryMenuItem.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\RouteBuilder.cs" />
+    <Compile Include="Modules\MarkersAndPaths\ReCatReader.cs" />
     <Compile Include="Modules\MarkersAndPaths\MarkersAndPaths.cs" />
-    <Compile Include="Modules\MarkersAndPaths\PackFormat\OverlayDataReader.cs" />
-    <Compile Include="Modules\MarkersAndPaths\PackFormat\MarkerBuilder.cs" />
-    <Compile Include="Modules\MarkersAndPaths\PackFormat\PathingCategoryBuilder.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\AugTyr\OverlayDataReader.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\OverlayDataReader.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PoiBuilder.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PathingCategoryBuilder.cs" />
     <Compile Include="Modules\MouseUsability\Controls\MouseHighlight.cs" />
     <Compile Include="Modules\MouseUsability\Controls\MouseHighlightDemoPanel.cs" />
     <Compile Include="Modules\MouseUsability\MouseUsability.cs" />
@@ -222,25 +339,8 @@
     <Compile Include="GameServices\ContentService.cs" />
     <Compile Include="GameServices\SettingsService.cs" />
     <Compile Include="Modules\Compass.cs" />
-    <Compile Include="Modules\Compatibility\AugTyr\AugTyrNode.cs" />
-    <Compile Include="Modules\Compatibility\AugTyr\AugTyrRoute.cs" />
     <Compile Include="Entities\Primitives\Billboard.cs" />
-    <Compile Include="Modules\TacO\Origin\GW2TacticalCategory.cs" />
-    <Compile Include="Modules\TacO\Origin\GW2Trail.cs" />
-    <Compile Include="Modules\TacO\Origin\MarkerTypeData.cs" />
-    <Compile Include="Modules\TacO\Origin\POI.cs" />
-    <Compile Include="Modules\TacO\Origin\POIBehavior.cs" />
-    <Compile Include="Modules\TacO\Origin\Util.cs" />
-    <Compile Include="Modules\TacO\Origin\POIActivationData.cs" />
-    <Compile Include="Modules\TacO\Origin\POIActivationDataKey.cs" />
-    <Compile Include="Modules\TacO\Origin\POIRoute.cs" />
-    <Compile Include="Modules\TacO\TacO.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Overlay.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -250,12 +350,12 @@
     <Compile Include="GameServices\GameService.cs" />
     <Compile Include="GameServices\PlayerService.cs" />
     <Compile Include="GameServices\GraphicsService.cs" />
+    <Compile Include="Properties\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.Designer.tt</DependentUpon>
+    </Compile>
     <Compile Include="SentryWrapper.cs" />
-    <Compile Include="Modules\Compatibility\TacO\MarkerCategory.cs" />
-    <Compile Include="Modules\Compatibility\TacO\OverlayData.cs" />
-    <Compile Include="Modules\Compatibility\TacO\POI.cs" />
-    <Compile Include="Modules\Compatibility\TacO\Trail.cs" />
-    <Compile Include="Modules\Daily\PactSupplyNetworkAgents.cs" />
     <Compile Include="Modules\DebugText.cs" />
     <Compile Include="Modules\DiscordRichPresence.cs" />
     <Compile Include="Modules\Module.cs" />
@@ -269,12 +369,20 @@
     <Compile Include="Utils\String.cs" />
     <Compile Include="Utils\Window.cs" />
     <Compile Include="Utils\WindowStyles.cs" />
+    <Compile Include="Utils\World.cs" />
+    <Compile Include="Utils\Xml.cs" />
     <Compile Include="WinApi\KeyboardHook.cs" />
     <Compile Include="WinApi\MouseHook.cs" />
     <Compile Include="_Extensions\PointExtensions.cs" />
     <Compile Include="_Extensions\RectangleExtension.cs" />
+    <Compile Include="_Extensions\SpriteBatchExtensions.cs" />
+    <Compile Include="_Extensions\StreamExtensions.cs" />
     <Compile Include="_Extensions\StringExtensions.cs" />
+    <Compile Include="_Extensions\Texture2DExtension.cs" />
+    <Compile Include="_Extensions\TimeSpanExtension.cs" />
+    <Compile Include="_Extensions\Vector2Extension.cs" />
     <Compile Include="_Extensions\Vector3Extensions.cs" />
+    <Compile Include="_Extensions\XmlNodeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DiscordRPC">
@@ -286,15 +394,14 @@
     <Reference Include="GW2NET.MumbleLink">
       <HintPath>.\GW2NET.MumbleLink.dll</HintPath>
     </Reference>
-    <Reference Include="Lidgren.Network, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Lidgren.Network.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework.Content.Pipeline">
+      <HintPath>.\MonoGame.Framework.Content.Pipeline.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework.Net, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -338,6 +445,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
@@ -353,7 +461,14 @@
   <ItemGroup>
     <Content Include="blishhud.ico" />
     <Content Include="blishraster2_0dw_icon.ico" />
-    <None Include="Blish HUD_TemporaryKey.pfx" />
+    <Content Include="data\recategory.inf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Properties\Strings.Designer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </None>
     <None Include="data\events.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -361,20 +476,17 @@
     <None Include="data\licenses.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ref.dat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
-    <None Include="app.config" />
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Strings.es.resx" />
+    <EmbeddedResource Include="Properties\Strings.fr.resx" />
+    <EmbeddedResource Include="Properties\Strings.resx" />
+    <EmbeddedResource Include="Properties\Strings.de.resx" />
+    <EmbeddedResource Include="Properties\Strings.zh.resx" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -389,43 +501,46 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Modules\MarkersAndPaths\PackFormat\Markers\" />
+    <Folder Include="ref\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Adhesive">
+      <Version>2.0.1-alpha</Version>
+    </PackageReference>
     <PackageReference Include="Costura.Fody">
-      <Version>3.3.2</Version>
+      <Version>4.0.0</Version>
     </PackageReference>
     <PackageReference Include="DynamicLanguageRuntime">
       <Version>1.2.2</Version>
     </PackageReference>
     <PackageReference Include="Flurl.Http">
-      <Version>2.4.1</Version>
+      <Version>2.4.2</Version>
     </PackageReference>
     <PackageReference Include="Fody">
-      <Version>4.0.2</Version>
+      <Version>5.0.6</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="HaxlSharp">
-      <Version>0.1.6009.41572</Version>
-    </PackageReference>
     <PackageReference Include="Humanizer.Core.de">
-      <Version>2.5.16</Version>
+      <Version>2.6.2</Version>
     </PackageReference>
     <PackageReference Include="Humanizer.Core.es">
-      <Version>2.5.16</Version>
+      <Version>2.6.2</Version>
     </PackageReference>
     <PackageReference Include="Humanizer.Core.fr">
-      <Version>2.5.16</Version>
+      <Version>2.6.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp">
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.Platforms">
-      <Version>2.2.0</Version>
+      <Version>2.2.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Win32.Primitives">
       <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="MonoGame.Content.Builder">
+      <Version>3.7.0.9</Version>
     </PackageReference>
     <PackageReference Include="MonoGame.Extended">
       <Version>1.1.0</Version>
@@ -433,20 +548,26 @@
     <PackageReference Include="MonoGame.Extended.Content.Pipeline">
       <Version>1.1.0</Version>
     </PackageReference>
+    <PackageReference Include="NAudio">
+      <Version>1.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="NAudio.Vorbis">
+      <Version>1.0.0</Version>
+    </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.3</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
+      <Version>12.0.2</Version>
     </PackageReference>
     <PackageReference Include="protobuf-net">
       <Version>2.4.0</Version>
     </PackageReference>
     <PackageReference Include="Sentry">
-      <Version>1.1.2</Version>
+      <Version>1.2.0</Version>
     </PackageReference>
     <PackageReference Include="Sentry.Protocol">
-      <Version>1.0.4</Version>
+      <Version>1.0.6</Version>
     </PackageReference>
     <PackageReference Include="System.AppContext">
       <Version>4.3.0</Version>
@@ -497,13 +618,13 @@
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Memory">
-      <Version>4.5.2</Version>
+      <Version>4.5.3</Version>
     </PackageReference>
     <PackageReference Include="System.Net.Http">
       <Version>4.3.4</Version>
     </PackageReference>
     <PackageReference Include="System.Net.Primitives">
-      <Version>4.3.0</Version>
+      <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="System.Net.Sockets">
       <Version>4.3.0</Version>
@@ -554,7 +675,7 @@
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Text.RegularExpressions">
-      <Version>4.3.0</Version>
+      <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="System.Threading">
       <Version>4.3.0</Version>
@@ -572,10 +693,16 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <PropertyGroup>
     <PostBuildEvent>rd /s /q "lv", "ms-MY", "mt", "nb", "nb-NO", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sr", "sr-Latn", "sv", "tr", "uk", "uz-Cyrl-UZ", "uz-Latn-UZ", "vi", "zh-CN"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "$(ProjectDir)BuildScripts\RefBuilder.ps1" -Project "$(ProjectDir)\" -Output "$(OutDir)\"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -32,42 +32,26 @@ namespace Blish_HUD.Modules.EventTimers {
 
         private bool _mouseOverEye = false;
         private bool MouseOverEye {
-            get { return _mouseOverEye; }
-            set {
-                if (_mouseOverEye == value) return;
-                _mouseOverEye = value;
-                Invalidate();
-            }
+            get => _mouseOverEye;
+            set => SetProperty(ref _mouseOverEye, value);
         }
 
         private bool _mouseOverTime = false;
         private bool MouseOverTime {
-            get { return _mouseOverTime; }
-            set {
-                if (_mouseOverTime == value) return;
-                _mouseOverTime = value;
-                Invalidate();
-            }
+            get => _mouseOverTime;
+            set => SetProperty(ref _mouseOverTime, value);
         }
 
         private bool _mouseOverWaypoint = false;
         private bool MouseOverWaypoint {
             get => _mouseOverWaypoint;
-            set {
-                if (_mouseOverWaypoint == value) return;
-                _mouseOverWaypoint = value;
-                Invalidate();
-            }
+            set => SetProperty(ref _mouseOverWaypoint, value);
         }
 
         private bool _mouseOverWiki = false;
         private bool MouseOverWiki {
             get => _mouseOverWiki;
-            set {
-                if (_mouseOverWiki == value) return;
-                _mouseOverWiki = value;
-                Invalidate();
-            }
+            set => SetProperty(ref _mouseOverWiki, value);
         }
 
         public bool Active {
@@ -111,10 +95,14 @@ namespace Blish_HUD.Modules.EventTimers {
             if (this.MouseOverWiki) Process.Start(this.AssignedMeta.Wiki);
 
             if (this.MouseOverWaypoint) {
-                System.Windows.Forms.Clipboard.SetText(this.AssignedMeta.Waypoint);
+                try {
+                    System.Windows.Forms.Clipboard.SetText(this.AssignedMeta.Waypoint);
+                } catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
+                }
 
                 //if (Module.settingShowNotificationWhenLandmarkIsCopied.Value)
-                Controls.Notification.ShowNotification(Content.GetTexture("waypoint"), "Waypoint copied to clipboard.", 2);
+                Notification.ShowNotification(Content.GetTexture("waypoint"), "Waypoint copied to clipboard.", 2);
             }
         }
 
@@ -126,7 +114,7 @@ namespace Blish_HUD.Modules.EventTimers {
         }
 
         private void EventSummary_MouseMoved(object sender, MouseEventArgs e) {
-            var relPos = e.MouseState.Position - this.AbsoluteBounds.Location;
+            var relPos = RelativeMousePosition;
 
             if (this.MouseOver && relPos.Y > this.Height - BOTTOMSECTION_HEIGHT) {
                 this.MouseOverEye = relPos.X > this.Width - BOTTOMSECTION_HEIGHT;
@@ -140,15 +128,15 @@ namespace Blish_HUD.Modules.EventTimers {
                 this.MouseOverWaypoint = false;
             }
 
-            this.MouseOverWaypoint = this.MouseOverWaypoint && !string.IsNullOrWhiteSpace(this.AssignedMeta.Waypoint);
-            this.MouseOverWiki = this.MouseOverWiki && !string.IsNullOrWhiteSpace(this.AssignedMeta.Wiki);
+            this.MouseOverWaypoint = this.MouseOverWaypoint && !string.IsNullOrEmpty(this.AssignedMeta.Waypoint);
+            this.MouseOverWiki = this.MouseOverWiki && !string.IsNullOrEmpty(this.AssignedMeta.Wiki);
 
             if (this.MouseOverEye)
                 this.BasicTooltipText = "Click to toggle tracking for this event.";
             else if (this.MouseOverWiki)
                 this.BasicTooltipText = "Read about this event on the wiki.";
             else if (this.MouseOverWaypoint)
-                this.BasicTooltipText = $"Nearby waypoint: {this.AssignedMeta.Waypoint}";
+                this.BasicTooltipText = $"Nearby waypoint: {AssignedMeta.Waypoint}";
             else if (this.MouseOverTime)
                 this.BasicTooltipText = GetTimeDetails();
             else
@@ -179,57 +167,87 @@ namespace Blish_HUD.Modules.EventTimers {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw background
-            spriteBatch.Draw(BackgroundSprite, bounds, Color.Black * 0.25f);
+            spriteBatch.Draw(BackgroundSprite, _size.InBounds(bounds), Color.Black * 0.25f);
 
             // Draw eye highlight
             if (this.MouseOverEye) {
-                spriteBatch.Draw(HoverEyeSprite, new Rectangle(this.Width - 256, 0, 256, 100), Color.White);
+                spriteBatch.Draw(HoverEyeSprite,
+                                 new Rectangle(_size.X - 256, 0, 256, 100).ToBounds(bounds),
+                                 Color.White);
             } else {
-                spriteBatch.Draw(EyeBackgroundSprite, new Rectangle(bounds.Size - new Point(35, 35), new Point(35, 35)), Color.Black);
+                spriteBatch.Draw(EyeBackgroundSprite,
+                                 new Rectangle(_size - new Point(35, 35), new Point(35, 35)).ToBounds(bounds),
+                                 Color.Black);
             }
 
             // Draw bottom section (overlap to make background darker here)
-            spriteBatch.Draw(BackgroundSprite, new Rectangle(0, bounds.Height - BOTTOMSECTION_HEIGHT, bounds.Width - BOTTOMSECTION_HEIGHT, BOTTOMSECTION_HEIGHT), Color.Black * 0.1f);
+            spriteBatch.Draw(BackgroundSprite,
+                             new Rectangle(0, _size.Y - BOTTOMSECTION_HEIGHT, _size.X - BOTTOMSECTION_HEIGHT, BOTTOMSECTION_HEIGHT).ToBounds(bounds),
+                             Color.Black * 0.1f);
 
             // Draw eye icon
-            spriteBatch.Draw(this.Active ? EyeSelectedSprite : EyeSprite, new Rectangle(bounds.Size - new Point(BOTTOMSECTION_HEIGHT, BOTTOMSECTION_HEIGHT), new Point(BOTTOMSECTION_HEIGHT, BOTTOMSECTION_HEIGHT)), Color.White);
+            spriteBatch.Draw(this.Active 
+                                 ? EyeSelectedSprite 
+                                 : EyeSprite,
+                             new Rectangle(_size - new Point(BOTTOMSECTION_HEIGHT, BOTTOMSECTION_HEIGHT),
+                                           new Point(BOTTOMSECTION_HEIGHT, BOTTOMSECTION_HEIGHT)).ToBounds(bounds),
+                             Color.White);
 
             // Draw wiki icon
-            if (!string.IsNullOrWhiteSpace(this.AssignedMeta.Wiki)) {
+            if (!string.IsNullOrEmpty(this.AssignedMeta.Wiki)) {
                 if (this.MouseOverWiki)
-                    spriteBatch.Draw(Content.GetTexture("glow-wiki"), new Rectangle(NEXTTIME_WIDTH + 15, bounds.Height - BOTTOMSECTION_HEIGHT + 1, 32, 32), Color.White);
+                    spriteBatch.Draw(Content.GetTexture("glow-wiki"),
+                                     new Rectangle(NEXTTIME_WIDTH + 15, _size.Y - BOTTOMSECTION_HEIGHT + 1, 32, 32).ToBounds(bounds),
+                                     Color.White);
 
-                spriteBatch.Draw(WikiSprite, new Rectangle(NEXTTIME_WIDTH + 15, bounds.Height - BOTTOMSECTION_HEIGHT + 1, 32, 32), Color.White); 
+                spriteBatch.Draw(WikiSprite,
+                                 new Rectangle(NEXTTIME_WIDTH + 15, _size.Y - BOTTOMSECTION_HEIGHT + 1, 32, 32).ToBounds(bounds),
+                                 Color.White); 
             }
 
             // Draw waypoint icon
-            if (!string.IsNullOrWhiteSpace(this.AssignedMeta.Waypoint)) {
+            if (!string.IsNullOrEmpty(this.AssignedMeta.Waypoint)) {
                 if (this.MouseOverWaypoint)
-                    spriteBatch.Draw(Content.GetTexture("glow-waypoint"), new Rectangle(NEXTTIME_WIDTH + 15 + 35, bounds.Height - BOTTOMSECTION_HEIGHT + 1, 32, 32), Color.White);
+                    spriteBatch.Draw(Content.GetTexture("glow-waypoint"),
+                                     new Rectangle(NEXTTIME_WIDTH + 15 + 35, _size.Y - BOTTOMSECTION_HEIGHT + 1, 32, 32).ToBounds(bounds),
+                                     Color.White);
 
-                spriteBatch.Draw(WaypointSprite, new Rectangle(NEXTTIME_WIDTH + 15 + 35, bounds.Height - BOTTOMSECTION_HEIGHT + 1, 32, 32), Color.White);
-            } else {
-                //spriteBatch.Draw(Content.GetTexture("no-waypoint"), new Rectangle(NEXTTIME_WIDTH + 15 + 35, bounds.Height - BOTTOMSECTION_HEIGHT + 1, 32, 32), Color.White);
+                spriteBatch.Draw(WaypointSprite,
+                                 new Rectangle(NEXTTIME_WIDTH + 15 + 35, _size.Y - BOTTOMSECTION_HEIGHT + 1, 32, 32).ToBounds(bounds),
+                                 Color.White);
             }
 
             // Draw bottom section seperator
-            spriteBatch.Draw(DividerSprite, new Rectangle(0, bounds.Height - 40, bounds.Width, 8), Color.White);
+            spriteBatch.Draw(DividerSprite,
+                             new Rectangle(0, _size.Y - 40, _size.X, 8).ToBounds(bounds),
+                             Color.White);
 
             // Draw event icon
             if (this.AssignedMeta.Icon != null)
-                spriteBatch.Draw(Content.GetTexture(this.AssignedMeta.Icon), new Rectangle((bounds.Height - BOTTOMSECTION_HEIGHT) / 2 - 32 + 10, (bounds.Height - 35) / 2 - 32, 64, 64), Color.White);
+                spriteBatch.Draw(Content.GetTexture(AssignedMeta.Icon),
+                                 new Rectangle((bounds.Height - BOTTOMSECTION_HEIGHT) / 2 - 32 + 10,
+                                               (bounds.Height - 35) / 2 - 32,
+                                               64,
+                                               64).ToBounds(bounds),
+                                 Color.White);
 
             //spriteBatch.Draw(IconBoxSprite, new Rectangle(0, 0, bounds.Height - 35, bounds.Height - 35), Color.White);
 
+            string wrappedText = Utils.DrawUtil.WrapText(Content.DefaultFont14, this.AssignedMeta.Name, 200);
             // Draw name of event (multiple times for stroke effect)
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89 - 2, 0 - 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89 + 2, 0 + 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89 - 2, 0 + 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89 + 2, 0 - 2, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.Black, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.Name, new Rectangle(89, 0, 216, this.Height - BOTTOMSECTION_HEIGHT), Color.White, Utils.DrawUtil.HorizontalAlignment.Left, Utils.DrawUtil.VerticalAlignment.Middle);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89 - 2, 0 - 2, 216, _size.Y - BOTTOMSECTION_HEIGHT).ToBounds(bounds), Color.Black);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89 + 2, 0 + 2, 216, _size.Y - BOTTOMSECTION_HEIGHT).ToBounds(bounds), Color.Black);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89 - 2, 0 + 2, 216, _size.Y - BOTTOMSECTION_HEIGHT).ToBounds(bounds), Color.Black);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89 + 2, 0 - 2, 216, _size.Y - BOTTOMSECTION_HEIGHT).ToBounds(bounds), Color.Black);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, wrappedText, new Rectangle(89, 0, 216, _size.Y - BOTTOMSECTION_HEIGHT).ToBounds(bounds), Color.White);
             
             // Draw the upcoming event time
-            Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.DefaultFont14, this.AssignedMeta.NextTime.ToShortTimeString(), new Rectangle(0, bounds.Height - BOTTOMSECTION_HEIGHT, NEXTTIME_WIDTH, 35), Color.White, Utils.DrawUtil.HorizontalAlignment.Right, Utils.DrawUtil.VerticalAlignment.Middle);
+            Utils.DrawUtil.DrawAlignedText(spriteBatch,
+                                           Content.DefaultFont14,
+                                           AssignedMeta.NextTime.ToShortTimeString(),
+                                           new Rectangle(0, _size.Y - BOTTOMSECTION_HEIGHT, NEXTTIME_WIDTH, 35).ToBounds(bounds),
+                                           Color.White,
+                                           Utils.DrawUtil.HorizontalAlignment.Right);
         }
 
     }

@@ -31,6 +31,10 @@ namespace Blish_HUD {
                                                     );
         }
 
+        public static Rectangle InBounds(this Point point, Rectangle bounds) {
+            return new Rectangle(bounds.Location, point);
+        }
+
         public static System.Drawing.Size ToSystemDrawingSize(this Microsoft.Xna.Framework.Point point) {
             return new System.Drawing.Size(point.X, point.Y);
         }

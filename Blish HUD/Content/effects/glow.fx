@@ -10,14 +10,12 @@
 float  TextureWidth;
 float4 GlowColor;
 
-sampler s0 = sampler_state
-{
+sampler s0 = sampler_state {
     AddressU = Clamp;
     AddressV = Clamp;
 };
 
-float4 DrawGlow(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0
-{
+float4 DrawGlow(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0 {
     float Pixel = 2 / TextureWidth;
     
     float4 clr = float4(0, 0, 0, 0);
@@ -34,13 +32,16 @@ float4 DrawGlow(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 Tex
     clr += tex2D(s0, float2(TexCoords.x        , TexCoords.y - Pixel));
     clr += tex2D(s0, float2(TexCoords.x        , TexCoords.y - Pixel - Pixel));
     clr += tex2D(s0, float2(TexCoords.x - Pixel, TexCoords.y - Pixel));
-    
-    return float4(clr.rgb, clr.a * 0.1) * GlowColor;
+	
+    return float4(clr.rgb * 12, clr.a * 0.1) * GlowColor;
 }
 
-float4 DrawIcon(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0
-{
+float4 DrawIcon(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0 {
     return tex2D(s0, TexCoords) * Color;
+}
+
+float4 DrawSilhouette(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0 {
+	return tex2D(s0, TexCoords) * float4(0, 0, 0, 1);
 }
 
 technique

@@ -34,11 +34,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
         private bool _mouseOverHotkey = false;
         private bool MouseOverHotkey {
             get => _mouseOverHotkey;
-            set {
-                if (_mouseOverHotkey == value) return;
-                _mouseOverHotkey = value;
-                Invalidate();
-            }
+            set => SetProperty(ref _mouseOverHotkey, value);
         }
 
         private DateTime lastClickTime;
