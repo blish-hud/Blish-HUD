@@ -13,7 +13,7 @@ namespace Blish_HUD.Controls.Effects {
         protected Control AssignedControl { get; }
 
 
-        private Vector2? _size;
+        protected Vector2? _size;
         /// <summary>
         /// The size within the <see cref="Control"/> it applies to.  If not explicitly set, the size of the assigned control will be used.
         /// </summary>
@@ -22,7 +22,7 @@ namespace Blish_HUD.Controls.Effects {
             set => _size = value;
         }
 
-        private Vector2? _location;
+        protected Vector2? _location;
         /// <summary>
         /// The location relative to the <see cref="Control"/> it applies to.  If not explicitly set, <see cref="Vector2.Zero"/> will be used.
         /// </summary>
@@ -31,7 +31,7 @@ namespace Blish_HUD.Controls.Effects {
             set => _location = value;
         }
 
-        private bool _enabled = true;
+        protected bool _enabled = true;
         /// <summary>
         /// If the <see cref="ControlEffect"/> should render or not.
         /// </summary>

@@ -22,12 +22,12 @@ namespace Blish_HUD.Controls {
 
     [Flags]
     public enum CaptureType {
-        None = 0x0,
-        Filter = 0x1,
-        Keyboard = 0x2,
-        Mouse = 0x4,
+        None       = 0x0,
+        Filter     = 0x1,
+        Keyboard   = 0x2,
+        Mouse      = 0x4,
         MouseWheel = 0x8,
-        ForceNone = 0x16
+        ForceNone  = 0x16
     }
 
     public abstract class Control : INotifyPropertyChanged, IDisposable {
@@ -72,28 +72,40 @@ namespace Blish_HUD.Controls {
 
         #region Resources
 
-        private static SpriteBatchParameters _defaultSpriteBatchParameters;
+        private static readonly SpriteBatchParameters _defaultSpriteBatchParameters;
 
         #endregion
 
+
+        private static readonly Tooltip _sharedTooltip;
+        private static readonly Label   _sharedTooltipLabel;
+
         static Control() {
             _defaultSpriteBatchParameters = new SpriteBatchParameters();
+
+            // Build shared tooltip
+            _sharedTooltip = new Tooltip();
+            _sharedTooltipLabel = new Label() {
+                Text              = "Loading...",
+                //Location          = new Point(Tooltip.PADDING),
+                AutoSizeHeight    = true,
+                AutoSizeWidth     = true,
+                VerticalAlignment = DrawUtil.VerticalAlignment.Middle,
+                ShowShadow        = true,
+                Parent            = _sharedTooltip,
+            };
+
+            // TODO: Consider having .Parent automatically wait for Graphics.SpriteScreen, if it is unavailable
+            Graphics.OnLoad += delegate {
+                _sharedTooltip.Parent = Graphics.SpriteScreen;
+            };
         }
 
         #endregion
 
         #region Static Control Events
 
-        public class ControlChangedEventArgs : EventArgs {
-            public Control ActivatedControl { get; }
-
-            public ControlChangedEventArgs(Control activatedControl) {
-                this.ActivatedControl = activatedControl;
-            }
-
-        }
-
-        public static event EventHandler<ControlChangedEventArgs> ActiveControlChanged;
+        public static event EventHandler<ControlActivatedEventArgs> ActiveControlChanged;
 
         private static Control _activeControl;
         public static Control ActiveControl {
@@ -103,11 +115,11 @@ namespace Blish_HUD.Controls {
 
                 _activeControl = value;
 
-                OnActiveControlChanged(new ControlChangedEventArgs(_activeControl));
+                OnActiveControlChanged(new ControlActivatedEventArgs(_activeControl));
             }
         }
 
-        private static void OnActiveControlChanged(ControlChangedEventArgs e) {
+        private static void OnActiveControlChanged(ControlActivatedEventArgs e) {
             if (!string.IsNullOrEmpty(e.ActivatedControl?._basicTooltipText)) {
                 _sharedTooltip.CurrentControl = e.ActivatedControl;
                 _sharedTooltipLabel.Text      = e.ActivatedControl._basicTooltipText;
@@ -215,10 +227,11 @@ namespace Blish_HUD.Controls {
 
                 _mouseOver = value;
 
-                if (_mouseOver)
+                if (_mouseOver) {
                     OnMouseEntered(new MouseEventArgs(Input.MouseState));
-                else
+                } else {
                     OnMouseLeft(new MouseEventArgs(Input.MouseState));
+                }
 
                 OnPropertyChanged();
             }
@@ -353,7 +366,8 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        protected bool ClipsBounds { get; set; } = true;
+        // TODO: Allow controls to skip clipping via a "ClipsBounds" setting
+        //protected bool ClipsBounds { get; set; } = true;
 
         private ControlEffect _effectBehind;
         /// <summary>
@@ -399,18 +413,26 @@ namespace Blish_HUD.Controls {
         }
 
         [JsonIgnore]
-        public Point RelativeMousePosition => Input.MouseState.Position - AbsoluteBounds.Location;
+        public Point RelativeMousePosition => Input.MouseState.Position - this.AbsoluteBounds.Location;
 
+        private ContextMenuStrip _menu;
         /// <summary>
         /// If provided, the menu will display when the control is right-clicked on.
         /// </summary>
-        public ContextMenuStrip Menu { get; set; }
+        public ContextMenuStrip Menu {
+            get => _menu;
+            set => SetProperty(ref _menu, value);
+        }
 
+        private Tooltip _tooltip;
         /// <summary>
         /// If provided, the Tooltip will display when the mouse is over the control.
         /// Do not use this if you are already using <see cref="BasicTooltipText"/>.
         /// </summary>
-        public Tooltip Tooltip { get; set; }
+        public Tooltip Tooltip {
+            get => _tooltip;
+            set => SetProperty(ref _tooltip, value);
+        }
 
         private string _basicTooltipText;
         /// <summary>
@@ -420,15 +442,13 @@ namespace Blish_HUD.Controls {
         public string BasicTooltipText {
             get => _basicTooltipText;
             set {
-                if (_basicTooltipText == value) return;
-
-                _basicTooltipText = value;
+                if (!SetProperty(ref _basicTooltipText, value)) return;
 
                 // In the event that the tooltip text is changed while it's being shown, this will update it
                 if (Control.ActiveControl == this) _sharedTooltipLabel.Text = value;
 
                 if (!string.IsNullOrEmpty(value)) {
-                    this.Tooltip = SharedTooltip;
+                    this.Tooltip = _sharedTooltip;
 
                     this.MouseEntered += delegate {
                         _sharedTooltipLabel.Text = this.BasicTooltipText;
@@ -467,13 +487,17 @@ namespace Blish_HUD.Controls {
         public Container Parent {
             get => _parent;
             set {
-                if (_parent == value) return;
+                var currentParent = _parent;
 
-                this.Parent?.RemoveChild(this);
+                if (SetProperty(ref _parent, value)) {
+                    currentParent?.RemoveChild(this);
 
-                _parent = value;
+                    _parent = value;
 
-                this.Parent?.AddChild(this);
+                    if (this.Parent == null || !this.Parent.AddChild(this)) {
+                        _parent = null;
+                    }
+                }
             }
         }
 
@@ -496,33 +520,10 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _backgroundColor, value);
         }
 
-        private static Tooltip _sharedTooltip;
-        private static Tooltip SharedTooltip {
-            get {
-                if (_sharedTooltip != null) return _sharedTooltip;
-                
-                // Lazy load shared tooltip instance
-                _sharedTooltip = new Tooltip();
-
-                _sharedTooltipLabel = new Label() {
-                    Text = "Loading...",
-                    Location = new Point(Tooltip.PADDING),
-                    AutoSizeHeight = true,
-                    AutoSizeWidth = true,
-                    VerticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle,
-                    ShowShadow = true,
-                    Parent = SharedTooltip,
-                };
-
-                return _sharedTooltip;
-            }
-        }
-        private static Label _sharedTooltipLabel;
-
         #region Render Properties
         
         [JsonIgnore]
-        public bool LayoutIsInvalid { get; private set; } = true;
+        internal LayoutState LayoutState { get; private set; } = LayoutState.SkipDraw;
 
         protected SpriteBatchParameters _spriteBatchParameters;
 
@@ -544,14 +545,8 @@ namespace Blish_HUD.Controls {
         protected static InputService Input => GameService.Input;
         protected static AnimationService Animation => GameService.Animation;
         protected static GraphicsService Graphics => GameService.Graphics;
-        
-        // Many controls utilize sprites loaded from the same atlas
-        protected static TextureAtlas ControlAtlas;
 
-        public Control() {
-            if (Content != null)
-                ControlAtlas = ControlAtlas ?? (ControlAtlas = Content.GetTextureAtlas2(@"atlas\ui"));
-
+        protected Control() {
             // TODO: This needs to get handled by the menustrip itself, not by the control
             /* They activate on the mouse down for the right-click menus which
                deviates from their norm (seems as if everything else activates on
@@ -582,11 +577,11 @@ namespace Blish_HUD.Controls {
         /// Avoid overriding <see cref="Invalidate"/> as it has the potential to be called multiple times prior to a render taking place.
         /// </summary>
         public virtual void Invalidate() {
-            this.LayoutIsInvalid = true;
+            this.LayoutState = LayoutState.Invalidated;
         }
 
         /// <summary>
-        /// Called whenever the size or location of the control is changed.  Is also called if <see cref="Invalidate"/> is called.
+        /// Called whenever the size or location of the control is changed.  Is also called if <see cref="Invalidate"/> is called and should contain any calculations needed for the call to Draw the <see cref="Control"/>.
         /// </summary>
         public virtual void RecalculateLayout() {
             /* NOOP */
@@ -673,37 +668,21 @@ namespace Blish_HUD.Controls {
 
         public virtual void DoUpdate(GameTime gameTime) { /* NOOP */ }
 
-        private void HandleTooltip() {
-            if (this.MouseOver && !this.AbsoluteBounds.Contains(Input.MouseState.Position)) {
-                //if (this.Tooltip != null) this.Tooltip.Visible = false;
-                this.MouseOver = false;
-            } else if (this.MouseOver && this.Tooltip != null) { // TODO: This all needs to be handled by the Tooltip, probably, not by the control
-                //this.Tooltip.CurrentControl = this;
-
-                //// We're going to assume nobody has a display so small that the tooltip just can't fit in any direction
-                //int topPos = Input.MouseState.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height > 0
-                //                 ? -Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height
-                //                 : Tooltip.MOUSE_VERTICAL_MARGIN * 2;
-
-                //int leftPos = Input.MouseState.Position.X + this.Tooltip.Width < Graphics.SpriteScreen.Width
-                //                  ? 0
-                //                  : -this.Tooltip.Width;
-
-                //this.Tooltip.Location = Input.MouseState.Position + new Point(leftPos, topPos);
-
-                //this.Tooltip.Visible = true;
-            }
-        }
-
         public void Update(GameTime gameTime) {
             DoUpdate(gameTime);
 
-            if (this.LayoutIsInvalid) {
+            if (this.LayoutState != LayoutState.Ready) {
                 RecalculateLayout();
-                this.LayoutIsInvalid = false;
+                this.LayoutState = LayoutState.Ready;
             }
 
-            HandleTooltip();
+            CheckMouseLeft();
+        }
+
+        private void CheckMouseLeft() {
+            if (_mouseOver && !this.AbsoluteBounds.Contains(Input.MouseState.Position)) {
+                this.MouseOver = false;
+            }
         }
 
         /// <summary>
@@ -713,7 +692,7 @@ namespace Blish_HUD.Controls {
         protected abstract void Paint(SpriteBatch spriteBatch, Rectangle bounds);
 
         public virtual void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor) {
-            Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(scissor, this.AbsoluteBounds.WithPadding(_padding)).ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
+            Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(scissor, this.AbsoluteBounds.WithPadding(_padding)).ScaleBy(Graphics.UIScaleMultiplier);
 
             this.EffectBehind?.Draw(spriteBatch, drawBounds);
 
@@ -794,7 +773,7 @@ namespace Blish_HUD.Controls {
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        
+
         protected void OnPropertyChanged(string propertyName, bool invalidateLayout) {
             if (string.IsNullOrEmpty(propertyName)) return;
 

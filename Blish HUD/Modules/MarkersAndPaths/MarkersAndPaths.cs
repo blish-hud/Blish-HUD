@@ -91,7 +91,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         private void BuildCategoryMenus() {
-            GameService.Director.QueueAdHocUpdate((gameTime) => {
+            GameService.Director.QueueMainThreadUpdate((gameTime) => {
                                                       var rootCategoryMenu = new ContextMenuStrip();
 
                                                       var allMarkersCMS = new ContextMenuStripItem() {

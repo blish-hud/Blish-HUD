@@ -79,12 +79,9 @@ namespace Blish_HUD.Controls {
 
             // Load static sprite regions
             spriteBoxes = new TextureRegion2D[] {
-                ControlAtlas.GetRegion("colorpicker/cp-clr-v1"),
-                ControlAtlas.GetRegion("colorpicker/cp-clr-v2"),
-                ControlAtlas.GetRegion("colorpicker/cp-clr-v3"),
-                ControlAtlas.GetRegion("colorpicker/cp-clr-v4"),
+                Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v1"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v2"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v3"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v4"),
             };
-            spriteHighlight = ControlAtlas.GetRegion("colorpicker/cp-clr-active");
+            spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-active");
         }
 
         #endregion

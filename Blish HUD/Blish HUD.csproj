@@ -131,7 +131,6 @@
     <Compile Include="Controls\CounterBox.cs" />
     <Compile Include="Controls\DetailsButton.cs" />
     <Compile Include="Controls\Effects\ControlEffect.cs" />
-    <Compile Include="Controls\Effects\GlowEffect.cs" />
     <Compile Include="Controls\Effects\ScrollingHighlightEffect.cs" />
     <Compile Include="Controls\Extern\HardwareInput.cs" />
     <Compile Include="Controls\Extern\Input.cs" />
@@ -150,7 +149,9 @@
     <Compile Include="Controls\Label.cs" />
     <Compile Include="Controls\NullControl.cs" />
     <Compile Include="Controls\Resources\Checkable.cs" />
+    <Compile Include="Controls\Resources\Control.cs" />
     <Compile Include="Controls\_Events\ChildChangedEventArgs.cs" />
+    <Compile Include="Controls\_Events\ControlActivatedEventArgs.cs" />
     <Compile Include="Controls\_Events\MovedEventArgs.cs" />
     <Compile Include="Controls\_Events\RegionChangedEventArgs.cs" />
     <Compile Include="Controls\_Events\ResizedEventArgs.cs" />
@@ -189,6 +190,9 @@
     <Compile Include="Controls\TrackBar.cs" />
     <Compile Include="Controls\WindowBase.cs" />
     <Compile Include="Controls\WindowTab.cs" />
+    <Compile Include="Controls\_Events\ValueChangedEventArgs.cs" />
+    <Compile Include="Controls\_Types\AccordionState.cs" />
+    <Compile Include="Controls\_Types\LayoutState.cs" />
     <Compile Include="Controls\_Types\Thickness.cs" />
     <Compile Include="CustomBlendStates.cs" />
     <Compile Include="Custom\ObservableKeyedCollection.cs" />
@@ -309,7 +313,6 @@
     <Compile Include="GameServices\PathingService.cs" />
     <Compile Include="GameServices\ModuleService.cs" />
     <Compile Include="GameServices\GameIntegrationService.cs" />
-    <Compile Include="Library\Bind\Bind.cs" />
     <Compile Include="Library\Glide\Ease.cs" />
     <Compile Include="Library\Glide\MemberAccessor.cs" />
     <Compile Include="Library\Glide\MemberLerper.cs" />

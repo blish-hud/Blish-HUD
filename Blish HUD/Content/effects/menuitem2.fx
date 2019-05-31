@@ -59,6 +59,16 @@ float4 PSControl(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 Te
     return tex2D(s0, TexCoords) * Color;
 }
 
+
+float4 PSCoverage(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0
+{
+	// R = Wipe in
+	// G = Wipe out
+	// B = Feathering
+	
+	
+}
+
 technique
 {
     pass scroll

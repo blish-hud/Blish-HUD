@@ -50,11 +50,6 @@ namespace Blish_HUD.Pathing.Entities {
             OnTrailPointsChanged();
         }
 
-        public void SetTrailPoints(List<Vector3> trailPoints) {
-            _trailPoints = trailPoints;
-            OnTrailPointsChanged();
-        }
-
         public virtual void OnTrailPointsChanged() {
             if (!_trailPoints.Any()) return;
 

@@ -20,7 +20,6 @@ namespace Blish_HUD.Modules.BeetleRacing.Controls {
         public bool ShowSpeedValue { get; set; } = false;
 
         public Speedometer() {
-            this.ClipsBounds = false;
             this.Size = new Point(128, 128);
 
             UpdateLocation(null, null);

@@ -287,9 +287,10 @@ namespace Blish_HUD {
             };
 
             var settingsListMenu = new Menu() {
-                Size     = settingsMenuSection.ContentRegion.Size,
+                Size           = settingsMenuSection.ContentRegion.Size,
                 MenuItemHeight = 40,
-                Parent   = settingsMenuSection
+                Parent         = settingsMenuSection,
+                CanSelect      = true,
             };
 
             Panel cPanel = null;
@@ -349,6 +350,8 @@ namespace Blish_HUD {
                 cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
                 cPanel.Parent   = baseSettingsPanel;
             };
+
+            settingsMi_Exit.Click += delegate { Overlay.Exit(); };
 
             //var settingsMenu = new Menu() {
             //    Size = new Point(256, 32 * 8),
@@ -836,7 +839,7 @@ namespace Blish_HUD {
 
             // TODO: Calculate this instead of specifying this statically (or better yet, modify labels to have wordwrap support)
             int lineLength = 115;
-            moduleDropdown.ValueChanged += (Object sender, Dropdown.ValueChangedEventArgs e) => {
+            moduleDropdown.ValueChanged += (Object sender, ValueChangedEventArgs e) => {
                 var selectedModule =
                     Module.AvailableModules.First(m => m.GetModuleInfo().Name == moduleDropdown.SelectedItem);
 

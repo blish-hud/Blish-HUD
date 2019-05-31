@@ -36,7 +36,7 @@ namespace Blish_HUD.Controls {
 
         protected bool _autoSizeHeight = false;
 
-        public LabelBase() : base() {
+        public LabelBase() {
             _font = Content.DefaultFont14;
         }
 

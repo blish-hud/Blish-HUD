@@ -144,7 +144,12 @@ namespace Blish_HUD.Modules.Musician.Controls {
                 this.BasicTooltipText = this.Title;
             }
         }
-        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
+
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse | CaptureType.Filter;
+        }
+
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
         {
             int iconSize = this.IconSize == DetailsIconSize.Large ? SHEETBUTTON_HEIGHT : SHEETBUTTON_HEIGHT - BOTTOMSECTION_HEIGHT;
 

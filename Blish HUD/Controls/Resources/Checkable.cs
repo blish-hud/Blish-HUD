@@ -4,26 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls.Resources {
     public static class Checkable {
 
-        private static Texture2D _textureTitleBarLeft;
-        private static Texture2D _textureTitleBarRight;
-        private static Texture2D _textureTitleBarLeftActive;
-        private static Texture2D _textureTitleBarRightActive;
-
-        private static Texture2D _textureExitButton;
-        private static Texture2D _textureExitButtonActive;
+        public static readonly List<TextureRegion2D> TextureRegionsCheckbox;
 
         static Checkable() {
-            _textureTitleBarLeft        = GameService.Content.GetTexture("titlebar-inactive");
-            _textureTitleBarRight       = GameService.Content.GetTexture("window-topright");
-            _textureTitleBarLeftActive  = GameService.Content.GetTexture("titlebar-active");
-            _textureTitleBarRightActive = GameService.Content.GetTexture("window-topright-active");
+            TextureRegionsCheckbox = new List<TextureRegion2D>();
 
-            _textureExitButton       = GameService.Content.GetTexture("button-exit");
-            _textureExitButtonActive = GameService.Content.GetTexture("button-exit-active");
+            TextureRegionsCheckbox.AddRange(new[] {
+                                                Control.TextureAtlasControl.GetRegion("checkbox/cb-unchecked"),
+                                                Control.TextureAtlasControl.GetRegion("checkbox/cb-unchecked-active"),
+                                                Control.TextureAtlasControl.GetRegion("checkbox/cb-unchecked-disabled"),
+                                                Control.TextureAtlasControl.GetRegion("checkbox/cb-checked"),
+                                                Control.TextureAtlasControl.GetRegion("checkbox/cb-checked-active"),
+                                                Control.TextureAtlasControl.GetRegion("checkbox/cb-checked-disabled"),
+                                            });
         }
 
     }

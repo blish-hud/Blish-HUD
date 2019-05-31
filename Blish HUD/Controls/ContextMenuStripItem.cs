@@ -61,35 +61,8 @@ namespace Blish_HUD.Controls {
                 }
             }
         }
-
-        #region Checkbox Features
-
-        // Basically just copying the checkbox implementation for now
-
-        private static List<TextureRegion2D> _cbRegions;
-
-        private static void LoadCheckboxSprites() {
-            if (_cbRegions != null) return;
-
-            _cbRegions = new List<TextureRegion2D>();
-
-            _cbRegions.AddRange(
-                                new TextureRegion2D[] {
-                                    ControlAtlas.GetRegion("checkbox/cb-unchecked"),
-                                    ControlAtlas.GetRegion("checkbox/cb-unchecked-active"),
-                                    ControlAtlas.GetRegion("checkbox/cb-unchecked-disabled"),
-                                    ControlAtlas.GetRegion("checkbox/cb-checked"),
-                                    ControlAtlas.GetRegion("checkbox/cb-checked-active"),
-                                    ControlAtlas.GetRegion("checkbox/cb-checked-disabled"),
-                                }
-                               );
-        }
-
-        #endregion
         
         public ContextMenuStripItem() {
-            LoadCheckboxSprites();
-
             this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
         }
 
@@ -137,7 +110,7 @@ namespace Blish_HUD.Controls {
                 extension = !this.Enabled ? "-disabled" : extension;
 
                 spriteBatch.DrawOnCtrl(this,
-                                 _cbRegions.First(cb => cb.Name == $"checkbox/cb{state}{extension}"),
+                                 Resources.Checkable.TextureRegionsCheckbox.First(cb => cb.Name == $"checkbox/cb{state}{extension}"),
                                  new Rectangle(
                                                HORIZONTAL_PADDING + BULLET_SIZE / 2 - 16,
                                                _size.Y / 2 - 16,

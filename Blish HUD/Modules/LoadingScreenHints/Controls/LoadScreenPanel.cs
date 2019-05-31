@@ -22,8 +22,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
         private HashSet<int> SeenGamingTips;
         private HashSet<int> SeenNarrations;
         private HashSet<int> SeenGuessCharacters;
-        public LoadScreenPanel()
-        {
+        public LoadScreenPanel() {
             this.rand = new Random();
             this.ShuffledHints = new HashSet<int>();
             this.SeenGamingTips = new HashSet<int>();
@@ -35,24 +34,20 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
             UpdateLocation(null, null);
             Graphics.SpriteScreen.Resized += UpdateLocation;
         }
-        public void FadeOut()
-        {
+
+        public void FadeOut() {
             if (Fade != null) return;
 
             float duration = 2.0f;
-            if (this.CurrentLoadScreenTip != null)
-            {
-                if (this.CurrentLoadScreenTip is GuessCharacter)
-                {
+            if (this.CurrentLoadScreenTip != null) {
+                if (this.CurrentLoadScreenTip is GuessCharacter) {
                     GuessCharacter selected = (GuessCharacter)this.CurrentLoadScreenTip;
                     selected.Result = true;
                     duration = duration + 3.0f;
-                } else if (this.CurrentLoadScreenTip is Narration)
-                {
+                } else if (this.CurrentLoadScreenTip is Narration) {
                     Narration selected = (Narration)this.CurrentLoadScreenTip;
                     duration = duration + selected.ReadingTime;
-                } else if (this.CurrentLoadScreenTip is GamingTip)
-                {
+                } else if (this.CurrentLoadScreenTip is GamingTip) {
                     GamingTip selected = (GamingTip)this.CurrentLoadScreenTip;
                     duration = duration + selected.ReadingTime;
                 }
@@ -66,8 +61,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
             });
 
         }
-        public void NextHint()
-        {
+        public void NextHint() {
             int total = 3;
             int count = ShuffledHints.Count;
             if (count >= total) { ShuffledHints.Clear(); count = 0; }
@@ -77,18 +71,15 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
 
             ShuffledHints.Add(hint);
 
-            if (CurrentLoadScreenTip != null)
-            {
-                if (CurrentLoadScreenTip is GuessCharacter)
-                {
+            if (CurrentLoadScreenTip != null) {
+                if (CurrentLoadScreenTip is GuessCharacter) {
                     GuessCharacter selected = (GuessCharacter)CurrentLoadScreenTip;
                     selected.CharacterImage.Dispose();
                 }
                 CurrentLoadScreenTip.Dispose();
             }
             
-            switch (hint)
-            {
+            switch (hint) {
                 case 1:
 
                     total = GamingTip.Tips.Count;
@@ -136,10 +127,11 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
             }
             this.AddChild(CurrentLoadScreenTip);
         }
-        private void UpdateLocation(object sender, EventArgs e)
-        {
+
+        private void UpdateLocation(object sender, EventArgs e) {
             this.Location = new Point((Graphics.SpriteScreen.Width / 2 - this.Width / 2), (Graphics.SpriteScreen.Height / 2 - this.Height / 2) + 300);
         }
+
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this, Content.GetTexture("background_loadscreenpanel"), bounds, Color.White);
         }
