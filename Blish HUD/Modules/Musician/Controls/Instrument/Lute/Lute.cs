@@ -5,7 +5,7 @@ using Blish_HUD.Modules.Musician.Domain.Values;
 using Blish_HUD.Controls.Intern;
 namespace Blish_HUD.Modules.Musician.Controls.Instrument
 {
-    public class Lute : InstrumentType
+    public class Lute : Instrument
     {
         private static readonly TimeSpan NoteTimeout = TimeSpan.FromMilliseconds(5);
         private static readonly TimeSpan OctaveTimeout = TimeSpan.FromTicks(500);

@@ -56,23 +56,23 @@ namespace Blish_HUD.Controls.Intern
 
         public void Press(GuildWarsControls key)
         {
-            var nInputs = new[]
-            {
-                new Input
-                {
-                    type = InputType.KEYBOARD,
-                    U = new InputUnion
-                    {
-                        ki = new KeybdInput
-                        {
-                            wScan = ScanCodeShorts[key],
-                            wVk = VirtualKeyShorts[key]
-                        }
-                    }
-                }
-            };
             if (HardwareInput || !GameService.GameIntegration.Gw2IsRunning)
             {
+                var nInputs = new[]
+                {
+                    new Input
+                    {
+                        type = InputType.KEYBOARD,
+                        U = new InputUnion
+                        {
+                            ki = new KeybdInput
+                            {
+                                wScan = ScanCodeShorts[key],
+                                wVk = VirtualKeyShorts[key]
+                            }
+                        }
+                    }
+                };
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Input.Size);
             }
             else
@@ -87,30 +87,30 @@ namespace Blish_HUD.Controls.Intern
 
         public void Release(GuildWarsControls key)
         {
-            var nInputs = new[]
-            {
-                new Input
-                {
-                    type = InputType.KEYBOARD,
-                    U = new InputUnion
-                    {
-                        ki = new KeybdInput
-                        {
-                            wScan = ScanCodeShorts[key],
-                            wVk = VirtualKeyShorts[key],
-                            dwFlags = KeyEventF.KEYUP
-                        }
-                    }
-                }
-            };
             if (HardwareInput || !GameService.GameIntegration.Gw2IsRunning)
             {
+                var nInputs = new[]
+                {
+                    new Input
+                    {
+                        type = InputType.KEYBOARD,
+                        U = new InputUnion
+                        {
+                            ki = new KeybdInput
+                            {
+                                wScan = ScanCodeShorts[key],
+                                wVk = VirtualKeyShorts[key],
+                                dwFlags = KeyEventF.KEYUP
+                            }
+                        }
+                    }
+                };
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Input.Size);
             }
             else
             {
                 uint vkCode = (uint)VirtualKeyShorts[key];
-                ExtraKeyInfo lParam = new ExtraKeyInfo()
+                ExtraKeyInfo lParam = new ExtraKeyInfo
                 {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
                     repeatCount = 1,

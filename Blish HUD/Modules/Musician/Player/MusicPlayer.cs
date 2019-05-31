@@ -14,7 +14,7 @@ namespace Blish_HUD.Modules.Musician.Player
         {
             Algorithm.Dispose();
         }
-        public MusicPlayer(MusicSheet musicSheet, InstrumentType instrument, IPlayAlgorithm algorithm)
+        public MusicPlayer(MusicSheet musicSheet, Instrument instrument, IPlayAlgorithm algorithm)
         {
             Algorithm = algorithm;
             Worker = new Thread(() => algorithm.Play(instrument, musicSheet.MetronomeMark, musicSheet.Melody.ToArray()));

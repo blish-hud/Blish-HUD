@@ -6,9 +6,9 @@ using Blish_HUD.Modules.Musician.Notation.Persistance;
 namespace Blish_HUD.Modules.Musician.Controls {
 
     // TODO: Show "Edit" button when music sheet creator correlates to account name from ApiService. Navigates to composer.
-    public class SheetButton : Control {
+    public class SheetButton : DetailsButton {
 
-        private const int SHEETBUTTON_WIDTH = 280;
+        private const int SHEETBUTTON_WIDTH = 327;
         private const int SHEETBUTTON_HEIGHT = 100;
 
         private const int USER_WIDTH = 75;
@@ -144,7 +144,7 @@ namespace Blish_HUD.Modules.Musician.Controls {
                 this.BasicTooltipText = this.Title;
             }
         }
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
         {
             int iconSize = this.IconSize == DetailsIconSize.Large ? SHEETBUTTON_HEIGHT : SHEETBUTTON_HEIGHT - BOTTOMSECTION_HEIGHT;
 

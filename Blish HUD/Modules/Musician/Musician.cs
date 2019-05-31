@@ -121,11 +121,12 @@ namespace Blish_HUD.Modules.Musician
                 Parent = lPanel,
                 Location = new Point(20, 20),
             };
-            var melodyPanel = new Panel()
+            var melodyPanel = new TintedPanel()
             {
-                Location = new Point(Panel.LEFT_MARGIN + 20, Panel.BOTTOM_MARGIN + backButton.Bottom),
-                Size = new Point(lPanel.Size.X - 50 - Panel.LEFT_MARGIN, lPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN),
+                Location = new Point(0, Panel.BOTTOM_MARGIN + backButton.Bottom),
+                Size = new Point(lPanel.Width, lPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN),
                 Parent = lPanel,
+                ShowBorder = true,
                 CanScroll = true
             };
 
@@ -431,7 +432,7 @@ namespace Blish_HUD.Modules.Musician
             {
                 int x = pos % 3;
                 int y = pos / 3;
-                mel.Location = new Point(x * 288, y * 108);
+                mel.Location = new Point(x * 335, y * 108);
 
                 ((Panel)mel.Parent).VerticalScrollOffset = 0;
                 mel.Parent.Invalidate();

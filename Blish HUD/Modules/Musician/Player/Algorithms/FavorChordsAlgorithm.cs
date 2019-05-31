@@ -10,7 +10,7 @@ namespace Blish_HUD.Modules.Musician.Player.Algorithms
     {
         private bool Abort = false;
         public void Dispose() { this.Abort = true; }
-        public void Play(InstrumentType instrument, MetronomeMark metronomeMark, ChordOffset[] melody)
+        public void Play(Instrument instrument, MetronomeMark metronomeMark, ChordOffset[] melody)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
