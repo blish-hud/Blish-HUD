@@ -45,16 +45,16 @@ namespace Blish_HUD.Controls {
             }
 
             protected override void OnMouseMoved(MouseEventArgs e) {
-                base.OnMouseMoved(e);
-
-                //var relPos = e.MouseState.Position - this.AbsoluteBounds.Location;
                 this.HighlightedItem = this.RelativeMousePosition.Y / _assocDropdown.Height;
+
+                base.OnMouseMoved(e);
             }
 
             protected override void OnClick(MouseEventArgs e) {
+                _assocDropdown.SelectedItem = _assocDropdown.Items[this.HighlightedItem];
+
                 base.OnClick(e);
 
-                _assocDropdown.SelectedItem = _assocDropdown.Items[this.HighlightedItem];
                 Dispose();
             }
 
@@ -71,7 +71,7 @@ namespace Blish_HUD.Controls {
                                                new Rectangle(
                                                              2,
                                                              2                     + _assocDropdown.Height * index,
-                                                             _size.X - 12          - spriteArrow.Width,
+                                                             _size.X - 12          - _textureArrow.Width,
                                                              _assocDropdown.Height - 4
                                                             ),
                                                new Color(45, 37, 25, 255)
@@ -84,7 +84,7 @@ namespace Blish_HUD.Controls {
                                                      new Rectangle(
                                                                    8,
                                                                    _assocDropdown.Height * index,
-                                                                   bounds.Width - 13 - spriteArrow.Width,
+                                                                   bounds.Width - 13 - _textureArrow.Width,
                                                                    _assocDropdown.Height
                                                                   ),
                                                      ContentService.Colors.Chardonnay
@@ -96,7 +96,7 @@ namespace Blish_HUD.Controls {
                                                      Content.DefaultFont14,
                                                      new Rectangle(8,
                                                                    _assocDropdown.Height * index,
-                                                                   bounds.Width - 13 - spriteArrow.Width,
+                                                                   bounds.Width - 13 - _textureArrow.Width,
                                                                    _assocDropdown.Height),
                                                      Color.FromNonPremultiplied(239, 240, 239, 255));
                     }
@@ -121,20 +121,29 @@ namespace Blish_HUD.Controls {
 
         private const int  DROPDOWN_HEIGHT = 25;
 
-        public class ValueChangedEventArgs : EventArgs {
-            public string PreviousValue { get; }
-            public string CurrentValue { get; }
+        #region Load Static
 
-            public ValueChangedEventArgs(string previousValue, string currentValue) {
-                this.PreviousValue = previousValue;
-                this.CurrentValue = currentValue;
-            }
+        private static TextureRegion2D _textureInputBox;
+        private static TextureRegion2D _textureArrow;
+        private static TextureRegion2D _textureArrowActive;
+
+        static Dropdown() {
+            _textureInputBox    = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/input-box");
+            _textureArrow       = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow");
+            _textureArrowActive = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow-active");
         }
+
+        #endregion
+
+        #region Events
+
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
         protected virtual void OnValueChanged(ValueChangedEventArgs e) {
             this.ValueChanged?.Invoke(this, e);
         }
+
+        #endregion
 
         public ObservableCollection<string> Items { get; }
 
@@ -154,16 +163,7 @@ namespace Blish_HUD.Controls {
         private DropdownPanel _lastPanel = null;
         private bool _hadPanel = false;
 
-        private static TextureRegion2D spriteInputBox;
-        private static TextureRegion2D spriteArrow;
-        private static TextureRegion2D spriteArrowActive;
-
         public Dropdown() {
-            // Load static resources
-            spriteInputBox = spriteInputBox ?? ControlAtlas.GetRegion("inputboxes/input-box");
-            spriteArrow = spriteArrow ?? ControlAtlas.GetRegion("inputboxes/dd-arrow");
-            spriteArrowActive = spriteArrowActive ?? ControlAtlas.GetRegion("inputboxes/dd-arrow-active");
-            
             this.Items = new ObservableCollection<string>();
 
             this.Items.CollectionChanged += delegate {
@@ -214,12 +214,12 @@ namespace Blish_HUD.Controls {
             // Draw dropdown arrow
             spriteBatch.DrawOnCtrl(
                                    this,
-                                   this.MouseOver ? spriteArrowActive : spriteArrow,
+                                   this.MouseOver ? _textureArrowActive : _textureArrow,
                                    new Rectangle(
-                                                 _size.X - spriteArrow.Width - 5,
-                                                 _size.Y / 2                 - spriteArrow.Height / 2,
-                                                 spriteArrow.Width,
-                                                 spriteArrow.Height
+                                                 _size.X - _textureArrow.Width - 5,
+                                                 _size.Y / 2                 - _textureArrow.Height / 2,
+                                                 _textureArrow.Width,
+                                                 _textureArrow.Height
                                                 )
                                   );
 
@@ -230,7 +230,7 @@ namespace Blish_HUD.Controls {
                                          Content.DefaultFont14,
                                          new Rectangle(
                                                        5, 0,
-                                                       _size.X - 10 - spriteArrow.Width,
+                                                       _size.X - 10 - _textureArrow.Width,
                                                        _size.Y
                                                       ),
                                          Color.FromNonPremultiplied(239, 240, 239, 255)

@@ -16,13 +16,35 @@ namespace Blish_HUD.Controls {
         private const int CONTROL_WIDTH = 12;
         private const int MIN_LENGTH = 32;
         private const int CAP_SLACK = 6;
+        
+        #region Load Static
 
-        private Tween TargetScrollDistanceAnim = null;
+        private static TextureRegion2D _textureTrack;
+        private static TextureRegion2D _textureUpArrow;
+        private static TextureRegion2D _textureDownArrow;
+        private static TextureRegion2D _textureBar;
+        private static TextureRegion2D _textureThumb;
+        private static TextureRegion2D _textureTopCap;
+        private static TextureRegion2D _textureBottomCap;
+
+        static Scrollbar() {
+            _textureTrack     = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-track");
+            _textureUpArrow   = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-arrow-up");
+            _textureDownArrow = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-arrow-down");
+            _textureBar       = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-bar-active");
+            _textureThumb     = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-thumb");
+            _textureTopCap    = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-cap-top");
+            _textureBottomCap = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-cap-bottom");
+        }
+
+        #endregion
+
+        private Tween _targetScrollDistanceAnim = null;
 
         private float _targetScrollDistance;
         private float TargetScrollDistance {
             get {
-                if (TargetScrollDistanceAnim == null) return _scrollDistance;
+                if (_targetScrollDistanceAnim == null) return _scrollDistance;
 
                 return _targetScrollDistance;
             }
@@ -39,29 +61,21 @@ namespace Blish_HUD.Controls {
         public float ScrollDistance {
             get => _scrollDistance;
             set {
-                float aVal = MathHelper.Clamp(value, 0f, 1f);
-                if (_scrollDistance != aVal) {
-                    _scrollDistance = aVal;
-                    UpdateAssocContainer();
+                if (!SetProperty(ref _scrollDistance, MathHelper.Clamp(value, 0f, 1f), true)) return;
 
-                    OnPropertyChanged();
-                }
+                UpdateAssocContainer();
             }
         }
 
         private int _scrollbarHeight = MIN_LENGTH;
-        private int ScrollbarHeight { get => _scrollbarHeight;
+        private int ScrollbarHeight {
+            get => _scrollbarHeight;
             set {
-                if (_scrollbarHeight == value) return;
-
-                _scrollbarHeight = value;
-                OnPropertyChanged();
+                if (!SetProperty(ref _scrollbarHeight, value, true)) return;
 
                 // Reclamps the scrolling content
                 RecalculateScrollbarSize();
                 UpdateAssocContainer();
-
-                Invalidate();
             }
         }
 
@@ -70,43 +84,10 @@ namespace Blish_HUD.Controls {
         private Container _associatedContainer;
         public Container AssociatedContainer {
             get => _associatedContainer;
-            set {
-                if (_associatedContainer == value) return;
-
-                _associatedContainer = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _associatedContainer, value);
         }
 
-        #region Sprites
-
-        private static bool _spritesLoaded = false;
-
-        private static TextureRegion2D spriteTrack;
-        private static TextureRegion2D spriteUpArrow;
-        private static TextureRegion2D spriteDownArrow;
-        private static TextureRegion2D spriteBar;
-        private static TextureRegion2D spriteThumb;
-        private static TextureRegion2D spriteTopCap;
-        private static TextureRegion2D spriteBottomCap;
-
-        private static void LoadSprites() {
-            if (_spritesLoaded) return;
-
-            spriteTrack = ControlAtlas.GetRegion("scrollbar/sb-track");
-            spriteUpArrow = ControlAtlas.GetRegion("scrollbar/sb-arrow-up");
-            spriteDownArrow = ControlAtlas.GetRegion("scrollbar/sb-arrow-down");
-            spriteBar = ControlAtlas.GetRegion("scrollbar/sb-bar-active");
-            spriteThumb = ControlAtlas.GetRegion("scrollbar/sb-thumb");
-            spriteTopCap = ControlAtlas.GetRegion("scrollbar/sb-cap-top");
-            spriteBottomCap = ControlAtlas.GetRegion("scrollbar/sb-cap-bottom");
-
-            _spritesLoaded = true;
-        }
-
-        #endregion
-
-        private int TrackLength => (_size.Y - spriteUpArrow.Height - spriteDownArrow.Height);
+        private int TrackLength => (_size.Y - _textureUpArrow.Height - _textureDownArrow.Height);
 
         private bool Scrolling = false;
         private int ScrollingOffset = 0;
@@ -116,12 +97,8 @@ namespace Blish_HUD.Controls {
         private Rectangle BarBounds;
         private Rectangle TrackBounds;
 
-
-
         public Scrollbar(Container container) : base() {
             _associatedContainer = container;
-
-            LoadSprites();
 
             UpArrowBounds = Rectangle.Empty;
             DownArrowBounds = Rectangle.Empty;
@@ -132,17 +109,16 @@ namespace Blish_HUD.Controls {
 
             Input.LeftMouseButtonReleased += delegate { if (Scrolling) { Scrolling = false; /* Invalidate(); */ } };
 
-            //_associatedContainer.MouseEntered += delegate { Invalidate(); };
-            //_associatedContainer.MouseLeft += delegate { Invalidate(); };
-            //_associatedContainer.ChildAdded += delegate { Invalidate(); };
-            //_associatedContainer.ChildRemoved += delegate { Invalidate(); };
-            //_associatedContainer.ContentResized += delegate { Invalidate(); };
-            _associatedContainer.MouseWheelScrolled += OnWheelScroll;
-
-            this.MouseWheelScrolled     += OnWheelScroll;
+            _associatedContainer.MouseWheelScrolled += HandleWheelScroll;
         }
 
-        protected void OnWheelScroll(object sender, MouseEventArgs e) {
+        protected override void OnMouseWheelScrolled(MouseEventArgs e) {
+            HandleWheelScroll(this, e);
+
+            base.OnMouseWheelScrolled(e);
+        }
+
+        private void HandleWheelScroll(object sender, MouseEventArgs e) {
             // Don't scroll if the scrollbar isn't visible
             if (!this.Visible || ScrollbarPercent > 0.99) return;
 
@@ -155,14 +131,14 @@ namespace Blish_HUD.Controls {
 
             float normalScroll = (float)Input.ClickState.EventDetails.wheelDelta / (float)Math.Abs(Input.ClickState.EventDetails.wheelDelta);
             
-            TargetScrollDistanceAnim?.Cancel();
+            _targetScrollDistanceAnim?.Cancel();
             
             this.TargetScrollDistance += normalScroll * -0.08f;
 
-            TargetScrollDistanceAnim = Animation.Tweener
+            _targetScrollDistanceAnim = Animation.Tweener
                                                 .Tween(this, new {ScrollDistance = this.TargetScrollDistance}, 0.35f)
                                                 .Ease(Glide.Ease.QuadOut)
-                                                .OnComplete(() => TargetScrollDistanceAnim = null);
+                                                .OnComplete(() => _targetScrollDistanceAnim = null);
         }
 
         protected override CaptureType CapturesInput() {
@@ -212,10 +188,10 @@ namespace Blish_HUD.Controls {
                 this.TargetScrollDistance = 0;
             }
 
-            UpArrowBounds = new Rectangle(this.Width / 2 - spriteUpArrow.Width / 2, 0, spriteUpArrow.Width, spriteUpArrow.Height);
-            DownArrowBounds = new Rectangle(this.Width / 2 - spriteDownArrow.Width / 2, this.Height - spriteDownArrow.Height, spriteDownArrow.Width, spriteDownArrow.Height);
-            BarBounds = new Rectangle(this.Width / 2 - spriteBar.Width / 2, (int)(this.ScrollDistance * (this.TrackLength - this.ScrollbarHeight)) + spriteUpArrow.Height, spriteBar.Width, this.ScrollbarHeight);
-            TrackBounds = new Rectangle(this.Width / 2 - spriteTrack.Width / 2, UpArrowBounds.Bottom, spriteTrack.Width, this.TrackLength);
+            UpArrowBounds = new Rectangle(this.Width / 2 - _textureUpArrow.Width / 2, 0, _textureUpArrow.Width, _textureUpArrow.Height);
+            DownArrowBounds = new Rectangle(this.Width / 2 - _textureDownArrow.Width / 2, this.Height - _textureDownArrow.Height, _textureDownArrow.Width, _textureDownArrow.Height);
+            BarBounds = new Rectangle(this.Width / 2 - _textureBar.Width / 2, (int)(this.ScrollDistance * (this.TrackLength - this.ScrollbarHeight)) + _textureUpArrow.Height, _textureBar.Width, this.ScrollbarHeight);
+            TrackBounds = new Rectangle(this.Width / 2 - _textureTrack.Width / 2, UpArrowBounds.Bottom, _textureTrack.Width, this.TrackLength);
             
             base.Invalidate();
         }
@@ -249,15 +225,15 @@ namespace Blish_HUD.Controls {
                            ? ContentService.Colors.Darkened(0.9f)
                            : drawTint;
 
-            spriteBatch.DrawOnCtrl(this, spriteTrack, TrackBounds);
+            spriteBatch.DrawOnCtrl(this, _textureTrack, TrackBounds);
 
-            spriteBatch.DrawOnCtrl(this, spriteUpArrow, UpArrowBounds, drawTint);
-            spriteBatch.DrawOnCtrl(this, spriteDownArrow, DownArrowBounds, drawTint);
+            spriteBatch.DrawOnCtrl(this, _textureUpArrow, UpArrowBounds, drawTint);
+            spriteBatch.DrawOnCtrl(this, _textureDownArrow, DownArrowBounds, drawTint);
 
-            spriteBatch.DrawOnCtrl(this, spriteBar, BarBounds, drawTint);
-            spriteBatch.DrawOnCtrl(this, spriteTopCap, new Rectangle(this.Width / 2 - spriteTopCap.Width / 2, BarBounds.Top - CAP_SLACK, spriteTopCap.Width, spriteTopCap.Height));
-            spriteBatch.DrawOnCtrl(this, spriteBottomCap, new Rectangle(this.Width / 2 - spriteBottomCap.Width / 2, BarBounds.Bottom - spriteBottomCap.Height + CAP_SLACK, spriteBottomCap.Width, spriteBottomCap.Height));
-            spriteBatch.DrawOnCtrl(this, spriteThumb, new Rectangle(this.Width / 2 - spriteThumb.Width / 2, BarBounds.Top + (this.ScrollbarHeight / 2 - spriteThumb.Height / 2), spriteThumb.Width, spriteThumb.Height), drawTint);
+            spriteBatch.DrawOnCtrl(this, _textureBar, BarBounds, drawTint);
+            spriteBatch.DrawOnCtrl(this, _textureTopCap, new Rectangle(this.Width / 2 - _textureTopCap.Width / 2, BarBounds.Top - CAP_SLACK, _textureTopCap.Width, _textureTopCap.Height));
+            spriteBatch.DrawOnCtrl(this, _textureBottomCap, new Rectangle(this.Width / 2 - _textureBottomCap.Width / 2, BarBounds.Bottom - _textureBottomCap.Height + CAP_SLACK, _textureBottomCap.Width, _textureBottomCap.Height));
+            spriteBatch.DrawOnCtrl(this, _textureThumb, new Rectangle(this.Width / 2 - _textureThumb.Width / 2, BarBounds.Top + (this.ScrollbarHeight / 2 - _textureThumb.Height / 2), _textureThumb.Width, _textureThumb.Height), drawTint);
         }
 
     }

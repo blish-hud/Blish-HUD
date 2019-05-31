@@ -26,6 +26,18 @@ namespace Blish_HUD.Controls {
         
         private const int ARROW_SIZE = 16;
 
+        #region Load Static
+
+        private static readonly Texture2D _textureArrow;
+
+        static MenuItem() {
+            _textureArrow = Content.GetTexture("156057");
+        }
+
+        #endregion
+
+        #region Events
+
         public event EventHandler<EventArgs> ItemSelected;
         protected virtual void OnItemSelected(EventArgs e) {
             this.ItemSelected?.Invoke(this, e);
@@ -36,6 +48,10 @@ namespace Blish_HUD.Controls {
             this.CheckedChanged?.Invoke(this, e);
         }
 
+        #endregion
+
+        #region Properties
+        
         protected int _menuItemHeight = DEFAULT_ITEM_HEIGHT;
         public int MenuItemHeight {
             get => _menuItemHeight;
@@ -115,6 +131,8 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        #endregion
+
         #region "Internal" Properties
 
         protected bool _overSection = false;
@@ -164,34 +182,9 @@ namespace Blish_HUD.Controls {
                           ICON_SIZE);
 
         #endregion
-
-        #region Checkbox Features
-
-        // Basically just copying the checkbox implementation for now
-
-        private static List<TextureRegion2D> _cbRegions;
-
-        private static void LoadCheckboxSprites() {
-            if (_cbRegions != null) return;
-
-            _cbRegions = new List<TextureRegion2D>();
-
-            _cbRegions.AddRange(
-                                new TextureRegion2D[] {
-                                    ControlAtlas.GetRegion("checkbox/cb-unchecked"),
-                                    ControlAtlas.GetRegion("checkbox/cb-unchecked-active"),
-                                    ControlAtlas.GetRegion("checkbox/cb-unchecked-disabled"),
-                                    ControlAtlas.GetRegion("checkbox/cb-checked"),
-                                    ControlAtlas.GetRegion("checkbox/cb-checked-active"),
-                                    ControlAtlas.GetRegion("checkbox/cb-checked-disabled"),
-                                }
-                               );
-        }
-
-        #endregion
-
-        private static Texture2D _spriteArrow;
+        
         private Glide.Tween _slideAnim;
+        private Effects.ScrollingHighlightEffect _scrollEffect;
 
         public MenuItem() { Initialize(); }
 
@@ -202,15 +195,13 @@ namespace Blish_HUD.Controls {
         }
 
         private void Initialize() {
-            this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
+            _scrollEffect = new Effects.ScrollingHighlightEffect(this);
+
+            this.EffectBehind = _scrollEffect;
 
             this.Height = this.MenuItemHeight;
 
-            _spriteArrow = _spriteArrow ?? (_spriteArrow = Content.GetTexture("156057"));
-
             this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, 0);
-
-            LoadCheckboxSprites();
         }
 
         public override void RecalculateLayout() {
@@ -359,15 +350,13 @@ namespace Blish_HUD.Controls {
                                           ARROW_SIZE,
                                           ARROW_SIZE);
 
-            spriteBatch.DrawOnCtrl(
-                                   this,
-                                   _spriteArrow,
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureArrow,
                                    arrowDest,
                                    null,
                                    Color.White,
                                    this.ArrowRotation,
-                                   arrowOrigin
-                                  );
+                                   arrowOrigin);
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
@@ -386,7 +375,7 @@ namespace Blish_HUD.Controls {
                 extension = this.MouseOverIconBox ? "-active" : extension;
                 extension = !this.Enabled ? "-disabled" : extension;
 
-                firstItemSprite = _cbRegions.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
+                firstItemSprite = Resources.Checkable.TextureRegionsCheckbox.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
             } else if (this.Icon != null && !this.Children.Any()) {
                 // performance?
                 firstItemSprite = new TextureRegion2D(this.Icon);

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+using Point = Microsoft.Xna.Framework.Point;
 using Screen = Blish_HUD.Controls.Screen;
 
 namespace Blish_HUD {
@@ -70,13 +73,18 @@ namespace Blish_HUD {
         public Point Resolution {
             get => new Point(Overlay.graphics.PreferredBackBufferWidth, Overlay.graphics.PreferredBackBufferHeight);
             set {
-                Overlay.graphics.PreferredBackBufferWidth = value.X;
-                Overlay.graphics.PreferredBackBufferHeight = value.Y;
-                
-                Overlay.graphics.ApplyChanges();
+                try {
+                    Overlay.graphics.PreferredBackBufferWidth  = value.X;
+                    Overlay.graphics.PreferredBackBufferHeight = value.Y;
 
-                float uiScale = GetScaleRatio(this.UIScale);
-                this.SpriteScreen.Size = new Point((int)(value.X / uiScale), (int)(value.Y / uiScale));
+                    Overlay.graphics.ApplyChanges();
+
+                    // Exception would be from the code above, but don't update our scaling if there is an exception
+                    float uiScale = GetScaleRatio(this.UIScale);
+                    this.SpriteScreen.Size = new Point((int) (value.X / uiScale), (int) (value.Y / uiScale));
+                } catch (SharpDXException sdxe) {
+                    // If device lost, we should hopefully handle in device lost event below
+                }
             }
         }
 
@@ -87,7 +95,6 @@ namespace Blish_HUD {
             // If for some reason we lose the rendering device, just restart the application
             // Might do better error handling later on
             Overlay.GraphicsDevice.DeviceLost += delegate { Application.Restart(); };
-            //MainLoop.Form.Resize += delegate { this.Resolution = new Point(MainLoop.Form.Size.Width, MainLoop.Form.Size.Height); };
 
             _uiScaleTransform = Matrix.CreateScale(GetScaleRatio(this.UIScale));
         }

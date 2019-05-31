@@ -81,7 +81,6 @@ namespace Blish_HUD.Controls.Effects {
                 AssignedControlOnMouseEntered(this.AssignedControl, null);
         }
 
-
         protected override void OnDisable() {
             AssignedControlOnMouseLeft(this.AssignedControl, null);
         }

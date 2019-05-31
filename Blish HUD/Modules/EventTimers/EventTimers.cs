@@ -12,6 +12,7 @@ using Flurl;
 using Humanizer;
 using Microsoft.Scripting.Utils;
 using Microsoft.Xna.Framework;
+using String = System.String;
 
 namespace Blish_HUD.Modules.EventTimers {
     public class EventTimers:Module {
@@ -210,18 +211,14 @@ namespace Blish_HUD.Modules.EventTimers {
             List<IGrouping<string, Meta>> submetas = Meta.Events.GroupBy(e => e.Category).ToList();
 
             var evAll = eventCategories.AddMenuItem(EC_ALLEVENTS);
-            evAll.LeftMouseButtonReleased += delegate {
-                displayedEvents.ForEach(de => { de.Visible = true; });
-
-                //RepositionES();
+            evAll.Click += delegate {
+                eventPanel.FilterChildren<DetailsButton>(db => true);
             };
 
             foreach (IGrouping<string, Meta> e in submetas) {
                 var ev = eventCategories.AddMenuItem(e.Key);
-                ev.LeftMouseButtonReleased += delegate {
-                    //displayedEvents.ForEach(de => { de.Visible = de.AssignedMeta.Category == e.Key; });
-                    
-                    //RepositionES();
+                ev.Click += delegate {
+                    eventPanel.FilterChildren<DetailsButton>(db => string.Equals(db.BasicTooltipText, e.Key));
                 };
             }
 
@@ -232,10 +229,18 @@ namespace Blish_HUD.Modules.EventTimers {
             ddSortMethod.Items.Add(DD_ALPHABETICAL);
             ddSortMethod.Items.Add(DD_NEXTUP);
 
-            ddSortMethod.ValueChanged += UpdateSort;
+            ddSortMethod.ValueChanged += delegate(object sender, ValueChangedEventArgs args) {
+                switch (args.CurrentValue) {
+                    case DD_ALPHABETICAL:
+                        eventPanel.SortChildren<DetailsButton>((db1, db2) => string.Compare(db1.Text, db2.Text, StringComparison.CurrentCultureIgnoreCase));
+                        break;
+                    case DD_NEXTUP:
+                        break;
+                }
+            };
 
             ddSortMethod.SelectedItem = DD_NEXTUP;
-            UpdateSort(ddSortMethod, EventArgs.Empty);
+            //UpdateSort(ddSortMethod, EventArgs.Empty);
 
             Console.WriteLine("Main Panel is: " + etPanel.Location.ToString() + " :: " + etPanel.Size.ToString());
             Console.WriteLine("Event Panel is: " + eventPanel.Location.ToString() + " :: " + eventPanel.Size.ToString());
@@ -247,6 +252,7 @@ namespace Blish_HUD.Modules.EventTimers {
         private void UpdateSort(object sender, EventArgs e) {
             switch (((Dropdown)sender).SelectedItem) {
                 case DD_ALPHABETICAL:
+
                     //displayedEvents.Sort((e1, e2) => e1.AssignedMeta.Name.CompareTo(e2.AssignedMeta.Name));
                     break;
                 case DD_NEXTUP:

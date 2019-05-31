@@ -58,7 +58,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS;NOMOUSEHOOK</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -149,7 +149,9 @@
     <Compile Include="Controls\Label.cs" />
     <Compile Include="Controls\NullControl.cs" />
     <Compile Include="Controls\Resources\Checkable.cs" />
+    <Compile Include="Controls\Resources\Control.cs" />
     <Compile Include="Controls\_Events\ChildChangedEventArgs.cs" />
+    <Compile Include="Controls\_Events\ControlChangedEventArgs.cs" />
     <Compile Include="Controls\_Events\MovedEventArgs.cs" />
     <Compile Include="Controls\_Events\RegionChangedEventArgs.cs" />
     <Compile Include="Controls\_Events\ResizedEventArgs.cs" />
@@ -188,6 +190,7 @@
     <Compile Include="Controls\TrackBar.cs" />
     <Compile Include="Controls\WindowBase.cs" />
     <Compile Include="Controls\WindowTab.cs" />
+    <Compile Include="Controls\_Events\ValueChangedEventArgs.cs" />
     <Compile Include="Controls\_Types\Thickness.cs" />
     <Compile Include="CustomBlendStates.cs" />
     <Compile Include="Custom\ObservableKeyedCollection.cs" />

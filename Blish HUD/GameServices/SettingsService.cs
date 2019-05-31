@@ -700,7 +700,7 @@ namespace Blish_HUD {
 
             // TODO: Calculate this instead of specifying this statically (or better yet, modify labels to have wordwrap support)
             int lineLength = 115;
-            moduleDropdown.ValueChanged += (Object sender, Dropdown.ValueChangedEventArgs e) => {
+            moduleDropdown.ValueChanged += (Object sender, ValueChangedEventArgs e) => {
                 var selectedModule =
                     Module.AvailableModules.First(m => m.GetModuleInfo().Name == moduleDropdown.SelectedItem);
 

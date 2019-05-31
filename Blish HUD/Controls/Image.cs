@@ -16,6 +16,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _texture, value);
         }
 
+        public Image() { /* NOOP */ }
+
         public Image(Texture2D texture) {
             this.Texture = texture;
             this.Size = texture.Bounds.Size;
@@ -28,7 +30,7 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(
                                    this,
                                    _texture,
-                                   new Rectangle(Point.Zero, _size)
+                                   bounds
                                   );
         }
 

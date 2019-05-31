@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD {
 
@@ -23,11 +24,46 @@ namespace Blish_HUD {
         /// Allows you to enqueue a call that will occur during the next time the Update loop executes.
         /// </summary>
         /// <param name="call">A method accepting <see="GameTime" /> as a parameter.</param>
-        public void QueueAdHocUpdate(Action<GameTime> call) {
+        public void QueueMainThreadUpdate(Action<GameTime> call) {
             _queuedUpdates.Enqueue(call);
         }
 
         protected override void Initialize() {
+            //Texture2D mask = Content.GetTexture("157357");
+            //Texture2D background = Content.GetTexture("157356");
+
+            //var coverageEffect = Overlay.cm.Load<Effect>(@"effects\gw2master");
+            //coverageEffect.Parameters["Mask"].SetValue(mask);
+            //coverageEffect.Parameters["directionIn"].SetValue(false);
+            //coverageEffect.Parameters["Roller"].SetValue(0f);
+
+            //Controls.Image shaderTest = new Image(background) {
+            //    BackgroundColor = Color.Magenta,
+            //    Parent = Graphics.SpriteScreen,
+            //    Size = new Point(128, 128),
+            //    Location = new Point(512, 100),
+            //    //SpriteBatchParameters = new SpriteBatchParameters(SpriteSortMode.Immediate,
+            //    //BlendState.NonPremultiplied,
+            //    //SamplerState.LinearClamp,
+            //    //null,
+            //    //null,
+            //    //coverageEffect,
+            //    //GameService.Graphics.UIScaleTransform)
+            //};
+
+            //Controls.TrackBar rollbarTest = new TrackBar() {
+            //    Parent = Graphics.SpriteScreen,
+            //    MinValue = 0,
+            //    MaxValue = 100,
+            //    Value = 0,
+            //    Location = new Point(512, shaderTest.Bottom - shaderTest.Height / 2),
+            //};
+
+            //rollbarTest.Left = shaderTest.Right + 10;
+
+            //rollbarTest.ValueChanged += delegate {
+            //    coverageEffect.Parameters["Roller"].SetValue(rollbarTest.Value / 100f);
+            //};
         }
 
         protected override void Load() {
@@ -67,18 +103,18 @@ namespace Blish_HUD {
                 Size = wndw.ContentRegion.Size
             };
 
-            var hi = new Label() {
-                Text = Utils.DrawUtil.WrapText(Content.DefaultFont14, "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)", 50),
-                Parent = hPanel,
-                Location = Point.Zero,
-                Height = 128,
-                AutoSizeWidth = true,
-                StrokeText = true,
-                HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
-                BackgroundColor = Color.Magenta
-            };
+            //var hi = new Label() {
+            //    Text = Utils.DrawUtil.WrapText(Content.DefaultFont14, "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)", 50),
+            //    Parent = hPanel,
+            //    Location = Point.Zero,
+            //    Height = 128,
+            //    AutoSizeWidth = true,
+            //    StrokeText = true,
+            //    HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
+            //    BackgroundColor = Color.Magenta
+            //};
 
-            hi.Location = new Point(hPanel.Width / 2 - hi.Width / 2, hPanel.Height / 2 - hi.Height / 2);
+            //hi.Location = new Point(hPanel.Width / 2 - hi.Width / 2, hPanel.Height / 2 - hi.Height / 2);
 
             return hPanel;
         }

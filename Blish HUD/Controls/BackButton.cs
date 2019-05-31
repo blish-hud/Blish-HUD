@@ -18,7 +18,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static Texture2D _textureBackButton;
+        private static readonly Texture2D _textureBackButton;
 
         static BackButton() {
             _textureBackButton = Content.GetTexture("784268");

@@ -254,6 +254,12 @@
 /processorParam:DebugMode=Auto
 /build:effects/glow.fx
 
+#begin effects/gw2master.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/gw2master.fx
+
 #begin effects/menuitem.fx
 /importer:EffectImporter
 /processor:EffectProcessor

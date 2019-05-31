@@ -72,7 +72,7 @@ namespace Blish_HUD.Controls {
 
         #region Resources
 
-        private static SpriteBatchParameters _defaultSpriteBatchParameters;
+        private static readonly SpriteBatchParameters _defaultSpriteBatchParameters;
 
         #endregion
 
@@ -83,15 +83,6 @@ namespace Blish_HUD.Controls {
         #endregion
 
         #region Static Control Events
-
-        public class ControlChangedEventArgs : EventArgs {
-            public Control ActivatedControl { get; }
-
-            public ControlChangedEventArgs(Control activatedControl) {
-                this.ActivatedControl = activatedControl;
-            }
-
-        }
 
         public static event EventHandler<ControlChangedEventArgs> ActiveControlChanged;
 
@@ -544,14 +535,8 @@ namespace Blish_HUD.Controls {
         protected static InputService Input => GameService.Input;
         protected static AnimationService Animation => GameService.Animation;
         protected static GraphicsService Graphics => GameService.Graphics;
-        
-        // Many controls utilize sprites loaded from the same atlas
-        protected static TextureAtlas ControlAtlas;
 
-        public Control() {
-            if (Content != null)
-                ControlAtlas = ControlAtlas ?? (ControlAtlas = Content.GetTextureAtlas2(@"atlas\ui"));
-
+        protected Control() {
             // TODO: This needs to get handled by the menustrip itself, not by the control
             /* They activate on the mouse down for the right-click menus which
                deviates from their norm (seems as if everything else activates on
