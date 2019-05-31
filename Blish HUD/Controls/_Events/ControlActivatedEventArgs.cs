@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Blish_HUD.Controls {
 
-    public class ControlChangedEventArgs : EventArgs {
+    public class ControlActivatedEventArgs : EventArgs {
         public Control ActivatedControl { get; }
 
-        public ControlChangedEventArgs(Control activatedControl) {
+        public ControlActivatedEventArgs(Control activatedControl) {
             this.ActivatedControl = activatedControl;
         }
 

@@ -42,9 +42,20 @@ namespace Blish_HUD.Controls {
             Input.RightMouseButtonPressed += MouseButtonPressed;
         }
 
+        protected override void OnShown(EventArgs e) {
+            // If we have no children, don't display (and don't call 'Shown' event, either)
+            if (!_children.Any()) {
+                this.Visible = false;
+                return;
+            }
+            
+            base.OnShown(e);
+        }
+
         public void Show(Point position) {
             this.Location = position;
-            this.Visible = true;
+            
+            base.Show();
         }
 
         public void Show(Control activeControl) {
@@ -55,7 +66,7 @@ namespace Blish_HUD.Controls {
                 this.Location = activeControl.Location + activeControl.Size;
             }
 
-            this.Visible = true;
+            base.Show();
         }
 
         public override void Hide() {

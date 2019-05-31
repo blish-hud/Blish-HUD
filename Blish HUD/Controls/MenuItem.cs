@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Utils;
@@ -11,13 +12,7 @@ using Newtonsoft.Json;
 
 namespace Blish_HUD.Controls {
 
-    // TODO: Decide if we should split this into two classes, MenuItem and an inheriting MenuItem meant for accordion menus
     public class MenuItem : Container, IMenuItem, ICheckable {
-
-        public enum AccordionState {
-            Expanded,
-            Collapsed
-        }
 
         private const int DEFAULT_ITEM_HEIGHT = 32;
         
@@ -38,8 +33,8 @@ namespace Blish_HUD.Controls {
 
         #region Events
 
-        public event EventHandler<EventArgs> ItemSelected;
-        protected virtual void OnItemSelected(EventArgs e) {
+        public event EventHandler<ControlActivatedEventArgs> ItemSelected;
+        protected virtual void OnItemSelected(ControlActivatedEventArgs e) {
             this.ItemSelected?.Invoke(this, e);
         }
 
@@ -56,11 +51,13 @@ namespace Blish_HUD.Controls {
         public int MenuItemHeight {
             get => _menuItemHeight;
             set {
-                if (SetProperty(ref _menuItemHeight, value, true)) {
-                    // Update all children to ensure they match in height
-                    foreach (var childMenuItem in _children.Cast<IMenuItem>()) {
-                        childMenuItem.MenuItemHeight = value;
-                    }
+                if (!SetProperty(ref _menuItemHeight, value, true)) return;
+
+                this.Height = _menuItemHeight;
+
+                // Update all children to ensure they match in height
+                foreach (var childMenuItem in _children.Cast<IMenuItem>().ToList()) {
+                    childMenuItem.MenuItemHeight = _menuItemHeight;
                 }
             }
         }
@@ -71,19 +68,17 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _shouldShift, value, true);
         }
 
+        public bool Selected => _selectedMenuItem == this;
+
+        protected MenuItem _selectedMenuItem;
+        public MenuItem SelectedMenuItem {
+            get => _selectedMenuItem;
+        }
+
         protected int _menuDepth = 0;
         protected int MenuDepth {
             get => _menuDepth;
             set => SetProperty(ref _menuDepth, value);
-        }
-
-        private bool _selected = false;
-        public bool Selected {
-            get => _selected;
-            set {
-                if (SetProperty(ref _selected, value))
-                    OnItemSelected(EventArgs.Empty);
-            }
         }
 
         protected string _text = "";
@@ -204,11 +199,52 @@ namespace Blish_HUD.Controls {
             this.ContentRegion = new Rectangle(0, this.MenuItemHeight, this.Width, 0);
         }
 
-        public override void RecalculateLayout() {
-            if (this.EffectBehind != null) {
-                this.EffectBehind.Size = new Vector2(_size.X, _menuItemHeight);
-                this.EffectBehind.Location = Vector2.Zero;
+        #region Menu Item Selection
+
+        public void Select() {
+            if (this.Selected) return;
+
+            if (_children.Any())
+                throw new InvalidOperationException("MenuItems with sub-MenuItems can not be selected directly.");
+
+            _scrollEffect.ForceActive = true;
+
+            ((IMenuItem)this).Select(this);
+            OnPropertyChanged(nameof(this.Selected));
+        }
+
+        void IMenuItem.Select(MenuItem menuItem) {
+            ((IMenuItem)this).Select(menuItem, new List<IMenuItem>() { this });
+        }
+
+        void IMenuItem.Select(MenuItem menuItem, List<IMenuItem> itemPath) {
+            itemPath.Add(this);
+
+            OnItemSelected(new ControlActivatedEventArgs(menuItem));
+
+            // Expand to show the selected MenuItem, if necessary
+            if (_children.Any()) {
+                this.Expand();
             }
+
+            var parentMenuItem = this.Parent as IMenuItem;
+            parentMenuItem?.Select(menuItem, itemPath);
+        }
+
+        public void Deselect() {
+            bool isSelected = this.Selected;
+            _selectedMenuItem         = null;
+            _scrollEffect.ForceActive = false;
+
+            if (isSelected) {
+                OnPropertyChanged(nameof(this.Selected));
+            }
+        }
+
+        #endregion
+        
+        public override void RecalculateLayout() {
+            _scrollEffect.Size = new Vector2(_size.X, _menuItemHeight);
 
             UpdateContentRegion();
         }
@@ -225,38 +261,45 @@ namespace Blish_HUD.Controls {
                               : this.MenuItemHeight;
         }
 
+        protected override void OnResized(ResizedEventArgs e) {
+            foreach (var childMenuItem in _children) {
+                childMenuItem.Width = e.CurrentSize.X;
+            }
+
+            base.OnResized(e);
+        }
+
         protected override void OnClick(MouseEventArgs e) {
-            if (_enabled
-             && _canCheck
+            if (_canCheck
              && this.MouseOverIconBox) { /* Mouse was clicked inside of the checkbox */
 
                 Checked = !Checked;
-            } else if (_enabled
-                    && _overSection
+            } else if (_overSection
                     && _children.Any()) { /* Mouse was clicked inside of the mainbody of the MenuItem */
 
                 ToggleSection();
-            } else if (_enabled
-                    && _overSection
+            } else if (_overSection
                     && _canCheck) { /* Mouse was clicked inside of the mainbody of the MenuItem,
                                            but we have no children, so we toggle checkbox */
 
                 Checked = !Checked;
             }
 
+            if (!_children.Any()) {
+                this.Select();
+            }
+
             base.OnClick(e);
         }
 
         protected override void OnMouseMoved(MouseEventArgs e) {
-            base.OnMouseMoved(e);
-
             // Helps us know when the mouse is over the MenuItem itself, or actually over its children
-            OverSection = RelativeMousePosition.Y <= MenuItemHeight;
+            OverSection = RelativeMousePosition.Y <= _menuItemHeight;
 
             if (OverSection)
-                this.EffectBehind?.Enable();
+                _scrollEffect.Enable();
             else
-                this.EffectBehind?.Disable();
+                _scrollEffect.Disable();
 
             // Used if this menu item has its checkbox enabled
             MouseOverIconBox = _canCheck
@@ -264,12 +307,14 @@ namespace Blish_HUD.Controls {
                             && FirstItemBoxRegion
                               .OffsetBy(LeftSidePadding, 0)
                               .Contains(RelativeMousePosition);
+
+            base.OnMouseMoved(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            base.OnMouseLeft(e);
-
             OverSection = false;
+
+            base.OnMouseLeft(e);
         }
 
         protected override CaptureType CapturesInput() => CaptureType.Mouse;
@@ -283,23 +328,11 @@ namespace Blish_HUD.Controls {
             newChild.MenuItemHeight = this.MenuItemHeight;
             newChild.MenuDepth = this.MenuDepth + 1;
 
-            // Ensure child items remains the same width as us
-            Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Width,
-                                                 () => this.Width, applyLeft: true);
-
             // We'll bind the top of the new control to the bottom of the last control we added
             var lastItem = _children.LastOrDefault();
             if (lastItem != null)
                 Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
                                                      () => lastItem.Bottom, applyLeft: true);
-
-            //ShouldShift = e.ResultingChildren.Any(mi => {
-            //    MenuItem cmi = (MenuItem)mi;
-
-            //    return cmi.CanCheck || cmi.Children.Any();
-            //});
-
-            Invalidate();
         }
 
         public void ToggleSection() {

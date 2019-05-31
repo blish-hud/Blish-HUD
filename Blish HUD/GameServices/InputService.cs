@@ -169,8 +169,8 @@ namespace Blish_HUD {
 
             var rawMouseState = Mouse.GetState();
             var newMouseState = new MouseState(
-                  (int)(rawMouseState.X / GameService.Graphics.GetScaleRatio(GameService.Graphics.UIScale)),
-                  (int)(rawMouseState.Y / GameService.Graphics.GetScaleRatio(GameService.Graphics.UIScale)),
+                  (int)(rawMouseState.X / Graphics.UIScaleMultiplier),
+                  (int)(rawMouseState.Y / Graphics.UIScaleMultiplier),
                   rawMouseState.ScrollWheelValue,
                   rawMouseState.LeftButton,
                   rawMouseState.MiddleButton,

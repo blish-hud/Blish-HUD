@@ -9,19 +9,20 @@ namespace Blish_HUD.Controls.Effects {
     /// </summary>
     public class ScrollingHighlightEffect : ControlEffect {
 
-        private const string SPARAM_MASK        = "Mask";
-        private const string SPARAM_OVERLAY     = "Overlay";
-        private const string SPARAM_ROLLER      = "Roller";
-        private const float  ANIMATION_DURATION = 0.5f;
+        private const string SPARAM_MASK                = "Mask";
+        private const string SPARAM_OVERLAY             = "Overlay";
+        private const string SPARAM_ROLLER              = "Roller";
+        private const float  DEFAULT_ANIMATION_DURATION = 0.5f;
 
         #region Static Persistant Effect
 
-        private static Effect _scrollingEffect;
+        private static readonly Effect _masterScrollEffect;
 
         static ScrollingHighlightEffect() {
-            _scrollingEffect = Overlay.cm.Load<Effect>(@"effects\menuitem");
-            _scrollingEffect.Parameters[SPARAM_MASK].SetValue(GameService.Content.GetTexture("156072"));
-            _scrollingEffect.Parameters[SPARAM_OVERLAY].SetValue(GameService.Content.GetTexture("156071"));
+            _masterScrollEffect = Overlay.cm.Load<Effect>(@"effects\menuitem");
+
+            _masterScrollEffect.Parameters[SPARAM_MASK].SetValue(GameService.Content.GetTexture("156072"));
+            _masterScrollEffect.Parameters[SPARAM_OVERLAY].SetValue(GameService.Content.GetTexture("156071"));
         }
 
         #endregion
@@ -31,14 +32,50 @@ namespace Blish_HUD.Controls.Effects {
             get => _scrollRoller;
             set {
                 _scrollRoller = value;
-                _scrollingEffect.Parameters[SPARAM_ROLLER].SetValue(_scrollRoller);
+
+                if (_forceActive) return;
+
+                _scrollEffect.Parameters[SPARAM_ROLLER].SetValue(_scrollRoller);
             }
         }
+
+        private float _duration = DEFAULT_ANIMATION_DURATION;
+        /// <summary>
+        /// The duration of the wipe effect when the mouse enters the control.
+        /// </summary>
+        public float Duration {
+            get => _duration;
+            set => _duration = value;
+        }
+
+        private bool _forceActive;
+        /// <summary>
+        /// If enabled, the effect will stay on full (used to show that the control or menu item is active).
+        /// </summary>
+        public bool ForceActive {
+            get => _forceActive;
+            set {
+                _forceActive = value;
+
+                if (_forceActive) {
+                    _shaderAnim?.Cancel();
+
+                    _scrollEffect.Parameters[SPARAM_ROLLER].SetValue(1f);
+                }
+            }
+        }
+
+        private readonly Effect _scrollEffect;
 
         private Glide.Tween _shaderAnim;
         private bool _mouseOver = false;
 
         public ScrollingHighlightEffect(Control assignedControl) : base(assignedControl) {
+            _scrollEffect = _masterScrollEffect.Clone();
+
+            _scrollEffect.Parameters[SPARAM_MASK].SetValue(GameService.Content.GetTexture("156072"));
+            _scrollEffect.Parameters[SPARAM_OVERLAY].SetValue(GameService.Content.GetTexture("156071"));
+
             assignedControl.MouseEntered += AssignedControlOnMouseEntered;
             assignedControl.MouseLeft    += AssignedControlOnMouseLeft;
         }
@@ -49,20 +86,20 @@ namespace Blish_HUD.Controls.Effects {
                                              SamplerState.LinearWrap,
                                              null,
                                              null,
-                                             _scrollingEffect,
+                                             _scrollEffect,
                                              GameService.Graphics.UIScaleTransform);
         }
 
         private void AssignedControlOnMouseEntered(object sender, MouseEventArgs e) {
-            if (!this.Enabled) return;
+            if (!_enabled || _forceActive) return;
 
-            this.ScrollRoller = 0;
+            this.ScrollRoller = 0f;
 
             _shaderAnim = GameService.Animation
                                      .Tweener
                                      .Tween(this,
-                                            new {ScrollRoller = 1.0f},
-                                            ANIMATION_DURATION);
+                                            new { ScrollRoller = 1f },
+                                            _duration);
 
             _mouseOver = true;
         }
@@ -85,9 +122,8 @@ namespace Blish_HUD.Controls.Effects {
             AssignedControlOnMouseLeft(this.AssignedControl, null);
         }
 
-
         public override void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (_mouseOver)
+            if (_mouseOver || _forceActive)
                 spriteBatch.DrawOnCtrl(this.AssignedControl, ContentService.Textures.Pixel, bounds, Color.Transparent);
         }
 

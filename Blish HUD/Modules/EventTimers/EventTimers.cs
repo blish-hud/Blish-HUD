@@ -67,8 +67,8 @@ namespace Blish_HUD.Modules.EventTimers {
             }
         }
 
-        private string GetTimeDetails(Meta AssignedMeta) {
-            var timeUntil = AssignedMeta.NextTime - DateTime.Now;
+        private string GetTimeDetails(Meta assignedMeta) {
+            var timeUntil = assignedMeta.NextTime - DateTime.Now;
 
             var msg = new StringBuilder();
 
@@ -82,7 +82,7 @@ namespace Blish_HUD.Modules.EventTimers {
                           );
 
             msg.Append(Environment.NewLine + "Upcoming Event Times:");
-            foreach (var utime in AssignedMeta.Times.Select(time => time > DateTime.UtcNow ? time.ToLocalTime() : time.ToLocalTime() + 1.Days()).OrderBy(time => time.Ticks).ToList()) {
+            foreach (var utime in assignedMeta.Times.Select(time => time > DateTime.UtcNow ? time.ToLocalTime() : time.ToLocalTime() + 1.Days()).OrderBy(time => time.Ticks).ToList()) {
                 msg.Append(Environment.NewLine + utime.ToShortTimeString());
             }
 
@@ -206,11 +206,13 @@ namespace Blish_HUD.Modules.EventTimers {
                 Size           = menuSection.ContentRegion.Size,
                 MenuItemHeight = 40,
                 Parent         = menuSection,
+                CanSelect      = true
             };
 
             List<IGrouping<string, Meta>> submetas = Meta.Events.GroupBy(e => e.Category).ToList();
 
             var evAll = eventCategories.AddMenuItem(EC_ALLEVENTS);
+            evAll.Select();
             evAll.Click += delegate {
                 eventPanel.FilterChildren<DetailsButton>(db => true);
             };

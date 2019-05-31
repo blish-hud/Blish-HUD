@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework.Graphics;
 using SharpDX;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Point = Microsoft.Xna.Framework.Point;
-using Screen = Blish_HUD.Controls.Screen;
 
 namespace Blish_HUD {
     public class GraphicsService:GameService {
@@ -44,25 +43,25 @@ namespace Blish_HUD {
 
                 _uiScale = value;
 
-                float uiScale = GetScaleRatio(value);
-                this.SpriteScreen.Size = new Point((int)(Overlay.graphics.PreferredBackBufferWidth / uiScale), (int)(Overlay.graphics.PreferredBackBufferHeight / uiScale));
+                _uiScaleMultiplier = GetScaleRatio(value);
+                this.SpriteScreen.Size = new Point((int)(Overlay.graphics.PreferredBackBufferWidth / _uiScaleMultiplier), (int)(Overlay.graphics.PreferredBackBufferHeight / _uiScaleMultiplier));
 
-                _uiScaleTransform = Matrix.CreateScale(uiScale);
+                _uiScaleTransform = Matrix.CreateScale(_uiScaleMultiplier);
 
             }
         }
 
         private Matrix _uiScaleTransform = Matrix.Identity;
-        public Matrix UIScaleTransform {
-            get => _uiScaleTransform;
-        }
+        public Matrix UIScaleTransform => _uiScaleTransform;
+
+        private float _uiScaleMultiplier = 1f;
+        public float UIScaleMultiplier => _uiScaleMultiplier;
 
         private Controls.Screen _screen;
         public Controls.Screen SpriteScreen => _screen;
 
-        // TODO: This needs separated out to a different service specific to 3D entities
-        // Or maybe not?
-        public Entities.World World { get; private set; }
+        private Entities.World _world;
+        public Entities.World World => _world;
 
         public GraphicsDevice GraphicsDevice => Overlay.GraphicsDevice;
         public GraphicsDeviceManager GraphicsDeviceManager => Overlay.graphics;
@@ -80,8 +79,7 @@ namespace Blish_HUD {
                     Overlay.graphics.ApplyChanges();
 
                     // Exception would be from the code above, but don't update our scaling if there is an exception
-                    float uiScale = GetScaleRatio(this.UIScale);
-                    this.SpriteScreen.Size = new Point((int) (value.X / uiScale), (int) (value.Y / uiScale));
+                    this.SpriteScreen.Size = new Point((int) (value.X / this.UIScaleMultiplier), (int) (value.Y / this.UIScaleMultiplier));
                 } catch (SharpDXException sdxe) {
                     // If device lost, we should hopefully handle in device lost event below
                 }
@@ -90,13 +88,14 @@ namespace Blish_HUD {
 
         protected override void Initialize() {
             _screen = new Controls.Screen();
-            this.World = new Entities.World();
+            _world  = new Entities.World();
 
             // If for some reason we lose the rendering device, just restart the application
             // Might do better error handling later on
             Overlay.GraphicsDevice.DeviceLost += delegate { Application.Restart(); };
 
-            _uiScaleTransform = Matrix.CreateScale(GetScaleRatio(this.UIScale));
+            _uiScaleMultiplier = GetScaleRatio(this.UIScale);
+            _uiScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
         }
 
         protected override void Load() { /* NOOP */ }
@@ -104,8 +103,8 @@ namespace Blish_HUD {
         protected override void Unload() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) {
-            this.SpriteScreen.Update(gameTime);
             this.World.Update(gameTime);
+            this.SpriteScreen.Update(gameTime);
         }
     }
 }

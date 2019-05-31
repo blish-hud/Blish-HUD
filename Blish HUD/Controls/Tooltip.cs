@@ -5,19 +5,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-   public class Tooltip:Container {
+   public class Tooltip : Container {
 
         internal const int PADDING = 2;
         internal const int MOUSE_VERTICAL_MARGIN = 18;
 
         private const int BORDER_THICKNESS = 3;
 
-
         #region Load Static
 
         private static List<Tooltip> _allTooltips;
 
-        private static Texture2D _textureTooltip;
+        private static readonly Texture2D _textureTooltip;
 
         static Tooltip() {
             _textureTooltip = Content.GetTexture("tooltip");
@@ -28,15 +27,16 @@ namespace Blish_HUD.Controls {
 
             Input.MouseMoved += delegate(object sender, MouseEventArgs args) {
                 if (Control.ActiveControl?.Tooltip != null) {
+                    Control.ActiveControl.Tooltip.CurrentControl = Control.ActiveControl;
                     UpdateTooltipPosition(Control.ActiveControl.Tooltip);
-                    Control.ActiveControl.Tooltip.Visible = true;
+                    Control.ActiveControl.Tooltip.Show();
                 }
             };
         }
 
         private static Control prevControl;
 
-        private static void ControlOnActiveControlChanged(object sender, ControlChangedEventArgs e) {
+        private static void ControlOnActiveControlChanged(object sender, ControlActivatedEventArgs e) {
             foreach (var tooltip in _allTooltips) {
                 tooltip.Hide();
             }
@@ -74,7 +74,6 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-
         public Control CurrentControl { get; set; }
 
         public Tooltip() : base() {
@@ -106,9 +105,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public override void DoUpdate(GameTime gameTime) {
-            base.DoUpdate(gameTime);
-
+        public override void UpdateContainer(GameTime gameTime) {
             if (this.CurrentControl != null && !this.CurrentControl.Visible) {
                 this.Visible = false;
                 this.CurrentControl = null;

@@ -318,15 +318,13 @@ namespace Blish_HUD.Controls {
             Content.PlaySoundEffectByName(@"audio\window-close");
         }
 
-        public override void DoUpdate(GameTime gameTime) {
+        public override void UpdateContainer(GameTime gameTime) {
             if (Dragging) {
                 var nOffset = Input.MouseState.Position - DragStart;
                 Location += nOffset;
 
                 DragStart = Input.MouseState.Position;
             }
-
-            base.DoUpdate(gameTime);
         }
 
         #region Paint Window

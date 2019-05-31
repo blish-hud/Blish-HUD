@@ -16,7 +16,17 @@ using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Blish_HUD.Controls {
-    public class TextBox:Control {
+    public class TextBox : Control {
+
+        #region Load Static
+
+        private static readonly Texture2D _textureTextbox;
+
+        static TextBox() {
+            _textureTextbox = Content.GetTexture("textbox");
+        }
+
+        #endregion
 
         public event EventHandler<EventArgs> OnTextChanged;
         public event EventHandler<EventArgs> OnEnterPressed;
@@ -105,15 +115,15 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            base.OnMouseEntered(e);
-
             _focusForm.Show();
+
+            base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            base.OnMouseLeft(e);
-
             _focusForm.Hide();
+
+            base.OnMouseLeft(e);
         }
 
         public override void TriggerKeyboardInput(KeyboardMessage e) {
@@ -205,39 +215,33 @@ namespace Blish_HUD.Controls {
             // Determines if the blinking caret is currently visible
             this.CaretVisible = _mttb.Focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75);
 
-            if (this.LayoutIsInvalid && _textWasChanged) {
+            if (this.LayoutState == LayoutState.Invalidated && _textWasChanged) {
                 _lastInvalidate = gameTime.TotalGameTime;
                 _textWasChanged = false;
             }
-
-            base.DoUpdate(gameTime);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.DrawOnCtrl(
-                                   this,
-                                   Content.GetTexture("textbox"),
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureTextbox,
                                    new Rectangle(Point.Zero, _size - new Point(5, 0)),
-                                   new Rectangle(0, 0, Math.Min(Content.GetTexture("textbox").Width - 5, _size.X - 5), Content.GetTexture("textbox").Height)
-                                  );
+                                   new Rectangle(0, 0, Math.Min(_textureTextbox.Width - 5, _size.X - 5), _textureTextbox.Height));
 
-            spriteBatch.DrawOnCtrl(
-                                   this, Content.GetTexture("textbox"),
+            spriteBatch.DrawOnCtrl(this, _textureTextbox,
                                    new Rectangle(_size.X - 5, 0, 5, _size.Y),
                                    new Rectangle(
-                                                 Content.GetTexture("textbox").Width - 5, 0,
-                                                 5, Content.GetTexture("textbox").Height
-                                                )
-                                  );
+                                                 _textureTextbox.Width - 5, 0,
+                                                 5, _textureTextbox.Height
+                                                ));
 
             var textBounds = new Rectangle(Point.Zero, _size);
             textBounds.Inflate(-10, -2);
 
-            var phFont = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic);
-
             // Draw the Textbox placeholder text
-            if (!_mttb.Focused && this.Text.Length == 0)
+            if (!_mttb.Focused && this.Text.Length == 0) {
+                var phFont = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic);
                 spriteBatch.DrawStringOnCtrl(this, _placeholderText, phFont, textBounds, Color.LightGray);
+            }
 
             // Draw the Textbox text
             spriteBatch.DrawStringOnCtrl(this, this.Text, _font, textBounds, Color.FromNonPremultiplied(239, 240, 239, 255));
@@ -246,12 +250,10 @@ namespace Blish_HUD.Controls {
                 float highlightLeftOffset = _font.MeasureString(_mttb.Text.Substring(0, _mttb.SelectionStart)).Width + textBounds.Left;
                 float highlightRightOffset = _font.MeasureString(_mttb.Text.Substring(0, _mttb.SelectionStart + _mttb.SelectionLength)).Width;
                     
-                spriteBatch.DrawOnCtrl(
-                                        this,
+                spriteBatch.DrawOnCtrl(this,
                                         ContentService.Textures.Pixel,
                                         new Rectangle((int) highlightLeftOffset - 1, 3, (int) highlightRightOffset, _size.Y - 9),
-                                        new Color(92, 80, 103, 150)
-                                        );
+                                        new Color(92, 80, 103, 150));
             } else if (_mttb.Focused && this.CaretVisible) {
                 int cursorPos = _mttb.SelectionStart;
                 float textOffset = this.Font.MeasureString(_mttb.Text.Substring(0, cursorPos)).Width;
