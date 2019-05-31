@@ -11,7 +11,7 @@ using Blish_HUD.Annotations;
 using Microsoft.Scripting.Utils;
 
 namespace Blish_HUD {
-    public abstract class GameService :INotifyPropertyChanged {
+    public abstract class GameService : INotifyPropertyChanged {
 
         private static readonly GameService[] AllServices;
         public static IReadOnlyList<GameService> All => AllServices;
@@ -61,6 +61,8 @@ namespace Blish_HUD {
         public static readonly ModuleService Module;
         public static readonly PersistentStoreService Store;
         public static readonly ApiService Gw2Api;
+        public static readonly ArcDpsService ArcDps;
+
         #endregion
 
         static GameService() {
@@ -82,6 +84,7 @@ namespace Blish_HUD {
             Pathing = new PathingService();
             Module = new ModuleService();
             Gw2Api = new ApiService();
+            ArcDps = new ArcDpsService();
 
             AllServices = new GameService[] {
                 Debug,
@@ -119,6 +122,8 @@ namespace Blish_HUD {
             GameServices.AddService<ModuleService>(AllServices[14]);
             GameServices.AddService<PersistentStoreService>(AllServices[15]);
             GameServices.AddService<ApiService>(AllServices[16]);
+                //ArcDps
+            };
         }
 
         #region Property Binding

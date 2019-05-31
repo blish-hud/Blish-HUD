@@ -60,12 +60,7 @@ namespace Blish_HUD.Pathing.Markers {
             }
         }
 
-        public BasicMarkerPathable() : base(new Entities.Marker()) {
-            //this.Behavior = new BasicTOBehavior<TacOMarkerPathable, Entities.Marker>(this, TacOBehavior.ReappearAfterTimer) {
-            //    ZoneRadius = 4.5f,
-            //    InfoText   = "You are in the zone!",
-            //};
-        }
+        public BasicMarkerPathable() : base(new Entities.Marker()) { }
 
     }
 }

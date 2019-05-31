@@ -65,7 +65,8 @@ namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
         }
 
         public Trail() {
-            _trailEffect = _trailEffect ?? Overlay.cm.Load<Effect>("effects\\trail");
+            //_trailEffect = _trailEffect ?? Overlay.cm.Load<Effect>("effects\\trail");
+            _trailEffect = _trailEffect ?? Overlay.cm.Load<Effect>("effects\\tacotrail");
             //this.Visible = true;
         }
         
@@ -73,15 +74,37 @@ namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
             _trailEffect.Parameters["TotalMilliseconds"].SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
         }
 
+        //public void Draw(GraphicsDevice graphicsDevice) {
+        //    _trailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.View * GameService.Camera.Projection * Matrix.Identity);
+        //    _trailEffect.Parameters["Texture"].SetValue(this.PathTexture);
+        //    _trailEffect.Parameters["FlowSpeed"].SetValue(this.AnimSpeed);
+        //    _trailEffect.Parameters["PlayerPosition"].SetValue(GameService.Player.Position);
+        //    _trailEffect.Parameters["FadeOutDistance"].SetValue(3000f);
+        //    _trailEffect.Parameters["FullClip"].SetValue(3500f);
+        //    _trailEffect.Parameters["FadeDistance"].SetValue(this.PathTexture.Height / 256.0f / 2.0f);
+        //    _trailEffect.Parameters["TotalLength"].SetValue(this.Distance                     / this.PathTexture.Height);
+
+        //    foreach (EffectPass trailPass in _trailEffect.CurrentTechnique.Passes) {
+        //        trailPass.Apply();
+
+        //        graphicsDevice.DrawUserPrimitives(
+        //                                          PrimitiveType.TriangleStrip,
+        //                                          this.VertexData,
+        //                                          0,
+        //                                          this.VertexData.Length - 2
+        //                                         );
+        //    }
+        //}
+
         public void Draw(GraphicsDevice graphicsDevice) {
-            _trailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.View * GameService.Camera.Projection * Matrix.Identity);
-            _trailEffect.Parameters["Texture"].SetValue(this.PathTexture);
-            _trailEffect.Parameters["FlowSpeed"].SetValue(this.AnimSpeed);
-            _trailEffect.Parameters["PlayerPosition"].SetValue(GameService.Player.Position);
-            _trailEffect.Parameters["FadeOutDistance"].SetValue(3000f);
+            _trailEffect.Parameters["camera"].SetValue(GameService.Camera.View * GameService.Camera.Projection * Matrix.Identity);
+            _trailEffect.Parameters["persp"].SetValue(this.PathTexture);
+            _trailEffect.Parameters["charpos"].SetValue(GameService.Player.Position);
+            _trailEffect.Parameters["data"].SetValue(this.AnimSpeed);
+            _trailEffect.Parameters["nearFarFades"].SetValue(new Vector2());
             _trailEffect.Parameters["FullClip"].SetValue(3500f);
             _trailEffect.Parameters["FadeDistance"].SetValue(this.PathTexture.Height / 256.0f / 2.0f);
-            _trailEffect.Parameters["TotalLength"].SetValue(this.Distance / this.PathTexture.Height);
+            _trailEffect.Parameters["TotalLength"].SetValue(this.Distance                     / this.PathTexture.Height);
 
             foreach (EffectPass trailPass in _trailEffect.CurrentTechnique.Passes) {
                 trailPass.Apply();
@@ -91,7 +114,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
                                                   this.VertexData,
                                                   0,
                                                   this.VertexData.Length - 2
-                                                  );
+                                                 );
             }
         }
 
@@ -202,67 +225,6 @@ namespace Blish_HUD.Modules.MarkersAndPaths.Entities.Paths {
 
             return trlSections;
         }
-
-        //public static List<TacOTrailPathable> FromXmlNode(XmlNode trailNode) {
-
-        //    string textureFilePath = trailNode.Attributes?["texture"]?.InnerText;
-
-        //    if (!string.IsNullOrWhiteSpace(textureFilePath)) {
-        //        string trailData = trailNode.Attributes?["trailData"]?.InnerText;
-        //        string type = trailNode.Attributes["type"]?.InnerText;
-
-        //        // type is required
-        //        if (type == null) return new List<TacOTrailPathable>();
-
-        //        var refCategory = GameService.Pathing.Categories.GetOrAddCategoryFromNamespace(type);
-
-        //        if (!string.IsNullOrWhiteSpace(trailData)) {
-        //            var fullTexturePath = GameService.Content.GetTexture(
-        //                                                                 System.IO.Path.Combine(
-        //                                                                    GameService.FileSrv.BasePath,
-        //                                                                    MarkersAndPaths.MARKER_DIRECTORY,
-        //                                                                    textureFilePath
-        //                                                                   )
-        //                                                                );
-
-        //            var fullTrailPath = Path.Combine(
-        //                                             GameService.FileSrv.BasePath,
-        //                                             MarkersAndPaths.MARKER_DIRECTORY,
-        //                                             trailData
-        //                                            );
-
-        //            Console.WriteLine($"Loading trail '{fullTrailPath}'");
-
-        //            var sectionData = TrlReader.ReadFile(fullTrailPath);
-
-        //            var pathList = new List<TacOTrailPathable>();
-
-        //            sectionData.ForEach(t => {
-        //                var newPathableSection = new TacOTrailPathable(t.TrailPoints) {
-        //                    ManagedEntity = {
-        //                        TrailTexture = fullTexturePath
-        //                    },
-        //                    MapId = t.MapId
-        //                };
-
-        //                pathList.Add(newPathableSection);
-        //                refCategory.AddPathable(newPathableSection);
-        //            });
-
-        //            return pathList;
-
-        //            //trails.ForEach(
-        //            //               t => refCategory.AddPath(t)
-        //            //               //t => Adhesive.Binding.CreateOneWayBinding(
-        //            //               //                                          () => t.Visible,
-        //            //               //                                          () => refCategory.Visible, applyLeft: true
-        //            //               //                                         )
-        //            //              );
-        //        }
-        //    }
-
-        //    return new List<TacOTrailPathable>();
-        //}
 
     }
 }

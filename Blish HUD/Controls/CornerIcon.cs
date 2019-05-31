@@ -8,61 +8,42 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.Controls {
-    public class CornerIcon : Control {
+    public class CornerIcon : Container {
 
         public enum CornerIconAlignment {
             Left,
             Center,
         }
 
-        private const int ICON_POSITION = 10;
-        private const int ICON_SIZE = 32;
-        private const float ICON_TRANS = 0.4f;
+        private const int   ICON_POSITION = 10;
+        private const int   ICON_SIZE     = 32;
+        private const float ICON_TRANS    = 0.4f;
 
         private Texture2D _icon;
         public Texture2D Icon {
             get => _icon;
-            set {
-                if (_icon == value) return;
-
-                _icon = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _icon, value);
         }
 
         private Texture2D _hoverIcon;
         public Texture2D HoverIcon {
             get => _hoverIcon;
-            set {
-                if (_hoverIcon == value) return;
-
-                _hoverIcon = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _hoverIcon, value);
         }
         
         private float _hoverTrans = ICON_TRANS;
         public float HoverTrans {
             get => _hoverTrans;
-            set {
-                if (_hoverTrans == value) return;
-
-                _hoverTrans = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _hoverTrans, value);
         }
 
         private bool _mouseInHouse = false;
         public bool MouseInHouse {
             get => _mouseInHouse;
             set {
-                if (_mouseInHouse == value) return;
-
-                _mouseInHouse = value;
-                
-                Animation.Tweener.Tween(this, new { HoverTrans = (this.MouseInHouse ? 1f : ICON_TRANS) }, 0.45f);
-
-                OnPropertyChanged();
+                if (SetProperty(ref _mouseInHouse, value)) {
+                    Animation.Tweener.Tween(this, new {HoverTrans = (this.MouseInHouse ? 1f : ICON_TRANS)}, 0.45f);
+                }
             }
         }
 
@@ -94,11 +75,16 @@ namespace Blish_HUD.Controls {
         public int Priority {
             get => _priority;
             set {
-                if (_priority == value) return;
-
-                _priority = value;
-                UpdateCornerIconPositions();
+                if (SetProperty(ref _priority, value)) {
+                    UpdateCornerIconPositions();
+                }
             }
+        }
+
+        private string _loadingMessage;
+        public string LoadingMessage {
+            get => _loadingMessage;
+            set => SetProperty(ref _loadingMessage, value, true);
         }
 
         static CornerIcon() {
@@ -134,35 +120,53 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        private LoadingSpinner _iconLoader;
         public CornerIcon() {
             this.Parent = Graphics.SpriteScreen;
             this.Size = new Point(ICON_SIZE, ICON_SIZE);
+            this.ContentRegion = new Rectangle(0, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+
+            _iconLoader = new LoadingSpinner() {
+                Parent = this,
+                Size = this.ContentRegion.Size,
+            };
 
             CornerIcons.Add(this);
         }
 
-        protected override void OnClick(MouseEventArgs e) {
-            base.OnClick(e);
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
+        }
 
+        protected override void OnClick(MouseEventArgs e) {
             Content.PlaySoundEffectByName(@"audio\button-click");
+
+            base.OnClick(e);
+        }
+
+        private Rectangle _layoutIconBounds;
+
+        public override void RecalculateLayout() {
+            _layoutIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
+
+            bool isLoading = !string.IsNullOrEmpty(_loadingMessage);
+            this.Size = new Point(ICON_SIZE, isLoading ? ICON_SIZE * 2 : ICON_SIZE);
+            _iconLoader.Visible = isLoading;
+            _iconLoader.BasicTooltipText = _loadingMessage;
         }
 
         // TODO: Use a shader to replace "HoverIcon"
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_icon == null) return;
 
-            if (this.MouseOver) {
+            if (this.MouseOver && this.RelativeMousePosition.Y <= _layoutIconBounds.Bottom) {
                 if (_hoverIcon == null) {
-                    // TODO: Figure out what we were inflating CornerIcon for
-                    //var srcBounds = _size.InBounds(bounds);
-                    //srcBounds.Inflate(1.5f, 1.5f);
-
-                    spriteBatch.DrawOnCtrl(this, _icon, new Rectangle(Point.Zero, _size));
+                    spriteBatch.DrawOnCtrl(this, _icon, _layoutIconBounds);
                 } else {
-                    spriteBatch.DrawOnCtrl(this, _hoverIcon, new Rectangle(Point.Zero, _size));
+                    spriteBatch.DrawOnCtrl(this, _hoverIcon, _layoutIconBounds);
                 }
             } else {
-                spriteBatch.DrawOnCtrl(this, _icon, new Rectangle(Point.Zero, _size), Color.White * _hoverTrans);
+                spriteBatch.DrawOnCtrl(this, _icon, _layoutIconBounds, Color.White * _hoverTrans);
             }
         }
     }

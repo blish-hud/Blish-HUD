@@ -282,6 +282,8 @@ namespace Blish_HUD.Modules.PoiLookup {
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            base.PaintBeforeChildren(spriteBatch, bounds);
+
             spriteBatch.DrawOnCtrl(this, Content.GetTexture("156390"), new Rectangle(Point.Zero, _size));
             spriteBatch.DrawStringOnCtrl(this, 
                                            "Landmark Search",

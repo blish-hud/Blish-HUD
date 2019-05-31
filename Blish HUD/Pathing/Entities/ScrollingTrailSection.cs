@@ -158,9 +158,9 @@ namespace Blish_HUD.Pathing.Entities {
 
             _basicTrailEffect.Parameters["TotalMilliseconds"].SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
         }
-        
+
         public override void Draw(GraphicsDevice graphicsDevice) {
-            if (this.TrailTexture == null || this.VertexData?.Length < 3 || this.VertexData == null) return;
+            if (this.TrailTexture == null || this.VertexData == null || this.VertexData.Length < 3) return;
 
             _basicTrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.WorldViewProjection);
             _basicTrailEffect.Parameters["PlayerViewProjection"].SetValue(GameService.Camera.PlayerView * GameService.Camera.Projection);
@@ -172,24 +172,20 @@ namespace Blish_HUD.Pathing.Entities {
             _basicTrailEffect.Parameters["Opacity"].SetValue(this.Opacity);
             _basicTrailEffect.Parameters["TotalLength"].SetValue(20f); // this.TrailLength / this.TrailTexture.Height * 2);
 
-            graphicsDevice.BlendState        = BlendState.AlphaBlend;
-            graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            graphicsDevice.SamplerStates[0]  = SamplerState.LinearWrap;
-            graphicsDevice.RasterizerState   = RasterizerState.CullNone;
+            graphicsDevice.BlendState = BlendState.AlphaBlend;
+            graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
+            graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+            graphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             foreach (EffectPass trailPass in _basicTrailEffect.CurrentTechnique.Passes) {
-            //foreach (EffectPass trailPass in b.CurrentTechnique.Passes) {
                 trailPass.Apply();
 
                 ((BasicEffect)this.EntityEffect).VertexColorEnabled = true;
-                //((BasicEffect)this.EntityEffect).TextureEnabled     = true;
 
-                graphicsDevice.DrawUserPrimitives(
-                                                  PrimitiveType.TriangleStrip,
+                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip,
                                                   this.VertexData,
                                                   0,
-                                                  this.VertexData.Length - 2
-                                                  );
+                                                  this.VertexData.Length - 2);
             }
         }
 

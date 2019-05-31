@@ -34,16 +34,19 @@ namespace Blish_HUD.Controls {
             base.DoUpdate(gameTime);
         }
 
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
+        }
+
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // TODO: Add this texture in with the rest of the UI elements in the ControlUI atlas
             spriteBatch.DrawOnCtrl(this, Content.GetTexture(DRAWATLAS), bounds, _activeAtlasRegion);
         }
 
-        protected override void Dispose(bool disposing) {
-            _spinAnimation.Cancel();
+        protected override void DisposeControl() {
             _spinAnimation = null;
 
-            base.Dispose(disposing);
+            base.DisposeControl();
         }
 
     }

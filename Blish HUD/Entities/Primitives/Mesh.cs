@@ -38,8 +38,8 @@ namespace Blish_HUD.Entities.Primitives {
 
 
 
-                    effect.View = GameServices.GetService<CameraService>().View;
-                    effect.Projection = GameServices.GetService<CameraService>().Projection;
+                    effect.View = GameService.Camera.View;
+                    effect.Projection = GameService.Camera.Projection;
                     effect.World = Matrix.CreateScale(this.Size) * Matrix.CreateTranslation(this.Position);
                 }
 

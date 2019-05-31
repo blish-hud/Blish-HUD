@@ -31,15 +31,5 @@ namespace Blish_HUD.Pathing.Entities {
             mouseOver = screenPosition.Z < 1 && xdist < 2 && ydist < 2;
         }
 
-        public override void Draw(GraphicsDevice graphicsDevice) {
-            base.Draw(graphicsDevice);
-        }
-
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
-
-            //this.Visible = !mouseOver || gameTime.TotalGameTime.TotalSeconds % 3 == 1;
-        }
-
     }
 }

@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
+namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO {
     public static class PathingCategoryBuilder {
 
-        private const string ELEMENT_CATEGORY = "MarkerCategory";
+        private const string ELEMENT_CATEGORY = "markercategory";
 
         public static void UnpackCategory(XmlNode categoryNode, PathingCategory categoryParent) {
-            if (categoryNode.Name != ELEMENT_CATEGORY) {
+            if (categoryNode.Name.ToLower() != ELEMENT_CATEGORY) {
                 Console.WriteLine($"Tried to unpack '{categoryNode.Name}' as category!");
                 return;
             }

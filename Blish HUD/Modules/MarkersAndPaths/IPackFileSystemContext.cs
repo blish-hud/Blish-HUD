@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,7 +13,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
     public interface IPackFileSystemContext : IDisposable {
 
-        void LoadOnXmlPack(Action<string, IPackFileSystemContext> loadXmlFunc);
+        void LoadOnFileType(Action<Stream, IPackFileSystemContext> loadFileFunc, string fileExtension, IProgress<string> progressIndicator = null);
 
         bool FileExists(string filePath);
 
@@ -25,6 +27,8 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
     }
 
     public class DirectoryPackContext : IPackFileSystemContext {
+
+        private static Dictionary<string, DirectoryPackContext> _cachedContexts = new Dictionary<string, DirectoryPackContext>();
 
         private readonly string _packDir;
 
@@ -40,19 +44,29 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             _isUsedOnNextMap       = new HashSet<string>();
         }
 
-        private void RunOnAllXmlPacks(string directory, Action<string, IPackFileSystemContext> loadXmlFunc) {
-            foreach (var mFile in Directory.EnumerateFiles(directory, "*.xml")) {
-                Console.WriteLine($"[{nameof(DirectoryPackContext)}] Loading pack file {mFile}");
-                loadXmlFunc.Invoke(File.ReadAllText(mFile), this);
+        public static DirectoryPackContext GetCachedContext(string directoryRoot) {
+            if (!_cachedContexts.ContainsKey(directoryRoot)) {
+                _cachedContexts.Add(directoryRoot, new DirectoryPackContext(directoryRoot));
+            } else { Console.WriteLine("Returned existing Directory Context!"); }
+
+            return _cachedContexts[directoryRoot];
+        }
+
+        private void RunOnAllOfFileType(string directory, Action<Stream, IPackFileSystemContext> loadFileFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+            foreach (var mFile in Directory.EnumerateFiles(directory, $"*.{fileExtension}")) {
+                progressIndicator?.Report($"Loading pack file {mFile}");
+
+                Console.WriteLine($"[{nameof(DirectoryPackContext)}] Loading file {mFile}");
+                loadFileFunc.Invoke(LoadFileStream(mFile), this);
             }
 
             foreach (var mDir in Directory.EnumerateDirectories(directory)) {
-                RunOnAllXmlPacks(mDir, loadXmlFunc);
+                RunOnAllOfFileType(mDir, loadFileFunc, fileExtension);
             }
         }
 
-        public void LoadOnXmlPack(Action<string, IPackFileSystemContext> loadXmlFunc) {
-            RunOnAllXmlPacks(_packDir, loadXmlFunc);
+        public void LoadOnFileType(Action<Stream, IPackFileSystemContext> loadFileFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+            RunOnAllOfFileType(_packDir, loadFileFunc, fileExtension, progressIndicator);
         }
 
         public bool FileExists(string filePath) {
@@ -126,7 +140,11 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
     public class ZipPackContext : IPackFileSystemContext {
 
+        private static Dictionary<string, ZipPackContext> _cachedContexts = new Dictionary<string, ZipPackContext>();
+
         private ZipArchive _packArchive;
+
+        private Mutex _exclusiveStreamAccessMutex;
 
         private Dictionary<string, Texture2D> _textureCache;
         private HashSet<string>               _pendingTextureRemoval;
@@ -135,20 +153,28 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         public ZipPackContext(string zipPackPath) {
             _packArchive = ZipFile.OpenRead(zipPackPath);
 
+            _exclusiveStreamAccessMutex = new Mutex(false);
+
             _textureCache          = new Dictionary<string, Texture2D>();
             _pendingTextureRemoval = new HashSet<string>();
             _isUsedOnNextMap       = new HashSet<string>();
         }
 
-        public void LoadOnXmlPack(Action<string, IPackFileSystemContext> loadXmlFunc) {
-            foreach (var entry in _packArchive.Entries) {
-                if (entry.Name.ToLower().EndsWith(".xml")) {
-                    Console.WriteLine($"[{nameof(ZipPackContext)}] Loading pack file {entry.FullName}");
+        public static ZipPackContext GetCachedContext(string zipPackPath) {
+            if (!_cachedContexts.ContainsKey(zipPackPath)) {
+                _cachedContexts.Add(zipPackPath, new ZipPackContext(zipPackPath));
+            } else { Console.WriteLine("Returned existing Zip Context!"); }
 
-                    using (var entryReader = new StreamReader(entry.Open())) {
-                        string rawPackXml = entryReader.ReadToEnd();
-                        loadXmlFunc.Invoke(rawPackXml, this);
-                    }
+            return _cachedContexts[zipPackPath];
+        }
+
+        public void LoadOnFileType(Action<Stream, IPackFileSystemContext> loadFileFunc, string fileExtension, IProgress<string> progressIndicator = null) {
+            foreach (var entry in _packArchive.Entries) {
+                if (entry.Name.EndsWith($".{fileExtension}", StringComparison.OrdinalIgnoreCase)) {
+                    progressIndicator?.Report($"Loading {entry.FullName}");
+
+                    var entryStream = LoadFileStream(entry.FullName);
+                    loadFileFunc.Invoke(entryStream, this);
                 }
             }
         }
@@ -188,7 +214,6 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         public Texture2D LoadTexture(string texturePath, Texture2D fallbackTexture) {
-            
             _isUsedOnNextMap.Add(texturePath);
 
             if (!_textureCache.ContainsKey(texturePath)) {
@@ -208,11 +233,17 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
             ZipArchiveEntry fileEntry;
 
             if ((fileEntry = _packArchive.GetEntry(filePath.Replace(@"\", "/"))) != null) {
-                try {
-                    return fileEntry.Open().ToMemoryStream();
-                } catch (Exception ex) {
-                    return Stream.Null;
+                _exclusiveStreamAccessMutex.WaitOne();
+
+                var memStream = new MemoryStream();
+                using (var entryStream = fileEntry.Open()) {
+                    entryStream.CopyTo(memStream);
                 }
+
+                memStream.Position = 0;
+
+                _exclusiveStreamAccessMutex.ReleaseMutex();
+                return memStream;
             }
 
             // Can't find it, so just send back an empty stream

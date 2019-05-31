@@ -86,5 +86,9 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _autoSizeHeight, value);
         }
 
+        public Label() : base() {
+            _cacheLabel = false;
+        }
+
     }
 }

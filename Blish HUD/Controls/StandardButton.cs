@@ -64,24 +64,24 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            base.OnMouseEntered(e);
-
             _anim?.Start();
+
+            base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            base.OnMouseLeft(e);
-
             if (_anim != null) {
                 _anim.Reverse();
                 _anim.AnimationCompleted += delegate { InitAnim(); };
             }
+
+            base.OnMouseLeft(e);
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            base.OnClick(e);
-
             Content.PlaySoundEffectByName(@"audio\button-click");
+
+            base.OnClick(e);
         }
 
         private int _animFrame = -1;

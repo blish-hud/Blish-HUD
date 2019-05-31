@@ -9,5 +9,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
 
         string Type { get; set; }
 
+        PathingCategory Category { get; set; }
+
     }
 }

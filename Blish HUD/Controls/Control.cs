@@ -103,9 +103,18 @@ namespace Blish_HUD.Controls {
 
                 _activeControl = value;
 
-                // _activeControl is not what should be passed as the sender...
-                ActiveControlChanged?.Invoke(_activeControl, new ControlChangedEventArgs(_activeControl));
+                OnActiveControlChanged(new ControlChangedEventArgs(_activeControl));
             }
+        }
+
+        private static void OnActiveControlChanged(ControlChangedEventArgs e) {
+            if (!string.IsNullOrEmpty(e.ActivatedControl?._basicTooltipText)) {
+                _sharedTooltip.CurrentControl = e.ActivatedControl;
+                _sharedTooltipLabel.Text      = e.ActivatedControl._basicTooltipText;
+            }
+
+            // TODO: _activeControl is probably not what should be passed as the sender...
+            ActiveControlChanged?.Invoke(_activeControl, e);
         }
 
         #endregion
@@ -416,7 +425,7 @@ namespace Blish_HUD.Controls {
                 _basicTooltipText = value;
 
                 // In the event that the tooltip text is changed while it's being shown, this will update it
-                if (SharedTooltip.CurrentControl == this) _sharedTooltipLabel.Text = value;
+                if (Control.ActiveControl == this) _sharedTooltipLabel.Text = value;
 
                 if (!string.IsNullOrEmpty(value)) {
                     this.Tooltip = SharedTooltip;
@@ -513,7 +522,7 @@ namespace Blish_HUD.Controls {
         #region Render Properties
         
         [JsonIgnore]
-        protected bool LayoutIsInvalid { get; private set; } = true;
+        public bool LayoutIsInvalid { get; private set; } = true;
 
         protected SpriteBatchParameters _spriteBatchParameters;
 
@@ -546,7 +555,7 @@ namespace Blish_HUD.Controls {
             // TODO: This needs to get handled by the menustrip itself, not by the control
             /* They activate on the mouse down for the right-click menus which
                deviates from their norm (seems as if everything else activates on
-               mouse button up - 🤷‍ */
+               mouse button up - 🤷‍) */
             this.RightMouseButtonPressed += ActivateContextMenuStrip;
         }
 
@@ -577,7 +586,7 @@ namespace Blish_HUD.Controls {
         }
 
         /// <summary>
-        /// Called whenever the size or location of the control is changed.
+        /// Called whenever the size or location of the control is changed.  Is also called if <see cref="Invalidate"/> is called.
         /// </summary>
         public virtual void RecalculateLayout() {
             /* NOOP */
@@ -666,23 +675,23 @@ namespace Blish_HUD.Controls {
 
         private void HandleTooltip() {
             if (this.MouseOver && !this.AbsoluteBounds.Contains(Input.MouseState.Position)) {
-                if (this.Tooltip != null) this.Tooltip.Visible = false;
+                //if (this.Tooltip != null) this.Tooltip.Visible = false;
                 this.MouseOver = false;
             } else if (this.MouseOver && this.Tooltip != null) { // TODO: This all needs to be handled by the Tooltip, probably, not by the control
-                this.Tooltip.CurrentControl = this;
+                //this.Tooltip.CurrentControl = this;
 
-                // We're going to assume nobody has a display so small that the tooltip just can't fit in any direction
-                int topPos = Input.MouseState.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height > 0
-                                 ? -Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height
-                                 : Tooltip.MOUSE_VERTICAL_MARGIN * 2;
+                //// We're going to assume nobody has a display so small that the tooltip just can't fit in any direction
+                //int topPos = Input.MouseState.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height > 0
+                //                 ? -Tooltip.MOUSE_VERTICAL_MARGIN - this.Tooltip.Height
+                //                 : Tooltip.MOUSE_VERTICAL_MARGIN * 2;
 
-                int leftPos = Input.MouseState.Position.X + this.Tooltip.Width < Graphics.SpriteScreen.Width
-                                  ? 0
-                                  : -this.Tooltip.Width;
+                //int leftPos = Input.MouseState.Position.X + this.Tooltip.Width < Graphics.SpriteScreen.Width
+                //                  ? 0
+                //                  : -this.Tooltip.Width;
 
-                this.Tooltip.Location = Input.MouseState.Position + new Point(leftPos, topPos);
+                //this.Tooltip.Location = Input.MouseState.Position + new Point(leftPos, topPos);
 
-                this.Tooltip.Visible = true;
+                //this.Tooltip.Visible = true;
             }
         }
 
@@ -723,10 +732,12 @@ namespace Blish_HUD.Controls {
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
+        protected virtual void DisposeControl() { /* NOOP */ }
+
+        private void Dispose(bool disposing) {
+            if (!_disposedValue) {
                 if (disposing) {
                     // Let everything know we're disposing (esp. Data Bindings)
                     this.Disposed?.Invoke(this, EventArgs.Empty);
@@ -754,26 +765,19 @@ namespace Blish_HUD.Controls {
 
                     // Remove self from parent object
                     this.Parent = null;
+
+                    this.DisposeControl();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~Control() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
         public void Dispose() {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
         #endregion
 

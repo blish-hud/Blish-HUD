@@ -81,9 +81,10 @@ namespace Blish_HUD.Controls {
             nNot.Show();
         }
 
-        protected override void Dispose(bool disposing) {
-            base.Dispose(disposing);
+        protected override void DisposeControl() {
             _notificationLifecycle = null;
+
+            base.DisposeControl();
         }
 
     }
