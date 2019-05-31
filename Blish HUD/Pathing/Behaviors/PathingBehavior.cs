@@ -140,7 +140,7 @@ namespace Blish_HUD.Pathing.Behaviors {
 
         public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {
             foreach (var attr in attributes) {
-                Console.WriteLine(attr.Name + " = " + attr.Value);
+                //Console.WriteLine(attr.Name + " = " + attr.Value);
             }
         }
 

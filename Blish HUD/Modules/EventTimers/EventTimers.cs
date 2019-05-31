@@ -244,9 +244,9 @@ namespace Blish_HUD.Modules.EventTimers {
             ddSortMethod.SelectedItem = DD_NEXTUP;
             //UpdateSort(ddSortMethod, EventArgs.Empty);
 
-            Console.WriteLine("Main Panel is: " + etPanel.Location.ToString() + " :: " + etPanel.Size.ToString());
-            Console.WriteLine("Event Panel is: " + eventPanel.Location.ToString() + " :: " + eventPanel.Size.ToString());
-            Console.WriteLine("Menu Section Panel is: " + menuSection.Location.ToString() + " :: " + eventPanel.Size.ToString());
+            //Console.WriteLine("Main Panel is: " + etPanel.Location.ToString() + " :: " + etPanel.Size.ToString());
+            //Console.WriteLine("Event Panel is: " + eventPanel.Location.ToString() + " :: " + eventPanel.Size.ToString());
+            //Console.WriteLine("Menu Section Panel is: " + menuSection.Location.ToString() + " :: " + eventPanel.Size.ToString());
 
             return etPanel;
         }

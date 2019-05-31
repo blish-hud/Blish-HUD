@@ -683,10 +683,6 @@ namespace Blish_HUD.Controls {
             if (_mouseOver && !this.AbsoluteBounds.Contains(Input.MouseState.Position)) {
                 this.MouseOver = false;
             }
-
-            if (_mouseOver && this.GetType() == typeof(MenuItem)) {
-                Console.WriteLine(this.AbsoluteBounds.ToString() + "  ::  " + Input.MouseState.Position.ToString());
-            }
         }
 
         /// <summary>
