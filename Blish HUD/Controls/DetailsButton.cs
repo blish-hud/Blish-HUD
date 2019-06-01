@@ -101,7 +101,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// Determines the way the <see cref="DetailsButton"/> will render.
         /// </summary>
-        public DetailsDisplayMode Displaymode {
+        public DetailsDisplayMode DisplayMode {
             get => _displayMode;
             set => SetProperty(ref _displayMode, value);
         }

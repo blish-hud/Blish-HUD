@@ -37,9 +37,9 @@ namespace Blish_HUD {
             public static Texture2D Pixel { get; private set; }
 
             public static void Load() {
-                Error = GameService.Content.GetTexture(@"common\error");
+                Error = Content.GetTexture(@"common\error");
 
-                Pixel = new Texture2D(GameService.Graphics.GraphicsDevice, 1, 1);
+                Pixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
                 Pixel.SetData(new[] { Color.White });
             }
         }
@@ -153,7 +153,7 @@ namespace Blish_HUD {
         }
 
 
-        public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas2(string textureAtlasName) {
+        public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
             return _contentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
         }
 
@@ -260,8 +260,8 @@ namespace Blish_HUD {
                 }
             }
         }
-        public Stream GetFile(string fileName)
-        {
+
+        public Stream GetFile(string fileName) {
             if (_loadedFiles.TryGetValue(fileName, out var cachedFile))
                 return cachedFile;
 
@@ -271,6 +271,7 @@ namespace Blish_HUD {
 
             return cachedFile;
         }
+
         protected override void Unload() {
             _loadedTextures.Clear();
             _loadedBitmapFonts.Clear();

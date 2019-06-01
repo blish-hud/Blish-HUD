@@ -200,7 +200,7 @@ namespace Blish_HUD.Controls {
             var primaryTileBounds = new Rectangle(HorzOffset, VertOffset, BOX_DIMENSIONSATSCALE_NORMAL, BOX_DIMENSIONSATSCALE_NORMAL).OffsetBy(bounds.Location);
             
             if (!animPulseLoad.Active)
-                spriteBatch.Draw(ControlAtlas.GetRegion("skillbox/sb-blank"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
+                spriteBatch.Draw(Resources.Control.TextureAtlasControl.GetRegion("skillbox/sb-blank"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
 
             if (this.Icon != null)
                 if (animFlipIcon == null)
@@ -208,15 +208,15 @@ namespace Blish_HUD.Controls {
                 else
                     spriteBatch.Draw(this.Icon, primaryTileBounds.Add(0, animFlipIcon.CurrentValueInt / 2, 0, Math.Max(-animFlipIcon.CurrentValueInt, -primaryTileBounds.Height + 1)).OffsetBy(bounds.Location), new Rectangle(16, 16, 96, 96), Color.White);
             else
-                spriteBatch.Draw(ControlAtlas.GetRegion("skillbox/sb-blank"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
+                spriteBatch.Draw(Resources.Control.TextureAtlasControl.GetRegion("skillbox/sb-blank"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
 
             if (animPulseLoad.Active)
-                spriteBatch.Draw(ControlAtlas.GetRegion($"skillbox/sb-anim1-f{animPulseLoad.CurrentValueInt}"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
+                spriteBatch.Draw(Resources.Control.TextureAtlasControl.GetRegion($"skillbox/sb-anim1-f{animPulseLoad.CurrentValueInt}"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
 
-            spriteBatch.Draw(ControlAtlas.GetRegion("skillbox/sb-outline"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
+            spriteBatch.Draw(Resources.Control.TextureAtlasControl.GetRegion("skillbox/sb-outline"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
 
             if (this.MouseOver) {
-                spriteBatch.Draw(ControlAtlas.GetRegion("skillbox/sb-hover"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
+                spriteBatch.Draw(Resources.Control.TextureAtlasControl.GetRegion("skillbox/sb-hover"), primaryTileBounds.OffsetBy(bounds.Location), Color.White);
             }
 
             //if (this.Dropped && Items.Count == 0)

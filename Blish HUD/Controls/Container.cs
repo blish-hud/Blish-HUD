@@ -54,8 +54,8 @@ namespace Blish_HUD.Controls {
                 OnPropertyChanged(nameof(this.ContentRegion));
         }
 
-        public void AddChild(Control child) {
-            if (_children.Contains(child)) return;
+        public bool AddChild(Control child) {
+            if (_children.Contains(child)) return true;
 
             var resultingChildren = _children.ToList();
             resultingChildren.Add(child);
@@ -63,14 +63,17 @@ namespace Blish_HUD.Controls {
             var evRes = new ChildChangedEventArgs(this, child, true, resultingChildren);
             OnChildAdded(evRes);
 
-            if (evRes.Cancel) return;
+            if (evRes.Cancel) return false;
 
             _children.Add(child);
+
             Invalidate();
+
+            return true;
         }
 
-        public void RemoveChild(Control child) {
-            if (!_children.Contains(child)) return;
+        public bool RemoveChild(Control child) {
+            if (!_children.Contains(child)) return true;
 
             var resultingChildren = _children.ToList();
             resultingChildren.Remove(child);
@@ -78,10 +81,14 @@ namespace Blish_HUD.Controls {
             var evRes = new ChildChangedEventArgs(this, child, false, resultingChildren);
             OnChildRemoved(evRes);
 
-            if (evRes.Cancel) return;
+            // TODO: Currently if a child removal is canceled, the child control will still set their parent to null, despite still being listed as a child here
+            if (evRes.Cancel) return false;
 
             _children.Remove(child);
+
             Invalidate();
+
+            return true;
         }
 
         private Rectangle? _contentRegion;
@@ -146,15 +153,21 @@ namespace Blish_HUD.Controls {
             return childResult ?? base.TriggerMouseInput(mouseEventType, ms);
         }
 
-        public override void DoUpdate(GameTime gameTime) {
+        public virtual void UpdateContainer(GameTime gameTime) { /* NOOP */ }
+
+        public sealed override void DoUpdate(GameTime gameTime) {
+            UpdateContainer(gameTime);
+
+            // Update our children
             foreach (var childControl in _children.ToList()) {
-                if (childControl.Visible || childControl.LayoutIsInvalid)
+                // Update child if it is visible or if it hasn't rendered yet (needs a first time calc)
+                if (childControl.Visible || childControl.LayoutState != LayoutState.Ready)
                     childControl.Update(gameTime);
             }
         }
 
         protected sealed override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            var controlScissor = Graphics.GraphicsDevice.ScissorRectangle.ScaleBy(1 / Graphics.GetScaleRatio(Graphics.UIScale));
+            var controlScissor = Graphics.GraphicsDevice.ScissorRectangle.ScaleBy(1 / Graphics.UIScaleMultiplier);
 
             // Draw container background
             PaintBeforeChildren(spriteBatch, bounds);
@@ -164,7 +177,7 @@ namespace Blish_HUD.Controls {
             PaintChildren(spriteBatch, bounds, controlScissor);
 
             // Restore scissor
-            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.GetScaleRatio(Graphics.UIScale));
+            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.UIScaleMultiplier);
 
             spriteBatch.Begin(this.SpriteBatchParameters);
 
@@ -180,7 +193,7 @@ namespace Blish_HUD.Controls {
 
             // Render each visible child
             foreach (var childControl in zSortedChildren) {
-                if (childControl.Visible) {
+                if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
                     //if (childControl.LayoutIsInvalid) {
                         // TODO: Need to figure out under what circumstances a control will be invalidated prior to a draw
                         //childControl.RecalculateLayout();

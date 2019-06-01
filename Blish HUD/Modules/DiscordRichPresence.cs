@@ -71,6 +71,8 @@ namespace Blish_HUD.Modules {
         private void UpdateDetails() {
             if (GameService.Player.Map == null) return;
 
+            Console.WriteLine($"Player changed maps to '{GameService.Player.Map.Name}' ({GameService.Player.Map.Id}).");
+
             // rpcClient *shouldn't* be null at this point unless a rare race condition occurs
             // In the event that this occurs, it'll be resolved by the next loop
             rpcClient?.SetPresence(new RichPresence() {

@@ -57,7 +57,21 @@ namespace Blish_HUD.Controls {
             ReflowChildLayout(_children);
         }
 
-        private void ReflowChildLayout(List<Control> allChildren) {
+        public void FilterChildren<TControl>(Func<TControl, bool> filter) where TControl : Control {
+            _children.Cast<TControl>().ToList().ForEach(tc => tc.Visible = filter(tc));
+            ReflowChildLayout(_children);
+        }
+
+        public void SortChildren<TControl>(Comparison<TControl> comparison) where TControl : Control {
+            var tempChildren = _children.Cast<TControl>().ToList();
+            tempChildren.Sort(comparison);
+
+            _children = tempChildren.Cast<Control>().ToList();
+
+            ReflowChildLayout(_children);
+        }
+
+        private void ReflowChildLayout(List<Control> allChildren){
             // TODO: Implement TopToBottom ControlFlowDirection
             if (this.FlowDirection == ControlFlowDirection.LeftToRight) {
                 float nextBottom = _padTopBeforeControl ? _controlPadding.Y : 0;

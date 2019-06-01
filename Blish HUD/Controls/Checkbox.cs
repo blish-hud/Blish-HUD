@@ -11,7 +11,7 @@ using MonoGame.Extended.TextureAtlases;
 namespace Blish_HUD.Controls {
 
     // TODO: Checkbox needs to shrink on mousedown (animation)
-    public class Checkbox:LabelBase, ICheckable {
+    public class Checkbox : LabelBase, ICheckable {
 
         public const int CHECKBOX_SIZE = 32;
 
@@ -20,31 +20,6 @@ namespace Blish_HUD.Controls {
         protected virtual void OnCheckedChanged(CheckChangedEvent e) {
             this.CheckedChanged?.Invoke(this, e);
         }
-
-        #region "Sprites"
-
-        private static bool _spritesLoaded = false;
-
-        private static List<TextureRegion2D> cbRegions;
-
-        private static void LoadSprites() {
-            if (_spritesLoaded) return;
-
-            cbRegions = new List<TextureRegion2D>();
-
-            cbRegions.AddRange(new TextureRegion2D[] {
-                ControlAtlas.GetRegion("checkbox/cb-unchecked"),
-                ControlAtlas.GetRegion("checkbox/cb-unchecked-active"),
-                ControlAtlas.GetRegion("checkbox/cb-unchecked-disabled"),
-                ControlAtlas.GetRegion("checkbox/cb-checked"),
-                ControlAtlas.GetRegion("checkbox/cb-checked-active"),
-                ControlAtlas.GetRegion("checkbox/cb-checked-disabled"),
-            });            
-
-            _spritesLoaded = true;
-        }
-
-        #endregion
 
         /// <summary>
         /// The text this <see cref="Checkbox"/> should show.
@@ -65,8 +40,6 @@ namespace Blish_HUD.Controls {
         }
 
         public Checkbox() : base() {
-            LoadSprites();
-
             this.Height = CHECKBOX_SIZE / 2;
 
             _autoSizeWidth = true;
@@ -106,7 +79,7 @@ namespace Blish_HUD.Controls {
             extension = this.MouseOver ? "-active" : extension;
             extension = !this.Enabled ? "-disabled" : extension;
 
-            var sprite = cbRegions.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
+            var sprite = Resources.Checkable.TextureRegionsCheckbox.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
 
             spriteBatch.DrawOnCtrl(this,
                                    sprite,
