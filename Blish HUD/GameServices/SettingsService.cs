@@ -380,7 +380,7 @@ namespace Blish_HUD {
         }
         private Panel BuildApiPanel(Point size)
         {
-            List<string> ApiKeys = this.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).Value;
+            Dictionary<Guid, string> ApiKeys = this.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
             Dictionary<string, string> foolSafeKeyRepository = ApiService.GetKeyIdRepository();
             var apiPanel = new Panel() { CanScroll = false, Size = size };
 
@@ -447,7 +447,13 @@ namespace Blish_HUD {
             apiKeyButton.LeftMouseButtonPressed += delegate
             {
                 Gw2Api.RemoveKey(foolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
+
+                keySelectionDropdown.Items.Clear();
                 foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
+                {
+                    keySelectionDropdown.Items.Add(item.Key);
+                }
                 keySelectionDropdown.Visible = foolSafeKeyRepository.Count > 0;
                 keySelectionDropdown.SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key;
 
@@ -471,7 +477,7 @@ namespace Blish_HUD {
                     errorMsg = "Not an API key! Invalid pattern.";
                     apiKeyError.TextColor = Color.IndianRed;
                 }
-                else if (ApiKeys.Contains(apiKey))
+                else if (ApiKeys.Any(entry => entry.Value.Contains(apiKey)))
                 {
                     errorMsg = "API key already registered!";
                     apiKeyError.TextColor = Color.LightGreen;
@@ -499,6 +505,7 @@ namespace Blish_HUD {
                     apiKeyError.Text = "Success! Key added. :-)";
                     apiKeyError.TextColor = Color.LightGreen;
                     apiKeyError.Visible = true;
+                    keySelectionDropdown.Items.Clear();
                     foolSafeKeyRepository = ApiService.GetKeyIdRepository();
                     foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
                     {
@@ -508,10 +515,7 @@ namespace Blish_HUD {
                     keySelectionDropdown.Visible = true;
                     apiKeyButton.Visible = true;
                 }
-                // Reset focus.
-                Overlay.Form.ActiveControl = null;
-                GameIntegration.FocusGw2();
-                Overlay.Form.Focus();
+                Overlay.ResetFocus();
             };
 
             keySelectionDropdown.ValueChanged += delegate {

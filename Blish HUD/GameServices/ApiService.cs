@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -10,6 +11,7 @@ namespace Blish_HUD
     public class ApiService : GameService
     {
         public static string SETTINGS_ENTRY = "ApiKeyRepository";
+        private static string SETTINGS_ENTRY_PERMS = "ModulePermissions";
         public static string PLACEHOLDER_KEY = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX";
         /// <summary>
         /// The Globally Unique Identifier from the currently connected api key.
@@ -27,13 +29,13 @@ namespace Blish_HUD
             CharacterRepository = new Dictionary<string, string>();
             if (!SettingsService.Settings.CoreSettings.Entries.ContainsKey(SETTINGS_ENTRY))
             {
-                SettingsService.Settings.CoreSettings.DefineSetting(SETTINGS_ENTRY, new List<string>(), new List<string>(), false, "Stored Guild Wars 2 API Keys.");
+                SettingsService.Settings.CoreSettings.DefineSetting(SETTINGS_ENTRY, new Dictionary<Guid,string>(), new Dictionary<Guid, string>(), false, "Stored Guild Wars 2 API Keys per Guid.");
             }
             else
             {
-                foreach (string key in SettingsService.Settings.CoreSettings.GetSetting<List<string>>(SETTINGS_ENTRY).Value)
+                foreach (KeyValuePair<Guid, string> entry in SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>> (SETTINGS_ENTRY).Value)
                 {
-                    this.RegisterCharacters(key);
+                    this.RegisterCharacters(entry.Value);
                 }
             }
         }
@@ -51,24 +53,18 @@ namespace Blish_HUD
         }
         protected override void Unload() { /* NOOP */ }
         protected override void Load() { /* NOOP */ }
-
-        /// <summary>
-        /// Creates Key (character) Value (api key) pairs from the given api key and merges them into the repository.
-        /// </summary>
-        /// <param name="apiKey">An api key.</param>
-        /// <returns></returns>
-        private void RegisterCharacters(string apiKey)
+        private void StartClient(string apiKey)
         {
             if (!IsKeyValid(apiKey)) return;
 
-            if (!HasPermissions(new[] { TokenPermission.Account, TokenPermission.Characters }, apiKey)) return;
+            this.Client = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
+            this.GUID = GetGuid(apiKey);
 
-            Gw2WebApiClient testClient = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
-
-            var charactersResponse = testClient.V2.Characters.IdsAsync();
-            charactersResponse.Wait();
+        }
+        private void RegisterCharacters(string apiKey)
+        {
             var new_characterRepository = new Dictionary<string, string>();
-            foreach (string name in charactersResponse.Result)
+            foreach (string name in GetCharacters(apiKey))
             {
                 // Bind characters to the api key.
                 new_characterRepository.Add(name, apiKey);
@@ -78,53 +74,67 @@ namespace Blish_HUD
         }
         private void RemoveCharacters(string apiKey)
         {
-            if (!IsKeyValid(apiKey)) return;
-
-            if (!HasPermissions(new[] { TokenPermission.Account, TokenPermission.Characters }, apiKey)) return;
-
-            Gw2WebApiClient testClient = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
-
-            var charactersResponse = testClient.V2.Characters.IdsAsync();
-            charactersResponse.Wait();
-            var new_characterRepository = new Dictionary<string, string>();
-            foreach (string name in charactersResponse.Result)
+            foreach (string name in GetCharacters(apiKey))
             {
                 CharacterRepository.Remove(name);
             }
         }
-        /// <summary>
-        /// Creates a new main client API connection for the given api key.
-        /// </summary>
-        /// <param name="apiKey">Main API key.</param>
-        private void StartClient(string apiKey)
+        private static List<string> GetCharacters(string apiKey)
         {
-            if (IsKeyValid(apiKey))
+            Gw2WebApiClient testClient = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
+
+            var charactersResponse = testClient.V2.Characters.IdsAsync();
+            charactersResponse.Wait();
+            return charactersResponse.Result.ToList();
+        }
+        private List<TokenPermission> GetPermissions(string apiKey)
+        {
+            List<TokenPermission> enumList = new List<TokenPermission>();
+            foreach (TokenPermission x in GetTokenInfo(apiKey).Permissions.List)
             {
-                this.Client = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
-                if (HasPermissions(new[]{ TokenPermission.Account }))
-                {
-                    // There is nothing wrong with having a Guid up immediately.
-                    var accountResponse = this.Client.V2.Account.GetAsync();
-                    accountResponse.Wait();
-                    this.GUID = accountResponse.Result.Id;
-                }
-            }
+                enumList.Add(x);
+            };
+            return enumList;
+        }
+        private static TokenInfo GetTokenInfo(string apiKey)
+        {
+            if (IsKeyValid(apiKey)) throw new ArgumentException("Invalid API key!");
+            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey));
+            var tokenInfoResponse = tempClient.V2.TokenInfo.GetAsync();
+            tokenInfoResponse.Wait();
+            return tokenInfoResponse.Result;
+        }
+        private static Account GetAccount(string apiKey)
+        {
+            if (IsKeyValid(apiKey)) throw new ArgumentException("Invalid API key!");
+            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey));
+            var accountResponse = tempClient.V2.Account.GetAsync();
+            accountResponse.Wait();
+            return accountResponse.Result;
+        }
+        public Guid GetGuid(string apiKey)
+        {
+            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
+            if (!HasPermissions(new[] { TokenPermission.Account }, apiKey))
+                throw new ArgumentException("Insufficient permissions for retrieving Guid! Required: Account.");
+            var accountResponse = tempClient.V2.Account.GetAsync();
+            accountResponse.Wait();
+            return accountResponse.Result.Id;
         }
         /// <summary>
         /// Checks if active api key conforms a character name in the repository.
         /// </summary>
-        public void Invalidate()
+        public bool Invalidate()
         {
-            if (!Connected) return;
-            var characterResponse = this.Client.V2.Characters.IdsAsync();
-            characterResponse.Wait();
-            foreach (string name in characterResponse.Result)
+            if (!Connected) return false;
+            foreach (string name in GetCharacters(Client.Connection.AccessToken))
             {
                 if (CharacterRepository.ContainsKey(name))
                     continue;
-                return;
+                return false;
             }
             this.Client = null;
+            return true;
         }
         /// <summary>
         /// Checks if the provided string is a valid Guild Wars 2 API key.
@@ -136,48 +146,41 @@ namespace Blish_HUD
             return apiKey != null ? Regex.IsMatch(apiKey, @"^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{20}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$") : false;
         }
         /// <summary>
+        /// Finds the api key matching the id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private static string GetKeyById(string id)
+        {
+            if (!Regex.IsMatch(id, "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$"))
+                throw new ArgumentException("Pattern mismatch! Not an Id of an Guild Wars 2 API key.");
+
+            Dictionary<Guid, string> apiKeys = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
+
+            return apiKeys.FirstOrDefault(i => i.Value.Contains(id)).Value;
+        }
+        /// <summary>
         /// Returns a fool safe dictionary containing name and the first halfs of the actual keys currently in the settings.
         /// </summary>
         /// <returns>The fool safe dictionary.</returns>
         public static Dictionary<string, string> GetKeyIdRepository()
         {
-            Dictionary<string, string> apiKeys = new Dictionary<string, string>();
+            Dictionary<string, string> foolApiKeys = new Dictionary<string, string>();
             if (SettingsService.Settings.CoreSettings.Entries.ContainsKey(ApiService.SETTINGS_ENTRY))
             {
-                List<string> keyRepo = SettingsService.Settings.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).Value;
+                Dictionary<Guid, string> keyRepo = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
 
-                foreach (string key in keyRepo)
+                foreach (KeyValuePair<Guid, string> entry in keyRepo)
                 {
-                    if (!IsKeyValid(key)) continue;
-                    Gw2WebApiClient testClient = new Gw2WebApiClient(new Connection(key));
-                    var tokeninfoResponse = testClient.V2.TokenInfo.GetAsync();
-                    tokeninfoResponse.Wait();
-                    string tokenName = tokeninfoResponse.Result.Name;
-                    var accountResponse = testClient.V2.Account.GetAsync();
-                    accountResponse.Wait();
-                    string accountName = accountResponse.Result.Name;
-                    tokenName = tokenName + " (" + accountName + ')';
-                    if (!apiKeys.ContainsKey(tokenName))
-                        apiKeys.Add(tokenName, tokeninfoResponse.Result.Id);
+                    if (!IsKeyValid(entry.Value)) continue;
+                    TokenInfo tokenInfo = GetTokenInfo(entry.Value);
+                    string new_entry = tokenInfo.Name + " (" + GetAccount(entry.Value).Name + ')';
+                    if (!foolApiKeys.ContainsKey(new_entry))
+                        foolApiKeys.Add(new_entry, tokenInfo.Id);
                 }
 
             }
-            return apiKeys;
-        }
-        /// <summary>
-        /// Gets all the permissions of the provided Api Client.
-        /// </summary>
-        /// <param name="client">The api client.</param>
-        /// <returns></returns>
-        private List<TokenPermission> GetPermissions(Gw2WebApiClient client)
-        {
-            var tokenInfoResponse = client.V2.TokenInfo.GetAsync();
-            tokenInfoResponse.Wait();
-            List<TokenPermission> enumList = new List<TokenPermission>();
-            foreach (TokenPermission x in tokenInfoResponse.Result.Permissions.List){
-                enumList.Add(x);
-            };
-            return enumList;
+            return foolApiKeys;
         }
         /// <summary>
         /// Checks if the Api Client has the given permissions.
@@ -187,12 +190,11 @@ namespace Blish_HUD
         /// <returns>bool</returns>
         public bool HasPermissions(TokenPermission[] permissions, string apiKey = null)
         {
-            Gw2WebApiClient testClient = this.Client;
+            var savedPermissions = this.GetPermissions(
+                apiKey != null ? 
+                apiKey 
+                : this.Client.Connection.AccessToken);
 
-            if (IsKeyValid(apiKey))
-                testClient = new Gw2WebApiClient(new Connection(apiKey));
-
-            var savedPermissions = this.GetPermissions(testClient);
             foreach (TokenPermission x in permissions)
             {
                 if (!savedPermissions.Contains(x)) return false;
@@ -207,27 +209,14 @@ namespace Blish_HUD
         {
             if (SettingsService.Settings.CoreSettings.Entries.ContainsKey(ApiService.SETTINGS_ENTRY))
             {
-                List<string> apiKeys = SettingsService.Settings.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).Value;
+                Dictionary<Guid, string> apiKeys = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
                 string key = GetKeyById(id);
                 if (key != null)
                 {
-                    apiKeys.Remove(key);
+                    apiKeys.Remove(apiKeys.First(i => i.Value.Contains(key)).Key);
                     RemoveCharacters(key);
                 }
             }
-        }
-        /// <summary>
-        /// Finds the api key matching the id.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private static string GetKeyById(string id)
-        {
-            if (!Regex.IsMatch(id, "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$"))
-                throw new ArgumentException("Pattern mismatch! Not an Id of an Guild Wars 2 API key.");
-
-            List<string> apiKeys = SettingsService.Settings.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).Value;
-            return apiKeys.Find(x => x.Contains(id));
         }
         /// <summary>
         /// Registers a new key that is not already saved in the settings.
@@ -237,25 +226,28 @@ namespace Blish_HUD
         {
             if (!IsKeyValid(apiKey)) return;
 
-            List<string> saved = SettingsService.Settings.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).Value;
+            SettingEntry<Dictionary<Guid, string>> entry = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY);
 
-            if (saved.Contains(apiKey)) return;
-            saved.Add(apiKey);
+            Dictionary<Guid, string> value = entry.Value;
+            Dictionary<Guid, string> defaultValue = entry.DefaultValue;
+            bool exposed = entry.ExposedAsSetting;
+            string description = entry.Description;
 
-            List<string> defaultValue = SettingsService.Settings.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).DefaultValue;
-            bool exposed = SettingsService.Settings.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).ExposedAsSetting;
-            string description = SettingsService.Settings.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).Description;
+            Guid guid = GetGuid(apiKey);
 
-            SettingsService.Settings.CoreSettings.DefineSetting(ApiService.SETTINGS_ENTRY, saved, defaultValue, exposed, description);
+            if (value.ContainsKey(guid)){
+                value[guid] = apiKey;
+            }
+            else
+            {
+                value.Add(guid, apiKey);
+            }
+
+            SettingsService.Settings.CoreSettings.DefineSetting(ApiService.SETTINGS_ENTRY, value, defaultValue, exposed, description);
             RegisterCharacters(apiKey);
+
         }
-        /// <summary>
-        /// Gets a subtoken with finite life cycle and fewer or equal permissions as the main key provided to BlishHUD.
-        /// </summary>
-        /// <param name="permissions">Endpoint permissions using Gw2Sharp.WebApi.V2.Models.</param>
-        /// <param name="days">Expiration in days from the moment of its creation (max. 7 days).</param>
-        /// <returns>A subtoken.</returns>
-        public string CreateSubtoken(TokenPermission[] permissions, int days)
+        private string CreateSubtoken(TokenPermission[] permissions, int days)
         {
             if (!Connected) return null;
             var subTokenResponse = this.Client.V2.CreateSubtoken
@@ -265,5 +257,19 @@ namespace Blish_HUD
             subTokenResponse.Wait();
             return subTokenResponse.Result.Subtoken;
         }
+        /// <summary>
+        /// Gets a subtoken with finite life cycle and fewer or equal permissions as the active API connection.
+        /// </summary>
+        /// <param name="moduleNamespace">Namespace of the module.</param>
+        /// <param name="days">Expiration in days from the moment of its creation (max. 7 days).</param>
+        /// <returns>A subtoken.</returns>
+        /*public string GetSubtoken()
+        {
+            if (!SettingsService.Settings.CoreSettings.Entries.ContainsKey(SETTINGS_ENTRY_PERMS))
+            {
+                SettingsService.Settings.CoreSettings.DefineSetting(SETTINGS_ENTRY, new Dictionary<string, TokenPermission[]>(), new Dictionary<string, TokenPermission[]>(), false, "Module API Permissions");
+            }
+            return null;
+        }*/
     }
 }
