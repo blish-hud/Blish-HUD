@@ -105,25 +105,6 @@ namespace Blish_HUD {
                 Store,
                 Gw2Api
             };
-
-            GameServices.AddService<DebugService>(AllServices[0]);
-            GameServices.AddService<FileService>(AllServices[1]);
-            GameServices.AddService<SettingsService>(AllServices[2]);
-            GameServices.AddService<ContentService>(AllServices[3]);
-            GameServices.AddService<AnimationService>(AllServices[4]);
-            GameServices.AddService<GraphicsService>(AllServices[5]);
-            GameServices.AddService<Gw2MumbleService>(AllServices[6]);
-            GameServices.AddService<PlayerService>(AllServices[7]);
-            GameServices.AddService<CameraService>(AllServices[8]);
-            GameServices.AddService<InputService>(AllServices[9]);
-            GameServices.AddService<DirectorService>(AllServices[10]);
-            GameServices.AddService<GameIntegrationService>(AllServices[11]);
-            GameServices.AddService<HotkeysService>(AllServices[12]);
-            GameServices.AddService<ModuleService>(AllServices[14]);
-            GameServices.AddService<PersistentStoreService>(AllServices[15]);
-            GameServices.AddService<ApiService>(AllServices[16]);
-                //ArcDps
-            };
         }
 
         #region Property Binding

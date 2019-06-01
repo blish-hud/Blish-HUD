@@ -19,7 +19,7 @@ namespace Blish_HUD {
             {
                 foreach (var item in dictionary)
                 {
-                    if (!main.ContainsKey(item.Key) && !update)
+                    if (!main.ContainsKey(item.Key) || update)
                     {
                         main[item.Key] = item.Value;
                     }

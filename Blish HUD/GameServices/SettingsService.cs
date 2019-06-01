@@ -381,7 +381,7 @@ namespace Blish_HUD {
         private Panel BuildApiPanel(Point size)
         {
             List<string> ApiKeys = this.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).Value;
-            Dictionary<string, string> FoolSafeKeyRepository = ApiService.GetKeyRepository();
+            Dictionary<string, string> foolSafeKeyRepository = ApiService.GetKeyIdRepository();
             var apiPanel = new Panel() { CanScroll = false, Size = size };
 
             var keySelectionDropdown = new Dropdown()
@@ -389,10 +389,10 @@ namespace Blish_HUD {
                 Parent = apiPanel,
                 Size = new Point(200, 30),
                 Location = new Point(apiPanel.Size.X - 200 - Panel.RIGHT_MARGIN, Panel.TOP_MARGIN),
-                Visible = FoolSafeKeyRepository.Count > 0,
-                SelectedItem = FoolSafeKeyRepository.FirstOrDefault().Key
+                Visible = foolSafeKeyRepository.Count > 0,
+                SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key
             };
-            foreach (KeyValuePair<string,string> item in FoolSafeKeyRepository)
+            foreach (KeyValuePair<string,string> item in foolSafeKeyRepository)
             {
                 keySelectionDropdown.Items.Add(item.Key);
             }
@@ -404,7 +404,7 @@ namespace Blish_HUD {
                 ShowShadow = true,
                 HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
                 Text = Gw2Api.Connected ? "OK! Connected. :-)" : "Not connected.",
-                TextColor = Gw2Api.Connected ? Color.LightGreen : Color.Red
+                TextColor = Gw2Api.Connected ? Color.LightGreen : Color.IndianRed
             };
             var apiKeyLabel = new Label()
             {
@@ -419,7 +419,10 @@ namespace Blish_HUD {
                 Parent = apiPanel,
                 Size = new Point(600, 30),
                 Location = new Point(apiPanel.Size.X / 2 - 300, apiKeyLabel.Bottom),
-                PlaceholderText = ApiService.PLACEHOLDER_KEY
+                PlaceholderText = keySelectionDropdown.SelectedItem != null ?
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+                    : ApiService.PLACEHOLDER_KEY
             };
             var apiKeyError = new Label()
             {
@@ -439,29 +442,39 @@ namespace Blish_HUD {
                 Location = new Point(apiKeyTextBox.Right, apiKeyTextBox.Location.Y),
                 Text = "",
                 BackgroundColor = Color.IndianRed,
-                Visible = false
+                Visible = keySelectionDropdown.SelectedItem != null
             };
             apiKeyButton.LeftMouseButtonPressed += delegate
             {
-                ApiService.RemoveKey(FoolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
-                FoolSafeKeyRepository.Remove(FoolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
-                keySelectionDropdown.SelectedItem = FoolSafeKeyRepository.FirstOrDefault().Key;
+                Gw2Api.RemoveKey(foolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
+                foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                keySelectionDropdown.Visible = foolSafeKeyRepository.Count > 0;
+                keySelectionDropdown.SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key;
 
-                apiKeyTextBox.PlaceholderText =
-                    FoolSafeKeyRepository.FirstOrDefault().Value + ApiService.PLACEHOLDER_KEY.Substring(FoolSafeKeyRepository.FirstOrDefault().Value.Length - 1);
+                apiKeyTextBox.PlaceholderText = keySelectionDropdown.SelectedItem != null ?
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+                    : ApiService.PLACEHOLDER_KEY;
 
-                keySelectionDropdown.Visible = FoolSafeKeyRepository.Count > 0;
                 apiKeyError.Visible = false;
                 apiKeyButton.Visible = keySelectionDropdown.Visible;
-                apiPanel.Invalidate();
+                Gw2Api.Invalidate();
+                connectedLabel.Text = Gw2Api.Connected ? "OK! Connected. :-)" : "Not connected.";
+                connectedLabel.TextColor = Gw2Api.Connected ? Color.LightGreen : Color.IndianRed;
             };
             apiKeyTextBox.OnEnterPressed += delegate
             {
                 string apiKey = apiKeyTextBox.Text;
                 string errorMsg = null;
-                if (ApiKeys.Contains(apiKey))
+                if (!ApiService.IsKeyValid(apiKey))
+                {
+                    errorMsg = "Not an API key! Invalid pattern.";
+                    apiKeyError.TextColor = Color.IndianRed;
+                }
+                else if (ApiKeys.Contains(apiKey))
                 {
                     errorMsg = "API key already registered!";
+                    apiKeyError.TextColor = Color.LightGreen;
                 }
                 else if (!Gw2Api.HasPermissions(new[]
                       {
@@ -471,37 +484,44 @@ namespace Blish_HUD {
                   apiKey))
                 {
                     errorMsg = "Insufficient permissions! Required: Account, Characters.";
+                    apiKeyError.TextColor = Color.IndianRed;
                 }
                 if (errorMsg != null) {
+
                     apiKeyError.Visible = true;
                     apiKeyError.Text = errorMsg;
                     apiKeyTextBox.Text = "";
-                } else {
-                    apiKeyError.Visible = true;
-                    apiKeyTextBox.PlaceholderText = apiKeyTextBox.Text;
 
-                    this.CoreSettings.GetSetting<List<string>>(ApiService.SETTINGS_ENTRY).Value.Add(apiKeyTextBox.Text);
+                } else {
+                    Gw2Api.RegisterKey(apiKeyTextBox.Text);
+                    apiKeyTextBox.PlaceholderText = apiKeyTextBox.Text;
+                    apiKeyTextBox.Text = "";
                     apiKeyError.Text = "Success! Key added. :-)";
                     apiKeyError.TextColor = Color.LightGreen;
-                    apiKeyTextBox.Text = "";
-                    Gw2Api.UpdateCharacters(apiKey);
+                    apiKeyError.Visible = true;
+                    foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                    foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
+                    {
+                        keySelectionDropdown.Items.Add(item.Key);
+                    }
+                    keySelectionDropdown.SelectedItem = foolSafeKeyRepository.LastOrDefault().Key;
+                    keySelectionDropdown.Visible = true;
+                    apiKeyButton.Visible = true;
                 }
                 // Reset focus.
                 Overlay.Form.ActiveControl = null;
                 GameIntegration.FocusGw2();
                 Overlay.Form.Focus();
-                apiPanel.Invalidate();
             };
-            keySelectionDropdown.ValueChanged += delegate {
 
+            keySelectionDropdown.ValueChanged += delegate {
                 apiKeyTextBox.PlaceholderText = 
                 keySelectionDropdown.SelectedItem != null ? 
-                    FoolSafeKeyRepository[keySelectionDropdown.SelectedItem] + 
-                    ApiService.PLACEHOLDER_KEY.Substring(FoolSafeKeyRepository.FirstOrDefault().Value.Length - 1) 
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] + 
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1) 
                     : ApiService.PLACEHOLDER_KEY;
 
-                apiKeyButton.Visible = keySelectionDropdown.SelectedItem != null;
-                apiPanel.Parent.UpdateContainer();
+                apiKeyButton.Visible = true;
             };
             return apiPanel;
         }
