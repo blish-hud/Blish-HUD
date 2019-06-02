@@ -323,6 +323,16 @@ namespace Blish_HUD {
                 }
             };
 
+            settingsMi_API.Click += delegate
+            {
+                cPanel?.Hide();
+                cPanel?.Dispose();
+
+                cPanel = BuildApiPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+                cPanel.Parent = baseSettingsPanel;
+            };
+
             settingsMi_About.Click += delegate {
                 cPanel?.Hide();
                 cPanel?.Dispose();
@@ -368,7 +378,157 @@ namespace Blish_HUD {
 
             return baseSettingsPanel;
         }
+        private Panel BuildApiPanel(Point size)
+        {
+            Dictionary<Guid, string> ApiKeys = this.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
+            Dictionary<string, string> foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+            var apiPanel = new Panel() { CanScroll = false, Size = size };
 
+            var keySelectionDropdown = new Dropdown()
+            {
+                Parent = apiPanel,
+                Size = new Point(200, 30),
+                Location = new Point(apiPanel.Size.X - 200 - Panel.RIGHT_MARGIN, Panel.TOP_MARGIN),
+                Visible = foolSafeKeyRepository.Count > 0,
+                SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key
+            };
+            foreach (KeyValuePair<string,string> item in foolSafeKeyRepository)
+            {
+                keySelectionDropdown.Items.Add(item.Key);
+            }
+            var connectedLabel = new Label()
+            {
+                Parent = apiPanel,
+                Size = new Point(apiPanel.Size.X, 30),
+                Location = new Point(0, apiPanel.Size.Y - Panel.BOTTOM_MARGIN - 15),
+                ShowShadow = true,
+                HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
+                Text = Gw2Api.Connected ? "OK! Connected. :-)" : "Not connected.",
+                TextColor = Gw2Api.Connected ? Color.LightGreen : Color.IndianRed
+            };
+            var apiKeyLabel = new Label()
+            {
+                Parent = apiPanel,
+                Size = new Point(apiPanel.Size.X, 30),
+                Location = new Point(0, apiPanel.Size.Y / 2 - apiPanel.Size.Y / 4 - 15),
+                ShowShadow = true,
+                HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
+                Text = "Insert your Guild Wars 2 API key here to unlock lots of cool features:"
+            };
+            var apiKeyTextBox = new TextBox() {
+                Parent = apiPanel,
+                Size = new Point(600, 30),
+                Location = new Point(apiPanel.Size.X / 2 - 300, apiKeyLabel.Bottom),
+                PlaceholderText = keySelectionDropdown.SelectedItem != null ?
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+                    : ApiService.PLACEHOLDER_KEY
+            };
+            var apiKeyError = new Label()
+            {
+                Parent = apiPanel,
+                Size = new Point(apiPanel.Size.X, 30),
+                Location = new Point(0, apiKeyTextBox.Bottom + Panel.BOTTOM_MARGIN),
+                ShowShadow = true,
+                HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
+                TextColor = Color.Red,
+                Text = "Invalid API key! Try again.",
+                Visible = false
+            };
+            var apiKeyButton = new StandardButton()
+            {
+                Parent = apiPanel,
+                Size = new Point(30, 30),
+                Location = new Point(apiKeyTextBox.Right, apiKeyTextBox.Location.Y),
+                Text = "",
+                BackgroundColor = Color.IndianRed,
+                Visible = keySelectionDropdown.SelectedItem != null
+            };
+            apiKeyButton.LeftMouseButtonPressed += delegate
+            {
+                Gw2Api.RemoveKey(foolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
+
+                keySelectionDropdown.Items.Clear();
+                foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
+                {
+                    keySelectionDropdown.Items.Add(item.Key);
+                }
+                keySelectionDropdown.Visible = foolSafeKeyRepository.Count > 0;
+                keySelectionDropdown.SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key;
+
+                apiKeyTextBox.PlaceholderText = keySelectionDropdown.SelectedItem != null ?
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+                    : ApiService.PLACEHOLDER_KEY;
+
+                apiKeyError.Visible = false;
+                apiKeyButton.Visible = keySelectionDropdown.Visible;
+                Gw2Api.Invalidate();
+                connectedLabel.Text = Gw2Api.Connected ? "OK! Connected. :-)" : "Not connected.";
+                connectedLabel.TextColor = Gw2Api.Connected ? Color.LightGreen : Color.IndianRed;
+            };
+            apiKeyTextBox.OnEnterPressed += delegate
+            {
+                string apiKey = apiKeyTextBox.Text;
+                string errorMsg = null;
+                if (!ApiService.IsKeyValid(apiKey))
+                {
+                    errorMsg = "Not an API key! Invalid pattern.";
+                    apiKeyError.TextColor = Color.IndianRed;
+                }
+                else if (ApiKeys.Any(entry => entry.Value.Contains(apiKey)))
+                {
+                    errorMsg = "API key already registered!";
+                    apiKeyError.TextColor = Color.LightGreen;
+                }
+                else if (!Gw2Api.HasPermissions(new[]
+                      {
+                        Gw2Sharp.WebApi.V2.Models.TokenPermission.Account,
+                        Gw2Sharp.WebApi.V2.Models.TokenPermission.Characters
+                    },
+                  apiKey))
+                {
+                    errorMsg = "Insufficient permissions! Required: Account, Characters.";
+                    apiKeyError.TextColor = Color.IndianRed;
+                }
+                if (errorMsg != null) {
+
+                    apiKeyError.Visible = true;
+                    apiKeyError.Text = errorMsg;
+                    apiKeyTextBox.Text = "";
+
+                } else {
+                    Gw2Api.RegisterKey(apiKeyTextBox.Text);
+                    apiKeyTextBox.PlaceholderText = apiKeyTextBox.Text;
+                    apiKeyTextBox.Text = "";
+                    apiKeyError.Text = "Success! Key added. :-)";
+                    apiKeyError.TextColor = Color.LightGreen;
+                    apiKeyError.Visible = true;
+                    keySelectionDropdown.Items.Clear();
+                    foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                    foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
+                    {
+                        keySelectionDropdown.Items.Add(item.Key);
+                    }
+                    keySelectionDropdown.SelectedItem = foolSafeKeyRepository.LastOrDefault().Key;
+                    keySelectionDropdown.Visible = true;
+                    apiKeyButton.Visible = true;
+                }
+                Overlay.ResetFocus();
+            };
+
+            keySelectionDropdown.ValueChanged += delegate {
+                apiKeyTextBox.PlaceholderText = 
+                keySelectionDropdown.SelectedItem != null ? 
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] + 
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1) 
+                    : ApiService.PLACEHOLDER_KEY;
+
+                apiKeyButton.Visible = true;
+            };
+            return apiPanel;
+        }
         // TODO: All of this needs to be somewhere else
 
         private const string ANET_COPYRIGHT_NOTICE =

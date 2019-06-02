@@ -35,7 +35,7 @@
 
         public override string ToString()
         {
-            return $"{(Octave == Octaves.High ? "▲" : Octave == Octaves.Low ? "▼" : string.Empty)}{Key}";
+            return $"{(Octave >= Octaves.High ? "▲" : Octave <= Octaves.Low ? "▼" : string.Empty)}{Key}";
         }
 
         public override bool Equals(object obj)

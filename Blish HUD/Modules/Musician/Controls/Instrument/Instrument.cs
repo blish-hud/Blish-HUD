@@ -17,10 +17,12 @@ namespace Blish_HUD.Modules.Musician.Controls.Instrument
         DecreaseOctaveToMiddle,
         StopPlaying
     }
-    public class InstrumentType
+    public abstract class Instrument
     {
-        public InstrumentType() { }
-        public virtual void PlayNote(Note note) { }
-        public virtual void GoToOctave(Note note) { }
+        public bool IsInstrument(string instrument) {
+            return this.GetType().Name.ToLower().Trim() == instrument.ToLower().Trim();
+        }
+        public abstract void PlayNote(Note note);
+        public abstract void GoToOctave(Note note);
     }
 }
