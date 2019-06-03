@@ -307,10 +307,17 @@ namespace Blish_HUD {
 
             //settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
 
+            var moduleMi_Module_Perms = new MenuItem("Module Permissions")
+            {
+                Parent = settingsMi_API,
+                Icon = Content.GetTexture("155048")
+            };
+
             var moduleMi_Module_Repo = new MenuItem("Manage Sources") {
                 Parent = settingsMi_Modules,
                 Icon   = Content.GetTexture("156140")
             };
+
             GameService.Module.OnLoad += delegate {
                 foreach (var module in GameService.Module.AvailableModules) {
                     var moduleInfo = module.GetModuleInfo();
@@ -349,6 +356,16 @@ namespace Blish_HUD {
                 cPanel          = BuildModulePanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
                 cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
                 cPanel.Parent   = baseSettingsPanel;
+            };
+
+            moduleMi_Module_Perms.Click += delegate
+            {
+                cPanel?.Hide();
+                cPanel?.Dispose();
+
+                cPanel = BuildModulePermissionsPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+                cPanel.Parent = baseSettingsPanel;
             };
 
             settingsMi_Exit.Click += delegate { Overlay.Exit(); };
@@ -464,9 +481,9 @@ namespace Blish_HUD {
 
                 apiKeyError.Visible = false;
                 apiKeyButton.Visible = keySelectionDropdown.Visible;
-                Gw2Api.Invalidate();
-                connectedLabel.Text = Gw2Api.Connected ? "OK! Connected. :-)" : "Not connected.";
-                connectedLabel.TextColor = Gw2Api.Connected ? Color.LightGreen : Color.IndianRed;
+                bool valid = Gw2Api.Invalidate();
+                connectedLabel.Text = valid ? "OK! Connected. :-)" : "Not connected.";
+                connectedLabel.TextColor = valid ? Color.LightGreen : Color.IndianRed;
             };
             apiKeyTextBox.OnEnterPressed += delegate
             {
@@ -514,6 +531,9 @@ namespace Blish_HUD {
                     keySelectionDropdown.SelectedItem = foolSafeKeyRepository.LastOrDefault().Key;
                     keySelectionDropdown.Visible = true;
                     apiKeyButton.Visible = true;
+                    bool valid = Gw2Api.Invalidate();
+                    connectedLabel.Text = valid ? "OK! Connected. :-)" : "Not connected.";
+                    connectedLabel.TextColor = valid ? Color.LightGreen : Color.IndianRed;
                 }
                 Overlay.ResetFocus();
             };
@@ -528,6 +548,95 @@ namespace Blish_HUD {
                 apiKeyButton.Visible = true;
             };
             return apiPanel;
+        }
+        private Panel BuildModulePermissionsPanel(Point size)
+        {
+            var permissionsPanel = new Panel() { CanScroll = false, Size = size };
+            // All modules that require GW2 API.
+            var apiModules = ModuleService.Module.AvailableModules.Where(x => x.GetModuleInfo().Permissions != null);
+
+            if (apiModules.Count() <= 0)
+            {
+                var noApiModulesLabel = new Label()
+                {
+                    Parent = permissionsPanel,
+                    Size = new Point(permissionsPanel.Size.X, 30),
+                    Location = new Point(0, permissionsPanel.Size.Y / 2 - 15),
+                    TextColor = Color.Orange,
+                    ShowShadow = true,
+                    StrokeText = true,
+                    HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
+                    Text = "None of the registered modules require the API service."
+                };
+                return permissionsPanel;
+            }
+            // Key = name, Value = namespace
+            Dictionary<string, string> nameSpaceRepository = new Dictionary<string, string>();
+
+            var moduleSelectionDropdown = new Dropdown()
+            {
+                Parent = permissionsPanel,
+                Size = new Point(200, 30),
+                Location = new Point(Panel.LEFT_MARGIN, Panel.TOP_MARGIN)
+            };
+            foreach (var module in apiModules)
+            {
+                string name = module.GetModuleInfo().Name;
+                nameSpaceRepository.Add(name, module.GetModuleInfo().Namespace);
+                moduleSelectionDropdown.Items.Add(name);
+            }
+            moduleSelectionDropdown.SelectedItem = null;
+            var permissionCheckBoxs = new List<Checkbox>();
+            int boxY = 0;
+            foreach (Gw2Sharp.WebApi.V2.Models.TokenPermission perm in ApiService.ALL_PERMISSIONS)
+            {
+                var newBox = new Checkbox()
+                {
+                    Parent = permissionsPanel,
+                    Location = new Point(Panel.LEFT_MARGIN, moduleSelectionDropdown.Bottom + boxY + Panel.BOTTOM_MARGIN),
+                    Size = new Point(100, 30),
+                    Text = perm.ToString(),
+                    Visible = false
+                };
+                permissionCheckBoxs.Add(newBox);
+                boxY = boxY + 30;
+
+                newBox.CheckedChanged += delegate
+                {
+                    var buildPermissions = new List<Gw2Sharp.WebApi.V2.Models.TokenPermission>();
+                    foreach (Checkbox check in permissionCheckBoxs)
+                    {
+                        if (check.Checked)
+                        {
+                            buildPermissions.Add(ApiService.ALL_PERMISSIONS.First(x => x.ToString().Equals(check.Text)));
+                        }
+                    }
+                    string nSpace = nameSpaceRepository[moduleSelectionDropdown.SelectedItem];
+
+                    var saved = this.CoreSettings.GetSetting<Dictionary<string, Gw2Sharp.WebApi.V2.Models.TokenPermission[]>>(ApiService.SETTINGS_ENTRY_PERMS);
+                    var value = saved.Value;
+                    var defaultValue = saved.DefaultValue;
+                    bool exposeAsSetting = saved.ExposedAsSetting;
+                    string description = saved.Description;
+
+                    saved.Value[nSpace] = buildPermissions.ToArray();
+
+                    this.CoreSettings.DefineSetting(ApiService.SETTINGS_ENTRY_PERMS, value, defaultValue, exposeAsSetting, description);
+                };
+            }
+            moduleSelectionDropdown.ValueChanged += delegate
+            {
+                string new_value = moduleSelectionDropdown.SelectedItem;
+                var module = ModuleService.Module.AvailableModules.First(i => i.GetModuleInfo().Namespace.Equals(nameSpaceRepository[new_value]));
+                var permissions = ApiService.GetModulePermissions(module).Select(x => x.ToString());
+                foreach (Checkbox box in permissionCheckBoxs)
+                {
+                    box.Checked = permissions.Contains(box.Text);
+                    box.Visible = true;
+                }
+            };
+            moduleSelectionDropdown.SelectedItem = moduleSelectionDropdown.Items.FirstOrDefault();
+            return permissionsPanel;
         }
         // TODO: All of this needs to be somewhere else
 

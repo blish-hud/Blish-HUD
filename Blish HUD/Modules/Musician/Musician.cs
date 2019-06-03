@@ -13,6 +13,7 @@ using Blish_HUD.Modules.Musician.Notation.Persistance;
 using Blish_HUD.Modules.Musician.Player;
 using Blish_HUD.Modules.Musician.Player.Algorithms;
 using Blish_HUD.Modules.Musician.Notation.Parsers;
+using Gw2Sharp.WebApi.V2.Models;
 namespace Blish_HUD.Modules.Musician
 {
     public class Musician : Module
@@ -45,7 +46,9 @@ namespace Blish_HUD.Modules.Musician
                 "bh.general.musician",
                 "Create, share and play sheet music.",
                 "Nekres.1038",
-                "0.2"
+                "0.2",
+                false,
+                new[]{ TokenPermission.Account }
             );
         }
 
