@@ -25,7 +25,6 @@ namespace Blish_HUD
             TokenPermission.Progression,
             TokenPermission.Guilds
         };
-
         /// <summary>
         /// The Globally Unique Identifier from the currently connected api key.
         /// </summary>
