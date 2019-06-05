@@ -617,11 +617,8 @@ namespace Blish_HUD {
                     string nSpace = nameSpaceRepository[moduleSelectionDropdown.SelectedItem];
                     var saved = RegisteredSettings[nSpace]
                         .GetSetting<List<Gw2Sharp.WebApi.V2.Models.TokenPermission>>(ApiService.SETTINGS_ENTRY_PERMISSIONS);
-                    // Create copy 
-                    var new_entry = new List<Gw2Sharp.WebApi.V2.Models.TokenPermission>(saved.Value);
-                    new_entry = buildPermissions;
-                    // Overwrite old entry with changed copy.
-                    saved.Value = new_entry;
+                    // Save new permissions.
+                    saved.Value = buildPermissions;
                 };
             }
             moduleSelectionDropdown.ValueChanged += delegate
