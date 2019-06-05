@@ -10,8 +10,9 @@ namespace Blish_HUD
 {
     public class ApiService : GameService
     {
-        public static string SETTINGS_ENTRY = "ApiKeyRepository";
-        public static string SETTINGS_ENTRY_PERMS = "ModulePermissions";
+        public Locale LANGUAGE = Locale.English;
+        public static string SETTINGS_ENTRY_APIKEYS = "ApiKeyRepository";
+        public static string SETTINGS_ENTRY_PERMISSIONS = "Permissions";
         public static string PLACEHOLDER_KEY = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX";
         public static TokenPermission[] ALL_PERMISSIONS = {
             TokenPermission.Account,
@@ -40,6 +41,8 @@ namespace Blish_HUD
 
         protected override void Initialize() {
             CharacterRepository = new Dictionary<string, string>();
+            // Define ApiKeyRepository core settings entry.
+            SettingsService.Settings.CoreSettings.DefineSetting(SETTINGS_ENTRY_APIKEYS, new Dictionary<Guid, string>(), new Dictionary<Guid, string>());
         }
         protected override void Update(GameTime time) {
             if (Gw2Mumble.Available)
@@ -55,11 +58,8 @@ namespace Blish_HUD
         }
         protected override void Unload() { /* NOOP */ }
         protected override void Load() {
-            if (!SettingsService.Settings.CoreSettings.Entries.ContainsKey(SETTINGS_ENTRY))
-            {
-                SettingsService.Settings.CoreSettings.DefineSetting(SETTINGS_ENTRY, new Dictionary<Guid, string>(), new Dictionary<Guid, string>(), false, "Stored Guild Wars 2 API Keys per Guid.");
-            }
-            foreach (KeyValuePair<Guid, string> entry in SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(SETTINGS_ENTRY).Value)
+            foreach (KeyValuePair<Guid, string> entry in SettingsService.Settings.CoreSettings
+                .GetSetting<Dictionary<Guid, string>>(SETTINGS_ENTRY_APIKEYS).Value)
             {
                 this.RegisterCharacters(entry.Value);
             }
@@ -67,10 +67,6 @@ namespace Blish_HUD
         }
         private void AddNewApiModules()
         {
-            if (!SettingsService.Settings.CoreSettings.Entries.ContainsKey(SETTINGS_ENTRY_PERMS))
-            {
-                SettingsService.Settings.CoreSettings.DefineSetting(SETTINGS_ENTRY_PERMS, new Dictionary<string, TokenPermission[]>(), new Dictionary<string, TokenPermission[]>(), false, "Module API permissions");
-            }
             var apiModules = ModuleService.Module.AvailableModules.Where(x => x.GetModuleInfo().Permissions != null);
             if (apiModules.Count() <= 0) {
                 System.Console.WriteLine(
@@ -79,27 +75,25 @@ namespace Blish_HUD
                     "╚════════════════════════════════════════════════════╝"
                 ); return; }
 
-            var saved = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<string, TokenPermission[]>>(ApiService.SETTINGS_ENTRY_PERMS);
-            var value = saved.Value;
-            foreach (var entry in apiModules)
+            foreach (var module in apiModules)
             {
-                string nSpace = entry.GetModuleInfo().Namespace;
-                if (!value.ContainsKey(nSpace))
-                {
-                    value.Add(nSpace, entry.GetModuleInfo().Permissions);
-                }
-            }
-            var defaultValue = saved.DefaultValue;
-            bool exposeAsSetting = saved.ExposedAsSetting;
-            string description = saved.Description;
+                string nSpace = module.GetModuleInfo().Namespace;
+                var save = Settings.RegisteredSettings[nSpace];
 
-            SettingsService.Settings.CoreSettings.DefineSetting(ApiService.SETTINGS_ENTRY_PERMS, value, defaultValue, exposeAsSetting, description);
+                if (!save.Entries.ContainsKey(ApiService.SETTINGS_ENTRY_PERMISSIONS))
+                {
+                    save.DefineSetting(SETTINGS_ENTRY_PERMISSIONS, 
+                        module.GetModuleInfo().Permissions.ToList(),
+                        module.GetModuleInfo().Permissions.ToList()
+                    );
+                } 
+            }
         }
         private void StartClient(string apiKey)
         {
             if (!IsKeyValid(apiKey)) return;
 
-            this.Client = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
+            this.Client = new Gw2WebApiClient(new Connection(apiKey, LANGUAGE));
             this.GUID = GetGuid(apiKey);
 
         }
@@ -112,7 +106,7 @@ namespace Blish_HUD
                 new_characterRepository.Add(name, apiKey);
             }
             // Add newly fetched characters to the repository.
-            DictionaryExtension.MergeIn<string, string>(CharacterRepository, true, new_characterRepository);
+            DictionaryExtension.MergeLeft<string, string>(CharacterRepository, true, new_characterRepository);
         }
         private void RemoveCharacters(string apiKey)
         {
@@ -131,9 +125,9 @@ namespace Blish_HUD
             }
             return _out;
         }
-        private static List<string> GetCharacters(string apiKey)
+        private List<string> GetCharacters(string apiKey)
         {
-            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
+            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, LANGUAGE));
             var charactersResponse = tempClient.V2.Characters.IdsAsync();
             charactersResponse.Wait();
             return charactersResponse.Result.ToList();
@@ -171,7 +165,9 @@ namespace Blish_HUD
             if (!Regex.IsMatch(id, "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$"))
                 throw new ArgumentException("Pattern mismatch! Not an Id of an Guild Wars 2 API key.");
 
-            Dictionary<Guid, string> apiKeys = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
+            Dictionary<Guid, string> apiKeys = Settings.CoreSettings
+                .GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY_APIKEYS)
+                .Value;
 
             return apiKeys.FirstOrDefault(i => i.Value.Contains(id)).Value;
         }
@@ -182,7 +178,7 @@ namespace Blish_HUD
         /// <returns></returns>
         public Guid GetGuid(string apiKey)
         {
-            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, Locale.English));
+            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, LANGUAGE));
             if (!HasPermissions(new[] { TokenPermission.Account }, apiKey))
                 throw new ArgumentException("Insufficient permissions for retrieving Guid! Required: Account.");
             var accountResponse = tempClient.V2.Account.GetAsync();
@@ -192,13 +188,15 @@ namespace Blish_HUD
         /// <summary>
         /// Returns an array containing the USER set permissions of the specified module.
         /// </summary>
-        /// <param name="nSpace"></param>
+        /// <param name="module">The module to get the permissions of.</param>
         /// <returns></returns>
         public static TokenPermission[] GetModulePermissions(Modules.IModule module)
         {
             string nSpace = module.GetModuleInfo().Namespace;
-            var saved = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<string, TokenPermission[]>>(ApiService.SETTINGS_ENTRY_PERMS).Value;
-            return saved.ContainsKey(nSpace) ? saved[nSpace] : null;
+            var saved = Settings.RegisteredSettings[nSpace]
+                .GetSetting<List<TokenPermission>>(SETTINGS_ENTRY_PERMISSIONS)
+                .Value;
+            return saved.ToArray();
         }
         /// <summary>
         /// Checks if the active API client still conforms a character name in the repository. If not, disposes the client.
@@ -233,9 +231,11 @@ namespace Blish_HUD
         public static Dictionary<string, string> GetKeyIdRepository()
         {
             Dictionary<string, string> foolApiKeys = new Dictionary<string, string>();
-            if (SettingsService.Settings.CoreSettings.Entries.ContainsKey(ApiService.SETTINGS_ENTRY))
+            if (Settings.CoreSettings.Entries.ContainsKey(SETTINGS_ENTRY_APIKEYS))
             {
-                Dictionary<Guid, string> keyRepo = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
+                Dictionary<Guid, string> keyRepo = Settings.CoreSettings
+                    .GetSetting<Dictionary<Guid, string>>(SETTINGS_ENTRY_APIKEYS)
+                    .Value;
 
                 foreach (KeyValuePair<Guid, string> entry in keyRepo)
                 {
@@ -257,10 +257,10 @@ namespace Blish_HUD
         /// <returns>bool</returns>
         public bool HasPermissions(TokenPermission[] permissions, string apiKey = null)
         {
-            var savedPermissions = this.GetPermissions(
+            var savedPermissions = GetPermissions(
                 apiKey != null ? 
                 apiKey 
-                : this.Client.Connection.AccessToken);
+                : Client.Connection.AccessToken);
 
             foreach (TokenPermission x in permissions)
             {
@@ -274,9 +274,12 @@ namespace Blish_HUD
         /// <param name="id"></param>
         public void RemoveKey(string id)
         {
-            if (SettingsService.Settings.CoreSettings.Entries.ContainsKey(ApiService.SETTINGS_ENTRY))
+            if (Settings.CoreSettings.Entries.ContainsKey(ApiService.SETTINGS_ENTRY_APIKEYS))
             {
-                Dictionary<Guid, string> apiKeys = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
+                Dictionary<Guid, string> apiKeys = Settings.CoreSettings
+                    .GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY_APIKEYS)
+                    .Value;
+
                 string key = GetKeyById(id);
                 if (key != null)
                 {
@@ -293,26 +296,24 @@ namespace Blish_HUD
         {
             if (!IsKeyValid(apiKey)) return;
 
-            SettingEntry<Dictionary<Guid, string>> entry = SettingsService.Settings.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY);
+            SettingEntry<Dictionary<Guid, string>> entry = Settings.CoreSettings
+                .GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY_APIKEYS);
 
-            Dictionary<Guid, string> value = entry.Value;
-            Dictionary<Guid, string> defaultValue = entry.DefaultValue;
-            bool exposed = entry.ExposedAsSetting;
-            string description = entry.Description;
+            // Create a copy of the setting entry's value.
+            Dictionary<Guid, string> new_value = new Dictionary<Guid, string>(entry.Value);
 
             Guid guid = GetGuid(apiKey);
 
-            if (value.ContainsKey(guid)){
-                value[guid] = apiKey;
+            if (new_value.ContainsKey(guid)){
+                new_value[guid] = apiKey;
             }
             else
             {
-                value.Add(guid, apiKey);
+                new_value.Add(guid, apiKey);
             }
-
-            SettingsService.Settings.CoreSettings.DefineSetting(ApiService.SETTINGS_ENTRY, value, defaultValue, exposed, description);
+            // Save the changed value.
+            entry.Value = new_value;
             RegisterCharacters(apiKey);
-
         }
         /// <summary>
         /// Gets a subtoken for the specified module.
