@@ -78,7 +78,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
                 }
                 CurrentLoadScreenTip.Dispose();
             }
-            
+
             switch (hint) {
                 case 1:
 
@@ -86,7 +86,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
                     count = SeenGamingTips.Count;
                     if (count >= total) { SeenGamingTips.Clear(); count = 0; }
                     range = Enumerable.Range(0, total - 1).Where(i => !SeenGamingTips.Contains(i));
-                    index = rand.Next(0, total - count - 2);
+                    index = rand.Next(0, total - count - 1);
                     hint = range.ElementAt(index);
 
                     SeenGamingTips.Add(hint);
@@ -100,7 +100,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
                     count = SeenNarrations.Count;
                     if (count >= total) { SeenNarrations.Clear(); count = 0; }
                     range = Enumerable.Range(0, total - 1).Where(i => !SeenNarrations.Contains(i));
-                    index = rand.Next(0, total - count - 2);
+                    index = rand.Next(0, total - count - 1);
                     hint = range.ElementAt(index);
 
                     SeenNarrations.Add(hint);
@@ -114,7 +114,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
                     count = SeenGuessCharacters.Count;
                     if (count >= total) { SeenGuessCharacters.Clear(); count = 0; }
                     range = Enumerable.Range(0, total - 1).Where(i => !SeenGuessCharacters.Contains(i));
-                    index = rand.Next(0, total - count - 2);
+                    index = rand.Next(0, total - count - 1);
                     hint = range.ElementAt(index);
 
                     SeenGuessCharacters.Add(hint);
