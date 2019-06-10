@@ -178,7 +178,7 @@ namespace Blish_HUD {
         public Settings CoreSettings { get; private set; }
 
         [JsonProperty]
-        public Dictionary<string, Settings> _registeredSettings;
+        public Dictionary<string, Settings> RegisteredSettings { get; private set; }
 
         [JsonIgnore]
         private JsonSerializerSettings _jsonSettings;
@@ -187,18 +187,18 @@ namespace Blish_HUD {
         private string _settingsPath;
 
         public Settings RegisterSettings(string setName, bool autoSave = false) {
-            if (_registeredSettings.ContainsKey(setName))
-                return _registeredSettings[setName];
+            if (RegisteredSettings.ContainsKey(setName))
+                return RegisteredSettings[setName];
 
             var aSettings = new Settings(autoSave);
 
-            _registeredSettings.Add(setName, aSettings);
+            RegisteredSettings.Add(setName, aSettings);
 
             return aSettings;
         }
 
         protected override void Initialize() {
-            _registeredSettings      = new Dictionary<string, Settings>();
+            RegisteredSettings      = new Dictionary<string, Settings>();
             this.CoreSettings        = new Settings();
 
             _jsonSettings = new JsonSerializerSettings() {
@@ -397,8 +397,11 @@ namespace Blish_HUD {
         }
         private Panel BuildApiPanel(Point size)
         {
-            Dictionary<Guid, string> ApiKeys = this.CoreSettings.GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY).Value;
+            Dictionary<Guid, string> ApiKeys = CoreSettings
+                .GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY_APIKEYS)
+                .Value;
             Dictionary<string, string> foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+
             var apiPanel = new Panel() { CanScroll = false, Size = size };
 
             var keySelectionDropdown = new Dropdown()
@@ -570,7 +573,7 @@ namespace Blish_HUD {
                 };
                 return permissionsPanel;
             }
-            // Key = name, Value = namespace
+            // Key = module name, Value = module namespace
             Dictionary<string, string> nameSpaceRepository = new Dictionary<string, string>();
 
             var moduleSelectionDropdown = new Dropdown()
@@ -612,22 +615,19 @@ namespace Blish_HUD {
                         }
                     }
                     string nSpace = nameSpaceRepository[moduleSelectionDropdown.SelectedItem];
-
-                    var saved = this.CoreSettings.GetSetting<Dictionary<string, Gw2Sharp.WebApi.V2.Models.TokenPermission[]>>(ApiService.SETTINGS_ENTRY_PERMS);
-                    var value = saved.Value;
-                    var defaultValue = saved.DefaultValue;
-                    bool exposeAsSetting = saved.ExposedAsSetting;
-                    string description = saved.Description;
-
-                    saved.Value[nSpace] = buildPermissions.ToArray();
-
-                    this.CoreSettings.DefineSetting(ApiService.SETTINGS_ENTRY_PERMS, value, defaultValue, exposeAsSetting, description);
+                    var saved = RegisteredSettings[nSpace]
+                        .GetSetting<List<Gw2Sharp.WebApi.V2.Models.TokenPermission>>(ApiService.SETTINGS_ENTRY_PERMISSIONS);
+                    // Save new permissions.
+                    saved.Value = buildPermissions;
                 };
             }
             moduleSelectionDropdown.ValueChanged += delegate
             {
                 string new_value = moduleSelectionDropdown.SelectedItem;
-                var module = ModuleService.Module.AvailableModules.First(i => i.GetModuleInfo().Namespace.Equals(nameSpaceRepository[new_value]));
+                var module = Module
+                    .AvailableModules.First(i => i.GetModuleInfo()
+                    .Namespace.Equals(nameSpaceRepository[new_value]));
+
                 var permissions = ApiService.GetModulePermissions(module).Select(x => x.ToString());
                 foreach (Checkbox box in permissionCheckBoxs)
                 {

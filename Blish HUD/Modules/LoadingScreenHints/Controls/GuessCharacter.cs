@@ -87,7 +87,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
             int centerLeft = center.X / 2;
             int centerRight = center.X + (center.X / 2);
 
-            var imgSize = ResizeKeepAspect(new Point(CharacterTexture.Width, CharacterTexture.Height), this.Size.X / 2 - LoadScreenPanel.RIGHT_PADDING, this.Size.Y - LoadScreenPanel.TOP_PADDING);
+            var imgSize = PointExtensions.ResizeKeepAspect(new Point(CharacterTexture.Width, CharacterTexture.Height), this.Size.X / 2 - LoadScreenPanel.RIGHT_PADDING, this.Size.Y - LoadScreenPanel.TOP_PADDING);
             var imgCenter = new Point(centerLeft - (imgSize.X / 2), center.Y - (imgSize.Y / 2));
 
             SilhouetteFX.Parameters["TextureWidth"].SetValue((float)CharacterTexture.Width);
@@ -106,14 +106,6 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
             CharacterImage.SpriteBatchParameters.Effect = SilhouetteFX;
             CharacterImage.SpriteBatchParameters.BlendState = BlendState.NonPremultiplied;
             Result = false;
-        }
-        private static Point ResizeKeepAspect(Point src, int maxWidth, int maxHeight, bool enlarge = false)
-        {
-            maxWidth = enlarge ? maxWidth : Math.Min(maxWidth, src.X);
-            maxHeight = enlarge ? maxHeight : Math.Min(maxHeight, src.Y);
-
-            decimal rnd = Math.Min(maxWidth / (decimal)src.X, maxHeight / (decimal)src.Y);
-            return new Point((int)Math.Round(src.X * rnd), (int)Math.Round(src.Y * rnd));
         }
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             var center = new Point(this.Size.X / 2, this.Size.Y / 2);
