@@ -8,7 +8,9 @@ namespace Blish_HUD.Modules.Musician.Player.Algorithms
 {
     public class FavorNotesAlgorithm : IPlayAlgorithm
     {
-        public void Play(InstrumentType instrument, MetronomeMark metronomeMark, ChordOffset[] melody)
+        private bool Abort = false;
+        public void Dispose() { this.Abort = true; }
+        public void Play(Instrument instrument, MetronomeMark metronomeMark, ChordOffset[] melody)
         {
             PrepareChordsOctave(instrument, melody[0].Chord);
 
@@ -17,6 +19,8 @@ namespace Blish_HUD.Modules.Musician.Player.Algorithms
 
             for (var strumIndex = 0; strumIndex < melody.Length;)
             {
+                if (this.Abort) return;
+
                 var strum = melody[strumIndex];
 
                 if (stopwatch.ElapsedMilliseconds > metronomeMark.WholeNoteLength.Multiply(strum.Offest).TotalMilliseconds)
@@ -41,12 +45,12 @@ namespace Blish_HUD.Modules.Musician.Player.Algorithms
             stopwatch.Stop();
         }
 
-        private static void PrepareChordsOctave(InstrumentType instrument, Chord chord)
+        private static void PrepareChordsOctave(Instrument instrument, Chord chord)
         {
             instrument.GoToOctave(chord.Notes.First());
         }
 
-        private static void PlayChord(InstrumentType instrument, Chord chord)
+        private static void PlayChord(Instrument instrument, Chord chord)
         {
             var notes = chord.Notes.ToArray();
 
@@ -61,7 +65,7 @@ namespace Blish_HUD.Modules.Musician.Player.Algorithms
             }
         }
 
-        private static void PrepareNoteOctave(InstrumentType instrument, Note note)
+        private static void PrepareNoteOctave(Instrument instrument, Note note)
         {
             instrument.GoToOctave(note);
         }

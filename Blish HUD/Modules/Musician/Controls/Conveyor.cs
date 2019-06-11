@@ -8,7 +8,7 @@ using Blish_HUD.Modules.Musician.Controls.Instrument;
 namespace Blish_HUD.Modules.Musician.Controls {
 
     public class Conveyor:Container {
-        private readonly InstrumentType Instrument;
+        private readonly Instrument.Instrument Instrument;
         public Conveyor() {
             this.Size = new Point(744, Graphics.SpriteScreen.Height); // set static bounds.
             this.ZIndex = -1;

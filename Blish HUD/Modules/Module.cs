@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework.Graphics;
-
+using Gw2Sharp.WebApi.V2.Models;
 namespace Blish_HUD.Modules {
 
     public struct ModuleInfo {
@@ -17,6 +17,7 @@ namespace Blish_HUD.Modules {
         public readonly string Version;
         public readonly string Description;
         public readonly string Namespace;
+        public readonly TokenPermission[] Permissions; 
 
         public readonly bool EnabledWithoutGw2;
 
@@ -26,14 +27,16 @@ namespace Blish_HUD.Modules {
         /// <param name="description">The description of your module that will be shown to users.</param>
         /// <param name="author">Your online tag, GW2 username, or your name.</param>
         /// <param name="version">The current version of your module.</param>
+        /// <param name="permissions">Optional: Required Guild Wars 2 API permissions.</param>
         /// <param name="enabledWithoutGw2">If enabled, your module will not be unloaded when GW2 is closed and left in the tray.</param>
-        public ModuleInfo(string name, Texture2D icon, string @namespace, string description, string author, string version, bool enabledWithoutGw2 = false) {
+        public ModuleInfo(string name, Texture2D icon, string @namespace, string description, string author, string version, bool enabledWithoutGw2 = false, TokenPermission[] permissions = null) {
             this.Name = name;
             this.Icon = icon;
             this.Namespace = @namespace;
             this.Description = description;
             this.Author = author;
             this.Version = version;
+            this.Permissions = permissions;
 
             this.EnabledWithoutGw2 = enabledWithoutGw2;
         }

@@ -132,7 +132,15 @@ namespace Blish_HUD {
         }
 
         public static RasterizerState _uiRasterizer;
-
+        /// <summary>
+        /// Removes the focus of any input form and puts the main overlay in focus and ontop of the game.
+        /// </summary>
+        public static void ResetFocus()
+        {
+            Overlay.Form.ActiveControl = null;
+            GameIntegrationService.GameIntegration.FocusGw2();
+            Overlay.Form.Focus();
+        }
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>

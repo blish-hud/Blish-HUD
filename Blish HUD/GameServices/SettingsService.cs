@@ -176,7 +176,7 @@ namespace Blish_HUD {
         public SettingsManager CoreSettings { get; private set; }
 
         [JsonProperty]
-        public Dictionary<string, SettingsManager> _registeredSettings;
+        public Dictionary<string, Settings> RegisteredSettings { get; private set; }
 
         [JsonIgnore]
         private JsonSerializerSettings _jsonSettings;
@@ -184,20 +184,20 @@ namespace Blish_HUD {
         [JsonIgnore]
         private string _settingsPath;
 
-        public SettingsManager RegisterSettings(string setName, bool autoSave = false) {
-            if (_registeredSettings.ContainsKey(setName))
-                return _registeredSettings[setName];
+        public Settings RegisterSettings(string setName, bool autoSave = false) {
+            if (RegisteredSettings.ContainsKey(setName))
+                return RegisteredSettings[setName];
 
             var aSettings = new SettingsManager(autoSave);
 
-            _registeredSettings.Add(setName, aSettings);
+            RegisteredSettings.Add(setName, aSettings);
 
             return aSettings;
         }
 
         protected override void Initialize() {
-            _registeredSettings      = new Dictionary<string, SettingsManager>();
-            this.CoreSettings        = new SettingsManager(true);
+            this.RegisteredSettings      = new Dictionary<string, SettingsManager>();
+            this.CoreSettings        = new Settings();
 
             _jsonSettings = new JsonSerializerSettings() {
                 PreserveReferencesHandling = PreserveReferencesHandling.All,
@@ -304,10 +304,17 @@ namespace Blish_HUD {
 
             //settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
 
+            var moduleMi_Module_Perms = new MenuItem("Module Permissions")
+            {
+                Parent = settingsMi_API,
+                Icon = Content.GetTexture("155048")
+            };
+
             var moduleMi_Module_Repo = new MenuItem("Manage Sources") {
                 Parent = settingsMi_Modules,
                 Icon   = Content.GetTexture("156140")
             };
+
             GameService.Module.OnLoad += delegate {
                 foreach (var module in GameService.Module.Modules) {
                     var moduleMi = new MenuItem(module.Manifest.Name) {
@@ -316,6 +323,16 @@ namespace Blish_HUD {
                         Parent           = settingsMi_Modules
                     };
                 }
+            };
+
+            settingsMi_API.Click += delegate
+            {
+                cPanel?.Hide();
+                cPanel?.Dispose();
+
+                cPanel = BuildApiPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+                cPanel.Parent = baseSettingsPanel;
             };
 
             settingsMi_About.Click += delegate {
@@ -334,6 +351,16 @@ namespace Blish_HUD {
                 cPanel          = BuildModulePanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
                 cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
                 cPanel.Parent   = baseSettingsPanel;
+            };
+
+            moduleMi_Module_Perms.Click += delegate
+            {
+                cPanel?.Hide();
+                cPanel?.Dispose();
+
+                cPanel = BuildModulePermissionsPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+                cPanel.Parent = baseSettingsPanel;
             };
 
             settingsMi_Exit.Click += delegate { ActiveOverlay.Exit(); };
@@ -363,7 +390,249 @@ namespace Blish_HUD {
 
             return baseSettingsPanel;
         }
+        private Panel BuildApiPanel(Point size)
+        {
+            Dictionary<Guid, string> ApiKeys = CoreSettings
+                .GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY_APIKEYS)
+                .Value;
+            Dictionary<string, string> foolSafeKeyRepository = ApiService.GetKeyIdRepository();
 
+            var apiPanel = new Panel() { CanScroll = false, Size = size };
+
+            var keySelectionDropdown = new Dropdown()
+            {
+                Parent = apiPanel,
+                Size = new Point(200, 30),
+                Location = new Point(apiPanel.Size.X - 200 - Panel.RIGHT_MARGIN, Panel.TOP_MARGIN),
+                Visible = foolSafeKeyRepository.Count > 0,
+                SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key
+            };
+            foreach (KeyValuePair<string,string> item in foolSafeKeyRepository)
+            {
+                keySelectionDropdown.Items.Add(item.Key);
+            }
+            var connectedLabel = new Label()
+            {
+                Parent = apiPanel,
+                Size = new Point(apiPanel.Size.X, 30),
+                Location = new Point(0, apiPanel.Size.Y - Panel.BOTTOM_MARGIN - 15),
+                ShowShadow = true,
+                HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
+                Text = Gw2Api.Connected ? "OK! Connected. :-)" : "Not connected.",
+                TextColor = Gw2Api.Connected ? Color.LightGreen : Color.IndianRed
+            };
+            var apiKeyLabel = new Label()
+            {
+                Parent = apiPanel,
+                Size = new Point(apiPanel.Size.X, 30),
+                Location = new Point(0, apiPanel.Size.Y / 2 - apiPanel.Size.Y / 4 - 15),
+                ShowShadow = true,
+                HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
+                Text = "Insert your Guild Wars 2 API key here to unlock lots of cool features:"
+            };
+            var apiKeyTextBox = new TextBox() {
+                Parent = apiPanel,
+                Size = new Point(600, 30),
+                Location = new Point(apiPanel.Size.X / 2 - 300, apiKeyLabel.Bottom),
+                PlaceholderText = keySelectionDropdown.SelectedItem != null ?
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+                    : ApiService.PLACEHOLDER_KEY
+            };
+            var apiKeyError = new Label()
+            {
+                Parent = apiPanel,
+                Size = new Point(apiPanel.Size.X, 30),
+                Location = new Point(0, apiKeyTextBox.Bottom + Panel.BOTTOM_MARGIN),
+                ShowShadow = true,
+                HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
+                TextColor = Color.Red,
+                Text = "Invalid API key! Try again.",
+                Visible = false
+            };
+            var apiKeyButton = new StandardButton()
+            {
+                Parent = apiPanel,
+                Size = new Point(30, 30),
+                Location = new Point(apiKeyTextBox.Right, apiKeyTextBox.Location.Y),
+                Text = "",
+                BackgroundColor = Color.IndianRed,
+                Visible = keySelectionDropdown.SelectedItem != null
+            };
+            apiKeyButton.LeftMouseButtonPressed += delegate
+            {
+                Gw2Api.RemoveKey(foolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
+
+                keySelectionDropdown.Items.Clear();
+                foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
+                {
+                    keySelectionDropdown.Items.Add(item.Key);
+                }
+                keySelectionDropdown.Visible = foolSafeKeyRepository.Count > 0;
+                keySelectionDropdown.SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key;
+
+                apiKeyTextBox.PlaceholderText = keySelectionDropdown.SelectedItem != null ?
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+                    : ApiService.PLACEHOLDER_KEY;
+
+                apiKeyError.Visible = false;
+                apiKeyButton.Visible = keySelectionDropdown.Visible;
+                bool valid = Gw2Api.Invalidate();
+                connectedLabel.Text = valid ? "OK! Connected. :-)" : "Not connected.";
+                connectedLabel.TextColor = valid ? Color.LightGreen : Color.IndianRed;
+            };
+            apiKeyTextBox.OnEnterPressed += delegate
+            {
+                string apiKey = apiKeyTextBox.Text;
+                string errorMsg = null;
+                if (!ApiService.IsKeyValid(apiKey))
+                {
+                    errorMsg = "Not an API key! Invalid pattern.";
+                    apiKeyError.TextColor = Color.IndianRed;
+                }
+                else if (ApiKeys.Any(entry => entry.Value.Contains(apiKey)))
+                {
+                    errorMsg = "API key already registered!";
+                    apiKeyError.TextColor = Color.LightGreen;
+                }
+                else if (!Gw2Api.HasPermissions(new[]
+                      {
+                        Gw2Sharp.WebApi.V2.Models.TokenPermission.Account,
+                        Gw2Sharp.WebApi.V2.Models.TokenPermission.Characters
+                    },
+                  apiKey))
+                {
+                    errorMsg = "Insufficient permissions! Required: Account, Characters.";
+                    apiKeyError.TextColor = Color.IndianRed;
+                }
+                if (errorMsg != null) {
+
+                    apiKeyError.Visible = true;
+                    apiKeyError.Text = errorMsg;
+                    apiKeyTextBox.Text = "";
+
+                } else {
+                    Gw2Api.RegisterKey(apiKeyTextBox.Text);
+                    apiKeyTextBox.PlaceholderText = apiKeyTextBox.Text;
+                    apiKeyTextBox.Text = "";
+                    apiKeyError.Text = "Success! Key added. :-)";
+                    apiKeyError.TextColor = Color.LightGreen;
+                    apiKeyError.Visible = true;
+                    keySelectionDropdown.Items.Clear();
+                    foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                    foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
+                    {
+                        keySelectionDropdown.Items.Add(item.Key);
+                    }
+                    keySelectionDropdown.SelectedItem = foolSafeKeyRepository.LastOrDefault().Key;
+                    keySelectionDropdown.Visible = true;
+                    apiKeyButton.Visible = true;
+                    bool valid = Gw2Api.Invalidate();
+                    connectedLabel.Text = valid ? "OK! Connected. :-)" : "Not connected.";
+                    connectedLabel.TextColor = valid ? Color.LightGreen : Color.IndianRed;
+                }
+                Overlay.ResetFocus();
+            };
+
+            keySelectionDropdown.ValueChanged += delegate {
+                apiKeyTextBox.PlaceholderText = 
+                keySelectionDropdown.SelectedItem != null ? 
+                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] + 
+                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1) 
+                    : ApiService.PLACEHOLDER_KEY;
+
+                apiKeyButton.Visible = true;
+            };
+            return apiPanel;
+        }
+        private Panel BuildModulePermissionsPanel(Point size)
+        {
+            var permissionsPanel = new Panel() { CanScroll = false, Size = size };
+            // All modules that require GW2 API.
+            var apiModules = ModuleService.Module.AvailableModules.Where(x => x.GetModuleInfo().Permissions != null);
+
+            if (apiModules.Count() <= 0)
+            {
+                var noApiModulesLabel = new Label()
+                {
+                    Parent = permissionsPanel,
+                    Size = new Point(permissionsPanel.Size.X, 30),
+                    Location = new Point(0, permissionsPanel.Size.Y / 2 - 15),
+                    TextColor = Color.Orange,
+                    ShowShadow = true,
+                    StrokeText = true,
+                    HorizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Center,
+                    Text = "None of the registered modules require the API service."
+                };
+                return permissionsPanel;
+            }
+            // Key = module name, Value = module namespace
+            Dictionary<string, string> nameSpaceRepository = new Dictionary<string, string>();
+
+            var moduleSelectionDropdown = new Dropdown()
+            {
+                Parent = permissionsPanel,
+                Size = new Point(200, 30),
+                Location = new Point(Panel.LEFT_MARGIN, Panel.TOP_MARGIN)
+            };
+            foreach (var module in apiModules)
+            {
+                string name = module.GetModuleInfo().Name;
+                nameSpaceRepository.Add(name, module.GetModuleInfo().Namespace);
+                moduleSelectionDropdown.Items.Add(name);
+            }
+            moduleSelectionDropdown.SelectedItem = null;
+            var permissionCheckBoxs = new List<Checkbox>();
+            int boxY = 0;
+            foreach (Gw2Sharp.WebApi.V2.Models.TokenPermission perm in ApiService.ALL_PERMISSIONS)
+            {
+                var newBox = new Checkbox()
+                {
+                    Parent = permissionsPanel,
+                    Location = new Point(Panel.LEFT_MARGIN, moduleSelectionDropdown.Bottom + boxY + Panel.BOTTOM_MARGIN),
+                    Size = new Point(100, 30),
+                    Text = perm.ToString(),
+                    Visible = false
+                };
+                permissionCheckBoxs.Add(newBox);
+                boxY = boxY + 30;
+
+                newBox.CheckedChanged += delegate
+                {
+                    var buildPermissions = new List<Gw2Sharp.WebApi.V2.Models.TokenPermission>();
+                    foreach (Checkbox check in permissionCheckBoxs)
+                    {
+                        if (check.Checked)
+                        {
+                            buildPermissions.Add(ApiService.ALL_PERMISSIONS.First(x => x.ToString().Equals(check.Text)));
+                        }
+                    }
+                    string nSpace = nameSpaceRepository[moduleSelectionDropdown.SelectedItem];
+                    var saved = RegisteredSettings[nSpace]
+                        .GetSetting<List<Gw2Sharp.WebApi.V2.Models.TokenPermission>>(ApiService.SETTINGS_ENTRY_PERMISSIONS);
+                    // Save new permissions.
+                    saved.Value = buildPermissions;
+                };
+            }
+            moduleSelectionDropdown.ValueChanged += delegate
+            {
+                string new_value = moduleSelectionDropdown.SelectedItem;
+                var module = Module
+                    .AvailableModules.First(i => i.GetModuleInfo()
+                    .Namespace.Equals(nameSpaceRepository[new_value]));
+
+                var permissions = ApiService.GetModulePermissions(module).Select(x => x.ToString());
+                foreach (Checkbox box in permissionCheckBoxs)
+                {
+                    box.Checked = permissions.Contains(box.Text);
+                    box.Visible = true;
+                }
+            };
+            moduleSelectionDropdown.SelectedItem = moduleSelectionDropdown.Items.FirstOrDefault();
+            return permissionsPanel;
+        }
         // TODO: All of this needs to be somewhere else
 
         private const string ANET_COPYRIGHT_NOTICE =

@@ -1,10 +1,27 @@
 ﻿using System;
 using Blish_HUD.Modules.Musician.Domain.Values;
-
+using Blish_HUD.Modules.Musician.Controls.Instrument;
+using System.Collections.Generic;
 namespace Blish_HUD.Modules.Musician.Notation.Serializer
 {
     public class NoteSerializer
     {
+        static Dictionary<string, string> Notation = new Dictionary<string, string>
+        {
+            { $"{Note.Keys.C}", "C" },
+            { $"{Note.Keys.D}", "D" },
+            { $"{Note.Keys.E}", "E" },
+            { $"{Note.Keys.F}", "F" },
+            { $"{Note.Keys.G}", "G" },
+            { $"{Note.Keys.A}", "A" },
+            { $"{Note.Keys.B}", "B" },
+            { $"{Note.Octaves.Lowest}", ",," },
+            { $"{Note.Octaves.Low}", "," },
+            { $"{Note.Octaves.Middle}", "" },
+            { $"{Note.Octaves.High}", "'" },
+            { $"{Note.Octaves.Highest}", "''" }
+        };
+
         public string Serialize(Note note)
         {
             // pause
