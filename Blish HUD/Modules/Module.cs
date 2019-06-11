@@ -43,9 +43,9 @@ namespace Blish_HUD.Modules {
     public abstract class Module : IModule {
 
         public abstract ModuleInfo GetModuleInfo();
-        public abstract void DefineSettings(Settings settings);
+        public abstract void DefineSettings(SettingsManager settingsManager);
 
-        public Settings Settings { get; set; }
+        public SettingsManager SettingsManager { get; set; }
 
         protected bool _enabled = false;
         
@@ -66,11 +66,11 @@ namespace Blish_HUD.Modules {
         protected bool Loaded = false;
 
         public Module() {
-            this.Settings = GameService
+            this.SettingsManager = GameService
                            .Settings
                            .RegisterSettings(GetModuleInfo().Namespace, true);
 
-            DefineSettings(this.Settings);
+            DefineSettings(this.SettingsManager);
         }
 
         public virtual void OnLoad() { Loaded = true; }

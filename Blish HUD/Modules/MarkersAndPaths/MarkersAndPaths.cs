@@ -4,8 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blish_HUD.Content;
 using Blish_HUD.Controls;
+using Blish_HUD.Modules.MarkersAndPaths.PackFormat;
 using Blish_HUD.Pathing;
+using Blish_HUD.Pathing.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -15,21 +18,21 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         internal const string MARKER_DIRECTORY = "markers";
         internal const string PATHS_DIRECTORY = "paths";
 
-        private string MarkerDirectory => Path.Combine(GameService.FileSrv.BasePath, MARKER_DIRECTORY);
-        private string PathsDirectory => Path.Combine(GameService.FileSrv.BasePath, PATHS_DIRECTORY);
+        private string MarkerDirectory => Path.Combine(GameService.Directory.BasePath, MARKER_DIRECTORY);
+        private string PathsDirectory => Path.Combine(GameService.Directory.BasePath, PATHS_DIRECTORY);
 
         public override ModuleInfo GetModuleInfo() {
             return new ModuleInfo(
-                  "Markers & Paths",
+                  "Markers & Paths 2",
                   GameService.Content.GetTexture("157355"),
-                  "bh.general.markersandpaths",
+                  "bh.general.markersandpaths2",
                   "Allows you to import markers and paths built for TacO and AugTyr.",
                   "LandersXanders.1235 (with additional code provided by BoyC)",
                   "1"
             );
         }
 
-        public override void DefineSettings(Settings settings) {
+        public override void DefineSettings(SettingsManager settingsManager) {
 
         }
 
@@ -51,25 +54,31 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
                 GameService.Debug.StopTimeFuncAndOutput("Markers and Paths");
             });
             loadPacks.Start();
+
+            GameService.Pathing.NewMapLoaded += delegate { OverlayDataReader.UpdatePathableStates(); };
         }
 
         private void LoadPacks(IProgress<string> progressIndicator) {
-            string[] packFiles = Directory.GetFiles(this.MarkerDirectory);
+            var dirDataReader = new Content.DirectoryReader(this.MarkerDirectory);
+            var dirResourceManager = new PathableResourceManager(dirDataReader);
+            GameService.Pathing.RegisterPathableResourceManager(dirResourceManager);
+            dirDataReader.LoadOnFileType((Stream fileStream, IDataReader dataReader) => {
+                PackFormat.OverlayDataReader.ReadFromXmlPack(fileStream, dirResourceManager);
+            }, ".xml");
 
-            var standardDirPackContext = DirectoryPackContext.GetCachedContext(this.MarkerDirectory);
-            GameService.Pathing.RegisterPathContext(standardDirPackContext);
-            standardDirPackContext.LoadOnFileType(PackFormat.OverlayDataReader.ReadFromXmlPack, "xml", progressIndicator);
-
+            // TODO: Cleanup
+            string[] packFiles = Directory.GetFiles(this.MarkerDirectory, "*.zip", SearchOption.AllDirectories);
             foreach (string packFile in packFiles) {
-                if (packFile.EndsWith(".zip")) {
-                    // Potentially contains many packs within
-                    var zipPackContext = ZipPackContext.GetCachedContext(packFile);
-                    GameService.Pathing.RegisterPathContext(zipPackContext);
-                    zipPackContext.LoadOnFileType(PackFormat.OverlayDataReader.ReadFromXmlPack, "xml", progressIndicator);
-                }
+                // Potentially contains many packs within
+                var zipDataReader = new Content.ZipArchiveReader(packFile);
+                var zipResourceManager = new PathableResourceManager(dirDataReader);
+                GameService.Pathing.RegisterPathableResourceManager(zipResourceManager);
+                zipDataReader.LoadOnFileType((Stream fileStream, IDataReader dataReader) => {
+                    PackFormat.OverlayDataReader.ReadFromXmlPack(fileStream, zipResourceManager);
+                }, ".xml");
             }
 
-            GameService.Pathing.Icon.LoadingMessage = "Building category menues...";
+            GameService.Pathing.Icon.LoadingMessage = "Building category menus...";
             BuildCategoryMenus();
         }
 

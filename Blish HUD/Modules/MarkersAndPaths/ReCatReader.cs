@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Blish_HUD.Modules.MarkersAndPaths {
 
+    /*
     public class ReCatSection {
 
         public string SectionName { get; }
@@ -58,4 +59,6 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
     }
+    */
+
 }

@@ -19,13 +19,13 @@ namespace Blish_HUD.Controls {
         
         #region Load Static
 
-        private static TextureRegion2D _textureTrack;
-        private static TextureRegion2D _textureUpArrow;
-        private static TextureRegion2D _textureDownArrow;
-        private static TextureRegion2D _textureBar;
-        private static TextureRegion2D _textureThumb;
-        private static TextureRegion2D _textureTopCap;
-        private static TextureRegion2D _textureBottomCap;
+        private static readonly TextureRegion2D _textureTrack;
+        private static readonly TextureRegion2D _textureUpArrow;
+        private static readonly TextureRegion2D _textureDownArrow;
+        private static readonly TextureRegion2D _textureBar;
+        private static readonly TextureRegion2D _textureThumb;
+        private static readonly TextureRegion2D _textureTopCap;
+        private static readonly TextureRegion2D _textureBottomCap;
 
         static Scrollbar() {
             _textureTrack     = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-track");

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Blish_HUD.Modules.MarkersAndPaths;
 using Blish_HUD.Pathing.Behaviors;
+using Blish_HUD.Pathing.Content;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Format {
@@ -23,7 +24,7 @@ namespace Blish_HUD.Pathing.Format {
 
         public bool SuccessfullyLoaded { get; private set; } = false;
 
-        protected IPackFileSystemContext PackContext { get; }
+        protected PathableResourceManager PathableManager { get; }
 
         public override bool Active {
             get => _active;
@@ -40,8 +41,8 @@ namespace Blish_HUD.Pathing.Format {
         private Dictionary<string, LoadedPathableAttributeDescription> _attributeLoaders;
         private List<XmlAttribute> _leftOverAttributes;
 
-        public LoadedPathable(TEntity pathableEntity, IPackFileSystemContext packContext) : base(pathableEntity) {
-            this.PackContext = packContext;
+        public LoadedPathable(TEntity pathableEntity, PathableResourceManager pathableManager) : base(pathableEntity) {
+            this.PathableManager = pathableManager;
         }
 
         protected abstract void BeginLoad();
@@ -171,15 +172,15 @@ namespace Blish_HUD.Pathing.Format {
         }
 
         protected virtual void AssignBehaviors() {
-            var attrNames = _leftOverAttributes.Select(xmlAttr => xmlAttr.Name.ToLower());
+            var attrNames = _leftOverAttributes.Select(xmlAttr => xmlAttr.Name);
 
             foreach (var autoBehavior in PathingBehavior.AllAvailableBehaviors) {
                 var checkBehavior = IdentifyingBehaviorAttributePrefixAttribute.GetAttributesOnType(autoBehavior);
 
-                if (attrNames.Any(sa => sa.StartsWith(checkBehavior.AttributePrefix))) {
+                if (attrNames.Any(sa => sa.StartsWith(checkBehavior.AttributePrefix, StringComparison.OrdinalIgnoreCase))) {
                     var loadedBehavior = Activator.CreateInstance(autoBehavior.MakeGenericType(this.GetType(), typeof(TEntity)), this) as ILoadableBehavior;
 
-                    loadedBehavior.LoadWithAttributes(_leftOverAttributes.Where(sa => sa.Name.ToLower().StartsWith(checkBehavior.AttributePrefix)));
+                    loadedBehavior.LoadWithAttributes(_leftOverAttributes.Where(sa => sa.Name.StartsWith(checkBehavior.AttributePrefix, StringComparison.OrdinalIgnoreCase)));
                     this.Behavior.Add((PathingBehavior)loadedBehavior);
                 }
             }

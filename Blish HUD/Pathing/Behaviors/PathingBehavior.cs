@@ -19,13 +19,18 @@ namespace Blish_HUD.Pathing.Behaviors {
 
         public static List<Type> AllAvailableBehaviors { get; }
 
-        private static PersistentStore _behaviorStore;
+        #region Load Static
+
+        private static readonly PersistentStore _behaviorStore;
 
         static PathingBehavior() {
             _behaviorStore = GameService.Pathing.PathingStore.GetSubstore(PATHINGBEHAVIOR_STORENAME);
 
             AllAvailableBehaviors = IdentifyingBehaviorAttributePrefixAttribute.GetTypes(System.Reflection.Assembly.GetExecutingAssembly()).ToList();
         }
+
+        #endregion
+
         protected PersistentStore BehaviorStore => _behaviorStore;
 
         public virtual void Update(GameTime gameTime) { /* NOOP */ }

@@ -41,9 +41,9 @@ namespace Blish_HUD.Pathing {
         private readonly TEntity _managedEntity;
         //private List<PathingBehavior<ManagedPathable<TEntity>, TEntity>> _behaviors = new List<PathingBehavior<ManagedPathable<TEntity>, TEntity>>();
         private List<PathingBehavior> _behaviors = new List<PathingBehavior>();
-        private int _mapId = -1;
-        private UserAccess _access = UserAccess.None;
-        private string _guid;
+        private int                   _mapId     = -1;
+        private UserAccess            _access    = UserAccess.None;
+        private string                _guid;
 
         /// <summary>
         /// Used by the Pathing service to either add or remove this path
@@ -60,6 +60,11 @@ namespace Blish_HUD.Pathing {
             // Load pre-set GUID or lazy-load new one
             get => _guid ?? (_guid = GetGuid());
             set => SetProperty(ref _guid, value);
+        }
+
+        public UserAccess Access {
+            get => _access;
+            set => SetProperty(ref _access, value);
         }
 
         public abstract bool Active { get; set; }

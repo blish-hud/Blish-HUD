@@ -78,7 +78,7 @@ namespace Blish_HUD.Controls.Effects {
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
         public virtual void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
-        public void Draw(SpriteBatch spriteBatch, Rectangle drawBounds) {
+        public void Draw(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_enabled) {
                 spriteBatch.Begin(GetSpriteBatchParameters());
 

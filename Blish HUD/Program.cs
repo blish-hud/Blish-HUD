@@ -3,6 +3,7 @@ using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Net.Mime;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using Blish_HUD;
@@ -25,8 +26,7 @@ namespace Blish_HUD {
             if (IsMoreThanOneInstance()) {
                 return;
             }
-            //Console.WriteLine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create));
-
+            
             // TODO: Implement for error logging in released versions
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             
@@ -49,8 +49,7 @@ namespace Blish_HUD {
                                       };
                                   })) {
 
-                SentrySdk.ConfigureScope(
-                                         scope => {
+                SentrySdk.ConfigureScope(scope => {
                                              // Want to try and gauge what kind of language support we'll want to provide in the future
                                              scope.SetTag("locale", CultureInfo.CurrentCulture.DisplayName);
 
@@ -84,9 +83,13 @@ namespace Blish_HUD {
             string errorMessage = "Application error: " + e.Message + Environment.NewLine + "Trace: " + e.StackTrace + Environment.NewLine + "Runtime terminating: " + args.IsTerminating + Environment.NewLine + APP_VERSION;
 
             try {
-                File.WriteAllText(Path.Combine(GameService.FileSrv.BasePath, "logs", "crash." + DateTime.Now.Ticks + ".log"), errorMessage);
+                File.WriteAllText(Path.Combine(GameService.Directory.BasePath, "logs", "crash." + DateTime.Now.Ticks + ".log"), errorMessage);
             } catch (Exception ex) {
-                System.Windows.Forms.MessageBox.Show("Blish HUD has crashed!  Additionally, there was an error saving the crash log, so here is the crash message: " + Environment.NewLine + errorMessage, "Blish HUD Crashed!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("Blish HUD has crashed!  Additionally, there was an error saving the crash log, so here is the crash message: "
+                              + Environment.NewLine + errorMessage
+                              + Environment.NewLine + Environment.NewLine
+                              + "And here is the error that prevented us from saving to the crash log: "
+                              + Environment.NewLine + ex.Message, "Blish HUD Crashed!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
         }
 

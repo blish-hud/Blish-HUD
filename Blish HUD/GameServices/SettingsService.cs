@@ -90,16 +90,16 @@ namespace Blish_HUD {
         }
 
         [JsonProperty]
-        public readonly Settings Owner;
+        public readonly SettingsManager Owner;
 
         public SettingEntry() { /* NOOP */ }
 
-        protected SettingEntry(Settings owner, T defaultValue = default) {
+        protected SettingEntry(SettingsManager owner, T defaultValue = default) {
             this.Owner = owner;
             this.DefaultValue = defaultValue;
         }
 
-        public static SettingEntry<T> InitSetting(Settings owner, T value, T defaultValue) {
+        public static SettingEntry<T> InitSetting(SettingsManager owner, T value, T defaultValue) {
             var newSetting = new SettingEntry<T>(owner, defaultValue) {
                 _value = value
             };
@@ -107,14 +107,14 @@ namespace Blish_HUD {
             return newSetting;
         }
 
-        public static SettingEntry<T> InitSetting(Settings owner, T defaultValue) {
+        public static SettingEntry<T> InitSetting(SettingsManager owner, T defaultValue) {
             return InitSetting(owner, defaultValue, defaultValue);
         }
 
     }
 
     [JsonObject]
-    public class Settings {
+    public class SettingsManager {
 
         [JsonProperty]
         public Dictionary<string, SettingEntry> _entries = new Dictionary<string, SettingEntry>();
@@ -129,9 +129,9 @@ namespace Blish_HUD {
             get => true;
         }
 
-        public Settings() { /* NOOP */ }
+        public SettingsManager() { /* NOOP */ }
 
-        public Settings(bool autoSave = false) {
+        public SettingsManager(bool autoSave = false) {
             //this.AutoSave = true;
         }
 
@@ -164,21 +164,19 @@ namespace Blish_HUD {
     [JsonObject]
     public class SettingsService:GameService {
 
+
+        private const string SETTINGS_FILENAME = "settings.json";
+
         public delegate Control SettingTypeRendererDelegate(string settingName, SettingEntry setting);
 
         [JsonIgnore]
         public Dictionary<Type, SettingTypeRendererDelegate> SettingTypeRenderers = new Dictionary<Type, SettingTypeRendererDelegate>();
 
-        private const string SETTINGS_FILENAME = "settings.json";
-
-        //private string _apikey;
-        //public string ApiKey { get { return _apikey; } set { _apikey = value; } }
+        [JsonProperty]
+        public SettingsManager CoreSettings { get; private set; }
 
         [JsonProperty]
-        public Settings CoreSettings { get; private set; }
-
-        [JsonProperty]
-        public Dictionary<string, Settings> _registeredSettings;
+        public Dictionary<string, SettingsManager> _registeredSettings;
 
         [JsonIgnore]
         private JsonSerializerSettings _jsonSettings;
@@ -186,11 +184,11 @@ namespace Blish_HUD {
         [JsonIgnore]
         private string _settingsPath;
 
-        public Settings RegisterSettings(string setName, bool autoSave = false) {
+        public SettingsManager RegisterSettings(string setName, bool autoSave = false) {
             if (_registeredSettings.ContainsKey(setName))
                 return _registeredSettings[setName];
 
-            var aSettings = new Settings(autoSave);
+            var aSettings = new SettingsManager(autoSave);
 
             _registeredSettings.Add(setName, aSettings);
 
@@ -198,21 +196,20 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            _registeredSettings      = new Dictionary<string, Settings>();
-            this.CoreSettings        = new Settings();
+            _registeredSettings      = new Dictionary<string, SettingsManager>();
+            this.CoreSettings        = new SettingsManager(true);
 
             _jsonSettings = new JsonSerializerSettings() {
                 PreserveReferencesHandling = PreserveReferencesHandling.All,
                 TypeNameHandling           = TypeNameHandling.Auto
             };
 
-            _settingsPath = Path.Combine(GameService.FileSrv.BasePath, SETTINGS_FILENAME);
+            _settingsPath = Path.Combine(GameService.Directory.BasePath, SETTINGS_FILENAME);
 
             // If settings aren't there, generate the file
             if (!File.Exists(_settingsPath)) Save();
 
             // Would prefer to have this under Load(), but SettingsService needs to be ready for other modules and services
-
             try {
                 string rawSettings = File.ReadAllText(_settingsPath);
 
@@ -312,12 +309,10 @@ namespace Blish_HUD {
                 Icon   = Content.GetTexture("156140")
             };
             GameService.Module.OnLoad += delegate {
-                foreach (var module in GameService.Module.AvailableModules) {
-                    var moduleInfo = module.GetModuleInfo();
-
-                    var moduleMi = new MenuItem(moduleInfo.Name) {
-                        BasicTooltipText = moduleInfo.Description,
-                        Icon             = module.Enabled ? Content.GetTexture("156149") : Content.GetTexture("156142"),
+                foreach (var module in GameService.Module.Modules) {
+                    var moduleMi = new MenuItem(module.Manifest.Name) {
+                        BasicTooltipText = "*tempDescription",
+                        //Icon             = module.Enabled ? Content.GetTexture("156149") : Content.GetTexture("156142"),
                         Parent           = settingsMi_Modules
                     };
                 }
@@ -341,7 +336,7 @@ namespace Blish_HUD {
                 cPanel.Parent   = baseSettingsPanel;
             };
 
-            settingsMi_Exit.Click += delegate { Overlay.Exit(); };
+            settingsMi_Exit.Click += delegate { ActiveOverlay.Exit(); };
 
             //var settingsMenu = new Menu() {
             //    Size = new Point(256, 32 * 8),
@@ -688,10 +683,10 @@ namespace Blish_HUD {
             // TODO: This should likely just have its value bound to the ModuleState setting (and the setting should be bound to the module's "Enabled" property)
             cbModuleEnabled.CheckedChanged += delegate {
                 var selectedModule =
-                    GameService.Module.AvailableModules.First(m => m.GetModuleInfo().Name == moduleDropdown.SelectedItem);
+                    GameService.Module.Modules.First(m => m.Manifest.Name == moduleDropdown.SelectedItem);
 
                 selectedModule.Enabled = cbModuleEnabled.Checked;
-                GameService.Module.ModuleStates.Value[selectedModule.GetModuleInfo().Namespace] =
+                GameService.Module.ModuleStates.Value[selectedModule.Manifest.Namespace] =
                     cbModuleEnabled.Checked;
 
                 LstSettings.ForEach(s => s.Enabled = cbModuleEnabled.Checked);
@@ -705,15 +700,15 @@ namespace Blish_HUD {
             int lineLength = 115;
             moduleDropdown.ValueChanged += (Object sender, ValueChangedEventArgs e) => {
                 var selectedModule =
-                    Module.AvailableModules.First(m => m.GetModuleInfo().Name == moduleDropdown.SelectedItem);
+                    Module.Modules.First(m => m.Manifest.Name == moduleDropdown.SelectedItem);
 
                 if (selectedModule != null) {
                     // Populate module info labels
-                    lblModuleName.Text = $"Module Name: {Utils.String.SplitText(selectedModule.GetModuleInfo().Name, lineLength)}";
-                    lblModuleAuthor.Text = $"Author: {Utils.String.SplitText(selectedModule.GetModuleInfo().Author, lineLength)}";
-                    lblModuleVersion.Text = $"Version: {Utils.String.SplitText(selectedModule.GetModuleInfo().Version, lineLength)}";
-                    lblModuleDescription.Text = $"Description: {Utils.String.SplitText(selectedModule.GetModuleInfo().Description, lineLength)}";
-                    lblModuleNamespace.Text = $"Module Namespace: {Utils.String.SplitText(selectedModule.GetModuleInfo().Namespace, lineLength)}";
+                    lblModuleName.Text = $"Module Name: {Utils.String.SplitText(selectedModule.Manifest.Name, lineLength)}";
+                    lblModuleAuthor.Text = $"Author: {Utils.String.SplitText(/* selectedModule.Manifest.Author */ "*tempAuthor*", lineLength)}";
+                    lblModuleVersion.Text = $"Version: {Utils.String.SplitText(selectedModule.Manifest.Version.ToString(), lineLength)}";
+                    lblModuleDescription.Text = $"Description: {Utils.String.SplitText(/* selectedModule.Manifest.Description */ "*tempDescription", lineLength)}";
+                    lblModuleNamespace.Text = $"Module Namespace: {Utils.String.SplitText(selectedModule.Manifest.Namespace, lineLength)}";
 
                     cbModuleEnabled.Checked = selectedModule.Enabled;
 
@@ -723,29 +718,33 @@ namespace Blish_HUD {
 
                     int lastControlBottom = lblModuleDescription.Bottom + 50;
 
-                    // Display settings registered by module
-                    foreach (KeyValuePair<string, SettingEntry> setting in selectedModule.Settings.Entries.Where(setting => setting.Value.ExposedAsSetting)) {
-                        Control settingCtrl;
+                    if (_registeredSettings.TryGetValue($"module:{selectedModule.Manifest.Namespace}", out var moduleSettings)) {
+                        // Display settings registered by module
+                        foreach (KeyValuePair<string, SettingEntry> setting in moduleSettings.Entries.Where(setting => setting.Value.ExposedAsSetting)) {
+                            Control settingCtrl;
 
-                        if (SettingTypeRenderers.ContainsKey(setting.Value.SettingType)) {
-                            settingCtrl = SettingTypeRenderers[setting.Value.SettingType]
-                               .Invoke(setting.Key, setting.Value);
-                            settingCtrl.Parent  = mPanel;
-                            settingCtrl.Enabled = cbModuleEnabled.Checked;
+                            if (SettingTypeRenderers.ContainsKey(setting.Value.SettingType)) {
+                                settingCtrl = SettingTypeRenderers[setting.Value.SettingType]
+                                   .Invoke(setting.Key, setting.Value);
+                                settingCtrl.Parent  = mPanel;
+                                settingCtrl.Enabled = cbModuleEnabled.Checked;
 
-                            settingCtrl.Location = new Point(lblModuleDescription.Left, lastControlBottom + 10);
+                                settingCtrl.Location = new Point(lblModuleDescription.Left, lastControlBottom + 10);
 
-                            lastControlBottom = settingCtrl.Bottom;
-                        } else {
-                            // This setting type is not supported for automatic display
-                            // Write this out to the log so that devs can see
-                            // TODO: This needs to use the debug service to output it correctly
-                            Console.WriteLine($"Module `{selectedModule.GetModuleInfo().Name}` has a setting `{setting.Key}` of type `{setting.Value.SettingType.ToString()}` which the Settings Service does not currently support the automatic exposure of.");
-                            settingCtrl = null;
+                                lastControlBottom = settingCtrl.Bottom;
+                            } else {
+                                // This setting type is not supported for automatic display
+                                // Write this out to the log so that devs can see
+                                // TODO: This needs to use the debug service to output it correctly
+                                Console.WriteLine($"Module `{selectedModule.Manifest.Name}` has a setting `{setting.Key}` of type `{setting.Value.SettingType.ToString()}` which the Settings Service does not currently support the automatic exposure of.");
+                                settingCtrl = null;
+                            }
+
+                            if (settingCtrl != null)
+                                LstSettings.Add(settingCtrl);
                         }
-
-                        if (settingCtrl != null)
-                            LstSettings.Add(settingCtrl);
+                    } else {
+                        // TODO: Display label saying that settings aren't visible because module has never been enabled
                     }
                 }
             };
@@ -753,8 +752,8 @@ namespace Blish_HUD {
             //backButton.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.NavigateHome(); };
 
             // Populate data
-            foreach (var module in Module.AvailableModules) {
-                moduleDropdown.Items.Add(module.GetModuleInfo().Name);
+            foreach (var module in Module.Modules) {
+                moduleDropdown.Items.Add(module.Manifest.Name);
             }
 
             return mPanel;

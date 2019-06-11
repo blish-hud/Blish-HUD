@@ -56,28 +56,12 @@ namespace Blish_HUD.BHGw2Api {
         public static List<int> MapIdIndex;
 
         public static async Task<Map> GetFromId(int id) {
-            //return await GetAsync<Map>("/v2/maps", id.ToString(), GetMapById, DateTime.Now.ToDateTimeOffset(14.Hours()), CacheDurationType.Sliding, true, true);
-
             return await $@"https://api.guildwars2.com/v2/maps/{id}".GetJsonAsync<Map>();
         }
 
-        private static async Task<Map> GetMapById(string identifier, string @namespace) {
-            return await BASE_API_URL.WithEndpoint(@namespace).ById(identifier).WithTimeout(Settings.TimeoutLength).GetJsonAsync<Map>();
-        }
-
-        public static void IndexEndpoint(bool fullPreCache = false) {
-            //Task<List<int>> indexIn = GetAsync<List<int>>("/v2/maps", "index", GetMapIndex, DateTime.Now.ToDateTimeOffset(14.Hours()), CacheDurationType.Sliding, true, true);
-            //indexIn.Wait(Settings.TimeoutLength);
-
-            //if (!indexIn.IsFaulted)
-            //    MapIdIndex = indexIn.Result;
-
+        public static void IndexEndpoint() {
             // TODO: This needs to be handled a different way - this function will be depricated shortly (it works, but it's old)
             CallForManyAsync<Map>("/v2/maps?ids=all", 14.Hours(), true);
-        }
-
-        private static async Task<List<int>> GetMapIndex(string identifier, string @namespace) {
-            return await BASE_API_URL.WithEndpoint(@namespace).WithTimeout(Settings.TimeoutLength).GetJsonAsync<List<int>>();
         }
 
     }

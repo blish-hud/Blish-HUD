@@ -53,7 +53,7 @@ namespace Blish_HUD.Modules.Musician
 
         //private SettingEntry<bool> settingExample;
 
-        public override void DefineSettings(Settings settings)
+        public override void DefineSettings(SettingsManager settingsManager)
         {
             // Define settings
             //settingExample = settings.DefineSetting<bool>("name", false, false, true, "Description");
@@ -64,7 +64,7 @@ namespace Blish_HUD.Modules.Musician
         {
             base.OnEnabled();
 
-            Directory.CreateDirectory(Path.Combine(GameService.FileSrv.BasePath, "musician"));
+            Directory.CreateDirectory(Path.Combine(GameService.Directory.BasePath, "musician"));
 
             xmlParser = new XmlMusicSheetReader();
             displayedSheets = new List<SheetButton>();
@@ -132,7 +132,7 @@ namespace Blish_HUD.Modules.Musician
             };
 
             // Load local sheet music (*.xml) files.
-            Task loader = Task.Run(() => Sheets = xmlParser.LoadDirectory(GameService.FileSrv.BasePath + @"\musician"));
+            Task loader = Task.Run(() => Sheets = xmlParser.LoadDirectory(GameService.Directory.BasePath + @"\musician"));
             loader.Wait();
 
             // TODO: Load a list from online database.

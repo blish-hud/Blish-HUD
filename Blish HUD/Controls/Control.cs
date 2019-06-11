@@ -87,17 +87,11 @@ namespace Blish_HUD.Controls {
             _sharedTooltip = new Tooltip();
             _sharedTooltipLabel = new Label() {
                 Text              = "Loading...",
-                //Location          = new Point(Tooltip.PADDING),
                 AutoSizeHeight    = true,
                 AutoSizeWidth     = true,
                 VerticalAlignment = DrawUtil.VerticalAlignment.Middle,
                 ShowShadow        = true,
                 Parent            = _sharedTooltip,
-            };
-
-            // TODO: Consider having .Parent automatically wait for Graphics.SpriteScreen, if it is unavailable
-            Graphics.OnLoad += delegate {
-                _sharedTooltip.Parent = Graphics.SpriteScreen;
             };
         }
 
@@ -145,8 +139,9 @@ namespace Blish_HUD.Controls {
         public event EventHandler<MouseEventArgs> MouseLeft;
 
         /// <summary>
-        /// Alias for <see cref="LeftMouseButtonReleased"/>.
+        /// Alias for <see cref="LeftMouseButtonReleased"/>.  Only fires if <see cref="Enabled"/> is true.
         /// </summary>
+        /// <remarks>Fires after <see cref="LeftMouseButtonReleased"/> fires.</remarks>
         public event EventHandler<MouseEventArgs> Click;
 
         protected virtual void OnLeftMouseButtonPressed(MouseEventArgs e) {

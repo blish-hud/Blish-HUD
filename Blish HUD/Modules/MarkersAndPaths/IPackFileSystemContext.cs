@@ -142,6 +142,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
         private static Dictionary<string, ZipPackContext> _cachedContexts = new Dictionary<string, ZipPackContext>();
 
+        private readonly string _archivePath;
         private ZipArchive _packArchive;
 
         private Mutex _exclusiveStreamAccessMutex;
@@ -151,6 +152,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         private HashSet<string>               _isUsedOnNextMap;
 
         public ZipPackContext(string zipPackPath) {
+            _archivePath = zipPackPath;
             _packArchive = ZipFile.OpenRead(zipPackPath);
 
             _exclusiveStreamAccessMutex = new Mutex(false);
@@ -181,7 +183,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
 
         public bool FileExists(string filePath) {
             return _packArchive.Entries.Any(entry => 
-                string.Equals(entry.FullName, filePath, StringComparison.CurrentCultureIgnoreCase)
+                string.Equals(entry.FullName, filePath.Replace(@"\", "/"), StringComparison.CurrentCultureIgnoreCase)
             );
         }
 
@@ -230,21 +232,30 @@ namespace Blish_HUD.Modules.MarkersAndPaths {
         }
 
         public Stream LoadFileStream(string filePath) {
+            //if (!FileExists(filePath))
+            //    throw new FileNotFoundException("File could not be found inside of archive.", filePath);
+
             ZipArchiveEntry fileEntry;
 
-            if ((fileEntry = _packArchive.GetEntry(filePath.Replace(@"\", "/"))) != null) {
-                _exclusiveStreamAccessMutex.WaitOne();
+            //if ((fileEntry = _packArchive.GetEntry(filePath)) != null) {
+                //_exclusiveStreamAccessMutex.WaitOne();
+            using (var exclusiveReader = ZipFile.OpenRead(_archivePath)) {
+                if ((fileEntry = exclusiveReader.GetEntry(filePath.Replace(@"\", "/"))) != null) {
 
-                var memStream = new MemoryStream();
-                using (var entryStream = fileEntry.Open()) {
-                    entryStream.CopyTo(memStream);
+
+                    var memStream = new MemoryStream();
+
+                    using (var entryStream = fileEntry.Open()) {
+                        entryStream.CopyTo(memStream);
+                    }
+
+                    memStream.Position = 0;
+
+                    //_exclusiveStreamAccessMutex.ReleaseMutex();
+                    return memStream;
                 }
-
-                memStream.Position = 0;
-
-                _exclusiveStreamAccessMutex.ReleaseMutex();
-                return memStream;
             }
+            //}
 
             // Can't find it, so just send back an empty stream
             return Stream.Null;

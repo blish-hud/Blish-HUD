@@ -71,9 +71,13 @@ namespace Blish_HUD.Controls {
 
         private static ObservableCollection<CornerIcon> CornerIcons { get; }
 
-        private int _priority;
+        private int? _priority;
+
+        /// <summary>
+        /// <see cref="CornerIcon"/>s are sorted by priority so that, from left to right, priority goes from the highest to lowest.
+        /// </summary>
         public int Priority {
-            get => _priority;
+            get => _priority ?? (_icon?.GetHashCode() ?? 0);
             set {
                 if (SetProperty(ref _priority, value)) {
                     UpdateCornerIconPositions();
@@ -111,7 +115,7 @@ namespace Blish_HUD.Controls {
         }
 
         private static void UpdateCornerIconPositions() {
-            List<CornerIcon> sortedIcons = CornerIcons.OrderBy((cornerIcon) => cornerIcon.Priority).ToList();
+            List<CornerIcon> sortedIcons = CornerIcons.OrderByDescending((cornerIcon) => cornerIcon.Priority).ToList();
 
             int horizontalOffset = Alignment == CornerIconAlignment.Left ? ICON_SIZE * ICON_POSITION + LeftOffset : Graphics.SpriteScreen.Width / 2 - (CornerIcons.Count * ICON_SIZE / 2);
 
@@ -120,15 +124,15 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private LoadingSpinner _iconLoader;
+        private readonly LoadingSpinner _iconLoader;
         public CornerIcon() {
-            this.Parent = Graphics.SpriteScreen;
-            this.Size = new Point(ICON_SIZE, ICON_SIZE);
+            this.Parent        = Graphics.SpriteScreen;
+            this.Size          = new Point(ICON_SIZE, ICON_SIZE);
             this.ContentRegion = new Rectangle(0, ICON_SIZE, ICON_SIZE, ICON_SIZE);
 
             _iconLoader = new LoadingSpinner() {
                 Parent = this,
-                Size = this.ContentRegion.Size,
+                Size   = this.ContentRegion.Size,
             };
 
             CornerIcons.Add(this);

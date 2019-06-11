@@ -16,11 +16,8 @@ using SharpDX.WIC;
 namespace Blish_HUD.Pathing.Markers {
     public class BasicMarkerPathable : ManagedPathable<Entities.Marker>, IMarker {
         
-        private Vector2 _baseDimensions;
         private float _minimumSize = 1.0f;
         private float _maximumSize = 1.0f;
-        private float _scale = 1.0f;
-        private float _opacity = 1.0f;
         private string _text;
         private bool _active = false;
 

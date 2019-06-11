@@ -17,6 +17,7 @@ namespace Blish_HUD.Pathing {
 
         int    MapId  { get; set; }
         string Guid   { get; set; }
+        UserAccess Access { get; set; }
         bool   Active { get; set; }
 
         float   Opacity  { get; set; }

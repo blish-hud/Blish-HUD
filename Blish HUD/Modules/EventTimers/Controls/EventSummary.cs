@@ -67,10 +67,10 @@ namespace Blish_HUD.Modules.EventTimers {
 
         public Meta AssignedMeta { get; protected set; }
 
-        public EventSummary(Meta meta, Settings settings) {
+        public EventSummary(Meta meta, SettingsManager settingsManager) {
             this.AssignedMeta = meta;
 
-            watchState = settings.DefineSetting("watchEvent:" + meta.Name, true, true, false, "");
+            watchState = settingsManager.DefineSetting("watchEvent:" + meta.Name, true, true, false, "");
             this.AssignedMeta.IsWatched = watchState.Value;
 
             BackgroundSprite = BackgroundSprite ?? ContentService.Textures.Pixel;
@@ -102,7 +102,7 @@ namespace Blish_HUD.Modules.EventTimers {
                 }
 
                 //if (Module.settingShowNotificationWhenLandmarkIsCopied.Value)
-                Notification.ShowNotification(Content.GetTexture("waypoint"), "Waypoint copied to clipboard.", 2);
+                Notification.ShowNotification("Waypoint copied to clipboard.");
             }
         }
 

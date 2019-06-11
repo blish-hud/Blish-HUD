@@ -12,9 +12,6 @@ namespace Blish_HUD.Controls {
         private const int BUTTON_WIDTH = 32;
         private const int BUTTON_HEIGHT = 32;
 
-        private const int ICON_WIDTH = 32;
-        private const int ICON_HEIGHT = 32;
-
         public event EventHandler<CheckChangedEvent> CheckedChanged;
 
         private void OnChecked(CheckChangedEvent e) {
@@ -74,7 +71,7 @@ namespace Blish_HUD.Controls {
 
         private static Effect _glowEffect;
         private Effect GetGlowEffect() {
-            _glowEffect = _glowEffect ?? Overlay.cm.Load<Effect>(@"effects\glow");
+            _glowEffect = _glowEffect ?? Overlay.ActiveContentManager.Load<Effect>(@"effects\glow");
             _glowEffect.Parameters["TextureWidth"].SetValue((float)this.Width);
             _glowEffect.Parameters["GlowColor"].SetValue(_glowColor.ToVector4());
 

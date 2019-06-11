@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD.Controls;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 
-namespace Blish_HUD.Content {
+namespace Blish_HUD.Controls {
     public class CachedStringRender : IDisposable {
 
         private static readonly Dictionary<int, CachedStringRender> _cachedStringRenders = new Dictionary<int, CachedStringRender>();
@@ -47,15 +43,15 @@ namespace Blish_HUD.Content {
                                   DrawUtil.HorizontalAlignment horizontalAlignment = DrawUtil.HorizontalAlignment.Left,
                                   DrawUtil.VerticalAlignment   verticalAlignment   = DrawUtil.VerticalAlignment.Middle) {
 
-            Text                 = text;
-            Font                 = font;
-            DestinationRectangle = new Rectangle(Point.Zero, destinationRectangle.Size);
-            Color                = color;
-            Wrap                 = wrap;
-            Stroke               = stroke;
-            StrokeDistance       = strokeDistance;
-            HorizontalAlignment  = horizontalAlignment;
-            VerticalAlignment    = verticalAlignment;
+            this.Text                 = text;
+            this.Font                 = font;
+            this.DestinationRectangle = new Rectangle(Point.Zero, destinationRectangle.Size);
+            this.Color                = color;
+            this.Wrap                 = wrap;
+            this.Stroke               = stroke;
+            this.StrokeDistance       = strokeDistance;
+            this.HorizontalAlignment  = horizontalAlignment;
+            this.VerticalAlignment    = verticalAlignment;
         }
 
         private void InitRender() {
@@ -115,7 +111,7 @@ namespace Blish_HUD.Content {
         }
 
         public override bool Equals(object obj) {
-            if (ReferenceEquals(null, obj)) return false;
+            if (obj is null) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
 

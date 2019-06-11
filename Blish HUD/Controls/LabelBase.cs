@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    public abstract class LabelBase:Control {
+    public abstract class LabelBase : Control {
 
         private CachedStringRender _labelRender;
 
@@ -56,7 +56,7 @@ namespace Blish_HUD.Controls {
             int lblRegionHeight = _size.Y;
 
             if (_autoSizeWidth || _autoSizeHeight) {
-                var textSize = _font.MeasureString(_text);
+                var textSize = GetTextDimensions();
 
                 if (_autoSizeWidth) {
                     lblRegionWidth = (int)Math.Ceiling(textSize.Width + (_showShadow || _strokeText ? 1 : 0));
@@ -82,6 +82,10 @@ namespace Blish_HUD.Controls {
                                                                        _horizontalAlignment,
                                                                        _verticalAlignment);
             }
+        }
+
+        protected Size2 GetTextDimensions(string text = null) {
+            return _font.MeasureString(text ?? _text);
         }
         
         protected void DrawText(SpriteBatch spriteBatch, Rectangle bounds, string text = null) {

@@ -14,7 +14,7 @@ using Blish_HUD.Pathing;
 using Humanizer;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO {
-    [Serializable]
+    
     public class PathingCategory : ObservableKeyedCollection<string, PathingCategory>, INotifyPropertyChanged {
 
         private PathingCategory _parent;

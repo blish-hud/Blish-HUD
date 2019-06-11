@@ -66,21 +66,6 @@ namespace Blish_HUD.BHGw2Api {
 
         public string Icon { get; set; }
 
-        // TODO: Should `NextTimes` be removed (not currently called)?
-        public IEnumerable<DateTime> NextTimes(int count) {
-            if (Events == null) return null;
-
-            var times = new List<DateTime>();
-
-            var tsNow = DateTime.Now.ToLocalTime().TimeOfDay;
-
-            List<TimeSpan> allTimes = this.Times.Select(time => time.ToLocalTime().TimeOfDay).OrderBy(time => time.TotalSeconds).ToList();
-
-            
-
-            return null;
-        }
-
         public static void UpdateEventSchedules() {
             if (Events == null) return;
 

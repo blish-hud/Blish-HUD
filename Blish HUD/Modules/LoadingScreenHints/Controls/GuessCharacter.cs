@@ -59,8 +59,8 @@ namespace Blish_HUD.Modules.LoadingScreenHints.Controls {
         private Texture2D CharacterTexture;
         private string CharacterString;
         public Image CharacterImage;
-        private Effect SilhouetteFX = Overlay.cm.Load<Effect>(@"effects\silhouette");
-        private Effect GlowFX = Overlay.cm.Load<Effect>(@"effects\glow");
+        private Effect SilhouetteFX = Overlay.ActiveContentManager.Load<Effect>(@"effects\silhouette");
+        private Effect GlowFX = Overlay.ActiveContentManager.Load<Effect>(@"effects\glow");
         private bool _result;
         public bool Result
         {

@@ -17,8 +17,8 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static Texture2D _textureBullet;
-        private static Texture2D _textureArrow;
+        private static readonly Texture2D _textureBullet;
+        private static readonly Texture2D _textureArrow;
 
         static ContextMenuStripItem() {
             _textureBullet = Content.GetTexture("155038");

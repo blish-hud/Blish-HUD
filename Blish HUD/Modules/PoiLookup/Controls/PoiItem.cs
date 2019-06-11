@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -63,6 +64,11 @@ namespace Blish_HUD.Modules.PoiLookup {
 
         public PoiItem() : base() {
             this.Size = new Point(100, 36);
+        }
+
+        /// <inheritdoc />
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {

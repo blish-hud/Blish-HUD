@@ -69,10 +69,10 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static Texture2D _textureFillCrest;
-        private static Texture2D _textureVignette;
-        private static Texture2D _textureCornerButton;
-        private static Texture2D _textureBottomSectionSeparator;
+        private static readonly Texture2D _textureFillCrest;
+        private static readonly Texture2D _textureVignette;
+        private static readonly Texture2D _textureCornerButton;
+        private static readonly Texture2D _textureBottomSectionSeparator;
 
         static DetailsButton() {
             _textureFillCrest              = Content.GetTexture(@"controls\detailsbutton\605004");
@@ -163,12 +163,12 @@ namespace Blish_HUD.Controls {
             get => _currentFill;
             set {
                 if (SetProperty(ref _currentFill, Math.Min(value, _maxFill))) {
-                    _fillAnim?.Cancel();
-                    _fillAnim = null;
+                    _animFill?.Cancel();
+                    _animFill = null;
 
                     float diffLength = Math.Abs(this.DisplayedFill - _currentFill) / (float)this.MaxFill;
 
-                    _fillAnim = Animation.Tweener.Tween(this, new { DisplayedFill = _currentFill }, 0.65f, 0, true).Ease(Glide.Ease.QuintIn);
+                    _animFill = Animation.Tweener.Tween(this, new { DisplayedFill = _currentFill }, 0.65f, 0, true).Ease(Glide.Ease.QuintIn);
                 }
             }
         }
@@ -233,8 +233,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _bottomSectionHeight, value, true);
         }
 
-        private Glide.Tween              _fillAnim;
-        private ScrollingHighlightEffect _scrollEffect;
+        private          Glide.Tween              _animFill;
+        private readonly ScrollingHighlightEffect _scrollEffect;
 
         public DetailsButton() {
             this.Size = new Point(DEFAULT_EVENTSUMMARY_WIDTH, DEFAULT_EVENTSUMMARY_HEIGHT);

@@ -13,7 +13,7 @@ namespace Blish_HUD.Modules.PoiLookup {
     // TODO: This should be updated to allow any number of possible results be displayed
     public class PoiLookupWindow : Controls.WindowBase {
 
-        private const int WINDOW_WIDTH = 256; //196;
+        private const int WINDOW_WIDTH = 256;
         private const int WINDOW_HEIGHT = 178;
 
         private const int TITLEBAR_HEIGHT = 32;
@@ -65,7 +65,6 @@ namespace Blish_HUD.Modules.PoiLookup {
         public PoiLookupWindow(PoiLookup module) : base() {
             Module = module;
 
-            //this.Size = new Point(WINDOW_WIDTH, WINDOW_HEIGHT);
             this.Title = "Landmark Search";
             this.ZIndex = Controls.Screen.TOOLWINDOW_BASEZINDEX;
 
@@ -78,14 +77,16 @@ namespace Blish_HUD.Modules.PoiLookup {
 
             ContentRegion = new Rectangle(0, TITLEBAR_HEIGHT, _size.X, _size.Y - TITLEBAR_HEIGHT);
 
-            Searchbox = new Controls.TextBox();
-            Searchbox.PlaceholderText = "Search";
-            Searchbox.Location = new Point(0, 0);
-            Searchbox.Size = new Point(this.Width, Searchbox.Height);
-            Searchbox.Parent = this;
+            Searchbox = new Controls.TextBox() {
+                PlaceholderText = "Search",
+                Location = new Point(0, 0),
+                Parent = this
+            };
+
+            Searchbox.Size = new Point(this.Width, Searchbox.Height);   
 
             // Tooltip used by all three result items
-            var ttDetails1 = new Controls.Tooltip();
+            var ttDetails1 = new Tooltip();
             var ttDetailsLmName = new Controls.Label() {
                 Text              = "Name Loading...",
                 Font              = Content.DefaultFont16,
@@ -205,10 +206,8 @@ namespace Blish_HUD.Modules.PoiLookup {
                         }
 
                         if (!currItem.MouseOver) {
-                            ttDetails1.Location = new Point(currItem.AbsoluteBounds.Right + 5, currItem.AbsoluteBounds.Top);
+                            ttDetails1.Show(currItem.AbsoluteBounds.Right + 5, currItem.AbsoluteBounds.Top);
                         }
-
-                        ttDetails1.Visible = true;
                     }
                 }
             }
@@ -321,20 +320,20 @@ namespace Blish_HUD.Modules.PoiLookup {
                     Clipboard.SetText(closestLandmark.ChatLink);
 
                     if (Module.settingShowNotificationWhenLandmarkIsCopied.Value)
-                        Controls.Notification.ShowNotification(item.Icon, $"{closestLandmark.Type} copied to clipboard.", 2);
+                        Controls.Notification.ShowNotification($"{closestLandmark.Type} copied to clipboard.", Notification.NotificationType.Info, item.Icon);
                 } catch (Exception ex) {
                     // TODO: Notify properly here. This rarely happens, but we shouldn't let it crash the app.
-                    Controls.Notification.ShowNotification(item.Icon, "Failed to copy to clipboard. Try again?", 2);
+                    Controls.Notification.ShowNotification("Failed to copy to clipboard. Try again?", Notification.NotificationType.Warning);
                 }
             } else {
                 try {
                     Clipboard.SetText(item.Landmark.ChatLink);
                     
                     if (Module.settingShowNotificationWhenLandmarkIsCopied.Value)
-                        Controls.Notification.ShowNotification(item.Icon, $"{item.Landmark.Type} copied to clipboard.", 2);
+                        Controls.Notification.ShowNotification($"{item.Landmark.Type} copied to clipboard.", Notification.NotificationType.Info, item.Icon);
                 } catch (Exception ex) {
                     // TODO: Notify properly here. This rarely happens, but we shouldn't let it crash the app.
-                    Controls.Notification.ShowNotification(item.Icon, "Failed to copy to clipboard. Try again?", 2);
+                    Controls.Notification.ShowNotification("Failed to copy to clipboard. Try again?", Notification.NotificationType.Warning);
                 }
             }
 

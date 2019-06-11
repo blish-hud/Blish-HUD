@@ -23,7 +23,7 @@ namespace Blish_HUD.Modules {
             );
         }
 
-        public override void DefineSettings(Settings settings) {
+        public override void DefineSettings(SettingsManager settingsManager) {
 
         }
 
@@ -40,7 +40,6 @@ namespace Blish_HUD.Modules {
                 });
             }
 
-            // TODO: This class needs some work before we continue to render any of this
             foreach (var rangeCirclesObj in RangeCirclesObjs) {
                 GameService.Graphics.World.Entities.Add(rangeCirclesObj);
             }

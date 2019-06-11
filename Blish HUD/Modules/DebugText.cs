@@ -27,7 +27,7 @@ namespace Blish_HUD.Modules {
 
         private delegate string DebugValueRendererDelegate(GameTime gameTime);
 
-        private Dictionary<SettingEntry<bool>, DebugValueRendererDelegate> DebugValueRenderers =
+        private readonly Dictionary<SettingEntry<bool>, DebugValueRendererDelegate> DebugValueRenderers =
             new Dictionary<SettingEntry<bool>, DebugValueRendererDelegate>();
 
         #region Settings
@@ -38,12 +38,12 @@ namespace Blish_HUD.Modules {
         private SettingEntry<bool> settingShowPlayerPosition;
         private SettingEntry<bool> settingShowOverlayFPS;
 
-        public override void DefineSettings(Settings settings) {
+        public override void DefineSettings(SettingsManager settingsManager) {
             // Define settings
-            settingShowMapId = settings.DefineSetting<bool>("Show Map ID", true, true, true, "Show ID of current map (future release will show name instead of ID).");
-            settingShowServerIp = settings.DefineSetting<bool>("Show Server IP", true, true, true, "Show the IP address of the server you're currently connected to.");
-            settingShowCurrentShard = settings.DefineSetting<bool>("Show Current Shard", true, true, true, "Show the current shard ID.");
-            settingShowPlayerPosition = settings.DefineSetting<bool>("Show Player Position", true, true, true, "Show the player's current XYZ position.");
+            settingShowMapId          = settingsManager.DefineSetting("Show Map ID",          true, true, true, "Show ID of current map (future release will show name instead of ID).");
+            settingShowServerIp       = settingsManager.DefineSetting("Show Server IP",       true, true, true, "Show the IP address of the server you're currently connected to.");
+            settingShowCurrentShard   = settingsManager.DefineSetting("Show Current Shard",   true, true, true, "Show the current shard ID.");
+            settingShowPlayerPosition = settingsManager.DefineSetting("Show Player Position", true, true, true, "Show the player's current XYZ position.");
             //settingShowOverlayFPS = settings.DefineSetting<bool>("Show Overlay FPS", true, true, true, "Show FPS of Blish HUD.");
         }
 

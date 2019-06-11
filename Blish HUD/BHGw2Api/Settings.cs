@@ -29,8 +29,8 @@ namespace Blish_HUD.BHGw2Api {
 
         public static Culture CurrentCulture { get; set; } = Culture.en;
 
-        private static string _cacheDir = "cache";
-        public static string CacheLocation => Path.Combine(GameService.FileSrv.BasePath, _cacheDir);
+        private static readonly string _cacheDir = "cache";
+        public static string CacheLocation => Path.Combine(GameService.Directory.BasePath, _cacheDir);
 
         public static void Load() {
             // Make sure the directory is there for us

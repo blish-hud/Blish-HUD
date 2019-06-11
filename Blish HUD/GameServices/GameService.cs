@@ -16,7 +16,6 @@ namespace Blish_HUD {
         private static readonly GameService[] AllServices;
         public static IReadOnlyList<GameService> All => AllServices;
 
-        // TODO: Would love to do this without needing to deal with events for this
         public event EventHandler<EventArgs> OnLoad;
 
         protected abstract void Initialize();
@@ -24,10 +23,10 @@ namespace Blish_HUD {
         protected abstract void Unload();
         protected abstract void Update(GameTime gameTime);
 
-        private protected Overlay Overlay;
+        private protected Overlay ActiveOverlay;
 
         public void DoInitialize(Overlay game) {
-            Overlay = game;
+            ActiveOverlay = game;
 
             Initialize();
         }
@@ -41,52 +40,53 @@ namespace Blish_HUD {
 
         public void DoUnload() => Unload();
         public void DoUpdate(GameTime gameTime) => Update(gameTime);
-        
+
         #region Static Service References
 
-        public static readonly DebugService Debug;
-        public static readonly FileService FileSrv;
-        public static readonly SettingsService Settings;
-        public static readonly ContentService Content;
-        public static readonly AnimationService Animation;
-        public static readonly GraphicsService Graphics;
-        public static readonly Gw2MumbleService Gw2Mumble;
-        public static readonly PlayerService Player;
-        public static readonly CameraService Camera;
-        public static readonly InputService Input;
-        public static readonly DirectorService Director;
+        public static readonly DebugService           Debug;
+        public static readonly DirectoryService            Directory;
+        public static readonly SettingsService        Settings;
+        public static readonly ContentService         Content;
+        public static readonly AnimationService       Animation;
+        public static readonly GraphicsService        Graphics;
+        public static readonly Gw2MumbleService       Gw2Mumble;
+        public static readonly PlayerService          Player;
+        public static readonly CameraService          Camera;
+        public static readonly InputService           Input;
+        public static readonly DirectorService        Director;
         public static readonly GameIntegrationService GameIntegration;
-        public static readonly HotkeysService Hotkeys;
-        public static readonly PathingService Pathing;
-        public static readonly ModuleService Module;
+        public static readonly HotkeysService         Hotkeys;
+        public static readonly PathingService         Pathing;
+        public static readonly ModuleService          Module;
         public static readonly PersistentStoreService Store;
-        public static readonly ArcDpsService ArcDps;
+        public static readonly ArcDpsService          ArcDps;
 
         #endregion
 
         static GameService() {
             // Init game services
-            Debug = new DebugService();
-            FileSrv = new FileService();
-            Store = new PersistentStoreService();
-            Settings = new SettingsService();
-            Content = new ContentService();
-            Animation = new AnimationService();
-            Graphics = new GraphicsService();
-            Gw2Mumble = new Gw2MumbleService();
-            Player = new PlayerService();
-            Camera = new CameraService();
-            Input = new InputService();
-            Director = new DirectorService();
+            Debug           = new DebugService();
+            Directory         = new DirectoryService();
+            Input           = new InputService();
+            Store           = new PersistentStoreService();
+            Settings        = new SettingsService();
+            Content         = new ContentService();
+            Animation       = new AnimationService();
+            Graphics        = new GraphicsService();
+            Gw2Mumble       = new Gw2MumbleService();
+            Player          = new PlayerService();
+            Camera          = new CameraService();
+            Director        = new DirectorService();
             GameIntegration = new GameIntegrationService();
-            Hotkeys = new HotkeysService();
-            Pathing = new PathingService();
-            Module = new ModuleService();
-            ArcDps = new ArcDpsService();
+            Hotkeys         = new HotkeysService();
+            Pathing         = new PathingService();
+            Module          = new ModuleService();
+            ArcDps          = new ArcDpsService();
 
             AllServices = new GameService[] {
                 Debug,
-                FileSrv,
+                Directory,
+                Store,
                 Settings,
                 Content,
                 Animation,
@@ -100,7 +100,6 @@ namespace Blish_HUD {
                 Hotkeys,
                 Pathing,
                 Module,
-                Store,
                 //ArcDps
             };
 

@@ -8,6 +8,7 @@ using System.Xml;
 using Blish_HUD.Entities.Primitives;
 using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Behavior;
 using Blish_HUD.Pathing;
+using Blish_HUD.Pathing.Content;
 using Blish_HUD.Pathing.Entities;
 using Blish_HUD.Pathing.Format;
 using Blish_HUD.Pathing.Markers;
@@ -21,8 +22,6 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
 
         private string          _type;
         private PathingCategory _category;
-        private float           _fadeNear     = -1;
-        private float           _fadeFar      = -1;
         private int             _resetLength;
         private bool            _autoTrigger;
         private bool            _hasCountdown;
@@ -50,22 +49,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
                 }
             }
         }
-
-        public float FadeNear {
-            get => Math.Min(_fadeNear, _fadeFar);
-            set => SetProperty(ref _fadeNear, value);
-        }
-
-        public float FadeFar {
-            get => Math.Max(_fadeNear, _fadeFar);
-            set => SetProperty(ref _fadeFar, value);
-        }
-
-        public float HeightOffset {
-            get => this.ManagedEntity.VerticalOffset;
-            set { this.ManagedEntity.VerticalOffset = value; OnPropertyChanged(); }
-        }
-
+        
         public int ResetLength {
             get => _resetLength;
             set => SetProperty(ref _resetLength, value);
@@ -79,6 +63,10 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
         public bool HasCountdown {
             get => _hasCountdown;
             set => SetProperty(ref _hasCountdown, value);
+        }
+        public float HeightOffset {
+            get => this.ManagedEntity.VerticalOffset;
+            set { this.ManagedEntity.VerticalOffset = value; OnPropertyChanged(); }
         }
 
         public float TriggerRange {
@@ -102,7 +90,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
         private readonly XmlNode         _sourceNode;
         private readonly PathingCategory _rootCategory;
 
-        public TacOMarkerPathable(XmlNode sourceNode, IPackFileSystemContext packContext, PathingCategory rootCategory) : base(packContext) {
+        public TacOMarkerPathable(XmlNode sourceNode, PathableResourceManager pathableManager, PathingCategory rootCategory) : base(pathableManager) {
             _sourceNode   = sourceNode;
             _rootCategory = rootCategory;
 
@@ -131,7 +119,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             RegisterAttribute("fadeNear", delegate (XmlAttribute attribute) {
                 if (!float.TryParse(attribute.Value, out float fOut)) return false;
 
-                this.FadeNear = fOut;
+                this.ManagedEntity.FadeNear = fOut;
                 return true;
             });
 
@@ -139,7 +127,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             RegisterAttribute("fadeFar", delegate (XmlAttribute attribute) {
                 if (!float.TryParse(attribute.Value, out float fOut)) return false;
 
-                this.FadeFar = fOut;
+                this.ManagedEntity.FadeFar = fOut;
                 return true;
             });
 
@@ -147,8 +135,8 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             RegisterAttribute("iconSize", delegate (XmlAttribute attribute) {
                 if (!float.TryParse(attribute.Value, out float fOut)) return false;
 
-                this.ManagedEntity.AutoResizeBillboard = false;
-                this.ManagedEntity.Size = new Vector2(fOut * 2);
+                this.ManagedEntity.AutoResize = false;
+                this.ManagedEntity.Size = new Vector2(fOut * 2f);
                 return true;
             });
 
@@ -224,14 +212,17 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             return base.FinalizeAttributes(attributeLoaders);
         }
 
+        private float _trueScale = -1;
         public override void Update(GameTime gameTime) {
             base.Update(gameTime);
 
-            if (this.FadeFar >= 0 && this.FadeNear >= 0) {
-                float baseLeft = Utils.World.WorldToGameCoord(this.ManagedEntity.DistanceFromCamera) - this.FadeNear;
-                float baseRange = this.FadeFar - this.FadeNear;
-                this.ManagedEntity.Opacity = 1 - MathHelper.Clamp(baseLeft / baseRange, 0f, 1f);
-            }
+            //float playerDistance = Utils.World.WorldToGameCoord(this.ManagedEntity.DistanceFromPlayer);
+
+            //if (this.FadeFar >= 0 && this.FadeNear >= 0) {
+            //    float baseLeft = playerDistance - this.FadeNear;
+            //    float baseRange = this.FadeFar - this.FadeNear;
+            //    this.ManagedEntity.Opacity = 1 - MathHelper.Clamp(baseLeft / baseRange, 0f, 1f);
+            //}
         }
 
     }

@@ -105,7 +105,7 @@ namespace Blish_HUD.BHGw2Api {
             return null;
         }
 
-        public static void IndexEndpoint(bool fullPreCache = false) {
+        public static void IndexEndpoint() {
             Task<List<int>> indexIn = GetAsync<List<int>>("/v2/colors", "index", GetDyeIndex, DateTime.Now.ToDateTimeOffset(14.Hours()), CacheDurationType.Sliding, true, true);
             indexIn.Wait(Settings.TimeoutLength);
 

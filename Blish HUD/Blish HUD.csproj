@@ -13,7 +13,7 @@
     <AssemblyName>Blish HUD</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <NuGetPackageImportStamp>
@@ -104,10 +104,8 @@
     <StartupObject>Blish_HUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BHGw2Api\ApiCache.cs" />
     <Compile Include="BHGw2Api\ApiExtensions.cs" />
     <Compile Include="BHGw2Api\ApiItem.cs" />
-    <Compile Include="BHGw2Api\CachedCall.cs" />
     <Compile Include="BHGw2Api\Cache\HybridCache.cs" />
     <Compile Include="BHGw2Api\DyeColor.cs" />
     <Compile Include="BHGw2Api\Converters\ChildItemConverter.cs" />
@@ -126,7 +124,11 @@
     <Compile Include="BHGw2Api\Settings.cs" />
     <Compile Include="BHUDControls\Hotkeys\HotkeyAssigner.cs" />
     <Compile Include="BHUDControls\Hotkeys\HotkeyAssignmentWindow.cs" />
-    <Compile Include="Content\CachedStringRender.cs" />
+    <Compile Include="Content\DirectoryReader.cs" />
+    <Compile Include="Content\RenderServiceReader.cs" />
+    <Compile Include="Content\Serialization\SemVerConverter.cs" />
+    <Compile Include="Content\ZipArchiveReader.cs" />
+    <Compile Include="Controls\_Types\CachedStringRender.cs" />
     <Compile Include="Controls\ContextMenuStripItem.cs" />
     <Compile Include="Controls\CounterBox.cs" />
     <Compile Include="Controls\DetailsButton.cs" />
@@ -201,7 +203,12 @@
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityContainer.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
-    <Compile Include="Interfaces\IKeyboard.cs" />
+    <Compile Include="Content\IDataReader.cs" />
+    <Compile Include="Modules\ExternalModule.cs" />
+    <Compile Include="Modules\ModuleParameters.cs" />
+    <Compile Include="Pathing\Content\PathableResourceManager.cs" />
+    <Compile Include="Utils\MouseInterceptor.cs" />
+    <Compile Include="_Interfaces\IKeyboard.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
     <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\LoadingScreenHints\Controls\GamingTip.cs" />
@@ -209,6 +216,7 @@
     <Compile Include="Modules\LoadingScreenHints\Controls\LoadScreenPanel.cs" />
     <Compile Include="Modules\LoadingScreenHints\Controls\Narration.cs" />
     <Compile Include="Modules\LoadingScreenHints\LoadingScreenHints.cs" />
+    <Compile Include="Modules\ManifestV1.cs" />
     <Compile Include="Modules\MarkersAndPaths\IPackFileSystemContext.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\ITacOPathable.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PathingCategory.cs" />
@@ -273,15 +281,14 @@
     <Compile Include="Modules\Musician\Player\Sound\AutoDisposeFileReader.cs" />
     <Compile Include="Modules\Musician\Player\Sound\CachedSound.cs" />
     <Compile Include="Modules\Musician\Player\Sound\CachedSoundSampleProvider.cs" />
-    <Compile Include="Modules\TestMefModule.cs" />
-    <Compile Include="Pathing\Behaviors\Clipboard.cs" />
+    <Compile Include="Pathing\Behaviors\Copy.cs" />
     <Compile Include="Pathing\Behaviors\IdentifyingBehaviorAttributePrefixAttribute.cs" />
     <Compile Include="Pathing\Behaviors\ILoadableBehavior.cs" />
     <Compile Include="Pathing\Entities\Marker.cs" />
     <Compile Include="GameServices\PersistentStoreService.cs" />
-    <Compile Include="Interfaces\IRenderable2D.cs" />
-    <Compile Include="Interfaces\IRenderable3D.cs" />
-    <Compile Include="Interfaces\IUpdatable.cs" />
+    <Compile Include="_Interfaces\IRenderable2D.cs" />
+    <Compile Include="_Interfaces\IRenderable3D.cs" />
+    <Compile Include="_Interfaces\IUpdatable.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Behavior\BasicTOBehavior.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\TacOMarkerPathable.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\TacOTrailPathable.cs" />
@@ -300,14 +307,13 @@
     <Compile Include="Pathing\Trails\BasicTrailPathable.cs" />
     <Compile Include="Pathing\Trails\ITrail.cs" />
     <Compile Include="Pathing\Trails\Route.cs" />
-    <Compile Include="Modules\MarkersAndPaths\Entities\Trail.cs" />
     <Compile Include="Entities\Primitives\Cuboid.cs" />
     <Compile Include="Entities\Primitives\Face.cs" />
     <Compile Include="Entities\Primitives\Mesh.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="FrameCounter.cs" />
     <Compile Include="GameServices\DirectorService.cs" />
-    <Compile Include="GameServices\FileService.cs" />
+    <Compile Include="GameServices\DirectoryService.cs" />
     <Compile Include="GameServices\HotkeysService.cs" />
     <Compile Include="GameServices\PathingService.cs" />
     <Compile Include="GameServices\ModuleService.cs" />
@@ -322,8 +328,6 @@
     <Compile Include="Modules\EventTimers\Controls\EventNotification.cs" />
     <Compile Include="Modules\EventTimers\Controls\EventSummary.cs" />
     <Compile Include="Modules\EventTimers\EventTimers.cs" />
-    <Compile Include="Modules\MarkersAndPaths\Controls\CategoryMenuItem.cs" />
-    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\RouteBuilder.cs" />
     <Compile Include="Modules\MarkersAndPaths\ReCatReader.cs" />
     <Compile Include="Modules\MarkersAndPaths\MarkersAndPaths.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\AugTyr\OverlayDataReader.cs" />
@@ -341,7 +345,6 @@
     <Compile Include="GameServices\DebugService.cs" />
     <Compile Include="GameServices\ContentService.cs" />
     <Compile Include="GameServices\SettingsService.cs" />
-    <Compile Include="Modules\Compass.cs" />
     <Compile Include="Entities\Primitives\Billboard.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Overlay.cs" />
@@ -365,10 +368,7 @@
     <Compile Include="Utils\Calc.cs" />
     <Compile Include="Utils\Math.cs" />
     <Compile Include="Utils\Time.cs" />
-    <Compile Include="Utils\Draw3dUtil.cs" />
     <Compile Include="Utils\DrawUtil.cs" />
-    <Compile Include="Utils\Mouse.cs" />
-    <Compile Include="Utils\Pipeline.cs" />
     <Compile Include="Utils\String.cs" />
     <Compile Include="Utils\Window.cs" />
     <Compile Include="Utils\WindowStyles.cs" />
@@ -467,6 +467,7 @@
     <Content Include="data\recategory.inf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="app.config" />
     <None Include="Properties\Strings.Designer.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
@@ -533,6 +534,9 @@
     <PackageReference Include="Humanizer.Core.fr">
       <Version>2.6.2</Version>
     </PackageReference>
+    <PackageReference Include="JsonSubTypes">
+      <Version>1.5.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.CSharp">
       <Version>4.5.0</Version>
     </PackageReference>
@@ -565,6 +569,9 @@
     </PackageReference>
     <PackageReference Include="protobuf-net">
       <Version>2.4.0</Version>
+    </PackageReference>
+    <PackageReference Include="SemanticVersioning">
+      <Version>1.2.0</Version>
     </PackageReference>
     <PackageReference Include="Sentry">
       <Version>1.2.0</Version>
@@ -705,7 +712,8 @@
     <PostBuildEvent>rd /s /q "lv", "ms-MY", "mt", "nb", "nb-NO", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sr", "sr-Latn", "sv", "tr", "uk", "uz-Cyrl-UZ", "uz-Latn-UZ", "vi", "zh-CN"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "$(ProjectDir)BuildScripts\RefBuilder.ps1" -Project "$(ProjectDir)\" -Output "$(OutDir)\"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

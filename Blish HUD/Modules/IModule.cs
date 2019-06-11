@@ -5,13 +5,13 @@ namespace Blish_HUD.Modules {
 
     public interface IModule {
 
-        Settings Settings { get; set; }
+        SettingsManager SettingsManager { get; set; }
 
         bool Enabled { get; set; }
 
         ModuleInfo GetModuleInfo();
 
-        void DefineSettings(Settings settings);
+        void DefineSettings(SettingsManager settingsManager);
 
         void OnLoad();
 

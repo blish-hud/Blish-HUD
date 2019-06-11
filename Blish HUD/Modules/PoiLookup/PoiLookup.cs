@@ -30,9 +30,9 @@ namespace Blish_HUD.Modules.PoiLookup {
         internal SettingEntry<bool> settingHideWindowAfterSelection;
         internal SettingEntry<bool> settingEnterSelectionIntoChatAutomatically;
 
-        public override void DefineSettings(Settings settings) {
-            settingShowNotificationWhenLandmarkIsCopied = settings.DefineSetting("Show Notification When Landmark Is Copied", true, true, true, "If enabled, a notification will be displayed in the center of the screen confirming the landmark was copied.");
-            settingHideWindowAfterSelection = settings.DefineSetting("Hide Window After Selection", true, true, true, "If enabled, the landmark search window will automatically hide after a landmark is selected from the results.");
+        public override void DefineSettings(SettingsManager settingsManager) {
+            settingShowNotificationWhenLandmarkIsCopied = settingsManager.DefineSetting("Show Notification When Landmark Is Copied", true, true, true, "If enabled, a notification will be displayed in the center of the screen confirming the landmark was copied.");
+            settingHideWindowAfterSelection = settingsManager.DefineSetting("Hide Window After Selection", true, true, true, "If enabled, the landmark search window will automatically hide after a landmark is selected from the results.");
         }
 
         public override void OnEnabled() {
@@ -55,11 +55,12 @@ namespace Blish_HUD.Modules.PoiLookup {
             };
 
             landmarkSearchIcon = new CornerIcon() {
-                Icon = GameService.Content.GetTexture("landmark-search"),
-                HoverIcon = GameService.Content.GetTexture("landmark-search-hover"),
+                Icon             = GameService.Content.GetTexture("landmark-search"),
+                HoverIcon        = GameService.Content.GetTexture("landmark-search-hover"),
                 Menu             = new ContextMenuStrip(),
                 BasicTooltipText = "Landmark Search",
                 Priority         = 5,
+                Parent           = GameService.Graphics.SpriteScreen
             };
 
             landmarkSearchIcon.Menu.AddMenuItem("Use large icon").Click += delegate {

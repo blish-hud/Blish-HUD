@@ -10,6 +10,7 @@ using GW2NET.Items;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Blish_HUD.Modules.MarkersAndPaths;
+using Blish_HUD.Pathing.Content;
 using Blish_HUD.Pathing.Entities;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework.Graphics;
@@ -79,7 +80,7 @@ namespace Blish_HUD.Pathing.Format {
             }
         }
 
-        public LoadedMarkerPathable(IPackFileSystemContext packContext) : base(new Marker(), packContext) { }
+        public LoadedMarkerPathable(PathableResourceManager pathableManager) : base(new Marker(), pathableManager) { }
 
         protected override void PrepareAttributes() {
             base.PrepareAttributes();
@@ -104,8 +105,7 @@ namespace Blish_HUD.Pathing.Format {
             RegisterAttribute("iconFile", delegate (XmlAttribute attribute) {
                 if (!string.IsNullOrEmpty(attribute.Value)) {
                     this.IconReferencePath = attribute.Value.Trim();
-                                                      //.Replace('\\', Path.DirectorySeparatorChar)
-                                                      //.Replace('/',  Path.DirectorySeparatorChar);
+
                     return true;
                 }
 
@@ -133,6 +133,12 @@ namespace Blish_HUD.Pathing.Format {
         }
 
         protected override bool FinalizeAttributes(Dictionary<string, LoadedPathableAttributeDescription> attributeLoaders) {
+            //if (attributeLoaders.ContainsKey("maxsize")) {
+            //    if (!attributeLoaders["maxsize"].Loaded) {
+            //        this.MaximumSize = Math.Min(this.MinimumSize, this.ManagedEntity.Size.X);
+            //    }
+            //}
+
             return base.FinalizeAttributes(attributeLoaders);
         }
 
@@ -154,13 +160,13 @@ namespace Blish_HUD.Pathing.Format {
 
         private void LoadIcon() {
             if (!string.IsNullOrEmpty(_iconReferencePath)) {
-                this.Icon = this.PackContext.LoadTexture(_iconReferencePath);
+                this.Icon = this.PathableManager.LoadTexture(_iconReferencePath);
             }
         }
         
         private void UnloadIcon() {
             this.Icon = null;
-            this.PackContext.MarkTextureForDisposal(_iconReferencePath);
+            this.PathableManager.MarkTextureForDisposal(_iconReferencePath);
         }
 
     }

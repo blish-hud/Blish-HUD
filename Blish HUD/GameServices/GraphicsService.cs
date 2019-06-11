@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using Blish_HUD.Controls;
+using Blish_HUD.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SharpDX;
@@ -12,6 +13,18 @@ using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
     public class GraphicsService:GameService {
+
+        #region Load Static
+
+        private static readonly Screen _spriteScreen;
+        private static readonly World  _world;
+
+        static GraphicsService() {
+            _spriteScreen = new Screen();
+            _world        = new World();
+        }
+
+        #endregion
 
         public enum UiScale {
             Small,  // 47 x 47
@@ -44,10 +57,9 @@ namespace Blish_HUD {
                 _uiScale = value;
 
                 _uiScaleMultiplier = GetScaleRatio(value);
-                this.SpriteScreen.Size = new Point((int)(Overlay.graphics.PreferredBackBufferWidth / _uiScaleMultiplier), (int)(Overlay.graphics.PreferredBackBufferHeight / _uiScaleMultiplier));
+                this.SpriteScreen.Size = new Point((int)(Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferWidth / _uiScaleMultiplier), (int)(Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / _uiScaleMultiplier));
 
                 _uiScaleTransform = Matrix.CreateScale(_uiScaleMultiplier);
-
             }
         }
 
@@ -57,42 +69,50 @@ namespace Blish_HUD {
         private float _uiScaleMultiplier = 1f;
         public float UIScaleMultiplier => _uiScaleMultiplier;
 
-        private Controls.Screen _screen;
-        public Controls.Screen SpriteScreen => _screen;
+        public Controls.Screen SpriteScreen => _spriteScreen;
 
-        private Entities.World _world;
         public Entities.World World => _world;
 
-        public GraphicsDevice GraphicsDevice => Overlay.GraphicsDevice;
-        public GraphicsDeviceManager GraphicsDeviceManager => Overlay.graphics;
+        public GraphicsDeviceManager GraphicsDeviceManager => Overlay.ActiveGraphicsDeviceManager;
+
+        public GraphicsDevice GraphicsDevice => Overlay.ActiveGraphicsDeviceManager.GraphicsDevice;
 
         public int WindowWidth => this.GraphicsDevice.Viewport.Width;
         public int WindowHeight => this.GraphicsDevice.Viewport.Height;
 
+        private float _aspectRatio;
+        public  float AspectRatio => _aspectRatio;
+
         public Point Resolution {
-            get => new Point(Overlay.graphics.PreferredBackBufferWidth, Overlay.graphics.PreferredBackBufferHeight);
+            get => new Point(Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferWidth, Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
             set {
                 try {
-                    Overlay.graphics.PreferredBackBufferWidth  = value.X;
-                    Overlay.graphics.PreferredBackBufferHeight = value.Y;
+                    Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
+                    Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
 
-                    Overlay.graphics.ApplyChanges();
+                    Overlay.ActiveGraphicsDeviceManager.ApplyChanges();
 
-                    // Exception would be from the code above, but don't update our scaling if there is an exception
-                    this.SpriteScreen.Size = new Point((int) (value.X / this.UIScaleMultiplier), (int) (value.Y / this.UIScaleMultiplier));
+                    // Exception would be from the code above, but don't update our
+                    // scaling if there is an exception
+                    ScreenSizeUpdated(value);
                 } catch (SharpDXException sdxe) {
                     // If device lost, we should hopefully handle in device lost event below
                 }
             }
         }
 
-        protected override void Initialize() {
-            _screen = new Controls.Screen();
-            _world  = new Entities.World();
+        private void ScreenSizeUpdated(Point newSize) {
+            // Update the SpriteScreen
+            this.SpriteScreen.Size = new Point((int)(newSize.X / this.UIScaleMultiplier), (int)(newSize.Y / this.UIScaleMultiplier));
 
+            // Update the aspect ratio
+            _aspectRatio = (float)Graphics.WindowWidth / (float)Graphics.WindowHeight;
+        }
+
+        protected override void Initialize() {
             // If for some reason we lose the rendering device, just restart the application
             // Might do better error handling later on
-            Overlay.GraphicsDevice.DeviceLost += delegate { Application.Restart(); };
+            ActiveOverlay.GraphicsDevice.DeviceLost += delegate { System.Windows.Forms.Application.Restart(); };
 
             _uiScaleMultiplier = GetScaleRatio(this.UIScale);
             _uiScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);

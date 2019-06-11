@@ -118,7 +118,7 @@ namespace Blish_HUD {
                 TypeNameHandling           = TypeNameHandling.None,
             };
 
-            _settingsPath = Path.Combine(GameService.FileSrv.BasePath, STORE_FILENAME);
+            _settingsPath = Path.Combine(GameService.Directory.BasePath, STORE_FILENAME);
 
             // If store isn't there, generate the file
             if (!File.Exists(_settingsPath)) Save();

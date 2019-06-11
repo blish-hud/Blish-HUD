@@ -115,7 +115,7 @@ namespace Blish_HUD {
 
         protected override void Load() {
             Overlay.Form.Shown += delegate {
-                Utils.Window.SetupOverlay(Overlay.WinHandle);
+                Utils.Window.SetupOverlay(Overlay.FormHandle);
 
                 //Overlay.Form.TopMost = true;
 
@@ -170,7 +170,7 @@ namespace Blish_HUD {
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
             ts_exit = this.TrayIconMenu.Items.Add("Close Blish HUD");
 
-            ts_exit.Click += delegate { Overlay.Exit(); };
+            ts_exit.Click += delegate { ActiveOverlay.Exit(); };
 
             this.TrayIconMenu.Opening += delegate {
                 ts_launchGw2.Enabled = !this.Gw2IsRunning;
@@ -246,7 +246,7 @@ namespace Blish_HUD {
             this.IsInGame = !(Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5); // || gameTime.IsRunningSlowly && GameService.Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5);
 
             if (this.Gw2IsRunning) {
-                if (!Utils.Window.UpdateOverlay(Overlay.WinHandle, this.Gw2WindowHandle)) {
+                if (!Utils.Window.UpdateOverlay(Overlay.FormHandle, this.Gw2WindowHandle)) {
                     this.Gw2Process = null;
                 }
             } else {

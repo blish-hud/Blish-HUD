@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Readers;
+using Blish_HUD.Pathing.Content;
 using Blish_HUD.Pathing.Entities;
 using Blish_HUD.Pathing.Format;
 using Blish_HUD.Pathing.Trails;
@@ -59,7 +60,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
         private readonly XmlNode         _sourceNode;
         private          PathingCategory _rootCategory;
 
-        public TacOTrailPathable(XmlNode sourceNode, IPackFileSystemContext packContext, PathingCategory rootCategory) : base(packContext) {
+        public TacOTrailPathable(XmlNode sourceNode, PathableResourceManager pathableContext, PathingCategory rootCategory) : base(pathableContext) {
             _sourceNode   = sourceNode;
             _rootCategory = rootCategory;
 
@@ -139,7 +140,7 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables {
             _category?.AddPathable(this);
 
             // Load trl file
-            using (var trlStream = this.PackContext.LoadFileStream(this.TrlFilePath)) {
+            using (var trlStream = this.PathableManager.DataReader.GetFileStream(this.TrlFilePath)) {
                 var sectionData = TrlReader.ReadStream(trlStream);
 
                 if (!sectionData.Any()) return false;

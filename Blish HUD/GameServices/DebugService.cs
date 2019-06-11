@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Humanizer;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 using Newtonsoft.Json;
 
 namespace Blish_HUD {
@@ -35,6 +36,9 @@ namespace Blish_HUD {
         private List<Alert> Alerts = new List<Alert>();
         private Dictionary<Alert, Panel> DisplayedAlerts = new Dictionary<Alert, Panel>();
 
+        private FrameCounter _frameCounter;
+        public FrameCounter FrameCounter => _frameCounter;
+
         public void WriteInfo(string info, params string[] formatItems) {
             Console.Write("INFO: " + string.Format(info, formatItems));
         }
@@ -51,7 +55,7 @@ namespace Blish_HUD {
             WriteWarning(warning + Environment.NewLine, formatItems);
         }
 
-        public void WriteError(string error, params string[] formatItems) {
+        public void WriteError(string error, params object[] formatItems) {
             Console.Write("ERROR: " + string.Format(error, formatItems));
         }
 
@@ -140,94 +144,20 @@ namespace Blish_HUD {
         }
 
         // TODO: Debug service needs to be fleshed out more
-        protected override void Initialize() { /* NOOP */ }
+        protected override void Initialize() {
+            _frameCounter = new FrameCounter();
+        }
         protected override void Unload() { /* NOOP */ }
 
         protected override void Load() {
             // Make sure crash dir is available for logs later on
-            Directory.CreateDirectory(Path.Combine(GameService.FileSrv.BasePath, "logs"));
+            System.IO.Directory.CreateDirectory(Path.Combine(GameService.Directory.BasePath, "logs"));
 
             FuncTimes = new Dictionary<string, FuncClock>();
-
-            /*
-            alertIcon = new Image(Content.GetTexture("1444522"));
-            alertTooltip = new Tooltip();
-
-            alertIcon.Location = new Point(Graphics.WindowWidth - 128 - alertIcon.Width, Graphics.WindowHeight - 64 - alertIcon.Height);
-            alertIcon.Tooltip = alertTooltip;
-            alertIcon.Parent = Graphics.SpriteScreen;
-            alertIcon.ZIndex = Screen.TOOLTIP_BASEZINDEX - 1;
-
-            Graphics.SpriteScreen.OnResized += delegate { alertIcon.Location = new Point(Graphics.WindowWidth - 128 - alertIcon.Width, Graphics.WindowHeight - 64 - alertIcon.Height); };
-
-            alertIcon.OnLeftMouseButtonReleased += delegate {
-                DisplayAlert("Debug Service", "This is a test error - not a real error.", DateTimeOffset.Now.AddSeconds(20));
-            };
-            */
         }
 
         protected override void Update(GameTime gameTime) {
-            /*
-            foreach (Alert alert in Alerts.ToList()) {
-                // Check if the alert has expired
-                if (alert.Expires < DateTimeOffset.Now) {
-                    Alerts.Remove(alert);
-
-                    // Remove the alert panel if it has expired
-                    if (DisplayedAlerts.ContainsKey(alert)) {
-                        DisplayedAlerts[alert].Dispose();
-                        DisplayedAlerts.Remove(alert);
-
-                        alertInvalid = true;
-                    }
-
-                    continue;
-                }
-
-                Panel alertPanel;
-                int topPos = 0;
-
-                // Add alert to tooltip, if it isn't in there already
-                if (!DisplayedAlerts.ContainsKey(alert)) {
-                    alertPanel = new Panel() { Parent = alertTooltip };
-
-                    Label ServiceLbl = new Label() {
-                        Text           = alert.ServiceTitle,
-                        AutoSizeWidth  = true,
-                        AutoSizeHeight = true,
-                        Location       = new Point(Tooltip.PADDING),
-                        Parent         = alertPanel
-                    };
-
-                    Label MessageLbl = new Label() {
-                        Text           = alert.AlertMessage,
-                        ShowShadow = true,
-                        AutoSizeWidth  = true,
-                        AutoSizeHeight = true,
-                        Location       = new Point(Tooltip.PADDING, ServiceLbl.Bottom + 5),
-                        Parent         = alertPanel
-                    };
-
-                    alertPanel.Size = new Point(
-                                                alertPanel.Children.Max(c => c.Right),
-                                                alertPanel.Children.Max(c => c.Bottom)
-                                                );
-
-                    alertInvalid = true;
-                } else {
-                    alertPanel = DisplayedAlerts[alert];
-                }
-
-                if (alertInvalid) {
-                    // Update layout of alert panels
-                    alertPanel.Location = new Point(0, topPos);
-                }
-
-                topPos += alertPanel.Height;
-            }
-
-            alertInvalid = false;
-            */
+            _frameCounter.Update(gameTime.GetElapsedSeconds());
         }
     }
 }

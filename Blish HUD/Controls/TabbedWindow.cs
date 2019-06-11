@@ -16,21 +16,15 @@ namespace Blish_HUD.Controls {
 
         private const int TAB_SECTION_WIDTH = 46;
 
-        private const int TOP_PADDING = 0;
-        private const int LEFT_PADDING = 0;
-
-        private const int WINDOW_WIDTH = 1024;
-        private const int WINDOW_HEIGHT = 780;
-
         private const int WINDOWCONTENT_WIDTH = 1024;
         private const int WINDOWCONTENT_HEIGHT = 700;
 
         #region Load Static
 
-        private static Texture2D _textureDefaultBackround;
-        private static Texture2D _textureSplitLine;
-        private static Texture2D _textureBlackFade;
-        private static Texture2D _textureTabActive;
+        private static readonly Texture2D _textureDefaultBackround;
+        private static readonly Texture2D _textureSplitLine;
+        private static readonly Texture2D _textureBlackFade;
+        private static readonly Texture2D _textureTabActive;
 
         static TabbedWindow() {
             _textureDefaultBackround = Content.GetTexture("502049");

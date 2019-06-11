@@ -18,10 +18,10 @@ namespace Blish_HUD {
         public CornerIcon BlishMenuIcon { get; protected set; }
         public ContextMenuStrip BlishContextMenu { get; protected set; }
 
-        private ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
+        private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
         /// <summary>
-        /// Allows you to enqueue a call that will occur during the next time the Update loop executes.
+        /// Allows you to enqueue a call that will occur during the next time the update loop executes.
         /// </summary>
         /// <param name="call">A method accepting <see="GameTime" /> as a parameter.</param>
         public void QueueMainThreadUpdate(Action<GameTime> call) {
@@ -72,11 +72,12 @@ namespace Blish_HUD {
                 HoverIcon        = Content.GetTexture("logo-big"),
                 Menu             = new ContextMenuStrip(),
                 BasicTooltipText = Properties.Strings.General_BlishHUD,
-                Priority         = int.MinValue,
+                Priority         = int.MaxValue,
+                Parent           = Graphics.SpriteScreen,
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem($"{Properties.Strings.General_Close} {Properties.Strings.General_BlishHUD}").Click += delegate { Overlay.Exit(); };
+            this.BlishContextMenu.AddMenuItem($"{Properties.Strings.General_Close} {Properties.Strings.General_BlishHUD}").Click += delegate { ActiveOverlay.Exit(); };
 
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
@@ -102,6 +103,69 @@ namespace Blish_HUD {
             var hPanel = new Panel() {
                 Size = wndw.ContentRegion.Size
             };
+
+            var bttn = new StandardButton() {
+                Size       = new Point(160, 26),
+                Icon       = Content.GetTexture("1228909"),
+                ResizeIcon = true,
+                Parent     = hPanel,
+                Text       = "Announcements",
+                Location   = new Point(100, 100)
+            };
+
+            var bttn2 = new StandardButton() {
+                Size       = new Point(160, 26),
+                Icon       = Content.GetTexture("1770706"),
+                ResizeIcon = false,
+                Parent     = hPanel,
+                Text       = "Celebrate",
+                Location   = new Point(bttn.Left, bttn.Bottom + 5)
+            };
+
+            var bttn3 = new StandardButton() {
+                Size       = new Point(160, 26),
+                Icon       = Content.GetTexture("156384"),
+                ResizeIcon = true,
+                Parent     = hPanel,
+                Text       = "ArenaNet is Cool",
+                Location   = new Point(bttn2.Left, bttn2.Bottom + 5)
+            };
+
+            var bttn4 = new StandardButton() {
+                Size       = new Point(32, 32),
+                Icon       = Content.GetTexture("156627"),
+                Parent     = hPanel,
+                ResizeIcon = true,
+                Location   = new Point(bttn3.Right + 5, bttn3.Top - 4),
+                Visible = false
+            };
+
+            var bttn5 = new StandardButton() {
+                Size       = new Point(160, 26),
+                Icon       = Content.GetTexture("156356"),
+                ResizeIcon = true,
+                Parent     = hPanel,
+                Text       = "I Like This",
+                Location   = new Point(bttn3.Left, bttn3.Bottom + 5)
+            };
+
+            //var rsreader = new Content.RenderServiceReader();
+
+            //var textureStream = rsreader.GetFileStream("18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941");
+
+            //rsreader.GetFileStream("4F19A8B4E309C3042358FB194F7190331DEF27EB/631494");
+            //rsreader.GetFileStream("027D1D382447933D074BE45F405EA1F379471DEB/63127");
+            //rsreader.GetFileStream("9D94B96446F269662F6ACC2531394A06C0E03951/947657");
+            //rsreader.GetFileStream("18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941");
+
+            //Texture2D ectoPic = Texture2D.FromStream(Graphics.GraphicsDevice, textureStream);
+
+            //var img = new Image() {
+            //    Size     = new Point(64, 64),
+            //    Parent   = hPanel,
+            //    Texture = ectoPic,
+            //    Location = new Point(256, 256)
+            //};
 
             //var hi = new Label() {
             //    Text = Utils.DrawUtil.WrapText(Content.DefaultFont14, "Thanks for trying Blish HUD!  More to come soon!  :)  -- FreeSnow (LandersXanders.1235)", 50),

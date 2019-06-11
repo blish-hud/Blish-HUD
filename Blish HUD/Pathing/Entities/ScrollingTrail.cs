@@ -23,8 +23,6 @@ namespace Blish_HUD.Pathing.Entities {
         private float _scale = 1;
         private float _opacity = 1;
 
-        private VertexPositionColorTexture[] VertexData { get; set; }
-
         public float AnimationSpeed {
             get => _animationSpeed;
             set {

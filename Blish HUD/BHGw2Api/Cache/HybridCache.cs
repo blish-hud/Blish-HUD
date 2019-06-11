@@ -80,8 +80,6 @@ namespace Blish_HUD.BHGw2Api.Cache {
             return null;
         }
 
-        private Dictionary<string, Task> FsLockingTask = new Dictionary<string, Task>();
-
         public async Task<T> GetEntryFromCache<T>(string endpoint, string identifier, GetLiveEndpointResultDelegate<T> cacheSetCall, DateTimeOffset cacheExpiration, CacheDurationType cacheDurationType = CacheDurationType.Absolute, bool persistInMemory = true, bool persistOnDisk = false) where T : class {
             // Check memory cache first
             var responseItem = persistInMemory ? Get(identifier, endpoint) as T : null;
@@ -131,7 +129,7 @@ namespace Blish_HUD.BHGw2Api.Cache {
 
         public override DefaultCacheCapabilities DefaultCacheCapabilities => (base.DefaultCacheCapabilities | DefaultCacheCapabilities.CacheRegions);
 
-        public bool AddMany(IEnumerable<ApiItem> items, string endpoint = null, TimeSpan endpointCacheDuration = default(TimeSpan)) {
+        public bool AddMany(IEnumerable<ApiItem> items, string endpoint = null, TimeSpan endpointCacheDuration = default) {
             var cacheDuration = new DateTimeOffset(DateTime.UtcNow).AddSeconds(endpointCacheDuration.Seconds);
 
             endpoint = GetEndpointNiceName(endpoint);
@@ -196,8 +194,5 @@ namespace Blish_HUD.BHGw2Api.Cache {
             return $"r:{@namespace ?? "core"};k:{itemName}";
         }
 
-        private static string ToJson(ApiItem dataItem) {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(dataItem, Settings.jsonSettings);
-        }
     }
 }

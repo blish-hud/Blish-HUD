@@ -178,7 +178,7 @@ namespace Blish_HUD.Utils {
 
             // If gw2 is not the focused application, stop being
             // topmost so that whatever is active can render on top
-            if (activeWindowHandle != gw2WindowHandle) {
+            if (activeWindowHandle != gw2WindowHandle && Form.ActiveForm == null) {
                 if (OnTop) {
                     Console.WriteLine("GW2 is no longer the active window.");
                     SetWindowPos(winHandle,  HWND_NOTOPMOST, pos.X, pos.Y, pos.Width, pos.Height, 0);

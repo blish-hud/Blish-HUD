@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Blish_HUD.BHGw2Api;
 using Humanizer;
 
 namespace Blish_HUD.Modules {
@@ -27,15 +26,13 @@ namespace Blish_HUD.Modules {
 
         private SettingEntry<bool> settingHideDetailsInWvW;
 
-        public override void DefineSettings(Settings settings) {
+        public override void DefineSettings(SettingsManager settingsManager) {
             //settingHideDetailsInWvW = settings.DefineSetting("Hide Detailed Location in WvW", true, true, true, "Prevents people on Discord from being able to see closest landmark details while you're in WvW.");
         }
 
         private DiscordRpcClient rpcClient;
         
         private DateTime startTime;
-
-        private Dictionary<int, Map> MapLookup = new Dictionary<int, Map>();
 
         private enum MapType {
             PvP = 2,
@@ -49,18 +46,20 @@ namespace Blish_HUD.Modules {
             Dry_Top = 16
         }
 
-        private Dictionary<string, string> mapOverrides = new Dictionary<string, string>() {
-            { "1206", "fractals_of_the_mists" },  // Mistlock Sanctuary
-            { "350", "fractals_of_the_mists" },   // Heart of the Mists
-            { "95", "eternal_battlegrounds" },    // Alpine Borderlands
-            { "96", "eternal_battlegrounds" },    // Alpine Borderlands
+        private readonly Dictionary<string, string> _mapOverrides = new Dictionary<string, string>() {
+            { "1206", "fractals_of_the_mists" }, // Mistlock Sanctuary
+            { "350",  "fractals_of_the_mists" }, // Heart of the Mists
+            { "95",   "eternal_battlegrounds" }, // Alpine Borderlands
+            { "96",   "eternal_battlegrounds" }, // Alpine Borderlands
         };
 
-        private Dictionary<int, string> contextOverrides = new Dictionary<int, string>() {
+        private readonly Dictionary<int, string> _contextOverrides = new Dictionary<int, string>() {
             
         };
 
         private string TruncateLength(string value, int maxLength) {
+            if (string.IsNullOrEmpty(value)) return "";
+
             return value.Length <= maxLength ? value : value.Substring(0, maxLength);
         }
 
@@ -85,7 +84,7 @@ namespace Blish_HUD.Modules {
                 State = TruncateLength($"in {GameService.Player.Map.Name}", 128),
 #endif
                 Assets = new Assets() {
-                    LargeImageKey = TruncateLength(mapOverrides.ContainsKey(GameService.Player.Map.Id) ? mapOverrides[GameService.Player.Map.Id] : GetDiscordSafeString(GameService.Player.Map.Name), 32),
+                    LargeImageKey = TruncateLength(_mapOverrides.ContainsKey(GameService.Player.Map.Id) ? _mapOverrides[GameService.Player.Map.Id] : GetDiscordSafeString(GameService.Player.Map.Name), 32),
                     LargeImageText = TruncateLength(GameService.Player.Map.Name, 128),
                     SmallImageKey = TruncateLength(((MapType)GameService.Player.MapType).ToString().ToLower(), 32),
                     SmallImageText = TruncateLength(((MapType)GameService.Player.MapType).ToString().Replace("_", " "), 128)
@@ -96,13 +95,6 @@ namespace Blish_HUD.Modules {
             });
 
             rpcClient?.Invoke();
-        }
-        
-        public override void Update(GameTime gameTime) {
-            //if (GameService.GameIntegration.Gw2IsRunning && GameService.Player.Available)
-            //    UpdateDetails();
-
-            //pcClient?.Invoke();
         }
 
         private void InitRichPresence() {

@@ -25,10 +25,10 @@ namespace Blish_HUD.Modules.BeetleRacing {
         private SettingEntry<bool> settingOnlyShowAtHighSpeeds;
         private SettingEntry<bool> settingShowSpeedNumber;
 
-        public override void DefineSettings(Settings settings) {
+        public override void DefineSettings(SettingsManager settingsManager) {
             // Define settings
-            settingOnlyShowAtHighSpeeds = settings.DefineSetting<bool>("Only Show at High Speeds", false, false, true, "Only show the speedometer if you're going at least 1/4 the max speed.");
-            settingShowSpeedNumber = settings.DefineSetting<bool>("Show Speed Value", false, false, true, "Shows the speed (in approx. inches per second) above the speedometer.");
+            settingOnlyShowAtHighSpeeds = settingsManager.DefineSetting<bool>("Only Show at High Speeds", false, false, true, "Only show the speedometer if you're going at least 1/4 the max speed.");
+            settingShowSpeedNumber = settingsManager.DefineSetting<bool>("Show Speed Value", false, false, true, "Shows the speed (in approx. inches per second) above the speedometer.");
         }
 
         #endregion

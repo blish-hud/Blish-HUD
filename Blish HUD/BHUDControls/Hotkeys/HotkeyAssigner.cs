@@ -37,16 +37,16 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
             set => SetProperty(ref _mouseOverHotkey, value);
         }
 
-        private DateTime lastClickTime;
+        private DateTime _lastClickTime;
 
-        private Hotkey HotkeyDefinition;
+        private Hotkey _hotkeyDefinition;
 
         public HotkeyAssigner(Hotkey hotkey) {
-            HotkeyDefinition = hotkey;
+            _hotkeyDefinition = hotkey;
 
             this.Size = new Point(256, 16);
 
-            lastClickTime = DateTime.MinValue;
+            _lastClickTime = DateTime.MinValue;
 
             this.MouseMoved += HotkeyAssigner_OnMouseMoved;
             this.MouseLeft += HotkeyAssigner_OnMouseLeft;
@@ -55,14 +55,14 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
 
         private void HotkeyAssigner_OnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
             // This is used to make it require a double-click to open the assignment window instead of just a single-click
-            if (DateTime.Now.Subtract(lastClickTime).TotalMilliseconds < DOUBLE_CLICK_THRESHOLD)
+            if (DateTime.Now.Subtract(_lastClickTime).TotalMilliseconds < DOUBLE_CLICK_THRESHOLD)
                 SetupNewAssignmentWindow();
             else
-                lastClickTime = DateTime.Now;
+                _lastClickTime = DateTime.Now;
         }
 
         private void SetupNewAssignmentWindow() {
-            var newHkAssign = new HotkeyAssignmentWindow(HotkeyDefinition);
+            var newHkAssign = new HotkeyAssignmentWindow(_hotkeyDefinition);
             newHkAssign.Location = new Point(Graphics.WindowWidth / 2 - newHkAssign.Width / 2, Graphics.WindowHeight / 2 - newHkAssign.Height / 2);
             newHkAssign.Parent = Graphics.SpriteScreen;
 
@@ -92,7 +92,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
             Blish_HUD.Utils.DrawUtil.DrawAlignedText(
                                                 spriteBatch,
                                                 Content.DefaultFont14,
-                                                HotkeyDefinition.Name,
+                                                _hotkeyDefinition.Name,
                                                 this.NameRegion.OffsetBy(UNIVERSAL_PADDING + 1, 1),
                                                 Color.Black,
                                                 DrawUtil.HorizontalAlignment.Left,
@@ -102,7 +102,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
             // Draw name
             Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch,
                                                 Content.DefaultFont14,
-                                                HotkeyDefinition.Name,
+                                                _hotkeyDefinition.Name,
                                                 this.NameRegion.OffsetBy(UNIVERSAL_PADDING, 0),
                                                 Color.White,
                                                 DrawUtil.HorizontalAlignment.Left,
@@ -117,7 +117,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
                             );
 
             // Easy way to get a string representation of the hotkeys
-            string hotkeyRep = string.Join(" + ", HotkeyDefinition.Keys);
+            string hotkeyRep = string.Join(" + ", _hotkeyDefinition.Keys);
 
             // Draw hotkey shadow
             Blish_HUD.Utils.DrawUtil.DrawAlignedText(

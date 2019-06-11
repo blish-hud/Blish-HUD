@@ -16,6 +16,7 @@ using Blish_HUD.Custom.Collections;
 using Blish_HUD.Entities;
 using Blish_HUD.Modules.MarkersAndPaths;
 using Blish_HUD.Pathing;
+using Blish_HUD.Pathing.Content;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Panel = Blish_HUD.Controls.Panel;
@@ -28,6 +29,8 @@ namespace Blish_HUD {
 
         private const string PATHING_STORENAME = "Pathing";
 
+        public event EventHandler<EventArgs> NewMapLoaded;
+
         private ConcurrentQueue<IPathable<Entity>> _queuedAddPathables = new ConcurrentQueue<IPathable<Entity>>();
         private ConcurrentQueue<IPathable<Entity>> _queuedRemovePathables = new ConcurrentQueue<IPathable<Entity>>();
 
@@ -35,7 +38,7 @@ namespace Blish_HUD {
         
         
 
-        public List<IPackFileSystemContext> PackContexts { get; set; } = new List<IPackFileSystemContext>();
+        public List<PathableResourceManager> PackManagers { get; set; } = new List<PathableResourceManager>();
 
         private PersistentStore _pathingStore;
 
@@ -56,7 +59,9 @@ namespace Blish_HUD {
         private Panel BuildCornerIcon() {
             Icon = new CornerIcon() {
                 BasicTooltipText = "Pathing",
-                Icon             = Content.GetTexture("marker-pathing-icon")
+                Icon             = Content.GetTexture("marker-pathing-icon"),
+                Parent           = Graphics.SpriteScreen,
+                Priority         = Int32.MaxValue - 1,
             };
 
             IconContextMenu = new ContextMenuStrip();
@@ -70,19 +75,31 @@ namespace Blish_HUD {
 
         private void ProcessPathableState(IPathable<Entity> pathable) {
             if (pathable.MapId == Player.MapId || pathable.MapId == -1) {
-                pathable.Active = true;
+                //pathable.Active = true;
                 Graphics.World.Entities.Add(pathable.ManagedEntity);
             } else if (Graphics.World.Entities.Contains(pathable.ManagedEntity)) {
-                pathable.Active = false;
+                //pathable.Active = false;
                 Graphics.World.Entities.Remove(pathable.ManagedEntity);
             }
         }
 
-        private void PlayerOnOnMapIdChanged(object sender, EventArgs e) {
-            for (int i = 0; i < this.Pathables.Count - 1; i++)
-                ProcessPathableState(this.Pathables[i]);
+        private void ProcessAddedPathable(IPathable<Entity> pathable) {
+            Graphics.World.Entities.Add(pathable.ManagedEntity);
+            this.Pathables.Add(pathable);
+        }
 
-            foreach (var packContext in this.PackContexts)
+        private void ProcessRemovedPathable(IPathable<Entity> pathable) {
+            Graphics.World.Entities.Remove(pathable.ManagedEntity);
+            this.Pathables.Remove(pathable);
+        }
+
+        private void PlayerOnOnMapIdChanged(object sender, EventArgs e) {
+            //for (int i = 0; i < this.Pathables.Count - 1; i++)
+            //    ProcessPathableState(this.Pathables[i]);
+
+            NewMapLoaded?.Invoke(this, EventArgs.Empty);
+
+            foreach (var packContext in this.PackManagers)
                 packContext.RunTextureDisposal();
         }
 
@@ -92,16 +109,25 @@ namespace Blish_HUD {
             _queuedAddPathables.Enqueue(pathable);
         }
 
-        public void RegisterPathContext(IPackFileSystemContext packContext) {
-            if (packContext == null) return;
+        public void UnregisterPathable(IPathable<Entity> pathable) {
+            if (pathable == null) return;
 
-            this.PackContexts.Add(packContext);
+            _queuedRemovePathables.Enqueue(pathable);
+        }
+
+        public void RegisterPathableResourceManager(PathableResourceManager pathableContext) {
+            if (pathableContext == null) return;
+
+            this.PackManagers.Add(pathableContext);
         }
 
         protected override void Update(GameTime gameTime) {
             while (_queuedAddPathables.TryDequeue(out IPathable<Entity> queuedPathable)) {
-                ProcessPathableState(queuedPathable);
-                this.Pathables.Add(queuedPathable);
+                ProcessAddedPathable(queuedPathable);
+            }
+
+            while (_queuedRemovePathables.TryDequeue(out IPathable<Entity> queuedRemovedPathable)) {
+                ProcessRemovedPathable(queuedRemovedPathable);
             }
 
             foreach (IPathable<Entity> pathable in this.Pathables) {

@@ -7,16 +7,42 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Blish_HUD.Content;
+using Blish_HUD.Entities;
 using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO;
+using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables;
+using Blish_HUD.Pathing;
+using Blish_HUD.Pathing.Content;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
     public static class OverlayDataReader {
 
-        private const string ROOT_ELEMENT_MARKERCATEGORY = "markercategory";
-
         internal static readonly PathingCategory Categories = new PathingCategory("root") { Visible = true };
 
-        public static void ReadFromXmlPack(Stream xmlPackStream, IPackFileSystemContext packContext) {
+        internal static readonly List<IPathable<Entity>> Pathables = new List<IPathable<Entity>>();
+
+        public static void RegisterPathable(IPathable<Entity> pathable) {
+            if (pathable == null) return;
+
+            Pathables.Add(pathable);
+        }
+
+        public static void UpdatePathableStates() {
+            for (int i = 0; i < Pathables.Count - 1; i++)
+                ProcessPathableState(Pathables[i]);
+        }
+
+        private static void ProcessPathableState(IPathable<Entity> pathable) {
+            if (pathable.MapId == GameService.Player.MapId || pathable.MapId == -1) {
+                pathable.Active = true;
+                GameService.Pathing.RegisterPathable(pathable);
+            } else if (GameService.Graphics.World.Entities.Contains(pathable.ManagedEntity)) {
+                pathable.Active = false;
+                GameService.Pathing.UnregisterPathable(pathable);
+            }
+        }
+
+        public static void ReadFromXmlPack(Stream xmlPackStream, PathableResourceManager pathableResourceManager) {
             string xmlPackContents;
 
             using (var xmlReader = new StreamReader(xmlPackStream)) {
@@ -31,14 +57,14 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
                 packDocument.LoadXml(packSrc);
                 packLoaded = true;
             } catch (XmlException exception) {
-                GameService.Debug.WriteErrorLine($"Could not load tacO overlay file {packContext} from context {xmlPackContents.GetType().Name} due to an XML error.  Error: {exception.Message}");
-            } catch (Exception exception) {
+                GameService.Debug.WriteErrorLine($"Could not load tacO overlay file {pathableResourceManager} from context {xmlPackContents.GetType().Name} due to an XML error.  Error: {exception.Message}");
+            } catch (Exception ex) {
                 throw;
             }
 
             if (packLoaded) {
                 TryLoadCategories(packDocument);
-                TryLoadPOIs(packDocument, packContext, Categories);
+                TryLoadPOIs(packDocument, pathableResourceManager, Categories);
             }
         }
 
@@ -51,12 +77,12 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
             }
         }
 
-        private static void TryLoadPOIs(XmlDocument packDocument, IPackFileSystemContext packContext, PathingCategory rootCategory) {
+        private static void TryLoadPOIs(XmlDocument packDocument, PathableResourceManager pathableManager, PathingCategory rootCategory) {
             var poiNodes = packDocument.DocumentElement?.SelectSingleNode("/OverlayData/POIs");
             if (poiNodes == null) return;
 
             foreach (XmlNode poiNode in poiNodes) {
-                PoiBuilder.UnpackPathable(poiNode, packContext, rootCategory);
+                PoiBuilder.UnpackPathable(poiNode, pathableManager, rootCategory);
             }
         }
 

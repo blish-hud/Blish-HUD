@@ -17,17 +17,17 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static Texture2D _textureTitleBarLeft;
-        private static Texture2D _textureTitleBarRight;
-        private static Texture2D _textureTitleBarLeftActive;
-        private static Texture2D _textureTitleBarRightActive;
+        private static readonly Texture2D _textureTitleBarLeft;
+        private static readonly Texture2D _textureTitleBarRight;
+        private static readonly Texture2D _textureTitleBarLeftActive;
+        private static readonly Texture2D _textureTitleBarRightActive;
 
-        private static Texture2D _textureExitButton;
-        private static Texture2D _textureExitButtonActive;
+        private static readonly Texture2D _textureExitButton;
+        private static readonly Texture2D _textureExitButtonActive;
 
-        private static Texture2D _textureWindowCorner;
-        private static Texture2D _textureWindowResizableCorner;
-        private static Texture2D _textureWindowResizableCornerActive;
+        private static readonly Texture2D _textureWindowCorner;
+        private static readonly Texture2D _textureWindowResizableCorner;
+        private static readonly Texture2D _textureWindowResizableCornerActive;
 
         static WindowBase() {
             _textureTitleBarLeft        = Content.GetTexture("titlebar-inactive");
@@ -117,7 +117,7 @@ namespace Blish_HUD.Controls {
         }
 
 
-        private Glide.Tween fade;
+        private readonly Glide.Tween _animFade;
 
         protected bool  Dragging  = false;
         protected Point DragStart = Point.Zero;
@@ -166,11 +166,11 @@ namespace Blish_HUD.Controls {
 
             Input.LeftMouseButtonReleased += delegate { Dragging = false; };
 
-            fade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
-            fade.Pause();
+            _animFade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
+            _animFade.Pause();
 
-            fade.OnComplete(() => {
-                fade.Pause();
+            _animFade.OnComplete(() => {
+                _animFade.Pause();
                 if (_opacity <= 0) this.Visible = false;
             });
         }
@@ -238,6 +238,15 @@ namespace Blish_HUD.Controls {
             }
 
             base.OnMouseMoved(e);
+        }
+
+        /// <inheritdoc />
+        protected override void OnMouseLeft(MouseEventArgs e) {
+            MouseOverTitleBar     = false;
+            MouseOverExitButton   = false;
+            MouseOverCornerResize = false;
+
+            base.OnMouseLeft(e);
         }
 
         protected override CaptureType CapturesInput() {
@@ -308,13 +317,13 @@ namespace Blish_HUD.Controls {
             this.Opacity = 0;
             this.Visible = true;
 
-            fade.Resume();
+            _animFade.Resume();
         }
         
         public override void Hide() {
             if (!this.Visible) return;
 
-            fade.Resume();
+            _animFade.Resume();
             Content.PlaySoundEffectByName(@"audio\window-close");
         }
 

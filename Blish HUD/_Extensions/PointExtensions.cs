@@ -19,8 +19,6 @@ namespace Blish_HUD {
         }
 
         public static Microsoft.Xna.Framework.Point UiToScale(this Microsoft.Xna.Framework.Point point) {
-            float scale = GameService.Graphics.GetScaleRatio(GameService.Graphics.UIScale);
-
             return new Microsoft.Xna.Framework.Point((int)(point.X / GameService.Graphics.UIScaleMultiplier),
                                                      (int)(point.Y / GameService.Graphics.UIScaleMultiplier));
         }

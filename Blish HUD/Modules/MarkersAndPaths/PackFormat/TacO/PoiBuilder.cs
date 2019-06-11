@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Xml;
+using Blish_HUD.Content;
 using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO;
 using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables;
+using Blish_HUD.Pathing.Content;
 using Microsoft.Scripting.Utils;
 
 namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
@@ -17,8 +19,8 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
      * AutoTrigger
      * HasCountdown
      * TriggerRange
-     *# MinSize
-     *# MaxSize
+     * MinSize
+     * MaxSize
      * Color
      * TrailData
      * AnimSpeed
@@ -57,27 +59,27 @@ namespace Blish_HUD.Modules.MarkersAndPaths.PackFormat {
 
     public static class PoiBuilder {
 
-        private const string ELEMENT_POITYPE_POI = "poi";
+        private const string ELEMENT_POITYPE_POI   = "poi";
         private const string ELEMENT_POITYPE_TRAIL = "trail";
         private const string ELEMENT_POITYPE_ROUTE = "route";
 
-        public static void UnpackPathable(XmlNode pathableNode, IPackFileSystemContext packContext, PathingCategory rootCategory) {
+        public static void UnpackPathable(XmlNode pathableNode, PathableResourceManager pathableManager, PathingCategory rootCategory) {
             switch (pathableNode.Name.ToLower()) {
                 case ELEMENT_POITYPE_POI:
-                    var newPoiMarker = new TacOMarkerPathable(pathableNode, packContext, rootCategory);
+                    var newPoiMarker = new TacOMarkerPathable(pathableNode, pathableManager, rootCategory);
 
                     if (newPoiMarker.SuccessfullyLoaded) {
-                        GameService.Pathing.RegisterPathable(newPoiMarker);
+                        OverlayDataReader.RegisterPathable(newPoiMarker);
                     } else {
                         Console.WriteLine("Failed to load marker: ");
                         Console.WriteLine(string.Join("; ", pathableNode.Attributes.Select(s => ((XmlAttribute)s).Name + " = " + ((XmlAttribute)s).Value)));
                     }
                     break;
                 case ELEMENT_POITYPE_TRAIL:
-                    var newPathTrail = new TacOTrailPathable(pathableNode, packContext, rootCategory);
+                    var newPathTrail = new TacOTrailPathable(pathableNode, pathableManager, rootCategory);
 
                     if (newPathTrail.SuccessfullyLoaded) {
-                        GameService.Pathing.RegisterPathable(newPathTrail);
+                        OverlayDataReader.RegisterPathable(newPathTrail);
                     } else {
                         Console.WriteLine("Failed to load trail: ");
                         Console.WriteLine(string.Join("; ", pathableNode.Attributes.Select(s => ((XmlAttribute)s).Name + " = " + ((XmlAttribute)s).Value)));

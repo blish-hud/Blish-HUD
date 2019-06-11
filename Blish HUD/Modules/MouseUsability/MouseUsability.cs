@@ -41,16 +41,16 @@ namespace Blish_HUD.Modules.MouseUsability {
         private SettingEntry<bool> setting_hl_showHighlight;
         private SettingEntry<bool> setting_hl_showOverBlishHud;
 
-        public override void DefineSettings(Settings settings) {
+        public override void DefineSettings(SettingsManager settingsManager) {
             // Define settings
-            setting_hl_highlightColorId = settings.DefineSetting<int>("mhl.highlightColorId", 1541, 1541);
-            setting_hl_outlineColorId = settings.DefineSetting<int>("mhl.outlineColorId", 1354, 1354);
-            setting_hl_hightlightThickness = settings.DefineSetting<float>("mhl.highlightThickness", 2.0f, 2.0f);
-            setting_hl_outlineThickness = settings.DefineSetting<float>("mhl.outlineThickness", 1.0f, 1.0f);
-            setting_hl_highlightOpacity = settings.DefineSetting<float>("mhl.highlightOpacity", 1.0f, 1.0f);
+            setting_hl_highlightColorId = settingsManager.DefineSetting<int>("mhl.highlightColorId", 1541, 1541);
+            setting_hl_outlineColorId = settingsManager.DefineSetting<int>("mhl.outlineColorId", 1354, 1354);
+            setting_hl_hightlightThickness = settingsManager.DefineSetting<float>("mhl.highlightThickness", 2.0f, 2.0f);
+            setting_hl_outlineThickness = settingsManager.DefineSetting<float>("mhl.outlineThickness", 1.0f, 1.0f);
+            setting_hl_highlightOpacity = settingsManager.DefineSetting<float>("mhl.highlightOpacity", 1.0f, 1.0f);
 
-            setting_hl_showHighlight = settings.DefineSetting<bool>("mhl.showHighlight", false, false);
-            setting_hl_showOverBlishHud = settings.DefineSetting<bool>("mhl.showOverBh", true, true);
+            setting_hl_showHighlight = settingsManager.DefineSetting<bool>("mhl.showHighlight", false, false);
+            setting_hl_showOverBlishHud = settingsManager.DefineSetting<bool>("mhl.showOverBh", true, true);
 
             // Wiring up settings
             //setting_hl_showHighlight.Set

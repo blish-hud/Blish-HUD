@@ -33,24 +33,20 @@ namespace Blish_HUD.BHGw2Api {
 
         private const string CACHE_SUBLOCATION = "api";
 
-        private static HybridCache apiCache =
-            new HybridCache("gw2api", Path.Combine(Settings.CacheLocation, CACHE_SUBLOCATION), null);
+        private static readonly HybridCache _apiCache = new HybridCache("gw2api", Path.Combine(Settings.CacheLocation, CACHE_SUBLOCATION), null);
 
         protected delegate void HandleCallResultDelegate<in T>(IEnumerable<T> result) where T : ApiItem;
 
         public abstract string CacheKey();
 
-        // TODO: Build into base class
-        //protected abstract void LoadIndex();
-
-        public static async Task<List<T>> CallForManyAsync<T>(string endpoint, TimeSpan cacheDuration = default(TimeSpan), bool persistInMemory = true) where T : ApiItem {
+        public static async Task<List<T>> CallForManyAsync<T>(string endpoint, TimeSpan cacheDuration = default, bool persistInMemory = true) where T : ApiItem {
             // TODO: Add "WithAuth" extension to URL building
             // TODO: Add ".WithCulture()"
             List<T> responseItems = await BASE_API_URL.WithEndpoint(endpoint).WithTimeout(Settings.TimeoutLength).GetJsonAsync<List<T>>();
 
             // If caching enabled for this endpoint, add all results to cache
             if (persistInMemory && responseItems != null) {
-                apiCache.AddMany(responseItems, endpoint, cacheDuration);
+                _apiCache.AddMany(responseItems, endpoint, cacheDuration);
             }
 
             return responseItems;
@@ -59,7 +55,7 @@ namespace Blish_HUD.BHGw2Api {
         protected static async Task<T> GetAsync<T>(string endpoint, string identifier, HybridCache.GetLiveEndpointResultDelegate<T> cacheSetCall,
             DateTimeOffset cacheDuration, CacheDurationType cacheDurationType = CacheDurationType.Absolute,
             bool persistInMemory = true, bool persistOnDisk = false) where T : class {
-            return await apiCache.GetEntryFromCache<T>(endpoint, identifier, cacheSetCall, cacheDuration,
+            return await _apiCache.GetEntryFromCache<T>(endpoint, identifier, cacheSetCall, cacheDuration,
                 cacheDurationType, persistInMemory, persistOnDisk);
         }
     }

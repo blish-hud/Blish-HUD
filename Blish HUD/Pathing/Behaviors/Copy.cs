@@ -9,16 +9,18 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Behaviors {
 
-    [IdentifyingBehaviorAttributePrefix("clipboard")]
-    public class Clipboard<TPathable, TEntity> : InZone<TPathable, TEntity>, ILoadableBehavior
+    [IdentifyingBehaviorAttributePrefix("copy")]
+    public class Copy<TPathable, TEntity> : InZone<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
 
         public string CopyValue { get; set; }
 
-        public int CopyRadius { get; set; }
-        
-        public Clipboard(TPathable managedPathable) : base(managedPathable) {
+        public int CopyRadius { get; set; } = 5;
+
+        public string CopyMessage { get; set; } = "'{0}' copied to clipboard.";
+
+        public Copy(TPathable managedPathable) : base(managedPathable) {
             this.ZoneRadius = 5;
         }
 
@@ -27,14 +29,20 @@ namespace Blish_HUD.Pathing.Behaviors {
 
             System.Windows.Forms.Clipboard.SetText(this.CopyValue);
 
-            Controls.Notification.ShowNotification(GameService.Content.GetTexture("waypoint"), "Landmark copied to clipboard.", 2);
+            Controls.Notification.ShowNotification(string.Format(this.CopyMessage, this.CopyValue));
         }
 
         public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {
             foreach (var attr in attributes) {
                 switch (attr.Name.ToLower()) {
-                    case "landmark":
+                    case "copy":
                         this.CopyValue = attr.Value;
+                        break;
+                    case "copy-radius":
+                        this.CopyRadius = int.Parse(attr.Value);
+                        break;
+                    case "copy-message":
+                        this.CopyMessage = attr.Value;
                         break;
                 }
             }

@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Entities;
-using Blish_HUD.Modules.MarkersAndPaths.Entities;
-using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables;
 using Blish_HUD.Pathing;
 using Blish_HUD.Pathing.Behaviors;
 using Blish_HUD.Pathing.Entities;

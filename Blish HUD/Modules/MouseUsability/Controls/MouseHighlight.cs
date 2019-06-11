@@ -67,37 +67,8 @@ namespace Blish_HUD.Modules.MouseUsability {
 
         private Orientation _orientation;
 
-
-        private Texture2D HighlightPixel;
-
         public MouseHighlight(Orientation orientation) {
             _orientation = orientation;
-
-            //HighlightPixel = new Texture2D(GameServices.GetService<GraphicsService>().GraphicsDevice, 1, 1);
-            HighlightPixel = HighlightPixel ?? ContentService.Textures.Pixel;
-            //GeneratePixel();
-
-            Invalidate();
-        }
-
-        public override void Invalidate() {
-            base.Invalidate();
-            
-            //if (_orientation == Orientation.Horizontal) {
-            //    _size = new Point(
-            //        GameServices.GetService<GraphicsService>().Resolution.X, 
-            //        (int)Math.Round(this.HighlightThickness, 0) + (int)Math.Round(this.OutlineThickness, 0) * 2
-            //    );
-            //} else {
-            //    _size = new Point(
-            //        (int)Math.Round(this.HighlightThickness, 0) + (int)Math.Round(this.OutlineThickness, 0) * 2,
-            //        GameServices.GetService<GraphicsService>().Resolution.Y
-            //    );
-            //}
-        }
-
-        private void GeneratePixel() {
-            HighlightPixel.SetData(new Color[] {Color.White});
         }
 
         protected override CaptureType CapturesInput() {
@@ -105,14 +76,12 @@ namespace Blish_HUD.Modules.MouseUsability {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.Draw(HighlightPixel, bounds, this.OutlineColor);
-
-            //int centerMargin = _orientation == Orientation.Horizontal ? bounds.Width / 2 - bounds.Height / 2 : bounds.Height / 2 - bounds.Width / 2;
+            spriteBatch.Draw(ContentService.Textures.Pixel, bounds, this.OutlineColor);
 
             if (_orientation == Orientation.Horizontal) {
-                spriteBatch.Draw(HighlightPixel, new Rectangle(0, (int)(this.OutlineThickness), bounds.Width, (int)(this.HighlightThickness)).OffsetBy(bounds.Location), this.HighlightColor);
+                spriteBatch.Draw(ContentService.Textures.Pixel, new Rectangle(0, (int)(this.OutlineThickness), bounds.Width, (int)(this.HighlightThickness)).OffsetBy(bounds.Location), _highlightColor);
             } else {
-                spriteBatch.Draw(HighlightPixel, new Rectangle((int)(this.OutlineThickness), 0, (int)(this.HighlightThickness), bounds.Height).OffsetBy(bounds.Location), this.HighlightColor);
+                spriteBatch.Draw(ContentService.Textures.Pixel, new Rectangle((int)(this.OutlineThickness), 0, (int)(this.HighlightThickness), bounds.Height).OffsetBy(bounds.Location), _highlightColor);
             }
         }
 

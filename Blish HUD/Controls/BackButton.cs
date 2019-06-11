@@ -44,7 +44,7 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _navTitle, value);
         }
 
-        private WindowBase _window;
+        private readonly WindowBase _window;
 
         public BackButton(WindowBase window) : base() {
             this.Size = new Point(BACKBUTTON_WIDTH, BACKBUTTON_HEIGHT);

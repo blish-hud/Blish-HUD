@@ -24,7 +24,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static Texture2D _textureMenuEdge;
+        private static readonly Texture2D _textureMenuEdge;
 
         static ContextMenuStrip() {
             _textureMenuEdge = Content.GetTexture("scrollbar-track");

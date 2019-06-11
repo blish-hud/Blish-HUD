@@ -14,7 +14,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static List<Tooltip> _allTooltips;
+        private static readonly List<Tooltip> _allTooltips;
 
         private static readonly Texture2D _textureTooltip;
 
@@ -34,22 +34,22 @@ namespace Blish_HUD.Controls {
             };
         }
 
-        private static Control prevControl;
+        private static Control _prevControl;
 
         private static void ControlOnActiveControlChanged(object sender, ControlActivatedEventArgs e) {
             foreach (var tooltip in _allTooltips) {
                 tooltip.Hide();
             }
 
-            if (prevControl != null) {
-                prevControl.Hidden -= ActivatedControlOnHidden;
-                prevControl.Disposed -= ActivatedControlOnHidden;
+            if (_prevControl != null) {
+                _prevControl.Hidden   -= ActivatedControlOnHidden;
+                _prevControl.Disposed -= ActivatedControlOnHidden;
             }
 
-            prevControl = e.ActivatedControl;
+            _prevControl = e.ActivatedControl;
 
-            if (prevControl != null) {
-                e.ActivatedControl.Hidden += ActivatedControlOnHidden;
+            if (_prevControl != null) {
+                e.ActivatedControl.Hidden   += ActivatedControlOnHidden;
                 e.ActivatedControl.Disposed += ActivatedControlOnHidden;
             }
         }
@@ -77,18 +77,10 @@ namespace Blish_HUD.Controls {
         public Control CurrentControl { get; set; }
 
         public Tooltip() : base() {
-            this.Visible = false;
-            this.Parent = GameService.Graphics.SpriteScreen;
             this.ZIndex = Screen.TOOLTIP_BASEZINDEX;
 
             this.ChildAdded   += Tooltip_ChildChanged;
             this.ChildRemoved += Tooltip_ChildChanged;
-
-            //Input.MouseMoved += delegate {
-            //    if (this.Visible && !this.CurrentControl.MouseOver) {
-            //        this.Visible = false;
-            //    }
-            //};
 
             _allTooltips.Add(this);
         }
@@ -110,6 +102,36 @@ namespace Blish_HUD.Controls {
                 this.Visible = false;
                 this.CurrentControl = null;
             }
+        }
+
+        /// <summary>
+        /// Shows the tooltip at the provided <see cref="x"/> and <see cref="y"/> coordinates.
+        /// </summary>
+        public void Show(int x, int y) {
+            this.Show(new Point(x, y));
+        }
+
+        /// <summary>
+        /// Shows the tooltip at the provided <see cref="location"/>.
+        /// </summary>
+        public void Show(Point location) {
+            this.Location = location;
+
+            this.Show();
+        }
+
+        /// <inheritdoc />
+        public override void Show() {
+            this.Parent = Graphics.SpriteScreen;
+
+            base.Show();
+        }
+
+        /// <inheritdoc />
+        public override void Hide() {
+            this.Parent = null;
+
+            base.Hide();
         }
 
         public override void RecalculateLayout() {

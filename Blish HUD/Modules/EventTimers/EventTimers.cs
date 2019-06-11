@@ -23,8 +23,6 @@ namespace Blish_HUD.Modules.EventTimers {
         private const string EC_ALLEVENTS = "All Events";
         private const string EC_HIDDEN = "Hidden Events";
 
-        private const int NEXTTIME_WIDTH = 75;
-
         private List<DetailsButton> displayedEvents;
         
         public override ModuleInfo GetModuleInfo() {
@@ -38,9 +36,9 @@ namespace Blish_HUD.Modules.EventTimers {
             );
         }
 
-        private Settings allSettings;
+        private SettingsManager _allSettingsManager;
 
-        public override void DefineSettings(Settings settings) { allSettings = settings; }
+        public override void DefineSettings(SettingsManager settingsManager) { _allSettingsManager = settingsManager; }
 
         public override void OnEnabled() {
             base.OnEnabled();
@@ -111,7 +109,7 @@ namespace Blish_HUD.Modules.EventTimers {
             };
 
             foreach (var meta in Meta.Events) {
-                var setting = allSettings.DefineSetting("watchEvent:" + meta.Name, true, true, false, "");
+                var setting = _allSettingsManager.DefineSetting("watchEvent:" + meta.Name, true, true, false, "");
 
                 meta.IsWatched = setting.Value;
 
@@ -165,7 +163,7 @@ namespace Blish_HUD.Modules.EventTimers {
                     glowWaypointBttn.Click += delegate {
                         System.Windows.Forms.Clipboard.SetText(meta.Waypoint);
 
-                        Controls.Notification.ShowNotification(GameService.Content.GetTexture("waypoint"), "Waypoint copied to clipboard.", 2);
+                        Controls.Notification.ShowNotification("Waypoint copied to clipboard.");
                     };
                 }
 

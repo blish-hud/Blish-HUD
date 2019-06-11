@@ -15,12 +15,12 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
         private const int WINDOW_WIDTH = 371;
         private const int WINDOW_HEIGHT = 200;
 
-        private Rectangle hotkeyRegion = new Rectangle(60, 80, 225, 30);
+        private Rectangle _hotkeyRegion = new Rectangle(60, 80, 225, 30);
 
-        private Hotkey HotkeyDefinition;
+        private Hotkey _hotkeyDefinition;
 
         public HotkeyAssignmentWindow(Hotkey hotkey) {
-            HotkeyDefinition = hotkey;
+            _hotkeyDefinition = hotkey;
 
             this.Size = new Point(WINDOW_WIDTH, WINDOW_HEIGHT);
             this.ZIndex = int.MaxValue - 2;
@@ -33,15 +33,15 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
         public override void TriggerKeyboardInput(KeyboardMessage e) {
             if (e.EventType == KeyboardEventType.KeyUp) return;
 
-            HotkeyDefinition.Keys.Clear();
-            HotkeyDefinition.Keys.AddRange(Input.KeysDown);
+            _hotkeyDefinition.Keys.Clear();
+            _hotkeyDefinition.Keys.AddRange(Input.KeysDown);
 
             Invalidate();
         }
 
         private void BuildChildElements() {
             var assignInputsLbl = new Label() {
-                Text = $"Assign inputs to: {HotkeyDefinition.Name}",
+                Text = $"Assign inputs to: {_hotkeyDefinition.Name}",
                 Location = new Point(40, 35),
                 ShowShadow = true,
                 AutoSizeWidth = true,
@@ -74,7 +74,7 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
             overwriteBttn.Location = new Point(cancelBttn.Left - 8 - overwriteBttn.Width, cancelBttn.Top);
 
             unbindBttn.LeftMouseButtonReleased += delegate {
-                HotkeyDefinition.Keys.Clear();
+                _hotkeyDefinition.Keys.Clear();
                 Invalidate();
             };
         }
@@ -83,10 +83,10 @@ namespace Blish_HUD.BHUDControls.Hotkeys {
             spriteBatch.Draw(Content.GetTexture("hotkey-window"), bounds, Color.White);
 
             // Easy way to get a string representation of the hotkeys
-            string hotkeyRep = string.Join(" + ", HotkeyDefinition.Keys);
+            string hotkeyRep = string.Join(" + ", _hotkeyDefinition.Keys);
 
-            Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular), hotkeyRep, hotkeyRegion.OffsetBy(1, 1), Color.Black, DrawUtil.HorizontalAlignment.Left, DrawUtil.VerticalAlignment.Middle);
-            Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular), hotkeyRep, hotkeyRegion, Color.White, DrawUtil.HorizontalAlignment.Left, DrawUtil.VerticalAlignment.Middle);
+            Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular), hotkeyRep, _hotkeyRegion.OffsetBy(1, 1), Color.Black, DrawUtil.HorizontalAlignment.Left, DrawUtil.VerticalAlignment.Middle);
+            Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular), hotkeyRep, _hotkeyRegion, Color.White, DrawUtil.HorizontalAlignment.Left, DrawUtil.VerticalAlignment.Middle);
         }
 
     }

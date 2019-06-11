@@ -27,7 +27,7 @@ namespace Blish_HUD.Modules.LoadingScreenHints
 
         #region Settings
 
-        public override void DefineSettings(Settings settings) {
+        public override void DefineSettings(SettingsManager settingsManager) {
             // Define settings
         }
 
@@ -45,8 +45,6 @@ namespace Blish_HUD.Modules.LoadingScreenHints
             };
             return tipsPanel;
         }
-
-        private Queue<double> sampleBuffer = new Queue<double>();
 
         public override void Update(GameTime gameTime) {
             base.Update(gameTime);
@@ -67,7 +65,6 @@ namespace Blish_HUD.Modules.LoadingScreenHints
         }
 
         public override void OnDisabled() {
-            sampleBuffer.Clear();
             LoadScreenPanel.Dispose();
         }
     }

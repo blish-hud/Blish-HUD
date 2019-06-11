@@ -5,13 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blish_HUD.Pathing.Entities;
 
 namespace Blish_HUD.Entities.Primitives {
-
-    public enum BillboardVerticalConstraint {
-        CameraPosition,
-        PlayerPosition,
-    }
 
     public class Billboard : Entity {
 
@@ -60,10 +56,8 @@ namespace Blish_HUD.Entities.Primitives {
             get => _texture;
             set {
                 if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture != null)
-                    this.Size = new Vector2(
-                                            Utils.World.GameToWorldCoord(_texture.Width),
-                                            Utils.World.GameToWorldCoord(_texture.Height)
-                                            );
+                    this.Size = new Vector2(Utils.World.GameToWorldCoord(_texture.Width),
+                                            Utils.World.GameToWorldCoord(_texture.Height));
             }
         }
 
@@ -106,7 +100,8 @@ namespace Blish_HUD.Entities.Primitives {
 
             _billboardEffect.View = GameService.Camera.View;
             _billboardEffect.Projection = GameService.Camera.Projection;
-            _billboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2 * _scale, this.Size.Y / -2 * _scale, 0))
+            _billboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2, this.Size.Y / -2, 0))
+                                   * Matrix.CreateScale(_scale, _scale, 1)
                                    * Matrix.CreateBillboard(this.Position + this.RenderOffset,
                                                             new Vector3(GameService.Camera.Position.X,
                                                                         GameService.Camera.Position.Y,
@@ -115,6 +110,8 @@ namespace Blish_HUD.Entities.Primitives {
                                                                             : GameService.Player.Position.Z),
                                                             new Vector3(0, 0, 1),
                                                             GameService.Camera.Forward);
+
+
 
             _billboardEffect.Alpha = this.Opacity;
             _billboardEffect.Texture = this.Texture;

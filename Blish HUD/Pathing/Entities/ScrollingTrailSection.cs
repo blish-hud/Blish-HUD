@@ -12,12 +12,12 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Pathing.Entities {
     public class ScrollingTrailSection : Trail, ITrail {
 
-        #region Static Effect Loading
+        #region Load Static
 
-        private static Effect _basicTrailEffect;
+        private static readonly Effect _basicTrailEffect;
 
         static ScrollingTrailSection() {
-            _basicTrailEffect = Overlay.cm.Load<Effect>("effects\\trail");
+            _basicTrailEffect = Overlay.ActiveContentManager.Load<Effect>("effects\\trail");
         }
 
         #endregion
@@ -126,23 +126,23 @@ namespace Blish_HUD.Pathing.Entities {
 
                 currPoint = nextPoint;
 
-#if DEBUG
-                //GameService.Director.QueueAdHocUpdate((gameTime) => {
-                //    var leftBoxPoint = new Cube() {
-                //        Color    = Color.Red,
-                //        Size     = new Vector3(0.25f),
-                //        Position = leftPoint
-                //    };
+#if PLOTTRAILS
+                GameService.Director.QueueMainThreadUpdate((gameTime) => {
+                    var leftBoxPoint = new Cube() {
+                        Color    = Color.Red,
+                        Size     = new Vector3(0.25f),
+                        Position = leftPoint
+                    };
 
-                //    var rightBoxPoint = new Cube() {
-                //        Color = Color.Red,
-                //        Size = new Vector3(0.25f),
-                //        Position = rightPoint
-                //    };
+                    var rightBoxPoint = new Cube() {
+                        Color = Color.Red,
+                        Size = new Vector3(0.25f),
+                        Position = rightPoint
+                    };
 
-                //    GameService.Graphics.World.Entities.Add(leftBoxPoint);
-                //    GameService.Graphics.World.Entities.Add(rightBoxPoint);
-                //});
+                    GameService.Graphics.World.Entities.Add(leftBoxPoint);
+                    GameService.Graphics.World.Entities.Add(rightBoxPoint);
+                });
 #endif
             }
 
@@ -151,38 +151,6 @@ namespace Blish_HUD.Pathing.Entities {
 
             this.VertexData[this.TrailPoints.Count * 2 - 1] = new VertexPositionColorTexture(fleftPoint,  Color.White, new Vector2(0f, pastDistance / (imgScale * 2) - 1));
             this.VertexData[this.TrailPoints.Count * 2 - 2] = new VertexPositionColorTexture(frightPoint, Color.White, new Vector2(1f, pastDistance / (imgScale * 2) - 1));
-        }
-
-        private void SmoothTrail(ref List<Vector3> pointList) {
-            List<Vector3> smoothedPoints = new List<Vector3>();
-
-            //for (int i = 1; i < pointList.Count; i++) {
-            //    if (Vector3.Distance(pointList[i - 1], pointList[i]) < 30f) {
-            //        pointList.RemoveAt(i);
-            //        i--;
-            //    }
-            //}
-
-            if (pointList.Count < 4) return;
-
-            smoothedPoints.Add(pointList[0]);
-
-            for (int i = 1; i < pointList.Count - 2; i++) {
-                smoothedPoints.Add(pointList[i]);
-
-                smoothedPoints.Add(Vector3.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .2f));
-                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .2f));
-                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .3f));
-                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .7f));
-                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .8f));
-                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .9f));
-            }
-
-            smoothedPoints.Add(pointList[pointList.Count - 2]);
-            smoothedPoints.Add(pointList[pointList.Count - 1]);
-
-            pointList.Clear();
-            pointList.AddRange(smoothedPoints);
         }
 
         public override void Update(GameTime gameTime) {

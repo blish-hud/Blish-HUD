@@ -161,8 +161,6 @@ namespace Blish_HUD {
 
         private const float LERPDURR = 0.2f;
         protected override void Update(GameTime gameTime) {
-            // This data is LERP'd to help smooth out movements
-            // Mumble API updates at most 50 times per second
             if (GameService.Gw2Mumble.MumbleBacking != null) {
                 //this.Position = Vector3.Lerp(this.Position, GameService.Gw2Mumble.MumbleBacking.AvatarPosition.ToXnaVector3(), LERPDURR);
                 //this.Forward  = Vector3.Lerp(this.Forward, GameService.Gw2Mumble.MumbleBacking.AvatarFront.ToXnaVector3(),    LERPDURR);

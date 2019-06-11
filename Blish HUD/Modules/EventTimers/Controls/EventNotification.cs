@@ -19,8 +19,6 @@ namespace Blish_HUD.Modules.EventTimers {
 
         private static int VisibleNotifications = 0;
 
-        private Glide.Tween _notificationLifecycle;
-
         private EventNotification(string title, Texture2D icon, string message) {
             Icon = icon;
 
@@ -76,12 +74,12 @@ namespace Blish_HUD.Modules.EventTimers {
         private void Show(float duration) {
             Content.PlaySoundEffectByName(@"audio\color-change");
 
-            _notificationLifecycle = Animation.Tweener
-                                             .Tween(this, new { Opacity = 1f }, 0.2f)
-                                             .Repeat(1)
-                                             .RepeatDelay(duration)
-                                             .Reflect()
-                                             .OnComplete(Dispose);
+            Animation.Tweener
+                     .Tween(this, new {Opacity = 1f}, 0.2f)
+                     .Repeat(1)
+                     .RepeatDelay(duration)
+                     .Reflect()
+                     .OnComplete(Dispose);
         }
 
         public static void ShowNotification(string title, Texture2D icon, string message, float duration) {
@@ -93,7 +91,6 @@ namespace Blish_HUD.Modules.EventTimers {
         }
 
         protected override void DisposeControl() {
-            _notificationLifecycle = null;
             VisibleNotifications--;
 
             base.DisposeControl();
