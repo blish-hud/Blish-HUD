@@ -37,5 +37,13 @@ namespace Blish_HUD {
             return new Microsoft.Xna.Framework.Point(point.X, point.Y);
         }
 
+        public static Point ResizeKeepAspect(Point src, int maxWidth, int maxHeight, bool enlarge = false)
+        {
+            maxWidth = enlarge ? maxWidth : Math.Min(maxWidth, src.X);
+            maxHeight = enlarge ? maxHeight : Math.Min(maxHeight, src.Y);
+
+            decimal rnd = Math.Min(maxWidth / (decimal)src.X, maxHeight / (decimal)src.Y);
+            return new Point((int)Math.Round(src.X * rnd), (int)Math.Round(src.Y * rnd));
+        }
     }
 }

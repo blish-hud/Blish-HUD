@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.Musician.Player
         {
             return MusicBoxNotationMusicPlayerFactory(rawMusicSheet, type);
         }
-        private static InstrumentType GetInstrument(string rawInstrument, KeyboardType type)
+        private static Instrument GetInstrument(string rawInstrument, KeyboardType type)
         {
             switch (rawInstrument)
             {

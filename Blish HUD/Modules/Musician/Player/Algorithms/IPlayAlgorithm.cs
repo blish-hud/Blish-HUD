@@ -5,6 +5,7 @@ namespace Blish_HUD.Modules.Musician.Player.Algorithms
 {
     public interface IPlayAlgorithm
     {
-        void Play(InstrumentType instrument, MetronomeMark metronomeMark, ChordOffset[] melody);
+        void Play(Instrument instrument, MetronomeMark metronomeMark, ChordOffset[] melody);
+        void Dispose();
     }
 }

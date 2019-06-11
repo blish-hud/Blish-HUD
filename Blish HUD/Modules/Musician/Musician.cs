@@ -13,6 +13,7 @@ using Blish_HUD.Modules.Musician.Notation.Persistance;
 using Blish_HUD.Modules.Musician.Player;
 using Blish_HUD.Modules.Musician.Player.Algorithms;
 using Blish_HUD.Modules.Musician.Notation.Parsers;
+using Gw2Sharp.WebApi.V2.Models;
 namespace Blish_HUD.Modules.Musician
 {
     public class Musician : Module
@@ -45,18 +46,20 @@ namespace Blish_HUD.Modules.Musician
                 "bh.general.musician",
                 "Create, share and play sheet music.",
                 "Nekres.1038",
-                "0.1"
+                "0.2",
+                false,
+                new[]{ TokenPermission.Account }
             );
         }
 
         #region Settings
 
-        //private SettingEntry<bool> settingExample;
+        private SettingEntry<bool> settingBackgroundPlayback;
 
         public override void DefineSettings(Settings settings)
         {
             // Define settings
-            //settingExample = settings.DefineSetting<bool>("name", false, false, true, "Description");
+            settingBackgroundPlayback = settings.DefineSetting<bool>("No background playback", false, false, true, "Stop key emulation when GW2 is in the background");
         }
 
         #endregion
@@ -123,11 +126,12 @@ namespace Blish_HUD.Modules.Musician
                 Parent = lPanel,
                 Location = new Point(20, 20),
             };
-            var melodyPanel = new Panel()
+            var melodyPanel = new TintedPanel()
             {
-                Location = new Point(Panel.LEFT_MARGIN + 20, Panel.BOTTOM_MARGIN + backButton.Bottom),
-                Size = new Point(lPanel.Size.X - 50 - Panel.LEFT_MARGIN, lPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN),
+                Location = new Point(0, Panel.BOTTOM_MARGIN + backButton.Bottom),
+                Size = new Point(lPanel.Width, lPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN),
                 Parent = lPanel,
+                ShowBorder = true,
                 CanScroll = true
             };
 
@@ -338,11 +342,12 @@ namespace Blish_HUD.Modules.Musician
                 Exponential = true,
                 Value = 1
             };
-            var notationTextBox = new TextBox
+
+            // TODO: Draw notation multilined.
+            var notationTextBox = new Label
             {
                 Size = new Point(composerPanel.Width, composerPanel.Height - 300),
                 Location = new Point(0, meterCounterBox.Top + 22 + Panel.BOTTOM_MARGIN),
-                PlaceholderText = "",
                 Parent = composerPanel
             };
 
@@ -432,7 +437,7 @@ namespace Blish_HUD.Modules.Musician
             {
                 int x = pos % 3;
                 int y = pos / 3;
-                mel.Location = new Point(x * 288, y * 108);
+                mel.Location = new Point(x * 335, y * 108);
 
                 ((Panel)mel.Parent).VerticalScrollOffset = 0;
                 mel.Parent.Invalidate();
@@ -441,19 +446,16 @@ namespace Blish_HUD.Modules.Musician
         }
         public override void OnDisabled()
         {
-            sampleBuffer.Clear();
             this.StopPlayback();
             GameService.Director.BlishHudWindow.RemoveTab(MusicianTab);
         }
-        private long lastUpdate = 0;
-        private Queue<double> sampleBuffer = new Queue<double>();
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
             // Unless we're in game running around, don't show.
-            if (GameService.GameIntegration.Gw2IsRunning)
+            if (settingBackgroundPlayback.Value && GameService.GameIntegration.Gw2IsRunning)
             {
                 if (Utils.Window.GetForegroundWindow() != GameService.GameIntegration.Gw2Process.MainWindowHandle)
                 {
@@ -461,7 +463,6 @@ namespace Blish_HUD.Modules.Musician
                     return;
                 }
             }
-            lastUpdate = GameService.Gw2Mumble.UiTick;
         }
         private void StopPlayback()
         {
@@ -472,7 +473,7 @@ namespace Blish_HUD.Modules.Musician
             }
             if (MusicPlayer != null)
             {
-                MusicPlayer.Worker.Abort();
+                MusicPlayer.Dispose();
                 MusicPlayer = null;
             }
         }

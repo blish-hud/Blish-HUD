@@ -60,6 +60,7 @@ namespace Blish_HUD {
         public static readonly PathingService Pathing;
         public static readonly ModuleService Module;
         public static readonly PersistentStoreService Store;
+        public static readonly ApiService Gw2Api;
         public static readonly ArcDpsService ArcDps;
 
         #endregion
@@ -82,6 +83,7 @@ namespace Blish_HUD {
             Hotkeys = new HotkeysService();
             Pathing = new PathingService();
             Module = new ModuleService();
+            Gw2Api = new ApiService();
             ArcDps = new ArcDpsService();
 
             AllServices = new GameService[] {
@@ -101,9 +103,8 @@ namespace Blish_HUD {
                 Pathing,
                 Module,
                 Store,
-                //ArcDps
+                Gw2Api
             };
-
         }
 
         #region Property Binding
