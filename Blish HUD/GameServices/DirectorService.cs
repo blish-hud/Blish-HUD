@@ -149,6 +149,23 @@ namespace Blish_HUD {
                 Location   = new Point(bttn3.Left, bttn3.Bottom + 5)
             };
 
+            var bttn6 = new StandardButton() {
+                Size       = new Point(128, 26),
+                ResizeIcon = true,
+                Parent     = hPanel,
+                Text       = "Enable Module",
+                Enabled = false,
+                Location   = new Point(bttn5.Left, bttn5.Bottom + 5)
+            };
+
+            var bttn7= new StandardButton() {
+                Size       = new Point(128, 26),
+                ResizeIcon = true,
+                Parent     = hPanel,
+                Text       = "Delete Module",
+                Location   = new Point(bttn6.Left, bttn6.Bottom + 5)
+            };
+
             //var rsreader = new Content.RenderServiceReader();
 
             //var textureStream = rsreader.GetFileStream("18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941");

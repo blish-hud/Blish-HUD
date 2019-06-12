@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Content;
 using Blish_HUD.Modules;
+using Gw2Sharp.WebApi.V2.Models;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
@@ -21,6 +22,7 @@ namespace Blish_HUD {
         public event EventHandler<EventArgs> ModuleDisabled;
 
         private readonly Manifest    _manifest;
+        private readonly ModuleState _state;
         private readonly IDataReader _dataReader;
 
         private bool _enabled = false;
@@ -44,16 +46,24 @@ namespace Blish_HUD {
 
         public Manifest Manifest => _manifest;
 
+        public ModuleState State => _state;
+
         [Import]
         public ExternalModule ModuleInstance { get; private set; }
 
-        public ModuleManager(Manifest manifest, IDataReader dataReader) {
+        public ModuleManager(Manifest manifest, ModuleState state, IDataReader dataReader) {
             _manifest   = manifest;
+            _state = state;
             _dataReader = dataReader;
         }
 
         public void Enable() {
-            var moduleParams = ModuleParameters.BuildFromManifest(_manifest, _dataReader);
+            var moduleParams = ModuleParameters.BuildFromManifest(_manifest, _state, _dataReader);
+
+            if (moduleParams == null) {
+                _enabled = false;
+                return;
+            }
 
             string packagePath = _manifest.Package.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
                                      ? _manifest.Package
@@ -70,7 +80,7 @@ namespace Blish_HUD {
         }
 
         public void Disable() {
-            // TODO: Disable module
+            ModuleInstance?.Dispose();
         }
 
         private void ComposeModuleFromFileSystemReader(string dllName, ModuleParameters parameters) {
@@ -86,6 +96,13 @@ namespace Blish_HUD {
 
     }
 
+    public class ModuleState {
+
+        public bool Enabled { get; set; }
+        public TokenPermission[] UserEnabledPermissions { get; set; }
+
+    }
+
     public class ModuleService : GameService {
 
         private const string MODULESTATES_CORE_SETTING = "ModuleStates";
@@ -94,18 +111,14 @@ namespace Blish_HUD {
 
         private const string MODULE_EXTENSION = ".bhm";
 
-        private string ModulesDirectory => Path.Combine(GameService.Directory.BasePath, MODULES_DIRECTORY);
+        private string ModulesDirectory => Directory.RegisterDirectory(MODULES_DIRECTORY);
 
-        private SettingEntry<Dictionary<string, bool>> _moduleStates;
+        private SettingEntry<Dictionary<string, ModuleState>> _moduleStates;
 
-        public SettingEntry<Dictionary<string, bool>> ModuleStates => _moduleStates;
+        public SettingEntry<Dictionary<string, ModuleState>> ModuleStates => _moduleStates;
 
         private readonly List<ModuleManager> _modules;
         public IReadOnlyList<ModuleManager> Modules => _modules.ToList();
-
-        public List<IModule> AvailableModules { get; private set; }
-
-        public List<ExternalModule> ExternalModules { get; set; }
 
         public ModuleService() {
             _modules = new List<ModuleManager>();
@@ -113,35 +126,31 @@ namespace Blish_HUD {
 
         protected override void Initialize() {
             _moduleStates = Settings.CoreSettings.DefineSetting(MODULESTATES_CORE_SETTING,
-                                                                new Dictionary<string, bool>(),
-                                                                new Dictionary<string, bool>());
+                                                                new Dictionary<string, ModuleState>(),
+                                                                new Dictionary<string, ModuleState>());
         }
-
-        //this.AvailableModules.Add(module);
-
-        //// All modules are disabled by default, currently to allow for users to select which modules they would like to enable
-        //if (this.ModuleStates.Value.ContainsKey(module.GetModuleInfo().Namespace)) {
-        //    module.Enabled = this.ModuleStates.Value[module.GetModuleInfo().Namespace];
-        //} else {
-        //    this.ModuleStates.Value.Add(module.GetModuleInfo().Namespace, false);
-        //}
 
         public ModuleManager RegisterModule(IDataReader moduleReader) {
             string manifestContents;
             using (var manifestReader = new StreamReader(moduleReader.GetFileStream("manifest.json"))) {
                 manifestContents = manifestReader.ReadToEnd();
             }
-
             var moduleManifest = JsonConvert.DeserializeObject<Manifest>(manifestContents);
-            var moduleManager  = new ModuleManager(moduleManifest, moduleReader);
+            bool enableModule = false;
+
+            if (_moduleStates.Value.ContainsKey(moduleManifest.Namespace)) {
+                enableModule = _moduleStates.Value[moduleManifest.Namespace].Enabled;
+            } else {
+                _moduleStates.Value.Add(moduleManifest.Namespace, new ModuleState());
+            }
+
+            var moduleManager  = new ModuleManager(moduleManifest,
+                                                   _moduleStates.Value[moduleManifest.Namespace],
+                                                   moduleReader);
+
+            moduleManager.Enabled = enableModule;
 
             _modules.Add(moduleManager);
-
-            if (this.ModuleStates.Value.ContainsKey(moduleManifest.Namespace)) {
-                moduleManager.Enabled = this.ModuleStates.Value[moduleManifest.Namespace];
-            } else {
-                this.ModuleStates.Value.Add(moduleManifest.Namespace, false);
-            }
 
             return moduleManager;
         }
@@ -149,7 +158,6 @@ namespace Blish_HUD {
         protected override void Load() {
             if (!System.IO.Directory.Exists(this.ModulesDirectory)) System.IO.Directory.CreateDirectory(this.ModulesDirectory);
 
-            // TODO: Load modules dynamically
             /*
             RegisterModule(new Modules.DebugText());
             RegisterModule(new Modules.DiscordRichPresence());
@@ -164,8 +172,8 @@ namespace Blish_HUD {
             // RegisterModule(new Modules.RangeCircles());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
 
-            foreach (var moduleArchivePath in System.IO.Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
-                ZipArchiveReader moduleReader = new ZipArchiveReader(moduleArchivePath);
+            foreach (string moduleArchivePath in System.IO.Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
+                var moduleReader = new ZipArchiveReader(moduleArchivePath);
 
                 if (moduleReader.FileExists("manifest.json")) {
                     RegisterModule(moduleReader);
@@ -173,22 +181,16 @@ namespace Blish_HUD {
             }
 
 #if DEBUG
-            foreach (var manifestPath in System.IO.Directory.GetFiles(this.ModulesDirectory, "manifest.json", SearchOption.AllDirectories)) {
+            foreach (string manifestPath in System.IO.Directory.GetFiles(this.ModulesDirectory, "manifest.json", SearchOption.AllDirectories)) {
                 string moduleDir = System.IO.Directory.GetParent(manifestPath).FullName;
 
-                DirectoryReader moduleReader = new DirectoryReader(moduleDir);
+                var moduleReader = new DirectoryReader(moduleDir);
 
                 if (moduleReader.FileExists("manifest.json")) {
                     RegisterModule(moduleReader);
                 }
             }
 #endif
-
-            //foreach (var externalModule in this.ExternalModules) {
-            //    Console.WriteLine($"Registering external module: {externalModule.Name} with Namespace {externalModule.Namespace}");
-            //    externalModule.DoInitialize();
-            //    //RegisterModule(externalModule);
-            //}
         }
 
         protected override void Unload() {
@@ -201,7 +203,7 @@ namespace Blish_HUD {
                     if (s.Enabled) s.ModuleInstance.DoUpdate(gameTime);
                 } catch (Exception ex) {
 #if DEBUG
-                    //throw;
+                    throw;
 #endif
                     Console.WriteLine($"{s.Manifest.Name} module had an error:");
                     Console.WriteLine(ex.Message);

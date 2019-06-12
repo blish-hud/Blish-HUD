@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using Gw2Sharp.WebApi.V2.Models;
 using JsonSubTypes;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SemVer;
 
 namespace Blish_HUD.Modules {
 
@@ -13,20 +16,34 @@ namespace Blish_HUD.Modules {
         V1 = 1,
     }
 
-    public enum TempPerm {
-        Account,
-        Inventories,
-        Characters,
-        TradingPost,
-        Wallet,
-        Unlocks,
-        PvP,
-        Builds,
-        Progression,
-        Guilds
-    }
+    public class ModuleDependency {
 
-    public class ModuleDependecy {
+        private const bool VERSIONRANGE_LOOSE = false;
+
+        internal class VersionDependenciesConverter : JsonConverter<List<ModuleDependency>> {
+            
+            public override void WriteJson(JsonWriter writer, List<ModuleDependency> value, JsonSerializer serializer) {
+                writer.WriteValue(value.ToString());
+            }
+
+            public override List<ModuleDependency> ReadJson(JsonReader reader, Type objectType, List<ModuleDependency> existingValue, bool hasExistingValue, JsonSerializer serializer) {
+                var moduleDependencyList = new List<ModuleDependency>();
+
+                JObject mdObj = JObject.Load(reader);
+
+                foreach (var prop in mdObj) {
+                    string dependencyNamespace    = prop.Key;
+                    string dependencyVersionRange = prop.Value.ToString();
+
+                    moduleDependencyList.Add(new ModuleDependency() {
+                        Namespace    = dependencyNamespace,
+                        VersionRange = new Range(dependencyVersionRange, VERSIONRANGE_LOOSE)
+                    });
+                }
+
+                return moduleDependencyList;
+            }
+        }
 
         public string Namespace { get; private set; }
 
@@ -34,7 +51,7 @@ namespace Blish_HUD.Modules {
 
     }
 
-    public class Contributer {
+    public class Contributor {
 
         [JsonProperty("name")]
         public string Name { get; private set; }
@@ -47,7 +64,7 @@ namespace Blish_HUD.Modules {
 
     }
 
-    public class APIPermissions {
+    public class ApiPermissions {
 
         [JsonProperty("optional")]
         public bool Optional { get; private set; }
@@ -76,39 +93,40 @@ namespace Blish_HUD.Modules {
         [JsonProperty("package", Required = Required.Always)]
         public string Package { get; private set; }
 
+        // Recommended attributes
+
+        [JsonProperty("description", DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string Description { get; private set; } = "";
+
+        [JsonProperty("dependencies"), JsonConverter(typeof(ModuleDependency.VersionDependenciesConverter))]
+        public List<ModuleDependency> Dependencies { get; private set; } = new List<ModuleDependency>();
+
+        [JsonProperty("url", DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string Url { get; private set; } = "";
+
+        [JsonProperty("author")]
+        public Contributor Author { get; private set; }
+
+        [JsonProperty("contributors", DefaultValueHandling = DefaultValueHandling.Populate)]
+        public List<Contributor> Contributors { get; private set; } = new List<Contributor>();
+
+        // Optional attributes
+
+        [JsonProperty("directories", DefaultValueHandling = DefaultValueHandling.Populate)]
+        public List<string> Directories { get; private set; } = new List<string>();
+
+        [JsonProperty("enable_without_gw2")]
+        public bool EnabledWithoutGW2 { get; private set; }
+
+        [JsonProperty("api_permissions", DefaultValueHandling = DefaultValueHandling.Populate)]
+        public Dictionary<TokenPermission, ApiPermissions> ApiPermissions { get; private set; } = new Dictionary<TokenPermission, ApiPermissions>();
+
     }
 
     public class ManifestV1 : Manifest {
 
         /// <inheritdoc />
         public override SupportedModuleManifestVersion ManifestVersion => SupportedModuleManifestVersion.V1;
-
-        // Recommended attributes
-
-        [JsonProperty("description")]
-        public string Description { get; private set; }
-
-        public List<ModuleDependecy> Dependencies { get; private set; }
-
-        [JsonProperty("url")]
-        public string Url { get; private set; }
-
-        [JsonProperty("author")]
-        public Contributer Author { get; private set; }
-
-        [JsonProperty("contributers")]
-        public List<Contributer> Contributers { get; private set; }
-
-        // Optional attributes
-
-        [JsonProperty("directories")]
-        public List<string> Directories { get; private set; }
-
-        [JsonProperty("enable_without_gw2")]
-        public bool EnabledWithoutGW2 { get; private set; }
-
-        [JsonProperty("api_permissions")]
-        public Dictionary<TempPerm, APIPermissions> APIPermissions { get; private set; }
 
     }
 }

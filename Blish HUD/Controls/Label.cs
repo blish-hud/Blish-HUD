@@ -15,7 +15,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public string Text {
             get => _text;
-            set => SetProperty(ref _text, value, true);
+            set {
+                if (SetProperty(ref _text, value, true) && (_autoSizeWidth || _autoSizeHeight)) {
+                    RecalculateLayout();
+                }
+            }
         }
 
         /// <summary>
@@ -23,7 +27,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public BitmapFont Font {
             get => _font;
-            set => SetProperty(ref _font, value, true);
+            set {
+                if (SetProperty(ref _font, value, true) && (_autoSizeWidth || _autoSizeHeight)) {
+                    RecalculateLayout();
+                }
+            }
         }
 
         /// <summary>
@@ -75,7 +83,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public bool AutoSizeWidth {
             get => _autoSizeWidth;
-            set => SetProperty(ref _autoSizeWidth, value);
+            set {
+                if (SetProperty(ref _autoSizeWidth, value, true) && (_autoSizeWidth || _autoSizeHeight)) {
+                    RecalculateLayout();
+                }
+            }
         }
 
         /// <summary>
@@ -83,11 +95,22 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public bool AutoSizeHeight {
             get => _autoSizeHeight;
-            set => SetProperty(ref _autoSizeHeight, value);
+            set {
+                if (SetProperty(ref _autoSizeHeight, value, true) && (_autoSizeWidth || _autoSizeHeight)) {
+                    RecalculateLayout();
+                }
+            }
         }
 
         public Label() : base() {
             _cacheLabel = false;
+        }
+
+
+        public override void RecalculateLayout() {
+            base.RecalculateLayout();
+
+            this.Size = LabelRegion;
         }
 
     }

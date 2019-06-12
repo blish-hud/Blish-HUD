@@ -138,12 +138,14 @@ namespace Blish_HUD {
         public SettingEntry<T> DefineSetting<T>(string name, T value, T defaultValue, bool exposedAsSetting = false, string description = "") {
             SettingEntry<T> actSetting;
 
-            if (!this.Entries.ContainsKey(name)) {
+            if (_entries.ContainsKey(name) && _entries[name] is SettingEntry<T> castSetting) {
+                actSetting = castSetting;
+                actSetting.DefaultValue = defaultValue;
+            } else {
+                // Setting was either predefined as a different type or has never been defined before
+                _entries.Remove(name);
                 actSetting = SettingEntry<T>.InitSetting(this, value, defaultValue);
                 _entries.Add(name, actSetting);
-            } else {
-                actSetting = (SettingEntry<T>)this.Entries[name];
-                actSetting.DefaultValue = defaultValue;
             }
 
             actSetting.ExposedAsSetting = exposedAsSetting;
@@ -162,8 +164,7 @@ namespace Blish_HUD {
     }
 
     [JsonObject]
-    public class SettingsService:GameService {
-
+    public class SettingsService : GameService {
 
         private const string SETTINGS_FILENAME = "settings.json";
 
@@ -172,19 +173,19 @@ namespace Blish_HUD {
         [JsonIgnore]
         public Dictionary<Type, SettingTypeRendererDelegate> SettingTypeRenderers = new Dictionary<Type, SettingTypeRendererDelegate>();
 
-        [JsonProperty]
-        public SettingsManager CoreSettings { get; private set; }
-
-        [JsonProperty]
-        public Dictionary<string, Settings> RegisteredSettings { get; private set; }
-
         [JsonIgnore]
         private JsonSerializerSettings _jsonSettings;
 
         [JsonIgnore]
         private string _settingsPath;
 
-        public Settings RegisterSettings(string setName, bool autoSave = false) {
+        [JsonProperty]
+        public Dictionary<string, SettingsManager> RegisteredSettings { get; private set; }
+
+        [JsonProperty]
+        public SettingsManager CoreSettings { get; private set; }
+
+        public SettingsManager RegisterSettings(string setName, bool autoSave = false) {
             if (RegisteredSettings.ContainsKey(setName))
                 return RegisteredSettings[setName];
 
@@ -196,8 +197,8 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            this.RegisteredSettings      = new Dictionary<string, SettingsManager>();
-            this.CoreSettings        = new Settings();
+            this.RegisteredSettings = new Dictionary<string, SettingsManager>();
+            this.CoreSettings       = new SettingsManager(true);
 
             _jsonSettings = new JsonSerializerSettings() {
                 PreserveReferencesHandling = PreserveReferencesHandling.All,
@@ -290,7 +291,11 @@ namespace Blish_HUD {
                 CanSelect      = true,
             };
 
-            Panel cPanel = null;
+            Panel cPanel = new Panel() {
+                Size     = new Point(748, baseSettingsPanel.Size.Y - Panel.BOTTOM_MARGIN * 2),
+                Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, Panel.BOTTOM_MARGIN),
+                Parent   = baseSettingsPanel
+            };
 
             var settingsMi_App = settingsListMenu.AddMenuItem("Application Settings", Content.GetTexture("156736"));
             var settingsMi_Controls = settingsListMenu.AddMenuItem("Control Settings", Content.GetTexture("156734"));
@@ -318,84 +323,67 @@ namespace Blish_HUD {
             GameService.Module.OnLoad += delegate {
                 foreach (var module in GameService.Module.Modules) {
                     var moduleMi = new MenuItem(module.Manifest.Name) {
-                        BasicTooltipText = "*tempDescription",
+                        BasicTooltipText = module.Manifest.Description,
                         //Icon             = module.Enabled ? Content.GetTexture("156149") : Content.GetTexture("156142"),
                         Parent           = settingsMi_Modules
+                    };
+
+                    moduleMi.Click += delegate {
+                        cPanel.NavigateToBuiltPanel(GameServices.UI.Module.SingleModuleSettingsUIBuilder.BuildSingleModuleSettings, module);
                     };
                 }
             };
 
-            settingsMi_API.Click += delegate
-            {
-                cPanel?.Hide();
-                cPanel?.Dispose();
+            //settingsMi_API.Click += delegate
+            //{
+            //    cPanel?.Hide();
+            //    cPanel?.Dispose();
 
-                cPanel = BuildApiPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
-                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
-                cPanel.Parent = baseSettingsPanel;
-            };
-
-            settingsMi_About.Click += delegate {
-                cPanel?.Hide();
-                cPanel?.Dispose();
-
-                cPanel          = BuildAboutPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
-                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
-                cPanel.Parent   = baseSettingsPanel;
-            };
-
-            settingsMi_Modules.Click += delegate {
-                cPanel?.Hide();
-                cPanel?.Dispose();
-
-                cPanel          = BuildModulePanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
-                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
-                cPanel.Parent   = baseSettingsPanel;
-            };
-
-            moduleMi_Module_Perms.Click += delegate
-            {
-                cPanel?.Hide();
-                cPanel?.Dispose();
-
-                cPanel = BuildModulePermissionsPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
-                cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
-                cPanel.Parent = baseSettingsPanel;
-            };
-
-            settingsMi_Exit.Click += delegate { ActiveOverlay.Exit(); };
-
-            //var settingsMenu = new Menu() {
-            //    Size = new Point(256, 32 * 8),
-            //    MenuItemHeight = 32,
-            //    Location = new Point(20, 20),
-            //    Parent = ssPanel,
+            //    cPanel = BuildApiPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+            //    cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+            //    cPanel.Parent = baseSettingsPanel;
             //};
 
-            ////var settingsMi_BlishHud = settingsMenu.AddMenuItem("Blish HUD Settings");
-            ////var settingsMi_Api = settingsMenu.AddMenuItem("API Settings");
-            //var settingsMi_Module = settingsMenu.AddMenuItem("Module Settings");
-            ////var setItemHotkeys = settingsMenu.AddMenuItem("Hotkeys");
-            ////var settingsMi_Integration = settingsMenu.AddMenuItem("Integration Settings");
-            ////var settingsMi_Update = settingsMenu.AddMenuItem("Update Settings");
-            //var aboutMi = settingsMenu.AddMenuItem("About");
-            //var exitMi = settingsMenu.AddMenuItem("Exit");
+            //settingsMi_About.Click += delegate {
+            //    cPanel?.Hide();
+            //    cPanel?.Dispose();
 
-            //settingsMi_Module.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
-            ////setItemHotkeys.OnLeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(GameServices.GetService<HotkeysService>().BuildHotkeysPanel(wndw)); };
-            //aboutMi.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildAboutPanel(wndw)); };
+            //    cPanel          = BuildAboutPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+            //    cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+            //    cPanel.Parent   = baseSettingsPanel;
+            //};
 
-            //// TODO: Add an "are you sure?" prompt
-            //exitMi.LeftMouseButtonReleased += (object sender, MouseEventArgs e) => { Overlay.Exit(); };
+            //settingsMi_Modules.Click += delegate {
+            //    cPanel?.Hide();
+            //    cPanel?.Dispose();
+
+            //    cPanel          = BuildModulePanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+            //    cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+            //    cPanel.Parent   = baseSettingsPanel;
+            //};
+
+            //moduleMi_Module_Perms.Click += delegate
+            //{
+            //    cPanel?.Hide();
+            //    cPanel?.Dispose();
+
+            //    cPanel = BuildModulePermissionsPanel(new Point(748, baseSettingsPanel.Size.Y - 50 - Panel.BOTTOM_MARGIN));
+            //    cPanel.Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 50);
+            //    cPanel.Parent = baseSettingsPanel;
+            //};
+
+            //settingsMi_Exit.Click += delegate { ActiveOverlay.Exit(); };
+
+            
 
             return baseSettingsPanel;
         }
         private Panel BuildApiPanel(Point size)
         {
             Dictionary<Guid, string> ApiKeys = CoreSettings
-                .GetSetting<Dictionary<Guid, string>>(ApiService.SETTINGS_ENTRY_APIKEYS)
+                .GetSetting<Dictionary<Guid, string>>(Gw2ApiService.SETTINGS_ENTRY_APIKEYS)
                 .Value;
-            Dictionary<string, string> foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+            Dictionary<string, string> foolSafeKeyRepository = Gw2ApiService.GetKeyIdRepository();
 
             var apiPanel = new Panel() { CanScroll = false, Size = size };
 
@@ -436,8 +424,8 @@ namespace Blish_HUD {
                 Location = new Point(apiPanel.Size.X / 2 - 300, apiKeyLabel.Bottom),
                 PlaceholderText = keySelectionDropdown.SelectedItem != null ?
                     foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
-                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
-                    : ApiService.PLACEHOLDER_KEY
+                    Gw2ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+                    : Gw2ApiService.PLACEHOLDER_KEY
             };
             var apiKeyError = new Label()
             {
@@ -464,7 +452,7 @@ namespace Blish_HUD {
                 Gw2Api.RemoveKey(foolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
 
                 keySelectionDropdown.Items.Clear();
-                foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                foolSafeKeyRepository = Gw2ApiService.GetKeyIdRepository();
                 foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
                 {
                     keySelectionDropdown.Items.Add(item.Key);
@@ -474,8 +462,8 @@ namespace Blish_HUD {
 
                 apiKeyTextBox.PlaceholderText = keySelectionDropdown.SelectedItem != null ?
                     foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
-                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
-                    : ApiService.PLACEHOLDER_KEY;
+                    Gw2ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+                    : Gw2ApiService.PLACEHOLDER_KEY;
 
                 apiKeyError.Visible = false;
                 apiKeyButton.Visible = keySelectionDropdown.Visible;
@@ -487,7 +475,7 @@ namespace Blish_HUD {
             {
                 string apiKey = apiKeyTextBox.Text;
                 string errorMsg = null;
-                if (!ApiService.IsKeyValid(apiKey))
+                if (!Gw2ApiService.IsKeyValid(apiKey))
                 {
                     errorMsg = "Not an API key! Invalid pattern.";
                     apiKeyError.TextColor = Color.IndianRed;
@@ -521,7 +509,7 @@ namespace Blish_HUD {
                     apiKeyError.TextColor = Color.LightGreen;
                     apiKeyError.Visible = true;
                     keySelectionDropdown.Items.Clear();
-                    foolSafeKeyRepository = ApiService.GetKeyIdRepository();
+                    foolSafeKeyRepository = Gw2ApiService.GetKeyIdRepository();
                     foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
                     {
                         keySelectionDropdown.Items.Add(item.Key);
@@ -540,23 +528,20 @@ namespace Blish_HUD {
                 apiKeyTextBox.PlaceholderText = 
                 keySelectionDropdown.SelectedItem != null ? 
                     foolSafeKeyRepository[keySelectionDropdown.SelectedItem] + 
-                    ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1) 
-                    : ApiService.PLACEHOLDER_KEY;
+                    Gw2ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1) 
+                    : Gw2ApiService.PLACEHOLDER_KEY;
 
                 apiKeyButton.Visible = true;
             };
             return apiPanel;
         }
-        private Panel BuildModulePermissionsPanel(Point size)
-        {
+        private Panel BuildModulePermissionsPanel(Point size) {
             var permissionsPanel = new Panel() { CanScroll = false, Size = size };
             // All modules that require GW2 API.
-            var apiModules = ModuleService.Module.AvailableModules.Where(x => x.GetModuleInfo().Permissions != null);
+            var apiModules = Module.Modules.Where(x => x.Manifest.ApiPermissions != null);
 
-            if (apiModules.Count() <= 0)
-            {
-                var noApiModulesLabel = new Label()
-                {
+            if (!apiModules.Any()) {
+                var noApiModulesLabel = new Label() {
                     Parent = permissionsPanel,
                     Size = new Point(permissionsPanel.Size.X, 30),
                     Location = new Point(0, permissionsPanel.Size.Y / 2 - 15),
@@ -579,14 +564,14 @@ namespace Blish_HUD {
             };
             foreach (var module in apiModules)
             {
-                string name = module.GetModuleInfo().Name;
-                nameSpaceRepository.Add(name, module.GetModuleInfo().Namespace);
+                string name = module.Manifest.Name;
+                nameSpaceRepository.Add(name, module.Manifest.Namespace);
                 moduleSelectionDropdown.Items.Add(name);
             }
             moduleSelectionDropdown.SelectedItem = null;
             var permissionCheckBoxs = new List<Checkbox>();
             int boxY = 0;
-            foreach (Gw2Sharp.WebApi.V2.Models.TokenPermission perm in ApiService.ALL_PERMISSIONS)
+            foreach (Gw2Sharp.WebApi.V2.Models.TokenPermission perm in Gw2ApiService.ALL_PERMISSIONS)
             {
                 var newBox = new Checkbox()
                 {
@@ -597,35 +582,29 @@ namespace Blish_HUD {
                     Visible = false
                 };
                 permissionCheckBoxs.Add(newBox);
-                boxY = boxY + 30;
+                boxY += 30;
 
-                newBox.CheckedChanged += delegate
-                {
+                newBox.CheckedChanged += delegate {
                     var buildPermissions = new List<Gw2Sharp.WebApi.V2.Models.TokenPermission>();
-                    foreach (Checkbox check in permissionCheckBoxs)
-                    {
-                        if (check.Checked)
-                        {
-                            buildPermissions.Add(ApiService.ALL_PERMISSIONS.First(x => x.ToString().Equals(check.Text)));
+                    foreach (Checkbox check in permissionCheckBoxs) {
+                        if (check.Checked) {
+                            buildPermissions.Add(Gw2ApiService.ALL_PERMISSIONS.First(x => x.ToString().Equals(check.Text)));
                         }
                     }
                     string nSpace = nameSpaceRepository[moduleSelectionDropdown.SelectedItem];
                     var saved = RegisteredSettings[nSpace]
-                        .GetSetting<List<Gw2Sharp.WebApi.V2.Models.TokenPermission>>(ApiService.SETTINGS_ENTRY_PERMISSIONS);
+                        .GetSetting<List<Gw2Sharp.WebApi.V2.Models.TokenPermission>>(Gw2ApiService.SETTINGS_ENTRY_PERMISSIONS);
                     // Save new permissions.
                     saved.Value = buildPermissions;
                 };
             }
-            moduleSelectionDropdown.ValueChanged += delegate
-            {
+            moduleSelectionDropdown.ValueChanged += delegate {
                 string new_value = moduleSelectionDropdown.SelectedItem;
                 var module = Module
-                    .AvailableModules.First(i => i.GetModuleInfo()
-                    .Namespace.Equals(nameSpaceRepository[new_value]));
-
-                var permissions = ApiService.GetModulePermissions(module).Select(x => x.ToString());
-                foreach (Checkbox box in permissionCheckBoxs)
-                {
+                    .Modules.First(i => i.Manifest.Namespace.Equals(nameSpaceRepository[new_value]));
+                
+                var permissions = Gw2ApiService.GetModulePermissions(module).Select(x => x.ToString());
+                foreach (Checkbox box in permissionCheckBoxs) {
                     box.Checked = permissions.Contains(box.Text);
                     box.Visible = true;
                 }
@@ -951,12 +930,10 @@ namespace Blish_HUD {
             // Wire events
             // TODO: This should likely just have its value bound to the ModuleState setting (and the setting should be bound to the module's "Enabled" property)
             cbModuleEnabled.CheckedChanged += delegate {
-                var selectedModule =
-                    GameService.Module.Modules.First(m => m.Manifest.Name == moduleDropdown.SelectedItem);
+                var selectedModule = Module.Modules.First(m => m.Manifest.Name == moduleDropdown.SelectedItem);
 
                 selectedModule.Enabled = cbModuleEnabled.Checked;
-                GameService.Module.ModuleStates.Value[selectedModule.Manifest.Namespace] =
-                    cbModuleEnabled.Checked;
+                Module.ModuleStates.Value[selectedModule.Manifest.Namespace].Enabled = cbModuleEnabled.Checked;
 
                 LstSettings.ForEach(s => s.Enabled = cbModuleEnabled.Checked);
 
@@ -974,9 +951,9 @@ namespace Blish_HUD {
                 if (selectedModule != null) {
                     // Populate module info labels
                     lblModuleName.Text = $"Module Name: {Utils.String.SplitText(selectedModule.Manifest.Name, lineLength)}";
-                    lblModuleAuthor.Text = $"Author: {Utils.String.SplitText(/* selectedModule.Manifest.Author */ "*tempAuthor*", lineLength)}";
+                    lblModuleAuthor.Text = $"Author: {Utils.String.SplitText(selectedModule.Manifest.Author.Name, lineLength)}";
                     lblModuleVersion.Text = $"Version: {Utils.String.SplitText(selectedModule.Manifest.Version.ToString(), lineLength)}";
-                    lblModuleDescription.Text = $"Description: {Utils.String.SplitText(/* selectedModule.Manifest.Description */ "*tempDescription", lineLength)}";
+                    lblModuleDescription.Text = $"Description: {Utils.String.SplitText(selectedModule.Manifest.Description, lineLength)}";
                     lblModuleNamespace.Text = $"Module Namespace: {Utils.String.SplitText(selectedModule.Manifest.Namespace, lineLength)}";
 
                     cbModuleEnabled.Checked = selectedModule.Enabled;
@@ -987,7 +964,7 @@ namespace Blish_HUD {
 
                     int lastControlBottom = lblModuleDescription.Bottom + 50;
 
-                    if (_registeredSettings.TryGetValue($"module:{selectedModule.Manifest.Namespace}", out var moduleSettings)) {
+                    if (this.RegisteredSettings.TryGetValue($"module:{selectedModule.Manifest.Namespace}", out var moduleSettings)) {
                         // Display settings registered by module
                         foreach (KeyValuePair<string, SettingEntry> setting in moduleSettings.Entries.Where(setting => setting.Value.ExposedAsSetting)) {
                             Control settingCtrl;

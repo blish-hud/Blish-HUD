@@ -138,10 +138,12 @@ namespace Blish_HUD.Controls {
             CornerIcons.Add(this);
         }
 
+        /// <inheritdoc />
         protected override CaptureType CapturesInput() {
             return CaptureType.Mouse;
         }
 
+        /// <inheritdoc />
         protected override void OnClick(MouseEventArgs e) {
             Content.PlaySoundEffectByName(@"audio\button-click");
 
@@ -149,6 +151,7 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle _layoutIconBounds;
+        /// <inheritdoc />
 
         public override void RecalculateLayout() {
             _layoutIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
@@ -160,18 +163,21 @@ namespace Blish_HUD.Controls {
         }
 
         // TODO: Use a shader to replace "HoverIcon"
+        /// <inheritdoc />
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_icon == null) return;
 
             if (this.MouseOver && this.RelativeMousePosition.Y <= _layoutIconBounds.Bottom) {
-                if (_hoverIcon == null) {
-                    spriteBatch.DrawOnCtrl(this, _icon, _layoutIconBounds);
-                } else {
-                    spriteBatch.DrawOnCtrl(this, _hoverIcon, _layoutIconBounds);
-                }
+                spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _layoutIconBounds);
             } else {
                 spriteBatch.DrawOnCtrl(this, _icon, _layoutIconBounds, Color.White * _hoverTrans);
             }
         }
+
+        /// <inheritdoc />
+        protected override void DisposeControl() {
+            CornerIcons.Remove(this);
+        }
+
     }
 }

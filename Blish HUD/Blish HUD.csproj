@@ -115,7 +115,6 @@
     <Compile Include="BHGw2Api\Item.cs" />
     <Compile Include="BHGw2Api\Meta.cs" />
     <Compile Include="BHGw2Api\RenderService.cs" />
-    <Compile Include="BHGw2Api\TokenInfo.cs" />
     <Compile Include="BHGw2Api\Continent.cs" />
     <Compile Include="BHGw2Api\Floor.cs" />
     <Compile Include="BHGw2Api\Landmark.cs" />
@@ -202,10 +201,14 @@
     <Compile Include="Entities\Cube.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityContainer.cs" />
-    <Compile Include="GameServices\ApiService.cs" />
+    <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Content\IDataReader.cs" />
+    <Compile Include="GameServices\UI\Module\SingleModuleSettingsUIBuilder.cs" />
     <Compile Include="Modules\ExternalModule.cs" />
+    <Compile Include="Modules\Managers\ContentsManager.cs" />
+    <Compile Include="Modules\Managers\DirectoriesManager.cs" />
+    <Compile Include="Modules\Managers\Gw2ApiManager.cs" />
     <Compile Include="Modules\ModuleParameters.cs" />
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
     <Compile Include="Utils\MouseInterceptor.cs" />
@@ -507,6 +510,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Modules\UI\" />
     <Folder Include="ref\" />
   </ItemGroup>
   <ItemGroup>
@@ -717,8 +721,7 @@
     <PostBuildEvent>rd /s /q "lv", "ms-MY", "mt", "nb", "nb-NO", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sr", "sr-Latn", "sv", "tr", "uk", "uz-Cyrl-UZ", "uz-Latn-UZ", "vi", "zh-CN"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "$(ProjectDir)BuildScripts\RefBuilder.ps1" -Project "$(ProjectDir)\" -Output "$(OutDir)\"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

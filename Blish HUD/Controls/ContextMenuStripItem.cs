@@ -78,8 +78,10 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            if (this.Enabled && this.CanCheck)
+            if (this.CanCheck)
                 this.Checked = !this.Checked;
+            else
+                this.Parent.Hide();
 
             base.OnClick(e);
         }

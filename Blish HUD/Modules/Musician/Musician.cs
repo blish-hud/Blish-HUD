@@ -59,7 +59,7 @@ namespace Blish_HUD.Modules.Musician
         public override void DefineSettings(SettingsManager settingsManager)
         {
             // Define settings
-            settingBackgroundPlayback = settings.DefineSetting<bool>("No background playback", false, false, true, "Stop key emulation when GW2 is in the background");
+            settingBackgroundPlayback = settingsManager.DefineSetting<bool>("No background playback", false, false, true, "Stop key emulation when GW2 is in the background");
         }
 
         #endregion

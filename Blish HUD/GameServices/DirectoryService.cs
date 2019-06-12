@@ -5,41 +5,10 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
+using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
-
-    public class DirectoriesManager {
-
-        private readonly HashSet<string>            _directoryNames;
-        private readonly Dictionary<string, string> _directoryPaths;
-
-        public IReadOnlyList<string> RegisteredDirectories => _directoryNames.ToList();
-
-        public DirectoriesManager(IEnumerable<string> directoryNames) {
-            _directoryNames = new HashSet<string>(directoryNames, StringComparer.OrdinalIgnoreCase);
-            _directoryPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            PrepareDirectories();
-        }
-
-        private void PrepareDirectories() {
-            foreach (string directoryName in _directoryNames) {
-                string fullDirectoryPath = Path.Combine(GameService.Directory.BasePath, directoryName);
-
-                Directory.CreateDirectory(fullDirectoryPath);
-
-                _directoryPaths.Add(directoryName, fullDirectoryPath);
-            }
-        }
-
-        public string GetFullDirectoryPath(string directoryName) {
-            if (!_directoryNames.Contains(directoryName)) return null;
-
-            return _directoryPaths[directoryName];
-        }
-
-    }
 
     public class DirectoryService : GameService {
 
@@ -69,6 +38,14 @@ namespace Blish_HUD {
             // will start to make their file operations starting in `Load()`
 
             DetermineWritePath();
+        }
+
+        public string RegisterDirectory(string directory) {
+            string registeredDirectory = Path.Combine(this.BasePath, directory);
+
+            System.IO.Directory.CreateDirectory(registeredDirectory);
+
+            return registeredDirectory;
         }
 
         public DirectoriesManager RegisterDirectories(IEnumerable<string> directories) {

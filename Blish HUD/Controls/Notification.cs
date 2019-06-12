@@ -11,7 +11,7 @@ using MonoGame.Extended.BitmapFonts;
 namespace Blish_HUD.Controls {
     public class Notification : Control {
 
-        private const int DURATION_DEFAULT = 2;
+        private const int DURATION_DEFAULT = 1000;
 
         private const int NOTIFICATION_WIDTH  = 1024;
         private const int NOTIFICATION_HEIGHT = 256;
@@ -102,7 +102,7 @@ namespace Blish_HUD.Controls {
                 case NotificationType.Blue:
                 case NotificationType.Green:
                 case NotificationType.Red:
-
+                    _layoutMessageBounds = this.LocalBounds;
                     break;
             }
         }
@@ -149,17 +149,19 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawStringOnCtrl(this,
                                          this.Message,
                                          _fontMenomonia36Regular,
-                                         _layoutMessageBounds.OffsetBy(1, 1),
+                                         //_layoutMessageBounds.OffsetBy(1, 1),
+                                         bounds.OffsetBy(1, 1),
                                          Color.Black,
-                                         true,
+                                         false,
                                          DrawUtil.HorizontalAlignment.Center);
 
             spriteBatch.DrawStringOnCtrl(this,
                                          this.Message,
                                          _fontMenomonia36Regular,
-                                         _layoutMessageBounds,
+                                         //_layoutMessageBounds,
+                                         bounds,
                                          messageColor,
-                                         true,
+                                         false,
                                          DrawUtil.HorizontalAlignment.Center);
         }
 

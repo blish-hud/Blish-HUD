@@ -44,11 +44,12 @@ namespace Blish_HUD {
         #region Static Service References
 
         public static readonly DebugService           Debug;
-        public static readonly DirectoryService            Directory;
+        public static readonly DirectoryService       Directory;
         public static readonly SettingsService        Settings;
         public static readonly ContentService         Content;
         public static readonly AnimationService       Animation;
         public static readonly GraphicsService        Graphics;
+        public static readonly Gw2ApiService          Gw2Api;
         public static readonly Gw2MumbleService       Gw2Mumble;
         public static readonly PlayerService          Player;
         public static readonly CameraService          Camera;
@@ -66,13 +67,14 @@ namespace Blish_HUD {
         static GameService() {
             // Init game services
             Debug           = new DebugService();
-            Directory         = new DirectoryService();
+            Directory       = new DirectoryService();
             Input           = new InputService();
             Store           = new PersistentStoreService();
             Settings        = new SettingsService();
             Content         = new ContentService();
             Animation       = new AnimationService();
             Graphics        = new GraphicsService();
+            Gw2Api          = new Gw2ApiService();
             Gw2Mumble       = new Gw2MumbleService();
             Player          = new PlayerService();
             Camera          = new CameraService();
@@ -91,6 +93,7 @@ namespace Blish_HUD {
                 Content,
                 Animation,
                 Graphics,
+                Gw2Api,
                 Gw2Mumble,
                 Player,
                 Camera,
@@ -99,8 +102,7 @@ namespace Blish_HUD {
                 GameIntegration,
                 Hotkeys,
                 Pathing,
-                Module,
-                //ArcDps
+                Module
             };
 
         }

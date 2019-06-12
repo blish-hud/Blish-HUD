@@ -43,7 +43,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnShown(EventArgs e) {
-            // If we have no children, don't display (and don't call 'Shown' event, either)
+            // If we have no children, don't display (and don't even call 'Shown' event)
             if (!_children.Any()) {
                 this.Visible = false;
                 return;
@@ -97,7 +97,7 @@ namespace Blish_HUD.Controls {
             }
 
             if (!this.MouseOver)
-                this.Visible = false;
+                this.Hide();
         }
 
         public ContextMenuStripItem AddMenuItem(string text) {
@@ -116,11 +116,6 @@ namespace Blish_HUD.Controls {
 
                 newChild.Height = ITEM_HEIGHT;
                 newChild.Left = BORDER_PADDING;
-
-                
-                newChild.MouseEntered += delegate {
-                    
-                };
 
                 newChild.MouseEntered += ChildOnMouseEntered;
                 newChild.Resized      += ChildOnResized;

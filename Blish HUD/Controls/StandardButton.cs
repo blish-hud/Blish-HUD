@@ -11,6 +11,9 @@ namespace Blish_HUD.Controls {
 
     public class StandardButton : LabelBase {
 
+        public const int STANDARD_CONTROL_HEIGHT = 26;
+        public const int DEFAULT_CONTROL_WIDTH = 128;
+
         private const int ICON_SIZE        = 16;
         private const int ICON_TEXT_OFFSET = 4;
 
@@ -63,7 +66,7 @@ namespace Blish_HUD.Controls {
             _horizontalAlignment = DrawUtil.HorizontalAlignment.Left;
             _verticalAlignment   = DrawUtil.VerticalAlignment.Middle;
 
-            this.Size = new Point(80, 26);
+            this.Size = new Point(DEFAULT_CONTROL_WIDTH, STANDARD_CONTROL_HEIGHT);
 
             InitAnim();
         }
@@ -126,7 +129,7 @@ namespace Blish_HUD.Controls {
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            if (this.MouseOver) {
+            if (_enabled && this.MouseOver) {
                 if (_animHover == null)
                     _animHover = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9 * (this.Width / ATLAS_SPRITE_WIDTH), AnimationService.EasingMethod.Linear);
             }
@@ -142,10 +145,18 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Button Texture
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureButtonIdle,
-                                   new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
-                                   _activeAtlasRegion);
+            if (_enabled) {
+                spriteBatch.DrawOnCtrl(this,
+                                       _textureButtonIdle,
+                                       new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
+                                       _activeAtlasRegion);
+            } else { 
+                // TODO: Use the actual button texture instead
+                spriteBatch.DrawOnCtrl(this,
+                                       ContentService.Textures.Pixel,
+                                       new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
+                                       Color.FromNonPremultiplied(121, 121, 121, 255));
+            }
 
             // Top Shadow
             spriteBatch.DrawOnCtrl(this,
@@ -178,6 +189,8 @@ namespace Blish_HUD.Controls {
                                        _layoutIconBounds);
             }
 
+            // TODO: Don't set button text color like this
+            _textColor = _enabled ? Color.Black : Color.FromNonPremultiplied(51, 51, 51, 255);
             // Button Text
             DrawText(spriteBatch, _layoutTextBounds);
         }

@@ -51,6 +51,20 @@ namespace Blish_HUD.Controls {
 
         private Scrollbar _panelScrollbar;
 
+        public delegate void BuildUIDelegate(Panel buildPanel, object obj);
+
+        public void NavigateToBuiltPanel(BuildUIDelegate buildCall, object obj) {
+            this.Children.ToList().ForEach(c => c.Dispose());
+
+            var buildPanel = new Panel() {
+                Size = _size
+            };
+
+            buildCall(buildPanel, obj);
+
+            buildPanel.Parent = this;
+        }
+
         protected override void OnMoved(MovedEventArgs e) {
             base.OnMoved(e);
 

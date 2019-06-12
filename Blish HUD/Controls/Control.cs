@@ -139,7 +139,7 @@ namespace Blish_HUD.Controls {
         public event EventHandler<MouseEventArgs> MouseLeft;
 
         /// <summary>
-        /// Alias for <see cref="LeftMouseButtonReleased"/>.  Only fires if <see cref="Enabled"/> is true.
+        /// Alias for <see cref="LeftMouseButtonReleased"/> with the difference that it only fires if <see cref="Enabled"/> is true.
         /// </summary>
         /// <remarks>Fires after <see cref="LeftMouseButtonReleased"/> fires.</remarks>
         public event EventHandler<MouseEventArgs> Click;
@@ -151,9 +151,8 @@ namespace Blish_HUD.Controls {
         protected virtual void OnLeftMouseButtonReleased(MouseEventArgs e) {
             this.LeftMouseButtonReleased?.Invoke(this, e);
 
-            if (this.Enabled) {
-                this.Click?.Invoke(this, e);
-            }
+            if (_enabled)
+                OnClick(e);
         }
 
         protected virtual void OnMouseMoved(MouseEventArgs e) {
@@ -184,7 +183,7 @@ namespace Blish_HUD.Controls {
         /// Fires <see cref="OnLeftMouseButtonReleased"/> if the control is enabled.
         /// </summary>
         protected virtual void OnClick(MouseEventArgs e) {
-            OnLeftMouseButtonReleased(e);
+            this.Click?.Invoke(this, e);
         }
 
         #endregion
@@ -622,7 +621,7 @@ namespace Blish_HUD.Controls {
                     return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
                     break;
                 case MouseEventType.LeftMouseButtonReleased:
-                    OnClick(new MouseEventArgs(ms));
+                    OnLeftMouseButtonReleased(new MouseEventArgs(ms));
                     return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
                     break;
                 case MouseEventType.RightMouseButtonPressed:

@@ -69,11 +69,11 @@ namespace Blish_HUD.Modules {
         protected bool Loaded = false;
 
         public Module() {
-            this.SettingsManager = GameService
-                           .Settings
-                           .RegisterSettings(GetModuleInfo().Namespace, true);
+            //this.SettingsManager = GameService
+            //               .Settings
+            //               .RegisterSettings(GetModuleInfo().Namespace, true);
 
-            DefineSettings(this.SettingsManager);
+            //DefineSettings(this.SettingsManager);
         }
 
         public virtual void OnLoad() { Loaded = true; }

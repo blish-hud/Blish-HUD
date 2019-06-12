@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Content;
+using Blish_HUD.Modules.Managers;
+using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -31,7 +33,6 @@ namespace Blish_HUD.Modules {
 
         private readonly ModuleParameters _moduleParameters;
 
-
         private bool _loaded = false;
         public bool Loaded => _loaded;
 
@@ -45,7 +46,7 @@ namespace Blish_HUD.Modules {
 
         public SemVer.Version Version => _moduleParameters.Manifest.Version;
 
-        // Parameters
+        // Service Managers
 
         protected SettingsManager SettingsManager => _moduleParameters.SettingsManager;
 
@@ -53,7 +54,11 @@ namespace Blish_HUD.Modules {
 
         protected DirectoriesManager DirectoriesManager => _moduleParameters.DirectoriesManager;
 
+        protected Gw2ApiManager Gw2ApiManager => _moduleParameters.GW2ApiManager;
+
         #endregion
+
+        private Task _loadTask;
 
         [ImportingConstructor]
         public ExternalModule([Import("ModuleParameters")] ModuleParameters moduleParameters) {
@@ -69,29 +74,31 @@ namespace Blish_HUD.Modules {
         }
 
         public void DoLoad() {
-            var loadModule = new Task(LoadAsync);
+            _loadTask = LoadAsync();
+        }
 
-            loadModule.ContinueWith((result) => {
-                switch (result.Status) {
-                    case TaskStatus.Faulted:
-                        OnModuleException(new UnobservedTaskExceptionEventArgs(result.Exception));
-                        break;
+        private void CheckForLoaded() {
+            switch (_loadTask.Status) {
+                case TaskStatus.Faulted:
+                    OnModuleException(new UnobservedTaskExceptionEventArgs(_loadTask.Exception));
+                    OnModuleLoaded(EventArgs.Empty);
+                    break;
 
-                    case TaskStatus.RanToCompletion:
-                        OnModuleLoaded(EventArgs.Empty);
-                        break;
+                case TaskStatus.RanToCompletion:
+                    OnModuleLoaded(EventArgs.Empty);
+                    break;
 
-                    default:
-                        GameService.Debug.WriteErrorLine($"Unexpected module load result status '{result.Status.ToString()}'.");
-                        break;
-                }
-            });
-
-            loadModule.Start();
+                default:
+                    GameService.Debug.WriteErrorLine($"Unexpected module load result status '{_loadTask.Status.ToString()}'.");
+                    break;
+            }
         }
 
         public void DoUpdate(GameTime gameTime) {
-            Update(gameTime);
+            if (_loaded)
+                Update(gameTime);
+            else
+                CheckForLoaded();
         }
 
         private void DoUnload() {
@@ -106,7 +113,7 @@ namespace Blish_HUD.Modules {
 
         protected virtual void DefineSettings(SettingsManager settingsManager) { /* NOOP */ }
 
-        protected virtual async void LoadAsync() { /* NOOP */ }
+        protected virtual async Task LoadAsync() { /* NOOP */ }
 
         protected virtual void Update(GameTime gameTime) { /* NOOP */ }
 
@@ -114,7 +121,8 @@ namespace Blish_HUD.Modules {
 
         #endregion
 
-        
+        #region IDispose
+
         protected virtual void Dispose(bool disposing) {
             DoUnload();
         }
@@ -129,6 +137,8 @@ namespace Blish_HUD.Modules {
         ~ExternalModule() {
             Dispose(false);
         }
+
+        #endregion
 
     }
 

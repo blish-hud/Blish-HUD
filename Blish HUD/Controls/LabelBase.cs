@@ -69,8 +69,6 @@ namespace Blish_HUD.Controls {
 
             LabelRegion = new Point(lblRegionWidth, lblRegionHeight);
 
-            this.Size = LabelRegion;
-
             if (_cacheLabel) {
                 _labelRender = CachedStringRender.GetCachedStringRender(_text,
                                                                        _font,
