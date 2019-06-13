@@ -52,11 +52,29 @@ namespace Blish_HUD.Content {
             );
         }
 
+        private string GetUniformFileName(string filePath) {
+            return filePath.Replace(@"\", "/").Replace("//", "/").Trim();
+        }
+
+        private ZipArchiveEntry GetArchiveEntry(string filePath) {
+            var cleanFilePath = GetUniformFileName(Path.Combine(_subPath, filePath));
+
+            foreach (var zipEntry in _archive.Entries) {
+                string cleanZipEntry = GetUniformFileName(zipEntry.FullName);
+
+                if (string.Equals(cleanFilePath, cleanZipEntry, StringComparison.OrdinalIgnoreCase)) {
+                    return zipEntry;
+                }
+            }
+
+            return null;
+        }
+
         /// <inheritdoc />
         public Stream GetFileStream(string filePath) {
             ZipArchiveEntry fileEntry;
 
-            if ((fileEntry = _archive.GetEntry(Path.Combine(_subPath, filePath.Replace(@"\", "/")))) != null) {
+            if ((fileEntry = this.GetArchiveEntry(filePath)) != null) { 
                 _exclusiveStreamAccessMutex.WaitOne();
 
                 var memStream = new MemoryStream();

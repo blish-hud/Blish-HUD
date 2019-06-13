@@ -123,7 +123,7 @@ namespace Blish_HUD.Modules {
 
         #region IDispose
 
-        protected virtual void Dispose(bool disposing) {
+        protected void Dispose(bool disposing) {
             DoUnload();
         }
 

@@ -11,12 +11,14 @@ using MonoGame.Extended.BitmapFonts;
 namespace Blish_HUD.Controls {
     public class Notification : Control {
 
-        private const int DURATION_DEFAULT = 1000;
+        private const int DURATION_DEFAULT = 4;
 
         private const int NOTIFICATION_WIDTH  = 1024;
         private const int NOTIFICATION_HEIGHT = 256;
 
         #region Load Static
+
+        private static Notification _activeNotification;
 
         private static readonly BitmapFont _fontMenomonia36Regular;
 
@@ -90,6 +92,11 @@ namespace Blish_HUD.Controls {
         }
 
         /// <inheritdoc />
+        protected override CaptureType CapturesInput() {
+            return CaptureType.ForceNone;
+        }
+
+        /// <inheritdoc />
         public override void RecalculateLayout() {
             switch (_type) {
                 case NotificationType.Info:
@@ -118,11 +125,11 @@ namespace Blish_HUD.Controls {
                     break;
 
                 case NotificationType.Warning:
-                    messageColor = Color.Yellow;
+                    messageColor = StandardColors.Yellow;
                     break;
 
                 case NotificationType.Error:
-                    messageColor = Color.Red;
+                    messageColor = StandardColors.Red;
                     break;
 
                 case NotificationType.Gray:
@@ -181,6 +188,10 @@ namespace Blish_HUD.Controls {
             var nNot = new Notification(message, type, icon, duration) {
                 Parent = Graphics.SpriteScreen
             };
+
+            _activeNotification?.Hide();
+
+            _activeNotification = nNot;
 
             nNot.Show();
         }

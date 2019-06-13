@@ -339,7 +339,7 @@ namespace Blish_HUD {
 
         public Gw2ApiManager RegisterGw2ApiConnection(Manifest manifest, TokenPermission[] userEnabledPermissions) {
             // Check to ensure all required permissions have been enabled
-            foreach (KeyValuePair<TokenPermission, ApiPermissions> permissionSet in manifest.ApiPermissions) {
+            foreach (KeyValuePair<TokenPermission, ApiPermissions> permissionSet in manifest.ApiPermissions ?? new Dictionary<TokenPermission, ApiPermissions>(0)) {
                 if (!permissionSet.Value.Optional) {
                     if (!userEnabledPermissions.Contains(permissionSet.Key)) {
                         Debug.WriteWarningLine($"Module '{manifest.Name} [{manifest.Namespace}]' requires API permission '{permissionSet.Key.ToString()}', but the user did not grant this permission.");

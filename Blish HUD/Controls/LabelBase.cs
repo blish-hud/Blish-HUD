@@ -26,6 +26,8 @@ namespace Blish_HUD.Controls {
 
         protected Utils.DrawUtil.VerticalAlignment _verticalAlignment = Utils.DrawUtil.VerticalAlignment.Top;
 
+        protected bool _wrapText = false;
+
         protected bool _showShadow = false;
 
         protected bool _strokeText = false;
@@ -83,6 +85,10 @@ namespace Blish_HUD.Controls {
         }
 
         protected Size2 GetTextDimensions(string text = null) {
+            text = text ?? _text;
+
+            if (!_autoSizeWidth && _wrapText) text = Utils.DrawUtil.WrapText(_font, text, LabelRegion.X > 0 ? LabelRegion.X : _size.X);
+
             return _font.MeasureString(text ?? _text);
         }
         
@@ -97,7 +103,7 @@ namespace Blish_HUD.Controls {
             if (_cacheLabel && _labelRender != null)
                 spriteBatch.DrawOnCtrl(this, _labelRender.CachedRender, bounds);
             else
-                spriteBatch.DrawStringOnCtrl(this, text, _font, bounds, _textColor, false, _strokeText, 1, _horizontalAlignment, _verticalAlignment);
+                spriteBatch.DrawStringOnCtrl(this, text, _font, bounds, _textColor, _wrapText, _strokeText, 1, _horizontalAlignment, _verticalAlignment);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
@@ -105,7 +111,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void DisposeControl() {
-            
+
         }
 
     }

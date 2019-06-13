@@ -204,6 +204,7 @@
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Content\IDataReader.cs" />
+    <Compile Include="GameServices\UI\ApplicationSettingsUIBuilder.cs" />
     <Compile Include="GameServices\UI\Module\SingleModuleSettingsUIBuilder.cs" />
     <Compile Include="Modules\ExternalModule.cs" />
     <Compile Include="Modules\Managers\ContentsManager.cs" />
@@ -215,11 +216,6 @@
     <Compile Include="_Interfaces\IKeyboard.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
     <Compile Include="Modules\IModule.cs" />
-    <Compile Include="Modules\LoadingScreenHints\Controls\GamingTip.cs" />
-    <Compile Include="Modules\LoadingScreenHints\Controls\GuessCharacter.cs" />
-    <Compile Include="Modules\LoadingScreenHints\Controls\LoadScreenPanel.cs" />
-    <Compile Include="Modules\LoadingScreenHints\Controls\Narration.cs" />
-    <Compile Include="Modules\LoadingScreenHints\LoadingScreenHints.cs" />
     <Compile Include="Modules\ManifestV1.cs" />
     <Compile Include="Modules\MarkersAndPaths\IPackFileSystemContext.cs" />
     <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\ITacOPathable.cs" />

@@ -41,6 +41,9 @@ namespace Blish_HUD {
                     this.Disable();
                     ModuleDisabled?.Invoke(this, EventArgs.Empty);
                 }
+
+                _state.Enabled = _enabled;
+                GameService.Settings.Save();
             }
         }
 
@@ -57,7 +60,7 @@ namespace Blish_HUD {
             _dataReader = dataReader;
         }
 
-        public void Enable() {
+        private void Enable() {
             var moduleParams = ModuleParameters.BuildFromManifest(_manifest, _state, _dataReader);
 
             if (moduleParams == null) {
@@ -79,7 +82,7 @@ namespace Blish_HUD {
             this.ModuleInstance.DoLoad();
         }
 
-        public void Disable() {
+        private void Disable() {
             ModuleInstance?.Dispose();
         }
 
@@ -199,15 +202,15 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             _modules.ForEach(s => {
-                try {
+                //try {
                     if (s.Enabled) s.ModuleInstance.DoUpdate(gameTime);
-                } catch (Exception ex) {
-#if DEBUG
-                    throw;
-#endif
-                    Console.WriteLine($"{s.Manifest.Name} module had an error:");
-                    Console.WriteLine(ex.Message);
-                }
+//                } catch (Exception ex) {
+//#if DEBUG
+//                    throw;
+//#endif
+//                    Console.WriteLine($"{s.Manifest.Name} module had an error:");
+//                    Console.WriteLine(ex.Message);
+//                }
             });
         }
     }

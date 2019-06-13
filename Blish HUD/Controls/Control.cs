@@ -66,6 +66,20 @@ namespace Blish_HUD.Controls {
             /// </summary>
             public static Color Shadow => new Color(0xff000000);
 
+            /// <summary>
+            /// Color of warning and alert text.  Also the color of lots of floating text.
+            ///
+            /// The color is yellow (#FFFF00).
+            /// </summary>
+            public static Color Yellow => Color.FromNonPremultiplied(255, 255, 0, 255);
+
+            /// <summary>
+            /// The color of error text.
+            ///
+            /// The color is red (#F20D13).
+            /// </summary>
+            public static Color Red => Color.FromNonPremultiplied(242, 13, 19, 255);
+
         }
 
         #endregion
@@ -89,7 +103,6 @@ namespace Blish_HUD.Controls {
                 Text              = "Loading...",
                 AutoSizeHeight    = true,
                 AutoSizeWidth     = true,
-                VerticalAlignment = DrawUtil.VerticalAlignment.Middle,
                 ShowShadow        = true,
                 Parent            = _sharedTooltip,
             };

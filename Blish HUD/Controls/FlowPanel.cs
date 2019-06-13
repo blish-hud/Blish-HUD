@@ -71,32 +71,41 @@ namespace Blish_HUD.Controls {
             ReflowChildLayout(_children);
         }
 
-        private void ReflowChildLayout(List<Control> allChildren){
-            // TODO: Implement TopToBottom ControlFlowDirection
-            if (this.FlowDirection == ControlFlowDirection.LeftToRight) {
-                float nextBottom = _padTopBeforeControl ? _controlPadding.Y : 0;
-                float currentBottom = 0;
-                float lastRight = _padLeftBeforeControl ? _controlPadding.X : 0;
+        private void ReflowChildLayoutLeftToRight(List<Control> allChildren) {
+            float nextBottom    = _padTopBeforeControl ? _controlPadding.Y : 0;
+            float currentBottom = 0;
+            float lastRight     = _padLeftBeforeControl ? _controlPadding.X : 0;
 
-                foreach (var child in allChildren.Where(c => c.Visible)) {
-                    // Need to flow over to the next line
-                    if (child.Width > this.Width - lastRight) {
-                        // TODO: Consider a more graceful alternative (like just stick it on its own line)
-                        // Prevent stack overflow
-                        if (child.Width > this.ContentRegion.Width)
-                            throw new Exception("Control is too large to flow in FlowPanel");
+            foreach (var child in allChildren.Where(c => c.Visible)) {
+                // Need to flow over to the next line
+                if (child.Width >= this.Width - lastRight) {
+                    // TODO: Consider a more graceful alternative (like just stick it on its own line)
+                    // Prevent stack overflow
+                    if (child.Width > this.ContentRegion.Width)
+                        throw new Exception("Control is too large to flow in FlowPanel");
 
-                        currentBottom = nextBottom + _controlPadding.Y;
-                        lastRight = _padLeftBeforeControl ? _controlPadding.X : 0;
-                    }
-
-                    child.Location = new Point((int)lastRight, (int)currentBottom);
-
-                    lastRight = child.Right + _controlPadding.X;
-
-                    // Ensure rows don't overlap
-                    nextBottom = Math.Max(nextBottom, child.Bottom);
+                    currentBottom = nextBottom + _controlPadding.Y;
+                    lastRight     = _padLeftBeforeControl ? _controlPadding.X : 0;
                 }
+
+                child.Location = new Point((int)lastRight, (int)currentBottom);
+
+                lastRight = child.Right + _controlPadding.X;
+
+                // Ensure rows don't overlap
+                nextBottom = Math.Max(nextBottom, child.Bottom);
+            }
+        }
+
+        private void ReflowChildLayoutTopToBottom(List<Control> allChildren) {
+            // TODO: Implement FlowPanel FlowDirection.TopToBottom
+        }
+
+        private void ReflowChildLayout(List<Control> allChildren) {
+            if (this.FlowDirection == ControlFlowDirection.LeftToRight) {
+                ReflowChildLayoutLeftToRight(allChildren.Where(c => c.GetType() != typeof(Scrollbar)).ToList());
+            } else {
+                ReflowChildLayoutTopToBottom(allChildren.Where(c => c.GetType() != typeof(Scrollbar)).ToList());
             }
         }
 

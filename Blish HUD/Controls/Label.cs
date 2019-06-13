@@ -52,6 +52,11 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _verticalAlignment, value);
         }
 
+        public bool WrapText {
+            get => _wrapText;
+            set => SetProperty(ref _wrapText, value, true);
+        }
+
         /// <summary>
         /// If enabled, a 1px offset shadow will be applied behind the rendered text.
         /// </summary>

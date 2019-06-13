@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Blish_HUD.Controls;
 using Blish_HUD.Entities;
 using Microsoft.Xna.Framework;
 
@@ -29,7 +30,7 @@ namespace Blish_HUD.Pathing.Behaviors {
 
             System.Windows.Forms.Clipboard.SetText(this.CopyValue);
 
-            Controls.Notification.ShowNotification(string.Format(this.CopyMessage, this.CopyValue));
+            Notification.ShowNotification(string.Format(this.CopyMessage, this.CopyValue));
         }
 
         public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {

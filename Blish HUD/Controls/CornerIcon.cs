@@ -101,7 +101,7 @@ namespace Blish_HUD.Controls {
                     var scaledMousePos = e.MouseState.Position.ScaleToUi();
                     if (scaledMousePos.Y < Overlay.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
                         foreach (var cornerIcon in CornerIcons) {
-                            cornerIcon.MouseInHouse = true;
+                            cornerIcon.MouseInHouse = scaledMousePos.X < cornerIcon.Left || cornerIcon.MouseOver;
                         }
 
                         return;
