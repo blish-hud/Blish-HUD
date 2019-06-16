@@ -250,6 +250,14 @@ namespace Blish_HUD {
             return definedEntry;
         }
 
+        public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
+            var subCollection = new SettingCollection(lazyLoaded);
+
+            this.DefineSetting(collectionKey, subCollection);
+
+            return subCollection;
+        }
+
         public void Load() {
             if (_entryTokens == null) return;
 
@@ -278,43 +286,7 @@ namespace Blish_HUD {
 
     }
 
-    //public class SettingsManager {
-
-    //    [JsonProperty]
-    //    public Dictionary<string, SettingEntry> _entries = new Dictionary<string, SettingEntry>();
-
-    //    [JsonIgnore]
-    //    public IReadOnlyDictionary<string, SettingEntry> Entries => 
-    //        _entries ?? (_entries = new Dictionary<string, SettingEntry>());
-
-    //    public SettingEntry<T> DefineSetting<T>(string name, T value, T defaultValue, bool exposedAsSetting = false, string description = "") {
-    //        SettingEntry<T> actSetting;
-
-    //        if (_entries.ContainsKey(name) && _entries[name] is SettingEntry<T> castSetting) {
-    //            actSetting = castSetting;
-    //        } else {
-    //            // Setting was either predefined as a different type or has never been defined before
-    //            _entries.Remove(name);
-    //            actSetting = SettingEntry<T>.InitSetting(value);
-    //            _entries.Add(name, actSetting);
-    //        }
-
-    //        actSetting.ExposedAsSetting = exposedAsSetting;
-    //        actSetting.Description = description;
-
-    //        return actSetting;
-    //    }
-
-    //    public SettingEntry<T> GetSetting<T>(string name) {
-    //        if (!this.Entries.ContainsKey(name))
-    //            throw new Exception("Attempted to query setting before it has been been set.");
-
-    //        return (SettingEntry<T>)this.Entries[name];
-    //    }
-
-    //}
-
-    [JsonObject]
+   [JsonObject]
     public class SettingsService : GameService {
 
         private const string SETTINGS_FILENAME = "settings.json";
@@ -333,13 +305,7 @@ namespace Blish_HUD {
         [JsonIgnore]
         private string _settingsPath;
 
-        //[JsonProperty]
-        //public Dictionary<string, SettingsManager> RegisteredSettings { get; private set; }
-
-        //[JsonProperty]
-        //internal SettingsManager CoreSettings { get; private set; }
-
-        internal SettingCollection Settings;
+        internal SettingCollection Settings { get; private set; }
 
         protected override void Initialize() {
             //this.RegisteredSettings = new Dictionary<string, SettingsManager>();
