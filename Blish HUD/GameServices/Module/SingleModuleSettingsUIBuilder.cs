@@ -8,7 +8,7 @@ using Blish_HUD.Modules;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 
-namespace Blish_HUD.GameServices.UI.Module {
+namespace Blish_HUD.GameServices.Module {
     public static class SingleModuleSettingsUIBuilder {
 
         public static void BuildSingleModuleSettings(Panel buildPanel, object module) {

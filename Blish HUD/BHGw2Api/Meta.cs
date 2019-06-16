@@ -83,7 +83,7 @@ namespace Blish_HUD.BHGw2Api {
                 double timeUntil = (e.NextTime - DateTime.Now).TotalMinutes;
                 if (timeUntil < (e.Reminder ?? -1) && e.IsWatched) {
                     if (!e.HasAlerted) {
-                        Modules.EventTimers.EventNotification.ShowNotification(e.Name, string.IsNullOrEmpty(e.Icon) ? GameService.Content.GetTexture("102377") : GameService.Content.GetTexture(e.Icon), $"Starts in {timeUntil.Minutes().Humanize()}", 10f);
+                        //Modules.EventTimers.EventNotification.ShowNotification(e.Name, string.IsNullOrEmpty(e.Icon) ? GameService.Content.GetTexture("102377") : GameService.Content.GetTexture(e.Icon), $"Starts in {timeUntil.Minutes().Humanize()}", 10f);
                         e.HasAlerted = true;
                     }
                 } else {

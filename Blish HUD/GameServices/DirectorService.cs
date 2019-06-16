@@ -14,9 +14,13 @@ namespace Blish_HUD {
 
     public class DirectorService:GameService {
 
+        private const string APPLICATION_SETTINGS = "ApplicationConfiguration";
+
         public TabbedWindow BlishHudWindow { get; protected set; }
         public CornerIcon BlishMenuIcon { get; protected set; }
         public ContextMenuStrip BlishContextMenu { get; protected set; }
+
+        internal SettingCollection _applicationSettings;
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
@@ -29,41 +33,14 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            //Texture2D mask = Content.GetTexture("157357");
-            //Texture2D background = Content.GetTexture("157356");
+            _applicationSettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
 
-            //var coverageEffect = Overlay.cm.Load<Effect>(@"effects\gw2master");
-            //coverageEffect.Parameters["Mask"].SetValue(mask);
-            //coverageEffect.Parameters["directionIn"].SetValue(false);
-            //coverageEffect.Parameters["Roller"].SetValue(0f);
+            DefineSettings(_applicationSettings);
+        }
 
-            //Controls.Image shaderTest = new Image(background) {
-            //    BackgroundColor = Color.Magenta,
-            //    Parent = Graphics.SpriteScreen,
-            //    Size = new Point(128, 128),
-            //    Location = new Point(512, 100),
-            //    //SpriteBatchParameters = new SpriteBatchParameters(SpriteSortMode.Immediate,
-            //    //BlendState.NonPremultiplied,
-            //    //SamplerState.LinearClamp,
-            //    //null,
-            //    //null,
-            //    //coverageEffect,
-            //    //GameService.Graphics.UIScaleTransform)
-            //};
-
-            //Controls.TrackBar rollbarTest = new TrackBar() {
-            //    Parent = Graphics.SpriteScreen,
-            //    MinValue = 0,
-            //    MaxValue = 100,
-            //    Value = 0,
-            //    Location = new Point(512, shaderTest.Bottom - shaderTest.Height / 2),
-            //};
-
-            //rollbarTest.Left = shaderTest.Right + 10;
-
-            //rollbarTest.ValueChanged += delegate {
-            //    coverageEffect.Parameters["Roller"].SetValue(rollbarTest.Value / 100f);
-            //};
+        private void DefineSettings(SettingCollection settings) {
+            settings.DefineSetting("AppCulture", Gw2Sharp.WebApi.Locale.English, "Application & API Language", "Determines the language used when displaying Blish HUD text and results from the GW2 API.");
+            settings.DefineSetting("StayInTray", true, "Minimize to tray when Guild Wars 2 Closes", "If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.\nYou can also use the Blish HUD icon in the tray to launch Guild Wars 2.");
         }
 
         protected override void Load() {

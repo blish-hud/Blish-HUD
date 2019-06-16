@@ -183,8 +183,8 @@ namespace Blish_HUD {
                 i++;
             }
 
-            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, $"Pathables Available: {Modules.MarkersAndPaths.PackFormat.OverlayDataReader.Pathables.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
+            //_basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, $"Pathables Available: {Modules.MarkersAndPaths.PackFormat.OverlayDataReader.Pathables.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            //i++;
             _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, $"3D Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             //i++;
             //spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Blish_HUD.Modules.MarkersAndPaths;
 using Blish_HUD.Pathing.Behaviors;
 using Blish_HUD.Pathing.Content;
 using Microsoft.Xna.Framework;

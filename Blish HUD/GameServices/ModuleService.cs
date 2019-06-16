@@ -13,6 +13,7 @@ using Blish_HUD.Modules;
 using Gw2Sharp.WebApi.V2.Models;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Module = Blish_HUD.Modules.Module;
 
 namespace Blish_HUD {
 
@@ -51,17 +52,19 @@ namespace Blish_HUD {
 
         public ModuleState State => _state;
 
+        public IDataReader DataReader => _dataReader;
+
         [Import]
-        public ExternalModule ModuleInstance { get; private set; }
+        public Module ModuleInstance { get; private set; }
 
         public ModuleManager(Manifest manifest, ModuleState state, IDataReader dataReader) {
             _manifest   = manifest;
-            _state = state;
+            _state      = state;
             _dataReader = dataReader;
         }
 
         private void Enable() {
-            var moduleParams = ModuleParameters.BuildFromManifest(_manifest, _state, _dataReader);
+            var moduleParams = ModuleParameters.BuildFromManifest(_manifest, this);
 
             if (moduleParams == null) {
                 _enabled = false;
@@ -83,13 +86,19 @@ namespace Blish_HUD {
         }
 
         private void Disable() {
-            ModuleInstance?.Dispose();
+            this.ModuleInstance?.Dispose();
+            this.ModuleInstance = null;
         }
 
         private void ComposeModuleFromFileSystemReader(string dllName, ModuleParameters parameters) {
-            byte[] assemblyData = _dataReader.GetFileBytes(dllName);
+            string symbolsPath = dllName.Replace(".dll", ".pdb");
 
-            var catalog   = new AssemblyCatalog(Assembly.Load(assemblyData));
+            byte[] assemblyData = _dataReader.GetFileBytes(dllName);
+            byte[] symbolData = _dataReader.GetFileBytes(symbolsPath) ?? new byte[0];
+
+            var moduleAssembly = Assembly.Load(assemblyData, symbolData);
+
+            var catalog   = new AssemblyCatalog(moduleAssembly);
             var container = new CompositionContainer(catalog);
 
             container.ComposeExportedValue("ModuleParameters", parameters);
@@ -102,7 +111,10 @@ namespace Blish_HUD {
     public class ModuleState {
 
         public bool Enabled { get; set; }
+
         public TokenPermission[] UserEnabledPermissions { get; set; }
+
+        public SettingCollection Settings;
 
     }
 
@@ -128,9 +140,7 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            _moduleStates = Settings.CoreSettings.DefineSetting(MODULESTATES_CORE_SETTING,
-                                                                new Dictionary<string, ModuleState>(),
-                                                                new Dictionary<string, ModuleState>());
+            _moduleStates = Settings.Settings.DefineSetting(MODULESTATES_CORE_SETTING, new Dictionary<string, ModuleState>());
         }
 
         public ModuleManager RegisterModule(IDataReader moduleReader) {

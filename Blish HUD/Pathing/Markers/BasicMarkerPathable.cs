@@ -6,8 +6,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Entities.Primitives;
-using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Behavior;
-using Blish_HUD.Modules.MarkersAndPaths.PackFormat.TacO.Pathables;
 using Blish_HUD.Pathing.Behaviors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

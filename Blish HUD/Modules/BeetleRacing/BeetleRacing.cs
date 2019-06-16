@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Modules.BeetleRacing.Controls;
+using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Modules.BeetleRacing {

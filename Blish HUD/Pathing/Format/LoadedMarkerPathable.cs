@@ -9,7 +9,6 @@ using Blish_HUD.Pathing.Markers;
 using GW2NET.Items;
 using Microsoft.Xna.Framework;
 using System.IO;
-using Blish_HUD.Modules.MarkersAndPaths;
 using Blish_HUD.Pathing.Content;
 using Blish_HUD.Pathing.Entities;
 using Blish_HUD.Utils;

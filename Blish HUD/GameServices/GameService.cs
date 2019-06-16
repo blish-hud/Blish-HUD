@@ -16,7 +16,11 @@ namespace Blish_HUD {
         private static readonly GameService[] AllServices;
         public static IReadOnlyList<GameService> All => AllServices;
 
-        public event EventHandler<EventArgs> OnLoad;
+        public event EventHandler<EventArgs> FinishedLoading;
+
+        public virtual void OnFinishedLoading(EventArgs e) {
+            this.FinishedLoading?.Invoke(this, e);
+        }
 
         protected abstract void Initialize();
         protected abstract void Load();
@@ -24,6 +28,8 @@ namespace Blish_HUD {
         protected abstract void Update(GameTime gameTime);
 
         private protected Overlay ActiveOverlay;
+
+        public bool Loaded { get; private set; }
 
         public void DoInitialize(Overlay game) {
             ActiveOverlay = game;
@@ -34,11 +40,16 @@ namespace Blish_HUD {
         public void DoLoad() {
             Load();
 
-            // Trigger OnLoad event
-            this.OnLoad?.Invoke(this, EventArgs.Empty);
+            this.Loaded = true;
+            OnFinishedLoading(EventArgs.Empty);
         }
 
-        public void DoUnload() => Unload();
+        public void DoUnload() {
+            Unload();
+
+            this.Loaded = false;
+        }
+
         public void DoUpdate(GameTime gameTime) => Update(gameTime);
 
         #region Static Service References

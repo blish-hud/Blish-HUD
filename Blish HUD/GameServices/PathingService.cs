@@ -14,7 +14,6 @@ using Blish_HUD.Annotations;
 using Blish_HUD.Controls;
 using Blish_HUD.Custom.Collections;
 using Blish_HUD.Entities;
-using Blish_HUD.Modules.MarkersAndPaths;
 using Blish_HUD.Pathing;
 using Blish_HUD.Pathing.Content;
 using Humanizer;

@@ -13,6 +13,8 @@ namespace Blish_HUD {
 
     public class Gw2ApiService : GameService {
 
+        private static string GW2API_SETTINGS = "Gw2ApiConfiguration";
+
         public Locale LANGUAGE = Locale.English;
         public static string SETTINGS_ENTRY_APIKEYS = "ApiKeyRepository";
         public static string SETTINGS_ENTRY_PERMISSIONS = "Permissions";
@@ -40,6 +42,9 @@ namespace Blish_HUD {
         private Gw2WebApiClient _client;
         private Dictionary<string, string> _characterRepository;
 
+        private SettingCollection _apiSettings;
+        private SettingEntry<Dictionary<Guid, string>> _apiKeyRepository;
+
         /// <summary>
         /// Checks if the ApiService has a main api client up and running that can be used to create subtokens.
         /// </summary>
@@ -48,8 +53,13 @@ namespace Blish_HUD {
         protected override void Initialize() {
             _characterRepository = new Dictionary<string, string>();
 
-            // Define ApiKeyRepository core settings entry.
-            Settings.CoreSettings.DefineSetting(SETTINGS_ENTRY_APIKEYS, new Dictionary<Guid, string>(), new Dictionary<Guid, string>());
+            _apiSettings = Settings.RegisterRootSettingCollection(GW2API_SETTINGS);
+
+            DefineSettings(_apiSettings);
+        }
+
+        private void DefineSettings(SettingCollection settings) {
+            _apiKeyRepository = settings.DefineSetting(SETTINGS_ENTRY_APIKEYS, new Dictionary<Guid, string>());
         }
 
         protected override void Update(GameTime time) {
@@ -67,9 +77,7 @@ namespace Blish_HUD {
         protected override void Unload() { /* NOOP */ }
 
         protected override void Load() {
-            foreach (KeyValuePair<Guid, string> entry in SettingsService.Settings.CoreSettings
-                .GetSetting<Dictionary<Guid, string>>(SETTINGS_ENTRY_APIKEYS).Value)
-            {
+            foreach (KeyValuePair<Guid, string> entry in _apiKeyRepository.Value) {
                 this.RegisterCharacters(entry.Value);
             }
             this.AddNewApiModules();
@@ -172,15 +180,11 @@ namespace Blish_HUD {
             return subTokenResponse.Result.Subtoken;
         }
 
-        private static string GetKeyById(string id) {
+        private string GetKeyById(string id) {
             if (!Regex.IsMatch(id, "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$"))
                 throw new ArgumentException("Pattern mismatch! Not an Id of an Guild Wars 2 API key.");
 
-            Dictionary<Guid, string> apiKeys = Settings.CoreSettings
-                .GetSetting<Dictionary<Guid, string>>(SETTINGS_ENTRY_APIKEYS)
-                .Value;
-
-            return apiKeys.FirstOrDefault(i => i.Value.Contains(id)).Value;
+            return _apiKeyRepository.Value.FirstOrDefault(i => i.Value.Contains(id)).Value;
         }
 
         /// <summary>
@@ -236,21 +240,16 @@ namespace Blish_HUD {
         /// Returns a fool safe dictionary containing name and the first halfs of the actual keys currently in the settings.
         /// </summary>
         /// <returns>The fool safe dictionary.</returns>
-        public static Dictionary<string, string> GetKeyIdRepository() {
+        public Dictionary<string, string> GetKeyIdRepository() {
             Dictionary<string, string> foolApiKeys = new Dictionary<string, string>();
-            if (Settings.CoreSettings.Entries.ContainsKey(SETTINGS_ENTRY_APIKEYS)) {
-                Dictionary<Guid, string> keyRepo = Settings.CoreSettings
-                    .GetSetting<Dictionary<Guid, string>>(SETTINGS_ENTRY_APIKEYS)
-                    .Value;
 
-                foreach (KeyValuePair<Guid, string> entry in keyRepo) {
-                    if (!IsKeyValid(entry.Value)) continue;
-                    TokenInfo tokenInfo = GetTokenInfo(entry.Value);
-                    string new_entry = tokenInfo.Name + " (" + GetAccount(entry.Value).Name + ')';
-                    if (!foolApiKeys.ContainsKey(new_entry))
-                        foolApiKeys.Add(new_entry, tokenInfo.Id);
-                }
+            foreach (KeyValuePair<Guid, string> entry in _apiKeyRepository.Value) {
+                if (!IsKeyValid(entry.Value)) continue;
 
+                TokenInfo tokenInfo = GetTokenInfo(entry.Value);
+                string new_entry = tokenInfo.Name + " (" + GetAccount(entry.Value).Name + ')';
+                if (!foolApiKeys.ContainsKey(new_entry))
+                    foolApiKeys.Add(new_entry, tokenInfo.Id);
             }
 
             return foolApiKeys;
@@ -277,16 +276,10 @@ namespace Blish_HUD {
         /// </summary>
         /// <param name="id"></param>
         public void RemoveKey(string id) {
-            if (Settings.CoreSettings.Entries.ContainsKey(SETTINGS_ENTRY_APIKEYS)) {
-                Dictionary<Guid, string> apiKeys = Settings.CoreSettings
-                    .GetSetting<Dictionary<Guid, string>>(SETTINGS_ENTRY_APIKEYS)
-                    .Value;
-
-                string key = GetKeyById(id);
-                if (key != null) {
-                    apiKeys.Remove(apiKeys.First(i => i.Value.Contains(key)).Key);
-                    RemoveCharacters(key);
-                }
+            string key = GetKeyById(id);
+            if (key != null) {
+                _apiKeyRepository.Value.Remove(_apiKeyRepository.Value.First(i => i.Value.Contains(key)).Key);
+                RemoveCharacters(key);
             }
         }
 
@@ -297,23 +290,19 @@ namespace Blish_HUD {
         public void RegisterKey(string apiKey) {
             if (!IsKeyValid(apiKey)) return;
 
-            SettingEntry<Dictionary<Guid, string>> entry = Settings.CoreSettings
-                .GetSetting<Dictionary<Guid, string>>(SETTINGS_ENTRY_APIKEYS);
-
             // Create a copy of the setting entry's value.
-            Dictionary<Guid, string> newValue = new Dictionary<Guid, string>(entry.Value);
+            Dictionary<Guid, string> newValue = new Dictionary<Guid, string>(_apiKeyRepository.Value);
 
             Guid guid = GetGuid(apiKey);
 
             if (newValue.ContainsKey(guid)){
                 newValue[guid] = apiKey;
-            }
-            else
-            {
+            } else {
                 newValue.Add(guid, apiKey);
             }
+
             // Save the changed value.
-            entry.Value = newValue;
+            _apiKeyRepository.Value = newValue;
             RegisterCharacters(apiKey);
         }
 

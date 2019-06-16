@@ -1,103 +1,180 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Blish_HUD.Controls;
+using Blish_HUD.Content;
+using Blish_HUD.Modules.Managers;
+using Gw2Sharp.WebApi;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Gw2Sharp.WebApi.V2.Models;
+
 namespace Blish_HUD.Modules {
 
-    public struct ModuleInfo {
+    public abstract class Module : IDisposable {
 
-        public readonly string Name;
-        public readonly Texture2D Icon;
-        public readonly string Author;
-        public readonly string Version;
-        public readonly string Description;
-        public readonly string Namespace;
-        public readonly TokenPermission[] Permissions; 
+        #region Module Events
 
-        public readonly bool EnabledWithoutGw2;
+        public event EventHandler<EventArgs>                        ModuleLoaded;
+        public event EventHandler<UnobservedTaskExceptionEventArgs> ModuleException;
 
-        /// <param name="name">The name of the module. This is the name that users will see when your module is listed.</param>
-        /// <param name="icon">An icon that represents your module.  It should be no larger than 32x32.</param>
-        /// <param name="namespace">The namespace of your module.  This should almost always be 'typeof(YourModuleClass).FullName'."/></param>
-        /// <param name="description">The description of your module that will be shown to users.</param>
-        /// <param name="author">Your online tag, GW2 username, or your name.</param>
-        /// <param name="version">The current version of your module.</param>
-        /// <param name="permissions">Optional: Required Guild Wars 2 API permissions.</param>
-        /// <param name="enabledWithoutGw2">If enabled, your module will not be unloaded when GW2 is closed and left in the tray.</param>
-        public ModuleInfo(string name, Texture2D icon, string @namespace, string description, string author, string version, bool enabledWithoutGw2 = false, TokenPermission[] permissions = null) {
-            this.Name = name;
-            this.Icon = icon;
-            this.Namespace = @namespace;
-            this.Description = description;
-            this.Author = author;
-            this.Version = version;
-            this.Permissions = permissions;
+        /// <summary>
+        /// Allows you to perform an action once your module has finished loading (once
+        /// <see cref="LoadAsync"/> has completed).  You must call "base.OnModuleLoaded(e)" at the
+        /// end for the <see cref="ExternalModule.ModuleLoaded"/> event to fire and for
+        /// <see cref="ExternalModule.Loaded" /> to update correctly.
+        /// </summary>
+        protected virtual void OnModuleLoaded(EventArgs e) {
+            _loaded = true;
 
-            this.EnabledWithoutGw2 = enabledWithoutGw2;
+            ModuleLoaded?.Invoke(this, e);
         }
 
-    }
+        protected virtual void OnModuleException(UnobservedTaskExceptionEventArgs e) {
+            ModuleException?.Invoke(this, e);
+        }
 
-    public abstract class Module : IModule {
+        #endregion
 
-        public abstract ModuleInfo GetModuleInfo();
-        public abstract void DefineSettings(SettingsManager settingsManager);
+        private readonly ModuleParameters _moduleParameters;
 
-        public SettingsManager SettingsManager { get; set; }
+        private bool _loaded = false;
+        public bool Loaded => _loaded;
 
-        protected bool _enabled = false;
-        
-        private List<WindowTab> TabsAdded = new List<WindowTab>();
+        #region Manifest & Parameter Aliases
 
-        public bool Enabled {
-            get => _enabled;
-            set {
-                if (_enabled == value) return;
+        // Manifest
 
-                _enabled = value;
+        public string Name => _moduleParameters.Manifest.Name;
 
-                if (_enabled) OnEnabled();
-                else OnDisabled();
+        public string Namespace => _moduleParameters.Manifest.Namespace;
+
+        public SemVer.Version Version => _moduleParameters.Manifest.Version;
+
+        // Service Managers
+
+        protected SettingsManager SettingsManager => _moduleParameters.SettingsManager;
+
+        protected ContentsManager ContentsManager => _moduleParameters.ContentsManager;
+
+        protected DirectoriesManager DirectoriesManager => _moduleParameters.DirectoriesManager;
+
+        protected Gw2ApiManager Gw2ApiManager => _moduleParameters.GW2ApiManager;
+
+        #endregion
+
+        private Task _loadTask;
+
+        [ImportingConstructor]
+        public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) {
+            _moduleParameters = moduleParameters;
+        }
+
+        #region Module Method Interface
+
+        public void DoInitialize() {
+            DefineSettings(this.SettingsManager.ModuleSettings);
+
+            Initialize();
+        }
+
+        public void DoLoad() {
+            _loadTask = LoadAsync();
+        }
+
+        private void CheckForLoaded() {
+            switch (_loadTask.Status) {
+                case TaskStatus.Faulted:
+                    OnModuleException(new UnobservedTaskExceptionEventArgs(_loadTask.Exception));
+                    OnModuleLoaded(EventArgs.Empty);
+                    break;
+
+                case TaskStatus.RanToCompletion:
+                    OnModuleLoaded(EventArgs.Empty);
+                    break;
+
+                default:
+                    GameService.Debug.WriteErrorLine($"Unexpected module load result status '{_loadTask.Status.ToString()}'.");
+                    break;
             }
         }
 
-        protected bool Loaded = false;
-
-        public Module() {
-            //this.SettingsManager = GameService
-            //               .Settings
-            //               .RegisterSettings(GetModuleInfo().Namespace, true);
-
-            //DefineSettings(this.SettingsManager);
+        public void DoUpdate(GameTime gameTime) {
+            if (_loaded)
+                Update(gameTime);
+            else
+                CheckForLoaded();
         }
 
-        public virtual void OnLoad() { Loaded = true; }
-        public virtual void OnEnabled() {
-            if (!Loaded) OnLoad();
+        private void DoUnload() {
+            Unload();
         }
 
-        public virtual void OnDisabled() {
-            // Clear out any tabs that were made (that the module didn't clean up)
-            foreach (var windowTab2 in TabsAdded) {
-                GameService.Director.BlishHudWindow.RemoveTab(windowTab2);
-            }
+        #endregion
+
+        #region Virtual Methods
+
+        /// <summary>
+        /// Allows your module to perform any initialization it needs before starting to run.
+        /// Please note that Initialize is NOT asynchronous and will block Blish HUD's update
+        /// and render loop, so be sure to not do anything here that takes too long.
+        /// </summary>
+        protected virtual void Initialize() { /* NOOP */ }
+
+        /// <summary>
+        /// Define the settings you would like to use in your module.  Settings are persistent
+        /// between updates to both Blish HUD and your module.
+        /// </summary>
+        protected virtual void DefineSettings(SettingCollection settings) { /* NOOP */ }
+
+        /// <summary>
+        /// Load content and more here. This call is asynchronous, so it is a good time to
+        /// run any long running steps for your module. Be careful when instancing
+        /// <see cref="Blish_HUD.Entities.Entity"/> and <see cref="Blish_HUD.Controls.Control"/>.
+        /// Setting their parent is not thread-safe and can cause the application to crash.
+        /// You will want to queue them to add later while on the main thread or in a delegate queued
+        /// with <see cref="Blish_HUD.DirectorService.QueueMainThreadUpdate(Action{GameTime})"/>.
+        /// </summary>
+        protected virtual async Task LoadAsync() { /* NOOP */ }
+
+        /// <summary>
+        /// Allows your module to run logic such as updating UI elements,
+        /// checking for conditions, playing audio, calculating changes, etc.
+        /// This method will block the primary Blish HUD loop, so any long
+        /// running tasks should be executed on a separate thread to prevent
+        /// slowing down the overlay.
+        /// </summary>
+        protected virtual void Update(GameTime gameTime) { /* NOOP */ }
+
+        /// <summary>
+        /// For a good module experience, your module should clean up ANY and ALL entities
+        /// and controls that were created and added to either the World or SpriteScreen.
+        /// Be sure to remove any tabs added to the Director window, CornerIcons, etc.
+        /// </summary>
+        protected virtual void Unload() { /* NOOP */ }
+
+        #endregion
+
+        #region IDispose
+
+        protected void Dispose(bool disposing) {
+            DoUnload();
         }
-        public virtual void Update(GameTime gameTime) { /* NOOP */ }
 
-        // Module Options
-
-        protected void AddSectionTab(string tabName, Texture2D icon, Panel panel) {
-            TabsAdded.Add(GameService.Director.BlishHudWindow.AddTab(tabName, icon, panel));
+        /// <inheritdoc />
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        protected void AddSettingsTab() {
-
+        /// <inheritdoc />
+        ~Module() {
+            Dispose(false);
         }
+
+        #endregion
 
     }
+
 }
