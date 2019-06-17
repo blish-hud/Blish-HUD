@@ -37,11 +37,11 @@ namespace Blish_HUD {
         
         
 
-        public List<PathableResourceManager> PackManagers { get; set; } = new List<PathableResourceManager>();
+        public SynchronizedCollection<PathableResourceManager> PackManagers { get; set; } = new SynchronizedCollection<PathableResourceManager>();
 
         private PersistentStore _pathingStore;
 
-        public PersistentStore PathingStore => _pathingStore ?? (_pathingStore = GameService.Store.Stores.GetSubstore(PATHING_STORENAME));
+        public PersistentStore PathingStore => _pathingStore ?? (_pathingStore = GameService.Store.RegisterStore(PATHING_STORENAME));
 
         protected override void Initialize() {
             // Subscribe to map changes so that we can hide or show markers for the new map
@@ -93,9 +93,6 @@ namespace Blish_HUD {
         }
 
         private void PlayerOnOnMapIdChanged(object sender, EventArgs e) {
-            //for (int i = 0; i < this.Pathables.Count - 1; i++)
-            //    ProcessPathableState(this.Pathables[i]);
-
             NewMapLoaded?.Invoke(this, EventArgs.Empty);
 
             foreach (var packContext in this.PackManagers)
@@ -118,6 +115,10 @@ namespace Blish_HUD {
             if (pathableContext == null) return;
 
             this.PackManagers.Add(pathableContext);
+        }
+
+        public void UnregisterPathableResourceManager(PathableResourceManager pathableContext) {
+            this.PackManagers.Remove(pathableContext);
         }
 
         protected override void Update(GameTime gameTime) {

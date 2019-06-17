@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,8 +21,8 @@ namespace Blish_HUD.Pathing.Content {
         public PathableResourceManager(IDataReader dataReader) {
             _dataReader = dataReader;
 
-            _textureCache = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
-            _pendingTextureUse = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            _textureCache          = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
+            _pendingTextureUse     = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             _pendingTextureRemoval = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -44,9 +45,7 @@ namespace Blish_HUD.Pathing.Content {
         public void MarkTextureForDisposal(string texturePath) {
             if (texturePath == null) return;
 
-            if (_textureCache.ContainsKey(texturePath)) {
-                _pendingTextureRemoval.Add(texturePath);
-            }
+            _pendingTextureRemoval.Add(texturePath);
         }
 
         public Texture2D LoadTexture(string texturePath) {
@@ -60,9 +59,7 @@ namespace Blish_HUD.Pathing.Content {
                 using (var textureStream = _dataReader.GetFileStream(texturePath)) {
                     if (textureStream == null) return fallbackTexture;
 
-                    _textureCache.Add(texturePath,
-                                      Texture2D.FromStream(GameService.Graphics.GraphicsDevice,
-                                                           textureStream));
+                    _textureCache.Add(texturePath, Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream));
                 }
             }
 

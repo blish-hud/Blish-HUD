@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Blish_HUD.Content;
 using Blish_HUD.Modules.Managers;
@@ -12,26 +13,60 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Modules {
 
+    public enum ModuleRunState {
+        /// <summary>
+        /// The module is currently still working to complete its initial <see cref="Module.LoadAsync"/>.
+        /// </summary>
+        Loading,
+
+        /// <summary>
+        /// The module has completed loading and is enabled.
+        /// </summary>
+        Loaded,
+
+        /// <summary>
+        /// The module has been disabled and is currently unloading the resources it has.
+        /// </summary>
+        Unloading
+    }
+
+    public class ModuleRunStateChangedEventArgs : EventArgs {
+
+        public ModuleRunState RunState { get; }
+
+        public ModuleRunStateChangedEventArgs(ModuleRunState runState) {
+            this.RunState = runState;
+        }
+
+    }
+
     public abstract class Module : IDisposable {
 
         #region Module Events
 
-        public event EventHandler<EventArgs>                        ModuleLoaded;
+        public event EventHandler<ModuleRunStateChangedEventArgs> ModuleRunStateChanged;
+        public event EventHandler<EventArgs>                      ModuleLoaded;
+
         public event EventHandler<UnobservedTaskExceptionEventArgs> ModuleException;
+
+        internal void OnModuleRunStateChanged(ModuleRunStateChangedEventArgs e) {
+            this.ModuleRunStateChanged?.Invoke(this, e);
+
+            if (e.RunState == ModuleRunState.Loaded) {
+                OnModuleLoaded(EventArgs.Empty);
+            }
+        }
 
         /// <summary>
         /// Allows you to perform an action once your module has finished loading (once
         /// <see cref="LoadAsync"/> has completed).  You must call "base.OnModuleLoaded(e)" at the
-        /// end for the <see cref="ExternalModule.ModuleLoaded"/> event to fire and for
-        /// <see cref="ExternalModule.Loaded" /> to update correctly.
+        /// end for the <see cref="ExternalModule.ModuleLoaded"/> event to fire.
         /// </summary>
         protected virtual void OnModuleLoaded(EventArgs e) {
-            _loaded = true;
-
             ModuleLoaded?.Invoke(this, e);
         }
 
-        protected virtual void OnModuleException(UnobservedTaskExceptionEventArgs e) {
+        protected void OnModuleException(UnobservedTaskExceptionEventArgs e) {
             ModuleException?.Invoke(this, e);
         }
 
@@ -39,8 +74,18 @@ namespace Blish_HUD.Modules {
 
         private readonly ModuleParameters _moduleParameters;
 
-        private bool _loaded = false;
-        public bool Loaded => _loaded;
+        private ModuleRunState _runState;
+        internal ModuleRunState RunState {
+            get => _runState;
+            set {
+                if (_runState == value) return;
+
+                _runState = value;
+                OnModuleRunStateChanged(new ModuleRunStateChangedEventArgs(_runState));
+            }
+        }
+
+        public bool Loaded => _runState == ModuleRunState.Loaded;
 
         #region Manifest & Parameter Aliases
 
@@ -86,28 +131,42 @@ namespace Blish_HUD.Modules {
         private void CheckForLoaded() {
             switch (_loadTask.Status) {
                 case TaskStatus.Faulted:
-                    OnModuleException(new UnobservedTaskExceptionEventArgs(_loadTask.Exception));
-                    OnModuleLoaded(EventArgs.Empty);
+                    var loadError = new UnobservedTaskExceptionEventArgs(_loadTask.Exception);
+                    OnModuleException(loadError);
+                    if (!loadError.Observed) {
+                        GameService.Debug.WriteErrorLine($"Module '{this.Name} ({this.Namespace})' had an unhandled exception while loading:");
+                        GameService.Debug.WriteErrorLine($"{loadError.Exception.ToString()}");
+                    }
+                    RunState = ModuleRunState.Loaded;
                     break;
 
                 case TaskStatus.RanToCompletion:
-                    OnModuleLoaded(EventArgs.Empty);
+                    RunState = ModuleRunState.Loaded;
+                    GameService.Debug.WriteInfoLine($"Module '{this.Name} ({this.Namespace})' finished loading.");
+                    break;
+
+                case TaskStatus.Canceled:
+                    GameService.Debug.WriteWarningLine($"Module '{this.Name} ({this.Namespace})' was cancelled before it could finish loading.");
+                    break;
+
+                case TaskStatus.WaitingForActivation:
                     break;
 
                 default:
-                    GameService.Debug.WriteErrorLine($"Unexpected module load result status '{_loadTask.Status.ToString()}'.");
+                    GameService.Debug.WriteWarningLine($"Unexpected module load result status '{_loadTask.Status.ToString()}'.");
                     break;
             }
         }
 
         public void DoUpdate(GameTime gameTime) {
-            if (_loaded)
+            if (_runState == ModuleRunState.Loaded)
                 Update(gameTime);
             else
                 CheckForLoaded();
         }
 
         private void DoUnload() {
+            this.RunState = ModuleRunState.Unloading;
             Unload();
         }
 

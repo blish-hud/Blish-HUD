@@ -121,11 +121,16 @@ namespace Blish_HUD.GameServices.Module {
 
                 cModuleMan.Enabled = true;
 
-                enableButton.Enabled  = !cModuleMan.Enabled;
-                disableButton.Enabled = cModuleMan.Enabled;
+                moduleState.Text      = "Loading";
+                moduleState.TextColor = Control.StandardColors.Yellow;
 
-                moduleState.Text      = cModuleMan.State.Enabled ? "Enabled" : "Disabled";
-                moduleState.TextColor = cModuleMan.State.Enabled ? Color.FromNonPremultiplied(0, 255, 25, 255) : Color.Red;
+                cModuleMan.ModuleInstance.ModuleLoaded += delegate {
+                    enableButton.Enabled  = !cModuleMan.Enabled;
+                    disableButton.Enabled = cModuleMan.Enabled;
+
+                    moduleState.Text      = cModuleMan.State.Enabled ? "Enabled" : "Disabled";
+                    moduleState.TextColor = cModuleMan.State.Enabled ? Color.FromNonPremultiplied(0, 255, 25, 255) : Color.Red;
+                };
             };
 
             disableButton.Click += delegate {
@@ -140,6 +145,37 @@ namespace Blish_HUD.GameServices.Module {
                 moduleState.Text      = cModuleMan.State.Enabled ? "Enabled" : "Disabled";
                 moduleState.TextColor = cModuleMan.State.Enabled ? Color.FromNonPremultiplied(0, 255, 25, 255) : Color.Red;
             };
+
+            // Settings Menu
+            var settingsMenu = new ContextMenuStrip();
+
+            var settingsButton = new GlowButton() {
+                Location = new Point(enableButton.Right + 12, enableButton.Top),
+
+                Icon       = GameService.Content.GetTexture(@"common\157109"),
+                ActiveIcon = GameService.Content.GetTexture(@"common\157110"),
+
+                BasicTooltipText = "Options",
+
+                Parent = buildPanel
+            };
+
+            settingsButton.Click += delegate { settingsMenu.Show(settingsButton); };
+
+            var viewModuleLogs = settingsMenu.AddMenuItem("View Module Logs");
+
+            if (cModuleMan.Manifest.Directories.Any()) {
+                var directoriesMenu = settingsMenu.AddMenuItem("Directories");
+                var subDirectoriesMenu = new ContextMenuStrip();
+
+                foreach (var directory in cModuleMan.Manifest.Directories) {
+                    subDirectoriesMenu.AddMenuItem($"Explore '{directory}'");
+                }
+
+                directoriesMenu.Submenu = subDirectoriesMenu;
+            }
+
+            var deleteModule = settingsMenu.AddMenuItem("Delete Module");
 
             // Collapse Sections
 

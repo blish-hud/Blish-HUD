@@ -39,24 +39,24 @@ namespace Blish_HUD {
         private FrameCounter _frameCounter;
         public FrameCounter FrameCounter => _frameCounter;
 
-        public void WriteInfo(string info, params string[] formatItems) {
-            Console.Write("INFO: " + string.Format(info, formatItems));
+        public void WriteInfo(string info, params object[] formatItems) {
+            System.Diagnostics.Debug.Write("INFO: " + string.Format(info, formatItems));
         }
 
-        public void WriteInfoLine(string info, params string[] formatItems) {
+        public void WriteInfoLine(string info, params object[] formatItems) {
             WriteInfo(info + Environment.NewLine, formatItems);
         }
 
-        public void WriteWarning(string warning, params string[] formatItems) {
-            Console.Write("WARNING: " + string.Format(warning, formatItems));
+        public void WriteWarning(string warning, params object[] formatItems) {
+            System.Diagnostics.Debug.Write("WARNING: " + string.Format(warning, formatItems));
         }
 
-        public void WriteWarningLine(string warning, params string[] formatItems) {
+        public void WriteWarningLine(string warning, params object[] formatItems) {
             WriteWarning(warning + Environment.NewLine, formatItems);
         }
 
         public void WriteError(string error, params object[] formatItems) {
-            Console.Write("ERROR: " + string.Format(error, formatItems));
+            System.Diagnostics.Debug.Write("ERROR: " + string.Format(error, formatItems));
         }
 
         public void WriteErrorLine(string error, params string[] formatItems) {
@@ -151,7 +151,8 @@ namespace Blish_HUD {
 
         protected override void Load() {
             // Make sure crash dir is available for logs later on
-            System.IO.Directory.CreateDirectory(Path.Combine(GameService.Directory.BasePath, "logs"));
+            GameService.Directory.RegisterDirectory("logs");
+            //System.IO.Directory.CreateDirectory(Path.Combine(GameService.Directory.BasePath, "logs"));
 
             FuncTimes = new Dictionary<string, FuncClock>();
         }

@@ -9,12 +9,74 @@ using System.Threading.Tasks;
 using Blish_HUD.Annotations;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Blish_HUD {
 
-
-    [JsonObject]
     public abstract class StoreValue {
+
+        public class StoreValueConverter : JsonConverter<StoreValue> {
+
+            public override void WriteJson(JsonWriter writer, StoreValue value, JsonSerializer serializer) {
+                JToken.FromObject(value._value, serializer).WriteTo(writer);
+            }
+
+            public override StoreValue ReadJson(JsonReader reader, Type objectType, StoreValue existingValue, bool hasExistingValue, JsonSerializer serializer) {
+                var jObj = JToken.Load(reader) as JValue;
+
+                Type storeType = typeof(int); 
+                switch (jObj.Type) {
+                    case JTokenType.Integer:
+                        storeType = typeof(int);
+                        break;
+                    case JTokenType.Float:
+                        storeType = typeof(float);
+                        break;
+                    case JTokenType.String:
+                        storeType = typeof(string);
+                        break;
+                    case JTokenType.Boolean:
+                        storeType = typeof(bool);
+                        break;
+                    case JTokenType.Null:
+                        storeType = typeof(string);
+                        break;
+                    case JTokenType.Date:
+                        storeType = typeof(DateTime);
+                        break;
+                    case JTokenType.Guid:
+                        storeType = typeof(Guid);
+                        break;
+                    case JTokenType.TimeSpan:
+                        storeType = typeof(TimeSpan);
+                        break;
+
+                    default:
+                        GameService.Debug.WriteWarningLine($"Persistent store value of type '{jObj.Type}' is not supported.");
+                        break;
+                }
+
+                var entryGeneric = Activator.CreateInstance(typeof(StoreValue<>).MakeGenericType(storeType));
+                var storeBase = entryGeneric as StoreValue;
+                storeBase._value = jObj.Value;
+
+                return storeBase;
+            }
+
+        }
+
+        protected object _value;
+
+        private object _defaultValue;
+
+        [JsonIgnore]
+        public bool IsDefaultValue => object.Equals(_value, _defaultValue);
+
+        public StoreValue UpdateDefault(object defaultValue) {
+            _defaultValue = defaultValue;
+
+            return this;
+        }
 
         #region Property Binding
 
@@ -34,12 +96,9 @@ namespace Blish_HUD {
     [JsonObject]
     public class StoreValue<T>:StoreValue, INotifyPropertyChanged {
 
-        [JsonProperty]
-        private T _value;
-
         [JsonIgnore]
         public T Value {
-            get => _value;
+            get => (T)_value;
             set {
                 if (object.Equals(_value, value)) return;
 
@@ -49,20 +108,67 @@ namespace Blish_HUD {
             }
         }
 
+        public StoreValue() { /* NOOP */ }
+
         public StoreValue(T defaultValue) {
             _value = defaultValue;
         }
 
     }
 
-    [JsonObject]
     public class PersistentStore {
+
+        public class PersistentStoreConverter : JsonConverter<PersistentStore> {
+
+            public override void WriteJson(JsonWriter writer, PersistentStore value, JsonSerializer serializer) {
+                JObject entryObject = new JObject();
+
+                if (value._substores.Any()) {
+                    var storesObject = new JObject();
+
+                    foreach (var store in value._substores) {
+                        storesObject.Add(store.Key, JToken.FromObject(store.Value, serializer));
+                    }
+
+                    entryObject.Add("Stores", storesObject);
+                }
+
+                var nonDefaultValues = value._values.Where(pair => !pair.Value.IsDefaultValue);
+                if (nonDefaultValues.Any()) {
+                    var valuesObject = new JObject();
+
+                    foreach (var ndValue in nonDefaultValues) {
+                        valuesObject.Add(ndValue.Key, JToken.FromObject(ndValue.Value, serializer));
+                    }
+
+                    entryObject.Add("Values", valuesObject);
+                }
+
+                entryObject.WriteTo(writer);
+            }
+
+            public override PersistentStore ReadJson(JsonReader reader, Type objectType, PersistentStore existingValue, bool hasExistingValue, JsonSerializer serializer) {
+                JObject jObj = JObject.Load(reader);
+
+                var loadedStore = new PersistentStore();
+
+                serializer.Populate(jObj.CreateReader(), loadedStore);
+
+                return loadedStore;
+            }
+
+        }
+
+        [JsonProperty("Stores")]
+        private Dictionary<string, PersistentStore> _substores = new Dictionary<string, PersistentStore>(StringComparer.OrdinalIgnoreCase);
         
-        [JsonProperty]
-        private Dictionary<string, PersistentStore> _substores = new Dictionary<string, PersistentStore>();
-        
-        [JsonProperty]
-        private Dictionary<string, StoreValue> _values = new Dictionary<string, StoreValue>();
+        [JsonProperty("Values")]
+        private Dictionary<string, StoreValue> _values = new Dictionary<string, StoreValue>(StringComparer.OrdinalIgnoreCase);
+
+        private Dictionary<string, StoreValue> _recordedValues {
+            get => _values.Where(pair => !pair.Value.IsDefaultValue).ToDictionary(dict => dict.Key, dict => dict.Value);
+            set => _values = value;
+        }
 
         public PersistentStore GetSubstore(string substoreName) {
             if (!_substores.ContainsKey(substoreName)) {
@@ -79,7 +185,7 @@ namespace Blish_HUD {
                 PersistentStoreService.StoreChanged = true;
             }
 
-            return (StoreValue<T>)_values[valueName];
+            return _values[valueName].UpdateDefault(defaultValue) as StoreValue<T>;
         }
 
         public void RemoveValueByName(string valueName) {
@@ -94,12 +200,11 @@ namespace Blish_HUD {
     [JsonObject]
     public class PersistentStoreService : GameService {
 
-        [JsonProperty]
-        public PersistentStore Stores { get; private set; }
+        private PersistentStore _stores;
 
         [JsonIgnore]
         private const string STORE_FILENAME = "persistent.json";
-        private const int SAVE_FREQUENCY = 10000; // Time in milliseconds (currently 10 seconds)
+        private const int SAVE_FREQUENCY = 5000; // Time in milliseconds (currently 5 seconds)
 
         [JsonIgnore]
         public static bool StoreChanged = false;
@@ -108,32 +213,43 @@ namespace Blish_HUD {
         private JsonSerializerSettings _jsonSettings;
 
         [JsonIgnore]
-        private string _settingsPath;
+        private string _persistentStorePath;
 
         protected override void Initialize() {
-            this.Stores = new PersistentStore();
-
             _jsonSettings = new JsonSerializerSettings() {
                 PreserveReferencesHandling = PreserveReferencesHandling.None,
                 TypeNameHandling           = TypeNameHandling.None,
+                Converters = new List<JsonConverter>() {
+                    new StoreValue.StoreValueConverter(),
+                    new PersistentStore.PersistentStoreConverter()
+                }
             };
 
-            _settingsPath = Path.Combine(GameService.Directory.BasePath, STORE_FILENAME);
+            _persistentStorePath = Path.Combine(GameService.Directory.BasePath, STORE_FILENAME);
 
             // If store isn't there, generate the file
-            if (!File.Exists(_settingsPath)) Save();
+            if (!File.Exists(_persistentStorePath)) Save();
 
             // Would prefer to have this under Load(), but PersistentStoreService needs to be ready for other modules and services
             try {
-                string rawSettings = File.ReadAllText(_settingsPath);
+                string rawStore = File.ReadAllText(_persistentStorePath);
 
-                JsonConvert.PopulateObject(rawSettings, this, _jsonSettings);
+                _stores = JsonConvert.DeserializeObject<PersistentStore>(rawStore, _jsonSettings);
             } catch (System.IO.FileNotFoundException) {
                 // Likely don't have access to this filesystem
             } catch (Exception e) {
                 // TODO: If this fails, we may need to prompt the user to re-generate the settings (in case they were corrupted or something)
                 Console.WriteLine(e.Message);
             }
+
+            if (_stores == null) {
+                Console.WriteLine("Persistent store was lost.");
+                _stores = new PersistentStore();
+            }
+        }
+
+        public PersistentStore RegisterStore(string storeName) {
+            return _stores.GetSubstore(storeName);
         }
 
         protected override void Load() { /* NOOP */ }
@@ -151,14 +267,14 @@ namespace Blish_HUD {
         }
 
         public void Save() {
-            string rawSettings = JsonConvert.SerializeObject(this, Formatting.None, _jsonSettings);
+            string rawStore = JsonConvert.SerializeObject(_stores, Formatting.None, _jsonSettings);
 
             try {
-                using (var settingsWriter = new StreamWriter(_settingsPath, false)) {
-                    settingsWriter.Write(rawSettings);
+                using (var settingsWriter = new StreamWriter(_persistentStorePath, false)) {
+                    settingsWriter.Write(rawStore);
                 }
             } catch (Exception e) {
-                Console.WriteLine("Failed to write settings to file!");
+                Console.WriteLine("Failed to write persistent store to file!");
                 // TODO: We need to try saving the file again later - something is preventing us from saving
             }
 

@@ -61,9 +61,9 @@ namespace Blish_HUD.Controls {
         public void Show(Control activeControl) {
             if (activeControl is ContextMenuStripItem parentMenu) {
                 this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top);
-                this.ZIndex = parentMenu.ZIndex - 1;
+                this.ZIndex = parentMenu.ZIndex + 1;
             } else {
-                this.Location = activeControl.Location + activeControl.Size;
+                this.Location = activeControl.AbsoluteBounds.Location + new Point(0, activeControl.Height);
             }
 
             base.Show();

@@ -95,31 +95,40 @@ namespace Blish_HUD.Modules {
 
         // Recommended attributes
 
-        [JsonProperty("description", DefaultValueHandling = DefaultValueHandling.Populate)]
-        public string Description { get; private set; } = "";
+        [JsonProperty("description")]
+        public string Description { get; private set; }
 
         [JsonProperty("dependencies"), JsonConverter(typeof(ModuleDependency.VersionDependenciesConverter))]
-        public List<ModuleDependency> Dependencies { get; private set; } = new List<ModuleDependency>();
+        public List<ModuleDependency> Dependencies { get; private set; }
 
-        [JsonProperty("url", DefaultValueHandling = DefaultValueHandling.Populate)]
+        [JsonProperty("url")]
         public string Url { get; private set; } = "";
 
         [JsonProperty("author")]
         public Contributor Author { get; private set; }
 
-        [JsonProperty("contributors", DefaultValueHandling = DefaultValueHandling.Populate)]
-        public List<Contributor> Contributors { get; private set; } = new List<Contributor>();
+        [JsonProperty("contributors")]
+        public List<Contributor> Contributors { get; private set; }
 
         // Optional attributes
 
-        [JsonProperty("directories", DefaultValueHandling = DefaultValueHandling.Populate)]
-        public List<string> Directories { get; private set; } = new List<string>();
+        [JsonProperty("directories")]
+        public List<string> Directories { get; private set; }
 
         [JsonProperty("enable_without_gw2")]
         public bool EnabledWithoutGW2 { get; private set; }
 
-        [JsonProperty("api_permissions", DefaultValueHandling = DefaultValueHandling.Populate)]
+        [JsonProperty("api_permissions")]
         public Dictionary<TokenPermission, ApiPermissions> ApiPermissions { get; private set; } = new Dictionary<TokenPermission, ApiPermissions>();
+
+        public Manifest() {
+            // Ensure nothing is empty, despite manifest version and contents
+            this.Description    = this.Description    ?? "";
+            this.Dependencies   = this.Dependencies   ?? new List<ModuleDependency>(0);
+            this.Url            = this.Url            ?? "";
+            this.Directories    = this.Directories    ?? new List<string>(0);
+            this.ApiPermissions = this.ApiPermissions ?? new Dictionary<TokenPermission, ApiPermissions>(0);
+        }
 
     }
 

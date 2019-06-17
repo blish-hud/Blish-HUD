@@ -7,29 +7,29 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Entities {
 
-    public class World:Entity {
+    public class World : Entity {
         
-        public List<Entity> Entities { get; private set; }
+        public SynchronizedCollection<Entity> Entities { get; private set; }
+
+        private IOrderedEnumerable<Entity> _sortedEntities;
 
         public World() : base() {
-            this.Entities = new List<Entity>();
+            this.Entities = new SynchronizedCollection<Entity>();
         }
 
         public override void Update(GameTime gameTime) {
             GameService.Debug.StartTimeFunc("Sorting 3D Entities");
-            this.Entities = this.Entities.OrderByDescending(e => e.DistanceFromCamera).ToList();
+            _sortedEntities = this.Entities.ToList().OrderByDescending(e => e.DistanceFromCamera);
             GameService.Debug.StopTimeFunc("Sorting 3D Entities");
 
-            foreach (var entity in this.Entities) {
+            foreach (var entity in _sortedEntities) {
                 entity.Update(gameTime);
             }
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
-            foreach (var entity in this.Entities.ToList()) {
-                if (entity.Visible) {
-                    entity.Draw(graphicsDevice);
-                }
+            foreach (var entity in _sortedEntities.Where(entity => entity.Visible)) {
+                entity.Draw(graphicsDevice);
             }
         }
     }
