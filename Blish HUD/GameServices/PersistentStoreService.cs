@@ -70,7 +70,7 @@ namespace Blish_HUD {
         private object _defaultValue;
 
         [JsonIgnore]
-        public bool IsDefaultValue => object.Equals(_value, _defaultValue);
+        public bool IsDefaultValue => object.Equals(_value, _defaultValue) && _defaultValue != null;
 
         public StoreValue UpdateDefault(object defaultValue) {
             _defaultValue = defaultValue;
