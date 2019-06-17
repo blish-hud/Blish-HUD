@@ -21,8 +21,8 @@ namespace Blish_HUD.Pathing.Content {
             _dataReader = dataReader;
 
             _textureCache = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
-            _pendingTextureUse = new HashSet<string>();
-            _pendingTextureRemoval = new HashSet<string>();
+            _pendingTextureUse = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            _pendingTextureRemoval = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void RunTextureDisposal() {

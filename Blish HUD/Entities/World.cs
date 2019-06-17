@@ -26,7 +26,7 @@ namespace Blish_HUD.Entities {
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
-            foreach (var entity in this.Entities) {
+            foreach (var entity in this.Entities.ToList()) {
                 if (entity.Visible) {
                     entity.Draw(graphicsDevice);
                 }
