@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Blish_HUD.Content {
 
-    public class ZipArchiveReader : IDataReader {
+    public sealed class ZipArchiveReader : IDataReader {
 
         private readonly ZipArchive _archive;
 

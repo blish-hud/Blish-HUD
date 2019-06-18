@@ -97,10 +97,6 @@ namespace Blish_HUD {
                 this.HudFocused = value != null;
                 this.HookOverride = (value != null && value.Captures.HasFlag(CaptureType.ForceNone));
 
-                //string controlName = value?.GetType().Name;
-                //if (!string.IsNullOrWhiteSpace(controlName))
-                //    Console.WriteLine(controlName);
-
                 _activeControl = value;
 
                 Control.ActiveControl = _activeControl;
@@ -153,7 +149,7 @@ namespace Blish_HUD {
 
         protected override void Unload() {
             mouseHook?.UnHookMouse();
-            //keyboardHook.UnHookKeyboard();
+            keyboardHook?.UnHookKeyboard();
         }
 
         protected override void Update(GameTime gameTime) {
@@ -162,7 +158,7 @@ namespace Blish_HUD {
         }
 
         private void HandleMouse() {
-            if (!GameIntegration.Gw2IsRunning || (this.FocusedControl == null & !Utils.Window.OnTop)) {
+            if (!GameIntegration.Gw2IsRunning || (this.FocusedControl == null && !Utils.Window.OnTop)) {
                 this.HudFocused = false;
                 return;
             }

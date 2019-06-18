@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.Content {
-    public class DirectoryReader : IDataReader {
+    public sealed class DirectoryReader : IDataReader {
 
         private readonly string _directoryPath;
 

@@ -120,7 +120,7 @@ namespace Blish_HUD {
 
         public SettingEntry() { /* NOOP */ }
 
-        protected SettingEntry(T value = default) {
+        protected SettingEntry(T value) {
             _value = value;
         }
 

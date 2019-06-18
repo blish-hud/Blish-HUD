@@ -10,7 +10,7 @@ using Flurl.Http;
 
 namespace Blish_HUD.Content {
 
-    public class RenderServiceReader : IDataReader {
+    public sealed class RenderServiceReader : IDataReader {
 
         #region Not Supported
 
@@ -32,8 +32,8 @@ namespace Blish_HUD.Content {
         #endregion
 
         /// <inheritdoc />
-        public Stream GetFileStream(string signatureFileIdPair) {
-            var getFileRes = GetFileStreamAsync(signatureFileIdPair);
+        public Stream GetFileStream(string filePath) {
+            var getFileRes = GetFileStreamAsync(filePath);
             getFileRes.Wait();
 
             if (getFileRes.Status == TaskStatus.RanToCompletion) {
@@ -54,9 +54,9 @@ namespace Blish_HUD.Content {
         }
 
         /// <inheritdoc />
-        public async Task<Stream> GetFileStreamAsync(string signatureFileIdPair) {
-            string requestUrl = $"https://darthmaim-cdn.de/gw2treasures/icons/{signatureFileIdPair}.png";
-            //string requestUrl = $"https://render.guildwars2.com/file/{signatureFileIdPair}.png";
+        public async Task<Stream> GetFileStreamAsync(string filePath) {
+            string requestUrl = $"https://darthmaim-cdn.de/gw2treasures/icons/{filePath}.png";
+            //string requestUrl = $"https://render.guildwars2.com/file/{filePath}.png";
 
             return await requestUrl.AllowAnyHttpStatus().GetStreamAsync().ConfigureAwait(false);
         }

@@ -16,16 +16,7 @@ namespace Blish_HUD.Controls {
         public const int TOOLWINDOW_BASEZINDEX = 45;
         public const int TOOLTIP_BASEZINDEX = 55;
         public const int CONTEXTMENU_BASEINDEX = 50;
-
-        //public Screen() : base() {
-        //    this.Location = new Point(0, 0);
-        //    //this.Size = new Point(GameService.Graphics.GraphicsDevice.Viewport.Width, GameService.Graphics.GraphicsDevice.Viewport.Height);
-        //}
-
-        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
-            // NOOP
-        }
-
+        
         public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
             List<Control> ZSortedChildren = _children.OrderByDescending(i => i.ZIndex).ToList();
 

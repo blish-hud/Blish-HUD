@@ -114,7 +114,7 @@ namespace Blish_HUD {
 
         public TokenPermission[] UserEnabledPermissions { get; set; }
 
-        public SettingCollection Settings;
+        public SettingCollection Settings { get; set; }
 
     }
 
