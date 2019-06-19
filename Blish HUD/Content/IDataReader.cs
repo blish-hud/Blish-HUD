@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.Content {
@@ -82,7 +79,6 @@ namespace Blish_HUD.Content {
         /// If the file does not exist or cannot be read, the <see cref="Task"/> will result in <see cref="T:null"/> instead of a <see cref="T:byte[]"/>.
         /// </returns>
         Task<byte[]> GetFileBytesAsync(string filePath);
-
 
     }
 

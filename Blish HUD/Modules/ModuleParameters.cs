@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD.Content;
-using Blish_HUD.Modules.Managers;
-using Gw2Sharp.WebApi;
+﻿using Blish_HUD.Modules.Managers;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules {

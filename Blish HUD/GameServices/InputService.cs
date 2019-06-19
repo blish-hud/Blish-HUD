@@ -4,15 +4,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Humanizer;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using Blish_HUD.Controls;
-using Microsoft.Xna.Framework.Graphics;
 using Control = Blish_HUD.Controls.Control;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 

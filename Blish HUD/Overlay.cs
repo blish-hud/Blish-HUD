@@ -4,7 +4,6 @@ using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework.Content;
 
 namespace Blish_HUD {
 
@@ -33,7 +32,6 @@ namespace Blish_HUD {
 
         // Primarily used to draw debug text
         private SpriteBatch _basicSpriteBatch;
-
 
         public Overlay() {
             _activeGraphicsDeviceManager = new GraphicsDeviceManager(this);

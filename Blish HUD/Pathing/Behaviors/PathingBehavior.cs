@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
-using Blish_HUD.Pathing;
-using Blish_HUD.Pathing.Markers;
 using Glide;
 using Microsoft.Xna.Framework;
 

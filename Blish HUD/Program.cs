@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Drawing.Text;
-using System.Globalization;
 using System.IO;
-using System.Net.Mime;
-using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using Blish_HUD;
-using Sentry;
 
 namespace Blish_HUD {
 #if WINDOWS || LINUX
@@ -16,7 +10,7 @@ namespace Blish_HUD {
     /// </summary>
     public static class Program {
 
-        public const string APP_VERSION = "blish_hud@0.4.0-alpha.10_DEV";
+        public const string APP_VERSION = "blish_hud@0.4.0-alpha.12_DEV";
 
         /// <summary>
         /// The main entry point for the application.
@@ -26,9 +20,11 @@ namespace Blish_HUD {
             if (IsMoreThanOneInstance()) {
                 return;
             }
-            
+
+#if !DEBUG
             // TODO: Implement for error logging in released versions
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+#endif
             
 #if SENTRY
             const string SENTRY_DSN = "https://e11516741a32440ca7a72b68d5af93df@sentry.do-ny3.svr.gw2blishhud.com/2";
@@ -78,7 +74,7 @@ namespace Blish_HUD {
             SentryWrapper.CaptureException(e);
 
             InputService.mouseHook?.UnHookMouse();
-            //InputService.keyboardHook?.UnHookKeyboard();
+            InputService.keyboardHook?.UnHookKeyboard();
 
             string errorMessage = "Application error: " + e.Message + Environment.NewLine + "Trace: " + e.StackTrace + Environment.NewLine + "Runtime terminating: " + args.IsTerminating + Environment.NewLine + APP_VERSION;
 
@@ -95,4 +91,4 @@ namespace Blish_HUD {
 
     }
 #endif
-}
+        }

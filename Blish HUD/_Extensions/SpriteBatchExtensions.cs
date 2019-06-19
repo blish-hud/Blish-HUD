@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Blish_HUD.Controls;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;

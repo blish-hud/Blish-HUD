@@ -1,290 +1,24 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Blish_HUD.Annotations;
+using Blish_HUD.BHUDControls.Hotkeys;
 using Blish_HUD.Controls;
-using Blish_HUD.Modules;
+using Blish_HUD.Settings;
 using Blish_HUD.Utils;
 using Flurl.Http;
-using Microsoft.Scripting.Utils;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Container = Blish_HUD.Controls.Container;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
 
-    public abstract class SettingEntry : INotifyPropertyChanged {
+    
 
-        public class SettingEntryConverter : JsonConverter<SettingEntry> {
+    
 
-            public override void WriteJson(JsonWriter writer, SettingEntry value, JsonSerializer serializer) {
-                JObject entryObject = new JObject();
-
-                Type entryType = value.GetSettingType();
-
-                entryObject.Add("T", $"{entryType.FullName}, {entryType.Assembly.GetName().Name}");
-                entryObject.Add("Key", value.EntryKey);
-                entryObject.Add("Value", JToken.FromObject(value.GetSettingValue(), serializer));
-
-                entryObject.WriteTo(writer);
-            }
-
-            public override SettingEntry ReadJson(JsonReader reader, Type objectType, SettingEntry existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                JObject jObj = JObject.Load(reader);
-
-                var entryTypeString = jObj["T"].Value<string>();
-                var entryType = Type.GetType(entryTypeString);
-
-                var entryGeneric = Activator.CreateInstance(typeof(SettingEntry<>).MakeGenericType(entryType));
-
-                serializer.Populate(jObj.CreateReader(), entryGeneric);
-
-                return entryGeneric as SettingEntry;
-            }
-
-        }
-
-        [JsonIgnore]
-        public string Description { get; set; }
-
-        [JsonIgnore]
-        public string DisplayName { get; set; }
-
-        [JsonIgnore]
-        public SettingsService.SettingTypeRendererDelegate Renderer { get; set; }
-
-        [JsonProperty("Key")]
-        public string EntryKey { get; protected set; }
-
-        protected abstract Type GetSettingType();
-
-        protected abstract Object GetSettingValue();
-
-        [JsonIgnore]
-        public Type SettingType => GetSettingType();
-
-        #region Property Binding
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #endregion
-    }
-
-    public class SettingEntry<T> : SettingEntry {
-
-        public event EventHandler<ValueChangedEventArgs<T>> SettingChanged;
-
-        public virtual void OnSettingChanged(ValueChangedEventArgs<T> e) {
-            GameService.Settings.SettingSave();
-
-            OnPropertyChanged(nameof(this.Value));
-
-            this.SettingChanged?.Invoke(this, e);
-        }
-
-        private T _value;
-        
-        [JsonProperty, JsonRequired]
-        public T Value {
-            get => _value;
-            set {
-                if (object.Equals(_value, value)) return;
-
-                var prevValue = this.Value;
-                _value = value;
-
-                OnSettingChanged(new ValueChangedEventArgs<T>(prevValue, _value));
-            }
-        }
-
-        protected override Type GetSettingType() {
-            return typeof(T);
-        }
-
-        /// <inheritdoc />
-        protected override object GetSettingValue() {
-            return _value;
-        }
-
-        public SettingEntry() { /* NOOP */ }
-
-        protected SettingEntry(T value) {
-            _value = value;
-        }
-
-        public static SettingEntry<T> InitSetting(T value) {
-            var newSetting = new SettingEntry<T>(value);
-
-            return newSetting;
-        }
-
-        public static SettingEntry<T> InitSetting(string entryKey, T value) {
-            var newSetting = new SettingEntry<T>(value) {
-                EntryKey      = entryKey,
-
-                _value        = value,
-            };
-
-            return newSetting;
-        }
-
-    }
-
-    public class SettingCollection : IEnumerable<SettingEntry> {
-
-        public class SettingCollectionConverter : JsonConverter<SettingCollection> {
-
-            public override void WriteJson(JsonWriter writer, SettingCollection value, JsonSerializer serializer) {
-                var settingCollectionObject = new JObject();
-
-                if (value.LazyLoaded)
-                    settingCollectionObject.Add("Lazy", value.LazyLoaded);
-
-                var entryArray = value._entryTokens as JArray;
-                if (value.Loaded) {
-                    entryArray = new JArray();
-
-                    foreach (var entry in value._entries) {
-                        var entryObject = JObject.FromObject(entry, serializer);
-
-                        var entryType = entry.GetType();
-
-                        //entryObject.Add("$type", $"{entryType.FullName}, {entryType.Assembly.GetName().Name}");
-
-                        entryArray.Add(entryObject);
-                    }
-                }
-
-                settingCollectionObject.Add("Entries", entryArray);
-
-                settingCollectionObject.WriteTo(writer);
-            }
-
-            public override SettingCollection ReadJson(JsonReader reader, Type objectType, SettingCollection existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                if (reader.TokenType == JsonToken.Null) return null;
-
-                JObject jObj = JObject.Load(reader);
-
-                var isLazy = false;
-
-                if (jObj["Lazy"] != null) {
-                    isLazy = jObj["Lazy"].Value<bool>();
-                }
-
-                if (jObj["Entries"] != null) 
-                    return new SettingCollection(isLazy, jObj["Entries"]);
-
-                return new SettingCollection(isLazy);
-            }
-
-        }
-
-        private JToken _entryTokens;
-
-        private bool               _lazyLoaded;
-        private List<SettingEntry> _entries;
-
-        public bool LazyLoaded => _lazyLoaded;
-
-        [JsonProperty(TypeNameHandling = TypeNameHandling.All)]
-        public IReadOnlyList<SettingEntry> Entries {
-            get {
-                if (!this.Loaded) Load();
-
-                return _entries.AsReadOnly();
-            }
-        }
-
-        public bool Loaded => _entries != null;
-
-        public SettingCollection(bool lazy = false) {
-            _lazyLoaded = lazy;
-            _entryTokens = null;
-
-            _entries = new List<SettingEntry>();
-        }
-
-        public SettingCollection(bool lazy, JToken entryTokens) {
-            _lazyLoaded = lazy;
-
-            _entryTokens = entryTokens;
-
-            if (!_lazyLoaded) {
-                Load();
-            }
-        }
-
-        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName = null, string description = null, SettingsService.SettingTypeRendererDelegate renderer = null) {
-            // We don't need to check if we've loaded because the first check uses this[key] which
-            // will load if we haven't already since it references this.Entries instead of _entries
-            var existingEntry = this[entryKey];
-
-            var definedValue = defaultValue;
-
-            if (existingEntry is SettingEntry<TEntry> matchingEntry) {
-                definedValue = matchingEntry.Value;
-            }
-
-            _entries.Remove(existingEntry);
-
-            SettingEntry<TEntry> definedEntry = SettingEntry<TEntry>.InitSetting(entryKey, definedValue);
-
-            _entries.Add(definedEntry);
-
-            definedEntry.DisplayName      = displayName;
-            definedEntry.Description      = description;
-            definedEntry.Renderer         = renderer;
-
-            return definedEntry;
-        }
-
-        public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
-            var subCollection = new SettingCollection(lazyLoaded);
-
-            this.DefineSetting(collectionKey, subCollection);
-
-            return subCollection;
-        }
-
-        public void Load() {
-            if (_entryTokens == null) return;
-
-            _entries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings);
-
-            _entryTokens = null;
-        }
-
-        public SettingEntry this[int index] => this.Entries[index];
-
-        public SettingEntry this[string entryKey] => this.Entries.FirstOrDefault(se => string.Equals(se.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase));
-        
-        #region IEnumerable
-
-        /// <inheritdoc />
-        public IEnumerator<SettingEntry> GetEnumerator() {
-            return this.Entries.GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
-        }
-
-        #endregion
-
-    }
+    
 
    [JsonObject]
     public class SettingsService : GameService {
@@ -363,12 +97,12 @@ namespace Blish_HUD {
 
             // bool setting renderer
             SettingTypeRenderers.Add(typeof(bool), (setting) => {
-                var strongSetting = (SettingEntry<bool>)setting;
+                var strongSetting = (SettingEntry<bool>) setting;
 
                 var settingCtrl = new Checkbox() {
-                    Text = strongSetting.DisplayName,
+                    Text             = strongSetting.DisplayName,
                     BasicTooltipText = strongSetting.Description,
-                    Checked = strongSetting.Value
+                    Checked          = strongSetting.Value
                 };
 
                 Adhesive.Binding.CreateTwoWayBinding(() => settingCtrl.Checked,
@@ -379,6 +113,8 @@ namespace Blish_HUD {
 
             // enum setting renderer
             SettingTypeRenderers.Add(typeof(Enum), (setting) => {
+                //var strongSetting = (SettingEntry<>) setting;
+
                 var enumType = setting.SettingType;
 
                 var settingCtrl = new Panel() {
@@ -392,17 +128,27 @@ namespace Blish_HUD {
                     Parent = settingCtrl,
                 };
 
-                Console.WriteLine($"{enumType.FullName} => ");
+                string[] values = Enum.GetNames(enumType);
 
-                var values = Enum.GetNames(enumType);
-
-                foreach (var enumOption in values) {
-                    Console.WriteLine(enumOption.ToString());
+                foreach (string enumOption in values) {
                     settingDropDown.Items.Add(enumOption.ToString());
                 }
 
+                //Adhesive.Binding.CreateTwoWayBinding(() => settingDropDown.SelectedItem,
+                //                                     () => strongSetting.Value,
+                //                                     (enumVal) => settingDropDown.SelectedItem = Enum.GetName(enumType, Convert.ChangeType(enumVal, enumType)),
+                //                                     (settingVal) => strongSetting.Value       = Enum.Parse(enumType, settingVal));
 
                 return settingCtrl;
+            });
+
+            // hotkey setting renderer
+            SettingTypeRenderers.Add(typeof(Hotkey), (setting) => {
+                var strongSetting = (SettingEntry<Hotkey>) setting;
+
+                var hotkeyAssigner = new HotkeyAssigner(strongSetting.Value);
+
+                return hotkeyAssigner;
             });
         }
 
@@ -422,6 +168,32 @@ namespace Blish_HUD {
         protected override void Unload() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) { /* NOOP */ }
+
+        public void RenderSettingsToPanel(Container panel, IEnumerable<SettingEntry> settings) {
+            int lastBottom = 0;
+
+            foreach (var settingEntry in settings) {
+                SettingTypeRendererDelegate matchingRenderer = null;
+
+                foreach (var typeRenderer in this.SettingTypeRenderers) {
+                    if (Utils.General.IsSameOrSubclass(typeRenderer.Key, settingEntry.SettingType)) {
+                        matchingRenderer = typeRenderer.Value;
+                    }
+                }
+
+                if (settingEntry.Renderer != null) {
+                    matchingRenderer = settingEntry.Renderer;
+                }
+
+                if (matchingRenderer != null) {
+                    var settingCtrl = matchingRenderer.Invoke(settingEntry);
+                    settingCtrl.Location = new Point(0, lastBottom + 10);
+                    settingCtrl.Parent   = panel;
+
+                    lastBottom = settingCtrl.Bottom;
+                }
+            }
+        }
 
         private Panel BuildSettingPanel(Controls.WindowBase wndw) {
             var baseSettingsPanel = new Panel() {
@@ -450,15 +222,12 @@ namespace Blish_HUD {
                 Parent   = baseSettingsPanel
             };
 
-            var settingsMi_App = settingsListMenu.AddMenuItem("Application Settings", Content.GetTexture("156736"));
-            var settingsMi_Controls = settingsListMenu.AddMenuItem("Control Settings", Content.GetTexture("156734"));
-            var settingsMi_Sound = settingsListMenu.AddMenuItem("Sound Settings", Content.GetTexture("156738"));
-            var settingsMi_Modules = settingsListMenu.AddMenuItem("Manage Modules", Content.GetTexture("156764-noarrow"));
-            var settingsMi_API = settingsListMenu.AddMenuItem("API Settings", Content.GetTexture("156684"));
-            var settingsMi_Update = settingsListMenu.AddMenuItem("Check For Updates", Content.GetTexture("156411"));
-            var settingsMi_SupportUs = settingsListMenu.AddMenuItem("Support the Project", Content.GetTexture("156331"));
-            var settingsMi_About = settingsListMenu.AddMenuItem("About", Content.GetTexture("440023"));
-            var settingsMi_Exit = settingsListMenu.AddMenuItem("Close Blish HUD", Content.GetTexture("155049"));
+            var settingsMi_About    = settingsListMenu.AddMenuItem("About",                Content.GetTexture("440023"));
+            var settingsMi_App      = settingsListMenu.AddMenuItem("Application Settings", Content.GetTexture("156736"));
+            var settingsMi_Controls = settingsListMenu.AddMenuItem("Hotkey Settings",      Content.GetTexture("156734"));
+            var settingsMi_Update   = settingsListMenu.AddMenuItem("Check For Updates",    Content.GetTexture("156411"));
+            var settingsMi_API      = settingsListMenu.AddMenuItem("API Settings",         Content.GetTexture("156684"));
+            var settingsMi_Modules  = settingsListMenu.AddMenuItem("Manage Modules",       Content.GetTexture("156764-noarrow"));
 
             //settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
 
@@ -475,6 +244,10 @@ namespace Blish_HUD {
 
             settingsMi_App.Click += delegate {
                 cPanel.NavigateToBuiltPanel(GameServices.Director.ApplicationSettingsUIBuilder.BuildSingleModuleSettings, null);
+            };
+
+            settingsMi_Controls.Click += delegate {
+                cPanel.NavigateToBuiltPanel(GameServices.Hotkeys.HotkeysSettingsUIBuilder.BuildApplicationHotkeySettings, null);
             };
 
             GameService.Module.FinishedLoading += delegate {

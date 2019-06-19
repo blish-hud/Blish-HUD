@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using Newtonsoft.Json;
 
 namespace Blish_HUD {
     public class DebugService:GameService {

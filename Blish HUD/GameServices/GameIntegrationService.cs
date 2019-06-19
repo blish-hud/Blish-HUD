@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Security.AccessControl;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Blish_HUD.Settings;
 using Microsoft.Win32;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
-using Color = System.Drawing.Color;
-using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
 
@@ -40,6 +32,8 @@ namespace Blish_HUD {
 
         private const string GW2_PATCHWINDOW_NAME = "ArenaNet";
         private const string GW2_GAMEWINDOW_NAME = "ArenaNet_Dx_Window_Class";
+
+        private const string GAMEINTEGRATION_SETTINGS = "GameIntegrationConfiguration";
 
         public NotifyIcon TrayIcon { get; private set; }
         public ContextMenuStrip TrayIconMenu { get; private set; }
@@ -79,32 +73,51 @@ namespace Blish_HUD {
                     _gw2Process = null;
                 } else {
                     this.Gw2WindowHandle = _gw2Process.MainWindowHandle;
+
+                    if (_gw2Process.MainModule != null) {
+                        _gw2ExecutablePath.Value = _gw2Process.MainModule.FileName;
+                    }
                 }
 
                 this.Gw2IsRunning = _gw2Process != null && Utils.Window.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
             }
         }
 
-        public string Gw2ExecutableLocation { get; private set; }
+        private SettingCollection _gameIntegrationSettings;
+
+        private SettingEntry<string> _gw2ExecutablePath;
+
+        public string Gw2ExecutablePath => _gw2ExecutablePath.Value;
 
         protected override void Initialize() {
-            // TODO: Split this out into its own function
+            _gameIntegrationSettings = Settings.RegisterRootSettingCollection(GAMEINTEGRATION_SETTINGS);
+
+            DefineSettings(_gameIntegrationSettings);
+        }
+
+        private void DefineSettings(SettingCollection settings) {
+            _gw2ExecutablePath = settings.DefineSetting("Gw2ExecutablePath", GetGw2PathFromRegistry(), "Gw2-64.exe Path", "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
+        }
+
+        private string GetGw2PathFromRegistry() {
             using (var gw2Key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(GW2_REGISTRY_KEY, RegistryRights.ReadKey)) {
                 if (gw2Key != null) {
                     string gw2Path = gw2Key.GetValue(GW2_REGISTRY_PATH_SV).ToString();
 
                     if (File.Exists(gw2Path)) {
-                        this.Gw2ExecutableLocation = gw2Path;
+                        return gw2Path;
                     }
                 }
             }
+
+            return null;
         }
 
         private void LaunchGw2(bool autologin = false) {
-            if (File.Exists(this.Gw2ExecutableLocation)) {
+            if (File.Exists(this.Gw2ExecutablePath)) {
                 var gw2Proc = new Process {
                     StartInfo = {
-                        FileName = this.Gw2ExecutableLocation,
+                        FileName = this.Gw2ExecutablePath,
                         Arguments = autologin ? "-autologin" : ""
                     }
                 };
@@ -116,12 +129,6 @@ namespace Blish_HUD {
         protected override void Load() {
             Overlay.Form.Shown += delegate {
                 Utils.Window.SetupOverlay(Overlay.FormHandle);
-
-                //Overlay.Form.TopMost = true;
-
-                //if (!this.Gw2IsRunning) {
-                //    Overlay.Form.Hide();
-                //}
             };
 
             CreateTrayIcon();
@@ -150,22 +157,18 @@ namespace Blish_HUD {
             };
 
             // Populate TrayIconMenu items
-            if (!string.IsNullOrEmpty(this.Gw2ExecutableLocation)) {
+            if (!string.IsNullOrEmpty(this.Gw2ExecutablePath)) {
                 ts_launchGw2Auto = this.TrayIconMenu.Items.Add("Launch Guild Wars 2 - Autologin");
                 ts_launchGw2     = this.TrayIconMenu.Items.Add("Launch Guild Wars 2");
 
                 ts_launchGw2Auto.Click += delegate { LaunchGw2(true); };
-                ts_launchGw2.Click += delegate { LaunchGw2(false); };
+                ts_launchGw2.Click     += delegate { LaunchGw2(false); };
 
                 this.TrayIcon.DoubleClick += delegate {
                     if (!this.Gw2IsRunning)
                         LaunchGw2(true);
                 };
-            } else {
-                var nogw2 = this.TrayIconMenu.Items.Add("Could not locate the gw2 executable!");
-                nogw2.Enabled = false;
             }
-
 
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
             ts_exit = this.TrayIconMenu.Items.Add("Close Blish HUD");
@@ -173,13 +176,13 @@ namespace Blish_HUD {
             ts_exit.Click += delegate { ActiveOverlay.Exit(); };
 
             this.TrayIconMenu.Opening += delegate {
-                ts_launchGw2.Enabled = !this.Gw2IsRunning;
-                ts_launchGw2Auto.Enabled = !this.Gw2IsRunning;
+                ts_launchGw2.Enabled     = !this.Gw2IsRunning && File.Exists(this.Gw2ExecutablePath);
+                ts_launchGw2Auto.Enabled = !this.Gw2IsRunning && File.Exists(this.Gw2ExecutablePath);
             };
         }
 
         // TODO: At some point it would be nice to pull all of this into just Program.cs so that we can dispose of the
-        // MonoGame instance when the game is not currently being played (and save the user a lot of memory)
+        // MonoGame instance when the game is not currently being played
         private void TryAttachToGw2() {
             this.Gw2Process = GetGw2Process();
 

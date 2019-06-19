@@ -2,19 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Blish_HUD.Annotations;
-using Microsoft.Scripting.Utils;
 
 namespace Blish_HUD {
     public abstract class GameService : INotifyPropertyChanged {
 
-        private static readonly GameService[] AllServices;
-        public static IReadOnlyList<GameService> All => AllServices;
+        private static readonly GameService[] _allServices;
+        public static IReadOnlyList<GameService> All => _allServices;
 
         public event EventHandler<EventArgs> FinishedLoading;
 
@@ -96,7 +91,7 @@ namespace Blish_HUD {
             Module          = new ModuleService();
             ArcDps          = new ArcDpsService();
 
-            AllServices = new GameService[] {
+            _allServices = new GameService[] {
                 Debug,
                 Directory,
                 Store,

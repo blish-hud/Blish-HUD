@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using Gw2Sharp.WebApi.V2.Models;
 using JsonSubTypes;
 using Newtonsoft.Json;

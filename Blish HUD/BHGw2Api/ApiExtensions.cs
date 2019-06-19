@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Flurl;
+﻿using Flurl;
 
 namespace Blish_HUD.BHGw2Api {
     public static class ApiExtensions {

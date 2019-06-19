@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Blish_HUD.Utils { 
+﻿namespace Blish_HUD.Utils { 
 
     public abstract class WindowStyles {
 

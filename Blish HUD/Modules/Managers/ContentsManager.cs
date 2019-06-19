@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Blish_HUD.Content;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,36 +9,38 @@ namespace Blish_HUD.Modules.Managers {
 
         private readonly IDataReader _reader;
 
-        private readonly Dictionary<string, Texture2D> _loadedTextures;
-        private readonly Dictionary<string, SoundEffect> _loadedSoundEffects;
-        private readonly Dictionary<string, Effect> _loadedEffects;
-        private readonly Dictionary<string, BitmapFont> _loadedBitmapFonts;
-        private readonly Dictionary<string, Model> _loadedModels;
-
         public ContentsManager(IDataReader reader) {
             _reader = reader;
-
-            _loadedTextures = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
-            _loadedSoundEffects = new Dictionary<string, SoundEffect>(StringComparer.OrdinalIgnoreCase);
-            _loadedEffects = new Dictionary<string, Effect>(StringComparer.OrdinalIgnoreCase);
-            _loadedBitmapFonts = new Dictionary<string, BitmapFont>(StringComparer.OrdinalIgnoreCase);
-            _loadedModels = new Dictionary<string, Model>(StringComparer.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Loads a <see cref="Texture2D"/> from a file such as a PNG.
+        /// </summary>
+        /// <param name="texturePath">The path to the texture.</param>
         public Texture2D GetTexture(string texturePath) {
             return GetTexture(texturePath, ContentService.Textures.Error);
         }
 
+        /// <summary>
+        /// Loads a <see cref="Texture2D"/> from a file such as a PNG. If the requested texture is inaccessible, the <see cref="fallbackTexture"/> will be returned.
+        /// </summary>
+        /// <param name="texturePath">The path to the texture.</param>
+        /// <param name="fallbackTexture">An alternative <see cref="Texture2D"/> to return if the requested texture is not found or is invalid.</param>
         public Texture2D GetTexture(string texturePath, Texture2D fallbackTexture) {
             using (var textureStream = _reader.GetFileStream(texturePath)) {
                 if (textureStream != null) {
                     return Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream);
-                } else {
-                    return fallbackTexture;
                 }
             }
+
+            return fallbackTexture;
         }
 
+        /// <summary>
+        /// Loads a compiled shader in from a file as a <see cref="TEffect"/> that inherits from <see cref="Effect"/>.
+        /// </summary>
+        /// <typeparam name="TEffect">A custom effect wrapper (similar to the function of <see cref="BasicEffect"/>).</typeparam>
+        /// <param name="effectPath">The path to the compiled shader.</param>
         public Effect GetEffect<TEffect>(string effectPath) where TEffect : Effect {
             if (GetEffect(effectPath) is TEffect effect) {
                 return effect;
@@ -51,6 +49,10 @@ namespace Blish_HUD.Modules.Managers {
             return null;
         }
 
+        /// <summary>
+        /// Loads a compiled shader in from a file as an <see cref="Effect"/>.
+        /// </summary>
+        /// <param name="effectPath">The path to the compiled shader.</param>
         public Effect GetEffect(string effectPath) {
             long effectDataLength = _reader.GetFileBytes(effectPath, out byte[] effectData);
 
@@ -61,6 +63,10 @@ namespace Blish_HUD.Modules.Managers {
             return null;
         }
 
+        /// <summary>
+        /// Loads a <see cref="SoundEffect"/> from a file.
+        /// </summary>
+        /// <param name="soundPath">The path to the sound file.</param>
         public SoundEffect GetSound(string soundPath) {
             using (var soundStream = _reader.GetFileStream(soundPath)) {
                 if (soundStream != null)
@@ -70,10 +76,18 @@ namespace Blish_HUD.Modules.Managers {
             return null;
         }
 
+        /// <summary>
+        /// [NOT IMPLEMENTED] Loads a <see cref="BitmapFont"/> from a file.
+        /// </summary>
+        /// <param name="fontPath">The path to the font file.</param>
         public BitmapFont GetBitmapFont(string fontPath) {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// [NOT IMPLEMENTED] Loads a <see cref="Model"/> from a file.
+        /// </summary>
+        /// <param name="modelPath">The path to the model.</param>
         public Model GetModel(string modelPath) {
             throw new NotImplementedException();
         }

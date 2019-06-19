@@ -1,22 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using Blish_HUD.Annotations;
 using Blish_HUD.Controls;
-using Blish_HUD.Custom.Collections;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing;
 using Blish_HUD.Pathing.Content;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Panel = Blish_HUD.Controls.Panel;
 
@@ -35,8 +23,6 @@ namespace Blish_HUD {
 
         public List<IPathable<Entity>> Pathables { get; set; } = new List<IPathable<Entity>>();
         
-        
-
         public SynchronizedCollection<PathableResourceManager> PackManagers { get; set; } = new SynchronizedCollection<PathableResourceManager>();
 
         private PersistentStore _pathingStore;
@@ -66,7 +52,7 @@ namespace Blish_HUD {
             IconContextMenu = new ContextMenuStrip();
 
             Icon.Click += delegate {
-                IconContextMenu.Show(Icon.Location + Icon.Size);
+                IconContextMenu.Show(Icon);
             };
 
             return null;
@@ -137,9 +123,7 @@ namespace Blish_HUD {
             }
         }
 
-        protected override void Unload() {
-
-        }
+        protected override void Unload() { /* NOOP */ }
 
     }
 

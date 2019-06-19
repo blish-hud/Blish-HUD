@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
@@ -170,6 +167,11 @@ namespace Blish_HUD.Controls {
             };
 
             this.Size = new Point(this.Width, DROPDOWN_HEIGHT);
+        }
+
+        /// <inheritdoc />
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
         }
 
         protected override void OnClick(MouseEventArgs e) {

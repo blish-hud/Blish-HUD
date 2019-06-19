@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD.Entities.Primitives;
-using Blish_HUD.Pathing.Behaviors;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using SharpDX.WIC;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing.Markers {
     public class BasicMarkerPathable : ManagedPathable<Entities.Marker>, IMarker {

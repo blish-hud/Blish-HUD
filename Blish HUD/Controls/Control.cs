@@ -1,22 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.TextureAtlases;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Blish_HUD.Annotations;
 using Blish_HUD.Controls.Effects;
-using Blish_HUD.Utils;
-using Flurl.Util;
 using Newtonsoft.Json;
 
 namespace Blish_HUD.Controls {

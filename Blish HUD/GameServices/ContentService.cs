@@ -2,19 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Runtime.Caching;
-using System.Threading.Tasks;
 using Blish_HUD.Content;
 using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Content.Pipeline;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
-using MonoGame.Framework.Content;
 
 namespace Blish_HUD {
 
@@ -102,9 +96,7 @@ namespace Blish_HUD {
 
         public Microsoft.Xna.Framework.Content.ContentManager ContentManager => Overlay.ActiveContentManager;
 
-        protected override void Initialize() {
-            
-        }
+        protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
             Textures.Load();
@@ -163,7 +155,6 @@ namespace Blish_HUD {
                 }
             }
         }
-
 
         public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
             return Overlay.ActiveContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
@@ -249,17 +240,6 @@ namespace Blish_HUD {
             }
         }
 
-        public Stream GetFile(string fileName) {
-            if (_loadedFiles.TryGetValue(fileName, out var cachedFile))
-                return cachedFile;
-
-            cachedFile = FileFromSystem($"{fileName}");
-
-            _loadedFiles.Add(fileName, cachedFile);
-
-            return cachedFile;
-        }
-
         protected override void Unload() {
             _loadedTextures.Clear();
             _loadedBitmapFonts.Clear();
@@ -267,18 +247,7 @@ namespace Blish_HUD {
             _loadedFiles.Clear();
         }
 
-        protected override void Update(GameTime gameTime) {
-            // Unload content from memory since they aren't playing gw2 right now
+        protected override void Update(GameTime gameTime) { /* NOOP */ }
 
-            // We can't do this until all content is actually handled by the content GameService
-            // If we do, some sprites won't be visible (like some font sprites that are loaded in MainLoop)
-            
-            //if (!GameService.GameIntegration.Gw2IsRunning) {
-            //    LoadedTextures.Clear();
-            //    LoadedBitmapFonts.Clear();
-            //    LoadedSoundEffects.Clear();
-            //    ContentManager.Unload();
-            //}
-        }
     }
 }

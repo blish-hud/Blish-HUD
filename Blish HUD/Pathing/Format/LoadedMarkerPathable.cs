@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using Blish_HUD.Pathing.Markers;
-using GW2NET.Items;
-using Microsoft.Xna.Framework;
-using System.IO;
 using Blish_HUD.Pathing.Content;
 using Blish_HUD.Pathing.Entities;
-using Blish_HUD.Utils;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing.Format {

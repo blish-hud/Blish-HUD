@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Humanizer;
 using Newtonsoft.Json;
 
 namespace Blish_HUD.BHGw2Api {

@@ -205,7 +205,12 @@
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Content\IDataReader.cs" />
     <Compile Include="GameServices\Director\ApplicationSettingsUIBuilder.cs" />
+    <Compile Include="GameServices\Hotkeys\HotkeysSettingsUIBuilder.cs" />
     <Compile Include="GameServices\Module\SingleModuleSettingsUIBuilder.cs" />
+    <Compile Include="GameServices\Settings\AboutSettingsUIBuilder.cs" />
+    <Compile Include="GameServices\Settings\SettingCollection.cs" />
+    <Compile Include="GameServices\Settings\SettingEntry.cs" />
+    <Compile Include="GameServices\Settings\SettingEntry[T].cs" />
     <Compile Include="Modules\Module.cs" />
     <Compile Include="Modules\Managers\ContentsManager.cs" />
     <Compile Include="Modules\Managers\DirectoriesManager.cs" />
@@ -213,7 +218,9 @@
     <Compile Include="Modules\Managers\SettingsManager.cs" />
     <Compile Include="Modules\ModuleParameters.cs" />
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
+    <Compile Include="Utils\Locale.cs" />
     <Compile Include="Utils\MouseInterceptor.cs" />
+    <Compile Include="Utils\General.cs" />
     <Compile Include="_Interfaces\IKeyboard.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
     <Compile Include="Modules\ManifestV1.cs" />

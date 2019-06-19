@@ -2,10 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Blish_HUD.Pathing.Content {
     public class PathableResourceManager : IDisposable {

@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Blish_HUD.Content;
 using Blish_HUD.Modules.Managers;
-using Gw2Sharp.WebApi;
+using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Modules {
 
     public enum ModuleRunState {
+        /// <summary>
+        /// The module is not loaded.
+        /// </summary>
+        Unloaded,
+
         /// <summary>
         /// The module is currently still working to complete its initial <see cref="Module.LoadAsync"/>.
         /// </summary>
@@ -74,8 +73,8 @@ namespace Blish_HUD.Modules {
 
         private readonly ModuleParameters _moduleParameters;
 
-        private ModuleRunState _runState;
-        internal ModuleRunState RunState {
+        private ModuleRunState _runState = ModuleRunState.Unloaded;
+        private ModuleRunState RunState {
             get => _runState;
             set {
                 if (_runState == value) return;
@@ -125,7 +124,9 @@ namespace Blish_HUD.Modules {
         }
 
         public void DoLoad() {
-            _loadTask = LoadAsync();
+            this.RunState = ModuleRunState.Loading;
+
+            _loadTask = Task.Run(LoadAsync);
         }
 
         private void CheckForLoaded() {
@@ -217,7 +218,7 @@ namespace Blish_HUD.Modules {
 
         #region IDispose
 
-        protected void Dispose(bool disposing) {
+        protected virtual void Dispose(bool disposing) {
             DoUnload();
         }
 

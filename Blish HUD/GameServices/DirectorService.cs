@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Blish_HUD.Controls;
-using Blish_HUD.Utils;
+using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD {
 
@@ -39,7 +34,7 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            settings.DefineSetting("AppCulture", Gw2Sharp.WebApi.Locale.English, "Application & API Language", "Determines the language used when displaying Blish HUD text and results from the GW2 API.");
+            settings.DefineSetting("AppCulture", Utils.Locale.GetGw2LocaleFromCurrentUICulture(), "Application & API Language", "Determines the language used when displaying Blish HUD text and results from the GW2 API.");
             settings.DefineSetting("StayInTray", true, "Minimize to tray when Guild Wars 2 Closes", "If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.\nYou can also use the Blish HUD icon in the tray to launch Guild Wars 2.");
         }
 
