@@ -29,8 +29,8 @@ namespace Blish_HUD {
                 _position = Gw2Mumble.MumbleBacking.CameraPosition.ToXnaVector3();
                 _forward  = Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3();   
 
-                _view       = Matrix.CreateLookAt(this.Position, this.Position + _forward, Utils.DrawUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
-                _playerView = Matrix.CreateLookAt(this.Position, Player.Position + new Vector3(0, 0, 0.5f), Utils.DrawUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
+                _view       = Matrix.CreateLookAt(this.Position, this.Position + _forward, VectorUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
+                _playerView = Matrix.CreateLookAt(this.Position, Player.Position + new Vector3(0, 0, 0.5f), VectorUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
                 _projection = Matrix.CreatePerspectiveFieldOfView((float)Gw2Mumble.MumbleBacking.Identity.FieldOfView, Graphics.AspectRatio, this.NearPlaneRenderDistance, this.FarPlaneRenderDistance);
 
                 _worldViewProjection = _view * _projection;

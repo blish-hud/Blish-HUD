@@ -102,39 +102,9 @@ namespace Blish_HUD.Pathing.Format {
 
                 return false;
             });
-            //RegisterAttribute("iconFile", delegate (XmlAttribute attribute) {
-            //    if (!string.IsNullOrWhiteSpace(attribute.Value)) {
-            //        this.Icon = GameService.Content.GetTexture(
-            //                                       Path.Combine(
-            //                                                    GameService.FileSrv.BasePath,
-            //                                                    PathingService.MARKER_DIRECTORY,
-            //                                                    attribute.Value.Trim()
-            //                                                             .Replace('\\', Path.DirectorySeparatorChar)
-            //                                                             .Replace('/', Path.DirectorySeparatorChar)
-            //                                                   )
-            //                                      );
-            //        return true;
-            //    }
-
-            //    return false;
-            //});
 
             // IMarker:Text
             RegisterAttribute("text", attribute => (!string.IsNullOrEmpty(this.Text = attribute.Value)));
-        }
-
-        protected override bool FinalizeAttributes(Dictionary<string, LoadedPathableAttributeDescription> attributeLoaders) {
-            //if (attributeLoaders.ContainsKey("maxsize")) {
-            //    if (!attributeLoaders["maxsize"].Loaded) {
-            //        this.MaximumSize = Math.Min(this.MinimumSize, this.ManagedEntity.Size.X);
-            //    }
-            //}
-
-            return base.FinalizeAttributes(attributeLoaders);
-        }
-
-        protected override void AssignBehaviors() {
-            base.AssignBehaviors();
         }
 
         public override void OnLoading(EventArgs e) {

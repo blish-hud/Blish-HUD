@@ -8,12 +8,15 @@ using Blish_HUD.Annotations;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace Blish_HUD {
 
     public abstract class StoreValue {
 
         public class StoreValueConverter : JsonConverter<StoreValue> {
+
+            private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
             public override void WriteJson(JsonWriter writer, StoreValue value, JsonSerializer serializer) {
                 JToken.FromObject(value._value, serializer).WriteTo(writer);
@@ -50,7 +53,7 @@ namespace Blish_HUD {
                         break;
 
                     default:
-                        GameService.Debug.WriteWarningLine($"Persistent store value of type '{jObj.Type}' is not supported.");
+                        Logger.Warn("Persistent store value of type {storeValueType} is not supported by the PersistentStoreService.", jObj.Type);
                         break;
                 }
 
@@ -198,6 +201,8 @@ namespace Blish_HUD {
     [JsonObject]
     public class PersistentStoreService : GameService {
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private PersistentStore _stores;
 
         [JsonIgnore]
@@ -223,7 +228,7 @@ namespace Blish_HUD {
                 }
             };
 
-            _persistentStorePath = Path.Combine(GameService.Directory.BasePath, STORE_FILENAME);
+            _persistentStorePath = Path.Combine(DirectoryUtil.BasePath, STORE_FILENAME);
 
             // If store isn't there, generate the file
             if (!File.Exists(_persistentStorePath)) Save();

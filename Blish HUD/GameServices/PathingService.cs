@@ -31,7 +31,7 @@ namespace Blish_HUD {
 
         protected override void Initialize() {
             // Subscribe to map changes so that we can hide or show markers for the new map
-            Player.OnMapIdChanged += PlayerOnOnMapIdChanged;
+            Player.MapIdChanged += PlayerMapIdChanged;
         }
 
         protected override void Load() {
@@ -78,7 +78,7 @@ namespace Blish_HUD {
             this.Pathables.Remove(pathable);
         }
 
-        private void PlayerOnOnMapIdChanged(object sender, EventArgs e) {
+        private void PlayerMapIdChanged(object sender, EventArgs e) {
             NewMapLoaded?.Invoke(this, EventArgs.Empty);
 
             foreach (var packContext in this.PackManagers)

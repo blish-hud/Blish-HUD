@@ -1,62 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using Blish_HUD.Controls;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 
 namespace Blish_HUD {
     public class DebugService:GameService {
 
-        private class Alert {
+        private static NLog.Config.LoggingConfiguration _logConfiguration;
 
-            public readonly string ServiceTitle;
-            public readonly string AlertMessage;
-            public DateTimeOffset Expires;
+        private static NLog.Logger Logger;
 
-            public Alert(string source, string message, DateTimeOffset expires) {
-                ServiceTitle = source;
-                AlertMessage = message;
-                Expires = expires;
-            }
+        internal static Logger InitDebug(Type returnLoggerType) {
+            // Make sure crash dir is available for logs as early as possible
+            var logPath = DirectoryUtil.RegisterDirectory("logs");
 
+            // Init the Logger
+            _logConfiguration = new LoggingConfiguration();
+
+            var logFile = new FileTarget("logfile") {
+                ArchiveFileName = Path.Combine(logPath, "blishhud.{#}.log"),
+                ArchiveFileKind = FilePathKind.Absolute,
+                FileName = Path.Combine(logPath, "blishhud.log"),
+                ArchiveNumbering = ArchiveNumberingMode.Rolling,
+                MaxArchiveFiles = 9,
+                EnableFileDelete = true,
+                CreateDirs = true,
+                Encoding = Encoding.UTF8,
+                KeepFileOpen = true,
+            };
+
+            var logConsole = new ConsoleTarget("logconsole");
+
+            _logConfiguration.AddTarget(logFile);
+            _logConfiguration.AddTarget(logConsole);
+
+            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
+            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logFile);
+
+            LogManager.Configuration = _logConfiguration;
+
+            Logger = LogManager.GetCurrentClassLogger();
+
+            return NLog.LogManager.GetCurrentClassLogger(returnLoggerType);
         }
 
-        private Controls.Tooltip alertTooltip;
-        private Controls.Image alertIcon;
-
-        private bool alertInvalid = false;
-
-        private List<Alert> Alerts = new List<Alert>();
-        private Dictionary<Alert, Panel> DisplayedAlerts = new Dictionary<Alert, Panel>();
-
-        private FrameCounter _frameCounter;
-        public FrameCounter FrameCounter => _frameCounter;
-
-        public void WriteInfo(string info, params object[] formatItems) {
-            System.Diagnostics.Debug.Write("INFO: " + string.Format(info, formatItems));
-        }
-
-        public void WriteInfoLine(string info, params object[] formatItems) {
-            WriteInfo(info + Environment.NewLine, formatItems);
-        }
-
-        public void WriteWarning(string warning, params object[] formatItems) {
-            System.Diagnostics.Debug.Write("WARNING: " + string.Format(warning, formatItems));
-        }
-
-        public void WriteWarningLine(string warning, params object[] formatItems) {
-            WriteWarning(warning + Environment.NewLine, formatItems);
-        }
-
-        public void WriteError(string error, params object[] formatItems) {
-            System.Diagnostics.Debug.Write("ERROR: " + string.Format(error, formatItems));
-        }
-
-        public void WriteErrorLine(string error, params string[] formatItems) {
-            WriteError(error + Environment.NewLine, formatItems);
-        }
+        public FrameCounter FrameCounter { get; private set; }
 
         public class FuncClock {
 
@@ -120,40 +116,21 @@ namespace Blish_HUD {
         public void StopTimeFuncAndOutput(string func) {
             #if DEBUG
                 FuncTimes[func]?.Stop();
-                Console.WriteLine($"{func} ran for {FuncTimes[func]?.LastTime.Milliseconds().Humanize()}.");
+                Logger.Info("{funcName} ran for {$funcTime}.", func, FuncTimes[func]?.LastTime.Milliseconds().Humanize());
             #endif
         }
 
-        public void DisplayAlert(string source, string message, DateTimeOffset expiration) {
-            WriteWarningLine($"[{source}] {message}");
-
-            // if the alert already exists, just extend the expiration on the existing alert
-            foreach (var alert in Alerts) {
-                if (alert.ServiceTitle == source && alert.AlertMessage == message) {
-                    alert.Expires = expiration;
-                    return;
-                }
-            }
-
-            Alerts.Add(new Alert(source, message, expiration));
-        }
-
-        // TODO: Debug service needs to be fleshed out more
         protected override void Initialize() {
-            _frameCounter = new FrameCounter();
+            this.FrameCounter = new FrameCounter();
         }
         protected override void Unload() { /* NOOP */ }
 
         protected override void Load() {
-            // Make sure crash dir is available for logs later on
-            GameService.Directory.RegisterDirectory("logs");
-            //System.IO.Directory.CreateDirectory(Path.Combine(GameService.Directory.BasePath, "logs"));
-
             FuncTimes = new Dictionary<string, FuncClock>();
         }
 
         protected override void Update(GameTime gameTime) {
-            _frameCounter.Update(gameTime.GetElapsedSeconds());
+            this.FrameCounter.Update(gameTime.GetElapsedSeconds());
         }
     }
 }

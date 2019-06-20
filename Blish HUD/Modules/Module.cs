@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
+using NLog;
 
 namespace Blish_HUD.Modules {
 
@@ -40,6 +42,8 @@ namespace Blish_HUD.Modules {
     }
 
     public abstract class Module : IDisposable {
+
+        protected static Logger Logger;
 
         #region Module Events
 
@@ -113,6 +117,7 @@ namespace Blish_HUD.Modules {
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) {
             _moduleParameters = moduleParameters;
+            NLog.LogManager.Configuration = _moduleParameters.LoggingConfig;
         }
 
         #region Module Method Interface
@@ -135,26 +140,25 @@ namespace Blish_HUD.Modules {
                     var loadError = new UnobservedTaskExceptionEventArgs(_loadTask.Exception);
                     OnModuleException(loadError);
                     if (!loadError.Observed) {
-                        GameService.Debug.WriteErrorLine($"Module '{this.Name} ({this.Namespace})' had an unhandled exception while loading:");
-                        GameService.Debug.WriteErrorLine($"{loadError.Exception.ToString()}");
+                        Logger.Error(_loadTask.Exception, "Module '{$moduleName} ({$moduleNamespace})' had an unhandled exception while loading:", this.Name, this.Namespace);
                     }
                     RunState = ModuleRunState.Loaded;
                     break;
 
                 case TaskStatus.RanToCompletion:
                     RunState = ModuleRunState.Loaded;
-                    GameService.Debug.WriteInfoLine($"Module '{this.Name} ({this.Namespace})' finished loading.");
+                    Logger.Info("Module '{$moduleName} ({$moduleNamespace})' finished loading.", this.Name, this.Namespace);
                     break;
 
                 case TaskStatus.Canceled:
-                    GameService.Debug.WriteWarningLine($"Module '{this.Name} ({this.Namespace})' was cancelled before it could finish loading.");
+                    Logger.Warn("Module '{$moduleName} ({$moduleNamespace})' was cancelled before it could finish loading.", this.Name, this.Namespace);
                     break;
 
                 case TaskStatus.WaitingForActivation:
                     break;
 
                 default:
-                    GameService.Debug.WriteWarningLine($"Unexpected module load result status '{_loadTask.Status.ToString()}'.");
+                    Logger.Warn("Module '{$moduleName} ({$moduleNamespace})' load state of {loadTaskStatus} was unexpected.", this.Name, this.Namespace, _loadTask.Status.ToString());
                     break;
             }
         }

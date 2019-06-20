@@ -14,7 +14,8 @@ namespace Blish_HUD {
 
     public class ContentService : GameService {
 
-        private const string REF_NAME = "ref";
+        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private const string REF_FILE = "ref.dat";
 
         #region Load Static
@@ -102,10 +103,6 @@ namespace Blish_HUD {
             Textures.Load();
         }
 
-        public ContentsManager RegisterContents(IDataReader dataReader) {
-            return new ContentsManager(dataReader.GetSubPath(REF_NAME));
-        }
-
         public void PlaySoundEffectByName(string soundName) {
             if (!_loadedSoundEffects.ContainsKey(soundName))
                 _loadedSoundEffects.Add(soundName, Overlay.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
@@ -183,8 +180,8 @@ namespace Blish_HUD {
             if (cachedTexture == null) {
                 try {
                     cachedTexture = Overlay.ActiveContentManager.Load<Texture2D>(textureName);
-                } catch (ContentLoadException e) {
-                    Debug.WriteWarningLine($"Could not find '{textureName}' precompiled or in include directory. Full error message: {e.ToString()}");
+                } catch (ContentLoadException ex) {
+                    Logger.Error(ex, "Could not find {textureName} precompiled or in the ref archive.", textureName);
                 }
             }
 
@@ -211,7 +208,7 @@ namespace Blish_HUD {
 
         private static Stream FileFromSystem(string filepath) {
             if (!File.Exists(REF_FILE)) {
-                Debug.WriteWarningLine($"{REF_FILE} is missing! Lots of assets will likely be missing!");
+                Logger.Warn("{refName} is missing! It should be in the same folder as BlishHUD.exe. Without it, most images and other assets will be missing.");
                 return null;
             }
 

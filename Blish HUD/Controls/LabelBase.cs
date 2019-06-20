@@ -17,9 +17,9 @@ namespace Blish_HUD.Controls {
 
         protected Color _textColor = Color.White;
 
-        protected Utils.DrawUtil.HorizontalAlignment _horizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Left;
+        protected HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
 
-        protected Utils.DrawUtil.VerticalAlignment _verticalAlignment = Utils.DrawUtil.VerticalAlignment.Top;
+        protected VerticalAlignment _verticalAlignment = VerticalAlignment.Top;
 
         protected bool _wrapText = false;
 

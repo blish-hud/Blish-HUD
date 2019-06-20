@@ -2,9 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Blish_HUD.Pathing.Content {
     public class PathableResourceManager : IDisposable {
+
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly Dictionary<string, Texture2D> _textureCache;
         private readonly HashSet<string> _pendingTextureUse;
@@ -23,6 +26,8 @@ namespace Blish_HUD.Pathing.Content {
         }
 
         public void RunTextureDisposal() {
+            Logger.Info("Running texture swap for pathables. {addCount} will be added and {removeCount} will be removed.", _pendingTextureUse.Count, _pendingTextureRemoval.Count);
+
             // Prevent us from removing textures that are still needed
             _pendingTextureRemoval.RemoveWhere(t => _pendingTextureUse.Contains(t));
 
@@ -56,6 +61,8 @@ namespace Blish_HUD.Pathing.Content {
                     if (textureStream == null) return fallbackTexture;
 
                     _textureCache.Add(texturePath, Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream));
+
+                    Logger.Info("Texture {texturePath} was successfully loaded from {dataReaderPath}.", texturePath, _dataReader.GetPathRepresentation(texturePath));
                 }
             }
 

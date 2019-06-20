@@ -36,12 +36,12 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _textColor, value);
         }
 
-        public Utils.DrawUtil.HorizontalAlignment HorizontalAlignment {
+        public HorizontalAlignment HorizontalAlignment {
             get => _horizontalAlignment;
             set => SetProperty(ref _horizontalAlignment, value);
         }
 
-        public Utils.DrawUtil.VerticalAlignment VerticalAlignment {
+        public VerticalAlignment VerticalAlignment {
             get => _verticalAlignment;
             set => SetProperty(ref _verticalAlignment, value);
         }

@@ -80,9 +80,7 @@ namespace Blish_HUD {
                 ScissorTestEnable = true
             };
 
-            BHGw2Api.Settings.Load();
-
-            // Create a new SpriteBatch, which can be used to draw textures.
+            // Create a new SpriteBatch, which can be used to draw debug information
             _basicSpriteBatch = new SpriteBatch(this.GraphicsDevice);
         }
 

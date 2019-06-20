@@ -33,6 +33,11 @@ namespace Blish_HUD.Content {
         }
 
         /// <inheritdoc />
+        public string GetPathRepresentation(string relativeFilePath = null) {
+            return $"{_archivePath}[{Path.Combine(_subPath, relativeFilePath ?? string.Empty)}]";
+        }
+
+        /// <inheritdoc />
         public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "") {
             var validEntries = _archive.Entries.Where(e => e.Name.EndsWith($"{fileExtension}", StringComparison.OrdinalIgnoreCase)).ToList();
 

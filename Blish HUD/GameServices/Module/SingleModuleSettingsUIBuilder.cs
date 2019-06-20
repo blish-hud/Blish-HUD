@@ -38,7 +38,7 @@ namespace Blish_HUD.GameServices.Module {
             var moduleVersion = new Label() {
                 Text              = $"v{cModuleMan.Manifest.Version}",
                 Height            = moduleName.Height - 6,
-                VerticalAlignment = DrawUtil.VerticalAlignment.Bottom,
+                VerticalAlignment = VerticalAlignment.Bottom,
                 AutoSizeWidth     = true,
                 StrokeText        = true,
                 Font              = GameService.Content.DefaultFont12,
@@ -49,7 +49,7 @@ namespace Blish_HUD.GameServices.Module {
             var moduleState = new Label() {
                 Text              = cModuleMan.State.Enabled ? "Enabled" : "Disabled",
                 Height            = moduleName.Height - 6,
-                VerticalAlignment = DrawUtil.VerticalAlignment.Bottom,
+                VerticalAlignment = VerticalAlignment.Bottom,
                 AutoSizeWidth     = true,
                 StrokeText        = true,
                 Font              = GameService.Content.DefaultFont12,
@@ -84,7 +84,7 @@ namespace Blish_HUD.GameServices.Module {
                     Height            = authorImage.Height - authorName.Height,
                     AutoSizeWidth     = true,
                     StrokeText        = true,
-                    VerticalAlignment = DrawUtil.VerticalAlignment.Bottom,
+                    VerticalAlignment = VerticalAlignment.Bottom,
                     Font              = GameService.Content.DefaultFont12,
                     Location          = new Point(authorImage.Right + 2, authorImage.Top),
                     Parent            = buildPanel

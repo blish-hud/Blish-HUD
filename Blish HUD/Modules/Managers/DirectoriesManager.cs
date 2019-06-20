@@ -6,21 +6,31 @@ namespace Blish_HUD.Modules.Managers {
 
     public class DirectoriesManager {
 
+        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private readonly HashSet<string>            _directoryNames;
         private readonly Dictionary<string, string> _directoryPaths;
 
         public IReadOnlyList<string> RegisteredDirectories => _directoryNames.ToList();
 
-        public DirectoriesManager(IEnumerable<string> directoryNames) {
-            _directoryNames = new HashSet<string>(directoryNames, StringComparer.OrdinalIgnoreCase);
+        private DirectoriesManager(IEnumerable<string> directories) {
+            _directoryNames = new HashSet<string>(directories, StringComparer.OrdinalIgnoreCase);
             _directoryPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             PrepareDirectories();
         }
 
+        public static DirectoriesManager GetModuleInstance(ModuleManager module) {
+            return new DirectoriesManager(module.Manifest.Directories ?? new List<string>(0));
+        }
+
         private void PrepareDirectories() {
             foreach (string directoryName in _directoryNames) {
-                _directoryPaths.Add(directoryName, GameService.Directory.RegisterDirectory(directoryName));
+                string registeredDirectory = DirectoryUtil.RegisterDirectory(directoryName);
+
+                Logger.Info("Directory {directoryName} ({$registeredPath}) was registered.", directoryName, registeredDirectory);
+
+                _directoryPaths.Add(directoryName, registeredDirectory);
             }
         }
 

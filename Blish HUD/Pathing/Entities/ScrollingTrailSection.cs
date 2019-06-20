@@ -90,8 +90,6 @@ namespace Blish_HUD.Pathing.Entities {
             // TacO has a minimum of 30, so we'll use 30
             _trailPoints = SetTrailResolution(_trailPoints, 30f);
 
-            //SmoothTrail(ref _trailPoints);
-
             this.VertexData = new VertexPositionColorTexture[this.TrailPoints.Count * 2];
 
             float imgScale = ScrollingTrail.TRAIL_WIDTH;

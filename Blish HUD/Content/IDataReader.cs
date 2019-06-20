@@ -16,6 +16,12 @@ namespace Blish_HUD.Content {
         IDataReader GetSubPath(string subPath);
 
         /// <summary>
+        /// Returns a string representation of the current path the DataReader is reading from. This won't necessarily be a valid file path.
+        /// </summary>
+        /// <param name="relativeFilePath">If provided, the path to a file within the <see cref="IDataReader"/> will be returned.</param>
+        string GetPathRepresentation(string relativeFilePath = null);
+
+        /// <summary>
         /// Enumerates all available files. Files that have the extension <see cref="fileExtension"/>
         /// will be passed to the provided <see cref="loadFileFunc"/>.
         /// </summary>

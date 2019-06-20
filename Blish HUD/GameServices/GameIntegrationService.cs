@@ -79,7 +79,7 @@ namespace Blish_HUD {
                     }
                 }
 
-                this.Gw2IsRunning = _gw2Process != null && Utils.Window.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
+                this.Gw2IsRunning = _gw2Process != null && Utils.WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
             }
         }
 
@@ -128,7 +128,7 @@ namespace Blish_HUD {
 
         protected override void Load() {
             Overlay.Form.Shown += delegate {
-                Utils.Window.SetupOverlay(Overlay.FormHandle);
+                Utils.WindowUtil.SetupOverlay(Overlay.FormHandle);
             };
 
             CreateTrayIcon();
@@ -232,6 +232,10 @@ namespace Blish_HUD {
 
             // TODO: Close or hide in tray (depending on user settings)
             Console.WriteLine("Guild Wars 2 application has exited!");
+
+            if (!GameService.Director.StayInTray) {
+                Application.Exit();
+            }
         }
 
         protected override void Unload() {
@@ -249,7 +253,7 @@ namespace Blish_HUD {
             this.IsInGame = !(Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5); // || gameTime.IsRunningSlowly && GameService.Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5);
 
             if (this.Gw2IsRunning) {
-                if (!Utils.Window.UpdateOverlay(Overlay.FormHandle, this.Gw2WindowHandle)) {
+                if (!Utils.WindowUtil.UpdateOverlay(Overlay.FormHandle, this.Gw2WindowHandle)) {
                     this.Gw2Process = null;
                 }
             } else {
@@ -267,7 +271,7 @@ namespace Blish_HUD {
             if (this.Gw2Process != null) {
                 try {
                     var gw2WindowHandle = this.Gw2Process.MainWindowHandle;
-                    Utils.Window.SetForegroundWindow(gw2WindowHandle);
+                    Utils.WindowUtil.SetForegroundWindow(gw2WindowHandle);
                 } catch (NullReferenceException ex) {
                     Console.WriteLine("gw2Process.MainWindowHandle > NullReferenceException: Ignored and skipping gw2 focus.");
                 }

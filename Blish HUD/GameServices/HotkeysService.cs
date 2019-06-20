@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Blish_HUD.BHUDControls.Hotkeys;
 using Blish_HUD.Controls;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;

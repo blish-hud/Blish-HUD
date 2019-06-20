@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Blish_HUD.Content;
 using Blish_HUD.Modules;
+using Blish_HUD.Settings;
 using Gw2Sharp.WebApi.V2.Models;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
@@ -123,7 +124,7 @@ namespace Blish_HUD {
 
         private const string MODULE_EXTENSION = ".bhm";
 
-        private string ModulesDirectory => Directory.RegisterDirectory(MODULES_DIRECTORY);
+        private string ModulesDirectory => DirectoryUtil.RegisterDirectory(MODULES_DIRECTORY);
 
         private SettingEntry<Dictionary<string, ModuleState>> _moduleStates;
 

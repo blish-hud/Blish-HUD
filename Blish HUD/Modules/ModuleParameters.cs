@@ -1,15 +1,23 @@
-﻿using Blish_HUD.Modules.Managers;
+﻿using System.Collections.Generic;
+using Blish_HUD.Modules.Managers;
 using Gw2Sharp.WebApi.V2.Models;
+using NLog;
+using NLog.Config;
 
 namespace Blish_HUD.Modules {
 
     public class ModuleParameters {
 
-        private Manifest           _manifest;
-        private Managers.SettingsManager    _settingsManager;
-        private ContentsManager    _contentsManager;
-        private DirectoriesManager _directoriesManager;
-        private Gw2ApiManager      _gw2ApiManager;
+        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private LoggingConfiguration _logConfiguration;
+        private Manifest             _manifest;
+        private SettingsManager      _settingsManager;
+        private ContentsManager      _contentsManager;
+        private DirectoriesManager   _directoriesManager;
+        private Gw2ApiManager        _gw2ApiManager;
+
+        public LoggingConfiguration LoggingConfig => _logConfiguration;
 
         public Manifest Manifest => _manifest;
 
@@ -32,7 +40,7 @@ namespace Blish_HUD.Modules {
                     break;
 
                 default:
-                    GameService.Debug.WriteErrorLine($"Unsupported manifest version '{manifest.ManifestVersion}'.");
+                    Logger.Warn($"Unsupported manifest version '{manifest.ManifestVersion}'. The module manifest will not be loaded.");
                     break;
             }
 
@@ -42,12 +50,13 @@ namespace Blish_HUD.Modules {
         private static ModuleParameters BuildFromManifest(ManifestV1 manifest, ModuleManager module) {
             var builtModuleParameters = new ModuleParameters();
 
+            builtModuleParameters._logConfiguration = LogManager.Configuration;
             builtModuleParameters._manifest = manifest;
 
             // TODO: Change manager registers so that they only need an instance of the ExternalModule and not specific params
-            builtModuleParameters._settingsManager    = Managers.SettingsManager.GetModuleInstance(module);
-            builtModuleParameters._contentsManager    = GameService.Content.RegisterContents(module.DataReader);
-            builtModuleParameters._directoriesManager = GameService.Directory.RegisterDirectories(manifest.Directories);
+            builtModuleParameters._settingsManager    = SettingsManager.GetModuleInstance(module);
+            builtModuleParameters._contentsManager    = ContentsManager.GetModuleInstance(module);
+            builtModuleParameters._directoriesManager = DirectoriesManager.GetModuleInstance(module);
             builtModuleParameters._gw2ApiManager      = GameService.Gw2Api.RegisterGw2ApiConnection(manifest, module.State.UserEnabledPermissions ?? new TokenPermission[0]);
 
             if (builtModuleParameters._gw2ApiManager == null) {

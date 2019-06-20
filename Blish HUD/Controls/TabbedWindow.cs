@@ -69,7 +69,7 @@ namespace Blish_HUD.Controls {
 
         protected virtual void OnTabChanged(EventArgs e) {
             if (_visible) {
-                Content.PlaySoundEffectByName($"audio\\tab-swap-{Utils.Calc.GetRandom(1, 5)}");
+                Content.PlaySoundEffectByName($"audio\\tab-swap-{RandomUtil.GetRandom(1, 5)}");
             }
 
             this.Subtitle = SelectedTab.Name;

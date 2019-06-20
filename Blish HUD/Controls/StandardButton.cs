@@ -58,8 +58,8 @@ namespace Blish_HUD.Controls {
 
         public StandardButton() {
             _textColor           = Color.Black;
-            _horizontalAlignment = DrawUtil.HorizontalAlignment.Left;
-            _verticalAlignment   = DrawUtil.VerticalAlignment.Middle;
+            _horizontalAlignment = HorizontalAlignment.Left;
+            _verticalAlignment   = VerticalAlignment.Middle;
 
             this.Size = new Point(DEFAULT_CONTROL_WIDTH, STANDARD_CONTROL_HEIGHT);
 

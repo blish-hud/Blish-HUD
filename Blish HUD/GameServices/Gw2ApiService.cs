@@ -3,14 +3,20 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.WebApi;
+using Gw2Sharp.WebApi.Caching;
 using Gw2Sharp.WebApi.V2.Models;
 using System.Text.RegularExpressions;
 using Blish_HUD.Modules;
 using Blish_HUD.Modules.Managers;
+using Blish_HUD.Settings;
+using Gw2Sharp.WebApi.Http;
+using System.Reflection;
 
 namespace Blish_HUD {
 
     public class Gw2ApiService : GameService {
+
+        private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private static string GW2API_SETTINGS = "Gw2ApiConfiguration";
 
@@ -38,6 +44,12 @@ namespace Blish_HUD {
         /// </summary>
         public Guid GUID { get; private set; }
 
+        private MemoryCacheMethod _sharedCacheMethod;
+        private Connection        _sharedConnection;
+        private Gw2WebApiClient   _sharedClient;
+
+        public Gw2WebApiClient SharedClient => _sharedClient;
+
         private Gw2WebApiClient _client;
         private Dictionary<string, string> _characterRepository;
 
@@ -52,6 +64,11 @@ namespace Blish_HUD {
         protected override void Initialize() {
             _characterRepository = new Dictionary<string, string>();
 
+            _sharedCacheMethod = new MemoryCacheMethod();
+            _sharedConnection = new Connection(String.Empty, (Locale)Director.UserLocale, new HttpClient(), _sharedCacheMethod); /*, $"{Program.APP_VERSION.Replace('@', '/')} blish-hud/Blish-HUD (Using Gw2Sharp/{typeof(Connection).GetTypeInfo().Assembly.GetName().Version.ToString(3)} Archomeda/Gw2Sharp)", new HttpClient(), _sharedCacheMethod);*/
+
+            _sharedClient = new Gw2WebApiClient(_sharedConnection);
+
             _apiSettings = Settings.RegisterRootSettingCollection(GW2API_SETTINGS);
 
             DefineSettings(_apiSettings);
@@ -62,15 +79,15 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime time) {
-            if (Gw2Mumble.Available) {
-                string currentCharacter = Gw2Mumble.MumbleBacking.Identity.Name;
+            //if (Gw2Mumble.Available) {
+            //    string currentCharacter = Gw2Mumble.MumbleBacking.Identity.Name;
 
-                if (_characterRepository.ContainsKey(currentCharacter)) {
-                    if (!Connected)
-                        this.StartClient(_characterRepository[currentCharacter]);
-                    else if (_characterRepository[currentCharacter] != _client.Connection.AccessToken) this.StartClient(_characterRepository[currentCharacter]);
-                }
-            }
+            //    if (_characterRepository.ContainsKey(currentCharacter)) {
+            //        if (!Connected)
+            //            this.StartClient(_characterRepository[currentCharacter]);
+            //        else if (_characterRepository[currentCharacter] != _client.Connection.AccessToken) this.StartClient(_characterRepository[currentCharacter]);
+            //    }
+            //}
         }
 
         protected override void Unload() { /* NOOP */ }
@@ -216,12 +233,12 @@ namespace Blish_HUD {
         public bool Invalidate() {
             if (!Connected) return false;
 
-            foreach (string name in GetCharacters(_client.Connection.AccessToken)) {
-                if (!_characterRepository.ContainsKey(name)) {
-                    this._client = null;
-                    return false;
-                }
-            }
+            //foreach (string name in GetCharacters(_client.Connection.AccessToken)) {
+            //    if (!_characterRepository.ContainsKey(name)) {
+            //        this._client = null;
+            //        return false;
+            //    }
+            //}
 
             return true;
         }
@@ -261,11 +278,11 @@ namespace Blish_HUD {
         /// <param name="apiKey">Optional: An api key to check permissions off.</param>
         /// <returns>bool</returns>
         public bool HasPermissions(IEnumerable<TokenPermission> permissions, string apiKey = null) {
-            var savedPermissions = GetPermissions(apiKey ?? _client.Connection.AccessToken);
+            //var savedPermissions = GetPermissions(apiKey ?? _client.Connection.AccessToken);
 
-            foreach (var x in permissions) {
-                if (!savedPermissions.Contains(x)) return false;
-            }
+            //foreach (var x in permissions) {
+            //    if (!savedPermissions.Contains(x)) return false;
+            //}
 
             return true;
         }
@@ -330,7 +347,7 @@ namespace Blish_HUD {
             foreach (KeyValuePair<TokenPermission, ApiPermissions> permissionSet in manifest.ApiPermissions ?? new Dictionary<TokenPermission, ApiPermissions>(0)) {
                 if (!permissionSet.Value.Optional) {
                     if (!userEnabledPermissions.Contains(permissionSet.Key)) {
-                        Debug.WriteWarningLine($"Module '{manifest.Name} [{manifest.Namespace}]' requires API permission '{permissionSet.Key.ToString()}', but the user did not grant this permission.");
+                        Logger.Warn("Module '{$moduleName} [{$moduleNamespace}]' requires API permission '{$permission}', but the user did not grant this permission.", manifest.Name, manifest.Namespace, permissionSet.Key.ToString());
                         return null;
                     }
                 }

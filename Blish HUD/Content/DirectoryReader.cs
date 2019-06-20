@@ -16,7 +16,15 @@ namespace Blish_HUD.Content {
 
         /// <inheritdoc />
         public IDataReader GetSubPath(string subPath) {
+            if (subPath.StartsWith(_directoryPath, StringComparison.OrdinalIgnoreCase))
+                return new DirectoryReader(subPath);
+
             return new DirectoryReader(Path.Combine(_directoryPath, subPath));
+        }
+
+        /// <inheritdoc />
+        public string GetPathRepresentation(string relativeFilePath = null) {
+            return Path.Combine(_directoryPath, relativeFilePath ?? "");
         }
 
         /// <inheritdoc />

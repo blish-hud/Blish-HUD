@@ -44,8 +44,6 @@ namespace Blish_HUD.Pathing.Format {
             RegisterAttribute("texture", delegate(XmlAttribute attribute) {
                                   if (!string.IsNullOrEmpty(attribute.Value)) {
                                       this.TextureReferencePath = attribute.Value.Trim();
-                                                                           //.Replace('\\', Path.DirectorySeparatorChar)
-                                                                           //.Replace('/',  Path.DirectorySeparatorChar);
 
                                       return true;
                                   }

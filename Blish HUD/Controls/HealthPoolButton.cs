@@ -46,7 +46,7 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this, HealthPoolSprite, new Rectangle(0, 0, this.Width, this.Height), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None);
-            spriteBatch.DrawStringOnCtrl(this, this.Text, Content.DefaultFont14, new Rectangle(0, 0, this.Width, this.Height), Color.White, false, true, 1, Utils.DrawUtil.HorizontalAlignment.Center, Utils.DrawUtil.VerticalAlignment.Middle);
+            spriteBatch.DrawStringOnCtrl(this, this.Text, Content.DefaultFont14, new Rectangle(0, 0, this.Width, this.Height), Color.White, false, true, 1, HorizontalAlignment.Center, VerticalAlignment.Middle);
             if (IsBeingPressed) {
                 spriteBatch.DrawOnCtrl(this, HealthPoolPressedSprite, new Rectangle(0, 0, this.Width, this.Height), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None);
             }

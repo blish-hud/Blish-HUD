@@ -29,19 +29,19 @@ namespace Blish_HUD.Controls {
 
         public int StrokeDistance { get; }
 
-        public DrawUtil.HorizontalAlignment HorizontalAlignment { get; }
+        public HorizontalAlignment HorizontalAlignment { get; }
 
-        public DrawUtil.VerticalAlignment VerticalAlignment { get; }
+        public VerticalAlignment VerticalAlignment { get; }
 
-        public CachedStringRender(string                       text,
-                                  BitmapFont                   font,
-                                  Rectangle                    destinationRectangle,
-                                  Color                        color,
-                                  bool                         wrap,
-                                  bool                         stroke,
-                                  int                          strokeDistance      = 1,
-                                  DrawUtil.HorizontalAlignment horizontalAlignment = DrawUtil.HorizontalAlignment.Left,
-                                  DrawUtil.VerticalAlignment   verticalAlignment   = DrawUtil.VerticalAlignment.Middle) {
+        public CachedStringRender(string              text,
+                                  BitmapFont          font,
+                                  Rectangle           destinationRectangle,
+                                  Color               color,
+                                  bool                wrap,
+                                  bool                stroke,
+                                  int                 strokeDistance      = 1,
+                                  HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
+                                  VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
 
             this.Text                 = text;
             this.Font                 = font;
@@ -118,15 +118,15 @@ namespace Blish_HUD.Controls {
             return Equals((CachedStringRender) obj);
         }
 
-        public static CachedStringRender GetCachedStringRender(string                       text,
-                                                               BitmapFont                   font,
-                                                               Rectangle                    destinationRectangle,
-                                                               Color                        color,
-                                                               bool                         wrap,
-                                                               bool                         stroke,
-                                                               int                          strokeDistance      = 1,
-                                                               DrawUtil.HorizontalAlignment horizontalAlignment = DrawUtil.HorizontalAlignment.Left,
-                                                               DrawUtil.VerticalAlignment   verticalAlignment   = DrawUtil.VerticalAlignment.Middle) {
+        public static CachedStringRender GetCachedStringRender(string              text,
+                                                               BitmapFont          font,
+                                                               Rectangle           destinationRectangle,
+                                                               Color               color,
+                                                               bool                wrap,
+                                                               bool                stroke,
+                                                               int                 strokeDistance      = 1,
+                                                               HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
+                                                               VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
 
             var checkCSR = new CachedStringRender(text, font, destinationRectangle, color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
 

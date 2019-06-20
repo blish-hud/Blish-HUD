@@ -13,6 +13,8 @@ namespace Blish_HUD.Pathing.Entities {
 
     public class Marker : Entity {
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         #region Load Static
 
         private static readonly Effect _sharedMarkerEffect;
@@ -97,6 +99,8 @@ namespace Blish_HUD.Pathing.Entities {
             this(image, position, Vector2.Zero) { }
 
         public Marker(Texture2D image, Vector3 position, Vector2 size) {
+            //Logger.Info("An instance of a marker was initialized!");
+
             Initialize();
 
             this.AutoResize = (size == Vector2.Zero);
@@ -158,7 +162,6 @@ namespace Blish_HUD.Pathing.Entities {
 
         private void Input_MouseMoved(object sender, MouseEventArgs e) {
             var screenPosition = GameService.Graphics.GraphicsDevice.Viewport.Project(this.Position, GameService.Camera.Projection, GameService.Camera.View, Matrix.Identity);
-
 
             float xdist = screenPosition.X - e.MouseState.Position.X;
             float ydist = screenPosition.Y - e.MouseState.Position.Y;

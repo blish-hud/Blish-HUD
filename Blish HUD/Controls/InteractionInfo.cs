@@ -33,7 +33,7 @@ namespace Blish_HUD.Controls {
 
         public InteractionInfo() {
             _text = DEFAULT_INFO_TEXT;
-            _verticalAlignment = DrawUtil.VerticalAlignment.Middle;
+            _verticalAlignment = VerticalAlignment.Middle;
             _showShadow = true;
             _strokeText = true;
             _font = Content.DefaultFont12;

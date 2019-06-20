@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using Blish_HUD.Controls;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
@@ -11,9 +12,18 @@ namespace Blish_HUD {
 
         private const string APPLICATION_SETTINGS = "ApplicationConfiguration";
 
+        public event EventHandler<EventArgs> UserLocaleChanged;
+
         public TabbedWindow BlishHudWindow { get; protected set; }
         public CornerIcon BlishMenuIcon { get; protected set; }
         public ContextMenuStrip BlishContextMenu { get; protected set; }
+
+        private SettingEntry<Gw2Locale> _userLocale;
+        private SettingEntry<bool> _stayInTray;
+
+        public Gw2Locale UserLocale => _userLocale.Value;
+
+        public bool StayInTray => _stayInTray.Value;
 
         internal SettingCollection _applicationSettings;
 
@@ -34,8 +44,28 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            settings.DefineSetting("AppCulture", Utils.Locale.GetGw2LocaleFromCurrentUICulture(), "Application & API Language", "Determines the language used when displaying Blish HUD text and results from the GW2 API.");
-            settings.DefineSetting("StayInTray", true, "Minimize to tray when Guild Wars 2 Closes", "If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.\nYou can also use the Blish HUD icon in the tray to launch Guild Wars 2.");
+            _userLocale = settings.DefineSetting("AppCulture", GetGw2LocaleFromCurrentUICulture(), "Application & API Language", "Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API.");
+            _stayInTray = settings.DefineSetting("StayInTray", true, "Minimize to tray when Guild Wars 2 Closes", "If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.\nYou can also use the Blish HUD icon in the tray to launch Guild Wars 2.");
+        }
+
+        private Gw2Locale GetGw2LocaleFromCurrentUICulture() {
+            string currLocale = CultureInfo.CurrentUICulture.EnglishName.Split(' ')[0];
+
+            switch (currLocale) {
+                case "Chinese":
+                    return Gw2Locale.Chinese;
+                case "French":
+                    return Gw2Locale.French;
+                case "German":
+                    return Gw2Locale.German;
+                case "Korean":
+                    return Gw2Locale.Korean;
+                case "Spanish":
+                    return Gw2Locale.Spanish;
+                case "English":
+                default:
+                    return Gw2Locale.English;
+            }
         }
 
         protected override void Load() {
@@ -163,7 +193,7 @@ namespace Blish_HUD {
             //    Height = 128,
             //    AutoSizeWidth = true,
             //    StrokeText = true,
-            //    HorizontalAlignment = DrawUtil.HorizontalAlignment.Center,
+            //    HorizontalAlignment = HorizontalAlignment.Center,
             //    BackgroundColor = Color.Magenta
             //};
 

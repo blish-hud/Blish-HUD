@@ -39,7 +39,7 @@ namespace Blish_HUD.Controls {
 
             _autoSizeWidth = true;
             _textColor = Color.White;
-            _verticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle;
+            _verticalAlignment = VerticalAlignment.Middle;
         }
 
         public override void RecalculateLayout() {

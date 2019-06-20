@@ -7,10 +7,20 @@ using MonoGame.Extended.BitmapFonts;
 namespace Blish_HUD.Modules.Managers {
     public class ContentsManager {
 
+        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private const string REF_NAME = "ref";
+
         private readonly IDataReader _reader;
 
-        public ContentsManager(IDataReader reader) {
+        private ContentsManager(IDataReader reader) {
             _reader = reader;
+
+            Logger.Info("New {contentsManagerName} instance utilizing a {dataReaderType} data reader.", nameof(ContentsManager), _reader.GetType().FullName);
+        }
+
+        public static ContentsManager GetModuleInstance(ModuleManager module) {
+            return new ContentsManager(module.DataReader.GetSubPath(REF_NAME));
         }
 
         /// <summary>
@@ -29,10 +39,12 @@ namespace Blish_HUD.Modules.Managers {
         public Texture2D GetTexture(string texturePath, Texture2D fallbackTexture) {
             using (var textureStream = _reader.GetFileStream(texturePath)) {
                 if (textureStream != null) {
+                    Logger.Info("Successfully loaded texture {texturePath} from {dataReaderFilePath}.", texturePath, _reader.GetPathRepresentation(texturePath));
                     return Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream);
                 }
             }
 
+            Logger.Warn("Unable to find texture {texturePath} at {dataReaderFilePath}.", texturePath, _reader.GetPathRepresentation(texturePath));
             return fallbackTexture;
         }
 

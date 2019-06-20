@@ -155,7 +155,7 @@ namespace Blish_HUD.Controls {
                                          bounds.OffsetBy(1, 1),
                                          Color.Black,
                                          false,
-                                         DrawUtil.HorizontalAlignment.Center);
+                                         HorizontalAlignment.Center);
 
             spriteBatch.DrawStringOnCtrl(this,
                                          this.Message,
@@ -164,7 +164,7 @@ namespace Blish_HUD.Controls {
                                          bounds,
                                          messageColor,
                                          false,
-                                         DrawUtil.HorizontalAlignment.Center);
+                                         HorizontalAlignment.Center);
         }
 
         /// <inheritdoc />

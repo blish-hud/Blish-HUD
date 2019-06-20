@@ -10,6 +10,8 @@ namespace Blish_HUD {
     /// </summary>
     public static class Program {
 
+        private static readonly NLog.Logger Logger = DebugService.InitDebug(typeof(Program));
+
         public const string APP_VERSION = "blish_hud@0.4.0-alpha.12_DEV";
 
         /// <summary>
@@ -21,8 +23,7 @@ namespace Blish_HUD {
                 return;
             }
 
-#if !DEBUG
-            // TODO: Implement for error logging in released versions
+#if !DEBUGTE
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 #endif
             
@@ -71,22 +72,24 @@ namespace Blish_HUD {
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
             var e = (Exception)args.ExceptionObject;
 
+            Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
+
             SentryWrapper.CaptureException(e);
 
-            InputService.mouseHook?.UnHookMouse();
-            InputService.keyboardHook?.UnHookKeyboard();
+            InputService.mouseHook?.UnhookMouse();
+            InputService.keyboardHook?.UnhookKeyboard();
 
-            string errorMessage = "Application error: " + e.Message + Environment.NewLine + "Trace: " + e.StackTrace + Environment.NewLine + "Runtime terminating: " + args.IsTerminating + Environment.NewLine + APP_VERSION;
+            //string errorMessage = "Application error: " + e.Message + Environment.NewLine + "Trace: " + e.StackTrace + Environment.NewLine + "Runtime terminating: " + args.IsTerminating + Environment.NewLine + APP_VERSION;
 
-            try {
-                File.WriteAllText(Path.Combine(GameService.Directory.BasePath, "logs", "crash." + DateTime.Now.Ticks + ".log"), errorMessage);
-            } catch (Exception ex) {
-                MessageBox.Show("Blish HUD has crashed!  Additionally, there was an error saving the crash log, so here is the crash message: "
-                              + Environment.NewLine + errorMessage
-                              + Environment.NewLine + Environment.NewLine
-                              + "And here is the error that prevented us from saving to the crash log: "
-                              + Environment.NewLine + ex.Message, "Blish HUD Crashed!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-            }
+            //try {
+            //    //File.WriteAllText(Path.Combine(GameService.Directory.BasePath, "logs", "crash." + DateTime.Now.Ticks + ".log"), errorMessage);
+            //} catch (Exception ex) {
+            //    MessageBox.Show("Blish HUD has crashed!  Additionally, there was an error saving the crash log, so here is the crash message: "
+            //                  + Environment.NewLine + errorMessage
+            //                  + Environment.NewLine + Environment.NewLine
+            //                  + "And here is the error that prevented us from saving to the crash log: "
+            //                  + Environment.NewLine + ex.Message, "Blish HUD Crashed!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            //}
         }
 
     }

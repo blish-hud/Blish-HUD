@@ -16,6 +16,11 @@ namespace Blish_HUD.Content {
         }
 
         /// <inheritdoc />
+        public string GetPathRepresentation(string relativeFilePath = null) {
+            return relativeFilePath ?? "";
+        }
+
+        /// <inheritdoc />
         void IDataReader.LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension) {
             throw new ActionNotSupportedException("Can't enumerate all images from render service.");
         }

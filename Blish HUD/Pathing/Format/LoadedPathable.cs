@@ -11,6 +11,8 @@ namespace Blish_HUD.Pathing.Format {
     public abstract class LoadedPathable<TEntity> : ManagedPathable<TEntity>
         where TEntity : Blish_HUD.Entities.Entity {
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public event EventHandler<EventArgs> Loading;
         public event EventHandler<EventArgs> Loaded;
         public event EventHandler<EventArgs> Unloading;
@@ -44,7 +46,7 @@ namespace Blish_HUD.Pathing.Format {
         protected abstract void BeginLoad();
 
         protected void LoadAttributes(XmlNode sourceNode) {
-            _attributeLoaders = new Dictionary<string, LoadedPathableAttributeDescription>();
+            _attributeLoaders = new Dictionary<string, LoadedPathableAttributeDescription>(StringComparer.OrdinalIgnoreCase);
             _leftOverAttributes = new List<XmlAttribute>();
 
             PrepareAttributes();
@@ -57,8 +59,8 @@ namespace Blish_HUD.Pathing.Format {
             foreach (KeyValuePair<string, LoadedPathableAttributeDescription> attributeDescription in _attributeLoaders) {
                 if (attributeDescription.Value.Required && !attributeDescription.Value.Loaded) {
                     // Required attribute wasn't found in the node
-                    Console.WriteLine($"Required attribute '{attributeDescription.Key}' could not be found in the pathable, so it will not be displayed:");
-                    Console.WriteLine(sourceNode.ToString(3));
+                    Logger.Warn($"Required attribute '{attributeDescription.Key}' could not be found in the pathable, so it will not be displayed:");
+                    Logger.Warn(sourceNode.ToString(3));
                     requiredAttributesRemain = true;
                 }
             }
@@ -77,28 +79,28 @@ namespace Blish_HUD.Pathing.Format {
 
         protected void ProcessAttributes(XmlAttributeCollection attributes) {
             foreach (XmlAttribute attribute in attributes) {
-                if (_attributeLoaders.TryGetValue(attribute.Name.ToLower(), out LoadedPathableAttributeDescription attributeDescription)) {
+                if (_attributeLoaders.TryGetValue(attribute.Name, out LoadedPathableAttributeDescription attributeDescription)) {
                     if (attributeDescription.LoadAttributeFunc.Invoke(attribute)) {
                         attributeDescription.Loaded = true;
                     } else if (attributeDescription.Required) {
                         // This was a required attribute and it failed to load
                         // We can stop loading it since it is no longer valid
-                        Console.WriteLine($"[🛑] Required attribute '{attribute.Name}' failed to load for pathable, so it will not be displayed.");
+                        Logger.Warn($"[🛑] Required attribute '{attribute.Name}' failed to load for pathable, so it will not be displayed.");
                         break;
                     } else {
                         // Attribute was optional, so we report and move along
-                        Console.WriteLine($"[⚠] Optional attribute '{attribute.Name}' could not be loaded for the pathable.");
+                        Logger.Trace($"[⚠] Optional attribute '{attribute.Name}' could not be loaded for the pathable.");
                     }
                 } else {
                     // Attribute was never defined for loading
-                    //Console.WriteLine($"[ℹ] Attribute '{attribute.Name}' does not have a marker description to load it, so it will be added to left overs.");
+                    Logger.Trace($"[ℹ] Attribute '{attribute.Name}' does not have a marker description to load it, so it will be added to left overs.");
                     _leftOverAttributes.Add(attribute);
                 }
             }
         }
 
         protected void RegisterAttribute(string attributeName, Func<XmlAttribute, bool> loadAttribute, bool required = false) {
-            _attributeLoaders.Add(attributeName.ToLower(),
+            _attributeLoaders.Add(attributeName,
                                   new LoadedPathableAttributeDescription(loadAttribute, required));
         }
 
