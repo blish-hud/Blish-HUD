@@ -48,7 +48,7 @@ namespace Blish_HUD {
             _settingsPath = Path.Combine(DirectoryUtil.BasePath, SETTINGS_FILENAME);
 
             // If settings aren't there, generate the file
-            if (!File.Exists(_settingsPath)) PrepareSettingsFirstTime(); ;
+            if (!File.Exists(_settingsPath)) PrepareSettingsFirstTime();
 
             LoadSettings();
         }

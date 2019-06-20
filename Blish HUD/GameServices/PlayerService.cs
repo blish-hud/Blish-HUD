@@ -40,16 +40,16 @@ namespace Blish_HUD {
                 this.MapIdChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
 
-                Task<Map> mapNameTask = GameService.Gw2Api.SharedClient.V2.Maps.GetAsync(_mapId);
-                mapNameTask.ContinueWith(
-                                         mapTsk => {
-                                             if (!mapTsk.IsFaulted) {
-                                                 this._map = mapTsk.Result;
+                //Task<Map> mapNameTask = GameService.Gw2Api.SharedClient.V2.Maps.GetAsync(_mapId);
+                //mapNameTask.ContinueWith(
+                //                         mapTsk => {
+                //                             if (!mapTsk.IsFaulted) {
+                //                                 this._map = mapTsk.Result;
 
-                                                 OnPropertyChanged(nameof(this.Map));
-                                                 this.MapChanged?.Invoke(this, EventArgs.Empty);
-                                             }
-                                         });
+                //                                 OnPropertyChanged(nameof(this.Map));
+                //                                 this.MapChanged?.Invoke(this, EventArgs.Empty);
+                //                             }
+                //                         });
             }
         }
 
