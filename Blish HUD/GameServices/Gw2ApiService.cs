@@ -20,11 +20,10 @@ namespace Blish_HUD {
 
         private static string GW2API_SETTINGS = "Gw2ApiConfiguration";
 
-        public Locale LANGUAGE = Locale.English;
-        public static string SETTINGS_ENTRY_APIKEYS = "ApiKeyRepository";
-        public static string SETTINGS_ENTRY_PERMISSIONS = "Permissions";
-        public static string PLACEHOLDER_KEY = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX";
-        public static TokenPermission[] ALL_PERMISSIONS = {
+        private static string SETTINGS_ENTRY_APIKEYS = "ApiKeyRepository";
+        private static string SETTINGS_ENTRY_PERMISSIONS = "Permissions";
+        private static string PLACEHOLDER_KEY = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX";
+        private static TokenPermission[] ALL_PERMISSIONS = {
             TokenPermission.Account,
             TokenPermission.Inventories,
             TokenPermission.Characters,
@@ -125,7 +124,7 @@ namespace Blish_HUD {
         private void StartClient(string apiKey) {
             if (!IsKeyValid(apiKey)) return;
 
-            this._client = new Gw2WebApiClient(new Connection(apiKey, LANGUAGE));
+            this._client = new Gw2WebApiClient(new Connection(apiKey, (Gw2Sharp.WebApi.Locale)Director.UserLocale));
             this.GUID = GetGuid(apiKey);
         }
 
@@ -158,7 +157,7 @@ namespace Blish_HUD {
         }
 
         private List<string> GetCharacters(string apiKey) {
-            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, LANGUAGE));
+            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, (Gw2Sharp.WebApi.Locale)Director.UserLocale));
             var charactersResponse = tempClient.V2.Characters.IdsAsync();
             charactersResponse.Wait();
             return charactersResponse.Result.ToList();
@@ -209,7 +208,7 @@ namespace Blish_HUD {
         /// <param name="apiKey"></param>
         /// <returns></returns>
         public Guid GetGuid(string apiKey) {
-            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, LANGUAGE));
+            Gw2WebApiClient tempClient = new Gw2WebApiClient(new Connection(apiKey, (Gw2Sharp.WebApi.Locale)Director.UserLocale));
             if (!HasPermissions(new[] { TokenPermission.Account }, apiKey))
                 throw new ArgumentException("Insufficient permissions for retrieving Guid! Required: Account.");
             var accountResponse = tempClient.V2.Account.GetAsync();

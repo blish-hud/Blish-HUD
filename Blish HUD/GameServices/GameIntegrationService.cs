@@ -250,7 +250,7 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             // Determine if we are in game or not
-            this.IsInGame = !(Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5); // || gameTime.IsRunningSlowly && GameService.Gw2Mumble.TimeSinceTick.TotalSeconds > 0.5);
+            this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
                 if (!Utils.WindowUtil.UpdateOverlay(Overlay.FormHandle, this.Gw2WindowHandle)) {

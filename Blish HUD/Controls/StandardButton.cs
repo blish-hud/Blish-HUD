@@ -124,9 +124,8 @@ namespace Blish_HUD.Controls {
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            if (_enabled && this.MouseOver) {
-                if (_animHover == null)
-                    _animHover = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9 * (this.Width / ATLAS_SPRITE_WIDTH), AnimationService.EasingMethod.Linear);
+            if (_enabled && this.MouseOver && _animHover == null) {
+                _animHover = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9 * (this.Width / ATLAS_SPRITE_WIDTH), AnimationService.EasingMethod.Linear);
             }
 
             if (_animHover != null) {

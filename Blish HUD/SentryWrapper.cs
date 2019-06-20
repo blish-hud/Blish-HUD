@@ -1,4 +1,5 @@
 ﻿using System;
+using Sentry;
 
 namespace Blish_HUD {
 

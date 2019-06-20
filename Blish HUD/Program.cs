@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using Sentry;
 
 namespace Blish_HUD {
 #if WINDOWS || LINUX

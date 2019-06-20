@@ -370,59 +370,59 @@ namespace Blish_HUD {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Text = "Insert your Guild Wars 2 API key here to unlock lots of cool features:"
             };
-            var apiKeyTextBox = new TextBox() {
-                Parent = apiPanel,
-                Size = new Point(600, 30),
-                Location = new Point(apiPanel.Size.X / 2 - 300, apiKeyLabel.Bottom),
-                PlaceholderText = keySelectionDropdown.SelectedItem != null ?
-                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
-                    Gw2ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
-                    : Gw2ApiService.PLACEHOLDER_KEY
-            };
-            var apiKeyError = new Label()
-            {
-                Parent = apiPanel,
-                Size = new Point(apiPanel.Size.X, 30),
-                Location = new Point(0, apiKeyTextBox.Bottom + Panel.BOTTOM_MARGIN),
-                ShowShadow = true,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                TextColor = Color.Red,
-                Text = "Invalid API key! Try again.",
-                Visible = false
-            };
-            var apiKeyButton = new StandardButton()
-            {
-                Parent = apiPanel,
-                Size = new Point(30, 30),
-                Location = new Point(apiKeyTextBox.Right, apiKeyTextBox.Location.Y),
-                Text = "",
-                BackgroundColor = Color.IndianRed,
-                Visible = keySelectionDropdown.SelectedItem != null
-            };
-            apiKeyButton.LeftMouseButtonPressed += delegate
-            {
-                Gw2Api.RemoveKey(foolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
+            //var apiKeyTextBox = new TextBox() {
+            //    Parent = apiPanel,
+            //    Size = new Point(600, 30),
+            //    Location = new Point(apiPanel.Size.X / 2 - 300, apiKeyLabel.Bottom),
+            //    PlaceholderText = keySelectionDropdown.SelectedItem != null ?
+            //        foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
+            //        Gw2ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+            //        : Gw2ApiService.PLACEHOLDER_KEY
+            //};
+            //var apiKeyError = new Label()
+            //{
+            //    Parent = apiPanel,
+            //    Size = new Point(apiPanel.Size.X, 30),
+            //    Location = new Point(0, apiKeyTextBox.Bottom + Panel.BOTTOM_MARGIN),
+            //    ShowShadow = true,
+            //    HorizontalAlignment = HorizontalAlignment.Center,
+            //    TextColor = Color.Red,
+            //    Text = "Invalid API key! Try again.",
+            //    Visible = false
+            //};
+            //var apiKeyButton = new StandardButton()
+            //{
+            //    Parent = apiPanel,
+            //    Size = new Point(30, 30),
+            //    Location = new Point(apiKeyTextBox.Right, apiKeyTextBox.Location.Y),
+            //    Text = "",
+            //    BackgroundColor = Color.IndianRed,
+            //    Visible = keySelectionDropdown.SelectedItem != null
+            //};
+            //apiKeyButton.LeftMouseButtonPressed += delegate
+            //{
+            //    Gw2Api.RemoveKey(foolSafeKeyRepository[keySelectionDropdown.SelectedItem]);
 
-                keySelectionDropdown.Items.Clear();
-                foolSafeKeyRepository = GameService.Gw2Api.GetKeyIdRepository();
-                foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
-                {
-                    keySelectionDropdown.Items.Add(item.Key);
-                }
-                keySelectionDropdown.Visible = foolSafeKeyRepository.Count > 0;
-                keySelectionDropdown.SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key;
+            //    keySelectionDropdown.Items.Clear();
+            //    foolSafeKeyRepository = GameService.Gw2Api.GetKeyIdRepository();
+            //    foreach (KeyValuePair<string, string> item in foolSafeKeyRepository)
+            //    {
+            //        keySelectionDropdown.Items.Add(item.Key);
+            //    }
+            //    keySelectionDropdown.Visible = foolSafeKeyRepository.Count > 0;
+            //    keySelectionDropdown.SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key;
 
-                apiKeyTextBox.PlaceholderText = keySelectionDropdown.SelectedItem != null ?
-                    foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
-                    Gw2ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
-                    : Gw2ApiService.PLACEHOLDER_KEY;
+            //    apiKeyTextBox.PlaceholderText = keySelectionDropdown.SelectedItem != null ?
+            //        foolSafeKeyRepository[keySelectionDropdown.SelectedItem] +
+            //        Gw2ApiService.PLACEHOLDER_KEY.Substring(foolSafeKeyRepository.FirstOrDefault().Value.Length - 1)
+            //        : Gw2ApiService.PLACEHOLDER_KEY;
 
-                apiKeyError.Visible = false;
-                apiKeyButton.Visible = keySelectionDropdown.Visible;
-                bool valid = Gw2Api.Invalidate();
-                connectedLabel.Text = valid ? "OK! Connected. :-)" : "Not connected.";
-                connectedLabel.TextColor = valid ? Color.LightGreen : Color.IndianRed;
-            };
+            //    apiKeyError.Visible = false;
+            //    apiKeyButton.Visible = keySelectionDropdown.Visible;
+            //    bool valid = Gw2Api.Invalidate();
+            //    connectedLabel.Text = valid ? "OK! Connected. :-)" : "Not connected.";
+            //    connectedLabel.TextColor = valid ? Color.LightGreen : Color.IndianRed;
+            //};
             //apiKeyTextBox.OnEnterPressed += delegate
             //{
             //    string apiKey = apiKeyTextBox.Text;
@@ -523,33 +523,33 @@ namespace Blish_HUD {
             moduleSelectionDropdown.SelectedItem = null;
             var permissionCheckBoxs = new List<Checkbox>();
             int boxY = 0;
-            foreach (Gw2Sharp.WebApi.V2.Models.TokenPermission perm in Gw2ApiService.ALL_PERMISSIONS)
-            {
-                var newBox = new Checkbox()
-                {
-                    Parent = permissionsPanel,
-                    Location = new Point(Panel.LEFT_MARGIN, moduleSelectionDropdown.Bottom + boxY + Panel.BOTTOM_MARGIN),
-                    Size = new Point(100, 30),
-                    Text = perm.ToString(),
-                    Visible = false
-                };
-                permissionCheckBoxs.Add(newBox);
-                boxY += 30;
+            //foreach (Gw2Sharp.WebApi.V2.Models.TokenPermission perm in Gw2ApiService.ALL_PERMISSIONS)
+            //{
+            //    var newBox = new Checkbox()
+            //    {
+            //        Parent = permissionsPanel,
+            //        Location = new Point(Panel.LEFT_MARGIN, moduleSelectionDropdown.Bottom + boxY + Panel.BOTTOM_MARGIN),
+            //        Size = new Point(100, 30),
+            //        Text = perm.ToString(),
+            //        Visible = false
+            //    };
+            //    permissionCheckBoxs.Add(newBox);
+            //    boxY += 30;
 
-                newBox.CheckedChanged += delegate {
-                    var buildPermissions = new List<Gw2Sharp.WebApi.V2.Models.TokenPermission>();
-                    foreach (Checkbox check in permissionCheckBoxs) {
-                        if (check.Checked) {
-                            buildPermissions.Add(Gw2ApiService.ALL_PERMISSIONS.First(x => x.ToString().Equals(check.Text)));
-                        }
-                    }
-                    //string nSpace = nameSpaceRepository[moduleSelectionDropdown.SelectedItem];
-                    //var saved = RegisteredSettings[nSpace]
-                    //    .GetSetting<List<Gw2Sharp.WebApi.V2.Models.TokenPermission>>(Gw2ApiService.SETTINGS_ENTRY_PERMISSIONS);
-                    //// Save new permissions.
-                    //saved.Value = buildPermissions;
-                };
-            }
+            //    newBox.CheckedChanged += delegate {
+            //        var buildPermissions = new List<Gw2Sharp.WebApi.V2.Models.TokenPermission>();
+            //        foreach (Checkbox check in permissionCheckBoxs) {
+            //            if (check.Checked) {
+            //                buildPermissions.Add(Gw2ApiService.ALL_PERMISSIONS.First(x => x.ToString().Equals(check.Text)));
+            //            }
+            //        }
+            //        //string nSpace = nameSpaceRepository[moduleSelectionDropdown.SelectedItem];
+            //        //var saved = RegisteredSettings[nSpace]
+            //        //    .GetSetting<List<Gw2Sharp.WebApi.V2.Models.TokenPermission>>(Gw2ApiService.SETTINGS_ENTRY_PERMISSIONS);
+            //        //// Save new permissions.
+            //        //saved.Value = buildPermissions;
+            //    };
+            //}
             moduleSelectionDropdown.ValueChanged += delegate {
                 string new_value = moduleSelectionDropdown.SelectedItem;
                 var module = Module
