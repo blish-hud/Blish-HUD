@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml;
 using Blish_HUD.Pathing.Behaviors;
@@ -115,12 +116,12 @@ namespace Blish_HUD.Pathing.Format {
 
             // IPathable:GUID
             RegisterAttribute("GUID",
-                              attribute => (!string.IsNullOrEmpty(this.Guid = attribute.Value.TrimEnd('='))),
+                              attribute => (!string.IsNullOrEmpty(this.Guid = attribute.Value)),
                               false);
 
             // IPathable:Opacity
             RegisterAttribute("opacity", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, out float fOut)) return false;
+                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
 
                 this.Opacity = fOut;
                 return true;
@@ -128,7 +129,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // IPathable:Position (X)
             RegisterAttribute("xPos", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, out float fOut)) return false;
+                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
 
                 _xPos = fOut;
                 return true;
@@ -136,7 +137,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // IPathable:Position (Y)
             RegisterAttribute("yPos", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, out float fOut)) return false;
+                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
 
                 _yPos = fOut;
                 return true;
@@ -144,7 +145,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // IPathable:Position (Z)
             RegisterAttribute("zPos", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, out float fOut)) return false;
+                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
 
                 _zPos = fOut;
                 return true;
@@ -152,7 +153,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // IPathable:Scale
             RegisterAttribute("scale", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, out float fOut)) return false;
+                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
 
                 this.Scale = fOut;
                 return true;
