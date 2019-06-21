@@ -43,7 +43,7 @@ namespace Blish_HUD {
             _logConfiguration.AddTarget(logConsole);
 
             _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
-            _logConfiguration.AddRule(LogLevel.Trace, LogLevel.Fatal, logFile);
+            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logFile);
 
             LogManager.Configuration = _logConfiguration;
 
