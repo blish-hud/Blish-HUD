@@ -86,74 +86,56 @@ namespace Blish_HUD.Pathing.Format {
                     } else if (attributeDescription.Required) {
                         // This was a required attribute and it failed to load
                         // We can stop loading it since it is no longer valid
-                        Logger.Warn($"[🛑] Required attribute '{attribute.Name}' failed to load for pathable, so it will not be displayed.");
+                        Logger.Warn("Required attribute {attributeName} failed to load for pathable, so it will not be displayed.", attribute.Name);
                         break;
                     } else {
                         // Attribute was optional, so we report and move along
-                        Logger.Trace($"[⚠] Optional attribute '{attribute.Name}' could not be loaded for the pathable.");
+                        Logger.Trace("Optional attribute {attributeName} could not be loaded for the pathable.", attribute.Name);
                     }
                 } else {
                     // Attribute was never defined for loading
-                    Logger.Trace($"[ℹ] Attribute '{attribute.Name}' does not have a marker description to load it, so it will be added to left overs.");
+                    Logger.Trace("Attribute {attributeName} does not have a marker description to load it, so it will be added to left overs.", attribute.Name);
                     _leftOverAttributes.Add(attribute);
                 }
             }
         }
 
         protected void RegisterAttribute(string attributeName, Func<XmlAttribute, bool> loadAttribute, bool required = false) {
-            _attributeLoaders.Add(attributeName,
-                                  new LoadedPathableAttributeDescription(loadAttribute, required));
+            _attributeLoaders.Add(attributeName, new LoadedPathableAttributeDescription(loadAttribute, required));
         }
 
         protected virtual void PrepareAttributes() {
             // IPathable:MapId
             RegisterAttribute("MapId", delegate (XmlAttribute attribute) {
-                if (!int.TryParse(attribute.Value, out int iOut)) return false;
+                if (!InvariantUtil.TryParseInt(attribute.Value, out int iOut)) return false;
 
                 this.MapId = iOut;
                 return true;
             });
 
             // IPathable:GUID
-            RegisterAttribute("GUID",
-                              attribute => (!string.IsNullOrEmpty(this.Guid = attribute.Value)),
-                              false);
+            RegisterAttribute("GUID", attribute => (!string.IsNullOrEmpty(this.Guid = attribute.Value)));
 
             // IPathable:Opacity
             RegisterAttribute("opacity", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
+                if (!InvariantUtil.TryParseFloat(attribute.Value, out float fOut)) return false;
 
                 this.Opacity = fOut;
                 return true;
             });
 
             // IPathable:Position (X)
-            RegisterAttribute("xPos", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
-
-                _xPos = fOut;
-                return true;
-            });
+            RegisterAttribute("xPos", attribute => !InvariantUtil.TryParseFloat(attribute.Value, out _xPos));
 
             // IPathable:Position (Y)
-            RegisterAttribute("yPos", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
-
-                _yPos = fOut;
-                return true;
-            });
+            RegisterAttribute("yPos", attribute => !InvariantUtil.TryParseFloat(attribute.Value, out _yPos));
 
             // IPathable:Position (Z)
-            RegisterAttribute("zPos", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
-
-                _zPos = fOut;
-                return true;
-            });
+            RegisterAttribute("zPos", attribute => !InvariantUtil.TryParseFloat(attribute.Value, out _zPos));
 
             // IPathable:Scale
             RegisterAttribute("scale", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
+                if (!InvariantUtil.TryParseFloat(attribute.Value, out float fOut)) return false;
 
                 this.Scale = fOut;
                 return true;

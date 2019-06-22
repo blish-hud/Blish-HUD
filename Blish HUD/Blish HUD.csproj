@@ -204,6 +204,7 @@
     <Compile Include="Modules\ModuleParameters.cs" />
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
+    <Compile Include="_Utils\InvariantUtil.cs" />
     <Compile Include="_Utils\MouseInterceptor.cs" />
     <Compile Include="_Utils\TypeUtil.cs" />
     <Compile Include="_Utils\VectorUtil.cs" />

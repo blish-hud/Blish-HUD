@@ -79,7 +79,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // IMarker:MinimumSize
             RegisterAttribute("minSize", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
+                if (!InvariantUtil.TryParseFloat(attribute.Value, out float fOut)) return false;
 
                 this.MinimumSize = fOut;
                 return true;
@@ -87,7 +87,7 @@ namespace Blish_HUD.Pathing.Format {
 
             // IMarker:MaximumSize
             RegisterAttribute("maxSize", delegate (XmlAttribute attribute) {
-                if (!float.TryParse(attribute.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out float fOut)) return false;
+                if (!InvariantUtil.TryParseFloat(attribute.Value, out float fOut)) return false;
 
                 this.MaximumSize = fOut;
                 return true;
