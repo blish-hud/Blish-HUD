@@ -8,16 +8,13 @@ namespace Blish_HUD.Modules {
 
     public class ModuleParameters {
 
-        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        private LoggingConfiguration _logConfiguration;
-        private Manifest             _manifest;
-        private SettingsManager      _settingsManager;
-        private ContentsManager      _contentsManager;
-        private DirectoriesManager   _directoriesManager;
-        private Gw2ApiManager        _gw2ApiManager;
-
-        public LoggingConfiguration LoggingConfig => _logConfiguration;
+        private Manifest           _manifest;
+        private SettingsManager    _settingsManager;
+        private ContentsManager    _contentsManager;
+        private DirectoriesManager _directoriesManager;
+        private Gw2ApiManager      _gw2ApiManager;
 
         public Manifest Manifest => _manifest;
 
@@ -27,11 +24,7 @@ namespace Blish_HUD.Modules {
 
         public DirectoriesManager DirectoriesManager => _directoriesManager;
 
-        public Gw2ApiManager GW2ApiManager => _gw2ApiManager;
-
-        private ModuleParameters() {
-            
-        }
+        public Gw2ApiManager Gw2ApiManager => _gw2ApiManager;
 
         internal static ModuleParameters BuildFromManifest(Manifest manifest, ModuleManager module) {
             switch (manifest.ManifestVersion) {
@@ -50,7 +43,6 @@ namespace Blish_HUD.Modules {
         private static ModuleParameters BuildFromManifest(ManifestV1 manifest, ModuleManager module) {
             var builtModuleParameters = new ModuleParameters();
 
-            builtModuleParameters._logConfiguration = LogManager.Configuration;
             builtModuleParameters._manifest = manifest;
 
             // TODO: Change manager registers so that they only need an instance of the ExternalModule and not specific params

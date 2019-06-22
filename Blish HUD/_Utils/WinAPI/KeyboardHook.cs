@@ -10,13 +10,14 @@ namespace Blish_HUD.WinAPI {
         private const  int                  WH_KEYBOARD_LL = 13;
         private const  int                  WM_KEYDOWN     = 0x0100;
         private const  int                  WM_KEYUP       = 0x0101;
-        private static LowLevelKeyboardProc _proc;
-        private static IntPtr               _keyboardHook = IntPtr.Zero;
+
+        private          IntPtr               _keyboardHook = IntPtr.Zero;
+        private readonly LowLevelKeyboardProc _proc;
 
         [DllImport("user32.dll")] private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
         [DllImport("user32.dll")] private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
-        public KeyboardHook() { _proc = HookCallback; }
+        public KeyboardHook() => _proc = HookCallback;
 
         public bool HookKeyboard() {
             Logger.Debug("Enabling keyboard hook.");
@@ -37,7 +38,7 @@ namespace Blish_HUD.WinAPI {
             _keyboardHook = IntPtr.Zero;
         }
 
-        public delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
             // Priority is to get the event into the queue so that Windows doesn't give up waiting on us

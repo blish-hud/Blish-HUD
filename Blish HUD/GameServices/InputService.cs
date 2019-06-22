@@ -54,7 +54,7 @@ public struct KeyboardMessage {
 namespace Blish_HUD {
     public class InputService:GameService {
 
-        public class MouseEvent {
+        internal class MouseEvent {
             public WinAPI.MouseHook.MouseMessages EventMessage { get; protected set; }
             public WinAPI.MouseHook.MSLLHOOKSTRUCT EventDetails { get; protected set; }
 
@@ -104,10 +104,10 @@ namespace Blish_HUD {
 
         public ConcurrentQueue<KeyboardMessage> KeyboardMessages = new ConcurrentQueue<KeyboardMessage>();
 
-        public MouseEvent ClickState { get; set; } = null;
+        internal MouseEvent ClickState { get; set; } = null;
 
-        private Thread thrdMouseHook;
-        private Thread thrdKeyboardHook;
+        private Thread _thrdMouseHook;
+        private Thread _thrdKeyboardHook;
 
         private static void HookMouse() {
             mouseHook = new WinAPI.MouseHook();

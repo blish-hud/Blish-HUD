@@ -107,7 +107,6 @@
     <Compile Include="Controls\HotkeyAssigner.cs" />
     <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
     <Compile Include="Content\DirectoryReader.cs" />
-    <Compile Include="Content\RenderServiceReader.cs" />
     <Compile Include="Content\Serialization\SemVerConverter.cs" />
     <Compile Include="Content\ZipArchiveReader.cs" />
     <Compile Include="Controls\_Types\CachedStringRender.cs" />

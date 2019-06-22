@@ -2,14 +2,14 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+// ReSharper disable InconsistentNaming
 
 namespace Blish_HUD.WinAPI {
     public class MouseHook {
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public struct MSLLHOOKSTRUCT {
-
+        internal struct MSLLHOOKSTRUCT {
             public Point  pt;
             public Int32  mouseData;
             public Int32  flags;
@@ -23,7 +23,6 @@ namespace Blish_HUD.WinAPI {
                     return v;
                 }
             }
-
         }
 
         private const Int32 WH_MOUSE_LL = 14;
@@ -31,7 +30,8 @@ namespace Blish_HUD.WinAPI {
 
         private delegate Int32 MouseHookDelegate(Int32 nCode, IntPtr wParam, ref MSLLHOOKSTRUCT lParam);
 
-        [MarshalAs(UnmanagedType.FunctionPtr)] private MouseHookDelegate _mouseProc;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        private MouseHookDelegate _mouseProc;
 
         public enum MouseMessages {
             WM_MouseMove            = 512,
@@ -47,10 +47,13 @@ namespace Blish_HUD.WinAPI {
             WM_MouseWheel           = 522,
         }
 
-        [DllImport("user32.dll")]   private static extern IntPtr SetWindowsHookExW(Int32 idHook, MouseHookDelegate HookProc, IntPtr hInstance, Int32 wParam);
-        [DllImport("user32.dll")]   private static extern Int32  CallNextHookEx(Int32 idHook, Int32 nCode, IntPtr wParam, ref MSLLHOOKSTRUCT lParam);
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetWindowsHookExW(Int32 idHook, MouseHookDelegate HookProc, IntPtr hInstance, Int32 wParam);
 
-        public MouseHook() { _mouseProc = MouseHookProc; }
+        [DllImport("user32.dll")]
+        private static extern Int32  CallNextHookEx(Int32 idHook, Int32 nCode, IntPtr wParam, ref MSLLHOOKSTRUCT lParam);
+
+        public MouseHook() => _mouseProc = MouseHookProc;
 
         public bool HookMouse() {
             Logger.Debug("Enabling mouse hook.");
@@ -71,7 +74,7 @@ namespace Blish_HUD.WinAPI {
             _mouseHook = IntPtr.Zero;
         }
 
-        public bool NonClick { get; private set; } = false;
+        internal bool NonClick { get; private set; } = false;
 
         private Int32 MouseHookProc(Int32 nCode, IntPtr wParam, ref MSLLHOOKSTRUCT lParam) {
             int action = wParam.ToInt32();

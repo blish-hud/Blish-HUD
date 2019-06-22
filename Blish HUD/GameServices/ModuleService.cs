@@ -11,6 +11,7 @@ using Blish_HUD.Settings;
 using Gw2Sharp.WebApi.V2.Models;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using NLog;
 using Module = Blish_HUD.Modules.Module;
 
 namespace Blish_HUD {
@@ -118,6 +119,8 @@ namespace Blish_HUD {
 
     public class ModuleService : GameService {
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private const string MODULESTATES_CORE_SETTING = "ModuleStates";
 
         private const string MODULES_DIRECTORY = "modules";
@@ -167,8 +170,6 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            if (!System.IO.Directory.Exists(this.ModulesDirectory)) System.IO.Directory.CreateDirectory(this.ModulesDirectory);
-
             /*
             RegisterModule(new Modules.DebugText());
             RegisterModule(new Modules.DiscordRichPresence());
@@ -183,17 +184,10 @@ namespace Blish_HUD {
             // RegisterModule(new Modules.RangeCircles());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
 
-            foreach (string moduleArchivePath in System.IO.Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
-                var moduleReader = new ZipArchiveReader(moduleArchivePath);
-
-                if (moduleReader.FileExists("manifest.json")) {
-                    RegisterModule(moduleReader);
-                }
-            }
-
-#if DEBUG
-            foreach (string manifestPath in System.IO.Directory.GetFiles(this.ModulesDirectory, "manifest.json", SearchOption.AllDirectories)) {
-                string moduleDir = System.IO.Directory.GetParent(manifestPath).FullName;
+            #if DEBUG
+            // Allows us to symlink the output directories of modules in development straight to the modules folder
+            foreach (string manifestPath in Directory.GetFiles(this.ModulesDirectory, "manifest.json", SearchOption.AllDirectories)) {
+                string moduleDir = Directory.GetParent(manifestPath).FullName;
 
                 var moduleReader = new DirectoryReader(moduleDir);
 
@@ -201,7 +195,15 @@ namespace Blish_HUD {
                     RegisterModule(moduleReader);
                 }
             }
-#endif
+            #endif
+
+            foreach (string moduleArchivePath in Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
+                var moduleReader = new ZipArchiveReader(moduleArchivePath);
+
+                if (moduleReader.FileExists("manifest.json")) {
+                    RegisterModule(moduleReader);
+                }
+            }
         }
 
         protected override void Unload() {
@@ -210,15 +212,15 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             _modules.ForEach(s => {
-                //try {
-                    if (s.Enabled) s.ModuleInstance.DoUpdate(gameTime);
-//                } catch (Exception ex) {
-//#if DEBUG
-//                    throw;
-//#endif
-//                    Console.WriteLine($"{s.Manifest.Name} module had an error:");
-//                    Console.WriteLine(ex.Message);
-//                }
+                                 try {
+                                     if (s.Enabled) s.ModuleInstance.DoUpdate(gameTime);
+                                 } catch (Exception ex) {
+                                     #if DEBUG
+                                     // To assist in debugging
+                                     throw;
+                                     #endif
+                                     Logger.Error(ex, "Module '{$moduleName} ({$moduleNamespace}) threw an exception.", s.Manifest.Name, s.Manifest.Namespace);
+                                 }
             });
         }
     }

@@ -43,7 +43,7 @@ namespace Blish_HUD.Modules {
 
     public abstract class Module : IDisposable {
 
-        protected static Logger Logger;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Module Events
 
@@ -108,7 +108,7 @@ namespace Blish_HUD.Modules {
 
         protected DirectoriesManager DirectoriesManager => _moduleParameters.DirectoriesManager;
 
-        protected Gw2ApiManager Gw2ApiManager => _moduleParameters.GW2ApiManager;
+        protected Gw2ApiManager Gw2ApiManager => _moduleParameters.Gw2ApiManager;
 
         #endregion
 
@@ -117,7 +117,6 @@ namespace Blish_HUD.Modules {
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) {
             _moduleParameters = moduleParameters;
-            NLog.LogManager.Configuration = _moduleParameters.LoggingConfig;
         }
 
         #region Module Method Interface
