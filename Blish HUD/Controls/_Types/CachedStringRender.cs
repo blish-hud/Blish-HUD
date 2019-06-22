@@ -82,6 +82,8 @@ namespace Blish_HUD.Controls {
                                              this.DestinationRectangle,
                                              this.Color,
                                              this.Wrap,
+                                             this.Stroke,
+                                             this.StrokeDistance,
                                              this.HorizontalAlignment,
                                              this.VerticalAlignment);
 

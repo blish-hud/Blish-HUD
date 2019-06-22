@@ -10,8 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing.Behaviors {
 
-
-    [IdentifyingBehaviorAttributePrefix("mesh")]
+    [PathingBehavior("mesh")]
     public class Mesh<TPathable, TEntity> : PathingBehavior<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {

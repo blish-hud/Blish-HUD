@@ -34,7 +34,7 @@ namespace Blish_HUD.Content {
 
         /// <inheritdoc />
         public string GetPathRepresentation(string relativeFilePath = null) {
-            return $"{_archivePath}[{Path.Combine(_subPath, relativeFilePath ?? string.Empty)}]";
+            return $"{_archivePath}[{Path.GetFileName(Path.Combine(_subPath, relativeFilePath ?? string.Empty))}]";
         }
 
         /// <inheritdoc />

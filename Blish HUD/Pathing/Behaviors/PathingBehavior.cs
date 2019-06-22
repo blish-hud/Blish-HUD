@@ -23,7 +23,7 @@ namespace Blish_HUD.Pathing.Behaviors {
         static PathingBehavior() {
             _behaviorStore = GameService.Pathing.PathingStore.GetSubstore(PATHINGBEHAVIOR_STORENAME);
 
-            AllAvailableBehaviors = IdentifyingBehaviorAttributePrefixAttribute.GetTypes(System.Reflection.Assembly.GetExecutingAssembly()).ToList();
+            AllAvailableBehaviors = PathingBehaviorAttribute.GetTypes(System.Reflection.Assembly.GetExecutingAssembly()).ToList();
         }
 
         #endregion
@@ -109,7 +109,7 @@ namespace Blish_HUD.Pathing.Behaviors {
         InZone
     }
 
-    [IdentifyingBehaviorAttributePrefix("bounce")]
+    [PathingBehavior("bounce")]
     public class BounceWhenClose<TPathable, TEntity> : PathingBehavior<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
@@ -119,6 +119,8 @@ namespace Blish_HUD.Pathing.Behaviors {
         private float _bounceDelay;
         private float _bounceHeight   = 2f;
         private float _bounceDuration = 1f;
+
+        private float _originalVerticalOffset;
 
         private Activator.Activator _bounceActivator;
 
@@ -154,7 +156,9 @@ namespace Blish_HUD.Pathing.Behaviors {
             }
         }
 
-        public BounceWhenClose(TPathable managedPathable) : base(managedPathable) { }
+        public BounceWhenClose(TPathable managedPathable) : base(managedPathable) {
+            _originalVerticalOffset = managedPathable.ManagedEntity.VerticalOffset;
+        }
 
         private Tween _bounceAnimation;
 
@@ -216,19 +220,20 @@ namespace Blish_HUD.Pathing.Behaviors {
             _bounceAnimation?.CancelAndComplete();
 
             _bounceAnimation = GameService.Animation.Tweener.Tween(this.ManagedPathable.ManagedEntity,
-                                                                   new { VerticalOffset = _bounceHeight },
+                                                                   new { VerticalOffset = _originalVerticalOffset + _bounceHeight },
                                                                    _bounceDuration,
                                                                    _bounceDelay)
-                                                              .Ease(Ease.QuadInOut)
-                                                              .Repeat()
-                                                              .Reflect();
+                                                            .From(new { VerticalOffset = _originalVerticalOffset })
+                                                            .Ease(Ease.QuadInOut)
+                                                            .Repeat()
+                                                            .Reflect();
         }
 
         private void StopBouncing() {
             _bounceAnimation?.Cancel();
 
             _bounceAnimation = GameService.Animation.Tweener.Tween(this.ManagedPathable.ManagedEntity,
-                                                                   new { VerticalOffset = 0f },
+                                                                   new { VerticalOffset = _originalVerticalOffset },
                                                                    this.ManagedPathable.ManagedEntity.VerticalOffset / 2f)
                                                             .Ease(Ease.BounceOut);
         }

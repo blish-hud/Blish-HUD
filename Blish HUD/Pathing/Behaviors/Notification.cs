@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Behaviors {
 
-    [IdentifyingBehaviorAttributePrefix("notification")]
+    [PathingBehavior("notification")]
     public class Notification<TPathable, TEntity> : PathingBehavior<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {

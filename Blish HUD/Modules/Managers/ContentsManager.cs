@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Blish_HUD.Content;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -102,6 +103,14 @@ namespace Blish_HUD.Modules.Managers {
         /// <param name="modelPath">The path to the model.</param>
         public Model GetModel(string modelPath) {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Retrieves the stream of a file.
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        public Stream GetFileStream(string filePath) {
+            return _reader.GetFileStream(filePath);
         }
 
     }

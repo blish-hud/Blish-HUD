@@ -140,6 +140,9 @@ namespace Blish_HUD.Modules {
                     OnModuleException(loadError);
                     if (!loadError.Observed) {
                         Logger.Error(_loadTask.Exception, "Module '{$moduleName} ({$moduleNamespace})' had an unhandled exception while loading:", this.Name, this.Namespace);
+                        #if DEBUG
+                        throw _loadTask.Exception;
+                        #endif
                     }
                     RunState = ModuleRunState.Loaded;
                     break;
@@ -174,9 +177,9 @@ namespace Blish_HUD.Modules {
             Unload();
         }
 
-        #endregion
+#endregion
 
-        #region Virtual Methods
+#region Virtual Methods
 
         /// <summary>
         /// Allows your module to perform any initialization it needs before starting to run.
@@ -217,9 +220,9 @@ namespace Blish_HUD.Modules {
         /// </summary>
         protected virtual void Unload() { /* NOOP */ }
 
-        #endregion
+#endregion
 
-        #region IDispose
+#region IDispose
 
         protected virtual void Dispose(bool disposing) {
             DoUnload();
@@ -236,7 +239,7 @@ namespace Blish_HUD.Modules {
             Dispose(false);
         }
 
-        #endregion
+#endregion
 
     }
 

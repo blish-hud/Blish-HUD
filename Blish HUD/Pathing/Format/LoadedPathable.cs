@@ -156,7 +156,7 @@ namespace Blish_HUD.Pathing.Format {
             var attrNames = _leftOverAttributes.Select(xmlAttr => xmlAttr.Name);
 
             foreach (var autoBehavior in PathingBehavior.AllAvailableBehaviors) {
-                var checkBehavior = IdentifyingBehaviorAttributePrefixAttribute.GetAttributesOnType(autoBehavior);
+                var checkBehavior = PathingBehaviorAttribute.GetAttributesOnType(autoBehavior);
 
                 if (attrNames.Any(sa => sa.StartsWith(checkBehavior.AttributePrefix, StringComparison.OrdinalIgnoreCase))) {
                     var loadedBehavior = Activator.CreateInstance(autoBehavior.MakeGenericType(this.GetType(), typeof(TEntity)), this) as ILoadableBehavior;

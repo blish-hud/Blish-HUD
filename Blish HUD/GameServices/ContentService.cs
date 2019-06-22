@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -20,16 +21,16 @@ namespace Blish_HUD {
 
         #region Load Static
 
-        private static readonly Dictionary<string, SoundEffect> _loadedSoundEffects;
-        private static readonly Dictionary<string, BitmapFont>  _loadedBitmapFonts;
-        private static readonly Dictionary<string, Texture2D>   _loadedTextures;
-        private static readonly Dictionary<string, Stream>      _loadedFiles;
+        private static readonly ConcurrentDictionary<string, SoundEffect> _loadedSoundEffects;
+        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts;
+        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures;
+        private static readonly ConcurrentDictionary<string, Stream>      _loadedFiles;
 
         static ContentService() {
-            _loadedSoundEffects = new Dictionary<string, SoundEffect>();
-            _loadedBitmapFonts  = new Dictionary<string, BitmapFont>();
-            _loadedTextures     = new Dictionary<string, Texture2D>();
-            _loadedFiles        = new Dictionary<string, Stream>();
+            _loadedSoundEffects = new ConcurrentDictionary<string, SoundEffect>();
+            _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
+            _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
+            _loadedFiles        = new ConcurrentDictionary<string, Stream>();
         }
 
         #endregion
@@ -105,7 +106,7 @@ namespace Blish_HUD {
 
         public void PlaySoundEffectByName(string soundName) {
             if (!_loadedSoundEffects.ContainsKey(soundName))
-                _loadedSoundEffects.Add(soundName, Overlay.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
+                _loadedSoundEffects.TryAdd(soundName, Overlay.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
 
             // TODO: Volume was 0.25f - changing to 0.125 until a setting can be exposed in the UI
             _loadedSoundEffects[soundName].Play(0.125f, 0, 0);
@@ -158,7 +159,7 @@ namespace Blish_HUD {
         }
 
         public void PurgeTextureCache(string textureName) {
-            _loadedTextures.Remove(textureName);
+            _loadedTextures.TryRemove(textureName, out var _);
         }
 
         public Texture2D GetTexture(string textureName) {
@@ -187,7 +188,7 @@ namespace Blish_HUD {
 
             cachedTexture = cachedTexture ?? defaultTexture;
 
-            _loadedTextures.Add(textureName, cachedTexture);
+            _loadedTextures.TryAdd(textureName, cachedTexture);
 
             return cachedTexture;
         }
@@ -198,7 +199,7 @@ namespace Blish_HUD {
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
                 var loadedFont = Overlay.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}");
                 loadedFont.LetterSpacing = -1;
-                _loadedBitmapFonts.Add(fullFontName, loadedFont);
+                _loadedBitmapFonts.TryAdd(fullFontName, loadedFont);
 
                 return loadedFont;
             }

@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 namespace Blish_HUD.Pathing.Behaviors.Activator {
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class WhenActivatorNameAttribute : Attribute {
+    public class BehaviorActivatorAttribute : Attribute {
 
         public static IEnumerable<Type> GetTypes(Assembly assembly) {
             foreach (var type in assembly.GetTypes()) {
-                if (type.GetCustomAttributes(typeof(WhenActivatorNameAttribute), true).Any()) {
+                if (type.GetCustomAttributes(typeof(BehaviorActivatorAttribute), true).Any()) {
                     yield return type;
                 }
             }
         }
 
-        public static WhenActivatorNameAttribute GetAttributesOnType(Type type) {
-            return (WhenActivatorNameAttribute)type.GetCustomAttribute(typeof(WhenActivatorNameAttribute), true);
+        public static BehaviorActivatorAttribute GetAttributesOnType(Type type) {
+            return (BehaviorActivatorAttribute)type.GetCustomAttribute(typeof(BehaviorActivatorAttribute), true);
         }
 
         public string ActivatorName { get; }
@@ -28,7 +28,7 @@ namespace Blish_HUD.Pathing.Behaviors.Activator {
         /// Identifies the *-when value that loads this activator.
         /// </summary>
         /// <param name="attributeName">The name of the activator.  This match is not case-sensitive.</param>
-        public WhenActivatorNameAttribute(string attributePrefix) {
+        public BehaviorActivatorAttribute(string attributePrefix) {
             this.ActivatorName = attributePrefix;
         }
 

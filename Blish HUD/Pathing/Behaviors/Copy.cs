@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Behaviors {
 
-    [IdentifyingBehaviorAttributePrefix("copy")]
+    [PathingBehavior("copy")]
     public class Copy<TPathable, TEntity> : InZone<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;

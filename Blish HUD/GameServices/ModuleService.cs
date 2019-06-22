@@ -184,8 +184,8 @@ namespace Blish_HUD {
             // RegisterModule(new Modules.RangeCircles());
             // RegisterModule(new Modules.MouseUsability.MouseUsability());
 
-            #if DEBUG
-            // Allows us to symlink the output directories of modules in development straight to the modules folder
+            #if DEBUG && !NODIRMODULES
+            // Allows devs to symlink the output directories of modules in development straight to the modules folder
             foreach (string manifestPath in Directory.GetFiles(this.ModulesDirectory, "manifest.json", SearchOption.AllDirectories)) {
                 string moduleDir = Directory.GetParent(manifestPath).FullName;
 

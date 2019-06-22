@@ -25,7 +25,7 @@ namespace Blish_HUD {
                 return;
             }
 
-#if !DEBUGTE
+#if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 #endif
             

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -65,7 +66,23 @@ namespace Blish_HUD.Entities {
             set => SetProperty(ref _opacity, value);
         }
 
-        // TODO: Consider calling 'OnPropertyChanged' for 'DistanceFromPlayer' and 'DistanceFromCamera' somehow reasonable
+        private EntityText _basicTitleText;
+        public string BasicTitleText {
+            get => _basicTitleText?.Text ?? string.Empty;
+            set {
+                _basicTitleText      = _basicTitleText ?? BuildTitleText();
+                _basicTitleText.Text = value;
+            }
+        }
+
+        public Color BasicTitleTextColor {
+            get => _basicTitleText?.TextColor ?? Color.White;
+            set {
+                _basicTitleText           = _basicTitleText ?? BuildTitleText();
+                _basicTitleText.TextColor = value;
+            }
+        }
+
         public virtual float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Player.Position);
         public virtual float DistanceFromCamera => Vector3.Distance(this.Position, GameService.Camera.Position);
 
@@ -76,13 +93,16 @@ namespace Blish_HUD.Entities {
 
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
 
-        public virtual void Draw(GraphicsDevice graphicsDevice) {
-            if (this.EntityEffect != StandardEffect) return;
+        public virtual void Draw(GraphicsDevice graphicsDevice) { /* NOOP */ }
 
-            StandardEffect.View = GameService.Camera.View;
-            StandardEffect.Projection = GameService.Camera.Projection;
+        private EntityText BuildTitleText() {
+            var entityText = new EntityText(this) {
+                VerticalOffset = 2f
+            };
 
-            StandardEffect.Alpha = this.Opacity;
+            GameService.Graphics.World.Entities.Add(entityText);
+
+            return entityText;
         }
 
         #region Property Management and Binding

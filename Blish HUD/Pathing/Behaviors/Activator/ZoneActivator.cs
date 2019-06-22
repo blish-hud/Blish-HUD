@@ -14,7 +14,7 @@ namespace Blish_HUD.Pathing.Behaviors.Activator {
 
     public class ZoneActivator : Activator {
 
-        public float ActivationDistance { get; set; } = 2f;
+        public float ActivationDistance { get; set; } = 3.5f;
 
         public DistanceFrom DistanceFrom { get; set; } = DistanceFrom.Player;
 

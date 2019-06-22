@@ -51,8 +51,7 @@ namespace Blish_HUD.Entities.Primitives {
             get => _texture;
             set {
                 if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture != null)
-                    this.Size = new Vector2(Utils.World.GameToWorldCoord(_texture.Width),
-                                            Utils.World.GameToWorldCoord(_texture.Height));
+                    this.Size = _texture.Bounds.Size.ToVector2().ToWorldCoord();
             }
         }
 

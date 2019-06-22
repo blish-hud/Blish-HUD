@@ -58,7 +58,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS;NOMOUSEHOOK</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;NOMOUSEHOOK;NODIRMODULES</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -184,7 +184,9 @@
     <Compile Include="Custom\Pipeline.cs" />
     <Compile Include="Entities\Cube.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\EntityBillboard.cs" />
     <Compile Include="Entities\EntityContainer.cs" />
+    <Compile Include="Entities\EntityText.cs" />
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Content\IDataReader.cs" />
@@ -202,10 +204,11 @@
     <Compile Include="Modules\Managers\SettingsManager.cs" />
     <Compile Include="Modules\ModuleParameters.cs" />
     <Compile Include="Pathing\Behaviors\Activator\Activator.cs" />
-    <Compile Include="Pathing\Behaviors\Activator\WhenActivatorNameAttribute.cs" />
+    <Compile Include="Pathing\Behaviors\Activator\BehaviorActivatorAttribute.cs" />
     <Compile Include="Pathing\Behaviors\Activator\ZoneActivator.cs" />
     <Compile Include="Pathing\Behaviors\Mesh.cs" />
     <Compile Include="Pathing\Behaviors\Notification.cs" />
+    <Compile Include="Pathing\Behaviors\Title.cs" />
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
@@ -221,7 +224,7 @@
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
     <Compile Include="Modules\ManifestV1.cs" />
     <Compile Include="Pathing\Behaviors\Copy.cs" />
-    <Compile Include="Pathing\Behaviors\IdentifyingBehaviorAttributePrefixAttribute.cs" />
+    <Compile Include="Pathing\Behaviors\PathingBehaviorAttribute.cs" />
     <Compile Include="Pathing\Behaviors\ILoadableBehavior.cs" />
     <Compile Include="Pathing\Entities\Marker.cs" />
     <Compile Include="GameServices\PersistentStoreService.cs" />
@@ -438,7 +441,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Gw2Sharp">
-      <Version>0.4.0</Version>
+      <Version>0.4.1</Version>
     </PackageReference>
     <PackageReference Include="Humanizer.Core.de">
       <Version>2.6.2</Version>
