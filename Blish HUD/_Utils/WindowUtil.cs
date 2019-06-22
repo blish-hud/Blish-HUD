@@ -5,26 +5,20 @@ using System.Text;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 
+// ReSharper disable FieldCanBeMadeReadOnly.Local
+// ReSharper disable InconsistentNaming
+
 namespace Blish_HUD.Utils {
 
-    public class GWL {
-        public const int WNDPROC = (-4);
-        public const int HINSTANCE = (-6);
-        public const int HWNDPARENT = (-8);
-        public const int STYLE = (-16);
-        public const int EXSTYLE = (-20);
-        public const int USERDATA = (-21);
-        public const int ID = (-12);
-    }
-
     public static class WindowUtil {
+
+        private const int GWL_STYLE   = -16;
+        private const int GWL_EXSTYLE = -20;
 
         private const uint CS_VREDRAW = 0x0001;
         private const uint CS_HREDRAW = 0x0002;
 
-        private static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
         private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
-        private static readonly IntPtr HWND_TOP = new IntPtr(0);
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
 
         private const uint SWP_SHOWWINDOW = 0x0040;
@@ -33,19 +27,19 @@ namespace Blish_HUD.Utils {
         private static extern bool ClientToScreen(IntPtr hWnd, ref System.Drawing.Point lpPoint);
 
         [DllImport("Dwmapi.dll")]
-        private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+        private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr GetActiveWindow();
+        private static extern IntPtr GetActiveWindow();
 
         [DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern long GetClassName(IntPtr hwnd, StringBuilder lpClassName, long nMaxCount);
+        private static extern long GetClassName(IntPtr hwnd, StringBuilder lpClassName, long nMaxCount);
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool GetClientRect(IntPtr hWnd, ref RECT lpRect);
 
         [DllImport("user32.dll")]
-        internal static extern IntPtr GetForegroundWindow();
+        private static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
         private static extern IntPtr GetWindowLongPtr32(IntPtr hWnd, int nIndex);
@@ -54,10 +48,10 @@ namespace Blish_HUD.Utils {
         private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
 
         [DllImport("user32.dll")]
-        static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
+        private static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
         private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, uint dwNewLong);
@@ -77,37 +71,36 @@ namespace Blish_HUD.Utils {
             public int Bottom;
         }
 
-        public struct MARGINS {
+        private struct Margins {
             public int cxLeftWidth;
             public int cxRightWidth;
             public int cyTopHeight;
             public int cyBottomHeight;
         }
 
-        public static IntPtr GetWindowLong(IntPtr hWnd, int nIndex) {
-            if (IntPtr.Size == 8)
-                return GetWindowLongPtr64(hWnd, nIndex);
-            else
-                return GetWindowLongPtr32(hWnd, nIndex);
-        }
+        internal static void SetForegroundWindowEx(IntPtr handle) => SetForegroundWindow(handle);
 
-        public static int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong) {
-            if (IntPtr.Size != 8)
-                return SetWindowLong32(hWnd, nIndex, dwNewLong);
-            return (int) SetWindowLongPtr64(hWnd, nIndex, new UIntPtr(dwNewLong));
-        }
+        private static IntPtr GetWindowLong(IntPtr hWnd, int nIndex) => IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLongPtr32(hWnd, nIndex);
+
+        private static int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong) => IntPtr.Size != 8 ? SetWindowLong32(hWnd, nIndex, dwNewLong) : (int) SetWindowLongPtr64(hWnd, nIndex, new UIntPtr(dwNewLong));
 
         internal static void SetupOverlay(IntPtr winHandle) {
-            SetWindowLong(winHandle, GWL.STYLE, CS_HREDRAW | CS_VREDRAW);
+            SetWindowLong(winHandle, GWL_STYLE, CS_HREDRAW | CS_VREDRAW);
 
-            SetWindowLong(winHandle, GWL.EXSTYLE, (uint)GetWindowLong(winHandle, GWL.EXSTYLE) | WindowStyles.WS_EX_LAYERED | WindowStyles.WS_EX_TRANSPARENT);
+            SetWindowLong(winHandle, GWL_EXSTYLE, (uint)GetWindowLong(winHandle, GWL_EXSTYLE) | WindowStyles.WS_EX_LAYERED | WindowStyles.WS_EX_TRANSPARENT);
 
             SetLayeredWindowAttributes(winHandle, 0, 0, 1);
             SetLayeredWindowAttributes(winHandle, 0, 255, 2);
         }
 
         private static Rectangle pos;
-        public static bool OnTop = true; // Used to force a SetWindowPos with HWND_TOPMOST when GW2 becomes active again
+
+        private static bool _onTop = true;
+
+        /// <summary>
+        /// Indicates if the overlay window is currently forcing itself on top of Guild Wars 2 or not.
+        /// </summary>
+        public static bool OnTop => _onTop;
 
         internal static bool UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle) {
             var clientRect = new RECT();
@@ -119,7 +112,7 @@ namespace Blish_HUD.Utils {
                 return false;
             }
 
-            var marg = new MARGINS {
+            var marg = new Margins {
                 cxLeftWidth = 0,
                 cyTopHeight = 0,
                 cxRightWidth = clientRect.Right,
@@ -142,19 +135,19 @@ namespace Blish_HUD.Utils {
             // If gw2 is not the focused application, stop being
             // topmost so that whatever is active can render on top
             if (activeWindowHandle != gw2WindowHandle && Form.ActiveForm == null) {
-                if (OnTop) {
+                if (_onTop) {
                     Console.WriteLine("GW2 is no longer the active window.");
                     SetWindowPos(winHandle,  HWND_NOTOPMOST, pos.X, pos.Y, pos.Width, pos.Height, 0);
 
-                    OnTop = false;
+                    _onTop = false;
                 }
                 return true;
             }
 
-            if (!OnTop)
+            if (!_onTop)
                 Console.WriteLine("GW2 is now the active window - reactivating the overlay.");
 
-            if (clientRect.Left + screenPoint.X != pos.X || clientRect.Top + screenPoint.Y != pos.Y || clientRect.Right - clientRect.Left != pos.Width || clientRect.Bottom - clientRect.Top != pos.Height || OnTop == false) {
+            if (clientRect.Left + screenPoint.X != pos.X || clientRect.Top + screenPoint.Y != pos.Y || clientRect.Right - clientRect.Left != pos.Width || clientRect.Bottom - clientRect.Top != pos.Height || _onTop == false) {
                 pos = new Rectangle(
                     clientRect.Left + screenPoint.X,
                     clientRect.Top + screenPoint.Y,
@@ -171,13 +164,13 @@ namespace Blish_HUD.Utils {
                 
                 DwmExtendFrameIntoClientArea(winHandle, ref marg);
 
-                OnTop = true;
+                _onTop = true;
             }
 
             return true;
         }
 
-        public static string GetClassNameOfWindow(IntPtr hwnd) {
+        internal static string GetClassNameOfWindow(IntPtr hwnd) {
             string        className = "";
             StringBuilder classText = null;
             try {
@@ -193,36 +186,37 @@ namespace Blish_HUD.Utils {
             return className;
         }
 
-        private static RECT prevProcRect;
-        private static System.Drawing.Point prevProcPos;
-        public static void UpdateOverlayPositionAndSize(IntPtr thisWindowHandle, Process process) {
-            var processWindowHandle = process.MainWindowHandle;
+        //private static RECT prevProcRect;
+        //private static System.Drawing.Point prevProcPos;
 
-            var procRect = new RECT();
-            GetClientRect(processWindowHandle, ref procRect);
+        //public static void UpdateOverlayPositionAndSize(IntPtr thisWindowHandle, Process process) {
+        //    var processWindowHandle = process.MainWindowHandle;
 
-            var procPos = new System.Drawing.Point();
-            ClientToScreen(processWindowHandle, ref procPos);
+        //    var procRect = new RECT();
+        //    GetClientRect(processWindowHandle, ref procRect);
 
-            if (procPos != prevProcPos || !procRect.Equals(prevProcRect)) {
-                GameService.Graphics.Resolution = new Point(
-                    procRect.Right - procRect.Left,
-                    procRect.Bottom - procRect.Top
-                );
+        //    var procPos = new System.Drawing.Point();
+        //    ClientToScreen(processWindowHandle, ref procPos);
 
-                SetWindowPos(
-                    thisWindowHandle,
-                    HWND_TOPMOST,
-                    procPos.X,
-                    procPos.Y,
-                    procRect.Right - procRect.Left,
-                    procRect.Bottom - procRect.Top,
-                    SWP_SHOWWINDOW
-                );
+        //    if (procPos != prevProcPos || !procRect.Equals(prevProcRect)) {
+        //        GameService.Graphics.Resolution = new Point(
+        //            procRect.Right - procRect.Left,
+        //            procRect.Bottom - procRect.Top
+        //        );
 
-                prevProcPos = procPos;
-                prevProcRect = procRect;
-            }
-        }
+        //        SetWindowPos(
+        //            thisWindowHandle,
+        //            HWND_TOPMOST,
+        //            procPos.X,
+        //            procPos.Y,
+        //            procRect.Right - procRect.Left,
+        //            procRect.Bottom - procRect.Top,
+        //            SWP_SHOWWINDOW
+        //        );
+
+        //        prevProcPos = procPos;
+        //        prevProcRect = procRect;
+        //    }
+        //}
     }
 }

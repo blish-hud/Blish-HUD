@@ -271,7 +271,7 @@ namespace Blish_HUD {
             if (this.Gw2Process != null) {
                 try {
                     var gw2WindowHandle = this.Gw2Process.MainWindowHandle;
-                    Utils.WindowUtil.SetForegroundWindow(gw2WindowHandle);
+                    Utils.WindowUtil.SetForegroundWindowEx(gw2WindowHandle);
                 } catch (NullReferenceException ex) {
                     Console.WriteLine("gw2Process.MainWindowHandle > NullReferenceException: Ignored and skipping gw2 focus.");
                 }
