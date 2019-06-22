@@ -159,7 +159,7 @@
     <Compile Include="Controls\LoadingSpinner.cs" />
     <Compile Include="Controls\Menu.cs" />
     <Compile Include="Controls\MenuItem.cs" />
-    <Compile Include="Controls\Notification.cs" />
+    <Compile Include="Controls\ScreenNotification.cs" />
     <Compile Include="Controls\Panel.cs" />
     <Compile Include="Controls\Popup.cs" />
     <Compile Include="Controls\Screen.cs" />
@@ -201,6 +201,11 @@
     <Compile Include="Modules\Managers\Gw2ApiManager.cs" />
     <Compile Include="Modules\Managers\SettingsManager.cs" />
     <Compile Include="Modules\ModuleParameters.cs" />
+    <Compile Include="Pathing\Behaviors\Activator\Activator.cs" />
+    <Compile Include="Pathing\Behaviors\Activator\WhenActivatorNameAttribute.cs" />
+    <Compile Include="Pathing\Behaviors\Activator\ZoneActivator.cs" />
+    <Compile Include="Pathing\Behaviors\Mesh.cs" />
+    <Compile Include="Pathing\Behaviors\Notification.cs" />
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />

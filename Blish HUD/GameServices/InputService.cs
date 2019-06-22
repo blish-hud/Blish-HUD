@@ -129,13 +129,13 @@ namespace Blish_HUD {
 
         protected override void Initialize() {
 #if !NOMOUSEHOOK
-            thrdMouseHook = new Thread(HookMouse);
-            thrdMouseHook.IsBackground = true;
-            thrdMouseHook.Start();
+            _thrdMouseHook = new Thread(HookMouse);
+            _thrdMouseHook.IsBackground = true;
+            _thrdMouseHook.Start();
 #endif
-            //thrdKeyboardHook = new Thread(HookKeyboard);
-            //thrdKeyboardHook.IsBackground = true;
-            //thrdKeyboardHook.Start();
+            //_thrdKeyboardHook = new Thread(HookKeyboard);
+            //_thrdKeyboardHook.IsBackground = true;
+            //_thrdKeyboardHook.Start();
         }
 
         protected override void Load() { /* NOOP */ }

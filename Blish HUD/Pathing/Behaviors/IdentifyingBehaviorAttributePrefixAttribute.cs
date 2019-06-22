@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Blish_HUD.Pathing.Behaviors {
@@ -8,8 +9,8 @@ namespace Blish_HUD.Pathing.Behaviors {
     public class IdentifyingBehaviorAttributePrefixAttribute : Attribute {
 
         public static IEnumerable<Type> GetTypes(Assembly assembly) {
-            foreach (Type type in assembly.GetTypes()) {
-                if (type.GetCustomAttributes(typeof(IdentifyingBehaviorAttributePrefixAttribute), true).Length > 0) {
+            foreach (var type in assembly.GetTypes()) {
+                if (type.GetCustomAttributes(typeof(IdentifyingBehaviorAttributePrefixAttribute), true).Any()) {
                     yield return type;
                 }
             }

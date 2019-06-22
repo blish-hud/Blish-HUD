@@ -6,5 +6,7 @@ namespace Blish_HUD.Pathing.Behaviors {
 
         void LoadWithAttributes(IEnumerable<XmlAttribute> attributes);
 
+        void Load();
+
     }
 }

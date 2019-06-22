@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
+using Blish_HUD.Pathing.Behaviors.Activator;
 using Glide;
 using Microsoft.Xna.Framework;
 
@@ -28,6 +29,8 @@ namespace Blish_HUD.Pathing.Behaviors {
         #endregion
 
         protected PersistentStore BehaviorStore => _behaviorStore;
+
+        public virtual void Load() { /* NOOP */ }
 
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
 
@@ -101,47 +104,154 @@ namespace Blish_HUD.Pathing.Behaviors {
 
     }
 
+    public enum BehaviorWhen {
+        Always,
+        InZone
+    }
+
     [IdentifyingBehaviorAttributePrefix("bounce")]
-    public class BounceWhenClose<TPathable, TEntity> : InZone<TPathable, TEntity>, ILoadableBehavior
+    public class BounceWhenClose<TPathable, TEntity> : PathingBehavior<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
 
-        public bool BounceWhileInZone { get; set; } = true;
+        private BehaviorWhen _bounceWhen = BehaviorWhen.Always;
+
+        private float _bounceDelay;
+        private float _bounceHeight   = 2f;
+        private float _bounceDuration = 1f;
+
+        private Activator.Activator _bounceActivator;
+
+        public BehaviorWhen BounceWhen {
+            get => _bounceWhen;
+            set {
+                _bounceWhen = value;
+                UpdateBounceState();
+            }
+        }
+
+        public float BounceHeight {
+            get => _bounceHeight;
+            set {
+                _bounceHeight = value;
+                UpdateBounceState();
+            }
+        } 
+
+        public float BounceDelay {
+            get => _bounceDelay;
+            set {
+                _bounceDelay = value;
+                UpdateBounceState();
+            }
+        }
+
+        public float BounceDuration {
+            get => _bounceDuration;
+            set {
+                _bounceDuration = value;
+                UpdateBounceState();
+            }
+        }
 
         public BounceWhenClose(TPathable managedPathable) : base(managedPathable) { }
 
         private Tween _bounceAnimation;
 
-        public override void OnEnterZoneRadius(GameTime gameTime) {
+        public override void Load() {
             _bounceAnimation?.CancelAndComplete();
+            _bounceAnimation = null;
 
-            _bounceAnimation = GameService.Animation.Tweener.Tween(
-                                                        this.ManagedPathable.ManagedEntity,
-                                                        new {VerticalOffset = 2f},
-                                                        1f,
-                                                        0f, false
-                                                       )
-                                          .Ease(Ease.QuadInOut);
-
-            if (this.BounceWhileInZone)
-                _bounceAnimation.Repeat().Reflect();
+            UpdateBounceState();
         }
 
-        public override void OnLeftZoneRadius(GameTime gameTime) {
-            var animTimeLeft = _bounceAnimation.TimeRemaining;
+        private void UpdateBounceState() {
+            if (_bounceActivator != null) {
+                _bounceActivator.Activated   -= BounceActivatorOnActivated;
+                _bounceActivator.Deactivated -= BounceActivatorOnDeactivated;
 
+                _bounceActivator.Dispose();
+            }
+
+            StopBouncing();
+
+            switch (this.BounceWhen) {
+                case BehaviorWhen.InZone:
+                    _bounceActivator = new ZoneActivator() {
+                        ActivationDistance = 2f,
+                        DistanceFrom       = DistanceFrom.Player,
+                        Position           = ManagedPathable.Position
+                    };
+
+                    _bounceActivator.Activated   += BounceActivatorOnActivated;
+                    _bounceActivator.Deactivated += BounceActivatorOnDeactivated;
+
+                    break;
+                case BehaviorWhen.Always:
+                default:
+                    StartBouncing();
+                    break;
+            }
+        }
+
+        private void BounceActivatorOnActivated(object sender, EventArgs e) {
+            StartBouncing();
+        }
+
+        private void BounceActivatorOnDeactivated(object sender, EventArgs e) {
+            StopBouncing();
+        }
+
+        /// <inheritdoc />
+        public override void Update(GameTime gameTime) {
+            if (_bounceActivator != null && _bounceActivator is ZoneActivator zoneActivator) {
+                zoneActivator.Position = ManagedPathable.Position;
+                zoneActivator.Update(gameTime);
+            }
+
+            base.Update(gameTime);
+        }
+
+        private void StartBouncing() {
+            _bounceAnimation?.CancelAndComplete();
+
+            _bounceAnimation = GameService.Animation.Tweener.Tween(this.ManagedPathable.ManagedEntity,
+                                                                   new { VerticalOffset = _bounceHeight },
+                                                                   _bounceDuration,
+                                                                   _bounceDelay)
+                                                              .Ease(Ease.QuadInOut)
+                                                              .Repeat()
+                                                              .Reflect();
+        }
+
+        private void StopBouncing() {
             _bounceAnimation?.Cancel();
 
             _bounceAnimation = GameService.Animation.Tweener.Tween(this.ManagedPathable.ManagedEntity,
-                                                                   new {VerticalOffset = 0f},
-                                                                   this.ManagedPathable.ManagedEntity.VerticalOffset / 2f,
-                                                                   0f, true)
-                                          .Ease(Ease.BounceOut);
+                                                                   new { VerticalOffset = 0f },
+                                                                   this.ManagedPathable.ManagedEntity.VerticalOffset / 2f)
+                                                            .Ease(Ease.BounceOut);
         }
 
         public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {
+            float fOut;
+
             foreach (var attr in attributes) {
-                //Console.WriteLine(attr.Name + " = " + attr.Value);
+                switch (attr.Name.ToLower()) {
+                    case "bounce":
+                    case "bounce-height":
+                        InvariantUtil.TryParseFloat(attr.Value, out _bounceHeight);
+                        break;
+                    case "bounce-delay":
+                        InvariantUtil.TryParseFloat(attr.Value, out _bounceDelay);
+                        break;
+                    case "bounce-duration":
+                        InvariantUtil.TryParseFloat(attr.Value, out _bounceDuration);
+                        break;
+                    case "bounce-when":
+                        Enum.TryParse(attr.Value, true, out _bounceWhen);
+                        break;
+                }
             }
         }
 

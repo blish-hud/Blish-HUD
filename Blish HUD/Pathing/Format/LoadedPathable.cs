@@ -169,6 +169,9 @@ namespace Blish_HUD.Pathing.Format {
 
         private void LoadResources() {
             OnLoading(EventArgs.Empty);
+
+            this.Behavior.ForEach(b => b.Load());
+
             OnLoaded(EventArgs.Empty);
         }
 

@@ -26,7 +26,7 @@ namespace Blish_HUD.Pathing.Behaviors {
 
             System.Windows.Forms.Clipboard.SetText(this.CopyValue);
 
-            Notification.ShowNotification(string.Format(this.CopyMessage, this.CopyValue));
+            ScreenNotification.ShowNotification(string.Format(this.CopyMessage, this.CopyValue));
         }
 
         public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {

@@ -29,6 +29,11 @@ namespace Blish_HUD.Entities {
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
+            graphicsDevice.BlendState        = BlendState.AlphaBlend;
+            graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
+            graphicsDevice.SamplerStates[0]  = SamplerState.LinearWrap;
+            graphicsDevice.RasterizerState   = RasterizerState.CullNone;
+
             foreach (var entity in _sortedEntities.Where(entity => entity.Visible)) {
                 entity.Draw(graphicsDevice);
             }

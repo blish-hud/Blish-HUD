@@ -1,10 +1,13 @@
-﻿using Blish_HUD.Utils;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Blish_HUD.Utils;
+using Glide;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    public class Notification : Control {
+    public class ScreenNotification : Control {
 
         private const int DURATION_DEFAULT = 4;
 
@@ -13,7 +16,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static Notification _activeNotification;
+        private static readonly SynchronizedCollection<ScreenNotification> _activeScreenNotifications;
 
         private static readonly BitmapFont _fontMenomonia36Regular;
 
@@ -22,7 +25,9 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureGreenBackground;
         private static readonly Texture2D _textureRedBackground;
 
-        static Notification() {
+        static ScreenNotification() {
+            _activeScreenNotifications = new SynchronizedCollection<ScreenNotification>();
+
             _fontMenomonia36Regular = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular);
 
             _textureGrayBackground  = Content.GetTexture(@"controls\notification\notification-gray");
@@ -44,7 +49,7 @@ namespace Blish_HUD.Controls {
             Red,
         }
 
-        private NotificationType _type = NotificationType.Info;
+        private NotificationType _type;
         public NotificationType Type {
             get => _type;
             set => SetProperty(ref _type, value, true);
@@ -70,11 +75,12 @@ namespace Blish_HUD.Controls {
         }
         
         private Glide.Tween _animFadeLifecycle;
+        private int _targetTop = 0;
 
         private Rectangle _layoutMessageBounds;
         private Rectangle _layoutIconBounds;
 
-        private Notification(string message, NotificationType type = NotificationType.Info, Texture2D icon = null, int duration = DURATION_DEFAULT) {
+        private ScreenNotification(string message, NotificationType type = NotificationType.Info, Texture2D icon = null, int duration = DURATION_DEFAULT) {
             _message  = message;
             _type     = type;
             _icon     = icon;
@@ -84,6 +90,8 @@ namespace Blish_HUD.Controls {
             this.Size = new Point(NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
             this.ZIndex = Screen.TOOLTIP_BASEZINDEX;
             this.Location = new Point(Graphics.WindowWidth / 2 - this.Size.X / 2, Graphics.WindowHeight / 4 - this.Size.Y / 2);
+
+            _targetTop = this.Top;
         }
 
         /// <inheritdoc />
@@ -112,7 +120,8 @@ namespace Blish_HUD.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             if (string.IsNullOrEmpty(_message)) return;
 
-            Color messageColor = Color.White;
+            Color     messageColor           = Color.White;
+            Texture2D notificationBackground = null;
 
             switch (_type) {
                 case NotificationType.Info:
@@ -128,30 +137,30 @@ namespace Blish_HUD.Controls {
                     break;
 
                 case NotificationType.Gray:
-                    spriteBatch.DrawOnCtrl(this, _textureGrayBackground, bounds);
+                    notificationBackground = _textureGrayBackground;
                     break;
 
                 case NotificationType.Blue:
-                    spriteBatch.DrawOnCtrl(this, _textureBlueBackground, bounds);
+                    notificationBackground = _textureBlueBackground;
                     break;
 
                 case NotificationType.Green:
-                    spriteBatch.DrawOnCtrl(this, _textureGreenBackground, bounds);
+                    notificationBackground = _textureGreenBackground;
                     break;
 
                 case NotificationType.Red:
-                    spriteBatch.DrawOnCtrl(this, _textureRedBackground, bounds);
+                    notificationBackground = _textureRedBackground;
                     break;
             }
 
-            // TODO: Add back drawing icon
+            if (notificationBackground != null)
+                spriteBatch.DrawOnCtrl(this, notificationBackground, _layoutMessageBounds);
 
-            //spriteBatch.Draw(this.Icon, new Rectangle(64, 32, 128, 128).OffsetBy(bounds.Location), Color.White);
-            
+            // TODO: Add back drawing icon: (something like) spriteBatch.Draw(this.Icon, new Rectangle(64, 32, 128, 128).OffsetBy(bounds.Location), Color.White);
+
             spriteBatch.DrawStringOnCtrl(this,
                                          this.Message,
                                          _fontMenomonia36Regular,
-                                         //_layoutMessageBounds.OffsetBy(1, 1),
                                          bounds.OffsetBy(1, 1),
                                          Color.Black,
                                          false,
@@ -160,7 +169,6 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawStringOnCtrl(this,
                                          this.Message,
                                          _fontMenomonia36Regular,
-                                         //_layoutMessageBounds,
                                          bounds,
                                          messageColor,
                                          false,
@@ -179,14 +187,37 @@ namespace Blish_HUD.Controls {
             base.Show();
         }
 
+        private void SlideDown(int distance) {
+            _targetTop += distance;
+
+            Animation.Tweener.Tween(this, new {Top = _targetTop}, 0.1f);
+
+            if (_opacity < 1f) return;
+
+            _animFadeLifecycle = Animation.Tweener
+                                          .Tween(this, new {Opacity = 0f}, 1f)
+                                          .OnComplete(Dispose);
+        }
+
+        /// <inheritdoc />
+        protected override void DisposeControl() {
+            _activeScreenNotifications.Remove(this);
+
+            base.DisposeControl();
+        }
+
         public static void ShowNotification(string message, NotificationType type = NotificationType.Info, Texture2D icon = null, int duration = DURATION_DEFAULT) {
-            var nNot = new Notification(message, type, icon, duration) {
+            var nNot = new ScreenNotification(message, type, icon, duration) {
                 Parent = Graphics.SpriteScreen
             };
 
-            _activeNotification?.Hide();
+            nNot.ZIndex = _activeScreenNotifications.DefaultIfEmpty(nNot).Max(n => n.ZIndex) + 1;
 
-            _activeNotification = nNot;
+            foreach (var activeScreenNotification in _activeScreenNotifications) {
+                activeScreenNotification.SlideDown((int)(_fontMenomonia36Regular.LineHeight * 0.75f));
+            }
+
+            _activeScreenNotifications.Add(nNot);
 
             nNot.Show();
         }

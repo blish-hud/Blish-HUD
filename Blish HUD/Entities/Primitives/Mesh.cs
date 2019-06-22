@@ -4,12 +4,15 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Entities.Primitives {
     public class Mesh:Entity {
 
-        private Model _model;
+        private readonly Model _model;
 
-        public Vector3 Size { get; set; } = Vector3.One;
+        private Texture2D _bananaTexture;
+
+        public Vector3 Size { get; set; } = Vector3.One / 5;
 
         public Mesh(Model model) : base() {
             _model = model;
+            //_bananaTexture = GameService.Content.ContentManager.Load<Texture2D>(@"models\banana");
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
@@ -17,11 +20,12 @@ namespace Blish_HUD.Entities.Primitives {
                 foreach (BasicEffect effect in mesh.Effects) {
                     //effect.EnableDefaultLighting();
                     //effect.PreferPerPixelLighting = true;
+                    ////effect.TextureEnabled = true;
                     //effect.TextureEnabled = true;
-                    //effect.Texture = MainLoop.traffic_texture;
+                    //effect.Texture = _bananaTexture;
                     //effect.SpecularPower = 1f;
                     //effect.LightingEnabled = true;
-                    effect.VertexColorEnabled = true;
+                    //effect.VertexColorEnabled = true;
 
                     //effect.AmbientLightColor = Vector3.One;
 
@@ -43,7 +47,7 @@ namespace Blish_HUD.Entities.Primitives {
         }
 
         public override void Update(GameTime gameTime) {
-            //Position = Services.Services.Player.Position + new Vector3(0, 0, 2);
+            //Position = GameService.Player.Position + new Vector3(0, 0, 2);
         }
 
     }
