@@ -26,10 +26,6 @@ namespace Blish_HUD {
             // Init the Logger
             _logConfiguration = new LoggingConfiguration();
 
-            #if DEBUG
-                LogManager.ThrowExceptions = true;
-            #endif
-
             string headerLayout   = $"Blish HUD v{Program.OverlayVersion}";
             string standardLayout = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}";
             string errorLayout    = @"${message}${onexception:EXCEPTION OCCURRED\:${exception:format=type,message,method:maxInnerExceptionLevel=5:innerFormat=shortType,message,method}}";
@@ -67,14 +63,17 @@ namespace Blish_HUD {
                 ForceLockingQueue = false
             };
 
+            #if DEBUG
+                LogManager.ThrowExceptions = true;
+
+                _logConfiguration.AddTarget(logDebug);
+                _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logDebug);
+                _logConfiguration.AddRuleForOneLevel(LogLevel.Error, logDebug, errorLayout);
+            #endif
+
             _logConfiguration.AddTarget(asyncLogFile);
-            _logConfiguration.AddTarget(logDebug);
-
             _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, asyncLogFile);
-            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logDebug);
-
             _logConfiguration.AddRuleForOneLevel(LogLevel.Error, asyncLogFile, errorLayout);
-            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, logDebug,     errorLayout);
 
             LogManager.Configuration = _logConfiguration;
         }
