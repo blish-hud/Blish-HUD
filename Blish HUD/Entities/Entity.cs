@@ -13,10 +13,11 @@ namespace Blish_HUD.Entities {
             _standardEffect ?? 
             (_standardEffect = new BasicEffect(GameService.Graphics.GraphicsDevice) { TextureEnabled = true });
 
-        private Vector3 _position         = Vector3.Zero;
-        private Vector3 _renderOffset     = Vector3.Zero;
-        private float   _opacity          = 1.0f;
-        private bool    _visible          = true;
+        private Vector3 _position     = Vector3.Zero;
+        private Vector3 _rotation     = Vector3.Zero;
+        private Vector3 _renderOffset = Vector3.Zero;
+        private float   _opacity      = 1.0f;
+        private bool    _visible      = true;
 
         private Effect _entityEffect;
         public virtual Effect EntityEffect {
@@ -27,6 +28,35 @@ namespace Blish_HUD.Entities {
         public virtual Vector3 Position {
             get => _position;
             set => SetProperty(ref _position, value);
+        }
+
+        public virtual Vector3 Rotation {
+            get => _rotation;
+            set => SetProperty(ref _rotation, value);
+        }
+
+        public float RotationX {
+            get => _rotation.X;
+            set {
+                if (SetProperty(ref _rotation, new Vector3(value, _rotation.Y, _rotation.Z), nameof(Rotation)))
+                    OnPropertyChanged();
+            }
+        }
+
+        public float RotationY {
+            get => _rotation.Y;
+            set {
+                if (SetProperty(ref _rotation, new Vector3(_rotation.X, value, _rotation.Z), nameof(Rotation)))
+                    OnPropertyChanged();
+            }
+        }
+
+        public float RotationZ {
+            get => _rotation.Z;
+            set {
+                if (SetProperty(ref _rotation, new Vector3(_rotation.X, _rotation.Y, value), nameof(Rotation)))
+                    OnPropertyChanged();
+            }
         }
 
         /// <summary>

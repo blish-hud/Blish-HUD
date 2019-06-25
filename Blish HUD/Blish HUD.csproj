@@ -104,6 +104,7 @@
     <StartupObject>Blish_HUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controls\CachedLabelBase.cs" />
     <Compile Include="Controls\HotkeyAssigner.cs" />
     <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
     <Compile Include="Content\DirectoryReader.cs" />
@@ -208,10 +209,14 @@
     <Compile Include="Pathing\Behaviors\Activator\ZoneActivator.cs" />
     <Compile Include="Pathing\Behaviors\Mesh.cs" />
     <Compile Include="Pathing\Behaviors\Notification.cs" />
+    <Compile Include="Pathing\Behaviors\Rotate.cs" />
     <Compile Include="Pathing\Behaviors\Title.cs" />
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
+    <Compile Include="_Utils\FontUtil.cs" />
+    <Compile Include="_Utils\GDIUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
+    <Compile Include="_Utils\LogUtil.cs" />
     <Compile Include="_Utils\MouseInterceptor.cs" />
     <Compile Include="_Utils\TypeUtil.cs" />
     <Compile Include="_Utils\VectorUtil.cs" />

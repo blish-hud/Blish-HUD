@@ -105,8 +105,6 @@ namespace Blish_HUD.Entities.Primitives {
                                                             new Vector3(0, 0, 1),
                                                             GameService.Camera.Forward);
 
-
-
             _billboardEffect.Alpha = this.Opacity;
             _billboardEffect.Texture = this.Texture;
 

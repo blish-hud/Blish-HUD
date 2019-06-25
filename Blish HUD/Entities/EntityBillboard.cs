@@ -17,7 +17,7 @@ namespace Blish_HUD.Entities {
 
         /// <inheritdoc />
         public override Vector3 Position {
-            get => AttachedEntity.Position;
+            get => AttachedEntity.Position + AttachedEntity.RenderOffset;
         }
 
         public EntityBillboard(Entity attachedEntity) {

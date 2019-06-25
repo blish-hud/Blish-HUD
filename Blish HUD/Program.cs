@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using NLog;
 using Sentry;
 
 namespace Blish_HUD {
@@ -12,9 +13,9 @@ namespace Blish_HUD {
     /// </summary>
     public static class Program {
 
-        private static readonly NLog.Logger Logger = DebugService.InitDebug(typeof(Program));
+        private static readonly Lazy<NLog.Logger> Logger = new Lazy<Logger>(LogManager.GetCurrentClassLogger);
 
-        public const string APP_VERSION = "blish_hud@0.4.0-alpha.12_DEV";
+        //public const string APP_VERSION = "blish_hud@0.4.0-alpha.12_DEV";
 
         /// <summary>
         /// The main entry point for the application.
@@ -25,10 +26,12 @@ namespace Blish_HUD {
                 return;
             }
 
+            DebugService.InitDebug();
+
 #if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 #endif
-            
+
 #if SENTRY
             const string SENTRY_DSN = "https://e11516741a32440ca7a72b68d5af93df@sentry.do-ny3.svr.gw2blishhud.com/2";
 
@@ -74,7 +77,7 @@ namespace Blish_HUD {
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
             var e = (Exception)args.ExceptionObject;
 
-            Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
+            Logger.Value.Fatal(e, "Blish HUD encountered a fatal crash!");
 
             SentryWrapper.CaptureException(e);
 

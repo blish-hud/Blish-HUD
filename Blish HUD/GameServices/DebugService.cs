@@ -10,47 +10,76 @@ using MonoGame.Extended;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using NLog.Targets.Wrappers;
 
 namespace Blish_HUD {
     public class DebugService:GameService {
 
-        private static NLog.Config.LoggingConfiguration _logConfiguration;
+        private static LoggingConfiguration _logConfiguration;
 
-        private static NLog.Logger Logger;
+        private static readonly Lazy<Logger> Logger = new Lazy<Logger>(LogManager.GetCurrentClassLogger);
 
-        internal static Logger InitDebug(Type returnLoggerType) {
+        internal static void InitDebug() {
             // Make sure crash dir is available for logs as early as possible
-            var logPath = DirectoryUtil.RegisterDirectory("logs");
+            string logPath = DirectoryUtil.RegisterDirectory("logs");
 
             // Init the Logger
             _logConfiguration = new LoggingConfiguration();
 
-            var logFile = new FileTarget("logfile") {
-                ArchiveFileName = Path.Combine(logPath, "blishhud.{#}.log"),
-                ArchiveFileKind = FilePathKind.Absolute,
-                FileName = Path.Combine(logPath, "blishhud.log"),
-                ArchiveNumbering = ArchiveNumberingMode.Rolling,
-                MaxArchiveFiles = 9,
-                EnableFileDelete = true,
-                CreateDirs = true,
-                Encoding = Encoding.UTF8,
-                KeepFileOpen = true,
+            #if DEBUG
+            LogManager.ThrowExceptions = true;
+#endif
+
+            const string HEADER_LAYOUT = @"Blish HUD v${assembly-version:type=Assembly}";
+            const string STANDARD_LAYOUT = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}";
+            const string ERROR_LAYOUT    = @"${message}${onexception:EXCEPTION OCCURRED\:${exception:format=type,message,method:maxInnerExceptionLevel=5:innerFormat=shortType,message,method}}";
+
+            var logDebug = new MethodCallTarget("logdebug") {
+                ClassName  = typeof(LogUtil).AssemblyQualifiedName,
+                MethodName = nameof(LogUtil.TargetDebug),
+                Parameters = {
+                    new MethodCallParameter("${time:invariant=true}"),
+                    new MethodCallParameter("${level}"),
+                    new MethodCallParameter("${logger}"),
+                    new MethodCallParameter("${message}")
+                }
             };
 
-            var logConsole = new ConsoleTarget("logconsole");
+            var logFile = new FileTarget("logfile") {
+                Header            = HEADER_LAYOUT,
+                FileNameKind      = FilePathKind.Absolute,
+                ArchiveFileKind   = FilePathKind.Absolute,
+                FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmm}}.log"),
+                ArchiveFileName   = Path.Combine(logPath, "blishhud.{#}.log"),
+                ArchiveDateFormat = "yyyyMMdd-HHmm",
+                ArchiveNumbering  = ArchiveNumberingMode.Date,
+                MaxArchiveFiles   = 9,
+                EnableFileDelete  = true,
+                CreateDirs        = true,
+                Encoding          = Encoding.UTF8,
+                KeepFileOpen      = true,
+                Layout            = STANDARD_LAYOUT
+            };
 
-            _logConfiguration.AddTarget(logFile);
-            _logConfiguration.AddTarget(logConsole);
+            var asyncLogFile = new AsyncTargetWrapper("asynclogfile", logFile) {
+                QueueLimit        = 200,
+                OverflowAction    = AsyncTargetWrapperOverflowAction.Discard,
+                ForceLockingQueue = false
+            };
 
-            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
-            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logFile);
+            _logConfiguration.AddTarget(asyncLogFile);
+            _logConfiguration.AddTarget(logDebug);
+
+            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, asyncLogFile);
+            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logDebug);
+
+            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, asyncLogFile, ERROR_LAYOUT);
+            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, logDebug,     ERROR_LAYOUT);
 
             LogManager.Configuration = _logConfiguration;
-
-            Logger = LogManager.GetCurrentClassLogger();
-
-            return NLog.LogManager.GetCurrentClassLogger(returnLoggerType);
         }
+
+
 
         public FrameCounter FrameCounter { get; private set; }
 
@@ -116,7 +145,7 @@ namespace Blish_HUD {
         public void StopTimeFuncAndOutput(string func) {
             #if DEBUG
                 FuncTimes[func]?.Stop();
-                Logger.Info("{funcName} ran for {$funcTime}.", func, FuncTimes[func]?.LastTime.Milliseconds().Humanize());
+                Logger.Value.Info("{funcName} ran for {$funcTime}.", func, FuncTimes[func]?.LastTime.Milliseconds().Humanize());
             #endif
         }
 

@@ -132,15 +132,23 @@ namespace Blish_HUD.Pathing.Entities {
             if (_texture == null) return;
 
             var modelMatrix = Matrix.CreateTranslation(_size.X / -2, _size.Y / -2, 0)
-                            * Matrix.CreateScale(_scale)
-                            * Matrix.CreateBillboard(this.Position + this.RenderOffset,
-                                                     new Vector3(GameService.Camera.Position.X,
-                                                                 GameService.Camera.Position.Y,
-                                                                 _verticalConstraint == BillboardVerticalConstraint.CameraPosition
-                                                                     ? GameService.Camera.Position.Z
-                                                                     : GameService.Player.Position.Z),
-                                                     new Vector3(0, 0, 1),
-                                                     GameService.Camera.Forward);
+                            * Matrix.CreateScale(_scale);
+
+            if (this.Rotation == Vector3.Zero) {
+                modelMatrix *= Matrix.CreateBillboard(this.Position + this.RenderOffset,
+                                                      new Vector3(GameService.Camera.Position.X,
+                                                                  GameService.Camera.Position.Y,
+                                                                  _verticalConstraint == BillboardVerticalConstraint.CameraPosition
+                                                                      ? GameService.Camera.Position.Z
+                                                                      : GameService.Player.Position.Z),
+                                                      new Vector3(0, 0, 1),
+                                                      GameService.Camera.Forward);
+            } else {
+                modelMatrix *= Matrix.CreateRotationX(this.Rotation.X)
+                             * Matrix.CreateRotationY(this.Rotation.Y)
+                             * Matrix.CreateRotationZ(this.Rotation.Z)
+                             * Matrix.CreateTranslation(this.Position + this.RenderOffset);
+            }
 
             _markerEffect.Parameters["PlayerPosition"].SetValue(GameService.Player.Position);
             _markerEffect.Parameters["Opacity"].SetValue(this.Opacity);
