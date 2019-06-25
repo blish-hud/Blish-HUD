@@ -165,9 +165,9 @@ namespace Blish_HUD {
         protected override void Load() {
             LoadRenderers();
 
-            Director.FinishedLoading += delegate {
-                Director.BlishHudWindow
-                        .AddTab("Settings", Content.GetTexture("155052"), BuildSettingPanel(GameService.Director.BlishHudWindow), int.MaxValue - 1);
+            Overlay.FinishedLoading += delegate {
+                Overlay.BlishHudWindow
+                        .AddTab("Settings", Content.GetTexture("155052"), BuildSettingPanel(GameService.Overlay.BlishHudWindow), int.MaxValue - 1);
             };
         }
 
@@ -264,7 +264,7 @@ namespace Blish_HUD {
             };
 
             settingsMi_App.Click += delegate {
-                cPanel.NavigateToBuiltPanel(GameServices.Director.ApplicationSettingsUIBuilder.BuildSingleModuleSettings, null);
+                cPanel.NavigateToBuiltPanel(GameServices.Overlay.OverlaySettingsUIBuilder.BuildSingleModuleSettings, null);
             };
 
             settingsMi_Controls.Click += delegate {

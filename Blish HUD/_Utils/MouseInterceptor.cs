@@ -54,7 +54,7 @@ namespace Blish_HUD.Utils {
                 throw new ArgumentNullException(nameof(control));
 
             var focusLocation = control.AbsoluteBounds.Location.ScaleToUi().ToSystemDrawingPoint();
-            focusLocation.Offset(Overlay.Form.Location);
+            focusLocation.Offset(BlishHud.Form.Location);
 
             var focusSize = control.AbsoluteBounds.Size.ScaleToUi().ToSystemDrawingSize();
 

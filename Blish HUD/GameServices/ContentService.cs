@@ -96,7 +96,7 @@ namespace Blish_HUD {
             Italic
         }
 
-        public Microsoft.Xna.Framework.Content.ContentManager ContentManager => Overlay.ActiveContentManager;
+        public Microsoft.Xna.Framework.Content.ContentManager ContentManager => Blish_HUD.BlishHud.ActiveContentManager;
 
         protected override void Initialize() { /* NOOP */ }
 
@@ -106,7 +106,7 @@ namespace Blish_HUD {
 
         public void PlaySoundEffectByName(string soundName) {
             if (!_loadedSoundEffects.ContainsKey(soundName))
-                _loadedSoundEffects.TryAdd(soundName, Overlay.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
+                _loadedSoundEffects.TryAdd(soundName, Blish_HUD.BlishHud.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
 
             // TODO: Volume was 0.25f - changing to 0.125 until a setting can be exposed in the UI
             _loadedSoundEffects[soundName].Play(0.125f, 0, 0);
@@ -116,7 +116,7 @@ namespace Blish_HUD {
         private static Texture2D TextureFromFile(string filepath) {
             if (File.Exists(filepath)) {
                 using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    return Texture2D.FromStream(Overlay.ActiveGraphicsDeviceManager.GraphicsDevice, fileStream);
+                    return Texture2D.FromStream(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, fileStream);
                 }
             } else return null;
         }
@@ -136,7 +136,7 @@ namespace Blish_HUD {
                             var textureCanSeek = new MemoryStream();
                             textureStream.CopyTo(textureCanSeek);
 
-                            return Texture2D.FromStream(Overlay.ActiveGraphicsDeviceManager.GraphicsDevice, textureCanSeek);
+                            return Texture2D.FromStream(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, textureCanSeek);
                         }
                     }
 
@@ -155,7 +155,7 @@ namespace Blish_HUD {
         }
 
         public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
-            return Overlay.ActiveContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
+            return Blish_HUD.BlishHud.ActiveContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
         }
 
         public void PurgeTextureCache(string textureName) {
@@ -180,7 +180,7 @@ namespace Blish_HUD {
 
             if (cachedTexture == null) {
                 try {
-                    cachedTexture = Overlay.ActiveContentManager.Load<Texture2D>(textureName);
+                    cachedTexture = Blish_HUD.BlishHud.ActiveContentManager.Load<Texture2D>(textureName);
                 } catch (ContentLoadException ex) {
                     Logger.Error(ex, "Could not find {textureName} precompiled or in the ref archive.", textureName);
                 }
@@ -197,7 +197,7 @@ namespace Blish_HUD {
             string fullFontName = $"{font.ToString().ToLower()}-{((int)size).ToString()}-{style.ToString().ToLower()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
-                var loadedFont = Overlay.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}");
+                var loadedFont = Blish_HUD.BlishHud.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}");
                 loadedFont.LetterSpacing = -1;
                 _loadedBitmapFonts.TryAdd(fullFontName, loadedFont);
 

@@ -20,7 +20,7 @@ namespace Blish_HUD.Pathing.Entities {
         private static readonly Effect _sharedMarkerEffect;
 
         static Marker() {
-            _sharedMarkerEffect = Overlay.ActiveContentManager.Load<Effect>(@"effects\marker");
+            _sharedMarkerEffect = BlishHud.ActiveContentManager.Load<Effect>(@"effects\marker");
         }
 
         #endregion

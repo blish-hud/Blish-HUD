@@ -190,7 +190,7 @@
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Content\IDataReader.cs" />
-    <Compile Include="GameServices\Director\ApplicationSettingsUIBuilder.cs" />
+    <Compile Include="GameServices\Overlay\OverlaySettingsUIBuilder.cs" />
     <Compile Include="GameServices\Hotkeys\HotkeysSettingsUIBuilder.cs" />
     <Compile Include="GameServices\Module\SingleModuleSettingsUIBuilder.cs" />
     <Compile Include="GameServices\Settings\AboutSettingsUIBuilder.cs" />
@@ -253,7 +253,7 @@
     <Compile Include="Entities\Primitives\Mesh.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="FrameCounter.cs" />
-    <Compile Include="GameServices\DirectorService.cs" />
+    <Compile Include="GameServices\OverlayService.cs" />
     <Compile Include="GameServices\HotkeysService.cs" />
     <Compile Include="GameServices\PathingService.cs" />
     <Compile Include="GameServices\ModuleService.cs" />
@@ -269,7 +269,7 @@
     <Compile Include="GameServices\SettingsService.cs" />
     <Compile Include="Entities\Primitives\Billboard.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Overlay.cs" />
+    <Compile Include="BlishHud.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameServices\CameraService.cs" />

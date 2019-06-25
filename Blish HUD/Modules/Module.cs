@@ -200,7 +200,7 @@ namespace Blish_HUD.Modules {
         /// <see cref="Blish_HUD.Entities.Entity"/> and <see cref="Blish_HUD.Controls.Control"/>.
         /// Setting their parent is not thread-safe and can cause the application to crash.
         /// You will want to queue them to add later while on the main thread or in a delegate queued
-        /// with <see cref="Blish_HUD.DirectorService.QueueMainThreadUpdate(Action{GameTime})"/>.
+        /// with <see cref="OverlayService.QueueMainThreadUpdate(Action{GameTime})"/>.
         /// </summary>
         protected virtual async Task LoadAsync() { /* NOOP */ }
 

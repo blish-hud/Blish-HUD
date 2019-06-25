@@ -27,12 +27,12 @@ namespace Blish_HUD {
             _logConfiguration = new LoggingConfiguration();
 
             #if DEBUG
-            LogManager.ThrowExceptions = true;
-#endif
+                LogManager.ThrowExceptions = true;
+            #endif
 
-            const string HEADER_LAYOUT = @"Blish HUD v${assembly-version:type=Assembly}";
-            const string STANDARD_LAYOUT = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}";
-            const string ERROR_LAYOUT    = @"${message}${onexception:EXCEPTION OCCURRED\:${exception:format=type,message,method:maxInnerExceptionLevel=5:innerFormat=shortType,message,method}}";
+            string headerLayout   = $"Blish HUD v{Program.OverlayVersion}";
+            string standardLayout = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}";
+            string errorLayout    = @"${message}${onexception:EXCEPTION OCCURRED\:${exception:format=type,message,method:maxInnerExceptionLevel=5:innerFormat=shortType,message,method}}";
 
             var logDebug = new MethodCallTarget("logdebug") {
                 ClassName  = typeof(LogUtil).AssemblyQualifiedName,
@@ -46,7 +46,7 @@ namespace Blish_HUD {
             };
 
             var logFile = new FileTarget("logfile") {
-                Header            = HEADER_LAYOUT,
+                Header            = headerLayout,
                 FileNameKind      = FilePathKind.Absolute,
                 ArchiveFileKind   = FilePathKind.Absolute,
                 FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmm}}.log"),
@@ -58,7 +58,7 @@ namespace Blish_HUD {
                 CreateDirs        = true,
                 Encoding          = Encoding.UTF8,
                 KeepFileOpen      = true,
-                Layout            = STANDARD_LAYOUT
+                Layout            = standardLayout
             };
 
             var asyncLogFile = new AsyncTargetWrapper("asynclogfile", logFile) {
@@ -73,13 +73,11 @@ namespace Blish_HUD {
             _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, asyncLogFile);
             _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, logDebug);
 
-            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, asyncLogFile, ERROR_LAYOUT);
-            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, logDebug,     ERROR_LAYOUT);
+            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, asyncLogFile, errorLayout);
+            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, logDebug,     errorLayout);
 
             LogManager.Configuration = _logConfiguration;
         }
-
-
 
         public FrameCounter FrameCounter { get; private set; }
 

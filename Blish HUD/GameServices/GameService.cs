@@ -22,12 +22,12 @@ namespace Blish_HUD {
         protected abstract void Unload();
         protected abstract void Update(GameTime gameTime);
 
-        private protected Overlay ActiveOverlay;
+        private protected BlishHud ActiveBlishHud;
 
         public bool Loaded { get; private set; }
 
-        public void DoInitialize(Overlay game) {
-            ActiveOverlay = game;
+        public void DoInitialize(BlishHud game) {
+            ActiveBlishHud = game;
 
             Initialize();
         }
@@ -54,7 +54,7 @@ namespace Blish_HUD {
         public static readonly ContentService         Content;
         public static readonly AnimationService       Animation;
         public static readonly GraphicsService        Graphics;
-        public static readonly DirectorService        Director;
+        public static readonly OverlayService         Overlay;
         public static readonly Gw2ApiService          Gw2Api;
         public static readonly Gw2MumbleService       Gw2Mumble;
         public static readonly PlayerService          Player;
@@ -78,7 +78,7 @@ namespace Blish_HUD {
             Content         = new ContentService();
             Animation       = new AnimationService();
             Graphics        = new GraphicsService();
-            Director        = new DirectorService();
+            Overlay         = new OverlayService();
             Gw2Api          = new Gw2ApiService();
             Gw2Mumble       = new Gw2MumbleService();
             Player          = new PlayerService();
@@ -96,7 +96,7 @@ namespace Blish_HUD {
                 Content,
                 Animation,
                 Graphics,
-                Director,
+                Overlay,
                 Gw2Api,
                 Gw2Mumble,
                 Player,

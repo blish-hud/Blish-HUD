@@ -52,7 +52,7 @@ namespace Blish_HUD {
                 _uiScale = value;
 
                 _uiScaleMultiplier = GetScaleRatio(value);
-                this.SpriteScreen.Size = new Point((int)(Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferWidth / _uiScaleMultiplier), (int)(Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / _uiScaleMultiplier));
+                this.SpriteScreen.Size = new Point((int)(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferWidth / _uiScaleMultiplier), (int)(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / _uiScaleMultiplier));
 
                 _uiScaleTransform = Matrix.CreateScale(_uiScaleMultiplier);
             }
@@ -68,9 +68,9 @@ namespace Blish_HUD {
 
         public Entities.World World => _world;
 
-        public GraphicsDeviceManager GraphicsDeviceManager => Overlay.ActiveGraphicsDeviceManager;
+        public GraphicsDeviceManager GraphicsDeviceManager => Blish_HUD.BlishHud.ActiveGraphicsDeviceManager;
 
-        public GraphicsDevice GraphicsDevice => Overlay.ActiveGraphicsDeviceManager.GraphicsDevice;
+        public GraphicsDevice GraphicsDevice => Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice;
 
         public int WindowWidth => this.GraphicsDevice.Viewport.Width;
         public int WindowHeight => this.GraphicsDevice.Viewport.Height;
@@ -79,13 +79,13 @@ namespace Blish_HUD {
         public  float AspectRatio => _aspectRatio;
 
         public Point Resolution {
-            get => new Point(Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferWidth, Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
+            get => new Point(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferWidth, Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
             set {
                 try {
-                    Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
-                    Overlay.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
+                    Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
+                    Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
 
-                    Overlay.ActiveGraphicsDeviceManager.ApplyChanges();
+                    Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.ApplyChanges();
 
                     // Exception would be from the code above, but don't update our
                     // scaling if there is an exception
@@ -107,7 +107,7 @@ namespace Blish_HUD {
         protected override void Initialize() {
             // If for some reason we lose the rendering device, just restart the application
             // Might do better error handling later on
-            ActiveOverlay.GraphicsDevice.DeviceLost += delegate { System.Windows.Forms.Application.Restart(); };
+            ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { System.Windows.Forms.Application.Restart(); };
 
             _uiScaleMultiplier = GetScaleRatio(this.UIScale);
             _uiScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);

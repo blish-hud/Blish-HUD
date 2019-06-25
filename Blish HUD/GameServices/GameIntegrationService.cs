@@ -66,8 +66,8 @@ namespace Blish_HUD {
                 _gw2Process = value;
 
                 if (value == null || _gw2Process.MainWindowHandle == IntPtr.Zero) {
-                    Overlay.Form.Invoke((MethodInvoker)(() => {
-                                                                Overlay.Form.Hide();
+                    Blish_HUD.BlishHud.Form.Invoke((MethodInvoker)(() => {
+                                                                Blish_HUD.BlishHud.Form.Hide();
                                                             }));
 
                     _gw2Process = null;
@@ -127,8 +127,8 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            Overlay.Form.Shown += delegate {
-                Utils.WindowUtil.SetupOverlay(Overlay.FormHandle);
+            Blish_HUD.BlishHud.Form.Shown += delegate {
+                Utils.WindowUtil.SetupOverlay(Blish_HUD.BlishHud.FormHandle);
             };
 
             CreateTrayIcon();
@@ -173,7 +173,7 @@ namespace Blish_HUD {
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
             ts_exit = this.TrayIconMenu.Items.Add("Close Blish HUD");
 
-            ts_exit.Click += delegate { ActiveOverlay.Exit(); };
+            ts_exit.Click += delegate { ActiveBlishHud.Exit(); };
 
             this.TrayIconMenu.Opening += delegate {
                 ts_launchGw2.Enabled     = !this.Gw2IsRunning && File.Exists(this.Gw2ExecutablePath);
@@ -203,8 +203,8 @@ namespace Blish_HUD {
                     Console.WriteLine(ex.Message);
                 }
 
-                Overlay.Form.Invoke((MethodInvoker) (() => {
-                                                             Overlay.Form.Show();
+                Blish_HUD.BlishHud.Form.Invoke((MethodInvoker) (() => {
+                                                             Blish_HUD.BlishHud.Form.Show();
                                                          }));
             }
         }
@@ -233,7 +233,7 @@ namespace Blish_HUD {
             // TODO: Close or hide in tray (depending on user settings)
             Console.WriteLine("Guild Wars 2 application has exited!");
 
-            if (!GameService.Director.StayInTray) {
+            if (!GameService.Overlay.StayInTray) {
                 Application.Exit();
             }
         }
@@ -253,7 +253,7 @@ namespace Blish_HUD {
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
-                if (!Utils.WindowUtil.UpdateOverlay(Overlay.FormHandle, this.Gw2WindowHandle)) {
+                if (!Utils.WindowUtil.UpdateOverlay(Blish_HUD.BlishHud.FormHandle, this.Gw2WindowHandle)) {
                     this.Gw2Process = null;
                 }
             } else {

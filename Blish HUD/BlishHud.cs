@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Blish_HUD {
 
-    public class Overlay : Game {
+    public class BlishHud : Game {
 
         #region Internal Static Members
 
@@ -33,7 +33,7 @@ namespace Blish_HUD {
         // Primarily used to draw debug text
         private SpriteBatch _basicSpriteBatch;
 
-        public Overlay() {
+        public BlishHud() {
             _activeGraphicsDeviceManager = new GraphicsDeviceManager(this);
             _activeGraphicsDeviceManager.PreparingDeviceSettings += delegate(object sender, PreparingDeviceSettingsEventArgs args) {
                 args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 4;
@@ -133,9 +133,9 @@ namespace Blish_HUD {
         /// </summary>
         public static void ResetFocus()
         {
-            Overlay.Form.ActiveControl = null;
+            BlishHud.Form.ActiveControl = null;
             GameIntegrationService.GameIntegration.FocusGw2();
-            Overlay.Form.Focus();
+            BlishHud.Form.Focus();
         }
         /// <summary>
         /// This is called when the game should draw itself.

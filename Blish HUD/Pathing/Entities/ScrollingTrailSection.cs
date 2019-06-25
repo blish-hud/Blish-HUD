@@ -13,7 +13,7 @@ namespace Blish_HUD.Pathing.Entities {
         private static readonly Effect _basicTrailEffect;
 
         static ScrollingTrailSection() {
-            _basicTrailEffect = Overlay.ActiveContentManager.Load<Effect>("effects\\trail");
+            _basicTrailEffect = BlishHud.ActiveContentManager.Load<Effect>("effects\\trail");
         }
 
         #endregion

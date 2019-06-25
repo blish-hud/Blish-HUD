@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using NLog;
@@ -15,7 +16,7 @@ namespace Blish_HUD {
 
         private static readonly Lazy<NLog.Logger> Logger = new Lazy<Logger>(LogManager.GetCurrentClassLogger);
 
-        //public const string APP_VERSION = "blish_hud@0.4.0-alpha.12_DEV";
+        public static SemVer.Version OverlayVersion { get; } = new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
 
         /// <summary>
         /// The main entry point for the application.
@@ -38,14 +39,19 @@ namespace Blish_HUD {
             using (SentrySdk.Init(
                                   o => {
                                       o.Dsn = new Dsn(SENTRY_DSN);
-                                      o.Release = APP_VERSION;
-                                      o.Environment = APP_VERSION.Contains("-") ? APP_VERSION.Split('-')[1].Split('.')[0] : APP_VERSION;
+                                      o.Release = OverlayVersion.ToString();
+                                      o.Environment = OverlayVersion.ToString().Contains("-") ? OverlayVersion.ToString().Split('-')[1].Split('.')[0] : OverlayVersion.ToString();
                                       o.Debug = true;
                                       o.BeforeSend = sentryEvent => {
                                           /* TODO: Confirm that this filters correctly - consider filtering more details and
                                              move it all to it's own function */
-                                          sentryEvent.LogEntry.Message = sentryEvent.LogEntry.Message.Replace(Environment.UserName, "<SENTRY-FILTERED-OUT-USERNAME>");
-                                          sentryEvent.Message = sentryEvent.Message.Replace(Environment.UserName, "<SENTRY-FILTERED-OUT-USERNAME>");
+                                          if (sentryEvent.LogEntry != null && !string.IsNullOrEmpty(sentryEvent.LogEntry.Message)) {
+                                              sentryEvent.LogEntry.Message = sentryEvent.LogEntry.Message.Replace(Environment.UserName, "<SENTRY-FILTERED-OUT-USERNAME>");
+                                          }
+
+                                          if (!string.IsNullOrEmpty(sentryEvent.Message)) {
+                                              sentryEvent.Message = sentryEvent.Message.Replace(Environment.UserName, "<SENTRY-FILTERED-OUT-USERNAME>");
+                                          }
 
                                           return sentryEvent;
                                       };
@@ -53,18 +59,16 @@ namespace Blish_HUD {
 
                 SentrySdk.ConfigureScope(scope => {
                                              // Want to try and gauge what kind of language support we'll want to provide in the future
-                                             scope.SetTag("locale", CultureInfo.CurrentCulture.DisplayName);
+                                             scope.SetTag("locale", CultureInfo.CurrentUICulture.DisplayName);
 
                                              // Try to avoid accidentally pulling their user account name (since it could have their real name in it)
                                              scope.SetTag("start-dir", Directory.GetCurrentDirectory().Replace(Environment.UserName, "<SENTRY-FILTERED-OUT-USERNAME>"));
                                          });
 
-                using (var game = new Overlay())
-                    game.Run();
+                using (var game = new BlishHud()) game.Run();
             }
 #else
-            using (var game = new Overlay())
-                game.Run();
+            using (var game = new BlishHud()) game.Run();
 #endif
 
             SingleInstanceMutex.ReleaseMutex();

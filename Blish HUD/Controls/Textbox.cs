@@ -27,7 +27,7 @@ namespace Blish_HUD.Controls {
             // This is needed to ensure that the textbox is *actually* unfocused
             _sharedUnfocusLabel = new System.Windows.Forms.Label {
                 Location = new System.Drawing.Point(-200, 0),
-                Parent   = Overlay.Form
+                Parent   = BlishHud.Form
             };
 
             _textureTextbox = Content.GetTexture("textbox");
@@ -79,7 +79,7 @@ namespace Blish_HUD.Controls {
             _lastInvalidate = DateTime.MinValue.TimeOfDay;
 
             _mttb = new System.Windows.Forms.TextBox() {
-                Parent = Overlay.Form,
+                Parent = BlishHud.Form,
                 Size = new Size(20, 20),
                 Location = new System.Drawing.Point(-500),
                 AutoCompleteMode = AutoCompleteMode.Append,
@@ -189,7 +189,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void Textbox_LeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            Overlay.Form.Activate();
+            BlishHud.Form.Activate();
 
             _mttb.Select(_mttb.Text.Length, 0);
             _mttb.Focus();

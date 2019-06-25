@@ -2,15 +2,16 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using Blish_HUD.Controls;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
 
-    public class DirectorService:GameService {
+    public class OverlayService:GameService {
 
-        private const string APPLICATION_SETTINGS = "ApplicationConfiguration";
+        private const string APPLICATION_SETTINGS = "OverlayConfiguration";
 
         public event EventHandler<EventArgs> UserLocaleChanged;
 
@@ -79,7 +80,7 @@ namespace Blish_HUD {
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem($"{Properties.Strings.General_Close} {Properties.Strings.General_BlishHUD}").Click += delegate { ActiveOverlay.Exit(); };
+            this.BlishContextMenu.AddMenuItem($"{Properties.Strings.General_Close} {Properties.Strings.General_BlishHUD}").Click += delegate { ActiveBlishHud.Exit(); };
 
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
