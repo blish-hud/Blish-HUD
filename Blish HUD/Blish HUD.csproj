@@ -189,6 +189,13 @@
     <Compile Include="Entities\EntityBillboard.cs" />
     <Compile Include="Entities\EntityContainer.cs" />
     <Compile Include="Entities\EntityText.cs" />
+    <Compile Include="GameServices\ArcDps\AsyncUserToken.cs" />
+    <Compile Include="GameServices\ArcDps\CombatParser.cs" />
+    <Compile Include="GameServices\ArcDps\Models\Ag.cs" />
+    <Compile Include="GameServices\ArcDps\Models\CombatEvent.cs" />
+    <Compile Include="GameServices\ArcDps\Models\Ev.cs" />
+    <Compile Include="GameServices\ArcDps\SockerListener.cs" />
+    <Compile Include="GameServices\ArcDps\SocketAsyncEventArgsPool.cs" />
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Content\IDataReader.cs" />
