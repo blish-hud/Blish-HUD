@@ -79,7 +79,7 @@ namespace Blish_HUD {
                     }
                 }
 
-                this.Gw2IsRunning = _gw2Process != null && Utils.WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
+                this.Gw2IsRunning = _gw2Process != null && Blish_HUD.WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
             }
         }
 
@@ -128,7 +128,7 @@ namespace Blish_HUD {
 
         protected override void Load() {
             Blish_HUD.BlishHud.Form.Shown += delegate {
-                Utils.WindowUtil.SetupOverlay(Blish_HUD.BlishHud.FormHandle);
+                Blish_HUD.WindowUtil.SetupOverlay(Blish_HUD.BlishHud.FormHandle);
             };
 
             CreateTrayIcon();
@@ -253,7 +253,7 @@ namespace Blish_HUD {
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
-                if (!Utils.WindowUtil.UpdateOverlay(Blish_HUD.BlishHud.FormHandle, this.Gw2WindowHandle)) {
+                if (!Blish_HUD.WindowUtil.UpdateOverlay(Blish_HUD.BlishHud.FormHandle, this.Gw2WindowHandle)) {
                     this.Gw2Process = null;
                 }
             } else {
@@ -271,7 +271,7 @@ namespace Blish_HUD {
             if (this.Gw2Process != null) {
                 try {
                     var gw2WindowHandle = this.Gw2Process.MainWindowHandle;
-                    Utils.WindowUtil.SetForegroundWindowEx(gw2WindowHandle);
+                    Blish_HUD.WindowUtil.SetForegroundWindowEx(gw2WindowHandle);
                 } catch (NullReferenceException ex) {
                     Console.WriteLine("gw2Process.MainWindowHandle > NullReferenceException: Ignored and skipping gw2 focus.");
                 }

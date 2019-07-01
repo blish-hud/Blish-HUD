@@ -8,11 +8,11 @@ namespace Blish_HUD {
         }
 
         public static Vector2 ToWorldCoord(this Vector2 vector) {
-            return new Vector2(Utils.World.GameToWorldCoord(vector.X), Utils.World.GameToWorldCoord(vector.Y));
+            return new Vector2(Blish_HUD.WorldUtil.GameToWorldCoord(vector.X), Blish_HUD.WorldUtil.GameToWorldCoord(vector.Y));
         }
 
         public static Vector2 ToGameCoord(this Vector2 vector) {
-            return new Vector2(Utils.World.WorldToGameCoord(vector.X), Utils.World.WorldToGameCoord(vector.Y));   
+            return new Vector2(Blish_HUD.WorldUtil.WorldToGameCoord(vector.X), Blish_HUD.WorldUtil.WorldToGameCoord(vector.Y));   
         }
 
     }

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Entities.Primitives {
-    public class Mesh:Entity {
+    public class Mesh : Entity {
 
         private readonly Model _model;
 
@@ -10,6 +10,11 @@ namespace Blish_HUD.Entities.Primitives {
 
         public Mesh(Model model) : base() {
             _model = model;
+        }
+
+        /// <inheritdoc />
+        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
+            throw new System.NotImplementedException();
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {

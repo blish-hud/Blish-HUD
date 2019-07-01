@@ -90,11 +90,11 @@ namespace Blish_HUD.Controls {
             // Build shared tooltip
             _sharedTooltip = new Tooltip();
             _sharedTooltipLabel = new Label() {
-                Text              = "Loading...",
-                AutoSizeHeight    = true,
-                AutoSizeWidth     = true,
-                ShowShadow        = true,
-                Parent            = _sharedTooltip,
+                Text           = "Loading...",
+                AutoSizeHeight = true,
+                AutoSizeWidth  = true,
+                ShowShadow     = true,
+                Parent         = _sharedTooltip,
             };
         }
 
@@ -364,7 +364,7 @@ namespace Blish_HUD.Controls {
         #endregion
 
         // TODO: Allow controls to skip clipping via a "ClipsBounds" setting
-        //protected bool ClipsBounds { get; set; } = true;
+        public bool ClipsBounds { get; set; } = true;
 
         private ControlEffect _effectBehind;
         /// <summary>
@@ -442,7 +442,9 @@ namespace Blish_HUD.Controls {
                 if (!SetProperty(ref _basicTooltipText, value)) return;
 
                 // In the event that the tooltip text is changed while it's being shown, this will update it
-                if (Control.ActiveControl == this) _sharedTooltipLabel.Text = value;
+                if (Control.ActiveControl == this) {
+                    _sharedTooltipLabel.Text = value;
+                }
 
                 if (!string.IsNullOrEmpty(value)) {
                     this.Tooltip = _sharedTooltip;
@@ -538,10 +540,10 @@ namespace Blish_HUD.Controls {
 
         // TODO: Not sure if these are needed anymore since GameServices are much easier to reference now
         // Aliases to make life easier
-        protected static ContentService Content => GameService.Content;
-        protected static InputService Input => GameService.Input;
+        protected static ContentService   Content   => GameService.Content;
+        protected static InputService     Input     => GameService.Input;
         protected static AnimationService Animation => GameService.Animation;
-        protected static GraphicsService Graphics => GameService.Graphics;
+        protected static GraphicsService  Graphics  => GameService.Graphics;
 
         protected Control() {
             // TODO: This needs to get handled by the menustrip itself, not by the control
@@ -615,30 +617,29 @@ namespace Blish_HUD.Controls {
         public virtual Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
             var inputCapture = CapturesInput();
 
-            if (!inputCapture.HasFlag(CaptureType.Mouse) && !inputCapture.HasFlag(CaptureType.MouseWheel) && !inputCapture.HasFlag(CaptureType.Filter))
-                return null;
+            if (inputCapture == CaptureType.None) return null;
 
             switch (mouseEventType) {
                 case MouseEventType.LeftMouseButtonPressed:
                     OnLeftMouseButtonPressed(new MouseEventArgs(ms));
-                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
+                    return this;
                     break;
                 case MouseEventType.LeftMouseButtonReleased:
                     OnLeftMouseButtonReleased(new MouseEventArgs(ms));
-                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
+                    return this;
                     break;
                 case MouseEventType.RightMouseButtonPressed:
                     OnRightMouseButtonPressed(new MouseEventArgs(ms));
-                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
+                    return this;
                     break;
                 case MouseEventType.RightMouseButtonReleased:
                     OnRightMouseButtonReleased(new MouseEventArgs(ms));
-                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
+                    return this;
                     break;
                 case MouseEventType.MouseMoved:
                     OnMouseMoved(new MouseEventArgs(ms));
                     this.MouseOver = true;
-                    return inputCapture.HasFlag(CaptureType.Mouse) ? this : null;
+                    return this;
                     break;
                 case MouseEventType.MouseWheelScrolled:
                     OnMouseWheelScrolled(new MouseEventArgs(ms));
@@ -689,7 +690,9 @@ namespace Blish_HUD.Controls {
         protected abstract void Paint(SpriteBatch spriteBatch, Rectangle bounds);
 
         public virtual void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor) {
-            Graphics.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(scissor, this.AbsoluteBounds.WithPadding(_padding)).ScaleBy(Graphics.UIScaleMultiplier);
+            var controlScissor = Rectangle.Intersect(scissor, this.AbsoluteBounds.WithPadding(_padding)).ScaleBy(Graphics.UIScaleMultiplier);
+
+            Graphics.GraphicsDevice.ScissorRectangle = controlScissor;
 
             this.EffectBehind?.Draw(spriteBatch, drawBounds);
 
@@ -698,6 +701,10 @@ namespace Blish_HUD.Controls {
             // Draw background
             if (_backgroundColor != Color.Transparent)
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, drawBounds, _backgroundColor);
+
+            if (!this.ClipsBounds) {
+                Graphics.GraphicsDevice.ScissorRectangle = Graphics.SpriteScreen.LocalBounds;
+            }
 
             // Draw control
             Paint(spriteBatch, drawBounds);

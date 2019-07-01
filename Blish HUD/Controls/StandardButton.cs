@@ -1,4 +1,4 @@
-﻿using Blish_HUD.Utils;
+﻿using Blish_HUD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

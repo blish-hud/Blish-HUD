@@ -11,17 +11,22 @@ namespace Blish_HUD.Controls {
         public const int TOOLWINDOW_BASEZINDEX = 45;
         public const int TOOLTIP_BASEZINDEX = 55;
         public const int CONTEXTMENU_BASEINDEX = 50;
-        
-        public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            List<Control> ZSortedChildren = _children.OrderByDescending(i => i.ZIndex).ToList();
 
-            foreach (var childControl in ZSortedChildren) {
-                if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible)
-                    return childControl.TriggerMouseInput(mouseEventType, ms);
-            }
-
-            return null;
+        /// <inheritdoc />
+        protected override CaptureType CapturesInput() {
+            return CaptureType.None;
         }
+
+        //public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
+        //    List<Control> ZSortedChildren = _children.OrderByDescending(i => i.ZIndex).ToList();
+
+        //    foreach (var childControl in ZSortedChildren) {
+        //        if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible)
+        //            return childControl.TriggerMouseInput(mouseEventType, ms);
+        //    }
+
+        //    return null;
+        //}
 
     }
 }

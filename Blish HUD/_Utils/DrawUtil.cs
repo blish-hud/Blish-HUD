@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Blish_HUD.Controls;
 
-namespace Blish_HUD.Utils {
+namespace Blish_HUD {
     public static class DrawUtil {
 
         public static void DrawAlignedText(SpriteBatch sb, SpriteFont sf, string text, Rectangle bounds, Color clr, HorizontalAlignment ha, VerticalAlignment va) {

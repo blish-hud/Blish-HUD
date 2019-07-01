@@ -126,11 +126,14 @@ namespace Blish_HUD.Controls {
         }
 
         public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            List<Control> zSortedChildren = _children.OrderByDescending(i => i.ZIndex).ToList();
+            List<Control> zSortedChildren = _children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => _children.IndexOf(c)).ToList();
 
-            if (mouseEventType == MouseEventType.MouseMoved) base.TriggerMouseInput(mouseEventType, ms);
-
+            Control thisResult  = null;
             Control childResult = null;
+
+            if (CapturesInput() != CaptureType.None) {
+                thisResult = base.TriggerMouseInput(mouseEventType, ms);
+            }
 
             foreach (var childControl in zSortedChildren) {
                 if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
@@ -142,13 +145,7 @@ namespace Blish_HUD.Controls {
                 }
             }
 
-            if (mouseEventType == MouseEventType.MouseMoved) {
-                var overResult = base.TriggerMouseInput(mouseEventType, ms);
-
-                return childResult ?? overResult;
-            }
-
-            return childResult ?? base.TriggerMouseInput(mouseEventType, ms);
+            return childResult ?? thisResult;
         }
 
         public virtual void UpdateContainer(GameTime gameTime) { /* NOOP */ }
@@ -184,7 +181,7 @@ namespace Blish_HUD.Controls {
 
         public virtual void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
-        public void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
+        protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
             var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
 
             List<Control> zSortedChildren = _children.OrderBy(i => i.ZIndex).ToList();
@@ -192,14 +189,9 @@ namespace Blish_HUD.Controls {
             // Render each visible child
             foreach (var childControl in zSortedChildren) {
                 if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
-                    //if (childControl.LayoutIsInvalid) {
-                        // TODO: Need to figure out under what circumstances a control will be invalidated prior to a draw
-                        //childControl.RecalculateLayout();
-                    //}
-
                     var childBounds = new Rectangle(Point.Zero, childControl.Size);
 
-                    if (childControl.AbsoluteBounds.Intersects(contentScissor)) {
+                    if (childControl.AbsoluteBounds.Intersects(contentScissor) || !childControl.ClipsBounds) {
                         childControl.Draw(spriteBatch, childBounds, contentScissor);
                     }
                 }

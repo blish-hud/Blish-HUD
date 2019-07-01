@@ -1,125 +1,153 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Entities.Primitives {
     public abstract class Cuboid:Entity {
 
-        private VertexPositionNormalTexture[] _verts;
+        protected VertexBuffer _geometryBuffer;
+        protected IndexBuffer  _indexBuffer;
 
-        private Vector3 _size = Vector3.One;
-        public Vector3 Size { get { return _size; } set { _size = value; UpdateSize(); } }
+        protected Vector3 _size;
 
-        public Texture2D Texture { get; set; }
-
-        private static BasicEffect basicEffect;
-
-        public Cuboid() : base() {
-            _verts = new VertexPositionNormalTexture[36];
-
-            basicEffect = basicEffect ?? new BasicEffect(GameService.Graphics.GraphicsDevice);
-            basicEffect.TextureEnabled = true;
-            basicEffect.EnableDefaultLighting();
-
-            UpdateSize();
+        public Vector3 Size {
+            get => _size;
+            set => SetProperty(ref _size, value, true);
         }
 
-        private void UpdateSize() {
-            // Calculate the position of the vertices on the top face.
-            var topLeftFront = this.Position + new Vector3(-1.0f, 1.0f, -1.0f) * this.Size;
-            var topLeftBack = this.Position + new Vector3(-1.0f, 1.0f, 1.0f) * this.Size;
-            var topRightFront = this.Position + new Vector3(1.0f, 1.0f, -1.0f) * this.Size;
-            var topRightBack = this.Position + new Vector3(1.0f, 1.0f, 1.0f) * this.Size;
+        public Texture2D Texture {
+            get => _renderEffect.Texture;
+            set => _renderEffect.Texture = value;
+        }
 
-            // Calculate the position of the vertices on the bottom face.
-            var btmLeftFront = this.Position + new Vector3(-1.0f, -1.0f, -1.0f) * this.Size;
-            var btmLeftBack = this.Position + new Vector3(-1.0f, -1.0f, 1.0f) * this.Size;
-            var btmRightFront = this.Position + new Vector3(1.0f, -1.0f, -1.0f) * this.Size;
-            var btmRightBack = this.Position + new Vector3(1.0f, -1.0f, 1.0f) * this.Size;
+        /// <inheritdoc />
+        public override float Opacity {
+            get => _renderEffect.Alpha;
+            set => _renderEffect.Alpha = value;
+        }
 
-            // Normal vectors for each face (needed for lighting / display)
-            var normalFront = new Vector3(0.0f, 0.0f, 1.0f) * this.Size;
-            var normalBack = new Vector3(0.0f, 0.0f, -1.0f) * this.Size;
-            var normalTop = new Vector3(0.0f, 1.0f, 0.0f) * this.Size;
-            var normalBottom = new Vector3(0.0f, -1.0f, 0.0f) * this.Size;
-            var normalLeft = new Vector3(-1.0f, 0.0f, 0.0f) * this.Size;
-            var normalRight = new Vector3(1.0f, 0.0f, 0.0f) * this.Size;
+        protected readonly VertexPositionTexture[] _verts;
+        protected readonly BasicEffect             _renderEffect;
 
-            // UV texture coordinates
-            //Vector2 textureTopLeft = new Vector2(1.0f * Size.X, 0.0f * Size.Y);
-            //Vector2 textureTopRight = new Vector2(0.0f * Size.X, 0.0f * Size.Y);
-            //Vector2 textureBottomLeft = new Vector2(1.0f * Size.X, 1.0f * Size.Y);
-            //Vector2 textureBottomRight = new Vector2(0.0f * Size.X, 1.0f * Size.Y);
-            var textureTopLeft = new Vector2(1.0f, 0.0f);
-            var textureTopRight = new Vector2(0.0f, 0.0f);
-            var textureBottomLeft = new Vector2(1.0f, 1.0f);
-            var textureBottomRight = new Vector2(0.0f, 1.0f);
+        public Cuboid() : this(new Vector3(1f)) { /* NOOP */ }
 
-            // Add the vertices for the FRONT face.
-            _verts[0] = new VertexPositionNormalTexture(topLeftFront, normalFront, textureTopLeft);
-            _verts[1] = new VertexPositionNormalTexture(btmLeftFront, normalFront, textureBottomLeft);
-            _verts[2] = new VertexPositionNormalTexture(topRightFront, normalFront, textureTopRight);
-            _verts[3] = new VertexPositionNormalTexture(btmLeftFront, normalFront, textureBottomLeft);
-            _verts[4] = new VertexPositionNormalTexture(btmRightFront, normalFront, textureBottomRight);
-            _verts[5] = new VertexPositionNormalTexture(topRightFront, normalFront, textureTopRight);
+        public Cuboid(float size) : this(new Vector3(size)) { /* NOOP */ }
 
-            // Add the vertices for the BACK face.
-            _verts[6] = new VertexPositionNormalTexture(topLeftBack, normalBack, textureTopRight);
-            _verts[7] = new VertexPositionNormalTexture(topRightBack, normalBack, textureTopLeft);
-            _verts[8] = new VertexPositionNormalTexture(btmLeftBack, normalBack, textureBottomRight);
-            _verts[9] = new VertexPositionNormalTexture(btmLeftBack, normalBack, textureBottomRight);
-            _verts[10] = new VertexPositionNormalTexture(topRightBack, normalBack, textureTopLeft);
-            _verts[11] = new VertexPositionNormalTexture(btmRightBack, normalBack, textureBottomLeft);
+        public Cuboid(Vector3 size) : base() {
+            _verts = new VertexPositionTexture[24];
 
-            // Add the vertices for the TOP face.
-            _verts[12] = new VertexPositionNormalTexture(topLeftFront, normalTop, textureBottomLeft);
-            _verts[13] = new VertexPositionNormalTexture(topRightBack, normalTop, textureTopRight);
-            _verts[14] = new VertexPositionNormalTexture(topLeftBack, normalTop, textureTopLeft);
-            _verts[15] = new VertexPositionNormalTexture(topLeftFront, normalTop, textureBottomLeft);
-            _verts[16] = new VertexPositionNormalTexture(topRightFront, normalTop, textureBottomRight);
-            _verts[17] = new VertexPositionNormalTexture(topRightBack, normalTop, textureTopRight);
+            _renderEffect = (BasicEffect)StandardEffect.Clone();
+            _renderEffect.TextureEnabled = true;
+            _renderEffect.VertexColorEnabled = false;
 
-            // Add the vertices for the BOTTOM face. 
-            _verts[18] = new VertexPositionNormalTexture(btmLeftFront, normalBottom, textureTopLeft);
-            _verts[19] = new VertexPositionNormalTexture(btmLeftBack, normalBottom, textureBottomLeft);
-            _verts[20] = new VertexPositionNormalTexture(btmRightBack, normalBottom, textureBottomRight);
-            _verts[21] = new VertexPositionNormalTexture(btmLeftFront, normalBottom, textureTopLeft);
-            _verts[22] = new VertexPositionNormalTexture(btmRightBack, normalBottom, textureBottomRight);
-            _verts[23] = new VertexPositionNormalTexture(btmRightFront, normalBottom, textureTopRight);
+            this.Texture = ContentService.Textures.Error;
 
-            // Add the vertices for the LEFT face.
-            _verts[24] = new VertexPositionNormalTexture(topLeftFront, normalLeft, textureTopRight);
-            _verts[25] = new VertexPositionNormalTexture(btmLeftBack, normalLeft, textureBottomLeft);
-            _verts[26] = new VertexPositionNormalTexture(btmLeftFront, normalLeft, textureBottomRight);
-            _verts[27] = new VertexPositionNormalTexture(topLeftBack, normalLeft, textureTopLeft);
-            _verts[28] = new VertexPositionNormalTexture(btmLeftBack, normalLeft, textureBottomLeft);
-            _verts[29] = new VertexPositionNormalTexture(topLeftFront, normalLeft, textureTopRight);
+            _size = size;
+        }
 
-            // Add the vertices for the RIGHT face. 
-            _verts[30] = new VertexPositionNormalTexture(topRightFront, normalRight, textureTopLeft);
-            _verts[31] = new VertexPositionNormalTexture(btmRightFront, normalRight, textureBottomLeft);
-            _verts[32] = new VertexPositionNormalTexture(btmRightBack, normalRight, textureBottomRight);
-            _verts[33] = new VertexPositionNormalTexture(topRightBack, normalRight, textureTopRight);
-            _verts[34] = new VertexPositionNormalTexture(topRightFront, normalRight, textureTopLeft);
-            _verts[35] = new VertexPositionNormalTexture(btmRightBack, normalRight, textureBottomRight);
+        private void GenerateCuboid(GraphicsDevice device, Vector3 size) {
+            _verts[0].Position = new Vector3(-1, 1, -1) * size;
+            _verts[0].TextureCoordinate = new Vector2(0, 0);
+            _verts[1].Position = new Vector3(1, 1, -1) * size;
+            _verts[1].TextureCoordinate = new Vector2(1, 0);
+            _verts[2].Position = new Vector3(-1, 1, 1) * size;
+            _verts[2].TextureCoordinate = new Vector2(0, 1);
+            _verts[3].Position = new Vector3(1, 1, 1) * size;
+            _verts[3].TextureCoordinate = new Vector2(1, 1);
+
+            _verts[4].Position = new Vector3(-1, -1, 1) * size;
+            _verts[4].TextureCoordinate = new Vector2(0, 0);
+            _verts[5].Position = new Vector3(1, -1, 1) * size;
+            _verts[5].TextureCoordinate = new Vector2(1, 0);
+            _verts[6].Position = new Vector3(-1, -1, -1) * size;
+            _verts[6].TextureCoordinate = new Vector2(0, 1);
+            _verts[7].Position = new Vector3(1, -1, -1) * size;
+            _verts[7].TextureCoordinate = new Vector2(1, 1);
+
+            _verts[8].Position = new Vector3(-1, 1, -1) * size;
+            _verts[8].TextureCoordinate = new Vector2(0, 0);
+            _verts[9].Position = new Vector3(-1, 1, 1) * size;
+            _verts[9].TextureCoordinate = new Vector2(1, 0);
+            _verts[10].Position = new Vector3(-1, -1, -1) * size;
+            _verts[10].TextureCoordinate = new Vector2(0, 1);
+            _verts[11].Position = new Vector3(-1, -1, 1) * size;
+            _verts[11].TextureCoordinate = new Vector2(1, 1);
+
+            _verts[12].Position = new Vector3(-1, 1, 1) * size;
+            _verts[12].TextureCoordinate = new Vector2(0, 0);
+            _verts[13].Position = new Vector3(1, 1, 1) * size;
+            _verts[13].TextureCoordinate = new Vector2(1, 0);
+            _verts[14].Position = new Vector3(-1, -1, 1) * size;
+            _verts[14].TextureCoordinate = new Vector2(0, 1);
+            _verts[15].Position = new Vector3(1, -1, 1) * size;
+            _verts[15].TextureCoordinate = new Vector2(1, 1);
+
+            _verts[16].Position = new Vector3(1, 1, 1) * size;
+            _verts[16].TextureCoordinate = new Vector2(0, 0);
+            _verts[17].Position = new Vector3(1, 1, -1) * size;
+            _verts[17].TextureCoordinate = new Vector2(1, 0);
+            _verts[18].Position = new Vector3(1, -1, 1) * size;
+            _verts[18].TextureCoordinate = new Vector2(0, 1);
+            _verts[19].Position = new Vector3(1, -1, -1) * size;
+            _verts[19].TextureCoordinate = new Vector2(1, 1);
+
+            _verts[20].Position = new Vector3(1, 1, -1) * size;
+            _verts[20].TextureCoordinate = new Vector2(0, 0);
+            _verts[21].Position = new Vector3(-1, 1, -1) * size;
+            _verts[21].TextureCoordinate = new Vector2(1, 0);
+            _verts[22].Position = new Vector3(1, -1, -1) * size;
+            _verts[22].TextureCoordinate = new Vector2(0, 1);
+            _verts[23].Position = new Vector3(-1, -1, -1) * size;
+            _verts[23].TextureCoordinate = new Vector2(1, 1);
+
+            _geometryBuffer?.Dispose();
+            _geometryBuffer = new VertexBuffer(GameService.Graphics.GraphicsDevice, VertexPositionTexture.VertexDeclaration, 24, BufferUsage.WriteOnly);
+            _geometryBuffer.SetData(_verts);
+
+            //var indices = new int[36];
+            //indices[0] = 0; indices[1] = 1; indices[2] = 2;
+            //indices[3] = 1; indices[4] = 3; indices[5] = 2;
+
+            //indices[6] = 4; indices[7]  = 5; indices[8]  = 6;
+            //indices[9] = 5; indices[10] = 7; indices[11] = 6;
+
+            //indices[12] = 8; indices[13] = 9; indices[14]  = 10;
+            //indices[15] = 9; indices[16] = 11; indices[17] = 10;
+
+            //indices[18] = 12; indices[19] = 13; indices[20] = 14;
+            //indices[21] = 13; indices[22] = 15; indices[23] = 14;
+
+            //indices[24] = 16; indices[25] = 17; indices[26] = 18;
+            //indices[27] = 17; indices[28] = 19; indices[29] = 18;
+
+            //indices[30] = 20; indices[31] = 21; indices[32] = 22;
+            //indices[33] = 21; indices[34] = 23; indices[35] = 22;
+
+            //_indexBuffer = new IndexBuffer(device, typeof(int), 36, BufferUsage.WriteOnly);
+            //_indexBuffer.SetData(indices);
+        }
+
+        /// <inheritdoc />
+        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
+            GenerateCuboid(graphicsDevice, _size);
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
-            basicEffect.View = GameService.Camera.View;
-            basicEffect.Projection = GameService.Camera.Projection;
-            basicEffect.World = Matrix.CreateTranslation(this.Position);
+            if (_geometryBuffer == null) return;
 
-            basicEffect.Texture = this.Texture;
+            _renderEffect.View       = GameService.Camera.View;
+            _renderEffect.Projection = GameService.Camera.Projection;
+            _renderEffect.World      = Matrix.CreateTranslation(_position);
 
-            basicEffect.Alpha = this.Opacity;
+            graphicsDevice.SetVertexBuffer(_geometryBuffer, 0);
 
-            foreach (var pass in basicEffect.CurrentTechnique.Passes) {
+            foreach (var pass in _renderEffect.CurrentTechnique.Passes) {
                 pass.Apply();
-
-                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, _verts, 0, 12);
             }
+
+            graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 24);
         }
 
-        public override void Update(GameTime gameTime) {
-        }
     }
 }

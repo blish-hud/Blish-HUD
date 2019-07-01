@@ -1,4 +1,4 @@
-﻿using Blish_HUD.Utils;
+﻿using Blish_HUD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -78,8 +78,8 @@ namespace Blish_HUD.Controls {
             // Easy way to get a string representation of the hotkeys
             string hotkeyRep = string.Join(" + ", _hotkeyDefinition.Keys);
 
-            Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular), hotkeyRep, _hotkeyRegion.OffsetBy(1, 1), Color.Black, HorizontalAlignment.Left, VerticalAlignment.Middle);
-            Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular), hotkeyRep, _hotkeyRegion, Color.White, HorizontalAlignment.Left, VerticalAlignment.Middle);
+            Blish_HUD.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular), hotkeyRep, _hotkeyRegion.OffsetBy(1, 1), Color.Black, HorizontalAlignment.Left, VerticalAlignment.Middle);
+            Blish_HUD.DrawUtil.DrawAlignedText(spriteBatch, Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular), hotkeyRep, _hotkeyRegion, Color.White, HorizontalAlignment.Left, VerticalAlignment.Middle);
         }
 
     }

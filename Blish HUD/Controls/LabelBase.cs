@@ -38,7 +38,8 @@ namespace Blish_HUD.Controls {
         }
 
         protected override CaptureType CapturesInput() {
-            return string.IsNullOrEmpty(this.BasicTooltipText) ? CaptureType.None : CaptureType.Mouse;
+            //return string.IsNullOrEmpty(this.BasicTooltipText) ? CaptureType.None : CaptureType.Mouse;
+            return CaptureType.Filter;
         }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace Blish_HUD.Controls {
         protected Size2 GetTextDimensions(string text = null) {
             text = text ?? _text;
 
-            if (!_autoSizeWidth && _wrapText) text = Utils.DrawUtil.WrapText(_font, text, LabelRegion.X > 0 ? LabelRegion.X : _size.X);
+            if (!_autoSizeWidth && _wrapText) text = Blish_HUD.DrawUtil.WrapText(_font, text, LabelRegion.X > 0 ? LabelRegion.X : _size.X);
 
             return _font.MeasureString(text ?? _text);
         }

@@ -13,6 +13,8 @@ namespace Blish_HUD.Pathing.Entities {
         protected Texture2D     _trailTexture;
 
         private VertexPositionColor[] VertexData { get; set; }
+
+        private BasicEffect _renderEffect;
         
         public float DistanceFromCamera => float.MaxValue;
 
@@ -33,6 +35,7 @@ namespace Blish_HUD.Pathing.Entities {
             }
         }
 
+        // TODO: Trail should not own this - only trails that support textures should define this
         public virtual Texture2D TrailTexture {
             get => _trailTexture;
             set => SetProperty(ref _trailTexture, value);
@@ -42,10 +45,14 @@ namespace Blish_HUD.Pathing.Entities {
 
         public Trail([CanBeNull] List<Vector3> trailPoints) {
             _trailPoints = trailPoints ?? new List<Vector3>();
-            OnTrailPointsChanged();
+            InitTrailPoints();
         }
 
-        public virtual void OnTrailPointsChanged() {
+        protected virtual void InitTrailPoints() {
+            _renderEffect                    = _renderEffect ?? (BasicEffect)StandardEffect.Clone();
+            _renderEffect.VertexColorEnabled = true;
+            _renderEffect.TextureEnabled     = false;
+
             if (!_trailPoints.Any()) return;
 
             this.VertexData = new VertexPositionColor[_trailPoints.Count - 1];
@@ -55,13 +62,13 @@ namespace Blish_HUD.Pathing.Entities {
             }
         }
 
+        /// <inheritdoc />
+        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
+            /* NOOP */
+        }
+
         public override void Draw(GraphicsDevice graphicsDevice) {
-            base.Draw(graphicsDevice);
-
-            ((BasicEffect)this.EntityEffect).VertexColorEnabled = true;
-            ((BasicEffect)this.EntityEffect).TextureEnabled = false;
-
-            foreach (var basicPass in this.EntityEffect.CurrentTechnique.Passes) {
+            foreach (var basicPass in _renderEffect.CurrentTechnique.Passes) {
                 basicPass.Apply();
 
                 graphicsDevice.DrawUserPrimitives(PrimitiveType.LineStrip,

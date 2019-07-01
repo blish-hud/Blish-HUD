@@ -11,11 +11,5 @@ namespace Blish_HUD.Entities {
             this.Size = new Vector3(0.25f, 0.25f, 0.25f);
         }
 
-        public override void Draw(GraphicsDevice graphicsDevice) {
-            ((BasicEffect) this.EntityEffect).EmissiveColor = this.Color.ToVector3();
-
-            base.Draw(graphicsDevice);
-        }
-
     }
 }

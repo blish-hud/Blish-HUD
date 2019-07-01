@@ -45,9 +45,9 @@ namespace Blish_HUD {
                 Header            = headerLayout,
                 FileNameKind      = FilePathKind.Absolute,
                 ArchiveFileKind   = FilePathKind.Absolute,
-                FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmm}}.log"),
+                FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.log"),
                 ArchiveFileName   = Path.Combine(logPath, "blishhud.{#}.log"),
-                ArchiveDateFormat = "yyyyMMdd-HHmm",
+                ArchiveDateFormat = "yyyyMMdd-HHmmss",
                 ArchiveNumbering  = ArchiveNumberingMode.Date,
                 MaxArchiveFiles   = 9,
                 EnableFileDelete  = true,
@@ -74,11 +74,16 @@ namespace Blish_HUD {
             _logConfiguration.AddTarget(asyncLogFile);
             _logConfiguration.AddRule(LogLevel.Info, LogLevel.Fatal, asyncLogFile);
             _logConfiguration.AddRuleForOneLevel(LogLevel.Error, asyncLogFile, errorLayout);
+            _logConfiguration.AddRuleForOneLevel(LogLevel.Fatal, asyncLogFile, errorLayout);
 
             LogManager.Configuration = _logConfiguration;
         }
 
         public FrameCounter FrameCounter { get; private set; }
+
+        public void GetLogger(Type callingType) {
+            
+        }
 
         public class FuncClock {
 

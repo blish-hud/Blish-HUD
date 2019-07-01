@@ -151,7 +151,7 @@ namespace Blish_HUD {
         }
 
         private void HandleMouse() {
-            if (!GameIntegration.Gw2IsRunning || (this.FocusedControl == null && !Utils.WindowUtil.OnTop)) {
+            if (!GameIntegration.Gw2IsRunning || (this.FocusedControl == null && !Blish_HUD.WindowUtil.OnTop)) {
                 this.HudFocused = false;
                 return;
             }

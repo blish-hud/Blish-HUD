@@ -71,7 +71,7 @@ namespace Blish_HUD.Entities {
             return GetEnumerator();
         }
 
-        public void AddChildren(ICollection<T> children) {
+        public void AddChildren(IEnumerable<T> children) {
             // Limit our list down to just items not already within the list
             // We're just ignoring any items that already children of this container
             List<T> childrenToAdd = children.Except(_children).ToList();
@@ -93,7 +93,7 @@ namespace Blish_HUD.Entities {
             this.AddChildren(new[] { child });
         }
 
-        public void RemoveChildren(ICollection<T> children) {
+        public void RemoveChildren(IEnumerable<T> children) {
             /* Limit our list down to just items within the list
                We'll just ignore any items that aren't actual children */
             List<T> childrenToRemove = children.Intersect(_children).ToList();
@@ -130,7 +130,6 @@ namespace Blish_HUD.Entities {
         /* To better indicate what is being added or removed, these
            are hidden with an explicit implementation so that we 
            can provide a method with a more intuitive name */
-
 
         // See: AddChild()
         void ICollection<T>.Add(T child) {

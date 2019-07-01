@@ -20,22 +20,27 @@ namespace Blish_HUD.Entities {
             _sortedEntities = this.Entities.ToList().OrderByDescending(e => e.DistanceFromCamera);
         }
 
-        public override void Update(GameTime gameTime) {
+        /// <inheritdoc />
+        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
+            /* NOOP - world does not need to rebuild */ 
+        }
+
+        public override void DoUpdate(GameTime gameTime) {
             UpdateEntitySort();
 
             foreach (var entity in _sortedEntities) {
-                entity.Update(gameTime);
+                entity.DoUpdate(gameTime);
             }
         }
 
-        public override void Draw(GraphicsDevice graphicsDevice) {
+        public override void DoDraw(GraphicsDevice graphicsDevice) {
             graphicsDevice.BlendState        = BlendState.AlphaBlend;
             graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
             graphicsDevice.SamplerStates[0]  = SamplerState.LinearWrap;
-            graphicsDevice.RasterizerState   = RasterizerState.CullNone;
+            graphicsDevice.RasterizerState   = RasterizerState.CullCounterClockwise;
 
             foreach (var entity in _sortedEntities.Where(entity => entity.Visible)) {
-                entity.Draw(graphicsDevice);
+                entity.DoDraw(graphicsDevice);
             }
         }
     }

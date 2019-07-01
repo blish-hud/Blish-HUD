@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Blish_HUD.Controls;
-using Blish_HUD.Utils;
+using Blish_HUD;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameServices.Module {

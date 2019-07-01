@@ -1,6 +1,6 @@
-﻿namespace Blish_HUD.Utils {
+﻿namespace Blish_HUD {
 
-    public static class World {
+    public static class WorldUtil {
 
         private const float INCH_TO_METER = 0.0254f;
 

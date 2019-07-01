@@ -88,7 +88,7 @@ namespace Blish_HUD {
             InputService.mouseHook?.UnhookMouse();
             InputService.keyboardHook?.UnhookKeyboard();
 
-            //string errorMessage = "Application error: " + e.Message + Environment.NewLine + "Trace: " + e.StackTrace + Environment.NewLine + "Runtime terminating: " + args.IsTerminating + Environment.NewLine + APP_VERSION;
+            string errorMessage = $"Application error: {e.Message}\nTrace: {e.StackTrace}\nVersion: {OverlayVersion}";
 
             //try {
             //    //File.WriteAllText(Path.Combine(GameService.Directory.BasePath, "logs", "crash." + DateTime.Now.Ticks + ".log"), errorMessage);

@@ -81,32 +81,30 @@ namespace Blish_HUD.Pathing.Entities {
         public Texture2D Texture {
             get => _texture;
             set {
-                if (SetProperty(ref _texture, value) && _autoResize && _texture != null)
-                    this.Size = new Vector2(Utils.World.GameToWorldCoord(_texture.Width),
-                                            Utils.World.GameToWorldCoord(_texture.Height));
+                if (SetProperty(ref _texture, value) && _autoResize && _texture != null) {
+                    this.Size = new Vector2(WorldUtil.GameToWorldCoord(_texture.Width),
+                                            WorldUtil.GameToWorldCoord(_texture.Height));
+                }
             }
         }
 
         private Effect _markerEffect;
 
-        public Marker() :
-            this(null, Vector3.Zero, Vector2.Zero) { }
+        private VertexBuffer _vertexBuffer;
 
-        public Marker(Texture2D image) :
-            this(image, Vector3.Zero) { }
+        public Marker() : this(null, Vector3.Zero, Vector2.Zero) { /* NOOP */ }
 
-        public Marker(Texture2D image, Vector3 position) :
-            this(image, position, Vector2.Zero) { }
+        public Marker(Texture2D image) : this(image, Vector3.Zero) { /* NOOP */ }
+
+        public Marker(Texture2D image, Vector3 position) : this(image, position, Vector2.Zero) { /* NOOP */ }
 
         public Marker(Texture2D image, Vector3 position, Vector2 size) {
-            //Logger.Info("An instance of a marker was initialized!");
-
             Initialize();
 
-            this.AutoResize = (size == Vector2.Zero);
-            this.Size                = size;
-            this.Texture             = image;
-            this.Position            = position;
+            _autoResize = (size == Vector2.Zero);
+            _size     = size;
+            _texture  = image;
+            _position = position;
 
             //this.VerticalConstraint = image.Height == image.Width
             //                              ? BillboardVerticalConstraint.PlayerPosition
@@ -116,7 +114,8 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         private void Initialize() {
-            _verts = new VertexPositionTexture[4];
+            _verts        = new VertexPositionTexture[4];
+            _vertexBuffer = new VertexBuffer(GameService.Graphics.GraphicsDevice, typeof(VertexPositionTexture), 4, BufferUsage.WriteOnly);
 
             _markerEffect = _sharedMarkerEffect.Clone();
         }
@@ -126,6 +125,13 @@ namespace Blish_HUD.Pathing.Entities {
             _verts[1] = new VertexPositionTexture(new Vector3(newSize.X * scale, 0,                 0),                    new Vector2(0, 1));
             _verts[2] = new VertexPositionTexture(new Vector3(0,                 newSize.Y * scale, 0),                    new Vector2(1, 0));
             _verts[3] = new VertexPositionTexture(new Vector3(newSize.X                    * scale, newSize.Y * scale, 0), new Vector2(0, 0));
+
+            _vertexBuffer.SetData(_verts);
+        }
+
+        /// <inheritdoc />
+        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
+            RecalculateSize(_size, _scale);
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
@@ -159,10 +165,12 @@ namespace Blish_HUD.Pathing.Entities {
             _markerEffect.Parameters["View"].SetValue(GameService.Camera.View);
             _markerEffect.Parameters["Projection"].SetValue(GameService.Camera.Projection);
 
+            graphicsDevice.SetVertexBuffer(_vertexBuffer);
+
             foreach (var pass in _markerEffect.CurrentTechnique.Passes) {
                 pass.Apply();
 
-                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, _verts, 0, 2);
+                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
             }
         }
 

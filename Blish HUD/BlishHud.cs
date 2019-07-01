@@ -65,7 +65,7 @@ namespace Blish_HUD {
 #if DEBUG
             ActiveGraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
             this.IsFixedTimeStep = false;
-            //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
+            //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
 #endif
 
             // Initialize all game services
@@ -144,25 +144,7 @@ namespace Blish_HUD {
         protected override void Draw(GameTime gameTime) {
             if (!GameService.GameIntegration.Gw2IsRunning) return;
 
-            this.GraphicsDevice.BlendState        = BlendState.Opaque;
-            this.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            this.GraphicsDevice.RasterizerState   = RasterizerState.CullNone;
-            this.GraphicsDevice.SamplerStates[0]  = SamplerState.LinearWrap;
-
-            this.GraphicsDevice.Clear(Color.Transparent);
-
-            GameService.Debug.StartTimeFunc("3D objects");
-            // Only draw 3D elements if we are in game
-            if (GameService.GameIntegration.IsInGame && (!GameService.ArcDps.ArcPresent || GameService.ArcDps.HudIsActive))
-                GameService.Graphics.World.Draw(this.GraphicsDevice);
-            GameService.Debug.StopTimeFunc("3D objects");
-
-            GameService.Debug.StartTimeFunc("UI Elements");
-            if (GameService.Graphics.SpriteScreen != null && GameService.Graphics.SpriteScreen.Visible) {
-                GameService.Graphics.SpriteScreen.Draw(_basicSpriteBatch, GameService.Graphics.SpriteScreen.LocalBounds, GameService.Graphics.SpriteScreen.LocalBounds);
-            }
-            GameService.Debug.StopTimeFunc("UI Elements");
-
+            GameService.Graphics.Render(gameTime, _basicSpriteBatch);
 
 #if DEBUG
             _basicSpriteBatch.Begin();

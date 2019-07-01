@@ -33,6 +33,11 @@ namespace Blish_HUD.Entities {
             }
         }
 
+        /// <inheritdoc />
+        public EntityText(Entity attachedEntity) : base(attachedEntity) {
+            this.AutoResizeBillboard = false;
+        }
+
         private void UpdateTextRender() {
             var textSize = GameService.Content.DefaultFont32.MeasureString(_text);
 
@@ -50,11 +55,6 @@ namespace Blish_HUD.Entities {
 
                 this.Texture = _cachedTextRender.CachedRender;
             }
-        }
-
-        /// <inheritdoc />
-        public EntityText(Entity attachedEntity) : base(attachedEntity) {
-            this.AutoResizeBillboard = false;
         }
 
     }

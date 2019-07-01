@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ServiceModel;
-using Blish_HUD.Utils;
+using Blish_HUD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
@@ -9,7 +10,7 @@ using MonoGame.Extended.BitmapFonts;
 namespace Blish_HUD.Controls {
     public class CachedStringRender : IDisposable {
 
-        private static readonly Dictionary<int, CachedStringRender> _cachedStringRenders = new Dictionary<int, CachedStringRender>();
+        private static readonly ConcurrentDictionary<int, CachedStringRender> _cachedStringRenders = new ConcurrentDictionary<int, CachedStringRender>();
         private static readonly NullControl _proxyControl = new NullControl();
 
         private RenderTarget2D _cachedRender;
@@ -58,7 +59,7 @@ namespace Blish_HUD.Controls {
             if (_cachedRender != null)
                 throw new ActionNotSupportedException($"{nameof(InitRender)} was already called on this!  It can only be called once.");
 
-            var graphicsDevice = GameService.Graphics.GraphicsDevice;
+            var graphicsDevice = BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice;
 
             _cachedRender = new RenderTarget2D(graphicsDevice,
                                                this.DestinationRectangle.Width,
@@ -130,16 +131,23 @@ namespace Blish_HUD.Controls {
                                                                HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
                                                                VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
 
-            var checkCSR = new CachedStringRender(text, font, destinationRectangle, color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
+            var checkCsr = new CachedStringRender(text, font, destinationRectangle, color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
 
-            int csrHash = checkCSR.GetHashCode();
+            int csrHash = checkCsr.GetHashCode();
 
-            if (!_cachedStringRenders.ContainsKey(csrHash)) {
-                checkCSR.InitRender();
-                _cachedStringRenders.Add(csrHash, checkCSR);
+            bool containsCachedCsr = _cachedStringRenders.ContainsKey(csrHash);
+
+            if (containsCachedCsr && _cachedStringRenders.TryGetValue(csrHash, out var existingCsr)) {
+                return existingCsr;
             }
 
-            return _cachedStringRenders[csrHash];
+            if (!containsCachedCsr) {
+                _cachedStringRenders.TryAdd(csrHash, checkCsr);
+            }
+
+            checkCsr.InitRender();
+
+            return checkCsr;
         }
 
         public void Dispose() {

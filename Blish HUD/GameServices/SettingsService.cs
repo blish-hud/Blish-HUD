@@ -19,7 +19,7 @@ namespace Blish_HUD {
 
         private const string SETTINGS_FILENAME = "settings.json";
 
-        public delegate Control SettingTypeRendererDelegate(SettingEntry setting);
+        public delegate void SettingTypeRendererDelegate(SettingEntry setting, Panel settingPanel);
 
         [JsonIgnore]
         public Dictionary<Type, SettingTypeRendererDelegate> SettingTypeRenderers = new Dictionary<Type, SettingTypeRendererDelegate>();
@@ -106,36 +106,38 @@ namespace Blish_HUD {
             SettingTypeRenderers.Clear();
 
             // bool setting renderer
-            SettingTypeRenderers.Add(typeof(bool), (setting) => {
+            SettingTypeRenderers.Add(typeof(bool), (setting, panel) => {
                 var strongSetting = (SettingEntry<bool>) setting;
 
                 var settingCtrl = new Checkbox() {
                     Text             = strongSetting.DisplayName,
                     BasicTooltipText = strongSetting.Description,
-                    Checked          = strongSetting.Value
+                    Checked          = strongSetting.Value,
+                    Parent           = panel
                 };
 
                 Adhesive.Binding.CreateTwoWayBinding(() => settingCtrl.Checked,
                                                      () => strongSetting.Value);
-
-                return settingCtrl;
             });
 
             // enum setting renderer
-            SettingTypeRenderers.Add(typeof(Enum), (setting) => {
+            SettingTypeRenderers.Add(typeof(Enum), (setting, panel) => {
                 //var strongSetting = (SettingEntry<>) setting;
 
                 var enumType = setting.SettingType;
 
-                var settingCtrl = new Panel() {
-                    Size = new Point(128, 25),
+                var settingDisplayName = new Label() {
+                    Size             = new Point(panel.Width - 128, panel.Height),
+                    Text             = $"{setting.DisplayName}:",
+                    BasicTooltipText = setting.Description,
+                    Parent           = panel
                 };
 
                 var settingDropDown = new Dropdown() {
-                    Size     = new Point(128, 25),
-                    Location = new Point(0, 0),
+                    Size             = new Point(128, 25),
+                    Location         = new Point(panel.Width - 128,   0),
                     BasicTooltipText = setting.Description,
-                    Parent = settingCtrl,
+                    Parent           = panel,
                 };
 
                 string[] values = Enum.GetNames(enumType);
@@ -143,22 +145,16 @@ namespace Blish_HUD {
                 foreach (string enumOption in values) {
                     settingDropDown.Items.Add(enumOption.ToString());
                 }
-
-                //Adhesive.Binding.CreateTwoWayBinding(() => settingDropDown.SelectedItem,
-                //                                     () => strongSetting.Value,
-                //                                     (enumVal) => settingDropDown.SelectedItem = Enum.GetName(enumType, Convert.ChangeType(enumVal, enumType)),
-                //                                     (settingVal) => strongSetting.Value       = Enum.Parse(enumType, settingVal));
-
-                return settingCtrl;
             });
 
             // hotkey setting renderer
-            SettingTypeRenderers.Add(typeof(Hotkey), (setting) => {
+            SettingTypeRenderers.Add(typeof(Hotkey), (setting, panel) => {
                 var strongSetting = (SettingEntry<Hotkey>) setting;
 
-                var hotkeyAssigner = new HotkeyAssigner(strongSetting.Value);
-
-                return hotkeyAssigner;
+                var hotkeyAssigner = new HotkeyAssigner(strongSetting.Value) {
+                    Size   = panel.Size,
+                    Parent = panel
+                };
             });
         }
 
@@ -179,7 +175,7 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) { /* NOOP */ }
 
-        public void RenderSettingsToPanel(Container panel, IEnumerable<SettingEntry> settings) {
+        public void RenderSettingsToPanel(Container panel, IEnumerable<SettingEntry> settings, int width = 325) {
             var listSettings = settings.ToList();
 
             Logger.Info("Rendering {numberOfSettings} settings to panel.", listSettings.Count());
@@ -187,11 +183,16 @@ namespace Blish_HUD {
             int lastBottom = 0;
 
             void CreateRenderer(SettingEntry settingEntry, SettingTypeRendererDelegate renderer) {
-                var settingCtrl = renderer.Invoke(settingEntry);
-                settingCtrl.Location = new Point(0, lastBottom + 10);
-                settingCtrl.Parent   = panel;
+                var settingPanel = new Panel() {
+                    Size     = new Point(width, 25),
+                    Location = new Point(0,     lastBottom + 10)
+                };
 
-                lastBottom = settingCtrl.Bottom;
+                renderer.Invoke(settingEntry, settingPanel);
+
+                settingPanel.Parent = panel;
+
+                lastBottom = settingPanel.Bottom;
             }
 
             foreach (var settingEntry in listSettings) {
@@ -263,12 +264,16 @@ namespace Blish_HUD {
                 Icon   = Content.GetTexture("156140")
             };
 
+            settingsMi_About.Click += delegate {
+                cPanel.NavigateToBuiltPanel(GameServices.Settings.UI.AboutUIBuilder.BuildAbout, null);
+            };
+
             settingsMi_App.Click += delegate {
-                cPanel.NavigateToBuiltPanel(GameServices.Overlay.OverlaySettingsUIBuilder.BuildSingleModuleSettings, null);
+                cPanel.NavigateToBuiltPanel(GameServices.Settings.UI.OverlaySettingsUIBuilder.BuildSingleModuleSettings, null);
             };
 
             settingsMi_Controls.Click += delegate {
-                cPanel.NavigateToBuiltPanel(GameServices.Hotkeys.HotkeysSettingsUIBuilder.BuildApplicationHotkeySettings, null);
+                cPanel.NavigateToBuiltPanel(GameServices.Settings.UI.HotkeysSettingsUIBuilder.BuildApplicationHotkeySettings, null);
             };
 
             GameService.Module.FinishedLoading += delegate {
@@ -563,241 +568,6 @@ namespace Blish_HUD {
             };
             moduleSelectionDropdown.SelectedItem = moduleSelectionDropdown.Items.FirstOrDefault();
             return permissionsPanel;
-        }
-        // TODO: All of this needs to be somewhere else
-
-        private const string ANET_COPYRIGHT_NOTICE =
-            @"©2010–2018 ArenaNet, LLC. All rights reserved. Guild Wars, Guild Wars 2, Heart of Thorns,
-            Guild Wars 2: Path of Fire, ArenaNet, NCSOFT, the Interlocking NC Logo, and all associated
-            logos and designs are trademarks or registered trademarks of NCSOFT Corporation. All other
-            trademarks are the property of their respective owners.";
-
-        private string ANET_COPYRIGHT_NOTICE_CLEAN =
-            "(C) 2010 - 2019 ArenaNet, LLC. All rights reserved. Guild Wars, Guild Wars 2, Heart of Thorns,|" +
-            "Guild Wars 2: Path of Fire, ArenaNet, NCSOFT, the Interlocking NC Logo, and all associated|" +
-            "logos and designs are trademarks or registered trademarks of NCSOFT Corporation. All other|" +
-            "trademarks are the property of their respective owners.";
-
-        private const string LICENSES_FILE = "licenses.json";
-
-        private const string DISCORD_INVITE = "https://discord.gg/78PYm77";
-        private const string SUBREDDIT_URL = "https://www.reddit.com/r/blishhud";
-
-        private Panel BuildAboutPanel(Point size) {
-            var asPanel = new Panel() {CanScroll = false, Size = size};
-
-            //var backButton = new BackButton(wndw) {
-            //    Text     = "Settings",
-            //    NavTitle = "About",
-            //    Parent   = asPanel,
-            //    Location = new Point(20, 20),
-            //};
-
-            // TODO: Label should support multi-line strings and should still support alignment
-            // I hate everything about this - there needs to be a better way.
-
-            var cleanNotice = ANET_COPYRIGHT_NOTICE_CLEAN;
-
-            var copyrightNotice1 = new Label() {
-                Text = cleanNotice.Split('|')[0],
-                AutoSizeHeight = true,
-                Width               = size.X,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Parent              = asPanel
-            };
-
-            var copyrightNotice2 = new Label() {
-                Text = cleanNotice.Split('|')[1],
-                Location            = new Point(0, copyrightNotice1.Bottom + 5),
-                AutoSizeHeight      = true,
-                Width = size.X,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Parent              = asPanel
-            };
-
-            var copyrightNotice3 = new Label() {
-                Text = cleanNotice.Split('|')[2],
-                Location            = new Point(0, copyrightNotice2.Bottom + 5),
-                AutoSizeHeight      = true,
-                Width = size.X,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Parent              = asPanel
-            };
-            
-            var copyrightNotice4 = new Label() {
-                Text = cleanNotice.Split('|')[3],
-                Location            = new Point(0, copyrightNotice3.Bottom + 5),
-                AutoSizeHeight      = true,
-                Width = size.X,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Parent              = asPanel
-            }; 
-
-            // OSS
-
-            var ossNotice = new Label() {
-                Text           = "Blish HUD makes use of multiple open source libraries:",
-                Location       = new Point(20 + 3, copyrightNotice4.Bottom + 25),
-                AutoSizeHeight = true,
-                Width          = size.X - 20 - 3,
-                //Parent         = asPanel
-            };
-
-            //var ossPanel = new TintedPanel() {
-            //    Parent    = asPanel,
-            //    Size      = new Point(asPanel.ContentRegion.Width - 60, wndw.ContentRegion.Height - ossNotice.Bottom - 76),
-            //    Location  = new Point(20,                               ossNotice.Bottom + 10),
-            //    CanScroll = true,
-            //};
-
-            //string licenseFilePath = Path.Combine("data", LICENSES_FILE);
-            //if (File.Exists(licenseFilePath)) {
-            //    string rawRefLicense = File.ReadAllText(licenseFilePath);
-
-            //    var licenseReference = JArray.Parse(rawRefLicense);
-
-            //    int lPos = 10;
-
-            //    foreach (JObject project in licenseReference) {
-
-            //        if (project.TryGetValue("project", out var name)) {
-            //            string sName = name.Value<string>();
-
-            //            var projectNameLbl = new LabelBase() {
-            //                Text              = sName,
-            //                Location          = new Point(ossNotice.Left, lPos),
-            //                Width             = 256,
-            //                Height            = 26,
-            //                VerticalAlignment = VerticalAlignment.Middle,
-            //                Parent            = ossPanel
-            //            };
-
-            //            if (project.TryGetValue("license", out var license)) {
-            //                string sLicense = license.Value<string>();
-
-            //                if (Uri.TryCreate(sLicense, UriKind.Absolute, out var licenseUri) && (licenseUri.Scheme == Uri.UriSchemeHttp || licenseUri.Scheme == Uri.UriSchemeHttps)) {
-
-            //                    var licenseBttn = new StandardButton() {
-            //                        Text     = "View License",
-            //                        Location = new Point(projectNameLbl.Right + 10, lPos),
-            //                        Width    = 128,
-            //                        Height   = 26,
-            //                        Parent   = ossPanel
-            //                    };
-
-            //                    licenseBttn.LeftMouseButtonReleased += (sender, args) => {
-            //                        wndw.Navigate(BuildLicensePanel(wndw, sName, sLicense));
-            //                    };
-            //                }
-            //            }
-
-            //            if (project.TryGetValue("repository", out var repository)) {
-            //                string sRepository = repository.Value<string>();
-
-            //                if (Uri.TryCreate(sRepository, UriKind.Absolute, out var repoUri) && (repoUri.Scheme == Uri.UriSchemeHttp || repoUri.Scheme == Uri.UriSchemeHttps)) {
-
-            //                    var repoBttn = new StandardButton() {
-            //                        Text     = "Repository",
-            //                        Location = new Point(projectNameLbl.Right + 128 + 15, lPos),
-            //                        Width    = 128,
-            //                        Height   = 26,
-            //                        Parent   = ossPanel
-            //                    };
-
-            //                    repoBttn.LeftMouseButtonReleased += (sender, args) => { Process.Start(sRepository); };
-            //                }
-            //            }
-
-            //            lPos = projectNameLbl.Bottom + 5;
-            //        }
-            //    }
-
-
-            //}
-
-            //var joinDiscordBttn = new StandardButton() {
-            //    Text     = "Join the Blish HUD Discord Channel",
-            //    Width    = 280,
-            //    Height   = 26,
-            //    Location = new Point(20, wndw.ContentRegion.Height - 26),
-            //    Parent   = asPanel,
-            //};
-
-            //var subredditBttn = new StandardButton() {
-            //    Text     = "Visit the Blish HUD Subreddit",
-            //    Width    = 280,
-            //    Height   = 26,
-            //    Location = new Point(joinDiscordBttn.Right + 10, wndw.ContentRegion.Height - 26),
-            //    Parent   = asPanel,
-            //};
-
-            //joinDiscordBttn.LeftMouseButtonReleased += delegate { Process.Start(DISCORD_INVITE); };
-            //subredditBttn.LeftMouseButtonReleased += delegate { Process.Start(SUBREDDIT_URL); };
-
-//            var versionLbl = new LabelBase() {
-//#if SENTRY
-//                Text           = $"{Program.APP_VERSION} (Sentry Enabled)",
-//#else
-//                Text           = Program.APP_VERSION,
-//#endif
-//                AutoSizeWidth  = true,
-//                AutoSizeHeight = true,
-//                Parent         = asPanel
-//            };
-
-//            versionLbl.Location = new Point(wndw.ContentRegion.Width - versionLbl.Width - 20, wndw.ContentRegion.Height - versionLbl.Height);
-
-            return asPanel;
-        }
-
-        private Panel BuildLicensePanel(Controls.WindowBase wndw, string name, string licenseUrl) {
-            var lPanel = new Panel() {CanScroll = false, Size = wndw.ContentRegion.Size };
-
-            var backButton = new BackButton(wndw) {
-                Text     = "License",
-                NavTitle = name,
-                Parent   = lPanel,
-                Location = new Point(20, 20),
-            };
-
-            var textPanel = new TintedPanel() {
-                Parent = lPanel,
-                CanScroll = true,
-                Size = new Point(lPanel.ContentRegion.Width - 40, lPanel.ContentRegion.Height - backButton.Bottom - 40),
-                Location = new Point(20, backButton.Bottom + 20)
-            };
-
-            var lLoader = new LoadingSpinner() { Parent = lPanel };
-            lLoader.Location = textPanel.Size / new Point(2) - lLoader.Size / new Point(2);
-
-            int lPos = 20;
-
-            licenseUrl.GetAsync().ContinueWith(async (httpResponseMessage) => {
-                                                   string rawLicense = await httpResponseMessage.Result.Content.ReadAsStringAsync();
-
-                                                   if (!(rawLicense.Length > 0)) {
-                                                       rawLicense = "There was a problem loading the license from:" + '\n' + licenseUrl;
-                                                   }
-
-                                                   foreach (string licenseLine in rawLicense.Split('\n')) {
-                                                       var lineLbl = new Label() {
-                                                           Text = licenseLine,
-                                                           Location = new Point(backButton.Left, lPos),
-                                                           AutoSizeHeight = true,
-                                                           Width = wndw.ContentRegion.Width,
-                                                           Parent = textPanel
-                                                       };
-
-                                                       lPos = lineLbl.Bottom + 5;
-
-                                                       if (!(lineLbl.Text.Trim().Length > 0))
-                                                           lineLbl.Dispose();
-                                                    }
-
-                                                    lLoader.Dispose();
-                                               });
-
-            return lPanel;
         }
 
     }

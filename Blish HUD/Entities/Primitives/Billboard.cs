@@ -115,6 +115,11 @@ namespace Blish_HUD.Entities.Primitives {
             }
         }
 
+        /// <inheritdoc />
+        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
+            RecalculateSize(_size, _scale);
+        }
+
         public override void Update(GameTime gameTime) {
             // NOOP
         }

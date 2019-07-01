@@ -1,4 +1,4 @@
-﻿using Blish_HUD.Utils;
+﻿using Blish_HUD;
 using Glide;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -82,7 +82,7 @@ namespace Blish_HUD.Controls {
 
             DrawText(spriteBatch,
                      textRegion,
-                     $"{Utils.DrawUtil.WrapText(_font, _text, textRegion.Width)}");
+                     $"{Blish_HUD.DrawUtil.WrapText(_font, _text, textRegion.Width)}");
         }
 
     }

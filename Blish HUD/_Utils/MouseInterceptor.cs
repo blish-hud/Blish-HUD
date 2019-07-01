@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Blish_HUD.Utils {
+namespace Blish_HUD {
 
     /// <summary>
     /// Used to force application focus when the mouse clicks in a specific area.

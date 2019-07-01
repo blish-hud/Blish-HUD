@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Blish_HUD.Utils;
+using Blish_HUD;
 using MonoGame.Extended.BitmapFonts;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -14,7 +14,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Utils.MouseInterceptor     _sharedInterceptor;
+        private static readonly Blish_HUD.MouseInterceptor     _sharedInterceptor;
         private static readonly System.Windows.Forms.Label _sharedUnfocusLabel;
 
         private static readonly Texture2D _textureTextbox;

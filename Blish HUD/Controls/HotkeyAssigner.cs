@@ -1,5 +1,5 @@
 ﻿using System;
-using Blish_HUD.Utils;
+using Blish_HUD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -83,7 +83,7 @@ namespace Blish_HUD.Controls {
                              );
 
             // Draw name shadow
-            Blish_HUD.Utils.DrawUtil.DrawAlignedText(
+            Blish_HUD.DrawUtil.DrawAlignedText(
                                                 spriteBatch,
                                                 Content.DefaultFont14,
                                                 _hotkeyDefinition.Name,
@@ -94,7 +94,7 @@ namespace Blish_HUD.Controls {
                                                );
 
             // Draw name
-            Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch,
+            Blish_HUD.DrawUtil.DrawAlignedText(spriteBatch,
                                                 Content.DefaultFont14,
                                                 _hotkeyDefinition.Name,
                                                 this.NameRegion.OffsetBy(UNIVERSAL_PADDING, 0),
@@ -114,7 +114,7 @@ namespace Blish_HUD.Controls {
             string hotkeyRep = string.Join(" + ", _hotkeyDefinition.Keys);
 
             // Draw hotkey shadow
-            Blish_HUD.Utils.DrawUtil.DrawAlignedText(
+            Blish_HUD.DrawUtil.DrawAlignedText(
                                                 spriteBatch,
                                                 Content.DefaultFont14,
                                                 hotkeyRep,
@@ -125,7 +125,7 @@ namespace Blish_HUD.Controls {
                                                );
 
             // Draw hotkey
-            Blish_HUD.Utils.DrawUtil.DrawAlignedText(spriteBatch,
+            Blish_HUD.DrawUtil.DrawAlignedText(spriteBatch,
                                                 Content.DefaultFont14,
                                                 hotkeyRep,
                                                 this.HotkeyRegion,

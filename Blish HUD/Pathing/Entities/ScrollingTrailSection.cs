@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Annotations;
+using Blish_HUD.Entities;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,6 +27,8 @@ namespace Blish_HUD.Pathing.Entities {
 
         private VertexPositionColorTexture[] VertexData { get; set; }
 
+        private VertexBuffer _vertexBuffer;
+
         public float AnimationSpeed {
             get => _animationSpeed;
             set => SetProperty(ref _animationSpeed, value);
@@ -35,7 +38,7 @@ namespace Blish_HUD.Pathing.Entities {
             get => _trailTexture;
             set {
                 if (SetProperty(ref _trailTexture, value))
-                    OnTrailPointsChanged();
+                    InitTrailPoints();
             }
         }
 
@@ -53,8 +56,7 @@ namespace Blish_HUD.Pathing.Entities {
             get => _scale;
             set => SetProperty(ref _scale, value);
         }
-
-
+        
         public ScrollingTrailSection() : base(null) { /* NOOP */ }
 
         public ScrollingTrailSection([CanBeNull] List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
@@ -84,7 +86,7 @@ namespace Blish_HUD.Pathing.Entities {
             return tempTrail;
         }
 
-        public override void OnTrailPointsChanged() {
+        protected override void InitTrailPoints() {
             if (!_trailPoints.Any()) return;
 
             // TacO has a minimum of 30, so we'll use 30
@@ -121,7 +123,7 @@ namespace Blish_HUD.Pathing.Entities {
                 currPoint = nextPoint;
 
 #if PLOTTRAILS
-                GameService.Director.QueueMainThreadUpdate((gameTime) => {
+                GameService.Overlay.QueueMainThreadUpdate((gameTime) => {
                     var leftBoxPoint = new Cube() {
                         Color    = Color.Red,
                         Size     = new Vector3(0.25f),
@@ -145,6 +147,9 @@ namespace Blish_HUD.Pathing.Entities {
 
             this.VertexData[this.TrailPoints.Count * 2 - 1] = new VertexPositionColorTexture(fleftPoint,  Color.White, new Vector2(0f, pastDistance / (imgScale * 2) - 1));
             this.VertexData[this.TrailPoints.Count * 2 - 2] = new VertexPositionColorTexture(frightPoint, Color.White, new Vector2(1f, pastDistance / (imgScale * 2) - 1));
+
+            _vertexBuffer = new VertexBuffer(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, this.VertexData.Length, BufferUsage.WriteOnly);
+            _vertexBuffer.SetData(this.VertexData);
         }
 
         public override void Update(GameTime gameTime) {
@@ -164,22 +169,19 @@ namespace Blish_HUD.Pathing.Entities {
             _basicTrailEffect.Parameters["FadeNear"].SetValue(this.FadeNear);
             _basicTrailEffect.Parameters["FadeFar"].SetValue(this.FadeFar);
             _basicTrailEffect.Parameters["Opacity"].SetValue(this.Opacity);
-            _basicTrailEffect.Parameters["TotalLength"].SetValue(20f); // this.TrailLength / this.TrailTexture.Height * 2);
+            _basicTrailEffect.Parameters["TotalLength"].SetValue(20f);
 
-            graphicsDevice.BlendState = BlendState.AlphaBlend;
-            graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
-            graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
-            graphicsDevice.RasterizerState = RasterizerState.CullNone;
+            graphicsDevice.SetVertexBuffer(_vertexBuffer, 0);
 
             foreach (EffectPass trailPass in _basicTrailEffect.CurrentTechnique.Passes) {
                 trailPass.Apply();
 
-                ((BasicEffect)this.EntityEffect).VertexColorEnabled = true;
+                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, this._vertexBuffer.VertexCount - 2);
 
-                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip,
-                                                  this.VertexData,
-                                                  0,
-                                                  this.VertexData.Length - 2);
+                //graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip,
+                //                                  this.VertexData,
+                //                                  0,
+                //                                  this.VertexData.Length - 2);
             }
         }
 

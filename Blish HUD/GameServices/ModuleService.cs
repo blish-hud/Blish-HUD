@@ -260,7 +260,17 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
-
+            _modules.ForEach(s => {
+                try {
+                    // TODO: Unload module
+                } catch (Exception ex) {
+                    #if DEBUG
+                    // To assist in debugging
+                    throw;
+                    #endif
+                    Logger.Error(ex, "Module '{$moduleName} ({$moduleNamespace}) threw an exception while being unloaded.", s.Manifest.Name, s.Manifest.Namespace);
+                }
+            });
         }
 
         protected override void Update(GameTime gameTime) {

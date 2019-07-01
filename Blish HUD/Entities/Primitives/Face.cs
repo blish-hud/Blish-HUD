@@ -17,6 +17,11 @@ namespace Blish_HUD.Entities.Primitives {
 
         protected Texture2D _texture;
 
+        /// <inheritdoc />
+        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
+            throw new System.NotImplementedException();
+        }
+
         public override void Update(GameTime gameTime) {
             // NOOP
         }
@@ -52,21 +57,7 @@ namespace Blish_HUD.Entities.Primitives {
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
-            if (!(this.EntityEffect is BasicEffect basicEffect)) return;
-
-            basicEffect.View = GameService.Camera.View;
-            basicEffect.Projection = GameService.Camera.Projection;
-            basicEffect.World = Matrix.CreateTranslation(this.Position + new Vector3(this.Size.X / -2, this.Size.Y / -2, 0));
-
-            basicEffect.Texture = _texture;
-
-            basicEffect.Alpha = this.Opacity;
-
-            foreach (var pass in basicEffect.CurrentTechnique.Passes) {
-                pass.Apply();
-
-                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, _verts, 0, 2);
-            }
+            
         }
 
     }

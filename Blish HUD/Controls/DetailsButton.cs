@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using Blish_HUD.Controls.Effects;
-using Blish_HUD.Utils;
+using Blish_HUD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

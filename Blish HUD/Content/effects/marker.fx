@@ -83,7 +83,7 @@ float GetFadeNearFar(VSOutput input) {
 		// Handle fade far (first since it'll clip and can skip the rest of this if it's too far away)
 		clip(FadeFar - input.Distance);
 		
-		float nearDist = input.Distance - FadeNear; // (input.TextureCoordinate.y * 0.0254f + input.Distance)
+		float nearDist = input.Distance - FadeNear;
 	
 		// Handle fade near
 		return 1.0 - clamp(nearDist / (FadeFar - FadeNear), 0.0, 1.0);

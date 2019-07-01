@@ -10,9 +10,9 @@ namespace Blish_HUD.Controls {
     public class Scrollbar:Control {
 
         private const int CONTROL_WIDTH = 12;
-        private const int MIN_LENGTH = 32;
-        private const int CAP_SLACK = 6;
-        
+        private const int MIN_LENGTH    = 32;
+        private const int CAP_SLACK     = 6;
+
         #region Load Static
 
         private static readonly TextureRegion2D _textureTrack;
@@ -143,7 +143,7 @@ namespace Blish_HUD.Controls {
         
         private void UpdateAssocContainer() {
             // TODO: What is the 612 in the scrollbar update?
-            AssociatedContainer.VerticalScrollOffset = (int)Math.Floor(Math.Max(_containerLowestContent - AssociatedContainer.ContentRegion.Height, 612) * this.ScrollDistance);
+            AssociatedContainer.VerticalScrollOffset = (int)Math.Floor((_containerLowestContent - AssociatedContainer.ContentRegion.Height) * this.ScrollDistance);
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
