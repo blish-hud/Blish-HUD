@@ -15,7 +15,9 @@ namespace Blish_HUD
         private static readonly object WatchLock = new object();
         private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
         private bool _hudIsActive;
+#if DEBUG
         public static long Counter = 0;
+#endif
 
         private SocketListener _server;
 
@@ -56,12 +58,14 @@ namespace Blish_HUD
         protected override void Initialize()
         {
             _stopwatch = new Stopwatch();
-            _server = new SocketListener(4000, 500);
+            _server = new SocketListener(10, 200_000);
             _server.ReceivedMessage += MessageHandler;
+#if DEBUG
             OnRawCombatEvent += data =>
             {
                 Interlocked.Increment(ref Counter);
             };
+#endif
         }
 
         protected override void Load()
@@ -75,7 +79,6 @@ namespace Blish_HUD
             _stopwatch.Stop();
             _server.Stop();
             RenderPresent = false;
-            Console.WriteLine(@"counter: " + Counter);
         }
 
         protected override void Update(GameTime gameTime)
