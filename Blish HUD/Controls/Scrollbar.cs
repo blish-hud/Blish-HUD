@@ -142,7 +142,6 @@ namespace Blish_HUD.Controls {
         }
         
         private void UpdateAssocContainer() {
-            // TODO: What is the 612 in the scrollbar update?
             AssociatedContainer.VerticalScrollOffset = (int)Math.Floor((_containerLowestContent - AssociatedContainer.ContentRegion.Height) * this.ScrollDistance);
         }
 
@@ -197,7 +196,7 @@ namespace Blish_HUD.Controls {
         private void RecalculateScrollbarSize() {
             if (_associatedContainer == null) return;
 
-            _containerLowestContent = Math.Max(_associatedContainer.Children.Any()
+            _containerLowestContent = Math.Max(_associatedContainer.Children.Any(c => c.Visible)
                                                    ? _associatedContainer.Children.Where(c => c.Visible).Max(c => c.Bottom)
                                                    : 0,
                                                _associatedContainer.ContentRegion.Height);

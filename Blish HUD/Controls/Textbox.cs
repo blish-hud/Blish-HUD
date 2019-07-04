@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Blish_HUD;
 using MonoGame.Extended.BitmapFonts;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -14,26 +13,30 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Blish_HUD.MouseInterceptor     _sharedInterceptor;
-        private static readonly System.Windows.Forms.Label _sharedUnfocusLabel;
+        private static MouseInterceptor           _sharedInterceptor;
+        private static System.Windows.Forms.Label _sharedUnfocusLabel;
 
         private static readonly Texture2D _textureTextbox;
 
         static TextBox() {
-            _sharedInterceptor = new MouseInterceptor();
-            _sharedInterceptor.MouseLeft += delegate { _sharedInterceptor.Hide(); };
-            _sharedInterceptor.LeftMouseButtonReleased += delegate { _sharedInterceptor.Hide(); };
+              _sharedInterceptor                         =  new MouseInterceptor();
+              _sharedInterceptor.MouseLeft               += delegate { _sharedInterceptor.Hide(); };
+              _sharedInterceptor.LeftMouseButtonReleased += delegate { _sharedInterceptor.Hide(); };
 
-            // This is needed to ensure that the textbox is *actually* unfocused
-            _sharedUnfocusLabel = new System.Windows.Forms.Label {
-                Location = new System.Drawing.Point(-200, 0),
-                Parent   = BlishHud.Form
-            };
+              // This is needed to ensure that the textbox is *actually* unfocused
+              _sharedUnfocusLabel = new System.Windows.Forms.Label {
+                  Location = new System.Drawing.Point(-200, 0),
+                  Parent   = BlishHud.Form
+              };
 
             _textureTextbox = Content.GetTexture("textbox");
         }
 
         #endregion
+
+        public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
+                                                                            /*   PanelOffset */ new Point(5, 2),
+                                                                            /* ControlOffset */ Control.ControlStandard.ControlOffset);
 
         public event EventHandler<EventArgs> OnTextChanged;
         public event EventHandler<EventArgs> OnEnterPressed;
@@ -98,7 +101,7 @@ namespace Blish_HUD.Controls {
             _mttb.KeyDown += InternalTextBox_KeyDown;
             _mttb.KeyUp += InternalTextBox_KeyUp;
 
-            this.Size = new Point(this.Width, 27);
+            this.Size = Standard.Size;
 
             Input.LeftMouseButtonPressed  += Input_MouseButtonPressed;
             Input.RightMouseButtonPressed += Input_MouseButtonPressed;

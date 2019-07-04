@@ -19,7 +19,7 @@ namespace Blish_HUD.Controls {
 
         protected HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
 
-        protected VerticalAlignment _verticalAlignment = VerticalAlignment.Top;
+        protected VerticalAlignment _verticalAlignment = VerticalAlignment.Middle;
 
         protected bool _wrapText = false;
 

@@ -75,7 +75,7 @@ namespace Blish_HUD.Modules {
 
         #endregion
 
-        private readonly ModuleParameters _moduleParameters;
+        protected readonly ModuleParameters ModuleParameters;
 
         private ModuleRunState _runState = ModuleRunState.Unloaded;
         private ModuleRunState RunState {
@@ -94,21 +94,11 @@ namespace Blish_HUD.Modules {
 
         // Manifest
 
-        public string Name => _moduleParameters.Manifest.Name;
+        public string Name => ModuleParameters.Manifest.Name;
 
-        public string Namespace => _moduleParameters.Manifest.Namespace;
+        public string Namespace => ModuleParameters.Manifest.Namespace;
 
-        public SemVer.Version Version => _moduleParameters.Manifest.Version;
-
-        // Service Managers
-
-        protected SettingsManager SettingsManager => _moduleParameters.SettingsManager;
-
-        protected ContentsManager ContentsManager => _moduleParameters.ContentsManager;
-
-        protected DirectoriesManager DirectoriesManager => _moduleParameters.DirectoriesManager;
-
-        protected Gw2ApiManager Gw2ApiManager => _moduleParameters.Gw2ApiManager;
+        public SemVer.Version Version => ModuleParameters.Manifest.Version;
 
         #endregion
 
@@ -116,13 +106,13 @@ namespace Blish_HUD.Modules {
 
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) {
-            _moduleParameters = moduleParameters;
+            ModuleParameters = moduleParameters;
         }
 
         #region Module Method Interface
 
         public void DoInitialize() {
-            DefineSettings(this.SettingsManager.ModuleSettings);
+            DefineSettings(ModuleParameters.SettingsManager.ModuleSettings);
 
             Initialize();
         }

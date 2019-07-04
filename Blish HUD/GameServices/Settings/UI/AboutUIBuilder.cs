@@ -33,7 +33,7 @@ namespace Blish_HUD.GameServices.Settings.UI {
         public static void BuildAbout(Panel panel, object nothing) {
             var redCornerTint = new Image(GameService.Content.GetTexture("1025164")) {
                 SpriteEffects = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically,
-                Location      = new Point(panel.Width - 1024 + 100 - 45, panel.Height - 256 + 100 - 63),
+                Location      = new Point(panel.Width - 1024 + 100 - 45, panel.Height - 256 + 100 - 63 + 15),
                 ClipsBounds   = false,
                 Parent        = panel,
             };

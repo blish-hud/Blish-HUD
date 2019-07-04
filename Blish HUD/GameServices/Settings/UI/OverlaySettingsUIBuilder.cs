@@ -5,14 +5,18 @@ namespace Blish_HUD.GameServices.Settings.UI {
     public static class OverlaySettingsUIBuilder {
 
         public static void BuildSingleModuleSettings(Panel buildPanel, object nothing) {
-            buildPanel.ShowBorder = true;
+            var settingPanels = new FlowPanel() {
+                Size        = buildPanel.ContentRegion.Size,
+                ShowBorder  = true,
+                Parent      = buildPanel
+            };
 
             var applicationSettingsPanel = new Panel() {
-                Width       = buildPanel.ContentRegion.Width,
+                Width       = settingPanels.ContentRegion.Width - 8,
                 Title       = "Application Settings",
                 CanCollapse = true,
-                Parent      = buildPanel,
-                Height      = 128
+                Height      = 128,
+                Parent      = settingPanels,
             };
 
             var applicationSettingsPadding = new Panel() {
@@ -22,25 +26,22 @@ namespace Blish_HUD.GameServices.Settings.UI {
             };
 
             var updatePanel = new Panel() {
-                Width       = buildPanel.ContentRegion.Width,
+                Width       = settingPanels.ContentRegion.Width - 8,
                 Title       = "Updates",
                 Height      = 128,
                 CanCollapse = true,
-                Collapsed   = true,
-                Parent      = buildPanel
+                Collapsed   = false,
+                Parent      = settingPanels
             };
 
             var audioSettingsPanel = new Panel() {
-                Width       = buildPanel.ContentRegion.Width,
+                Width       = settingPanels.ContentRegion.Width - 8,
                 Title       = "Volume Settings",
                 Height      = 128,
                 CanCollapse = true,
-                Collapsed   = true,
-                Parent      = buildPanel
+                Collapsed   = false,
+                Parent      = settingPanels
             };
-
-            Adhesive.Binding.CreateOneWayBinding(() => updatePanel.Top,        () => applicationSettingsPanel.Bottom, (h) => h, true);
-            Adhesive.Binding.CreateOneWayBinding(() => audioSettingsPanel.Top, () => updatePanel.Bottom,              (h) => h, true);
 
             GameService.Settings.RenderSettingsToPanel(applicationSettingsPadding, GameService.Overlay._applicationSettings.Entries);
 

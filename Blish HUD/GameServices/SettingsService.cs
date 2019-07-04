@@ -224,7 +224,7 @@ namespace Blish_HUD {
 
             var settingsMenuSection = new Panel() {
                 ShowBorder = true,
-                Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20, baseSettingsPanel.Height - 50 - Panel.BOTTOM_MARGIN),
+                Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20, baseSettingsPanel.Height - 50 - 24),
                 Location   = new Point(5, 50),
                 CanScroll  = true,
                 Title      = "Settings",
@@ -239,15 +239,14 @@ namespace Blish_HUD {
             };
 
             Panel cPanel = new Panel() {
-                Size     = new Point(748, baseSettingsPanel.Size.Y - Panel.BOTTOM_MARGIN * 2),
-                Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, Panel.BOTTOM_MARGIN),
+                Size     = new Point(748, baseSettingsPanel.Size.Y - 24 * 2),
+                Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 24),
                 Parent   = baseSettingsPanel
             };
 
             var settingsMi_About    = settingsListMenu.AddMenuItem("About",                Content.GetTexture("440023"));
             var settingsMi_App      = settingsListMenu.AddMenuItem("Application Settings", Content.GetTexture("156736"));
             var settingsMi_Controls = settingsListMenu.AddMenuItem("Hotkey Settings",      Content.GetTexture("156734"));
-            var settingsMi_Update   = settingsListMenu.AddMenuItem("Check For Updates",    Content.GetTexture("156411"));
             var settingsMi_API      = settingsListMenu.AddMenuItem("API Settings",         Content.GetTexture("156684"));
             var settingsMi_Modules  = settingsListMenu.AddMenuItem("Manage Modules",       Content.GetTexture("156764-noarrow"));
 
@@ -330,10 +329,9 @@ namespace Blish_HUD {
 
             //settingsMi_Exit.Click += delegate { ActiveOverlay.Exit(); };
 
-
-
             return baseSettingsPanel;
         }
+
         private Panel BuildApiPanel(Point size) {
             return null;
 
@@ -348,7 +346,7 @@ namespace Blish_HUD {
             {
                 Parent = apiPanel,
                 Size = new Point(200, 30),
-                Location = new Point(apiPanel.Size.X - 200 - Panel.RIGHT_MARGIN, Panel.TOP_MARGIN),
+                //Location = new Point(apiPanel.Size.X - 200 - Panel.RIGHT_PADDING, Panel.TOP_MARGIN),
                 Visible = foolSafeKeyRepository.Count > 0,
                 SelectedItem = foolSafeKeyRepository.FirstOrDefault().Key
             };
@@ -360,7 +358,7 @@ namespace Blish_HUD {
             {
                 Parent = apiPanel,
                 Size = new Point(apiPanel.Size.X, 30),
-                Location = new Point(0, apiPanel.Size.Y - Panel.BOTTOM_MARGIN - 15),
+                //Location = new Point(0, apiPanel.Size.Y - Panel.BOTTOM_PADDING - 15),
                 ShowShadow = true,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Text = Gw2Api.Connected ? "OK! Connected. :-)" : "Not connected.",
@@ -495,7 +493,7 @@ namespace Blish_HUD {
         private Panel BuildModulePermissionsPanel(Point size) {
             var permissionsPanel = new Panel() { CanScroll = false, Size = size };
             // All modules that require GW2 API.
-            var apiModules = Module.Modules.Where(x => x.Manifest.ApiPermissions != null);
+            var apiModules = Module.Modules.Where(x => x.Manifest.ApiPermissions != null).ToList();
 
             if (!apiModules.Any()) {
                 var noApiModulesLabel = new Label() {
@@ -517,7 +515,7 @@ namespace Blish_HUD {
             {
                 Parent = permissionsPanel,
                 Size = new Point(200, 30),
-                Location = new Point(Panel.LEFT_MARGIN, Panel.TOP_MARGIN)
+                //Location = new Point(Panel.LEFT_PADDING, Panel.TOP_MARGIN)
             };
             foreach (var module in apiModules)
             {

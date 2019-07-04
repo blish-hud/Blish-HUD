@@ -201,6 +201,28 @@ namespace Blish_HUD.GameServices.Module {
                 WrapText       = true,
                 Parent         = descriptionPanel
             };
+
+            // Permissions
+
+            var permissionPanel = new FlowPanel() {
+                Size                 = descriptionPanel.Size,
+                CanScroll            = true,
+                Location             = new Point(0, descriptionPanel.Bottom + Panel.MenuStandard.ControlOffset.Y),
+                PadLeftBeforeControl = true,
+                PadTopBeforeControl  = true,
+                ControlPadding       = new Vector2(10),
+                Title                = "Permissions",
+                ShowBorder           = true,
+                Parent               = collapsePanel
+            };
+
+            foreach (var perm in cModuleMan.Manifest.ApiPermissions) {
+                var permCheckbox = new Checkbox() {
+                    Text   = perm.Key.ToString(),
+                    Parent = permissionPanel,
+                    Width  = permissionPanel.Width / 3
+                };
+            }
         }
 
     }

@@ -39,11 +39,19 @@ namespace Blish_HUD.Controls {
         protected override void OnChildAdded(ChildChangedEventArgs e) {
             base.OnChildAdded(e);
             OnChildrenChanged(e);
+
+            e.ChangedChild.Resized += ChangedChildOnResized;
         }
 
         protected override void OnChildRemoved(ChildChangedEventArgs e) {
             base.OnChildRemoved(e);
             OnChildrenChanged(e);
+
+            e.ChangedChild.Resized -= ChangedChildOnResized;
+        }
+
+        private void ChangedChildOnResized(object sender, ResizedEventArgs e) {
+            ReflowChildLayout(_children);
         }
 
         private void OnChildrenChanged(ChildChangedEventArgs e) {
@@ -52,6 +60,8 @@ namespace Blish_HUD.Controls {
 
         public override void RecalculateLayout() {
             ReflowChildLayout(_children);
+
+            base.RecalculateLayout();
         }
 
         public void FilterChildren<TControl>(Func<TControl, bool> filter) where TControl : Control {
@@ -70,7 +80,7 @@ namespace Blish_HUD.Controls {
 
         private void ReflowChildLayoutLeftToRight(List<Control> allChildren) {
             float nextBottom    = _padTopBeforeControl ? _controlPadding.Y : 0;
-            float currentBottom = 0;
+            float currentBottom = _padTopBeforeControl ? _controlPadding.Y : 0;
             float lastRight     = _padLeftBeforeControl ? _controlPadding.X : 0;
 
             foreach (var child in allChildren.Where(c => c.Visible)) {

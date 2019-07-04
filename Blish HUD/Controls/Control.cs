@@ -24,7 +24,11 @@ namespace Blish_HUD.Controls {
 
         #region Static References
 
-        #region StandardColors
+        #region Standards
+
+        public static readonly DesignStandard ControlStandard = new DesignStandard(/*          Size */ Point.Zero,
+                                                                                   /*   PanelOffset */ new Point(09, 28),
+                                                                                   /* ControlOffset */ new Point(10, 10));
 
         public static class StandardColors {
 
