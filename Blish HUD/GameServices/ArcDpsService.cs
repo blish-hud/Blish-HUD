@@ -58,7 +58,7 @@ namespace Blish_HUD
             _server = new SocketListener(10, 200_000);
             _server.ReceivedMessage += MessageHandler;
 #if DEBUG
-            RawCombatEvent += (_, _) => { Interlocked.Increment(ref Counter); };
+            RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
 #endif
         }
 
