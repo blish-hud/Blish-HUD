@@ -3,21 +3,18 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using Blish_HUD.ArcDps;
-using Blish_HUD.ArcDps.Models;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD
 {
     public class ArcDpsService : GameService
     {
-        public delegate void RawCombatEvent(CombatEvent data);
-
         private static readonly object WatchLock = new object();
+#if DEBUG
+        public static long Counter;
+#endif
         private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
         private bool _hudIsActive;
-#if DEBUG
-        public static long Counter = 0;
-#endif
 
         private SocketListener _server;
 
@@ -53,7 +50,7 @@ namespace Blish_HUD
         /// <summary>
         ///     Holds unprocessed combat data
         /// </summary>
-        public event RawCombatEvent OnRawCombatEvent;
+        public event EventHandler<RawCombatEventArgs> RawCombatEvent;
 
         protected override void Initialize()
         {
@@ -61,10 +58,7 @@ namespace Blish_HUD
             _server = new SocketListener(10, 200_000);
             _server.ReceivedMessage += MessageHandler;
 #if DEBUG
-            OnRawCombatEvent += data =>
-            {
-                Interlocked.Increment(ref Counter);
-            };
+            RawCombatEvent += (_, _) => { Interlocked.Increment(ref Counter); };
 #endif
         }
 
@@ -102,15 +96,18 @@ namespace Blish_HUD
                 case (byte) MessageType.Combat:
                     ProcessCombat(data.Message);
                     break;
-                default:
-                    break;
             }
         }
 
         private void ProcessCombat(byte[] data)
         {
             var message = CombatParser.ProcessCombat(data);
-            OnRawCombatEvent?.Invoke(message);
+            OnRawCombatEvent(new RawCombatEventArgs(message));
+        }
+
+        private void OnRawCombatEvent(RawCombatEventArgs e)
+        {
+            RawCombatEvent?.Invoke(this, e);
         }
 
         private enum MessageType
