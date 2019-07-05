@@ -159,7 +159,7 @@ namespace Blish_HUD.ArcDps
 
                 if (token.MessageSize == null)
                 {
-                    if (totalReceivedDataSize - dataStartOffset > MESSAGE_HEADER_SIZE)
+                    if (totalReceivedDataSize - alreadyProcessedDataSize > MESSAGE_HEADER_SIZE)
                     {
                         var headerData = new byte[MESSAGE_HEADER_SIZE];
                         Buffer.BlockCopy(e.Buffer, dataStartOffset, headerData, 0, MESSAGE_HEADER_SIZE);
