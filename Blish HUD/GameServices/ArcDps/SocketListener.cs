@@ -88,7 +88,16 @@ namespace Blish_HUD.ArcDps
             }
 
             _acceptedClientsSemaphore.WaitOne();
-            if (!_listenSocket.AcceptAsync(acceptEventArg)) ProcessAccept(acceptEventArg);
+
+            try
+            {
+                if (!_listenSocket.AcceptAsync(acceptEventArg)) ProcessAccept(acceptEventArg);
+            }
+            catch
+            {
+                // ignored
+                // will fail when closing bhud
+            }
         }
 
         private void ProcessAccept(SocketAsyncEventArgs e)
