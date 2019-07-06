@@ -47,6 +47,14 @@ namespace Blish_HUD
             }
         }
 
+        /// <remarks>
+        ///     Please note that you block the socket server with whatever
+        ///     you are doing on this event. So please don't do anything
+        ///     that requires heavy work. Make your own worker thread
+        ///     if you need to.
+        ///     Also note, that this is not the main thread, so operations
+        ///     other parts of BHUD have to be thread safe.
+        /// </remarks>
         /// <summary>
         ///     Holds unprocessed combat data
         /// </summary>

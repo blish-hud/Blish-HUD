@@ -1,5 +1,8 @@
 ﻿namespace Blish_HUD.ArcDps.Models
 {
+    /// <summary>
+    ///     Infos and data about the combat event. Have a look at the arcdps plugin documentation for how to use it
+    /// </summary>
     public class Ev
     {
         public Ev(ulong time, ulong srcAgent, ulong dstAgent, int value, int buffDmg, uint overStackValue, uint skillId,

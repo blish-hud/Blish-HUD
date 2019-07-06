@@ -1,5 +1,8 @@
 ﻿namespace Blish_HUD.ArcDps.Models
 {
+    /// <summary>
+    ///     An Agent. Could be anything that has behaviour in-game, for example a player or an NPC
+    /// </summary>
     public class Ag
     {
         public Ag(string name, ulong id, uint profession, uint elite, uint self, ushort team)

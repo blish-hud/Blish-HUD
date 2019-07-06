@@ -1,5 +1,8 @@
 ﻿namespace Blish_HUD.ArcDps.Models
 {
+    /// <summary>
+    ///     A combat event, like arcdps exposes it to its plugins
+    /// </summary>
     public class CombatEvent
     {
         public CombatEvent(Ev ev, Ag src, Ag dst, string skillName, ulong id, ulong revision)
@@ -18,6 +21,5 @@
         public string SkillName { get; }
         public ulong Id { get; }
         public ulong Revision { get; }
-
     }
 }
