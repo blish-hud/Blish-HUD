@@ -117,13 +117,6 @@ namespace Blish_HUD.Controls {
             buildPanel.Parent = this;
         }
 
-        protected override void OnMoved(MovedEventArgs e) {
-            base.OnMoved(e);
-
-            // Mostly needed to update the scrollbar location, if it's visible
-            //UpdateRegions();
-        }
-
         /// <inheritdoc />
         protected override void OnClick(MouseEventArgs e) {
             if (_canCollapse && _layoutHeaderBounds.Contains(this.RelativeMousePosition)) {
@@ -131,11 +124,6 @@ namespace Blish_HUD.Controls {
             }
 
             base.OnClick(e);
-        }
-
-        protected override void OnResized(ResizedEventArgs e) {
-            base.OnResized(e);
-            //UpdateRegions();
         }
 
         protected override void OnChildAdded(ChildChangedEventArgs e) {
@@ -263,10 +251,6 @@ namespace Blish_HUD.Controls {
                 _scrollbarBindings.ForEach((bind) => bind.Disable());
                 _scrollbarBindings.Clear();
 
-                int psHOffset = this.ShowBorder ? -20 : 0;
-                int psYOffset = this.ShowBorder ? 10 : 0;
-                int psXOffset = this.ShowBorder ? -RIGHT_PADDING - 2 : -20;
-
                 _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Parent, () => this.Parent, applyLeft: true));
 
                 _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Height, () => this.Height, (h) => this.ContentRegion.Height - 20, applyLeft: true));
@@ -291,6 +275,10 @@ namespace Blish_HUD.Controls {
         
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             if (!string.IsNullOrEmpty(_title)) {
+                spriteBatch.DrawOnCtrl(this,
+                                       _texturePanelHeader,
+                                       _layoutHeaderBounds);
+
                 // Panel header
                 if (_canCollapse && _mouseOver && this.RelativeMousePosition.Y <= HEADER_HEIGHT) {
                     spriteBatch.DrawOnCtrl(this,
@@ -323,7 +311,7 @@ namespace Blish_HUD.Controls {
 
             if (this.ShowBorder) {
                 // Lightly tint the background of the panel
-                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(ContentRegion.X, 0, ContentRegion.Width, ContentRegion.Bottom), Color.Black * (0.1f * AccentOpacity));
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, this.ContentRegion, Color.Black * (0.1f * AccentOpacity));
 
                 // Top left accent
                 spriteBatch.DrawOnCtrl(this,

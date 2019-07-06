@@ -45,6 +45,7 @@ namespace Blish_HUD.GameServices.Settings.UI {
                 Width               = panel.Width,
                 StrokeText          = true,
                 HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment   = VerticalAlignment.Top,
                 Parent              = panel
             };
 

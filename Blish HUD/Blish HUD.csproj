@@ -189,6 +189,7 @@
     <Compile Include="Entities\EntityBillboard.cs" />
     <Compile Include="Entities\EntityContainer.cs" />
     <Compile Include="Entities\EntityText.cs" />
+    <Compile Include="GameServices\Content\RenderServiceTextureSize.cs" />
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Content\IDataReader.cs" />
@@ -216,8 +217,8 @@
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
-    <Compile Include="_Utils\LogUtil.cs" />
     <Compile Include="_Utils\MouseInterceptor.cs" />
+    <Compile Include="_Utils\StringUtil.cs" />
     <Compile Include="_Utils\VectorUtil.cs" />
     <Compile Include="_Utils\WinAPI\Extern.cs" />
     <Compile Include="_Enums\Gw2Locale.cs" />

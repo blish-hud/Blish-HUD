@@ -189,37 +189,5 @@ namespace Blish_HUD {
             return className;
         }
 
-        //private static RECT prevProcRect;
-        //private static System.Drawing.Point prevProcPos;
-
-        //public static void UpdateOverlayPositionAndSize(IntPtr thisWindowHandle, Process process) {
-        //    var processWindowHandle = process.MainWindowHandle;
-
-        //    var procRect = new RECT();
-        //    GetClientRect(processWindowHandle, ref procRect);
-
-        //    var procPos = new System.Drawing.Point();
-        //    ClientToScreen(processWindowHandle, ref procPos);
-
-        //    if (procPos != prevProcPos || !procRect.Equals(prevProcRect)) {
-        //        GameService.Graphics.Resolution = new Point(
-        //            procRect.Right - procRect.Left,
-        //            procRect.Bottom - procRect.Top
-        //        );
-
-        //        SetWindowPos(
-        //            thisWindowHandle,
-        //            HWND_TOPMOST,
-        //            procPos.X,
-        //            procPos.Y,
-        //            procRect.Right - procRect.Left,
-        //            procRect.Bottom - procRect.Top,
-        //            SWP_SHOWWINDOW
-        //        );
-
-        //        prevProcPos = procPos;
-        //        prevProcRect = procRect;
-        //    }
-        //}
     }
 }

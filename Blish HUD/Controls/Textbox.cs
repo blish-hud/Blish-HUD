@@ -9,6 +9,10 @@ using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Blish_HUD.Controls {
+
+    /// <summary>
+    /// Represents a textbox control.
+    /// </summary>
     public class TextBox : Control {
 
         #region Load Static
@@ -38,11 +42,11 @@ namespace Blish_HUD.Controls {
                                                                             /*   PanelOffset */ new Point(5, 2),
                                                                             /* ControlOffset */ Control.ControlStandard.ControlOffset);
 
-        public event EventHandler<EventArgs> OnTextChanged;
-        public event EventHandler<EventArgs> OnEnterPressed;
-        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> OnKeyPressed;
-        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> OnKeyDown;
-        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> OnKeyUp;
+        public event EventHandler<EventArgs> TextChanged;
+        public event EventHandler<EventArgs> EnterPressed;
+        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> KeyPressed;
+        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> KeyDown;
+        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> KeyUp;
 
         protected System.Windows.Forms.TextBox _mttb;
 
@@ -78,6 +82,9 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _font, value);
         }
 
+        /// <summary>
+        /// [NOT THREAD-SAFE]
+        /// </summary>
         public TextBox() {
             _lastInvalidate = DateTime.MinValue.TimeOfDay;
 
@@ -131,7 +138,7 @@ namespace Blish_HUD.Controls {
             if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
                 e.SuppressKeyPress = true;
             
-            this.OnKeyDown?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
+            this.KeyDown?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
 
             _textWasChanged = true;
             Invalidate();
@@ -139,15 +146,15 @@ namespace Blish_HUD.Controls {
 
         private void InternalTextBox_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) {
-                this.OnEnterPressed?.Invoke(this, new EventArgs());
+                this.EnterPressed?.Invoke(this, new EventArgs());
             } else {
                 /* Supress up and down keys because they move the cursor left and
                    right for some silly reason */
                 if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
                     e.SuppressKeyPress = true;
 
-                this.OnKeyUp?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
-                this.OnKeyPressed?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
+                this.KeyUp?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
+                this.KeyPressed?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
             }
 
             _textWasChanged = true;
@@ -188,7 +195,7 @@ namespace Blish_HUD.Controls {
 
             _textWasChanged = true;
 
-            this.OnTextChanged?.Invoke(this, e);
+            this.TextChanged?.Invoke(this, e);
         }
 
         private void Textbox_LeftMouseButtonReleased(object sender, MouseEventArgs e) {

@@ -3,8 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 using Blish_HUD.Content;
+using Blish_HUD.GameServices.Content;
 using Blish_HUD.Modules.Managers;
+using Flurl.Http;
+using Microsoft.Scripting.Runtime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -52,11 +56,16 @@ namespace Blish_HUD {
             public static Texture2D Error { get; private set; }
             public static Texture2D Pixel { get; private set; }
 
+            public static Texture2D TransparentPixel { get; private set; }
+
             public static void Load() {
                 Error = Content.GetTexture(@"common\error");
 
                 Pixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
                 Pixel.SetData(new[] { Color.White });
+
+                TransparentPixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
+                TransparentPixel.SetData(new[] { Color.Transparent });
             }
         }
 
@@ -192,6 +201,77 @@ namespace Blish_HUD {
 
             return cachedTexture;
         }
+
+        /// <summary>
+        /// Retreives a texture from the Guild Wars 2 Render Service.
+        /// </summary>
+        /// <param name="signature">The SHA1 signature of the requested texture.</param>
+        /// <param name="fileId">The file id of the requested texture.</param>
+        /// <param name="size">Specifies the size of the texture requested - only some render service hosts will utilize this setting.</param>
+        /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
+        /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
+        public Texture2D GetRenderServiceTexture(string signature, string fileId, RenderServiceTextureSize size) {
+            Texture2D returnedTexture = new Texture2D(Graphics.GraphicsDevice, (int)size, (int)size);
+
+            string requestUrl = $"https://darthmaim-cdn.de/gw2treasures/icons/{signature}/{fileId}-{(int)size}px.png";
+
+            requestUrl.GetBytesAsync()
+                      .ContinueWith((textureDataResponse) => {
+                                        if (textureDataResponse.Exception != null) {
+                                            Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
+                                            return;
+                                        }
+
+                                        var textureData = textureDataResponse.Result;
+
+                                        using (var textureStream = new MemoryStream(textureData)) {
+                                            var loadedTexture = Texture2D.FromStream(Graphics.GraphicsDevice, textureStream);
+
+                                            Color[] clrData = new Color[loadedTexture.Width * loadedTexture.Height];
+                                            loadedTexture.GetData(clrData);
+
+                                            returnedTexture.SetData(clrData);
+
+                                            loadedTexture.Dispose();
+                                        }
+                                    });
+
+            return returnedTexture;
+        }
+
+        #region Render Service
+
+        /// <summary>
+        /// Retreives a texture from the Guild Wars 2 Render Service.
+        /// </summary>
+        /// <param name="signature">The SHA1 signature of the requested texture.</param>
+        /// <param name="fileId">The file id of the requested texture.</param>
+        /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
+        /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
+        public Texture2D GetRenderServiceTexture(string signature, string fileId) {
+            return GetRenderServiceTexture(signature, fileId, RenderServiceTextureSize.Unspecified);
+        }
+
+        private static Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
+
+        public Texture2D GetRenderServiceTexture(string uriOrSignatureFileIdPair,  RenderServiceTextureSize size) {
+            var splitUri = _regexRenderServiceSignatureFileIdPair.Match(uriOrSignatureFileIdPair);
+
+            if (!splitUri.Success) {
+                throw new ArgumentException($"Could not find signature / file id pair in provided '{uriOrSignatureFileIdPair}'.", nameof(uriOrSignatureFileIdPair));
+            }
+
+            string signature = splitUri.Groups[1].Value;
+            string fileId    = splitUri.Groups[2].Value;
+
+            return GetRenderServiceTexture(signature, fileId, size);
+        }
+
+        public Texture2D GetRenderServiceTexture(string uriOrSignatureFileIdPair) {
+            return GetRenderServiceTexture(uriOrSignatureFileIdPair, RenderServiceTextureSize.Unspecified);
+        }
+
+#endregion
 
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
             string fullFontName = $"{font.ToString().ToLower()}-{((int)size).ToString()}-{style.ToString().ToLower()}";

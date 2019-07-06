@@ -15,8 +15,11 @@ namespace Blish_HUD {
 
     public class GameIntegrationService : GameService {
 
-        public event EventHandler<EventArgs> OnGw2Closed;
-        public event EventHandler<EventArgs> OnGw2Started;
+        public event EventHandler<EventArgs> Gw2Closed;
+        public event EventHandler<EventArgs> Gw2Started;
+
+        public event EventHandler<EventArgs> Gw2LostFocus;
+        public event EventHandler<EventArgs> Gw2AcquiredFocus;
 
         // How long, in seconds, between each
         // check to see if GW2 is running
@@ -49,9 +52,9 @@ namespace Blish_HUD {
                 _gw2IsRunning = value;
 
                 if (_gw2IsRunning)
-                    this.OnGw2Started?.Invoke(this, EventArgs.Empty);
+                    this.Gw2Started?.Invoke(this, EventArgs.Empty);
                 else
-                    this.OnGw2Closed?.Invoke(this, EventArgs.Empty);
+                    this.Gw2Closed?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -66,9 +69,7 @@ namespace Blish_HUD {
                 _gw2Process = value;
 
                 if (value == null || _gw2Process.MainWindowHandle == IntPtr.Zero) {
-                    Blish_HUD.BlishHud.Form.Invoke((MethodInvoker)(() => {
-                                                                Blish_HUD.BlishHud.Form.Hide();
-                                                            }));
+                    BlishHud.Form.Invoke((MethodInvoker) (() => { BlishHud.Form.Hide(); }));
 
                     _gw2Process = null;
                 } else {
@@ -79,7 +80,7 @@ namespace Blish_HUD {
                     }
                 }
 
-                this.Gw2IsRunning = _gw2Process != null && Blish_HUD.WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
+                this.Gw2IsRunning = _gw2Process != null && WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
             }
         }
 
@@ -127,8 +128,8 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            Blish_HUD.BlishHud.Form.Shown += delegate {
-                Blish_HUD.WindowUtil.SetupOverlay(Blish_HUD.BlishHud.FormHandle);
+            BlishHud.Form.Shown += delegate {
+                WindowUtil.SetupOverlay(BlishHud.FormHandle);
             };
 
             CreateTrayIcon();
@@ -181,8 +182,6 @@ namespace Blish_HUD {
             };
         }
 
-        // TODO: At some point it would be nice to pull all of this into just Program.cs so that we can dispose of the
-        // MonoGame instance when the game is not currently being played
         private void TryAttachToGw2() {
             this.Gw2Process = GetGw2Process();
 
@@ -203,9 +202,7 @@ namespace Blish_HUD {
                     Console.WriteLine(ex.Message);
                 }
 
-                Blish_HUD.BlishHud.Form.Invoke((MethodInvoker) (() => {
-                                                             Blish_HUD.BlishHud.Form.Show();
-                                                         }));
+                BlishHud.Form.Invoke((MethodInvoker) (() => { BlishHud.Form.Show(); }));
             }
         }
 
@@ -246,23 +243,23 @@ namespace Blish_HUD {
         }
         
         // Keeps track of how long it's been since we last checked for the gw2 process
-        private double lastGw2Check = 0;
+        private double _lastGw2Check = 0;
 
         protected override void Update(GameTime gameTime) {
             // Determine if we are in game or not
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
-                if (!Blish_HUD.WindowUtil.UpdateOverlay(Blish_HUD.BlishHud.FormHandle, this.Gw2WindowHandle)) {
+                if (!WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle)) {
                     this.Gw2Process = null;
                 }
             } else {
-                lastGw2Check += gameTime.ElapsedGameTime.TotalSeconds;
+                _lastGw2Check += gameTime.ElapsedGameTime.TotalSeconds;
                 
-                if (lastGw2Check > GW2_EXE_CHECKRATE) {
+                if (_lastGw2Check > GW2_EXE_CHECKRATE) {
                     TryAttachToGw2();
 
-                    lastGw2Check = 0;
+                    _lastGw2Check = 0;
                 }
             }
         }
@@ -271,7 +268,7 @@ namespace Blish_HUD {
             if (this.Gw2Process != null) {
                 try {
                     var gw2WindowHandle = this.Gw2Process.MainWindowHandle;
-                    Blish_HUD.WindowUtil.SetForegroundWindowEx(gw2WindowHandle);
+                    WindowUtil.SetForegroundWindowEx(gw2WindowHandle);
                 } catch (NullReferenceException ex) {
                     Console.WriteLine("gw2Process.MainWindowHandle > NullReferenceException: Ignored and skipping gw2 focus.");
                 }

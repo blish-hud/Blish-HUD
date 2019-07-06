@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Text;
@@ -6,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Blish_HUD.Controls;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
@@ -23,9 +23,8 @@ namespace Blish_HUD {
         private static Logger Logger;
 
         private static LoggingConfiguration _logConfiguration;
-
-        private const string STANDARD_LAYOUT = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}";
-        private const string ERROR_LAYOUT    = @"${message}${onexception:EXCEPTION OCCURRED\:${exception:format=type,message,method:maxInnerExceptionLevel=5:innerFormat=shortType,message,method}}";
+        // ${message}
+        private const string STANDARD_LAYOUT = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}${onexception:${newline}${exception:format=toString}${newline}}";
 
         internal static void InitDebug() {
             // Make sure crash dir is available for logs as early as possible
@@ -59,9 +58,8 @@ namespace Blish_HUD {
             };
 
             _logConfiguration.AddTarget(asyncLogFile);
-            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Warn, asyncLogFile);
-            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, asyncLogFile, ERROR_LAYOUT);
-            _logConfiguration.AddRuleForOneLevel(LogLevel.Fatal, asyncLogFile, ERROR_LAYOUT);
+
+            _logConfiguration.AddRule(LogLevel.Info,  LogLevel.Fatal,  asyncLogFile);
 
             AddDebugTarget(_logConfiguration);
             AddSentryTarget(_logConfiguration);
@@ -71,13 +69,17 @@ namespace Blish_HUD {
             Logger = LogManager.GetCurrentClassLogger();
         }
 
+        public static void TargetDebug(string time, string level, string logger, string message) {
+            System.Diagnostics.Debug.WriteLine($"{time}|{level.ToUpper()}|{logger}|{message}");
+        }
+
         [Conditional("DEBUG")]
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
             LogManager.ThrowExceptions = true;
 
             var logDebug = new MethodCallTarget("logdebug") {
-                ClassName  = typeof(LogUtil).AssemblyQualifiedName,
-                MethodName = nameof(LogUtil.TargetDebug),
+                ClassName  = typeof(DebugService).AssemblyQualifiedName,
+                MethodName = nameof(DebugService.TargetDebug),
                 Parameters = {
                     new MethodCallParameter("${time:invariant=true}"),
                     new MethodCallParameter("${level}"),
@@ -87,9 +89,7 @@ namespace Blish_HUD {
             };
 
             _logConfiguration.AddTarget(logDebug);
-            _logConfiguration.AddRule(LogLevel.Info, LogLevel.Warn, logDebug);
-            _logConfiguration.AddRuleForOneLevel(LogLevel.Error, logDebug, ERROR_LAYOUT);
-            _logConfiguration.AddRuleForOneLevel(LogLevel.Fatal, logDebug, ERROR_LAYOUT);
+            _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, logDebug);
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
@@ -99,6 +99,13 @@ namespace Blish_HUD {
             var e = (Exception)args.ExceptionObject;
 
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
+
+            FlushSentry();
+        }
+
+        [Conditional("SENTRY")]
+        private static void FlushSentry() {
+            SentrySdk.Close();
         }
 
         [Conditional("SENTRY")]
@@ -118,14 +125,21 @@ namespace Blish_HUD {
                 // It's not working right now, though, for some reason
                 //sentry.DisableAppDomainUnhandledExceptionCapture();
 
-                sentry.BeforeSend = delegate(SentryEvent d) {
-                    d.SetTag("locale", CultureInfo.CurrentUICulture.DisplayName);
+                sentry.BeforeBreadcrumb = delegate(Breadcrumb breadcrumb) {
+                    string filteredMessage = StringUtil.ReplaceUsingStringComparison(breadcrumb.Message, Environment.UserName, "<filtered-username>", StringComparison.OrdinalIgnoreCase);
+
+                    return new Breadcrumb(filteredMessage, breadcrumb.Type, breadcrumb.Data, breadcrumb.Category, breadcrumb.Level);
+                };
+
+                sentry.BeforeSend = delegate(SentryEvent sentryEvent) {
+                    sentryEvent.SetTag("locale", CultureInfo.CurrentUICulture.DisplayName);
 
                     if (!string.IsNullOrEmpty(Program.OverlayVersion.Build)) {
-                        d.SetTag("Build", Program.OverlayVersion.Build);
+                        sentryEvent.SetTag("Build", Program.OverlayVersion.Build);
                     }
 
                     try {
+                        // Display installed modules
                         if (GameService.Module != null && GameService.Module.Loaded) {
                             var moduleDetails = GameService.Module.Modules.Select(m => new {
                                 m.Manifest.Name,
@@ -134,13 +148,13 @@ namespace Blish_HUD {
                                 m.Enabled
                             });
 
-                            d.SetExtra("Modules", moduleDetails.ToArray());
+                            sentryEvent.SetExtra("Modules", moduleDetails.ToArray());
                         }
                     } catch (Exception unknownException) {
-                        d.SetExtra("Modules", $"Exception: {unknownException.Message}");
+                        sentryEvent.SetExtra("Modules", $"Exception: {unknownException.Message}");
                     }
 
-                    return d;
+                    return sentryEvent;
                 };
             });
         }
@@ -190,14 +204,15 @@ namespace Blish_HUD {
 
         }
 
-        internal Dictionary<string, FuncClock> _funcTimes;
+        internal ConcurrentDictionary<string, FuncClock> _funcTimes;
 
         [Conditional("DEBUG")]
         public void StartTimeFunc(string func) {
-            if (!_funcTimes.ContainsKey(func))
-                _funcTimes.Add(func, new FuncClock());
+            if (!_funcTimes.ContainsKey(func)) {
+                _funcTimes.TryAdd(func, new FuncClock());
+            }
 
-            _funcTimes[func].Start();
+            _funcTimes[func]?.Start();
         }
 
         [Conditional("DEBUG")]
@@ -220,7 +235,7 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            _funcTimes = new Dictionary<string, FuncClock>();
+            _funcTimes = new ConcurrentDictionary<string, FuncClock>();
         }
 
         protected override void Update(GameTime gameTime) {

@@ -59,12 +59,9 @@ namespace Blish_HUD.Controls {
             var tabWindowTexture = _textureDefaultBackround;
             tabWindowTexture = tabWindowTexture.Duplicate().SetRegion(0, 0, 64, _textureDefaultBackround.Height, Color.Transparent);   
 
-            ConstructWindow(tabWindowTexture, new Vector2(25, 33), new Rectangle(0, 0, 1100, 745), new Thickness(60, 75, 45, 25), 40);
+            this.ConstructWindow(tabWindowTexture, new Vector2(25, 33), new Rectangle(0, 0, 1100, 745), new Thickness(60, 75, 45, 25), 40);
 
             ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, WINDOWCONTENT_WIDTH, WINDOWCONTENT_HEIGHT);
-
-            this.TabChanged += delegate {
-            };
         }
 
         protected virtual void OnTabChanged(EventArgs e) {
