@@ -4,6 +4,7 @@ using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Blish_HUD {
 
@@ -169,9 +170,11 @@ namespace Blish_HUD {
             i++;
             _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
-            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "ArcDPS Bridge: " + (GameService.ArcDps.ArcPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "ArcDPS Bridge: " + (GameService.ArcDps.RenderPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
             _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "IsHudActive: " + (GameService.ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "Counter: " + Interlocked.Read(ref ArcDpsService.Counter), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
 #endif
 
             _basicSpriteBatch.End();
