@@ -3,12 +3,6 @@ using System.Net.Sockets;
 
 namespace Blish_HUD.ArcDps
 {
-    public sealed class MessageData
-    {
-        public byte[] Message;
-        public AsyncUserToken Token;
-    }
-
     public sealed class AsyncUserToken : IDisposable
     {
         public AsyncUserToken(Socket socket)

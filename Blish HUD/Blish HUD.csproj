@@ -190,6 +190,7 @@
     <Compile Include="Entities\EntityText.cs" />
     <Compile Include="GameServices\ArcDps\AsyncUserToken.cs" />
     <Compile Include="GameServices\ArcDps\CombatParser.cs" />
+    <Compile Include="GameServices\ArcDps\MessageData.cs" />
     <Compile Include="GameServices\ArcDps\Models\Ag.cs" />
     <Compile Include="GameServices\ArcDps\Models\CombatEvent.cs" />
     <Compile Include="GameServices\ArcDps\Models\Ev.cs" />
