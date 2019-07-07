@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using Blish_HUD.Controls.Effects;
 using Blish_HUD;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -83,7 +84,7 @@ namespace Blish_HUD.Controls {
         private DetailsIconSize      _iconSize    = DetailsIconSize.Large;
         private string               _text;
         private string               _iconDetails;
-        private Texture2D            _icon;
+        private AsyncTexture2D       _icon;
         private bool                 _showVignette = true;
         private int                  _maxFill;
         private int                  _currentFill;
@@ -122,7 +123,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// The icon to display on the left side of the <see cref="DetailsButton"/>.
         /// </summary>
-        public Texture2D Icon {
+        public AsyncTexture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }

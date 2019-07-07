@@ -210,8 +210,9 @@ namespace Blish_HUD {
         /// <param name="size">Specifies the size of the texture requested - only some render service hosts will utilize this setting.</param>
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
-        public Texture2D GetRenderServiceTexture(string signature, string fileId, RenderServiceTextureSize size) {
-            Texture2D returnedTexture = new Texture2D(Graphics.GraphicsDevice, (int)size, (int)size);
+        public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId, RenderServiceTextureSize size) {
+            //Texture2D returnedTexture = new Texture2D(Graphics.GraphicsDevice, (int)size, (int)size);
+            AsyncTexture2D returnedTexture = new AsyncTexture2D(Textures.TransparentPixel.Duplicate());
 
             string requestUrl = $"https://darthmaim-cdn.de/gw2treasures/icons/{signature}/{fileId}-{(int)size}px.png";
 
@@ -227,12 +228,14 @@ namespace Blish_HUD {
                                         using (var textureStream = new MemoryStream(textureData)) {
                                             var loadedTexture = Texture2D.FromStream(Graphics.GraphicsDevice, textureStream);
 
-                                            Color[] clrData = new Color[loadedTexture.Width * loadedTexture.Height];
-                                            loadedTexture.GetData(clrData);
+                                            returnedTexture.SwapTexture(loadedTexture);
 
-                                            returnedTexture.SetData(clrData);
+                                            //Color[] clrData = new Color[loadedTexture.Width * loadedTexture.Height];
+                                            //loadedTexture.GetData(clrData);
 
-                                            loadedTexture.Dispose();
+                                            //returnedTexture.SetData(clrData);
+
+                                            //loadedTexture.Dispose();
                                         }
                                     });
 
@@ -248,13 +251,20 @@ namespace Blish_HUD {
         /// <param name="fileId">The file id of the requested texture.</param>
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
-        public Texture2D GetRenderServiceTexture(string signature, string fileId) {
+        public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
             return GetRenderServiceTexture(signature, fileId, RenderServiceTextureSize.Unspecified);
         }
 
-        private static Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static readonly Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
 
-        public Texture2D GetRenderServiceTexture(string uriOrSignatureFileIdPair,  RenderServiceTextureSize size) {
+        /// <summary>
+        /// Retreives a texture from the Guild Wars 2 Render Service.
+        /// </summary>
+        /// <param name="uriOrSignatureFileIdPair">Either the full Render Service URL or the signature and file id URI (e.g. "7554DCAF5A1EA1BDF5297352A203AF2357BE2B5B/498983").</param>
+        /// <param name="size">Specifies the size of the texture requested - only some render service hosts will utilize this setting.</param>
+        /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
+        /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
+        public AsyncTexture2D GetRenderServiceTexture(string uriOrSignatureFileIdPair,  RenderServiceTextureSize size) {
             var splitUri = _regexRenderServiceSignatureFileIdPair.Match(uriOrSignatureFileIdPair);
 
             if (!splitUri.Success) {
@@ -267,7 +277,13 @@ namespace Blish_HUD {
             return GetRenderServiceTexture(signature, fileId, size);
         }
 
-        public Texture2D GetRenderServiceTexture(string uriOrSignatureFileIdPair) {
+        /// <summary>
+        /// Retreives a texture from the Guild Wars 2 Render Service.
+        /// </summary>
+        /// <param name="uriOrSignatureFileIdPair">Either the full Render Service URL or the signature and file id URI (e.g. "7554DCAF5A1EA1BDF5297352A203AF2357BE2B5B/498983").</param>
+        /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
+        /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
+        public AsyncTexture2D GetRenderServiceTexture(string uriOrSignatureFileIdPair) {
             return GetRenderServiceTexture(uriOrSignatureFileIdPair, RenderServiceTextureSize.Unspecified);
         }
 

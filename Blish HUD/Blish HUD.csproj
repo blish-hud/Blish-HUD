@@ -104,6 +104,7 @@
     <StartupObject>Blish_HUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Content\AsyncTexture2D.cs" />
     <Compile Include="Controls\HotkeyAssigner.cs" />
     <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
     <Compile Include="Content\DirectoryReader.cs" />
@@ -182,7 +183,6 @@
     <Compile Include="Controls\_Types\Thickness.cs" />
     <Compile Include="Controls\_Types\VerticalAlignment.cs" />
     <Compile Include="CustomBlendStates.cs" />
-    <Compile Include="Custom\ObservableKeyedCollection.cs" />
     <Compile Include="Entities\Cube.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityBillboard.cs" />

@@ -55,19 +55,17 @@ namespace Blish_HUD.Controls {
             this.VerticalAlignment    = verticalAlignment;
         }
 
-        private void InitRender() {
+        private void InitRender(GraphicsDevice graphicsDevice) {
             if (_cachedRender != null)
                 throw new ActionNotSupportedException($"{nameof(InitRender)} was already called on this!  It can only be called once.");
 
-            var graphicsDevice = BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice;
-
-            _cachedRender = new RenderTarget2D(graphicsDevice,
+            _cachedRender = new RenderTarget2D(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice,
                                                this.DestinationRectangle.Width,
                                                this.DestinationRectangle.Height,
                                                false,
                                                SurfaceFormat.Color,
                                                DepthFormat.None,
-                                               graphicsDevice.PresentationParameters.MultiSampleCount,
+                                               BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice.PresentationParameters.MultiSampleCount,
                                                RenderTargetUsage.PreserveContents);
 
             _proxyControl.Size = this.DestinationRectangle.Size;
@@ -145,7 +143,7 @@ namespace Blish_HUD.Controls {
                 _cachedStringRenders.TryAdd(csrHash, checkCsr);
             }
 
-            checkCsr.InitRender();
+            GameService.Graphics.QueueMainThreadRender(checkCsr.InitRender);
 
             return checkCsr;
         }
