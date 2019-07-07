@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Blish_HUD.Annotations;
 using Blish_HUD.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -43,7 +42,7 @@ namespace Blish_HUD.Pathing.Entities {
 
         public Trail() : this(null) { /* NOOP */ }
 
-        public Trail([CanBeNull] List<Vector3> trailPoints) {
+        public Trail(List<Vector3> trailPoints) {
             _trailPoints = trailPoints ?? new List<Vector3>();
             InitTrailPoints();
         }

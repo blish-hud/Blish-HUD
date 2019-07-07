@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using Blish_HUD.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -41,7 +40,7 @@ namespace Blish_HUD.Entities {
         private readonly List<T> _children;
         public IReadOnlyCollection<T> Children => _children.AsReadOnly();
 
-        public EntityContainer([CanBeNull] IEnumerable<T> children) {
+        public EntityContainer(IEnumerable<T> children) {
             _children = children?.ToList() ?? new List<T>();
         }
         
@@ -142,7 +141,7 @@ namespace Blish_HUD.Entities {
         }
 
         // See: RemoveChild()
-        bool ICollection<T>.Remove([CanBeNull] T child) {
+        bool ICollection<T>.Remove(T child) {
             int beforeCount = _children.Count;
 
             RemoveChild(child);

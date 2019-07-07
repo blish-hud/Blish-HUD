@@ -279,7 +279,6 @@
     <Compile Include="GameServices\ContentService.cs" />
     <Compile Include="GameServices\SettingsService.cs" />
     <Compile Include="Entities\Primitives\Billboard.cs" />
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="BlishHud.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

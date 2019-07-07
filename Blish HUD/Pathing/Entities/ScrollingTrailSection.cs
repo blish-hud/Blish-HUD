@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Blish_HUD.Annotations;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
@@ -59,7 +58,7 @@ namespace Blish_HUD.Pathing.Entities {
         
         public ScrollingTrailSection() : base(null) { /* NOOP */ }
 
-        public ScrollingTrailSection([CanBeNull] List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
+        public ScrollingTrailSection(List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
 
         private List<Vector3> SetTrailResolution(List<Vector3> trailPoints, float pointResolution) {
             List<Vector3> tempTrail = new List<Vector3>();

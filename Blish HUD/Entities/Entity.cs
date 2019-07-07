@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Blish_HUD.Annotations;
 
 namespace Blish_HUD.Entities {
     public abstract class Entity : INotifyPropertyChanged, IUpdatable, IRenderable3D {
@@ -172,7 +171,6 @@ namespace Blish_HUD.Entities {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

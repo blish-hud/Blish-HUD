@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Blish_HUD.Annotations;
 using Blish_HUD.Controls.Effects;
 using Newtonsoft.Json;
 
@@ -793,7 +792,6 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             OnPropertyChanged(propertyName, false);
         }

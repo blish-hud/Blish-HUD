@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
-using Blish_HUD.Annotations;
 using Blish_HUD.Pathing.Behaviors;
 using Microsoft.Xna.Framework;
 
@@ -116,7 +115,6 @@ namespace Blish_HUD.Pathing {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
