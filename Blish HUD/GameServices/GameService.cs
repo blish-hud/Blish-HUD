@@ -105,7 +105,8 @@ namespace Blish_HUD {
                 GameIntegration,
                 Hotkeys,
                 Pathing,
-                Module
+                Module,
+                ArcDps
             };
 
         }
