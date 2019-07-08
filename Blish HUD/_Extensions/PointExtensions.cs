@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
@@ -19,8 +14,6 @@ namespace Blish_HUD {
         }
 
         public static Microsoft.Xna.Framework.Point UiToScale(this Microsoft.Xna.Framework.Point point) {
-            float scale = GameService.Graphics.GetScaleRatio(GameService.Graphics.UIScale);
-
             return new Microsoft.Xna.Framework.Point((int)(point.X / GameService.Graphics.UIScaleMultiplier),
                                                      (int)(point.Y / GameService.Graphics.UIScaleMultiplier));
         }

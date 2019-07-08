@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using Blish_HUD.Modules.MarkersAndPaths;
+using Blish_HUD.Pathing.Content;
 using Blish_HUD.Pathing.Entities;
-using Blish_HUD.Pathing.Trails;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing.Format {
@@ -42,7 +35,7 @@ namespace Blish_HUD.Pathing.Format {
             }
         }
 
-        public LoadedTrailPathable(IPackFileSystemContext packContext) : base(new ScrollingTrail(), packContext) { }
+        public LoadedTrailPathable(PathableResourceManager pathableContext) : base(new ScrollingTrail(), pathableContext) { }
 
         protected override void PrepareAttributes() {
             base.PrepareAttributes();
@@ -51,8 +44,6 @@ namespace Blish_HUD.Pathing.Format {
             RegisterAttribute("texture", delegate(XmlAttribute attribute) {
                                   if (!string.IsNullOrEmpty(attribute.Value)) {
                                       this.TextureReferencePath = attribute.Value.Trim();
-                                                                           //.Replace('\\', Path.DirectorySeparatorChar)
-                                                                           //.Replace('/',  Path.DirectorySeparatorChar);
 
                                       return true;
                                   }
@@ -76,13 +67,13 @@ namespace Blish_HUD.Pathing.Format {
 
         private void LoadTexture() {
             if (!string.IsNullOrEmpty(_textureReferencePath)) {
-                this.Texture = this.PackContext.LoadTexture(_textureReferencePath);
+                this.Texture = this.PathableManager.LoadTexture(_textureReferencePath);
             }
         }
 
         private void UnloadTexture() {
             this.Texture = null;
-            this.PackContext.MarkTextureForDisposal(_textureReferencePath);
+            this.PathableManager.MarkTextureForDisposal(_textureReferencePath);
         }
 
     }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Blish_HUD.Controls;
-using Blish_HUD.Utils;
+using Blish_HUD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
@@ -36,7 +31,7 @@ namespace Blish_HUD {
             this.BlendState        = blendState;
             this.SamplerState      = samplerState;
             this.DepthStencilState = depthStencilState;
-            this.RasterizerState   = rasterizerState ?? Overlay._uiRasterizer;
+            this.RasterizerState   = rasterizerState ?? BlishHud.UiRasterizer;
             this.Effect            = effect;
             this.TransformMatrix   = transformMatrix;
         }
@@ -60,7 +55,7 @@ namespace Blish_HUD {
                               parameters.BlendState,
                               parameters.SamplerState,
                               parameters.DepthStencilState,
-                              parameters.RasterizerState ?? Overlay._uiRasterizer,
+                              parameters.RasterizerState ?? BlishHud.UiRasterizer,
                               parameters.Effect,
                               parameters.TransformMatrix ?? GameService.Graphics.UIScaleTransform);
         }
@@ -114,17 +109,15 @@ namespace Blish_HUD {
                              0);
         }
 
-        public static void DrawStringOnCtrl(
-            this SpriteBatch             spriteBatch,
-            Control                      ctrl,
-            string                       text,
-            BitmapFont                   font,
-            Rectangle                    destinationRectangle,
-            Color                        color,
-            bool                         wrap                = false,
-            DrawUtil.HorizontalAlignment horizontalAlignment = DrawUtil.HorizontalAlignment.Left,
-            DrawUtil.VerticalAlignment   verticalAlignment   = DrawUtil.VerticalAlignment.Middle
-        ) {
+        public static void DrawStringOnCtrl(this SpriteBatch    spriteBatch,
+                                            Control             ctrl,
+                                            string              text,
+                                            BitmapFont          font,
+                                            Rectangle           destinationRectangle,
+                                            Color               color,
+                                            bool                wrap                = false,
+                                            HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
+                                            VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
             DrawStringOnCtrl(spriteBatch,
                              ctrl,
                              text,
@@ -138,24 +131,24 @@ namespace Blish_HUD {
                              verticalAlignment);
         }
 
-        public static void DrawStringOnCtrl(this SpriteBatch spriteBatch,
-                                            Control ctrl,
-                                            string text,
-                                            BitmapFont font,
-                                            Rectangle destinationRectangle,
-                                            Color color,
-                                            bool wrap,
-                                            bool stroke,
-                                            int strokeDistance = 1,
-                                            DrawUtil.HorizontalAlignment horizontalAlignment = DrawUtil.HorizontalAlignment.Left,
-                                            DrawUtil.VerticalAlignment verticalAlignment = DrawUtil.VerticalAlignment.Middle) {
+        public static void DrawStringOnCtrl(this SpriteBatch    spriteBatch,
+                                            Control             ctrl,
+                                            string              text,
+                                            BitmapFont          font,
+                                            Rectangle           destinationRectangle,
+                                            Color               color,
+                                            bool                wrap,
+                                            bool                stroke,
+                                            int                 strokeDistance      = 1,
+                                            HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
+                                            VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
 
             if (string.IsNullOrEmpty(text)) return;
 
             text = wrap ? DrawUtil.WrapText(font, text, destinationRectangle.Width) : text;
 
             // TODO: This does not account for vertical alignment
-            if (horizontalAlignment != DrawUtil.HorizontalAlignment.Left && (wrap || text.Contains("\n"))) {
+            if (horizontalAlignment != HorizontalAlignment.Left && (wrap || text.Contains("\n"))) {
                 using (StringReader reader = new StringReader(text)) {
                     string line;
 
@@ -179,19 +172,19 @@ namespace Blish_HUD {
             int yPos = destinationRectangle.Y;
 
             switch (horizontalAlignment) {
-                case DrawUtil.HorizontalAlignment.Center:
+                case HorizontalAlignment.Center:
                     xPos += destinationRectangle.Width / 2 - (int)textSize.X / 2;
                     break;
-                case DrawUtil.HorizontalAlignment.Right:
+                case HorizontalAlignment.Right:
                     xPos += destinationRectangle.Width - (int)textSize.X;
                     break;
             }
 
             switch (verticalAlignment) {
-                case DrawUtil.VerticalAlignment.Middle:
+                case VerticalAlignment.Middle:
                     yPos += destinationRectangle.Height / 2 - (int)textSize.Y / 2;
                     break;
-                case DrawUtil.VerticalAlignment.Bottom:
+                case VerticalAlignment.Bottom:
                     yPos += destinationRectangle.Height - (int)textSize.Y;
                     break;
             }

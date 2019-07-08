@@ -4,11 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD.Annotations;
-using Blish_HUD.Entities;
-using Microsoft.Scripting.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -45,7 +40,7 @@ namespace Blish_HUD.Entities {
         private readonly List<T> _children;
         public IReadOnlyCollection<T> Children => _children.AsReadOnly();
 
-        public EntityContainer([CanBeNull] IEnumerable<T> children) {
+        public EntityContainer(IEnumerable<T> children) {
             _children = children?.ToList() ?? new List<T>();
         }
         
@@ -75,7 +70,7 @@ namespace Blish_HUD.Entities {
             return GetEnumerator();
         }
 
-        public void AddChildren(ICollection<T> children) {
+        public void AddChildren(IEnumerable<T> children) {
             // Limit our list down to just items not already within the list
             // We're just ignoring any items that already children of this container
             List<T> childrenToAdd = children.Except(_children).ToList();
@@ -97,7 +92,7 @@ namespace Blish_HUD.Entities {
             this.AddChildren(new[] { child });
         }
 
-        public void RemoveChildren(ICollection<T> children) {
+        public void RemoveChildren(IEnumerable<T> children) {
             /* Limit our list down to just items within the list
                We'll just ignore any items that aren't actual children */
             List<T> childrenToRemove = children.Intersect(_children).ToList();
@@ -135,7 +130,6 @@ namespace Blish_HUD.Entities {
            are hidden with an explicit implementation so that we 
            can provide a method with a more intuitive name */
 
-
         // See: AddChild()
         void ICollection<T>.Add(T child) {
             AddChild(child);
@@ -147,7 +141,7 @@ namespace Blish_HUD.Entities {
         }
 
         // See: RemoveChild()
-        bool ICollection<T>.Remove([CanBeNull] T child) {
+        bool ICollection<T>.Remove(T child) {
             int beforeCount = _children.Count;
 
             RemoveChild(child);

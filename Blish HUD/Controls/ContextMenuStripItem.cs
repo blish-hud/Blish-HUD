@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
-using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
 
@@ -17,8 +15,8 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static Texture2D _textureBullet;
-        private static Texture2D _textureArrow;
+        private static readonly Texture2D _textureBullet;
+        private static readonly Texture2D _textureArrow;
 
         static ContextMenuStripItem() {
             _textureBullet = Content.GetTexture("155038");
@@ -78,8 +76,10 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            if (this.Enabled && this.CanCheck)
+            if (this.CanCheck)
                 this.Checked = !this.Checked;
+            else
+                this.Parent.Hide();
 
             base.OnClick(e);
         }

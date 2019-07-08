@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
@@ -119,16 +116,20 @@ namespace Blish_HUD.Controls {
 
         }
 
-        private const int  DROPDOWN_HEIGHT = 25;
+        public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
+                                                                            /*   PanelOffset */ new Point(5,   2),
+                                                                            /* ControlOffset */ Control.ControlStandard.ControlOffset);
 
         #region Load Static
 
-        private static TextureRegion2D _textureInputBox;
-        private static TextureRegion2D _textureArrow;
-        private static TextureRegion2D _textureArrowActive;
+        private static readonly Texture2D _textureInputBox;
+
+        private static readonly TextureRegion2D _textureArrow;
+        private static readonly TextureRegion2D _textureArrowActive;
 
         static Dropdown() {
-            _textureInputBox    = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/input-box");
+            _textureInputBox = Content.GetTexture("input-box");
+
             _textureArrow       = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow");
             _textureArrowActive = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow-active");
         }
@@ -161,7 +162,7 @@ namespace Blish_HUD.Controls {
         }
 
         private DropdownPanel _lastPanel = null;
-        private bool _hadPanel = false;
+        private bool          _hadPanel  = false;
 
         public Dropdown() {
             this.Items = new ObservableCollection<string>();
@@ -171,7 +172,12 @@ namespace Blish_HUD.Controls {
                 Invalidate();
             };
 
-            this.Size = new Point(this.Width, DROPDOWN_HEIGHT);
+            this.Size = Standard.Size;
+        }
+
+        /// <inheritdoc />
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
         }
 
         protected override void OnClick(MouseEventArgs e) {
@@ -189,25 +195,24 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw dropdown
-            spriteBatch.DrawOnCtrl(
-                                   this,
-                                   Content.GetTexture("input-box"),
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureInputBox,
                                    new Rectangle(Point.Zero, _size).Subtract(new Rectangle(0, 0, 5, 0)),
                                    new Rectangle(
                                                  0, 0,
-                                                 Math.Min(Content.GetTexture("textbox").Width - 5, this.Width - 5),
-                                                 Content.GetTexture("textbox").Height
+                                                 Math.Min(_textureInputBox.Width - 5, this.Width - 5),
+                                                 _textureInputBox.Height
                                                 )
                                   );
 
             // Draw right side of dropdown
             spriteBatch.DrawOnCtrl(
                                    this,
-                                   Content.GetTexture("input-box"),
+                                   _textureInputBox,
                                    new Rectangle(_size.X - 5, 0, 5, _size.Y),
                                    new Rectangle(
-                                                 Content.GetTexture("textbox").Width - 5, 0,
-                                                 5, Content.GetTexture("textbox").Height
+                                                 _textureInputBox.Width - 5, 0,
+                                                 5, _textureInputBox.Height
                                                 )
                                   );
             

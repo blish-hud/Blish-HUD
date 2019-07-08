@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Blish_HUD.Controls.Effects;
-using Blish_HUD.Utils;
+using Blish_HUD;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -69,10 +66,10 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static Texture2D _textureFillCrest;
-        private static Texture2D _textureVignette;
-        private static Texture2D _textureCornerButton;
-        private static Texture2D _textureBottomSectionSeparator;
+        private static readonly Texture2D _textureFillCrest;
+        private static readonly Texture2D _textureVignette;
+        private static readonly Texture2D _textureCornerButton;
+        private static readonly Texture2D _textureBottomSectionSeparator;
 
         static DetailsButton() {
             _textureFillCrest              = Content.GetTexture(@"controls\detailsbutton\605004");
@@ -87,7 +84,7 @@ namespace Blish_HUD.Controls {
         private DetailsIconSize      _iconSize    = DetailsIconSize.Large;
         private string               _text;
         private string               _iconDetails;
-        private Texture2D            _icon;
+        private AsyncTexture2D       _icon;
         private bool                 _showVignette = true;
         private int                  _maxFill;
         private int                  _currentFill;
@@ -126,7 +123,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// The icon to display on the left side of the <see cref="DetailsButton"/>.
         /// </summary>
-        public Texture2D Icon {
+        public AsyncTexture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }
@@ -163,12 +160,12 @@ namespace Blish_HUD.Controls {
             get => _currentFill;
             set {
                 if (SetProperty(ref _currentFill, Math.Min(value, _maxFill))) {
-                    _fillAnim?.Cancel();
-                    _fillAnim = null;
+                    _animFill?.Cancel();
+                    _animFill = null;
 
                     float diffLength = Math.Abs(this.DisplayedFill - _currentFill) / (float)this.MaxFill;
 
-                    _fillAnim = Animation.Tweener.Tween(this, new { DisplayedFill = _currentFill }, 0.65f, 0, true).Ease(Glide.Ease.QuintIn);
+                    _animFill = Animation.Tweener.Tween(this, new { DisplayedFill = _currentFill }, 0.65f, 0, true).Ease(Glide.Ease.QuintIn);
                 }
             }
         }
@@ -233,8 +230,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _bottomSectionHeight, value, true);
         }
 
-        private Glide.Tween              _fillAnim;
-        private ScrollingHighlightEffect _scrollEffect;
+        private          Glide.Tween              _animFill;
+        private readonly ScrollingHighlightEffect _scrollEffect;
 
         public DetailsButton() {
             this.Size = new Point(DEFAULT_EVENTSUMMARY_WIDTH, DEFAULT_EVENTSUMMARY_HEIGHT);
@@ -362,7 +359,7 @@ namespace Blish_HUD.Controls {
                 }
 
                 if (_showFillFraction)
-                    spriteBatch.DrawStringOnCtrl(this, $"{_currentFill}/{_maxFill}", Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, true, true, 1, DrawUtil.HorizontalAlignment.Center, DrawUtil.VerticalAlignment.Bottom);
+                    spriteBatch.DrawStringOnCtrl(this, $"{_currentFill}/{_maxFill}", Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, true, true, 1, HorizontalAlignment.Center, VerticalAlignment.Bottom);
             } else if (_icon != null) {
                 // Draw icon without any fill effects
                 spriteBatch.DrawOnCtrl(
@@ -376,7 +373,7 @@ namespace Blish_HUD.Controls {
             }
 
             if (!_showFillFraction || !(_maxFill > 0 && _showVignette)) {
-                spriteBatch.DrawStringOnCtrl(this, _iconDetails, Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, true, true, 1, DrawUtil.HorizontalAlignment.Center, DrawUtil.VerticalAlignment.Bottom);
+                spriteBatch.DrawStringOnCtrl(this, _iconDetails, Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, true, true, 1, HorizontalAlignment.Center, VerticalAlignment.Bottom);
             }
 
             // Draw icon vignette (draw with or without the icon to keep a consistent look)

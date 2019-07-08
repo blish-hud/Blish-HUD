@@ -1,11 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blish_HUD.Content;
 
 namespace Blish_HUD.Controls {
     public class CornerIcon : Container {
@@ -19,14 +17,14 @@ namespace Blish_HUD.Controls {
         private const int   ICON_SIZE     = 32;
         private const float ICON_TRANS    = 0.4f;
 
-        private Texture2D _icon;
-        public Texture2D Icon {
+        private AsyncTexture2D _icon;
+        public AsyncTexture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }
 
-        private Texture2D _hoverIcon;
-        public Texture2D HoverIcon {
+        private AsyncTexture2D _hoverIcon;
+        public AsyncTexture2D HoverIcon {
             get => _hoverIcon;
             set => SetProperty(ref _hoverIcon, value);
         }
@@ -71,9 +69,13 @@ namespace Blish_HUD.Controls {
 
         private static ObservableCollection<CornerIcon> CornerIcons { get; }
 
-        private int _priority;
+        private int? _priority;
+
+        /// <summary>
+        /// <see cref="CornerIcon"/>s are sorted by priority so that, from left to right, priority goes from the highest to lowest.
+        /// </summary>
         public int Priority {
-            get => _priority;
+            get => _priority ?? (_icon?.GetHashCode() ?? 0);
             set {
                 if (SetProperty(ref _priority, value)) {
                     UpdateCornerIconPositions();
@@ -95,9 +97,9 @@ namespace Blish_HUD.Controls {
             GameService.Input.MouseMoved += (sender, e) => {
                 if (Alignment == CornerIconAlignment.Left) {
                     var scaledMousePos = e.MouseState.Position.ScaleToUi();
-                    if (scaledMousePos.Y < Overlay.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
+                    if (scaledMousePos.Y < BlishHud.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
                         foreach (var cornerIcon in CornerIcons) {
-                            cornerIcon.MouseInHouse = true;
+                            cornerIcon.MouseInHouse = scaledMousePos.X < cornerIcon.Left || cornerIcon.MouseOver;
                         }
 
                         return;
@@ -111,7 +113,7 @@ namespace Blish_HUD.Controls {
         }
 
         private static void UpdateCornerIconPositions() {
-            List<CornerIcon> sortedIcons = CornerIcons.OrderBy((cornerIcon) => cornerIcon.Priority).ToList();
+            List<CornerIcon> sortedIcons = CornerIcons.OrderByDescending((cornerIcon) => cornerIcon.Priority).ToList();
 
             int horizontalOffset = Alignment == CornerIconAlignment.Left ? ICON_SIZE * ICON_POSITION + LeftOffset : Graphics.SpriteScreen.Width / 2 - (CornerIcons.Count * ICON_SIZE / 2);
 
@@ -120,24 +122,26 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private LoadingSpinner _iconLoader;
+        private readonly LoadingSpinner _iconLoader;
         public CornerIcon() {
-            this.Parent = Graphics.SpriteScreen;
-            this.Size = new Point(ICON_SIZE, ICON_SIZE);
+            this.Parent        = Graphics.SpriteScreen;
+            this.Size          = new Point(ICON_SIZE, ICON_SIZE);
             this.ContentRegion = new Rectangle(0, ICON_SIZE, ICON_SIZE, ICON_SIZE);
 
             _iconLoader = new LoadingSpinner() {
                 Parent = this,
-                Size = this.ContentRegion.Size,
+                Size   = this.ContentRegion.Size,
             };
 
             CornerIcons.Add(this);
         }
 
+        /// <inheritdoc />
         protected override CaptureType CapturesInput() {
             return CaptureType.Mouse;
         }
 
+        /// <inheritdoc />
         protected override void OnClick(MouseEventArgs e) {
             Content.PlaySoundEffectByName(@"audio\button-click");
 
@@ -145,6 +149,7 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle _layoutIconBounds;
+        /// <inheritdoc />
 
         public override void RecalculateLayout() {
             _layoutIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
@@ -156,18 +161,21 @@ namespace Blish_HUD.Controls {
         }
 
         // TODO: Use a shader to replace "HoverIcon"
+        /// <inheritdoc />
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_icon == null) return;
 
             if (this.MouseOver && this.RelativeMousePosition.Y <= _layoutIconBounds.Bottom) {
-                if (_hoverIcon == null) {
-                    spriteBatch.DrawOnCtrl(this, _icon, _layoutIconBounds);
-                } else {
-                    spriteBatch.DrawOnCtrl(this, _hoverIcon, _layoutIconBounds);
-                }
+                spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _layoutIconBounds);
             } else {
                 spriteBatch.DrawOnCtrl(this, _icon, _layoutIconBounds, Color.White * _hoverTrans);
             }
         }
+
+        /// <inheritdoc />
+        protected override void DisposeControl() {
+            CornerIcons.Remove(this);
+        }
+
     }
 }

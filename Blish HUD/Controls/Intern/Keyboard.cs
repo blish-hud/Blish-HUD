@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
 using Blish_HUD.Controls.Extern;
 namespace Blish_HUD.Controls.Intern
 {

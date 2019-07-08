@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Controls
 {
@@ -194,7 +193,7 @@ namespace Blish_HUD.Controls
                 spriteBatch.DrawOnCtrl(this, MinusSprite, new Rectangle(0, 0, 17, 17), Color.White);
             }
             var combine = this.Prefix + this.Value.ToString() + this.Suffix;
-            spriteBatch.DrawStringOnCtrl(this, combine, Content.DefaultFont14, new Rectangle(18, 0, this.ValueWidth, 17), Color.White, false, true, 1, Utils.DrawUtil.HorizontalAlignment.Center, Utils.DrawUtil.VerticalAlignment.Middle);
+            spriteBatch.DrawStringOnCtrl(this, combine, Content.DefaultFont14, new Rectangle(18, 0, this.ValueWidth, 17), Color.White, false, true, 1, HorizontalAlignment.Center, VerticalAlignment.Middle);
 
             if (this.MouseOverPlus) {
                 spriteBatch.DrawOnCtrl(this, PlusSprite, new Rectangle(21 + this.ValueWidth, 2, 15, 15), Color.White);
