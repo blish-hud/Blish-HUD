@@ -1,4 +1,5 @@
 ﻿using System;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -30,17 +31,17 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected Texture2D _icon;
-        public Texture2D Icon {
+        protected AsyncTexture2D _icon;
+        public AsyncTexture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }
 
-        protected Texture2D _activeIcon;
+        protected AsyncTexture2D _activeIcon;
         /// <summary>
         /// If provided, this icon will be shown when the button is active.  If not provided, a basic glow shader will be used instead.
         /// </summary>
-        public Texture2D ActiveIcon {
+        public AsyncTexture2D ActiveIcon {
             get => _activeIcon;
             set => SetProperty(ref _activeIcon, value);
         }

@@ -72,6 +72,12 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _showBorder, value, true);
         }
 
+        protected bool _showTint;
+        public bool ShowTint {
+            get => _showTint;
+            set => SetProperty(ref _showTint, value);
+        }
+
         protected bool _canCollapse;
         public bool CanCollapse {
             get => _canCollapse;
@@ -274,6 +280,13 @@ namespace Blish_HUD.Controls {
         }
         
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            if (_showTint) {
+                spriteBatch.DrawOnCtrl(this,
+                                       ContentService.Textures.Pixel,
+                                       this.ContentRegion,
+                                       Color.Black * 0.4f);
+            }
+
             if (!string.IsNullOrEmpty(_title)) {
                 spriteBatch.DrawOnCtrl(this,
                                        _texturePanelHeader,

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Content;
 
 namespace Blish_HUD.Controls {
 
@@ -135,13 +136,13 @@ namespace Blish_HUD.Controls {
         public Dictionary<WindowTab, Panel> Panels = new Dictionary<WindowTab, Panel>();
         public List<WindowTab> Tabs = new List<WindowTab>();
 
-        public WindowTab AddTab(string name, Texture2D icon, Panel panel, int priority) {
+        public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel, int priority) {
             var tab = new WindowTab(name, icon, priority);
             AddTab(tab, panel);
             return tab;
         }
 
-        public WindowTab AddTab(string name, Texture2D icon, Panel panel) {
+        public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel) {
             var tab = new WindowTab(name, icon);
             AddTab(tab, panel);
             return tab;

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Blish_HUD.Content;
 
 namespace Blish_HUD.Controls {
     public class CornerIcon : Container {
@@ -16,14 +17,14 @@ namespace Blish_HUD.Controls {
         private const int   ICON_SIZE     = 32;
         private const float ICON_TRANS    = 0.4f;
 
-        private Texture2D _icon;
-        public Texture2D Icon {
+        private AsyncTexture2D _icon;
+        public AsyncTexture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }
 
-        private Texture2D _hoverIcon;
-        public Texture2D HoverIcon {
+        private AsyncTexture2D _hoverIcon;
+        public AsyncTexture2D HoverIcon {
             get => _hoverIcon;
             set => SetProperty(ref _hoverIcon, value);
         }

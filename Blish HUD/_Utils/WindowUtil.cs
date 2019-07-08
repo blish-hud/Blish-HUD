@@ -12,6 +12,8 @@ namespace Blish_HUD {
 
     public static class WindowUtil {
 
+        private static readonly Logger Logger = Logger.GetLogger(typeof(WindowUtil));
+
         private const uint WS_EX_TRANSPARENT = 0x00000020;
         private const uint WS_EX_LAYERED     = 0x00080000;
 
@@ -96,23 +98,22 @@ namespace Blish_HUD {
             SetLayeredWindowAttributes(winHandle, 0, 255, 2);
         }
 
+        public enum OverlayUpdateResponse {
+            WithFocus,
+            WithoutFocus,
+            Errored
+        }
+
         private static Rectangle pos;
 
-        private static bool _onTop = true;
-
-        /// <summary>
-        /// Indicates if the overlay window is currently forcing itself on top of Guild Wars 2 or not.
-        /// </summary>
-        public static bool OnTop => _onTop;
-
-        internal static bool UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle) {
+        internal static OverlayUpdateResponse UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle, bool wasOnTop) {
             var clientRect = new RECT();
             bool errGetClientRectResult = GetClientRect(gw2WindowHandle, ref clientRect);
 
             // Probably errors caused by gw2 closing at the time of the call or the call is super early and has the wrong handle somehow
             if (!errGetClientRectResult) {
-                Console.WriteLine($"{nameof(GetClientRect)} failed with error code {Marshal.GetLastWin32Error()}.");
-                return false;
+                Logger.Warn($"{nameof(GetClientRect)} failed with error code {Marshal.GetLastWin32Error()}.");
+                return OverlayUpdateResponse.Errored;
             }
 
             var marg = new Margins {
@@ -127,8 +128,8 @@ namespace Blish_HUD {
 
             // Probably errors caused by gw2 closing at the time of the call
             if (!errClientToScreen) {
-                Console.WriteLine($"{nameof(ClientToScreen)} failed with error code {Marshal.GetLastWin32Error()}.");
-                return false;
+                Logger.Warn($"{nameof(ClientToScreen)} failed with error code {Marshal.GetLastWin32Error()}.");
+                return OverlayUpdateResponse.Errored;
             }
 
             GameService.Debug.StartTimeFunc("GetForegroundWindow");
@@ -138,19 +139,18 @@ namespace Blish_HUD {
             // If gw2 is not the focused application, stop being
             // topmost so that whatever is active can render on top
             if (activeWindowHandle != gw2WindowHandle && Form.ActiveForm == null) {
-                if (_onTop) {
-                    Console.WriteLine("GW2 is no longer the active window.");
+                if (wasOnTop) {
+                    Logger.Debug("GW2 is no longer the active window.");
                     SetWindowPos(winHandle,  HWND_NOTOPMOST, pos.X, pos.Y, pos.Width, pos.Height, 0);
-
-                    _onTop = false;
                 }
-                return true;
+                return OverlayUpdateResponse.WithoutFocus;
             }
 
-            if (!_onTop)
-                Console.WriteLine("GW2 is now the active window - reactivating the overlay.");
+            if (!wasOnTop) {
+                Logger.Debug("GW2 is now the active window - reactivating the overlay.");
+            }
 
-            if (clientRect.Left + screenPoint.X != pos.X || clientRect.Top + screenPoint.Y != pos.Y || clientRect.Right - clientRect.Left != pos.Width || clientRect.Bottom - clientRect.Top != pos.Height || _onTop == false) {
+            if (clientRect.Left + screenPoint.X != pos.X || clientRect.Top + screenPoint.Y != pos.Y || clientRect.Right - clientRect.Left != pos.Width || clientRect.Bottom - clientRect.Top != pos.Height || wasOnTop == false) {
                 pos = new Rectangle(
                     clientRect.Left + screenPoint.X,
                     clientRect.Top + screenPoint.Y,
@@ -166,11 +166,9 @@ namespace Blish_HUD {
                 SetWindowPos(winHandle, HWND_TOPMOST, clientRect.Left + screenPoint.X, clientRect.Top + screenPoint.Y, clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top, 0);
                 
                 DwmExtendFrameIntoClientArea(winHandle, ref marg);
-
-                _onTop = true;
             }
 
-            return true;
+            return OverlayUpdateResponse.WithFocus;
         }
 
         internal static string GetClassNameOfWindow(IntPtr hwnd) {

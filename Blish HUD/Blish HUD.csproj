@@ -163,14 +163,12 @@
     <Compile Include="Controls\MenuItem.cs" />
     <Compile Include="Controls\ScreenNotification.cs" />
     <Compile Include="Controls\Panel.cs" />
-    <Compile Include="Controls\Popup.cs" />
     <Compile Include="Controls\Screen.cs" />
     <Compile Include="Controls\Scrollbar.cs" />
     <Compile Include="Controls\SkillBox.cs" />
     <Compile Include="Controls\StandardButton.cs" />
     <Compile Include="Controls\TabbedWindow.cs" />
     <Compile Include="Controls\TextBox.cs" />
-    <Compile Include="Controls\TintedPanel.cs" />
     <Compile Include="Controls\Tooltip.cs" />
     <Compile Include="Controls\TrackBar.cs" />
     <Compile Include="Controls\WindowBase.cs" />

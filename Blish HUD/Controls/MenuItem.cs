@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
@@ -83,8 +84,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _text, value);
         }
 
-        protected Texture2D _icon;
-        public Texture2D Icon {
+        protected AsyncTexture2D _icon;
+        public AsyncTexture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }

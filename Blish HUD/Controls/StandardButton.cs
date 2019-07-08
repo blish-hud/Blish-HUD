@@ -1,4 +1,5 @@
 ﻿using Blish_HUD;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -32,12 +33,12 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _text, value, true);
         }
 
-        private Texture2D _icon;
+        private AsyncTexture2D _icon;
 
         /// <summary>
         /// An icon to show on the <see cref="StandardButton"/>.  For best results, the <see cref="Icon"/> should be 16x16.
         /// </summary>
-        public Texture2D Icon {
+        public AsyncTexture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value, true);
         }
@@ -115,7 +116,7 @@ namespace Blish_HUD.Controls {
                     textLeft += ICON_SIZE / 2;
                 }
 
-                var iconSize = _resizeIcon ? new Point(ICON_SIZE) : _icon.Bounds.Size;
+                var iconSize = _resizeIcon ? new Point(ICON_SIZE) : _icon.GetTexture().Bounds.Size;
 
                 _layoutIconBounds = new Rectangle(textLeft - iconSize.X - ICON_TEXT_OFFSET, _size.Y / 2 - iconSize.Y / 2, iconSize.X, iconSize.Y);
             }

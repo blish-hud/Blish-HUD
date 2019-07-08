@@ -35,10 +35,10 @@ namespace Blish_HUD.Content {
             _stagedTexture2D = null;
         }
 
-        /// <inheritdoc />
-        public override bool Equals(object obj) {
-            return Equals(_activeTexture2D, obj);
-        }
+        ///// <inheritdoc />
+        //public override bool Equals(object obj) {
+        //    return Equals(_activeTexture2D, obj);
+        //}
 
         /// <inheritdoc />
         public override int GetHashCode() {
@@ -50,6 +50,8 @@ namespace Blish_HUD.Content {
         }
 
         public static implicit operator AsyncTexture2D(Texture2D texture2D) {
+            if (texture2D == null) return null;
+
             return new AsyncTexture2D(texture2D);
         }
 

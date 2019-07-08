@@ -15,11 +15,13 @@ namespace Blish_HUD {
 
     public class GameIntegrationService : GameService {
 
+        private static readonly Logger Logger = Logger.GetLogger(typeof(GameIntegrationService));
+
         public event EventHandler<EventArgs> Gw2Closed;
         public event EventHandler<EventArgs> Gw2Started;
 
-        public event EventHandler<EventArgs> Gw2LostFocus;
         public event EventHandler<EventArgs> Gw2AcquiredFocus;
+        public event EventHandler<EventArgs> Gw2LostFocus;
 
         // How long, in seconds, between each
         // check to see if GW2 is running
@@ -42,7 +44,23 @@ namespace Blish_HUD {
         public ContextMenuStrip TrayIconMenu { get; private set; }
 
         public bool IsInGame { get; private set; } = false;
-        
+
+        private bool _gw2HasFocus = false;
+        public bool Gw2HasFocus {
+            get => _gw2HasFocus;
+            set {
+                if (_gw2HasFocus == value) return;
+
+                _gw2HasFocus = value;
+
+                if (_gw2HasFocus) {
+                    Gw2AcquiredFocus?.Invoke(this, EventArgs.Empty);
+                } else {
+                    Gw2LostFocus?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
         private bool _gw2IsRunning = false;
         public bool Gw2IsRunning {
             get => _gw2IsRunning;
@@ -227,8 +245,7 @@ namespace Blish_HUD {
         private void OnGw2Exit(object sender, System.EventArgs e) {
             this.Gw2Process = null;
 
-            // TODO: Close or hide in tray (depending on user settings)
-            Console.WriteLine("Guild Wars 2 application has exited!");
+            Logger.Info("Guild Wars 2 application has exited!");
 
             if (!GameService.Overlay.StayInTray) {
                 Application.Exit();
@@ -250,8 +267,11 @@ namespace Blish_HUD {
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
-                if (!WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle)) {
+                var overlayUpdateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
+                if (overlayUpdateResult == WindowUtil.OverlayUpdateResponse.Errored) { 
                     this.Gw2Process = null;
+                } else {
+                    this.Gw2HasFocus = (overlayUpdateResult == WindowUtil.OverlayUpdateResponse.WithFocus);
                 }
             } else {
                 _lastGw2Check += gameTime.ElapsedGameTime.TotalSeconds;
