@@ -32,6 +32,9 @@ namespace Blish_HUD {
 
         public static System.Windows.Forms.Form Form { get; private set; }
 
+        // TODO: Move this into GraphicsService
+        public static RasterizerState UiRasterizer { get; private set; }
+
         // Primarily used to draw debug text
         private SpriteBatch _basicSpriteBatch;
 
@@ -78,7 +81,7 @@ namespace Blish_HUD {
         }
 
         protected override void LoadContent() {
-            _uiRasterizer = new RasterizerState() {
+            UiRasterizer = new RasterizerState() {
                 ScissorTestEnable = true
             };
 
@@ -129,16 +132,6 @@ namespace Blish_HUD {
             base.Update(gameTime);
         }
 
-        public static RasterizerState _uiRasterizer;
-        /// <summary>
-        /// Removes the focus of any input form and puts the main overlay in focus and ontop of the game.
-        /// </summary>
-        public static void ResetFocus()
-        {
-            BlishHud.Form.ActiveControl = null;
-            GameIntegrationService.GameIntegration.FocusGw2();
-            BlishHud.Form.Focus();
-        }
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
