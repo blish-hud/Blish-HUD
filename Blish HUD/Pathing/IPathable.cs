@@ -1,4 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing {
     public interface IPathable<out TEntity> : IPathable
@@ -11,7 +17,6 @@ namespace Blish_HUD.Pathing {
 
         int    MapId  { get; set; }
         string Guid   { get; set; }
-        UserAccess Access { get; set; }
         bool   Active { get; set; }
 
         float   Opacity  { get; set; }

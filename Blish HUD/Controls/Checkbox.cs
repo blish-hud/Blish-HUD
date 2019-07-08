@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
 
@@ -37,15 +42,15 @@ namespace Blish_HUD.Controls {
         public Checkbox() : base() {
             this.Height = CHECKBOX_SIZE / 2;
 
-            _autoSizeWidth     = true;
-            _textColor         = Color.White;
-            _verticalAlignment = VerticalAlignment.Middle;
+            _autoSizeWidth = true;
+            _textColor = Color.White;
+            _verticalAlignment = Utils.DrawUtil.VerticalAlignment.Middle;
         }
 
         public override void RecalculateLayout() {
             base.RecalculateLayout();
 
-            this.Size = new Point(CHECKBOX_SIZE / 3 * 2 + LabelRegion.X, _size.Y);
+            _size = new Point(CHECKBOX_SIZE / 3 * 2 + LabelRegion.X, _size.Y);
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {

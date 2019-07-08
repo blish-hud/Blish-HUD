@@ -1,9 +1,17 @@
-﻿using Blish_HUD.Content;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Blish_HUD.Pathing.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Blish_HUD.Entities.Primitives {
+
+    public enum BillboardVerticalConstraint {
+        CameraPosition,
+        PlayerPosition,
+    }
 
     public class Billboard : Entity {
 
@@ -12,7 +20,7 @@ namespace Blish_HUD.Entities.Primitives {
         private bool                        _autoResizeBillboard = true;
         private Vector2                     _size                = Vector2.One;
         private float                       _scale               = 1f;
-        private AsyncTexture2D              _texture;
+        private Texture2D                   _texture;
         private BillboardVerticalConstraint _verticalConstraint = BillboardVerticalConstraint.CameraPosition;
 
         /// <summary>
@@ -48,11 +56,14 @@ namespace Blish_HUD.Entities.Primitives {
             }
         }
 
-        public AsyncTexture2D Texture {
+        public Texture2D Texture {
             get => _texture;
             set {
-                if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture.GetTexture() != null)
-                    this.Size = _texture.GetTexture().Bounds.Size.ToVector2().ToWorldCoord();
+                if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture != null)
+                    this.Size = new Vector2(
+                                            Utils.World.GameToWorldCoord(_texture.Width),
+                                            Utils.World.GameToWorldCoord(_texture.Height)
+                                            );
             }
         }
 
@@ -95,8 +106,7 @@ namespace Blish_HUD.Entities.Primitives {
 
             _billboardEffect.View = GameService.Camera.View;
             _billboardEffect.Projection = GameService.Camera.Projection;
-            _billboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2, this.Size.Y / -2, 0))
-                                   * Matrix.CreateScale(_scale, _scale, 1)
+            _billboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2 * _scale, this.Size.Y / -2 * _scale, 0))
                                    * Matrix.CreateBillboard(this.Position + this.RenderOffset,
                                                             new Vector3(GameService.Camera.Position.X,
                                                                         GameService.Camera.Position.Y,
@@ -107,18 +117,13 @@ namespace Blish_HUD.Entities.Primitives {
                                                             GameService.Camera.Forward);
 
             _billboardEffect.Alpha = this.Opacity;
-            _billboardEffect.Texture = this.Texture.GetTexture();
+            _billboardEffect.Texture = this.Texture;
 
             foreach (var pass in _billboardEffect.CurrentTechnique.Passes) {
                 pass.Apply();
 
                 graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, _verts, 0, 2);
             }
-        }
-
-        /// <inheritdoc />
-        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
-            RecalculateSize(_size, _scale);
         }
 
         public override void Update(GameTime gameTime) {

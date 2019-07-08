@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
-using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Behaviors {
@@ -36,6 +39,14 @@ namespace Blish_HUD.Pathing.Behaviors {
             //                                                             );
 
             Indicator = new InteractionInfo();
+        }
+
+        public override void OnEnterZoneRadius(GameTime gameTime) {
+            Indicator.Show();
+        }
+
+        public override void OnLeftZoneRadius(GameTime gameTime) {
+            Indicator.Hide();
         }
 
     }

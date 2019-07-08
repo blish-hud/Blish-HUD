@@ -1,46 +1,35 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Entities {
 
-    public class World : Entity {
+    public class World:Entity {
         
-        public SynchronizedCollection<Entity> Entities { get; private set; }
-
-        private IOrderedEnumerable<Entity> _sortedEntities;
+        public List<Entity> Entities { get; private set; }
 
         public World() : base() {
-            this.Entities = new SynchronizedCollection<Entity>();
-            UpdateEntitySort();
+            this.Entities = new List<Entity>();
         }
 
-        private void UpdateEntitySort() {
-            _sortedEntities = this.Entities.ToList().OrderByDescending(e => e.DistanceFromCamera);
-        }
+        public override void Update(GameTime gameTime) {
+            GameService.Debug.StartTimeFunc("Sorting 3D Entities");
+            this.Entities = this.Entities.OrderByDescending(e => e.DistanceFromCamera).ToList();
+            GameService.Debug.StopTimeFunc("Sorting 3D Entities");
 
-        /// <inheritdoc />
-        public override void HandleRebuild(GraphicsDevice graphicsDevice) {
-            /* NOOP - world does not need to rebuild */ 
-        }
-
-        public override void DoUpdate(GameTime gameTime) {
-            UpdateEntitySort();
-
-            foreach (var entity in _sortedEntities) {
-                entity.DoUpdate(gameTime);
+            foreach (var entity in this.Entities) {
+                entity.Update(gameTime);
             }
         }
 
-        public override void DoDraw(GraphicsDevice graphicsDevice) {
-            graphicsDevice.BlendState        = BlendState.AlphaBlend;
-            graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
-            graphicsDevice.SamplerStates[0]  = SamplerState.LinearWrap;
-            graphicsDevice.RasterizerState   = RasterizerState.CullCounterClockwise;
-
-            foreach (var entity in _sortedEntities.Where(entity => entity.Visible)) {
-                entity.DoDraw(graphicsDevice);
+        public override void Draw(GraphicsDevice graphicsDevice) {
+            foreach (var entity in this.Entities) {
+                if (entity.Visible) {
+                    entity.Draw(graphicsDevice);
+                }
             }
         }
     }

@@ -1,60 +1,39 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using Blish_HUD.Annotations;
+using MonoGame.Extended;
+using MonoGame.Extended.Sprites;
 
 namespace Blish_HUD.Entities {
     public abstract class Entity : INotifyPropertyChanged, IUpdatable, IRenderable3D {
 
-        protected static BasicEffect StandardEffect { get; } = new BasicEffect(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice) { TextureEnabled = true };
+        private static BasicEffect _standardEffect;
+        private static BasicEffect StandardEffect =>
+            _standardEffect ?? 
+            (_standardEffect = new BasicEffect(GameService.Graphics.GraphicsDevice) { TextureEnabled = true });
 
-        protected Vector3 _position     = Vector3.Zero;
-        protected Vector3 _rotation     = Vector3.Zero;
-        protected Vector3 _renderOffset = Vector3.Zero;
-        protected float   _opacity      = 1.0f;
-        protected bool    _visible      = true;
+        private Vector3 _position         = Vector3.Zero;
+        private Vector3 _renderOffset     = Vector3.Zero;
+        private float   _opacity          = 1.0f;
+        private bool    _visible          = true;
 
-        private bool _pendingRebuild = true;
+        private Effect _entityEffect;
+        public virtual Effect EntityEffect {
+            get => _entityEffect ?? StandardEffect;
+            set => _entityEffect = value;
+        }
 
         public virtual Vector3 Position {
             get => _position;
             set => SetProperty(ref _position, value);
         }
-
-        public virtual Vector3 Rotation {
-            get => _rotation;
-            set => SetProperty(ref _rotation, value);
-        }
-
-        public float RotationX {
-            get => _rotation.X;
-            set {
-                if (SetProperty(ref _rotation, new Vector3(value, _rotation.Y, _rotation.Z), false, nameof(Rotation)))
-                    OnPropertyChanged();
-            }
-        }
-
-        public float RotationY {
-            get => _rotation.Y;
-            set {
-                if (SetProperty(ref _rotation, new Vector3(_rotation.X, value, _rotation.Z), false, nameof(Rotation)))
-                    OnPropertyChanged();
-            }
-        }
-
-        public float RotationZ {
-            get => _rotation.Z;
-            set {
-                if (SetProperty(ref _rotation, new Vector3(_rotation.X, _rotation.Y, value), false, nameof(Rotation)))
-                    OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// If <c>true</c>, the <see cref="Entity"/> will rebuild its <see cref="VertexBuffer"/> during the next update cycle.
-        /// </summary>
-        public bool PendingRebuild => _pendingRebuild;
 
         /// <summary>
         /// The offset that this entity is rendered from its origin.
@@ -67,7 +46,7 @@ namespace Blish_HUD.Entities {
         public virtual float VerticalOffset {
             get => _renderOffset.Z;
             set {
-                if (SetProperty(ref _renderOffset, new Vector3(_renderOffset.X, _renderOffset.Y, value), false, nameof(this.RenderOffset)))
+                if (SetProperty(ref _renderOffset, new Vector3(_renderOffset.X, _renderOffset.Y, value), nameof(this.RenderOffset)))
                     OnPropertyChanged();
             }
         }
@@ -75,7 +54,7 @@ namespace Blish_HUD.Entities {
         public virtual float HorizontalOffset {
             get => _renderOffset.X;
             set {
-                if (SetProperty(ref _renderOffset, new Vector3(value, _renderOffset.Y, _renderOffset.Z), false, nameof(this.RenderOffset)))
+                if (SetProperty(ref _renderOffset, new Vector3(value, _renderOffset.Y, _renderOffset.Z), nameof(this.RenderOffset)))
                     OnPropertyChanged();
             }
         }
@@ -83,7 +62,7 @@ namespace Blish_HUD.Entities {
         public virtual float DepthOffset {
             get => _renderOffset.Y;
             set {
-                if (SetProperty(ref _renderOffset, new Vector3(_renderOffset.X, value, _renderOffset.Y), false, nameof(this.RenderOffset)))
+                if (SetProperty(ref _renderOffset, new Vector3(_renderOffset.X, value, _renderOffset.Y), nameof(this.RenderOffset)))
                     OnPropertyChanged();
             }
         }
@@ -93,76 +72,32 @@ namespace Blish_HUD.Entities {
             set => SetProperty(ref _opacity, value);
         }
 
+        // TODO: Consider calling 'OnPropertyChanged' for 'DistanceFromPlayer' and 'DistanceFromCamera' somehow reasonable
+        public virtual float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Player.Position);
+        public virtual float DistanceFromCamera => Vector3.Distance(this.Position, GameService.Camera.Position);
+
         public virtual bool Visible {
             get => _visible;
             set => SetProperty(ref _visible, value);
         }
 
-        private EntityBillboard _billboard;
-        public EntityBillboard Billboard {
-            get => _billboard ?? _basicTitleTextBillboard;
-            set => SetProperty(ref _billboard, value);
-        }
-
-        private EntityText _basicTitleTextBillboard;
-        public string BasicTitleText {
-            get => _basicTitleTextBillboard?.Text ?? string.Empty;
-            set {
-                _basicTitleTextBillboard      = _basicTitleTextBillboard ?? BuildTitleText();
-                _basicTitleTextBillboard.Text = value;
-            }
-        }
-
-        public Color BasicTitleTextColor {
-            get => _basicTitleTextBillboard?.TextColor ?? Color.White;
-            set {
-                _basicTitleTextBillboard           = _basicTitleTextBillboard ?? BuildTitleText();
-                _basicTitleTextBillboard.TextColor = value;
-            }
-        }
-
-        public virtual float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Player.Position);
-        public virtual float DistanceFromCamera => Vector3.Distance(this.Position, GameService.Camera.Position);
-
-        private EntityText BuildTitleText() {
-            var entityText = new EntityText(this) {
-                VerticalOffset = 2f
-            };
-
-            return entityText;
-        }
-
-        public virtual void DoUpdate(GameTime gameTime) {
-            if (_pendingRebuild) {
-                HandleRebuild(GameService.Graphics.GraphicsDevice);
-                _pendingRebuild = false;
-            }
-
-            Update(gameTime);
-
-            this.Billboard?.DoUpdate(gameTime);
-        }
-
-        public virtual void DoDraw(GraphicsDevice graphicsDevice) {
-            Draw(graphicsDevice);
-
-            this.Billboard?.DoDraw(graphicsDevice);
-        }
-
-        public abstract void HandleRebuild(GraphicsDevice graphicsDevice);
-
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
 
-        public virtual void Draw(GraphicsDevice graphicsDevice) { /* NOOP */ }
+        public virtual void Draw(GraphicsDevice graphicsDevice) {
+            if (this.EntityEffect != StandardEffect) return;
+
+            StandardEffect.View = GameService.Camera.View;
+            StandardEffect.Projection = GameService.Camera.Projection;
+
+            StandardEffect.Alpha = this.Opacity;
+        }
 
         #region Property Management and Binding
 
-        protected bool SetProperty<T>(ref T property, T newValue, bool rebuildEntity = false, [CallerMemberName] string propertyName = null) {
+        protected bool SetProperty<T>(ref T property, T newValue, [CallerMemberName] string propertyName = null) {
             if (Equals(property, newValue) || propertyName == null) return false;
 
             property = newValue;
-
-            _pendingRebuild = _pendingRebuild || rebuildEntity;
 
             OnPropertyChanged(propertyName);
 
@@ -171,6 +106,7 @@ namespace Blish_HUD.Entities {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

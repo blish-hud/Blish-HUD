@@ -19,7 +19,7 @@ namespace Blish_HUD.Controls.Effects {
         private static readonly Effect _masterScrollEffect;
 
         static ScrollingHighlightEffect() {
-            _masterScrollEffect = BlishHud.ActiveContentManager.Load<Effect>(@"effects\menuitem");
+            _masterScrollEffect = Overlay.cm.Load<Effect>(@"effects\menuitem");
 
             _masterScrollEffect.Parameters[SPARAM_MASK].SetValue(GameService.Content.GetTexture("156072"));
             _masterScrollEffect.Parameters[SPARAM_OVERLAY].SetValue(GameService.Content.GetTexture("156071"));

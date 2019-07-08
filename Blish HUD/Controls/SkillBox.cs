@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Blish_HUD.Content;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
@@ -45,8 +47,8 @@ namespace Blish_HUD.Controls {
             //}
         }
 
-        private AsyncTexture2D _icon;
-        public AsyncTexture2D Icon { get { return _icon; } set { if (_icon != value) { _icon = value; Invalidate(); } } }
+        private Texture2D _icon;
+        public Texture2D Icon { get { return _icon; } set { if (_icon != value) { _icon = value; Invalidate(); } } }
 
         private bool _hasDropdown = false;
         public bool HasDropdown { get { return _hasDropdown; } set { _hasDropdown = value; Invalidate(); } }

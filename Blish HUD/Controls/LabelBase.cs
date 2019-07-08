@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    public abstract class LabelBase : Control {
+    public abstract class LabelBase:Control {
 
         private CachedStringRender _labelRender;
 
@@ -17,11 +22,9 @@ namespace Blish_HUD.Controls {
 
         protected Color _textColor = Color.White;
 
-        protected HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
+        protected Utils.DrawUtil.HorizontalAlignment _horizontalAlignment = Utils.DrawUtil.HorizontalAlignment.Left;
 
-        protected VerticalAlignment _verticalAlignment = VerticalAlignment.Middle;
-
-        protected bool _wrapText = false;
+        protected Utils.DrawUtil.VerticalAlignment _verticalAlignment = Utils.DrawUtil.VerticalAlignment.Top;
 
         protected bool _showShadow = false;
 
@@ -38,8 +41,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override CaptureType CapturesInput() {
-            //return string.IsNullOrEmpty(this.BasicTooltipText) ? CaptureType.None : CaptureType.Mouse;
-            return CaptureType.Filter;
+            return string.IsNullOrEmpty(this.BasicTooltipText) ? CaptureType.None : CaptureType.Mouse;
         }
 
         /// <summary>
@@ -54,7 +56,7 @@ namespace Blish_HUD.Controls {
             int lblRegionHeight = _size.Y;
 
             if (_autoSizeWidth || _autoSizeHeight) {
-                var textSize = GetTextDimensions();
+                var textSize = _font.MeasureString(_text);
 
                 if (_autoSizeWidth) {
                     lblRegionWidth = (int)Math.Ceiling(textSize.Width + (_showShadow || _strokeText ? 1 : 0));
@@ -66,6 +68,8 @@ namespace Blish_HUD.Controls {
             }
 
             LabelRegion = new Point(lblRegionWidth, lblRegionHeight);
+
+            this.Size = LabelRegion;
 
             if (_cacheLabel) {
                 _labelRender = CachedStringRender.GetCachedStringRender(_text,
@@ -79,14 +83,6 @@ namespace Blish_HUD.Controls {
                                                                        _verticalAlignment);
             }
         }
-
-        protected Size2 GetTextDimensions(string text = null) {
-            text = text ?? _text;
-
-            if (!_autoSizeWidth && _wrapText) text = Blish_HUD.DrawUtil.WrapText(_font, text, LabelRegion.X > 0 ? LabelRegion.X : _size.X);
-
-            return _font.MeasureString(text ?? _text);
-        }
         
         protected void DrawText(SpriteBatch spriteBatch, Rectangle bounds, string text = null) {
             text = text ?? _text;
@@ -99,7 +95,7 @@ namespace Blish_HUD.Controls {
             if (_cacheLabel && _labelRender != null)
                 spriteBatch.DrawOnCtrl(this, _labelRender.CachedRender, bounds);
             else
-                spriteBatch.DrawStringOnCtrl(this, text, _font, bounds, _textColor, _wrapText, _strokeText, 1, _horizontalAlignment, _verticalAlignment);
+                spriteBatch.DrawStringOnCtrl(this, text, _font, bounds, _textColor, false, _strokeText, 1, _horizontalAlignment, _verticalAlignment);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
@@ -107,7 +103,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void DisposeControl() {
-
+            
         }
 
     }

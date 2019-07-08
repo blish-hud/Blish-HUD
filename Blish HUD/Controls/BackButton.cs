@@ -1,4 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Blish_HUD.Utils;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
@@ -38,7 +44,7 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _navTitle, value);
         }
 
-        private readonly WindowBase _window;
+        private WindowBase _window;
 
         public BackButton(WindowBase window) : base() {
             this.Size = new Point(BACKBUTTON_WIDTH, BACKBUTTON_HEIGHT);

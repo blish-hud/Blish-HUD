@@ -1,56 +1,51 @@
-﻿using Blish_HUD;
-using Blish_HUD.Content;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Controls {
 
-    public class StandardButton : LabelBase {
+    public class StandardButton:Control {
 
-        public const int STANDARD_CONTROL_HEIGHT = 26;
-        public const int DEFAULT_CONTROL_WIDTH = 128;
+        static class CachedButtonTextures {
 
-        private const int ICON_SIZE        = 16;
-        private const int ICON_TEXT_OFFSET = 4;
+            private static bool Cached = false;
 
-        #region Load Static
+            private static Texture2D _ButtonIdle;
+            public static Texture2D ButtonIdle {
+                get {
+                    if (!Cached) Load();
 
-        private static readonly Texture2D _textureButtonIdle;
-        private static readonly Texture2D _textureButtonBorder;
-        
-        static StandardButton() {
-            _textureButtonIdle   = Content.GetTexture(@"common\button-states");
-            _textureButtonBorder = Content.GetTexture("button-border");
+                    return _ButtonIdle;
+                }
+            }
+
+            public static Texture2D SpriteButtonBorder;
+
+            public static void Load() {
+                _ButtonIdle = _ButtonIdle ?? Content.GetTexture(@"common\button-states");
+
+                SpriteButtonBorder = SpriteButtonBorder ?? Content.GetTexture("button-border");
+
+                Cached = true;
+            }
+
+            public static void Unload() {
+
+                Cached = false;
+            }
+
         }
 
-        #endregion
-
-        /// <summary>
-        /// The text shown on the button.
-        /// </summary>
+        protected string _text = "button";
         public string Text {
             get => _text;
-            set => SetProperty(ref _text, value, true);
-        }
-
-        private AsyncTexture2D _icon;
-
-        /// <summary>
-        /// An icon to show on the <see cref="StandardButton"/>.  For best results, the <see cref="Icon"/> should be 16x16.
-        /// </summary>
-        public AsyncTexture2D Icon {
-            get => _icon;
-            set => SetProperty(ref _icon, value, true);
-        }
-
-        private bool _resizeIcon;
-
-        /// <summary>
-        /// If true, the <see cref="Icon"/> texture will be resized to 16x16.
-        /// </summary>
-        public bool ResizeIcon {
-            get => _resizeIcon;
-            set => SetProperty(ref _resizeIcon, value, true);
+            set => SetProperty(ref _text, value);
         }
 
         protected override CaptureType CapturesInput() {
@@ -58,30 +53,26 @@ namespace Blish_HUD.Controls {
         }
 
         public StandardButton() {
-            _textColor           = Color.Black;
-            _horizontalAlignment = HorizontalAlignment.Left;
-            _verticalAlignment   = VerticalAlignment.Middle;
-
-            this.Size = new Point(DEFAULT_CONTROL_WIDTH, STANDARD_CONTROL_HEIGHT);
+            CachedButtonTextures.Load();
 
             InitAnim();
         }
 
         private void InitAnim() {
             // TODO: Convert button animation from old animation service to glide library
-            _animHover = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9, AnimationService.EasingMethod.Linear);
+            _anim = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9, AnimationService.EasingMethod.Linear);
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            _animHover?.Start();
+            _anim?.Start();
 
             base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            if (_animHover != null) {
-                _animHover.Reverse();
-                _animHover.AnimationCompleted += delegate { InitAnim(); };
+            if (_anim != null) {
+                _anim.Reverse();
+                _anim.AnimationCompleted += delegate { InitAnim(); };
             }
 
             base.OnMouseLeft(e);
@@ -93,101 +84,69 @@ namespace Blish_HUD.Controls {
             base.OnClick(e);
         }
 
+        private int _animFrame = -1;
+        private double _animEllapsedTime = 0;
+
         private const int ATLAS_SPRITE_WIDTH = 350;
         private const int ATLAS_SPRITE_HEIGHT = 20;
         private const int ANIM_FRAME_TIME = 300 / 9;
 
-        private EaseAnimation _animHover;
-
-        private Rectangle _layoutIconBounds = Rectangle.Empty;
-        private Rectangle _layoutTextBounds = Rectangle.Empty;
-
-        /// <inheritdoc />
-        public override void RecalculateLayout() {
-            // TODO: Ensure that these calculations are correctly placing the image in the middle and clean things up
-            var textSize = GetTextDimensions();
-
-            int textLeft = (int)(_size.X / 2 - textSize.Width / 2);
-
-            if (_icon != null) {
-                if (textSize.Width > 0) {
-                    textLeft += ICON_SIZE / 2 + ICON_TEXT_OFFSET / 2;
-                } else {
-                    textLeft += ICON_SIZE / 2;
-                }
-
-                var iconSize = _resizeIcon ? new Point(ICON_SIZE) : _icon.GetTexture().Bounds.Size;
-
-                _layoutIconBounds = new Rectangle(textLeft - iconSize.X - ICON_TEXT_OFFSET, _size.Y / 2 - iconSize.Y / 2, iconSize.X, iconSize.Y);
-            }
-
-            _layoutTextBounds = new Rectangle(textLeft, 0, _size.X - textLeft, _size.Y);
-        }
+        private EaseAnimation _anim;
 
         public override void DoUpdate(GameTime gameTime) {
-            if (_enabled && this.MouseOver && _animHover == null) {
-                _animHover = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9 * (this.Width / ATLAS_SPRITE_WIDTH), AnimationService.EasingMethod.Linear);
+            if (this.MouseOver) {
+                if (_anim == null)
+                    _anim = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9 * (this.Width / ATLAS_SPRITE_WIDTH), AnimationService.EasingMethod.Linear);
             }
 
-            if (_animHover != null) {
-                _activeAtlasRegion = new Rectangle(_animHover.CurrentValueInt * ATLAS_SPRITE_WIDTH, 0, ATLAS_SPRITE_WIDTH, ATLAS_SPRITE_HEIGHT);
+            if (_anim != null) {
+                _activeAtlasRegion = new Rectangle(_anim.CurrentValueInt * ATLAS_SPRITE_WIDTH, 0, ATLAS_SPRITE_WIDTH, ATLAS_SPRITE_HEIGHT);
                 
-                if (_animHover.Active) Invalidate();
+                if (_anim.Active) Invalidate();
             }
+
+            base.DoUpdate(gameTime);
         }
 
         private Rectangle _activeAtlasRegion = new Rectangle(0, 0, 350, 20);
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Button Texture
-            if (_enabled) {
-                spriteBatch.DrawOnCtrl(this,
-                                       _textureButtonIdle,
-                                       new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
-                                       _activeAtlasRegion);
-            } else { 
-                // TODO: Use the actual button texture instead
-                spriteBatch.DrawOnCtrl(this,
-                                       ContentService.Textures.Pixel,
-                                       new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
-                                       Color.FromNonPremultiplied(121, 121, 121, 255));
-            }
+            spriteBatch.DrawOnCtrl(this,
+                                   CachedButtonTextures.ButtonIdle,
+                             new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
+                             _activeAtlasRegion);
 
             // Top Shadow
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureButtonBorder,
-                                   new Rectangle(2, 0, this.Width - 5, 4),
-                                   new Rectangle(0, 0, 1,              4));
+            spriteBatch.DrawOnCtrl(this, CachedButtonTextures.SpriteButtonBorder,
+                             new Rectangle(2, 0, this.Width - 5, 4),
+                             new Rectangle(0, 0, 1, 4));
 
             // Right Shadow
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureButtonBorder,
-                                   new Rectangle(this.Width - 4, 2, 4, this.Height - 3),
-                                   new Rectangle(0,              1, 4, 1));
+            spriteBatch.DrawOnCtrl(this, CachedButtonTextures.SpriteButtonBorder,
+                             new Rectangle(this.Width - 4, 2, 4, this.Height - 3),
+                             new Rectangle(0, 1, 4, 1));
 
             // Bottom Shadow
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureButtonBorder,
-                                   new Rectangle(3, this.Height - 4, this.Width - 6, 4),
-                                   new Rectangle(1, 0,               1,              4));
+            spriteBatch.DrawOnCtrl(this, CachedButtonTextures.SpriteButtonBorder,
+                             new Rectangle(3, this.Height - 4, this.Width - 6, 4), 
+                             new Rectangle(1, 0, 1, 4));
 
             // Left Shadow
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureButtonBorder,
-                                   new Rectangle(0, 2, 4, this.Height - 3),
-                                   new Rectangle(0, 3, 4, 1));
+            spriteBatch.DrawOnCtrl(this, CachedButtonTextures.SpriteButtonBorder,
+                             new Rectangle(0, 2, 4, this.Height - 3),
+                             new Rectangle(0, 3, 4, 1));
 
-            // Draw Icon
-            if (_icon != null) {
-                spriteBatch.DrawOnCtrl(this,
-                                       _icon,
-                                       _layoutIconBounds);
-            }
-
-            // TODO: Don't set button text color like this
-            _textColor = _enabled ? Color.Black : Color.FromNonPremultiplied(51, 51, 51, 255);
             // Button Text
-            DrawText(spriteBatch, _layoutTextBounds);
+            spriteBatch.DrawStringOnCtrl(
+                                         this,
+                                         _text,
+                                         Content.DefaultFont14,
+                                         new Rectangle(Point.Zero, _size), 
+                                         Color.Black,
+                                         false,
+                                         Utils.DrawUtil.HorizontalAlignment.Center
+                                        );
         }
 
     }

@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
+using Blish_HUD.Annotations;
 using Blish_HUD.Pathing.Behaviors;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing {
     
@@ -37,9 +41,9 @@ namespace Blish_HUD.Pathing {
         private readonly TEntity _managedEntity;
         //private List<PathingBehavior<ManagedPathable<TEntity>, TEntity>> _behaviors = new List<PathingBehavior<ManagedPathable<TEntity>, TEntity>>();
         private List<PathingBehavior> _behaviors = new List<PathingBehavior>();
-        private int                   _mapId     = -1;
-        private UserAccess            _access    = UserAccess.None;
-        private string                _guid;
+        private int _mapId = -1;
+        private UserAccess _access = UserAccess.None;
+        private string _guid;
 
         /// <summary>
         /// Used by the Pathing service to either add or remove this path
@@ -56,11 +60,6 @@ namespace Blish_HUD.Pathing {
             // Load pre-set GUID or lazy-load new one
             get => _guid ?? (_guid = GetGuid());
             set => SetProperty(ref _guid, value);
-        }
-
-        public UserAccess Access {
-            get => _access;
-            set => SetProperty(ref _access, value);
         }
 
         public abstract bool Active { get; set; }
@@ -97,7 +96,7 @@ namespace Blish_HUD.Pathing {
 
         public virtual void Update(GameTime gameTime) {
             for (int i = 0; i < _behaviors.Count; i++) {
-                _behaviors[i].UpdateBehavior(gameTime);
+                _behaviors[i].Update(gameTime);
             }
         }
 
@@ -115,6 +114,7 @@ namespace Blish_HUD.Pathing {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

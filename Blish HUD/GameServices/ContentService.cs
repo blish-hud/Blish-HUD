@@ -1,43 +1,23 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Text.RegularExpressions;
-using Blish_HUD.Content;
-using Blish_HUD.GameServices.Content;
-using Blish_HUD.Modules.Managers;
-using Flurl.Http;
-using Microsoft.Scripting.Runtime;
+using System.Linq;
+using System.Runtime.Caching;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Content.Pipeline;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using MonoGame.Framework.Content;
 
 namespace Blish_HUD {
+    public class ContentService:GameService {
 
-    public class ContentService : GameService {
-
-        private static readonly Logger Logger = Logger.GetLogger(typeof(ContentService));
-
-        private const string REF_FILE = "ref.dat";
-
-        #region Load Static
-
-        private static readonly ConcurrentDictionary<string, SoundEffect> _loadedSoundEffects;
-        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts;
-        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures;
-        private static readonly ConcurrentDictionary<string, Stream>      _loadedFiles;
-
-        static ContentService() {
-            _loadedSoundEffects = new ConcurrentDictionary<string, SoundEffect>();
-            _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
-            _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
-            _loadedFiles        = new ConcurrentDictionary<string, Stream>();
-        }
-
-        #endregion
+        private const string REF_PATH = "ref.dat";
 
         public static class Colors {
             public static readonly Color ColonialWhite = Color.FromNonPremultiplied(255, 238, 187, 255);
@@ -56,16 +36,11 @@ namespace Blish_HUD {
             public static Texture2D Error { get; private set; }
             public static Texture2D Pixel { get; private set; }
 
-            public static Texture2D TransparentPixel { get; private set; }
-
             public static void Load() {
                 Error = Content.GetTexture(@"common\error");
 
                 Pixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
                 Pixel.SetData(new[] { Color.White });
-
-                TransparentPixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
-                TransparentPixel.SetData(new[] { Color.Transparent });
             }
         }
 
@@ -105,9 +80,25 @@ namespace Blish_HUD {
             Italic
         }
 
-        public Microsoft.Xna.Framework.Content.ContentManager ContentManager => Blish_HUD.BlishHud.ActiveContentManager;
+        private Dictionary<string, SoundEffect> _loadedSoundEffects;
+        private Dictionary<string, BitmapFont> _loadedBitmapFonts;
+        private Dictionary<string, Texture2D> _loadedTextures;
+        private Dictionary<string, Stream> _loadedFiles;
 
-        protected override void Initialize() { /* NOOP */ }
+        private Dictionary<string, Texture2D> _mapLoadedTextures;
+
+        //private IAppCache contentCache = new CachingService();
+
+        private ContentManager _contentManager;
+
+        protected override void Initialize() {
+            _contentManager = Overlay.Content;
+
+            _loadedSoundEffects = new Dictionary<string, SoundEffect>();
+            _loadedBitmapFonts = new Dictionary<string, BitmapFont>();
+            _loadedTextures = new Dictionary<string, Texture2D>();
+            _loadedFiles = new Dictionary<string, Stream>();
+        }
 
         protected override void Load() {
             Textures.Load();
@@ -115,28 +106,26 @@ namespace Blish_HUD {
 
         public void PlaySoundEffectByName(string soundName) {
             if (!_loadedSoundEffects.ContainsKey(soundName))
-                _loadedSoundEffects.TryAdd(soundName, Blish_HUD.BlishHud.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
+                _loadedSoundEffects.Add(soundName, _contentManager.Load<SoundEffect>($"{soundName}"));
 
             // TODO: Volume was 0.25f - changing to 0.125 until a setting can be exposed in the UI
             _loadedSoundEffects[soundName].Play(0.125f, 0, 0);
         }
-
         // Used while debugging since it's easier
-        private static Texture2D TextureFromFile(string filepath) {
+        private static Texture2D TextureFromFile(GraphicsDevice gc, string filepath) {
             if (File.Exists(filepath)) {
                 using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    return Texture2D.FromStream(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, fileStream);
+                    return Texture2D.FromStream(gc, fileStream);
                 }
             } else return null;
         }
-
-        private static Texture2D TextureFromFileSystem(string filepath) {
-            if (!File.Exists(REF_FILE)) {
-                Console.WriteLine($"{REF_FILE} is missing!  Lots of assets will be missing!");
+        private static Texture2D TextureFromFileSystem(GraphicsDevice gc, string filepath) {
+            if (!File.Exists(REF_PATH)) {
+                Console.WriteLine($"{REF_PATH} is missing!  Lots of assets will be missing!");
                 return null;
             }
             
-            using (var refFs = new FileStream(REF_FILE, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+            using (var refFs = new FileStream(REF_PATH, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read)) {
                     var refEntry = refArchive.GetEntry(filepath);
 
@@ -145,34 +134,52 @@ namespace Blish_HUD {
                             var textureCanSeek = new MemoryStream();
                             textureStream.CopyTo(textureCanSeek);
 
-                            return Texture2D.FromStream(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, textureCanSeek);
+                            return Texture2D.FromStream(gc, textureCanSeek);
                         }
+                    } else {
+                        #if DEBUG
+                        Directory.CreateDirectory(@"ref\to-include");
+
+                        // Makes it easy to know what's in use so that it can be added to the ref archive later
+                        if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
+
+                        return TextureFromFile(gc, $@"ref\{filepath}");
+                        #endif
                     }
-
-                    #if DEBUG
-                    System.IO.Directory.CreateDirectory(@"ref\to-include");
-
-                    // Makes it easy to know what's in use so that it can be added to the ref archive later
-                    if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
-
-                    return TextureFromFile($@"ref\{filepath}");
-                    #endif
 
                     return null;
                 }
             }
         }
 
+
         public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
-            return Blish_HUD.BlishHud.ActiveContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
+            return _contentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
         }
 
         public void PurgeTextureCache(string textureName) {
-            _loadedTextures.TryRemove(textureName, out var _);
+            _loadedTextures.Remove(textureName);
         }
 
         public Texture2D GetTexture(string textureName) {
             return GetTexture(textureName, Textures.Error);
+        }
+
+        public void CacheTexture(string texturePath) {
+            string cacheFolder = Path.Combine(FileSrv.BasePath, "cache");
+            string spritesFolder = Path.Combine(cacheFolder, "sprites");
+            string tempFolder = Path.Combine(cacheFolder, "_temp");
+            Directory.CreateDirectory(spritesFolder);
+            Directory.CreateDirectory(tempFolder);
+
+            var pm = new MonoGame.Framework.Content.Pipeline.Builder.PipelineManager(spritesFolder, tempFolder, @"Path\_temp");
+            pm.Profile = GraphicsProfile.HiDef;
+            pm.CompressContent = false;
+            pm.Platform = TargetPlatform.Windows;
+            var builtContent = pm.BuildContent(texturePath);
+            var processedContent = pm.ProcessContent(builtContent);
+
+            //Console.WriteLine($"{texturePath} => {processedContent.GetType().Name}");
         }
 
         public Texture2D GetTexture(string textureName, Texture2D defaultTexture) {
@@ -182,149 +189,87 @@ namespace Blish_HUD {
                 return cachedTexture;
 
             if (File.Exists(textureName)) {
-                return TextureFromFile(textureName);
+                CacheTexture(textureName);
+                return TextureFromFile(GameService.Graphics.GraphicsDevice, textureName);
             }
 
-            cachedTexture = TextureFromFileSystem($"{textureName}.png");
+            cachedTexture = TextureFromFileSystem(GameService.Graphics.GraphicsDevice, $"{textureName}.png");
 
             if (cachedTexture == null) {
                 try {
-                    cachedTexture = Blish_HUD.BlishHud.ActiveContentManager.Load<Texture2D>(textureName);
-                } catch (ContentLoadException ex) {
-                    Logger.Error(ex, "Could not find {textureName} precompiled or in the ref archive.", textureName);
+                    cachedTexture = _contentManager.Load<Texture2D>(textureName);
+                } catch (ContentLoadException e) {
+                    GameService.Debug.WriteInfoLine($"Could not find '{textureName}' precompiled or in include directory. Full error message: {e.ToString()}");
                 }
             }
 
             cachedTexture = cachedTexture ?? defaultTexture;
 
-            _loadedTextures.TryAdd(textureName, cachedTexture);
+            _loadedTextures.Add(textureName, cachedTexture);
 
             return cachedTexture;
         }
-
-        /// <summary>
-        /// Retreives a texture from the Guild Wars 2 Render Service.
-        /// </summary>
-        /// <param name="signature">The SHA1 signature of the requested texture.</param>
-        /// <param name="fileId">The file id of the requested texture.</param>
-        /// <param name="size">Specifies the size of the texture requested - only some render service hosts will utilize this setting.</param>
-        /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
-        /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
-        public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId, RenderServiceTextureSize size) {
-            //Texture2D returnedTexture = new Texture2D(Graphics.GraphicsDevice, (int)size, (int)size);
-            AsyncTexture2D returnedTexture = new AsyncTexture2D(Textures.TransparentPixel.Duplicate());
-
-            string requestUrl = $"https://darthmaim-cdn.de/gw2treasures/icons/{signature}/{fileId}-{(int)size}px.png";
-
-            requestUrl.GetBytesAsync()
-                      .ContinueWith((textureDataResponse) => {
-                                        if (textureDataResponse.Exception != null) {
-                                            Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
-                                            return;
-                                        }
-
-                                        var textureData = textureDataResponse.Result;
-
-                                        using (var textureStream = new MemoryStream(textureData)) {
-                                            var loadedTexture = Texture2D.FromStream(Graphics.GraphicsDevice, textureStream);
-
-                                            returnedTexture.SwapTexture(loadedTexture);
-                                        }
-                                    });
-
-            return returnedTexture;
-        }
-
-        #region Render Service
-
-        /// <summary>
-        /// Retreives a texture from the Guild Wars 2 Render Service.
-        /// </summary>
-        /// <param name="signature">The SHA1 signature of the requested texture.</param>
-        /// <param name="fileId">The file id of the requested texture.</param>
-        /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
-        /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
-        public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
-            return GetRenderServiceTexture(signature, fileId, RenderServiceTextureSize.Unspecified);
-        }
-
-        private static readonly Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
-
-        /// <summary>
-        /// Retreives a texture from the Guild Wars 2 Render Service.
-        /// </summary>
-        /// <param name="uriOrSignatureFileIdPair">Either the full Render Service URL or the signature and file id URI (e.g. "7554DCAF5A1EA1BDF5297352A203AF2357BE2B5B/498983").</param>
-        /// <param name="size">Specifies the size of the texture requested - only some render service hosts will utilize this setting.</param>
-        /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
-        /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
-        public AsyncTexture2D GetRenderServiceTexture(string uriOrSignatureFileIdPair,  RenderServiceTextureSize size) {
-            var splitUri = _regexRenderServiceSignatureFileIdPair.Match(uriOrSignatureFileIdPair);
-
-            if (!splitUri.Success) {
-                throw new ArgumentException($"Could not find signature / file id pair in provided '{uriOrSignatureFileIdPair}'.", nameof(uriOrSignatureFileIdPair));
-            }
-
-            string signature = splitUri.Groups[1].Value;
-            string fileId    = splitUri.Groups[2].Value;
-
-            return GetRenderServiceTexture(signature, fileId, size);
-        }
-
-        /// <summary>
-        /// Retreives a texture from the Guild Wars 2 Render Service.
-        /// </summary>
-        /// <param name="uriOrSignatureFileIdPair">Either the full Render Service URL or the signature and file id URI (e.g. "7554DCAF5A1EA1BDF5297352A203AF2357BE2B5B/498983").</param>
-        /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
-        /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
-        public AsyncTexture2D GetRenderServiceTexture(string uriOrSignatureFileIdPair) {
-            return GetRenderServiceTexture(uriOrSignatureFileIdPair, RenderServiceTextureSize.Unspecified);
-        }
-
-#endregion
 
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
             string fullFontName = $"{font.ToString().ToLower()}-{((int)size).ToString()}-{style.ToString().ToLower()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
-                var loadedFont = Blish_HUD.BlishHud.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}");
+                var loadedFont = _contentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}");
                 loadedFont.LetterSpacing = -1;
-                _loadedBitmapFonts.TryAdd(fullFontName, loadedFont);
+                _loadedBitmapFonts.Add(fullFontName, loadedFont);
 
                 return loadedFont;
             }
 
             return _loadedBitmapFonts[fullFontName];
         }
-
-        private static Stream FileFromSystem(string filepath) {
-            if (!File.Exists(REF_FILE)) {
-                Logger.Warn("{refName} is missing! It should be in the same folder as BlishHUD.exe. Without it, most images and other assets will be missing.");
+        private static Stream FileFromSystem(string filepath)
+        {
+            if (!File.Exists(REF_PATH))
+            {
+                Console.WriteLine($"{REF_PATH} is missing!  Lots of assets will be missing!");
                 return null;
             }
 
-            using (var refFs = new FileStream(REF_FILE, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read)) {
+            using (var refFs = new FileStream(REF_PATH, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read))
+                {
                     var refEntry = refArchive.GetEntry(filepath);
 
-                    if (refEntry != null) {
-                        using (var fileStream = refEntry.Open()) {
+                    if (refEntry != null)
+                    {
+                        using (var fileStream = refEntry.Open())
+                        {
                             var fileCanSeek = new MemoryStream();
                             fileStream.CopyTo(fileCanSeek);
 
                             return fileCanSeek;
                         }
-                    } else {
+                    }
+                    else
+                    {
 #if DEBUG
-                        System.IO.Directory.CreateDirectory(@"ref\to-include");
+                        Directory.CreateDirectory(@"ref\to-include");
 
                         // Makes it easy to know what's in use so that it can be added to the ref archive later
                         if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
 #endif
                     }
-
                     return null;
                 }
             }
+        }
+
+        public Stream GetFile(string fileName) {
+            if (_loadedFiles.TryGetValue(fileName, out var cachedFile))
+                return cachedFile;
+
+            cachedFile = FileFromSystem($"{fileName}");
+
+            _loadedFiles.Add(fileName, cachedFile);
+
+            return cachedFile;
         }
 
         protected override void Unload() {
@@ -334,7 +279,18 @@ namespace Blish_HUD {
             _loadedFiles.Clear();
         }
 
-        protected override void Update(GameTime gameTime) { /* NOOP */ }
+        protected override void Update(GameTime gameTime) {
+            // Unload content from memory since they aren't playing gw2 right now
 
+            // We can't do this until all content is actually handled by the content GameService
+            // If we do, some sprites won't be visible (like some font sprites that are loaded in MainLoop)
+            
+            //if (!GameService.GameIntegration.Gw2IsRunning) {
+            //    LoadedTextures.Clear();
+            //    LoadedBitmapFonts.Clear();
+            //    LoadedSoundEffects.Clear();
+            //    ContentManager.Unload();
+            //}
+        }
     }
 }

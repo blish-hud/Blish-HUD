@@ -260,12 +260,6 @@
 /processorParam:DebugMode=Auto
 /build:effects/gw2master.fx
 
-#begin effects/marker.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:effects/marker.fx
-
 #begin effects/menuitem.fx
 /importer:EffectImporter
 /processor:EffectProcessor

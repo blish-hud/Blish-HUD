@@ -1,54 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Blish_HUD.WinApi;
+using Blish_HUD;
 using MonoGame.Extended.BitmapFonts;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Blish_HUD.Controls {
-
-    /// <summary>
-    /// Represents a textbox control.
-    /// </summary>
     public class TextBox : Control {
 
         #region Load Static
 
-        private static MouseInterceptor           _sharedInterceptor;
-        private static System.Windows.Forms.Label _sharedUnfocusLabel;
-
         private static readonly Texture2D _textureTextbox;
 
         static TextBox() {
-              _sharedInterceptor                         =  new MouseInterceptor();
-              _sharedInterceptor.MouseLeft               += delegate { _sharedInterceptor.Hide(); };
-              _sharedInterceptor.LeftMouseButtonReleased += delegate { _sharedInterceptor.Hide(); };
-
-              // This is needed to ensure that the textbox is *actually* unfocused
-              _sharedUnfocusLabel = new System.Windows.Forms.Label {
-                  Location = new System.Drawing.Point(-200, 0),
-                  Parent   = BlishHud.Form
-              };
-
             _textureTextbox = Content.GetTexture("textbox");
         }
 
         #endregion
 
-        public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
-                                                                            /*   PanelOffset */ new Point(5, 2),
-                                                                            /* ControlOffset */ Control.ControlStandard.ControlOffset);
-
-        public event EventHandler<EventArgs> TextChanged;
-        public event EventHandler<EventArgs> EnterPressed;
-        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> KeyPressed;
-        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> KeyDown;
-        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> KeyUp;
+        public event EventHandler<EventArgs> OnTextChanged;
+        public event EventHandler<EventArgs> OnEnterPressed;
+        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> OnKeyPressed;
+        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> OnKeyDown;
+        public event EventHandler<Microsoft.Xna.Framework.Input.Keys> OnKeyUp;
 
         protected System.Windows.Forms.TextBox _mttb;
+        protected Form _focusForm;
 
         public string Text {
             get => _mttb.Text;
@@ -82,16 +69,13 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _font, value);
         }
 
-        /// <summary>
-        /// [NOT THREAD-SAFE]
-        /// </summary>
         public TextBox() {
             _lastInvalidate = DateTime.MinValue.TimeOfDay;
 
             _mttb = new System.Windows.Forms.TextBox() {
-                Parent = BlishHud.Form,
-                Size = new Size(20, 20),
-                Location = new System.Drawing.Point(-500),
+                Parent = Overlay.Form,
+                Size = new Size(300, 20),
+                Location = new System.Drawing.Point(Overlay.Form.Left - 500),
                 AutoCompleteMode = AutoCompleteMode.Append,
                 AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource,
                 AutoCompleteCustomSource = new System.Windows.Forms.AutoCompleteStringCollection(),
@@ -99,30 +83,45 @@ namespace Blish_HUD.Controls {
                 TabStop = false
             };
 
-            _sharedInterceptor.LeftMouseButtonReleased += delegate {
-                if (_sharedInterceptor.ActiveControl == this) 
-                    Textbox_LeftMouseButtonReleased(null, null);
+            _focusForm = new Form {
+                TopMost           = true,
+                Size              = new Size(1, 1),
+                Location          = new System.Drawing.Point(-200, -200),
+                ShowInTaskbar     = false,
+                AllowTransparency = true,
+                FormBorderStyle   = FormBorderStyle.None,
+                Opacity           = 0.01f,
+                BackColor         = System.Drawing.Color.Black
             };
+
+            #if DEBUG
+                /* This method is pretty hacked up, so I want to make
+                   sure we can keep tabs on it as the application evolves. */
+                _focusForm.Opacity   = 0.2f;
+                _focusForm.BackColor = System.Drawing.Color.Magenta;
+            #endif
+
+            _focusForm.Hide();
+            _focusForm.Click += delegate { Textbox_LeftMouseButtonReleased(null, null); };
+            _focusForm.MouseLeave += delegate { _focusForm.Hide(); };
             
-            _mttb.TextChanged += InternalTextBox_TextChanged;
-            _mttb.KeyDown += InternalTextBox_KeyDown;
-            _mttb.KeyUp += InternalTextBox_KeyUp;
+            _mttb.TextChanged += _mttb_TextChanged;
+            _mttb.KeyDown += _mttb_KeyDown;
+            _mttb.KeyUp += _mttb_KeyUp;
 
-            this.Size = Standard.Size;
+            this.Size = new Point(this.Width, 27);
 
-            Input.LeftMouseButtonPressed  += Input_MouseButtonPressed;
-            Input.RightMouseButtonPressed += Input_MouseButtonPressed;
+            Input.LeftMouseButtonPressed += Input_LeftMouseButtonPressed;
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            _sharedInterceptor.Show(this);
+            _focusForm.Show();
 
             base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            if (_sharedInterceptor.ActiveControl == this)
-                _sharedInterceptor.Hide();
+            _focusForm.Hide();
 
             base.OnMouseLeft(e);
         }
@@ -132,46 +131,46 @@ namespace Blish_HUD.Controls {
 
         protected override CaptureType CapturesInput() { return CaptureType.Mouse | CaptureType.ForceNone; }
 
-        private void InternalTextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
+        private void _mttb_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
             /* Supress up and down keys because they move the cursor left and
                right for some silly reason */
             if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
                 e.SuppressKeyPress = true;
             
-            this.KeyDown?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
+            this.OnKeyDown?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
 
             _textWasChanged = true;
             Invalidate();
         }
 
-        private void InternalTextBox_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
+        private void _mttb_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) {
-                this.EnterPressed?.Invoke(this, new EventArgs());
+                this.OnEnterPressed?.Invoke(this, new EventArgs());
             } else {
                 /* Supress up and down keys because they move the cursor left and
-                   right for some silly reason */
+               right for some silly reason */
                 if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
                     e.SuppressKeyPress = true;
 
-                this.KeyUp?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
-                this.KeyPressed?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
+                this.OnKeyUp?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
+                this.OnKeyPressed?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
             }
 
             _textWasChanged = true;
             Invalidate();
         }
 
-        private void Input_MouseButtonPressed(object sender, MouseEventArgs e) {
+        private void Input_LeftMouseButtonPressed(object sender, MouseEventArgs e) {
             if (_mttb.Focused && !this.MouseOver) {
-                _sharedUnfocusLabel.Select();
+                Overlay.UnfocusLabel.Select();
                 Invalidate();
             }
         }
 
-        private void InternalTextBox_TextChanged(object sender, EventArgs e) {
+        private void _mttb_TextChanged(object sender, EventArgs e) {
             string finalText = _mttb.Text;
 
-            foreach (char c in _mttb.Text) {
+            foreach (char c in _mttb.Text.ToCharArray()) {
                 if (this.Font.GetCharacterRegion(c) == null) { 
                     finalText = finalText.Replace(c.ToString(), "");
                 }
@@ -195,11 +194,11 @@ namespace Blish_HUD.Controls {
 
             _textWasChanged = true;
 
-            this.TextChanged?.Invoke(this, e);
+            this.OnTextChanged?.Invoke(this, e);
         }
 
         private void Textbox_LeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            BlishHud.Form.Activate();
+            Overlay.Form.Activate();
 
             _mttb.Select(_mttb.Text.Length, 0);
             _mttb.Focus();
@@ -207,9 +206,11 @@ namespace Blish_HUD.Controls {
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            // Keep MouseInterceptor on top of us
-            if (_sharedInterceptor.Visible && _sharedInterceptor.ActiveControl == this)
-                _sharedInterceptor.Show(this);
+            var focusLocation = this.AbsoluteBounds.Location.ScaleToUi().ToSystemDrawingPoint();
+            focusLocation.Offset(Overlay.Form.Location);
+
+            _focusForm.Location = focusLocation;
+            _focusForm.Size = this.AbsoluteBounds.Size.ScaleToUi().ToSystemDrawingSize();
 
             // Determines if the blinking caret is currently visible
             this.CaretVisible = _mttb.Focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75);

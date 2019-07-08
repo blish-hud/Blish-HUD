@@ -13,7 +13,7 @@
     <AssemblyName>Blish HUD</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <NuGetPackageImportStamp>
@@ -58,7 +58,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS;NODIRMODULES;NOMOUSEHOOK</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;NOMOUSEHOOK</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -104,14 +104,29 @@
     <StartupObject>Blish_HUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Content\AsyncTexture2D.cs" />
-    <Compile Include="Controls\HotkeyAssigner.cs" />
-    <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
-    <Compile Include="Content\DirectoryReader.cs" />
-    <Compile Include="Content\Serialization\SemVerConverter.cs" />
-    <Compile Include="Content\ZipArchiveReader.cs" />
-    <Compile Include="Controls\IAccordion.cs" />
-    <Compile Include="Controls\_Types\CachedStringRender.cs" />
+    <Compile Include="BHGw2Api\ApiCache.cs" />
+    <Compile Include="BHGw2Api\ApiExtensions.cs" />
+    <Compile Include="BHGw2Api\ApiItem.cs" />
+    <Compile Include="BHGw2Api\CachedCall.cs" />
+    <Compile Include="BHGw2Api\Cache\HybridCache.cs" />
+    <Compile Include="BHGw2Api\DyeColor.cs" />
+    <Compile Include="BHGw2Api\Converters\ChildItemConverter.cs" />
+    <Compile Include="BHGw2Api\Converters\ColorConverter.cs" />
+    <Compile Include="BHGw2Api\Converters\RectangleConverter.cs" />
+    <Compile Include="BHGw2Api\Converters\PointConverter.cs" />
+    <Compile Include="BHGw2Api\Item.cs" />
+    <Compile Include="BHGw2Api\Meta.cs" />
+    <Compile Include="BHGw2Api\RenderService.cs" />
+    <Compile Include="BHGw2Api\TokenInfo.cs" />
+    <Compile Include="BHGw2Api\Continent.cs" />
+    <Compile Include="BHGw2Api\Floor.cs" />
+    <Compile Include="BHGw2Api\Landmark.cs" />
+    <Compile Include="BHGw2Api\Map.cs" />
+    <Compile Include="BHGw2Api\Region.cs" />
+    <Compile Include="BHGw2Api\Settings.cs" />
+    <Compile Include="BHUDControls\Hotkeys\HotkeyAssigner.cs" />
+    <Compile Include="BHUDControls\Hotkeys\HotkeyAssignmentWindow.cs" />
+    <Compile Include="Content\CachedStringRender.cs" />
     <Compile Include="Controls\ContextMenuStripItem.cs" />
     <Compile Include="Controls\CounterBox.cs" />
     <Compile Include="Controls\DetailsButton.cs" />
@@ -161,98 +176,116 @@
     <Compile Include="Controls\LoadingSpinner.cs" />
     <Compile Include="Controls\Menu.cs" />
     <Compile Include="Controls\MenuItem.cs" />
-    <Compile Include="Controls\ScreenNotification.cs" />
+    <Compile Include="Controls\Notification.cs" />
     <Compile Include="Controls\Panel.cs" />
+    <Compile Include="Controls\Popup.cs" />
     <Compile Include="Controls\Screen.cs" />
     <Compile Include="Controls\Scrollbar.cs" />
     <Compile Include="Controls\SkillBox.cs" />
     <Compile Include="Controls\StandardButton.cs" />
     <Compile Include="Controls\TabbedWindow.cs" />
     <Compile Include="Controls\TextBox.cs" />
+    <Compile Include="Controls\TintedPanel.cs" />
     <Compile Include="Controls\Tooltip.cs" />
     <Compile Include="Controls\TrackBar.cs" />
     <Compile Include="Controls\WindowBase.cs" />
     <Compile Include="Controls\WindowTab.cs" />
     <Compile Include="Controls\_Events\ValueChangedEventArgs.cs" />
     <Compile Include="Controls\_Types\AccordionState.cs" />
-    <Compile Include="Controls\_Types\DesignStandard.cs" />
-    <Compile Include="Controls\_Types\HorizontalAlignment.cs" />
     <Compile Include="Controls\_Types\LayoutState.cs" />
     <Compile Include="Controls\_Types\Thickness.cs" />
-    <Compile Include="Controls\_Types\VerticalAlignment.cs" />
     <Compile Include="CustomBlendStates.cs" />
+    <Compile Include="Custom\ObservableKeyedCollection.cs" />
+    <Compile Include="Custom\Pipeline.cs" />
     <Compile Include="Entities\Cube.cs" />
-    <Compile Include="Entities\Effects\EntityEffect.cs" />
     <Compile Include="Entities\Entity.cs" />
-    <Compile Include="Entities\EntityBillboard.cs" />
     <Compile Include="Entities\EntityContainer.cs" />
-    <Compile Include="Entities\EntityText.cs" />
-    <Compile Include="GameServices\ArcDps\AsyncUserToken.cs" />
-    <Compile Include="GameServices\ArcDps\CombatParser.cs" />
-    <Compile Include="GameServices\ArcDps\MessageData.cs" />
-    <Compile Include="GameServices\ArcDps\Models\Ag.cs" />
-    <Compile Include="GameServices\ArcDps\Models\CombatEvent.cs" />
-    <Compile Include="GameServices\ArcDps\Models\Ev.cs" />
-    <Compile Include="GameServices\ArcDps\RawCombatEventArgs.cs" />
-    <Compile Include="GameServices\ArcDps\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="GameServices\ArcDps\SocketListener.cs" />
-    <Compile Include="GameServices\Content\RenderServiceTextureSize.cs" />
-    <Compile Include="GameServices\Debug\Logger.cs" />
-    <Compile Include="GameServices\Gw2ApiService.cs" />
+    <Compile Include="GameServices\ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
-    <Compile Include="Content\IDataReader.cs" />
-    <Compile Include="GameServices\PersistentStore\Store.cs" />
-    <Compile Include="GameServices\PersistentStore\StoreValue.cs" />
-    <Compile Include="GameServices\PersistentStore\StoreValue[T].cs" />
-    <Compile Include="GameServices\Settings\UI\AboutUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\UI\OverlaySettingsUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\UI\HotkeysSettingsUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\UI\SingleModuleSettingsUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\SettingCollection.cs" />
-    <Compile Include="GameServices\Settings\SettingEntry.cs" />
-    <Compile Include="GameServices\Settings\SettingEntry[T].cs" />
-    <Compile Include="GameServices\Settings\UI\UpdateUIBuilder.cs" />
-    <Compile Include="Modules\Module.cs" />
-    <Compile Include="Modules\Managers\ContentsManager.cs" />
-    <Compile Include="Modules\Managers\DirectoriesManager.cs" />
-    <Compile Include="Modules\Managers\Gw2ApiManager.cs" />
-    <Compile Include="Modules\Managers\SettingsManager.cs" />
-    <Compile Include="Modules\ModuleParameters.cs" />
-    <Compile Include="Pathing\Behaviors\Activator\Activator.cs" />
-    <Compile Include="Pathing\Behaviors\Activator\Always.cs" />
-    <Compile Include="Pathing\Behaviors\Activator\BehaviorActivatorAttribute.cs" />
-    <Compile Include="Pathing\Behaviors\Activator\ZoneActivator.cs" />
-    <Compile Include="Pathing\Behaviors\Bounce.cs" />
-    <Compile Include="Pathing\Behaviors\Interactable[TPathable,TEntity].cs" />
-    <Compile Include="Pathing\Behaviors\_Types\BehaviorWhen.cs" />
-    <Compile Include="Pathing\Behaviors\Mesh.cs" />
-    <Compile Include="Pathing\Behaviors\Notification.cs" />
-    <Compile Include="Pathing\Behaviors\PathingBehavior[TPathable,TEntity].cs" />
-    <Compile Include="Pathing\Behaviors\Rotate.cs" />
-    <Compile Include="Pathing\Behaviors\Title.cs" />
-    <Compile Include="Pathing\Content\PathableResourceManager.cs" />
-    <Compile Include="Pathing\Entities\Effects\MarkerEffect.cs" />
-    <Compile Include="_Utils\DirectoryUtil.cs" />
-    <Compile Include="_Utils\InvariantUtil.cs" />
-    <Compile Include="_Utils\MouseInterceptor.cs" />
-    <Compile Include="_Utils\StringUtil.cs" />
-    <Compile Include="_Utils\VectorUtil.cs" />
-    <Compile Include="_Utils\WinAPI\Extern.cs" />
-    <Compile Include="_Enums\Gw2Locale.cs" />
-    <Compile Include="_Enums\Gw2Profession.cs" />
-    <Compile Include="_Enums\Gw2Race.cs" />
-    <Compile Include="_Events\ValueChangedEventArgs[T].cs" />
-    <Compile Include="_Interfaces\IKeyboard.cs" />
+    <Compile Include="Interfaces\IKeyboard.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
-    <Compile Include="Modules\ManifestV1.cs" />
-    <Compile Include="Pathing\Behaviors\Copy.cs" />
-    <Compile Include="Pathing\Behaviors\PathingBehaviorAttribute.cs" />
+    <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\GamingTip.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\GuessCharacter.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\LoadScreenPanel.cs" />
+    <Compile Include="Modules\LoadingScreenHints\Controls\Narration.cs" />
+    <Compile Include="Modules\LoadingScreenHints\LoadingScreenHints.cs" />
+    <Compile Include="Modules\MarkersAndPaths\IPackFileSystemContext.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\ITacOPathable.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PathingCategory.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Readers\TrlReader.cs" />
+    <Compile Include="Modules\Musician\Controls\Conveyor.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bass\Bass.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bass\BassNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bass\BassPreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bass\BassSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell2\Bell2.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell2\Bell2Note.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell2\Bell2Preview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell2\Bell2SoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell\Bell.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell\BellNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell\BellPreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Bell\BellSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Flute\Flute.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Flute\FluteNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Flute\FlutePreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Flute\FluteSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Harp\Harp.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Harp\HarpNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Harp\HarpPreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Harp\HarpSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Horn\Horn.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Horn\HornNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Horn\HornPreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Horn\HornSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Instrument.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\KeyboardPractice.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Lute\Lute.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Lute\LuteNote.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Lute\LutePreview.cs" />
+    <Compile Include="Modules\Musician\Controls\Instrument\Lute\LuteSoundRepository.cs" />
+    <Compile Include="Modules\Musician\Controls\NoteBlock.cs" />
+    <Compile Include="Modules\Musician\Controls\SheetButton.cs" />
+    <Compile Include="Modules\Musician\Domain\MusicSheet.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\Beat.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\Chord.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\ChordOffset.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\Fraction.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\MetronomeMark.cs" />
+    <Compile Include="Modules\Musician\Domain\Values\Note.cs" />
+    <Compile Include="Modules\Musician\Musician.cs" />
+    <Compile Include="Modules\Musician\Notation\Parsers\ChordParser.cs" />
+    <Compile Include="Modules\Musician\Notation\Parsers\MusicSheetParser.cs" />
+    <Compile Include="Modules\Musician\Notation\Parsers\NoteParser.cs" />
+    <Compile Include="Modules\Musician\Notation\Persistance\RawMusicSheet.cs" />
+    <Compile Include="Modules\Musician\Notation\Persistance\XmlMusicSheetReader.cs" />
+    <Compile Include="Modules\Musician\Notation\Persistance\XmlMusicSheetWriter.cs" />
+    <Compile Include="Modules\Musician\Notation\Serializer\ChordOffsetSerializer.cs" />
+    <Compile Include="Modules\Musician\Notation\Serializer\ChordSerializer.cs" />
+    <Compile Include="Modules\Musician\Notation\Serializer\MusicSheetSerializer.cs" />
+    <Compile Include="Modules\Musician\Notation\Serializer\NoteSerializer.cs" />
+    <Compile Include="Modules\Musician\Player\Algorithms\FavorChordsAlgorithm.cs" />
+    <Compile Include="Modules\Musician\Player\Algorithms\FavorNotesAlgorithm.cs" />
+    <Compile Include="Modules\Musician\Player\Algorithms\IPlayAlgorithm.cs" />
+    <Compile Include="Modules\Musician\Player\MusicPlayer.cs" />
+    <Compile Include="Modules\Musician\Player\MusicPlayerFactory.cs" />
+    <Compile Include="Modules\Musician\Player\Sound\AudioPlaybackEngine.cs" />
+    <Compile Include="Modules\Musician\Player\Sound\AutoDisposeFileReader.cs" />
+    <Compile Include="Modules\Musician\Player\Sound\CachedSound.cs" />
+    <Compile Include="Modules\Musician\Player\Sound\CachedSoundSampleProvider.cs" />
+    <Compile Include="Modules\TestMefModule.cs" />
+    <Compile Include="Pathing\Behaviors\Clipboard.cs" />
+    <Compile Include="Pathing\Behaviors\IdentifyingBehaviorAttributePrefixAttribute.cs" />
     <Compile Include="Pathing\Behaviors\ILoadableBehavior.cs" />
     <Compile Include="Pathing\Entities\Marker.cs" />
     <Compile Include="GameServices\PersistentStoreService.cs" />
-    <Compile Include="_Interfaces\IRenderable2D.cs" />
-    <Compile Include="_Interfaces\IRenderable3D.cs" />
-    <Compile Include="_Interfaces\IUpdatable.cs" />
+    <Compile Include="Interfaces\IRenderable2D.cs" />
+    <Compile Include="Interfaces\IRenderable3D.cs" />
+    <Compile Include="Interfaces\IUpdatable.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Behavior\BasicTOBehavior.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\TacOMarkerPathable.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\Pathables\TacOTrailPathable.cs" />
     <Compile Include="Pathing\Behaviors\DisplayInteractionInfo.cs" />
     <Compile Include="Pathing\Entities\ScrollingTrail.cs" />
     <Compile Include="Pathing\Entities\Trail.cs" />
@@ -268,12 +301,14 @@
     <Compile Include="Pathing\Trails\BasicTrailPathable.cs" />
     <Compile Include="Pathing\Trails\ITrail.cs" />
     <Compile Include="Pathing\Trails\Route.cs" />
+    <Compile Include="Modules\MarkersAndPaths\Entities\Trail.cs" />
     <Compile Include="Entities\Primitives\Cuboid.cs" />
     <Compile Include="Entities\Primitives\Face.cs" />
     <Compile Include="Entities\Primitives\Mesh.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="FrameCounter.cs" />
-    <Compile Include="GameServices\OverlayService.cs" />
+    <Compile Include="GameServices\DirectorService.cs" />
+    <Compile Include="GameServices\FileService.cs" />
     <Compile Include="GameServices\HotkeysService.cs" />
     <Compile Include="GameServices\PathingService.cs" />
     <Compile Include="GameServices\ModuleService.cs" />
@@ -283,12 +318,34 @@
     <Compile Include="Library\Glide\MemberLerper.cs" />
     <Compile Include="Library\Glide\Tween.cs" />
     <Compile Include="Library\Glide\Tweener.cs" />
+    <Compile Include="Modules\BeetleRacing\BeetleRacing.cs" />
+    <Compile Include="Modules\BeetleRacing\Controls\Speedometer.cs" />
+    <Compile Include="Modules\EventTimers\Controls\EventNotification.cs" />
+    <Compile Include="Modules\EventTimers\Controls\EventSummary.cs" />
+    <Compile Include="Modules\EventTimers\EventTimers.cs" />
+    <Compile Include="Modules\MarkersAndPaths\Controls\CategoryMenuItem.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\RouteBuilder.cs" />
+    <Compile Include="Modules\MarkersAndPaths\ReCatReader.cs" />
+    <Compile Include="Modules\MarkersAndPaths\MarkersAndPaths.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\AugTyr\OverlayDataReader.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\OverlayDataReader.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PoiBuilder.cs" />
+    <Compile Include="Modules\MarkersAndPaths\PackFormat\TacO\PathingCategoryBuilder.cs" />
+    <Compile Include="Modules\MouseUsability\Controls\MouseHighlight.cs" />
+    <Compile Include="Modules\MouseUsability\Controls\MouseHighlightDemoPanel.cs" />
+    <Compile Include="Modules\MouseUsability\MouseUsability.cs" />
+    <Compile Include="Modules\PoiLookup\Controls\PoiItem.cs" />
+    <Compile Include="Modules\PoiLookup\PoiLookup.cs" />
+    <Compile Include="Modules\PoiLookup\Controls\PoiLookupWindow.cs" />
+    <Compile Include="Modules\RangeCircles.cs" />
     <Compile Include="GameServices\AnimationService.cs" />
     <Compile Include="GameServices\DebugService.cs" />
     <Compile Include="GameServices\ContentService.cs" />
     <Compile Include="GameServices\SettingsService.cs" />
+    <Compile Include="Modules\Compass.cs" />
     <Compile Include="Entities\Primitives\Billboard.cs" />
-    <Compile Include="BlishHud.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Overlay.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameServices\CameraService.cs" />
@@ -302,12 +359,24 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.Designer.tt</DependentUpon>
     </Compile>
-    <Compile Include="_Utils\RandomUtil.cs" />
-    <Compile Include="_Utils\DrawUtil.cs" />
-    <Compile Include="_Utils\WindowUtil.cs" />
-    <Compile Include="_Utils\WorldUtil.cs" />
-    <Compile Include="_Utils\WinAPI\KeyboardHook.cs" />
-    <Compile Include="_Utils\WinAPI\MouseHook.cs" />
+    <Compile Include="SentryWrapper.cs" />
+    <Compile Include="Modules\DebugText.cs" />
+    <Compile Include="Modules\DiscordRichPresence.cs" />
+    <Compile Include="Modules\Module.cs" />
+    <Compile Include="Utils\Calc.cs" />
+    <Compile Include="Utils\Math.cs" />
+    <Compile Include="Utils\Time.cs" />
+    <Compile Include="Utils\Draw3dUtil.cs" />
+    <Compile Include="Utils\DrawUtil.cs" />
+    <Compile Include="Utils\Mouse.cs" />
+    <Compile Include="Utils\Pipeline.cs" />
+    <Compile Include="Utils\String.cs" />
+    <Compile Include="Utils\Window.cs" />
+    <Compile Include="Utils\WindowStyles.cs" />
+    <Compile Include="Utils\World.cs" />
+    <Compile Include="Utils\Xml.cs" />
+    <Compile Include="WinApi\KeyboardHook.cs" />
+    <Compile Include="WinApi\MouseHook.cs" />
     <Compile Include="_Extensions\DictionaryExtension.cs" />
     <Compile Include="_Extensions\PointExtensions.cs" />
     <Compile Include="_Extensions\RectangleExtension.cs" />
@@ -321,6 +390,9 @@
     <Compile Include="_Extensions\XmlNodeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="DiscordRPC">
+      <HintPath>.\DiscordRPC.dll</HintPath>
+    </Reference>
     <Reference Include="GW2NET.Core">
       <HintPath>.\GW2NET.Core.dll</HintPath>
     </Reference>
@@ -397,11 +469,13 @@
     <Content Include="data\recategory.inf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="app.config" />
     <None Include="Properties\Strings.Designer.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <DependentUpon>Strings.resx</DependentUpon>
+    </None>
+    <None Include="data\events.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="data\ignored.json" />
     <None Include="data\licenses.json">
@@ -432,9 +506,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="GameServices\Hotkeys\" />
-    <Folder Include="GameServices\Module\" />
-    <Folder Include="GameServices\Overlay\" />
     <Folder Include="ref\" />
   </ItemGroup>
   <ItemGroup>
@@ -451,12 +522,12 @@
       <Version>2.4.2</Version>
     </PackageReference>
     <PackageReference Include="Fody">
-      <Version>5.1.1</Version>
+      <Version>5.0.6</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Gw2Sharp">
-      <Version>0.4.1</Version>
+      <Version>0.3.0</Version>
     </PackageReference>
     <PackageReference Include="Humanizer.Core.de">
       <Version>2.6.2</Version>
@@ -466,9 +537,6 @@
     </PackageReference>
     <PackageReference Include="Humanizer.Core.fr">
       <Version>2.6.2</Version>
-    </PackageReference>
-    <PackageReference Include="JsonSubTypes">
-      <Version>1.6.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp">
       <Version>4.5.0</Version>
@@ -500,19 +568,10 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.2</Version>
     </PackageReference>
-    <PackageReference Include="Octokit">
-      <Version>0.32.0</Version>
-    </PackageReference>
     <PackageReference Include="protobuf-net">
       <Version>2.4.0</Version>
     </PackageReference>
-    <PackageReference Include="SemanticVersioning">
-      <Version>1.2.0</Version>
-    </PackageReference>
     <PackageReference Include="Sentry">
-      <Version>1.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="Sentry.NLog">
       <Version>1.2.0</Version>
     </PackageReference>
     <PackageReference Include="Sentry.Protocol">

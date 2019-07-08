@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Blish_HUD.Annotations;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
@@ -8,12 +12,12 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Pathing.Entities {
     public class ScrollingTrailSection : Trail, ITrail {
 
-        #region Load Static
+        #region Static Effect Loading
 
-        private static readonly Effect _basicTrailEffect;
+        private static Effect _basicTrailEffect;
 
         static ScrollingTrailSection() {
-            _basicTrailEffect = BlishHud.ActiveContentManager.Load<Effect>("effects\\trail");
+            _basicTrailEffect = Overlay.cm.Load<Effect>("effects\\trail");
         }
 
         #endregion
@@ -26,8 +30,6 @@ namespace Blish_HUD.Pathing.Entities {
 
         private VertexPositionColorTexture[] VertexData { get; set; }
 
-        private VertexBuffer _vertexBuffer;
-
         public float AnimationSpeed {
             get => _animationSpeed;
             set => SetProperty(ref _animationSpeed, value);
@@ -37,7 +39,7 @@ namespace Blish_HUD.Pathing.Entities {
             get => _trailTexture;
             set {
                 if (SetProperty(ref _trailTexture, value))
-                    InitTrailPoints();
+                    OnTrailPointsChanged();
             }
         }
 
@@ -55,10 +57,11 @@ namespace Blish_HUD.Pathing.Entities {
             get => _scale;
             set => SetProperty(ref _scale, value);
         }
-        
+
+
         public ScrollingTrailSection() : base(null) { /* NOOP */ }
 
-        public ScrollingTrailSection(List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
+        public ScrollingTrailSection([CanBeNull] List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
 
         private List<Vector3> SetTrailResolution(List<Vector3> trailPoints, float pointResolution) {
             List<Vector3> tempTrail = new List<Vector3>();
@@ -85,11 +88,13 @@ namespace Blish_HUD.Pathing.Entities {
             return tempTrail;
         }
 
-        protected override void InitTrailPoints() {
+        public override void OnTrailPointsChanged() {
             if (!_trailPoints.Any()) return;
 
             // TacO has a minimum of 30, so we'll use 30
             _trailPoints = SetTrailResolution(_trailPoints, 30f);
+
+            //SmoothTrail(ref _trailPoints);
 
             this.VertexData = new VertexPositionColorTexture[this.TrailPoints.Count * 2];
 
@@ -121,23 +126,23 @@ namespace Blish_HUD.Pathing.Entities {
 
                 currPoint = nextPoint;
 
-#if PLOTTRAILS
-                GameService.Overlay.QueueMainThreadUpdate((gameTime) => {
-                    var leftBoxPoint = new Cube() {
-                        Color    = Color.Red,
-                        Size     = new Vector3(0.25f),
-                        Position = leftPoint
-                    };
+#if DEBUG
+                //GameService.Director.QueueAdHocUpdate((gameTime) => {
+                //    var leftBoxPoint = new Cube() {
+                //        Color    = Color.Red,
+                //        Size     = new Vector3(0.25f),
+                //        Position = leftPoint
+                //    };
 
-                    var rightBoxPoint = new Cube() {
-                        Color = Color.Red,
-                        Size = new Vector3(0.25f),
-                        Position = rightPoint
-                    };
+                //    var rightBoxPoint = new Cube() {
+                //        Color = Color.Red,
+                //        Size = new Vector3(0.25f),
+                //        Position = rightPoint
+                //    };
 
-                    GameService.Graphics.World.Entities.Add(leftBoxPoint);
-                    GameService.Graphics.World.Entities.Add(rightBoxPoint);
-                });
+                //    GameService.Graphics.World.Entities.Add(leftBoxPoint);
+                //    GameService.Graphics.World.Entities.Add(rightBoxPoint);
+                //});
 #endif
             }
 
@@ -146,9 +151,38 @@ namespace Blish_HUD.Pathing.Entities {
 
             this.VertexData[this.TrailPoints.Count * 2 - 1] = new VertexPositionColorTexture(fleftPoint,  Color.White, new Vector2(0f, pastDistance / (imgScale * 2) - 1));
             this.VertexData[this.TrailPoints.Count * 2 - 2] = new VertexPositionColorTexture(frightPoint, Color.White, new Vector2(1f, pastDistance / (imgScale * 2) - 1));
+        }
 
-            _vertexBuffer = new VertexBuffer(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, this.VertexData.Length, BufferUsage.WriteOnly);
-            _vertexBuffer.SetData(this.VertexData);
+        private void SmoothTrail(ref List<Vector3> pointList) {
+            List<Vector3> smoothedPoints = new List<Vector3>();
+
+            //for (int i = 1; i < pointList.Count; i++) {
+            //    if (Vector3.Distance(pointList[i - 1], pointList[i]) < 30f) {
+            //        pointList.RemoveAt(i);
+            //        i--;
+            //    }
+            //}
+
+            if (pointList.Count < 4) return;
+
+            smoothedPoints.Add(pointList[0]);
+
+            for (int i = 1; i < pointList.Count - 2; i++) {
+                smoothedPoints.Add(pointList[i]);
+
+                smoothedPoints.Add(Vector3.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .2f));
+                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .2f));
+                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .3f));
+                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .7f));
+                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .8f));
+                //smoothedPoints.Add(Vector2.CatmullRom(pointList[i - 1], pointList[i], pointList[i + 1], pointList[i + 2], .9f));
+            }
+
+            smoothedPoints.Add(pointList[pointList.Count - 2]);
+            smoothedPoints.Add(pointList[pointList.Count - 1]);
+
+            pointList.Clear();
+            pointList.AddRange(smoothedPoints);
         }
 
         public override void Update(GameTime gameTime) {
@@ -168,19 +202,22 @@ namespace Blish_HUD.Pathing.Entities {
             _basicTrailEffect.Parameters["FadeNear"].SetValue(this.FadeNear);
             _basicTrailEffect.Parameters["FadeFar"].SetValue(this.FadeFar);
             _basicTrailEffect.Parameters["Opacity"].SetValue(this.Opacity);
-            _basicTrailEffect.Parameters["TotalLength"].SetValue(20f);
+            _basicTrailEffect.Parameters["TotalLength"].SetValue(20f); // this.TrailLength / this.TrailTexture.Height * 2);
 
-            graphicsDevice.SetVertexBuffer(_vertexBuffer, 0);
+            graphicsDevice.BlendState = BlendState.AlphaBlend;
+            graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
+            graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+            graphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             foreach (EffectPass trailPass in _basicTrailEffect.CurrentTechnique.Passes) {
                 trailPass.Apply();
 
-                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, this._vertexBuffer.VertexCount - 2);
+                ((BasicEffect)this.EntityEffect).VertexColorEnabled = true;
 
-                //graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip,
-                //                                  this.VertexData,
-                //                                  0,
-                //                                  this.VertexData.Length - 2);
+                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip,
+                                                  this.VertexData,
+                                                  0,
+                                                  this.VertexData.Length - 2);
             }
         }
 

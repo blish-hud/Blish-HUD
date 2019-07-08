@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
+using Blish_HUD;
 using Microsoft.Xna.Framework;
 using GW2NET.MumbleLink;
 

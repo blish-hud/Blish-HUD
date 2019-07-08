@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -20,7 +24,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureMenuEdge;
+        private static Texture2D _textureMenuEdge;
 
         static ContextMenuStrip() {
             _textureMenuEdge = Content.GetTexture("scrollbar-track");
@@ -39,7 +43,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnShown(EventArgs e) {
-            // If we have no children, don't display (and don't even call 'Shown' event)
+            // If we have no children, don't display (and don't call 'Shown' event, either)
             if (!_children.Any()) {
                 this.Visible = false;
                 return;
@@ -57,9 +61,9 @@ namespace Blish_HUD.Controls {
         public void Show(Control activeControl) {
             if (activeControl is ContextMenuStripItem parentMenu) {
                 this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top);
-                this.ZIndex = parentMenu.ZIndex + 1;
+                this.ZIndex = parentMenu.ZIndex - 1;
             } else {
-                this.Location = activeControl.AbsoluteBounds.Location + new Point(0, activeControl.Height);
+                this.Location = activeControl.Location + activeControl.Size;
             }
 
             base.Show();
@@ -93,7 +97,7 @@ namespace Blish_HUD.Controls {
             }
 
             if (!this.MouseOver)
-                this.Hide();
+                this.Visible = false;
         }
 
         public ContextMenuStripItem AddMenuItem(string text) {
@@ -112,6 +116,11 @@ namespace Blish_HUD.Controls {
 
                 newChild.Height = ITEM_HEIGHT;
                 newChild.Left = BORDER_PADDING;
+
+                
+                newChild.MouseEntered += delegate {
+                    
+                };
 
                 newChild.MouseEntered += ChildOnMouseEntered;
                 newChild.Resized      += ChildOnResized;

@@ -1,5 +1,8 @@
 ﻿using System;
-using Blish_HUD.Content;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -8,6 +11,9 @@ namespace Blish_HUD.Controls {
 
         private const int BUTTON_WIDTH = 32;
         private const int BUTTON_HEIGHT = 32;
+
+        private const int ICON_WIDTH = 32;
+        private const int ICON_HEIGHT = 32;
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
 
@@ -31,17 +37,17 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected AsyncTexture2D _icon;
-        public AsyncTexture2D Icon {
+        protected Texture2D _icon;
+        public Texture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }
 
-        protected AsyncTexture2D _activeIcon;
+        protected Texture2D _activeIcon;
         /// <summary>
         /// If provided, this icon will be shown when the button is active.  If not provided, a basic glow shader will be used instead.
         /// </summary>
-        public AsyncTexture2D ActiveIcon {
+        public Texture2D ActiveIcon {
             get => _activeIcon;
             set => SetProperty(ref _activeIcon, value);
         }
@@ -68,7 +74,7 @@ namespace Blish_HUD.Controls {
 
         private static Effect _glowEffect;
         private Effect GetGlowEffect() {
-            _glowEffect = _glowEffect ?? BlishHud.ActiveContentManager.Load<Effect>(@"effects\glow");
+            _glowEffect = _glowEffect ?? Overlay.cm.Load<Effect>(@"effects\glow");
             _glowEffect.Parameters["TextureWidth"].SetValue((float)this.Width);
             _glowEffect.Parameters["GlowColor"].SetValue(_glowColor.ToVector4());
 

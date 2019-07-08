@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Blish_HUD.Content;
+using System.ServiceModel;
+using System.Text;
+using System.Threading.Tasks;
+using Blish_HUD.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
@@ -9,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Blish_HUD.Controls {
 
-    public class MenuItem : Container, IMenuItem, ICheckable, IAccordion {
+    public class MenuItem : Container, IMenuItem, ICheckable {
 
         private const int DEFAULT_ITEM_HEIGHT = 32;
         
@@ -84,8 +87,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _text, value);
         }
 
-        protected AsyncTexture2D _icon;
-        public AsyncTexture2D Icon {
+        protected Texture2D _icon;
+        public Texture2D Icon {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }
@@ -96,15 +99,20 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _canCheck, value);
         }
 
-        protected bool _collapsed = true;
+        protected AccordionState _state = AccordionState.Collapsed;
         [JsonIgnore]
-        public bool Collapsed {
-            get => _collapsed;
+        public AccordionState State {
+            get => _state;
             set {
-                if (value) {
-                    Collapse();
-                } else {
-                    Expand();
+                if (SetProperty(ref _state, value)) {
+                    switch (_state) {
+                        case AccordionState.Expanded:
+                            Collapse();
+                            break;
+                        case AccordionState.Collapsed:
+                            Expand();
+                            break;
+                    }
                 }
             }
         }
@@ -134,9 +142,18 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        // Must remain internal for Glide to be able to access the property
+        private float _arrowRotation = -MathHelper.PiOver2;
+        // Must remain public for Glide to be able to access the property
         [JsonIgnore]
-        public float ArrowRotation { get; set; } = -MathHelper.PiOver2;
+        public float ArrowRotation {
+            get => _arrowRotation;
+            set {
+                if (_arrowRotation == value) return;
+
+                _arrowRotation = value;
+                OnPropertyChanged();
+            }
+        }
 
         [JsonIgnore]
         private bool MouseOverIconBox { get; set; } = false;
@@ -146,7 +163,7 @@ namespace Blish_HUD.Controls {
                 int leftSideBuilder = ICON_PADDING;
 
                 // Add space if we need to render dropdown arrow
-                if (_children.Any())
+                //if (_children.Any())
                     leftSideBuilder += ARROW_SIZE;
 
                 return leftSideBuilder;
@@ -160,8 +177,8 @@ namespace Blish_HUD.Controls {
                           ICON_SIZE);
 
         #endregion
-
-        private Glide.Tween                      _slideAnim;
+        
+        private Glide.Tween _slideAnim;
         private Effects.ScrollingHighlightEffect _scrollEffect;
 
         public MenuItem() { Initialize(); }
@@ -239,7 +256,7 @@ namespace Blish_HUD.Controls {
                 this.ContentRegion = new Rectangle(0, MenuItemHeight, _size.X, 0);
             }
 
-            this.Height = !_collapsed
+            this.Height = this.State == AccordionState.Expanded
                               ? this.ContentRegion.Bottom
                               : this.MenuItemHeight;
         }
@@ -260,7 +277,7 @@ namespace Blish_HUD.Controls {
             } else if (_overSection
                     && _children.Any()) { /* Mouse was clicked inside of the mainbody of the MenuItem */
 
-                ToggleAccordionState();
+                ToggleSection();
             } else if (_overSection
                     && _canCheck) { /* Mouse was clicked inside of the mainbody of the MenuItem,
                                            but we have no children, so we toggle checkbox */
@@ -318,19 +335,20 @@ namespace Blish_HUD.Controls {
                                                      () => lastItem.Bottom, applyLeft: true);
         }
 
-        /// <inheritdoc />
-        public bool ToggleAccordionState() {
-            this.Collapsed = !_collapsed;
-
-            return _collapsed;
+        public void ToggleSection() {
+            if (this.State == AccordionState.Collapsed) {
+                Expand();
+            } else {
+                Collapse();
+            }
         }
 
         public void Expand() {
-            if (!_collapsed) return;
+            if (this.State == AccordionState.Expanded) return;
 
             _slideAnim?.CancelAndComplete();
 
-            SetProperty(ref _collapsed, false);
+            _state = AccordionState.Expanded;
 
             _slideAnim = Animation.Tweener
                                  .Tween(this,
@@ -342,11 +360,11 @@ namespace Blish_HUD.Controls {
         }
 
         public void Collapse() {
-            if (_collapsed) return;
+            if (this.State == AccordionState.Collapsed) return;
 
             _slideAnim?.CancelAndComplete();
 
-            SetProperty(ref _collapsed, true);
+            _state = AccordionState.Collapsed;
 
             _slideAnim = Animation.Tweener
                                  .Tween(this,

@@ -1,5 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 
 namespace Blish_HUD.Controls.Effects {
     public abstract class ControlEffect {
@@ -72,7 +78,7 @@ namespace Blish_HUD.Controls.Effects {
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
         public virtual void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
-        public void Draw(SpriteBatch spriteBatch, Rectangle bounds) {
+        public void Draw(SpriteBatch spriteBatch, Rectangle drawBounds) {
             if (_enabled) {
                 spriteBatch.Begin(GetSpriteBatchParameters());
 

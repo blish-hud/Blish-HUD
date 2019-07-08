@@ -1,4 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
@@ -56,7 +61,7 @@ namespace Blish_HUD.Controls {
             _mttb = new System.Windows.Forms.TextBox() {
                 Parent = _ctrlForm,
                 Size = new System.Drawing.Size(300, 20),
-                Location = new System.Drawing.Point(BlishHud.Form.Left - 500),
+                Location = new System.Drawing.Point(Overlay.Form.Left - 500),
                 AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append,
                 AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource,
                 AutoCompleteCustomSource = new System.Windows.Forms.AutoCompleteStringCollection(),
@@ -87,7 +92,7 @@ namespace Blish_HUD.Controls {
 
         public override void DoUpdate(GameTime gameTime) {
             var focusLocation = this.AbsoluteBounds.Location.ScaleToUi().ToSystemDrawingPoint();
-            focusLocation.Offset(BlishHud.Form.Location);
+            focusLocation.Offset(Overlay.Form.Location);
 
             _ctrlForm.Location = focusLocation;
             _ctrlForm.Size = this.AbsoluteBounds.Size.ScaleToUi().ToSystemDrawingSize();

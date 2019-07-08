@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Blish_HUD.Pathing.Entities;
+using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Trails {
     public class BasicTrailPathable : ManagedPathable<Entities.Trail> {
