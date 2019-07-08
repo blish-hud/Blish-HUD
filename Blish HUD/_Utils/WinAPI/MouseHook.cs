@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace Blish_HUD.WinAPI {
     public class MouseHook {
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(MouseHook));
 
         internal struct MSLLHOOKSTRUCT {
             public Point  pt;

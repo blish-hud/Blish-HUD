@@ -7,13 +7,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Content {
-    public class AsyncTexture2D {
+    public sealed class AsyncTexture2D : IDisposable {
 
         private Texture2D _stagedTexture2D;
         private Texture2D _activeTexture2D;
 
         public AsyncTexture2D() {
-            /* NOOP */
+            _activeTexture2D = ContentService.Textures.TransparentPixel;
         }
 
         public AsyncTexture2D(Texture2D defaultTexture) {
@@ -35,12 +35,28 @@ namespace Blish_HUD.Content {
             _stagedTexture2D = null;
         }
 
+        /// <inheritdoc />
+        public override bool Equals(object obj) {
+            return Equals(_activeTexture2D, obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode() {
+            return _activeTexture2D?.GetHashCode() ?? 0;
+        }
+
         public static implicit operator Texture2D(AsyncTexture2D asyncTexture2D) {
             return asyncTexture2D._activeTexture2D;
         }
 
         public static implicit operator AsyncTexture2D(Texture2D texture2D) {
             return new AsyncTexture2D(texture2D);
+        }
+
+        /// <inheritdoc />
+        public void Dispose() {
+            _stagedTexture2D?.Dispose();
+            _activeTexture2D?.Dispose();
         }
 
     }

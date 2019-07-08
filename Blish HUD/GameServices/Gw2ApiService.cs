@@ -10,13 +10,12 @@ using Blish_HUD.Modules;
 using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
 using Gw2Sharp.WebApi.Http;
-using System.Reflection;
 
 namespace Blish_HUD {
 
     public class Gw2ApiService : GameService {
 
-        private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static Logger Logger = Logger.GetLogger(typeof(Gw2ApiService));
 
         private static string GW2API_SETTINGS = "Gw2ApiConfiguration";
 

@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Entities {
     public class EntityText : EntityBillboard {
 
-        private Controls.CachedStringRender _cachedTextRender;
+        private CachedStringRender _cachedTextRender;
 
         private string _text      = string.Empty;
         private Color  _textColor = Color.White;

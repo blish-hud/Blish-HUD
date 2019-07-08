@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Blish_HUD.Content;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Blish_HUD.Pathing.Entities;
 
@@ -11,7 +12,7 @@ namespace Blish_HUD.Entities.Primitives {
         private bool                        _autoResizeBillboard = true;
         private Vector2                     _size                = Vector2.One;
         private float                       _scale               = 1f;
-        private Texture2D                   _texture;
+        private AsyncTexture2D              _texture;
         private BillboardVerticalConstraint _verticalConstraint = BillboardVerticalConstraint.CameraPosition;
 
         /// <summary>
@@ -47,11 +48,11 @@ namespace Blish_HUD.Entities.Primitives {
             }
         }
 
-        public Texture2D Texture {
+        public AsyncTexture2D Texture {
             get => _texture;
             set {
-                if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture != null)
-                    this.Size = _texture.Bounds.Size.ToVector2().ToWorldCoord();
+                if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture.GetTexture() != null)
+                    this.Size = _texture.GetTexture().Bounds.Size.ToVector2().ToWorldCoord();
             }
         }
 
@@ -106,7 +107,7 @@ namespace Blish_HUD.Entities.Primitives {
                                                             GameService.Camera.Forward);
 
             _billboardEffect.Alpha = this.Opacity;
-            _billboardEffect.Texture = this.Texture;
+            _billboardEffect.Texture = this.Texture.GetTexture();
 
             foreach (var pass in _billboardEffect.CurrentTechnique.Passes) {
                 pass.Apply();

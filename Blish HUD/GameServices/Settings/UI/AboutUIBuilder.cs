@@ -7,7 +7,7 @@ using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Blish_HUD.GameServices.Settings.UI {
+namespace Blish_HUD.Settings.UI {
     public static class AboutUIBuilder {
 
         private const string ANET_COPYRIGHT_NOTICE =

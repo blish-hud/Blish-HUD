@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using Blish_HUD.Modules.Managers;
 using Gw2Sharp.WebApi.V2.Models;
-using NLog;
-using NLog.Config;
 
 namespace Blish_HUD.Modules {
 
     public class ModuleParameters {
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(ModuleParameters));
 
         private Manifest           _manifest;
         private SettingsManager    _settingsManager;

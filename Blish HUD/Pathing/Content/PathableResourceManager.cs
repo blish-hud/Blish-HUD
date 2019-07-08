@@ -7,18 +7,16 @@ using System.Net;
 namespace Blish_HUD.Pathing.Content {
     public class PathableResourceManager : IDisposable {
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(PathableResourceManager));
 
         private readonly Dictionary<string, Texture2D> _textureCache;
         private readonly HashSet<string> _pendingTextureUse;
         private readonly HashSet<string> _pendingTextureRemoval;
 
-        private readonly IDataReader _dataReader;
-
-        public IDataReader DataReader => _dataReader;
+        public IDataReader DataReader { get; }
 
         public PathableResourceManager(IDataReader dataReader) {
-            _dataReader = dataReader;
+            this.DataReader = dataReader;
 
             _textureCache          = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
             _pendingTextureUse     = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -57,12 +55,12 @@ namespace Blish_HUD.Pathing.Content {
             _pendingTextureUse.Add(texturePath);
 
             if (!_textureCache.ContainsKey(texturePath)) {
-                using (var textureStream = _dataReader.GetFileStream(texturePath)) {
+                using (var textureStream = this.DataReader.GetFileStream(texturePath)) {
                     if (textureStream == null) return fallbackTexture;
 
                     _textureCache.Add(texturePath, Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream));
 
-                    Logger.Info("Texture {texturePath} was successfully loaded from {dataReaderPath}.", texturePath, _dataReader.GetPathRepresentation(texturePath));
+                    Logger.Info("Texture {texturePath} was successfully loaded from {dataReaderPath}.", texturePath, this.DataReader.GetPathRepresentation(texturePath));
                 }
             }
 
@@ -71,7 +69,7 @@ namespace Blish_HUD.Pathing.Content {
 
         /// <inheritdoc />
         public void Dispose() {
-            _dataReader?.Dispose();
+            this.DataReader?.Dispose();
 
             foreach (KeyValuePair<string, Texture2D> texture in _textureCache) {
                 texture.Value?.Dispose();

@@ -28,8 +28,8 @@ namespace Blish_HUD.Pathing.Behaviors.Activator {
         /// Identifies the *-when value that loads this activator.
         /// </summary>
         /// <param name="attributeName">The name of the activator.  This match is not case-sensitive.</param>
-        public BehaviorActivatorAttribute(string attributePrefix) {
-            this.ActivatorName = attributePrefix;
+        public BehaviorActivatorAttribute(string whenValue) {
+            this.ActivatorName = whenValue;
         }
 
     }

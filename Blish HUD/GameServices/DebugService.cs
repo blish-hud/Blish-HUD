@@ -59,14 +59,14 @@ namespace Blish_HUD {
 
             _logConfiguration.AddTarget(asyncLogFile);
 
-            _logConfiguration.AddRule(LogLevel.Info,  LogLevel.Fatal,  asyncLogFile);
+            _logConfiguration.AddRule(NLog.LogLevel.Info,  NLog.LogLevel.Fatal,  asyncLogFile);
 
             AddDebugTarget(_logConfiguration);
             AddSentryTarget(_logConfiguration);
 
-            LogManager.Configuration = _logConfiguration;
+            NLog.LogManager.Configuration = _logConfiguration;
 
-            Logger = LogManager.GetCurrentClassLogger();
+            Logger = Logger.GetLogger(typeof(DebugService));
         }
 
         public static void TargetDebug(string time, string level, string logger, string message) {
@@ -75,7 +75,7 @@ namespace Blish_HUD {
 
         [Conditional("DEBUG")]
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
-            LogManager.ThrowExceptions = true;
+            NLog.LogManager.ThrowExceptions = true;
 
             var logDebug = new MethodCallTarget("logdebug") {
                 ClassName  = typeof(DebugService).AssemblyQualifiedName,
@@ -89,7 +89,7 @@ namespace Blish_HUD {
             };
 
             _logConfiguration.AddTarget(logDebug);
-            _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, logDebug);
+            _logConfiguration.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logDebug);
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {

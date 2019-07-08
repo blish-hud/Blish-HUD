@@ -27,7 +27,7 @@ namespace Blish_HUD.Content {
         /// </summary>
         /// <param name="loadFileFunc">The method to call on all files within the context of the <see cref="IDataReader"/> that have the required file extension.</param>
         /// <param name="fileExtension">The file extension criteria. Should contain the '.' before the extension. If no fileExtension is provided, all files will meet the criteria.</param>
-        void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "");
+        void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null);
 
         /// <summary>
         /// Determines whether the specified file exists.

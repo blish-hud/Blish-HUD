@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Blish_HUD.Settings {
 
-    public class SettingCollection : IEnumerable<SettingEntry> {
+    public sealed class SettingCollection : IEnumerable<SettingEntry> {
 
         public class SettingCollectionConverter : JsonConverter<SettingCollection> {
 

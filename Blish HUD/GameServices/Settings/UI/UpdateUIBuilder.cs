@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 
-namespace Blish_HUD.GameServices.Settings.UI {
+namespace Blish_HUD.Settings.UI {
     public static class UpdateUIBuilder {
 
         public static void BuildUpdateBlishHudSettings(Panel buildPanel, object empty) {

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
-using NLog;
 
 namespace Blish_HUD.Modules {
 
@@ -43,7 +42,7 @@ namespace Blish_HUD.Modules {
 
     public abstract class Module : IDisposable {
 
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(Module));
 
         #region Module Events
 
@@ -169,7 +168,7 @@ namespace Blish_HUD.Modules {
 
 #endregion
 
-#region Virtual Methods
+        #region Virtual Methods
 
         /// <summary>
         /// Allows your module to perform any initialization it needs before starting to run.
@@ -210,9 +209,9 @@ namespace Blish_HUD.Modules {
         /// </summary>
         protected virtual void Unload() { /* NOOP */ }
 
-#endregion
+        #endregion
 
-#region IDispose
+        #region IDispose
 
         protected virtual void Dispose(bool disposing) {
             DoUnload();
@@ -229,7 +228,7 @@ namespace Blish_HUD.Modules {
             Dispose(false);
         }
 
-#endregion
+        #endregion
 
     }
 

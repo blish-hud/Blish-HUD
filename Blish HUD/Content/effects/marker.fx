@@ -14,9 +14,9 @@ float Opacity;
 float FadeNear;
 float FadeFar;
 
+matrix World;
 matrix View;
 matrix Projection;
-matrix World;
 
 Texture2D Texture : register(t0);
 sampler TextureSampler : register(s0) {

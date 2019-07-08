@@ -16,7 +16,7 @@ namespace Blish_HUD {
         private readonly NLog.Logger _internalLogger;
 
         private Logger(Type type) {
-            _internalLogger = LogManager.GetLogger(type.AssemblyQualifiedName);
+            _internalLogger = LogManager.GetLogger(type.FullName);
         }
 
         #region Trace

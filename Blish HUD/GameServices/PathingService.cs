@@ -5,6 +5,7 @@ using Blish_HUD.Controls;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing;
 using Blish_HUD.Pathing.Content;
+using Blish_HUD.PersistentStore;
 using Microsoft.Xna.Framework;
 using Panel = Blish_HUD.Controls.Panel;
 
@@ -18,16 +19,16 @@ namespace Blish_HUD {
 
         public event EventHandler<EventArgs> NewMapLoaded;
 
-        private ConcurrentQueue<IPathable<Entity>> _queuedAddPathables = new ConcurrentQueue<IPathable<Entity>>();
-        private ConcurrentQueue<IPathable<Entity>> _queuedRemovePathables = new ConcurrentQueue<IPathable<Entity>>();
+        private readonly ConcurrentQueue<IPathable<Entity>> _queuedAddPathables = new ConcurrentQueue<IPathable<Entity>>();
+        private readonly ConcurrentQueue<IPathable<Entity>> _queuedRemovePathables = new ConcurrentQueue<IPathable<Entity>>();
 
         public List<IPathable<Entity>> Pathables { get; set; } = new List<IPathable<Entity>>();
         
         public SynchronizedCollection<PathableResourceManager> PackManagers { get; set; } = new SynchronizedCollection<PathableResourceManager>();
 
-        private PersistentStore _pathingStore;
+        private Store _pathingStore;
 
-        public PersistentStore PathingStore => _pathingStore ?? (_pathingStore = GameService.Store.RegisterStore(PATHING_STORENAME));
+        public Store PathingStore => _pathingStore ?? (_pathingStore = Store.RegisterStore(PATHING_STORENAME));
 
         protected override void Initialize() {
             // Subscribe to map changes so that we can hide or show markers for the new map

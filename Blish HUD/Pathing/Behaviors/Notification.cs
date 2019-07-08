@@ -16,8 +16,6 @@ namespace Blish_HUD.Pathing.Behaviors {
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
 
-        private ZoneActivator _activator;
-
         private string _notificationMessage = string.Empty;
         private ScreenNotification.NotificationType _notificationType = ScreenNotification.NotificationType.Info;
 
@@ -38,21 +36,20 @@ namespace Blish_HUD.Pathing.Behaviors {
 
         /// <inheritdoc />
         public override void Load() {
-            if (_activator != null) {
-                _activator.Activated   -= ActivatorOnActivated;
-                _activator.Deactivated -= ActivatorOnDeactivated;
+            if (this.Activator != null) {
+                this.Activator.Activated   -= ActivatorOnActivated;
+                this.Activator.Deactivated -= ActivatorOnDeactivated;
 
-                _activator.Dispose();
+                this.Activator.Dispose();
             }
 
-            _activator = new ZoneActivator() {
+            this.Activator = new ZoneActivator<TPathable, TEntity>(this) {
                 ActivationDistance = 4f,
-                DistanceFrom       = DistanceFrom.Player,
-                Position           = ManagedPathable.Position
+                DistanceFrom       = DistanceFrom.Player
             };
 
-            _activator.Activated   += ActivatorOnActivated;
-            _activator.Deactivated += ActivatorOnDeactivated;
+            this.Activator.Activated   += ActivatorOnActivated;
+            this.Activator.Deactivated += ActivatorOnDeactivated;
         }
 
         private void ActivatorOnActivated(object sender, EventArgs e) {
@@ -64,12 +61,6 @@ namespace Blish_HUD.Pathing.Behaviors {
 
         private void ActivatorOnDeactivated(object sender, EventArgs e) {
             _canResendMessage = true;
-        }
-
-        /// <inheritdoc />
-        public override void Update(GameTime gameTime) {
-            _activator.Position = ManagedPathable.Position;
-            _activator.Update(gameTime);
         }
 
         /// <inheritdoc />

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ServiceModel;
 using Blish_HUD;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
@@ -13,8 +14,9 @@ namespace Blish_HUD.Controls {
         private static readonly ConcurrentDictionary<int, CachedStringRender> _cachedStringRenders = new ConcurrentDictionary<int, CachedStringRender>();
         private static readonly NullControl _proxyControl = new NullControl();
 
-        private RenderTarget2D _cachedRender;
-        public RenderTarget2D CachedRender => _cachedRender;
+        private readonly AsyncTexture2D _cachedRender;
+
+        public AsyncTexture2D CachedRender => _cachedRender;
 
         public string Text { get; }
 
@@ -53,24 +55,23 @@ namespace Blish_HUD.Controls {
             this.StrokeDistance       = strokeDistance;
             this.HorizontalAlignment  = horizontalAlignment;
             this.VerticalAlignment    = verticalAlignment;
+
+            _cachedRender = new AsyncTexture2D(ContentService.Textures.TransparentPixel.Duplicate());
         }
 
         private void InitRender(GraphicsDevice graphicsDevice) {
-            if (_cachedRender != null)
-                throw new ActionNotSupportedException($"{nameof(InitRender)} was already called on this!  It can only be called once.");
-
-            _cachedRender = new RenderTarget2D(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice,
-                                               this.DestinationRectangle.Width,
-                                               this.DestinationRectangle.Height,
-                                               false,
-                                               SurfaceFormat.Color,
-                                               DepthFormat.None,
-                                               BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice.PresentationParameters.MultiSampleCount,
-                                               RenderTargetUsage.PreserveContents);
+            var cachedRenderTarget = new RenderTarget2D(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice,
+                                                        this.DestinationRectangle.Width,
+                                                        this.DestinationRectangle.Height,
+                                                        false,
+                                                        SurfaceFormat.Color,
+                                                        DepthFormat.None,
+                                                        BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice.PresentationParameters.MultiSampleCount,
+                                                        RenderTargetUsage.PreserveContents);
 
             _proxyControl.Size = this.DestinationRectangle.Size;
 
-            graphicsDevice.SetRenderTarget(_cachedRender);
+            graphicsDevice.SetRenderTarget(cachedRenderTarget);
 
             using (var spriteBatch = new SpriteBatch(graphicsDevice)) {
                 spriteBatch.Begin();
@@ -90,6 +91,8 @@ namespace Blish_HUD.Controls {
             }
 
             graphicsDevice.SetRenderTarget(null);
+
+            _cachedRender.SwapTexture(cachedRenderTarget);
         }
 
         public override int GetHashCode() {
@@ -136,6 +139,7 @@ namespace Blish_HUD.Controls {
             bool containsCachedCsr = _cachedStringRenders.ContainsKey(csrHash);
 
             if (containsCachedCsr && _cachedStringRenders.TryGetValue(csrHash, out var existingCsr)) {
+                checkCsr.Dispose();
                 return existingCsr;
             }
 

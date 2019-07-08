@@ -38,10 +38,11 @@ namespace Blish_HUD.Content {
         }
 
         /// <inheritdoc />
-        public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "") {
+        public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {
             var validEntries = _archive.Entries.Where(e => e.Name.EndsWith($"{fileExtension}", StringComparison.OrdinalIgnoreCase)).ToList();
 
             foreach (var entry in validEntries) {
+                progress?.Report($"Loading {entry.Name}");
                 var entryStream = GetFileStream(entry.FullName);
 
                 loadFileFunc.Invoke(entryStream, this);

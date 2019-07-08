@@ -2,12 +2,13 @@
 using System.Xml;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
+using Blish_HUD.Pathing.Behaviors.Activator;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Pathing.Behaviors {
 
     [PathingBehavior("copy")]
-    public class Copy<TPathable, TEntity> : InZone<TPathable, TEntity>, ILoadableBehavior
+    public class Copy<TPathable, TEntity> : PathingBehavior<TPathable, TEntity>, ILoadableBehavior
         where TPathable : ManagedPathable<TEntity>
         where TEntity : Entity {
 
@@ -18,15 +19,10 @@ namespace Blish_HUD.Pathing.Behaviors {
         public string CopyMessage { get; set; } = "'{0}' copied to clipboard.";
 
         public Copy(TPathable managedPathable) : base(managedPathable) {
-            this.ZoneRadius = 5;
-        }
-
-        public override void OnEnterZoneRadius(GameTime gameTime) {
-            this.ManagedPathable.Active = false;
-
-            System.Windows.Forms.Clipboard.SetText(this.CopyValue);
-
-            ScreenNotification.ShowNotification(string.Format(this.CopyMessage, this.CopyValue));
+            var zoneActivator = new ZoneActivator<TPathable, TEntity>(this) {
+                ActivationDistance = 5f,
+                DistanceFrom       = DistanceFrom.Player
+            };
         }
 
         public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {

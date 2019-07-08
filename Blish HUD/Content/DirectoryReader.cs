@@ -28,8 +28,9 @@ namespace Blish_HUD.Content {
         }
 
         /// <inheritdoc />
-        public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "") {
+        public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {    
             foreach (string filePath in Directory.EnumerateFiles(_directoryPath, $"*{fileExtension}", SearchOption.AllDirectories)) {
+                progress?.Report($"Loading {Path.GetFileName(filePath)}");
                 loadFileFunc.Invoke(this.GetFileStream(filePath), this);
             }
         }

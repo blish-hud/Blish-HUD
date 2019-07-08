@@ -6,7 +6,7 @@ namespace Blish_HUD.Modules.Managers {
 
     public class DirectoriesManager {
 
-        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        protected static readonly Logger Logger = Logger.GetLogger(typeof(DirectoriesManager));
 
         private readonly HashSet<string>            _directoryNames;
         private readonly Dictionary<string, string> _directoryPaths;

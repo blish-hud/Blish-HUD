@@ -140,9 +140,11 @@ namespace Blish_HUD {
             }
             GameService.Debug.StopTimeFunc("UI Elements");
 
+            GameService.Debug.StartTimeFunc("Render Queue");
             if (this._queuedRenders.TryDequeue(out var renderCall)) {
                 renderCall.Invoke(this.GraphicsDevice);
             }
+            GameService.Debug.StopTimeFunc("Render Queue");
         }
 
         protected override void Load() { /* NOOP */ }
@@ -151,6 +153,7 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             this.World.DoUpdate(gameTime);
+            Entities.Effects.EntityEffect.UpdateEffects(gameTime);
             this.SpriteScreen.Update(gameTime);
         }
     }

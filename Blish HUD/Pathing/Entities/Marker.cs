@@ -1,6 +1,7 @@
 ﻿using System;
 using Blish_HUD.Entities;
 using Blish_HUD.Entities.Primitives;
+using Blish_HUD.Pathing.Entities.Effects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -13,14 +14,14 @@ namespace Blish_HUD.Pathing.Entities {
 
     public class Marker : Entity {
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(Marker));
 
         #region Load Static
 
-        private static readonly Effect _sharedMarkerEffect;
+        private static readonly MarkerEffect _sharedMarkerEffect;
 
         static Marker() {
-            _sharedMarkerEffect = BlishHud.ActiveContentManager.Load<Effect>(@"effects\marker");
+            _sharedMarkerEffect = new MarkerEffect(BlishHud.ActiveContentManager.Load<Effect>(@"effects\marker"));
         }
 
         #endregion
@@ -81,43 +82,43 @@ namespace Blish_HUD.Pathing.Entities {
         public Texture2D Texture {
             get => _texture;
             set {
-                if (SetProperty(ref _texture, value) && _autoResize && _texture != null) {
-                    this.Size = new Vector2(WorldUtil.GameToWorldCoord(_texture.Width),
-                                            WorldUtil.GameToWorldCoord(_texture.Height));
+                if (SetProperty(ref _texture, value) && _texture != null) {
+                    this.VerticalConstraint = _texture.Height == _texture.Width
+                                                  ? BillboardVerticalConstraint.CameraPosition
+                                                  : BillboardVerticalConstraint.PlayerPosition;
+
+                    if (_autoResize) {
+                        this.Size = new Vector2(WorldUtil.GameToWorldCoord(_texture.Width),
+                                                WorldUtil.GameToWorldCoord(_texture.Height));
+                    }
                 }
             }
         }
 
         private Effect _markerEffect;
 
-        private VertexBuffer _vertexBuffer;
+        private DynamicVertexBuffer _vertexBuffer;
 
         public Marker() : this(null, Vector3.Zero, Vector2.Zero) { /* NOOP */ }
 
-        public Marker(Texture2D image) : this(image, Vector3.Zero) { /* NOOP */ }
+        public Marker(Texture2D texture) : this(texture, Vector3.Zero) { /* NOOP */ }
 
-        public Marker(Texture2D image, Vector3 position) : this(image, position, Vector2.Zero) { /* NOOP */ }
+        public Marker(Texture2D texture, Vector3 position) : this(texture, position, Vector2.Zero) { /* NOOP */ }
 
-        public Marker(Texture2D image, Vector3 position, Vector2 size) {
+        public Marker(Texture2D texture, Vector3 position, Vector2 size) {
             Initialize();
 
             _autoResize = (size == Vector2.Zero);
-            _size     = size;
-            _texture  = image;
-            _position = position;
-
-            //this.VerticalConstraint = image.Height == image.Width
-            //                              ? BillboardVerticalConstraint.PlayerPosition
-            //                              : BillboardVerticalConstraint.PlayerPosition;
+            this.Position = position;
+            this.Size     = size;
+            this.Texture  = texture;
 
             //GameService.Input.MouseMoved += Input_MouseMoved;
         }
 
         private void Initialize() {
             _verts        = new VertexPositionTexture[4];
-            _vertexBuffer = new VertexBuffer(GameService.Graphics.GraphicsDevice, typeof(VertexPositionTexture), 4, BufferUsage.WriteOnly);
-
-            _markerEffect = _sharedMarkerEffect.Clone();
+            _vertexBuffer = new DynamicVertexBuffer(GameService.Graphics.GraphicsDevice, typeof(VertexPositionTexture), 4, BufferUsage.WriteOnly);
         }
 
         private void RecalculateSize(Vector2 newSize, float scale) {
@@ -156,18 +157,15 @@ namespace Blish_HUD.Pathing.Entities {
                              * Matrix.CreateTranslation(this.Position + this.RenderOffset);
             }
 
-            _markerEffect.Parameters["PlayerPosition"].SetValue(GameService.Player.Position);
-            _markerEffect.Parameters["Opacity"].SetValue(this.Opacity);
-            _markerEffect.Parameters["FadeNear"].SetValue(_fadeNear);
-            _markerEffect.Parameters["FadeFar"].SetValue(_fadeFar);
-            _markerEffect.Parameters["Texture"].SetValue(_texture);
-            _markerEffect.Parameters["World"].SetValue(modelMatrix);
-            _markerEffect.Parameters["View"].SetValue(GameService.Camera.View);
-            _markerEffect.Parameters["Projection"].SetValue(GameService.Camera.Projection);
+            _sharedMarkerEffect.SetEntityState(modelMatrix,
+                                               _texture,
+                                               _opacity,
+                                               _fadeNear,
+                                               _fadeFar);
 
             graphicsDevice.SetVertexBuffer(_vertexBuffer);
 
-            foreach (var pass in _markerEffect.CurrentTechnique.Passes) {
+            foreach (var pass in _sharedMarkerEffect.CurrentTechnique.Passes) {
                 pass.Apply();
 
                 graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);

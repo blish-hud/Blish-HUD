@@ -3,27 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blish_HUD.Entities;
+using Blish_HUD.Pathing.Trails;
+using Microsoft.Scripting.Runtime;
 using Microsoft.Xna.Framework;
-using SharpDX.MediaFoundation;
 
 namespace Blish_HUD.Pathing.Behaviors.Activator {
 
-    public abstract class Activator : IDisposable {
+    public abstract class Activator<TPathable, TEntity> : IDisposable
+        where TPathable : ManagedPathable<TEntity>
+        where TEntity : Entity {
 
         public event EventHandler<EventArgs> Activated;
         public event EventHandler<EventArgs> Deactivated;
 
-        private bool _active = false;
+        public bool Active { get; private set; } = false;
 
-        public bool Active => _active;
+        protected PathingBehavior<TPathable, TEntity> AssociatedBehavior { get; }
+
+        public Activator([NotNull] PathingBehavior<TPathable, TEntity> associatedBehavior) {
+            this.AssociatedBehavior = associatedBehavior;
+        }
 
         protected void Activate() {
-            _active = true;
+            this.Active = true;
             this.Activated?.Invoke(this, EventArgs.Empty);
         }
 
         protected void Deactivate() {
-            _active = false;
+            this.Active = false;
             this.Deactivated?.Invoke(this, EventArgs.Empty);
         }
 

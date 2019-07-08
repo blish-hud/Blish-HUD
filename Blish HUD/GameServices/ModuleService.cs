@@ -12,7 +12,6 @@ using Blish_HUD.Settings;
 using Gw2Sharp.WebApi.V2.Models;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using NLog;
 using File = System.IO.File;
 using Module = Blish_HUD.Modules.Module;
 
@@ -104,7 +103,11 @@ namespace Blish_HUD {
 
             container.ComposeExportedValue("ModuleParameters", parameters);
 
-            container.SatisfyImportsOnce(this);
+            try {
+                container.SatisfyImportsOnce(this);
+            } catch (Exception e) {
+
+            }
         }
 
     }
@@ -121,7 +124,7 @@ namespace Blish_HUD {
 
     public class ModuleService : GameService {
 
-        private static readonly NLog.Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(ModuleService));
 
         private const string MODULE_SETTINGS = "ModuleConfiguration";
 

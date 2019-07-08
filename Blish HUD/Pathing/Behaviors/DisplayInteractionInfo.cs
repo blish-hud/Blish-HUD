@@ -38,13 +38,5 @@ namespace Blish_HUD.Pathing.Behaviors {
             Indicator = new InteractionInfo();
         }
 
-        public override void OnEnterZoneRadius(GameTime gameTime) {
-            Indicator.Show();
-        }
-
-        public override void OnLeftZoneRadius(GameTime gameTime) {
-            Indicator.Hide();
-        }
-
     }
 }

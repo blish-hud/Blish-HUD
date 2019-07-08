@@ -19,7 +19,7 @@ namespace Blish_HUD {
 
     public class ContentService : GameService {
 
-        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(ContentService));
 
         private const string REF_FILE = "ref.dat";
 
@@ -229,13 +229,6 @@ namespace Blish_HUD {
                                             var loadedTexture = Texture2D.FromStream(Graphics.GraphicsDevice, textureStream);
 
                                             returnedTexture.SwapTexture(loadedTexture);
-
-                                            //Color[] clrData = new Color[loadedTexture.Width * loadedTexture.Height];
-                                            //loadedTexture.GetData(clrData);
-
-                                            //returnedTexture.SetData(clrData);
-
-                                            //loadedTexture.Dispose();
                                         }
                                     });
 

@@ -97,7 +97,7 @@ namespace Blish_HUD.Pathing {
 
         public virtual void Update(GameTime gameTime) {
             for (int i = 0; i < _behaviors.Count; i++) {
-                _behaviors[i].Update(gameTime);
+                _behaviors[i].UpdateBehavior(gameTime);
             }
         }
 

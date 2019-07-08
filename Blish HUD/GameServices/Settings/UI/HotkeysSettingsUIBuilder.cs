@@ -1,6 +1,6 @@
 ﻿using Blish_HUD.Controls;
 
-namespace Blish_HUD.GameServices.Settings.UI {
+namespace Blish_HUD.Settings.UI {
     public static class HotkeysSettingsUIBuilder {
 
         public static void BuildApplicationHotkeySettings(Panel buildPanel, object nothing) {

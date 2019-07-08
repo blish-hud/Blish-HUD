@@ -15,7 +15,7 @@ namespace Blish_HUD {
     [JsonObject]
     public class SettingsService : GameService {
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(SettingsService));
 
         private const string SETTINGS_FILENAME = "settings.json";
 
@@ -264,15 +264,15 @@ namespace Blish_HUD {
             };
 
             settingsMi_About.Click += delegate {
-                cPanel.NavigateToBuiltPanel(GameServices.Settings.UI.AboutUIBuilder.BuildAbout, null);
+                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.AboutUIBuilder.BuildAbout, null);
             };
 
             settingsMi_App.Click += delegate {
-                cPanel.NavigateToBuiltPanel(GameServices.Settings.UI.OverlaySettingsUIBuilder.BuildSingleModuleSettings, null);
+                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.OverlaySettingsUIBuilder.BuildSingleModuleSettings, null);
             };
 
             settingsMi_Controls.Click += delegate {
-                cPanel.NavigateToBuiltPanel(GameServices.Settings.UI.HotkeysSettingsUIBuilder.BuildApplicationHotkeySettings, null);
+                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.HotkeysSettingsUIBuilder.BuildApplicationHotkeySettings, null);
             };
 
             GameService.Module.FinishedLoading += delegate {
@@ -284,7 +284,7 @@ namespace Blish_HUD {
                     };
 
                     moduleMi.Click += delegate {
-                        cPanel.NavigateToBuiltPanel(GameServices.Module.SingleModuleSettingsUIBuilder.BuildSingleModuleSettings, module);
+                        cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.SingleModuleSettingsUIBuilder.BuildSingleModuleSettings, module);
                     };
                 }
             };

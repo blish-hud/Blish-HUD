@@ -4,7 +4,7 @@ using Blish_HUD.Controls;
 using Blish_HUD;
 using Microsoft.Xna.Framework;
 
-namespace Blish_HUD.GameServices.Module {
+namespace Blish_HUD.Settings.UI {
     public static class SingleModuleSettingsUIBuilder {
 
         public static void BuildSingleModuleSettings(Panel buildPanel, object module) {

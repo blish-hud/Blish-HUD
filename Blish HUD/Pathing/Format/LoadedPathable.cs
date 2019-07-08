@@ -12,7 +12,7 @@ namespace Blish_HUD.Pathing.Format {
     public abstract class LoadedPathable<TEntity> : ManagedPathable<TEntity>
         where TEntity : Blish_HUD.Entities.Entity {
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = Logger.GetLogger(typeof(LoadedMarkerPathable));
 
         public event EventHandler<EventArgs> Loading;
         public event EventHandler<EventArgs> Loaded;

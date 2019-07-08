@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using NLog;
-using Sentry;
 
 namespace Blish_HUD {
 
@@ -23,7 +17,7 @@ namespace Blish_HUD {
         static Program() {
             // Make sure logging and logging services are available as soon as possible
             DebugService.InitDebug();
-            Logger = LogManager.GetCurrentClassLogger();
+            Logger = Logger.GetLogger(typeof(Program));
 
             if (!string.IsNullOrEmpty(OverlayVersion.PreRelease)) {
                 Logger.Info("Running PreRelease {preReleaseVersion}", OverlayVersion.PreRelease);

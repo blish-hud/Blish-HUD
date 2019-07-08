@@ -8,7 +8,7 @@ using MonoGame.Extended.BitmapFonts;
 namespace Blish_HUD.Modules.Managers {
     public class ContentsManager {
 
-        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        protected static readonly Logger Logger = Logger.GetLogger(typeof(ContentsManager));
 
         private const string REF_NAME = "ref";
 
