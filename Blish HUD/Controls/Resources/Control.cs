@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MonoGame.Extended.TextureAtlases;
+﻿using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls.Resources {
     public static class Control {

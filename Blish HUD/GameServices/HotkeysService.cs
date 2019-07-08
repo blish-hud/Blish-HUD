@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD.BHUDControls.Hotkeys;
 using Blish_HUD.Controls;
+using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
 
 namespace Blish_HUD {
 
     public class Hotkey {
 
+        [JsonProperty]
         public List<Keys> Keys { get; set; }
 
         public string Name { get; set; }
@@ -19,8 +18,8 @@ namespace Blish_HUD {
         public string Category { get; set; }
 
 
-        public Hotkey(string name, string description, string category, IEnumerable<Keys> hotkeys) {
-            this.Keys = new List<Keys>(hotkeys.ToArray());
+        public Hotkey(string name, string description, string category, IEnumerable<Keys> keys) {
+            this.Keys = new List<Keys>(keys.ToArray());
 
             this.Name = name;
             this.Description = description;
@@ -31,10 +30,23 @@ namespace Blish_HUD {
 
     public class HotkeysService : GameService {
 
-        protected override void Initialize() { }
+        private const string HOTKEY_SETTINGS = "HotkeyConfiguration";
+
+        internal SettingCollection _hotkeySettings;
+
+        protected override void Initialize() {
+            _hotkeySettings = Settings.RegisterRootSettingCollection(HOTKEY_SETTINGS);
+
+            DefineSettings(_hotkeySettings);
+        }
+
+        private void DefineSettings(SettingCollection settings) {
+            settings.DefineSetting("Test hotkey", new Hotkey("Test hotkey2", "This is the description", "cate", new[] { Keys.LeftShift, Keys.LeftAlt, Keys.L }));
+            settings.DefineSetting("Test hotkey2", new Hotkey("Test hotkey3", "This is thasfe description", "catase", new[] { Keys.LeftShift, Keys.LeftAlt, Keys.K }));
+        }
 
         protected override void Load() {
-            //GameService.Director.BlishHudWindow.AddTab("Hotkeys", "marker-pathing-icon", BuildHotkeysPanel(GameService.Director.BlishHudWindow), int.MaxValue - 4);
+            
         }
 
         protected override void Unload() { }
@@ -70,8 +82,6 @@ namespace Blish_HUD {
                 Width = wndw.ContentRegion.Width / 2,
                 Parent    = hkPanel,
             };
-
-
 
             return hkPanel;
         }

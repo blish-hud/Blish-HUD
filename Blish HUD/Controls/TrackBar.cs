@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
@@ -14,8 +10,8 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static TextureRegion2D _textureTrack;
-        private static TextureRegion2D _textureNub;
+        private static readonly TextureRegion2D _textureTrack;
+        private static readonly TextureRegion2D _textureNub;
 
         static TrackBar() {
             _textureTrack = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-track");

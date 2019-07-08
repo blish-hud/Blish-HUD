@@ -3,8 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blish_HUD.Content;
 
 namespace Blish_HUD.Controls {
 
@@ -16,21 +15,15 @@ namespace Blish_HUD.Controls {
 
         private const int TAB_SECTION_WIDTH = 46;
 
-        private const int TOP_PADDING = 0;
-        private const int LEFT_PADDING = 0;
-
-        private const int WINDOW_WIDTH = 1024;
-        private const int WINDOW_HEIGHT = 780;
-
         private const int WINDOWCONTENT_WIDTH = 1024;
         private const int WINDOWCONTENT_HEIGHT = 700;
 
         #region Load Static
 
-        private static Texture2D _textureDefaultBackround;
-        private static Texture2D _textureSplitLine;
-        private static Texture2D _textureBlackFade;
-        private static Texture2D _textureTabActive;
+        private static readonly Texture2D _textureDefaultBackround;
+        private static readonly Texture2D _textureSplitLine;
+        private static readonly Texture2D _textureBlackFade;
+        private static readonly Texture2D _textureTabActive;
 
         static TabbedWindow() {
             _textureDefaultBackround = Content.GetTexture("502049");
@@ -67,17 +60,14 @@ namespace Blish_HUD.Controls {
             var tabWindowTexture = _textureDefaultBackround;
             tabWindowTexture = tabWindowTexture.Duplicate().SetRegion(0, 0, 64, _textureDefaultBackround.Height, Color.Transparent);   
 
-            ConstructWindow(tabWindowTexture, new Vector2(25, 33), new Rectangle(0, 0, 1100, 745), new Thickness(60, 75, 45, 25), 40);
+            this.ConstructWindow(tabWindowTexture, new Vector2(25, 33), new Rectangle(0, 0, 1100, 745), new Thickness(60, 75, 45, 25), 40);
 
             ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, WINDOWCONTENT_WIDTH, WINDOWCONTENT_HEIGHT);
-
-            this.TabChanged += delegate {
-            };
         }
 
         protected virtual void OnTabChanged(EventArgs e) {
             if (_visible) {
-                Content.PlaySoundEffectByName($"audio\\tab-swap-{Utils.Calc.GetRandom(1, 5)}");
+                Content.PlaySoundEffectByName($"audio\\tab-swap-{RandomUtil.GetRandom(1, 5)}");
             }
 
             this.Subtitle = SelectedTab.Name;
@@ -146,13 +136,13 @@ namespace Blish_HUD.Controls {
         public Dictionary<WindowTab, Panel> Panels = new Dictionary<WindowTab, Panel>();
         public List<WindowTab> Tabs = new List<WindowTab>();
 
-        public WindowTab AddTab(string name, Texture2D icon, Panel panel, int priority) {
+        public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel, int priority) {
             var tab = new WindowTab(name, icon, priority);
             AddTab(tab, panel);
             return tab;
         }
 
-        public WindowTab AddTab(string name, Texture2D icon, Panel panel) {
+        public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel) {
             var tab = new WindowTab(name, icon);
             AddTab(tab, panel);
             return tab;

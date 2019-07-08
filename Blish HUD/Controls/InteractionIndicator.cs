@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD.Utils;
+﻿using Blish_HUD;
 using Glide;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
     public class InteractionIndicator : LabelBase {
@@ -50,7 +44,7 @@ namespace Blish_HUD.Controls {
 
         public InteractionIndicator() {
             _text = DEFAULT_INTERACT_TEXT;
-            _verticalAlignment = DrawUtil.VerticalAlignment.Middle;
+            _verticalAlignment = VerticalAlignment.Middle;
             _showShadow = true;
             _strokeText = true;
             _font = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);

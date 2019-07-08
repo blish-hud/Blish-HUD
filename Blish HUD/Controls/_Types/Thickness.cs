@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Blish_HUD.Controls {
+﻿namespace Blish_HUD.Controls {
 
     /// <summary>
     /// Used to define a 'thickness' around each side of a rectangle.

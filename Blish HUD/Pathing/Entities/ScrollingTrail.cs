@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD.Annotations;
+﻿using System.Collections.Generic;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.Direct3D11;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 
 namespace Blish_HUD.Pathing.Entities {
@@ -22,8 +16,6 @@ namespace Blish_HUD.Pathing.Entities {
         private float _fadeFar = 900;
         private float _scale = 1;
         private float _opacity = 1;
-
-        private VertexPositionColorTexture[] VertexData { get; set; }
 
         public float AnimationSpeed {
             get => _animationSpeed;

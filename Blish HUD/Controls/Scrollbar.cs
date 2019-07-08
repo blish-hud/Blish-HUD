@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Glide;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,18 +10,18 @@ namespace Blish_HUD.Controls {
     public class Scrollbar:Control {
 
         private const int CONTROL_WIDTH = 12;
-        private const int MIN_LENGTH = 32;
-        private const int CAP_SLACK = 6;
-        
+        private const int MIN_LENGTH    = 32;
+        private const int CAP_SLACK     = 6;
+
         #region Load Static
 
-        private static TextureRegion2D _textureTrack;
-        private static TextureRegion2D _textureUpArrow;
-        private static TextureRegion2D _textureDownArrow;
-        private static TextureRegion2D _textureBar;
-        private static TextureRegion2D _textureThumb;
-        private static TextureRegion2D _textureTopCap;
-        private static TextureRegion2D _textureBottomCap;
+        private static readonly TextureRegion2D _textureTrack;
+        private static readonly TextureRegion2D _textureUpArrow;
+        private static readonly TextureRegion2D _textureDownArrow;
+        private static readonly TextureRegion2D _textureBar;
+        private static readonly TextureRegion2D _textureThumb;
+        private static readonly TextureRegion2D _textureTopCap;
+        private static readonly TextureRegion2D _textureBottomCap;
 
         static Scrollbar() {
             _textureTrack     = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-track");
@@ -146,8 +142,7 @@ namespace Blish_HUD.Controls {
         }
         
         private void UpdateAssocContainer() {
-            // TODO: What is the 612 in the scrollbar update?
-            AssociatedContainer.VerticalScrollOffset = (int)Math.Floor(Math.Max(_containerLowestContent - AssociatedContainer.ContentRegion.Height, 612) * this.ScrollDistance);
+            AssociatedContainer.VerticalScrollOffset = (int)Math.Floor((_containerLowestContent - AssociatedContainer.ContentRegion.Height) * this.ScrollDistance);
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
@@ -201,7 +196,7 @@ namespace Blish_HUD.Controls {
         private void RecalculateScrollbarSize() {
             if (_associatedContainer == null) return;
 
-            _containerLowestContent = Math.Max(_associatedContainer.Children.Any()
+            _containerLowestContent = Math.Max(_associatedContainer.Children.Any(c => c.Visible)
                                                    ? _associatedContainer.Children.Where(c => c.Visible).Max(c => c.Bottom)
                                                    : 0,
                                                _associatedContainer.ContentRegion.Height);

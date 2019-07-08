@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
@@ -15,7 +9,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public string Text {
             get => _text;
-            set => SetProperty(ref _text, value, true);
+            set {
+                if (SetProperty(ref _text, value, true) && (_autoSizeWidth || _autoSizeHeight)) {
+                    RecalculateLayout();
+                }
+            }
         }
 
         /// <summary>
@@ -23,7 +21,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public BitmapFont Font {
             get => _font;
-            set => SetProperty(ref _font, value, true);
+            set {
+                if (SetProperty(ref _font, value, true) && (_autoSizeWidth || _autoSizeHeight)) {
+                    RecalculateLayout();
+                }
+            }
         }
 
         /// <summary>
@@ -34,14 +36,19 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _textColor, value);
         }
 
-        public Utils.DrawUtil.HorizontalAlignment HorizontalAlignment {
+        public HorizontalAlignment HorizontalAlignment {
             get => _horizontalAlignment;
             set => SetProperty(ref _horizontalAlignment, value);
         }
 
-        public Utils.DrawUtil.VerticalAlignment VerticalAlignment {
+        public VerticalAlignment VerticalAlignment {
             get => _verticalAlignment;
             set => SetProperty(ref _verticalAlignment, value);
+        }
+
+        public bool WrapText {
+            get => _wrapText;
+            set => SetProperty(ref _wrapText, value, true);
         }
 
         /// <summary>
@@ -75,7 +82,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public bool AutoSizeWidth {
             get => _autoSizeWidth;
-            set => SetProperty(ref _autoSizeWidth, value);
+            set {
+                if (SetProperty(ref _autoSizeWidth, value, true) && (_autoSizeWidth || _autoSizeHeight)) {
+                    RecalculateLayout();
+                }
+            }
         }
 
         /// <summary>
@@ -83,11 +94,22 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public bool AutoSizeHeight {
             get => _autoSizeHeight;
-            set => SetProperty(ref _autoSizeHeight, value);
+            set {
+                if (SetProperty(ref _autoSizeHeight, value, true) && (_autoSizeWidth || _autoSizeHeight)) {
+                    RecalculateLayout();
+                }
+            }
         }
 
         public Label() : base() {
             _cacheLabel = false;
+        }
+
+
+        public override void RecalculateLayout() {
+            base.RecalculateLayout();
+
+            this.Size = LabelRegion;
         }
 
     }

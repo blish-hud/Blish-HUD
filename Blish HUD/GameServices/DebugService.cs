@@ -1,65 +1,167 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Text;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Blish_HUD.Controls;
 using Humanizer;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
+using MonoGame.Extended;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+using NLog.Targets.Wrappers;
+using Sentry;
+using Sentry.Protocol;
 
 namespace Blish_HUD {
     public class DebugService:GameService {
 
-        private class Alert {
+        private static Logger Logger;
 
-            public readonly string ServiceTitle;
-            public readonly string AlertMessage;
-            public DateTimeOffset Expires;
+        private static LoggingConfiguration _logConfiguration;
+        // ${message}
+        private const string STANDARD_LAYOUT = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}${onexception:${newline}${exception:format=toString}${newline}}";
 
-            public Alert(string source, string message, DateTimeOffset expires) {
-                ServiceTitle = source;
-                AlertMessage = message;
-                Expires = expires;
-            }
+        internal static void InitDebug() {
+            // Make sure crash dir is available for logs as early as possible
+            string logPath = DirectoryUtil.RegisterDirectory("logs");
 
+            // Init the Logger
+            _logConfiguration = new LoggingConfiguration();
+
+            string headerLayout   = $"Blish HUD v{Program.OverlayVersion}";
+
+            var logFile = new FileTarget("logfile") {
+                Header            = headerLayout,
+                FileNameKind      = FilePathKind.Absolute,
+                ArchiveFileKind   = FilePathKind.Absolute,
+                FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.log"),
+                ArchiveFileName   = Path.Combine(logPath, "blishhud.{#}.log"),
+                ArchiveDateFormat = "yyyyMMdd-HHmmss",
+                ArchiveNumbering  = ArchiveNumberingMode.Date,
+                MaxArchiveFiles   = 9,
+                EnableFileDelete  = true,
+                CreateDirs        = true,
+                Encoding          = Encoding.UTF8,
+                KeepFileOpen      = true,
+                Layout            = STANDARD_LAYOUT
+            };
+
+            var asyncLogFile = new AsyncTargetWrapper("asynclogfile", logFile) {
+                QueueLimit        = 200,
+                OverflowAction    = AsyncTargetWrapperOverflowAction.Discard,
+                ForceLockingQueue = false
+            };
+
+            _logConfiguration.AddTarget(asyncLogFile);
+
+            _logConfiguration.AddRule(NLog.LogLevel.Info,  NLog.LogLevel.Fatal,  asyncLogFile);
+
+            AddDebugTarget(_logConfiguration);
+            AddSentryTarget(_logConfiguration);
+
+            NLog.LogManager.Configuration = _logConfiguration;
+
+            Logger = Logger.GetLogger(typeof(DebugService));
         }
 
-        private Controls.Tooltip alertTooltip;
-        private Controls.Image alertIcon;
-
-        private bool alertInvalid = false;
-
-        private List<Alert> Alerts = new List<Alert>();
-        private Dictionary<Alert, Panel> DisplayedAlerts = new Dictionary<Alert, Panel>();
-
-        public void WriteInfo(string info, params string[] formatItems) {
-            Console.Write("INFO: " + string.Format(info, formatItems));
+        public static void TargetDebug(string time, string level, string logger, string message) {
+            System.Diagnostics.Debug.WriteLine($"{time}|{level.ToUpper()}|{logger}|{message}");
         }
 
-        public void WriteInfoLine(string info, params string[] formatItems) {
-            WriteInfo(info + Environment.NewLine, formatItems);
+        [Conditional("DEBUG")]
+        private static void AddDebugTarget(LoggingConfiguration logConfig) {
+            NLog.LogManager.ThrowExceptions = true;
+
+            var logDebug = new MethodCallTarget("logdebug") {
+                ClassName  = typeof(DebugService).AssemblyQualifiedName,
+                MethodName = nameof(DebugService.TargetDebug),
+                Parameters = {
+                    new MethodCallParameter("${time:invariant=true}"),
+                    new MethodCallParameter("${level}"),
+                    new MethodCallParameter("${logger}"),
+                    new MethodCallParameter("${message}")
+                }
+            };
+
+            _logConfiguration.AddTarget(logDebug);
+            _logConfiguration.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logDebug);
         }
 
-        public void WriteWarning(string warning, params string[] formatItems) {
-            Console.Write("WARNING: " + string.Format(warning, formatItems));
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
+            InputService.mouseHook?.UnhookMouse();
+            InputService.keyboardHook?.UnhookKeyboard();
+
+            var e = (Exception)args.ExceptionObject;
+
+            Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
+
+            FlushSentry();
         }
 
-        public void WriteWarningLine(string warning, params string[] formatItems) {
-            WriteWarning(warning + Environment.NewLine, formatItems);
+        [Conditional("SENTRY")]
+        private static void FlushSentry() {
+            SentrySdk.Close();
         }
 
-        public void WriteError(string error, params string[] formatItems) {
-            Console.Write("ERROR: " + string.Format(error, formatItems));
+        [Conditional("SENTRY")]
+        private static void AddSentryTarget(LoggingConfiguration logConfig) {
+            const string SENTRY_DSN = "https://e11516741a32440ca7a72b68d5af93df@sentry.do-ny3.svr.gw2blishhud.com/2";
+            const string BREADCRUMB_LAYOUT = "${logger}: ${message}";
+
+            logConfig.AddSentry(sentry => {
+                sentry.Dsn              = new Dsn(SENTRY_DSN);
+                sentry.Release          = $"blish_hud@{Program.OverlayVersion.Major}.{Program.OverlayVersion.Minor}.{Program.OverlayVersion.Patch}";
+                sentry.Environment      = string.IsNullOrEmpty(Program.OverlayVersion.PreRelease) ? "Release" : Program.OverlayVersion.PreRelease;
+                sentry.Debug            = true;
+                sentry.BreadcrumbLayout = BREADCRUMB_LAYOUT;
+                sentry.MaxBreadcrumbs   = 20;
+
+                // We do this ourselves for our other logging
+                // It's not working right now, though, for some reason
+                //sentry.DisableAppDomainUnhandledExceptionCapture();
+
+                sentry.BeforeBreadcrumb = delegate(Breadcrumb breadcrumb) {
+                    string filteredMessage = StringUtil.ReplaceUsingStringComparison(breadcrumb.Message, Environment.UserName, "<filtered-username>", StringComparison.OrdinalIgnoreCase);
+
+                    return new Breadcrumb(filteredMessage, breadcrumb.Type, breadcrumb.Data, breadcrumb.Category, breadcrumb.Level);
+                };
+
+                sentry.BeforeSend = delegate(SentryEvent sentryEvent) {
+                    sentryEvent.SetTag("locale", CultureInfo.CurrentUICulture.DisplayName);
+
+                    if (!string.IsNullOrEmpty(Program.OverlayVersion.Build)) {
+                        sentryEvent.SetTag("Build", Program.OverlayVersion.Build);
+                    }
+
+                    try {
+                        // Display installed modules
+                        if (GameService.Module != null && GameService.Module.Loaded) {
+                            var moduleDetails = GameService.Module.Modules.Select(m => new {
+                                m.Manifest.Name,
+                                m.Manifest.Namespace,
+                                Version = m.Manifest.Version.ToString(),
+                                m.Enabled
+                            });
+
+                            sentryEvent.SetExtra("Modules", moduleDetails.ToArray());
+                        }
+                    } catch (Exception unknownException) {
+                        sentryEvent.SetExtra("Modules", $"Exception: {unknownException.Message}");
+                    }
+
+                    return sentryEvent;
+                };
+            });
         }
 
-        public void WriteErrorLine(string error, params string[] formatItems) {
-            WriteError(error + Environment.NewLine, formatItems);
-        }
+        public FrameCounter FrameCounter { get; private set; }
 
-        public class FuncClock {
+        internal class FuncClock {
 
             private const int BUFFER_LENGTH = 60;
 
@@ -69,165 +171,77 @@ namespace Blish_HUD {
                 get {
                     float totalRuntime = 0;
                     
-                    for (int i = 0; i < timeBuffer.Count - 1; i++) {
-                        totalRuntime += timeBuffer[i];
+                    for (int i = 0; i < _timeBuffer.Count - 1; i++) {
+                        totalRuntime += _timeBuffer[i];
                     }
 
-                    return totalRuntime / timeBuffer.Count;
+                    return totalRuntime / _timeBuffer.Count;
                 }
             }
 
-            private readonly List<long> timeBuffer;
-            private readonly Stopwatch funcStopwatch;
+            private readonly List<long> _timeBuffer;
+            private readonly Stopwatch _funcStopwatch;
 
             public FuncClock() {
-                timeBuffer = new List<long>();
-                funcStopwatch = new Stopwatch();
+                _timeBuffer = new List<long>();
+                _funcStopwatch = new Stopwatch();
             }
 
             public void Start() {
-                funcStopwatch.Start();
+                _funcStopwatch.Start();
             }
 
             public void Stop() {
-                funcStopwatch.Stop();
+                _funcStopwatch.Stop();
 
-                if (timeBuffer.Count > BUFFER_LENGTH) timeBuffer.RemoveAt(0);
+                if (_timeBuffer.Count > BUFFER_LENGTH) _timeBuffer.RemoveAt(0);
 
-                this.LastTime = funcStopwatch.ElapsedMilliseconds;
-                timeBuffer.Add(funcStopwatch.ElapsedMilliseconds);
+                this.LastTime = _funcStopwatch.ElapsedMilliseconds;
+                _timeBuffer.Add(_funcStopwatch.ElapsedMilliseconds);
 
-                funcStopwatch.Reset();
+                _funcStopwatch.Reset();
             }
 
         }
 
-        public Dictionary<string, FuncClock> FuncTimes;
+        internal ConcurrentDictionary<string, FuncClock> _funcTimes;
+
+        [Conditional("DEBUG")]
         public void StartTimeFunc(string func) {
-            #if DEBUG
-                if (!FuncTimes.ContainsKey(func))
-                    FuncTimes.Add(func, new FuncClock());
-
-                FuncTimes[func].Start();
-            #endif
-        }
-
-        public void StopTimeFunc(string func) {
-            #if DEBUG
-                FuncTimes[func]?.Stop();
-            #endif
-        }
-
-        public void StopTimeFuncAndOutput(string func) {
-            #if DEBUG
-                FuncTimes[func]?.Stop();
-                Console.WriteLine($"{func} ran for {FuncTimes[func]?.LastTime.Milliseconds().Humanize()}.");
-            #endif
-        }
-
-        public void DisplayAlert(string source, string message, DateTimeOffset expiration) {
-            WriteWarningLine($"[{source}] {message}");
-
-            // if the alert already exists, just extend the expiration on the existing alert
-            foreach (var alert in Alerts) {
-                if (alert.ServiceTitle == source && alert.AlertMessage == message) {
-                    alert.Expires = expiration;
-                    return;
-                }
+            if (!_funcTimes.ContainsKey(func)) {
+                _funcTimes.TryAdd(func, new FuncClock());
             }
 
-            Alerts.Add(new Alert(source, message, expiration));
+            _funcTimes[func]?.Start();
         }
 
-        // TODO: Debug service needs to be fleshed out more
-        protected override void Initialize() { /* NOOP */ }
-        protected override void Unload() { /* NOOP */ }
+        [Conditional("DEBUG")]
+        public void StopTimeFunc(string func) {
+            _funcTimes[func]?.Stop();
+        }
+
+        [Conditional("DEBUG")]
+        public void StopTimeFuncAndOutput(string func) {
+            _funcTimes[func]?.Stop();
+            Logger.Debug("{funcName} ran for {$funcTime}.", func, _funcTimes[func]?.LastTime.Milliseconds().Humanize());
+        }
+
+        protected override void Initialize() {
+            this.FrameCounter = new FrameCounter();
+
+#if !DEBUG
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+#endif
+        }
 
         protected override void Load() {
-            // Make sure crash dir is available for logs later on
-            Directory.CreateDirectory(Path.Combine(GameService.FileSrv.BasePath, "logs"));
-
-            FuncTimes = new Dictionary<string, FuncClock>();
-
-            /*
-            alertIcon = new Image(Content.GetTexture("1444522"));
-            alertTooltip = new Tooltip();
-
-            alertIcon.Location = new Point(Graphics.WindowWidth - 128 - alertIcon.Width, Graphics.WindowHeight - 64 - alertIcon.Height);
-            alertIcon.Tooltip = alertTooltip;
-            alertIcon.Parent = Graphics.SpriteScreen;
-            alertIcon.ZIndex = Screen.TOOLTIP_BASEZINDEX - 1;
-
-            Graphics.SpriteScreen.OnResized += delegate { alertIcon.Location = new Point(Graphics.WindowWidth - 128 - alertIcon.Width, Graphics.WindowHeight - 64 - alertIcon.Height); };
-
-            alertIcon.OnLeftMouseButtonReleased += delegate {
-                DisplayAlert("Debug Service", "This is a test error - not a real error.", DateTimeOffset.Now.AddSeconds(20));
-            };
-            */
+            _funcTimes = new ConcurrentDictionary<string, FuncClock>();
         }
 
         protected override void Update(GameTime gameTime) {
-            /*
-            foreach (Alert alert in Alerts.ToList()) {
-                // Check if the alert has expired
-                if (alert.Expires < DateTimeOffset.Now) {
-                    Alerts.Remove(alert);
-
-                    // Remove the alert panel if it has expired
-                    if (DisplayedAlerts.ContainsKey(alert)) {
-                        DisplayedAlerts[alert].Dispose();
-                        DisplayedAlerts.Remove(alert);
-
-                        alertInvalid = true;
-                    }
-
-                    continue;
-                }
-
-                Panel alertPanel;
-                int topPos = 0;
-
-                // Add alert to tooltip, if it isn't in there already
-                if (!DisplayedAlerts.ContainsKey(alert)) {
-                    alertPanel = new Panel() { Parent = alertTooltip };
-
-                    Label ServiceLbl = new Label() {
-                        Text           = alert.ServiceTitle,
-                        AutoSizeWidth  = true,
-                        AutoSizeHeight = true,
-                        Location       = new Point(Tooltip.PADDING),
-                        Parent         = alertPanel
-                    };
-
-                    Label MessageLbl = new Label() {
-                        Text           = alert.AlertMessage,
-                        ShowShadow = true,
-                        AutoSizeWidth  = true,
-                        AutoSizeHeight = true,
-                        Location       = new Point(Tooltip.PADDING, ServiceLbl.Bottom + 5),
-                        Parent         = alertPanel
-                    };
-
-                    alertPanel.Size = new Point(
-                                                alertPanel.Children.Max(c => c.Right),
-                                                alertPanel.Children.Max(c => c.Bottom)
-                                                );
-
-                    alertInvalid = true;
-                } else {
-                    alertPanel = DisplayedAlerts[alert];
-                }
-
-                if (alertInvalid) {
-                    // Update layout of alert panels
-                    alertPanel.Location = new Point(0, topPos);
-                }
-
-                topPos += alertPanel.Height;
-            }
-
-            alertInvalid = false;
-            */
+            this.FrameCounter.Update(gameTime.GetElapsedSeconds());
         }
+
+        protected override void Unload() { /* NOOP */ }
     }
 }

@@ -7,8 +7,6 @@
 #define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-float TotalMilliseconds;
-float FlowSpeed;
 float3 PlayerPosition;
 
 float Opacity;
@@ -16,75 +14,90 @@ float Opacity;
 float FadeNear;
 float FadeFar;
 
-float TotalLength;
-float FadeDistance;
+matrix World;
+matrix View;
+matrix Projection;
 
-float4x4 PlayerViewProjection;
-float4x4 WorldViewProjection;
 Texture2D Texture : register(t0);
-sampler TextureSampler : register(s0)
-{
+sampler TextureSampler : register(s0) {
     Texture = (Texture);
 };
 
-struct VertexShaderInput
-{
+struct VSInput {
     float4 Position : POSITION0;
-    float4 Color : COLOR0;
     float2 TextureCoordinate : TEXCOORD0;
 };
 
-struct VertexShaderOutput
-{
+struct VSOutput {
     float4 Position : SV_Position;
-    float4 Color : COLOR0;
     float2 TextureCoordinate : TEXCOORD0;
 	float  Distance : float;
 };
 
-struct PixelShaderOutput
-{
+struct PixelShaderOutput {
     float4 Color : COLOR0;
 };
 
-// NOTE: The path is drawn backwards 
-VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
-{
-    VertexShaderOutput output;
-    output.Position = mul(input.Position, WorldViewProjection);
-    
-	// Get distance player is from current spot in trail (so that we can fade it out a bit)
-	output.Distance = distance(input.Position.xyz, PlayerPosition) / 0.0254f;
+matrix Billboard(matrix modelView) {
+	matrix billboardView = modelView;
+	
+	billboardView[0][0] = 1.0;
+	billboardView[0][1] = 0.0;
+	billboardView[0][2] = 0.0;
+	
+	billboardView[1][0] = 0.0;
+	billboardView[1][1] = 1.0;
+	billboardView[1][2] = 0.0;
+	
+	billboardView[2][0] = 0.0;
+	billboardView[2][1] = 0.0;
+	billboardView[2][2] = 1.0;
+	
+	return billboardView;	
+}
 
-	// Pass on to PS (some redundant for later)
-    output.Color = input.Color * Opacity;
+VSOutput VertexShaderFunction(VSInput input) {
+    VSOutput output;
+	
+	matrix modelView = mul(World, View);
+	
+	float4 worldPosition = mul(input.Position, World);	
+	float4 viewPosition = mul(worldPosition, View);
+	
+	viewPosition = mul(input.Position, modelView);
+	
+	//viewPosition = mul(input.Position, tbb);
+	output.Position = mul(viewPosition, Projection);
+	
+	// Get distance player is from marker
+	output.Distance = distance(worldPosition.xyz, PlayerPosition) / 0.0254f;
 	
 	// make the trail slowly move along the path
-    output.TextureCoordinate = float2(input.TextureCoordinate.x, input.TextureCoordinate.y + (TotalMilliseconds / 1000) * FlowSpeed);
+    output.TextureCoordinate = input.TextureCoordinate.xy;
 
     return output;
 }
 
-PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
-{
+float GetFadeNearFar(VSOutput input) {
+	if (FadeNear >= 0 && FadeFar >= 0) {
+		// Handle fade far (first since it'll clip and can skip the rest of this if it's too far away)
+		clip(FadeFar - input.Distance);
+		
+		float nearDist = input.Distance - FadeNear;
+	
+		// Handle fade near
+		return 1.0 - clamp(nearDist / (FadeFar - FadeNear), 0.0, 1.0);
+	}
+	
+	return 1.0;
+}
+
+PixelShaderOutput PixelShaderFunction(VSOutput input) {
     PixelShaderOutput output;
 	
-	float a = 1.0;
-	
-	// Handle fade far (first since it'll clip and can skip the rest of this if it's too far away)
-	//clip(FadeFar - input.Distance);
-	if (FadeFar - input.Distance) {
-		a = 0;
-	}
-
-    float nearDist = input.Distance - FadeNear; // (input.TextureCoordinate.y * 0.0254f + input.Distance)
-	
-	// Handle fade near
-	float nearDistFade = 1.0 - clamp(nearDist / (FadeFar - FadeNear), 0.0, 1.0);
+	float distanceFade = GetFadeNearFar(input);
     
-    output.Color = tex2D(TextureSampler, input.TextureCoordinate) * nearDistFade * input.Color * Opacity * a;
-	
-    //clip(output.Color.a - 0.02);
+    output.Color = tex2D(TextureSampler, input.TextureCoordinate) * distanceFade * Opacity;
 	
     return output;
 }

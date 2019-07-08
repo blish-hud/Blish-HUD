@@ -1,34 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
-using Blish_HUD.BHGw2Api;
 using Microsoft.Xna.Framework;
+using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD {
     public class PlayerService:GameService {
 
-
         public Vector3 Position { get; protected set; } = Vector3.Zero;
         public Vector3 Forward { get; protected set; } = Vector3.Zero;
 
-        // Well this is kind of dumb - player service and gw2mumble need a stronger distinction
         public bool Available => GameService.Gw2Mumble.Available;
 
         // Context Events
-        public event EventHandler<EventArgs> OnMapChanged;
-        public event EventHandler<EventArgs> OnMapIdChanged;
-        public event EventHandler<EventArgs> OnMapTypeChanged;
-        public event EventHandler<EventArgs> OnShardIdChanged;
-        public event EventHandler<EventArgs> OnInstanceChanged;
+        public event EventHandler<EventArgs> MapChanged;
+        public event EventHandler<EventArgs> MapIdChanged;
+        public event EventHandler<EventArgs> MapTypeChanged;
+        public event EventHandler<EventArgs> ShardIdChanged;
+        public event EventHandler<EventArgs> InstanceChanged;
 
         // Identity Events
-        public event EventHandler<EventArgs> OnCharacterNameChanged;
-        public event EventHandler<EventArgs> OnCharacterProfessionChanged;
-        public event EventHandler<EventArgs> OnRaceChanged;
-        public event EventHandler<EventArgs> OnUiScaleChanged;
+        public event EventHandler<EventArgs> CharacterNameChanged;
+        public event EventHandler<EventArgs> CharacterProfessionChanged;
+        public event EventHandler<EventArgs> RaceChanged;
+        public event EventHandler<EventArgs> UiScaleChanged;
 
         #region Context Properties
 
@@ -43,19 +37,18 @@ namespace Blish_HUD {
 
                 _mapId = value;
 
-                Task<Map> mapNameTask = BHGw2Api.Map.GetFromId(_mapId);
-                mapNameTask.ContinueWith(
-                                         mapTsk => {
+                this.MapIdChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged();
+
+                Task<Map> mapNameTask = GameService.Gw2Api.SharedClient.V2.Maps.GetAsync(_mapId);
+                mapNameTask.ContinueWith(mapTsk => {
                                              if (!mapTsk.IsFaulted) {
-                                                 this._map = mapTsk.Result;
+                                                 _map = mapTsk.Result;
 
                                                  OnPropertyChanged(nameof(this.Map));
-                                                 this.OnMapChanged?.Invoke(this, EventArgs.Empty);
+                                                 this.MapChanged?.Invoke(this, EventArgs.Empty);
                                              }
                                          });
-
-                this.OnMapIdChanged?.Invoke(this, EventArgs.Empty);
-                OnPropertyChanged();
             }
         }
 
@@ -67,7 +60,7 @@ namespace Blish_HUD {
 
                 _mapType = value;
 
-                this.OnMapTypeChanged?.Invoke(this, EventArgs.Empty);
+                this.MapTypeChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
             }
         }
@@ -80,7 +73,7 @@ namespace Blish_HUD {
 
                 _shardId = value;
 
-                this.OnShardIdChanged?.Invoke(this, EventArgs.Empty);
+                this.ShardIdChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
             }
         }
@@ -93,7 +86,7 @@ namespace Blish_HUD {
 
                 _instance = value;
 
-                this.OnInstanceChanged?.Invoke(this, EventArgs.Empty);
+                this.InstanceChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
             }
         }
@@ -110,7 +103,7 @@ namespace Blish_HUD {
 
                 _characterName = value;
 
-                this.OnCharacterNameChanged?.Invoke(this, EventArgs.Empty);
+                this.CharacterNameChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
             }
         }
@@ -123,7 +116,7 @@ namespace Blish_HUD {
 
                 _characterProfession = value;
 
-                this.OnCharacterProfessionChanged?.Invoke(this, EventArgs.Empty);
+                this.CharacterProfessionChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
             }
         }
@@ -136,7 +129,7 @@ namespace Blish_HUD {
 
                 _race = value;
 
-                this.OnRaceChanged?.Invoke(this, EventArgs.Empty);
+                this.RaceChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
             }
         }
@@ -149,25 +142,19 @@ namespace Blish_HUD {
 
                 _uiScale = value;
 
-                this.OnUiScaleChanged?.Invoke(this, EventArgs.Empty);
+                this.UiScaleChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
             }
         }
 
         #endregion
         
-        protected override void Initialize() {
-        }
+        protected override void Initialize() { /* NOOP */ }
 
-        private const float LERPDURR = 0.2f;
         protected override void Update(GameTime gameTime) {
-            // This data is LERP'd to help smooth out movements
-            // Mumble API updates at most 50 times per second
             if (GameService.Gw2Mumble.MumbleBacking != null) {
-                //this.Position = Vector3.Lerp(this.Position, GameService.Gw2Mumble.MumbleBacking.AvatarPosition.ToXnaVector3(), LERPDURR);
-                //this.Forward  = Vector3.Lerp(this.Forward, GameService.Gw2Mumble.MumbleBacking.AvatarFront.ToXnaVector3(),    LERPDURR);
                 this.Position = GameService.Gw2Mumble.MumbleBacking.AvatarPosition.ToXnaVector3();
-                this.Forward = GameService.Gw2Mumble.MumbleBacking.AvatarFront.ToXnaVector3();
+                this.Forward  = GameService.Gw2Mumble.MumbleBacking.AvatarFront.ToXnaVector3();
 
                 this.MapId    = GameService.Gw2Mumble.MumbleBacking.Context.MapId;
                 this.MapType  = GameService.Gw2Mumble.MumbleBacking.Context.MapType;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
     public class CameraService : GameService {
@@ -30,23 +24,16 @@ namespace Blish_HUD {
         private Matrix _worldViewProjection;
         public Matrix WorldViewProjection => _worldViewProjection;
 
-        private float _aspectRatio;
-        public float AspectRatio => _aspectRatio;
-
         protected override void Update(GameTime gameTime) {
             if (GameService.Gw2Mumble.Available) {
-                _aspectRatio = (float) Graphics.WindowWidth / (float) Graphics.WindowHeight;
+                _position = Gw2Mumble.MumbleBacking.CameraPosition.ToXnaVector3();
+                _forward  = Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3();   
 
-                _position = Gw2Mumble.MumbleBacking.CameraPosition.ToXnaVector3(); //Vector3.Lerp(_position, GameServices.GetService<Gw2MumbleService>().MumbleBacking.CameraPosition.ToXnaVector3(), LERPDURR);
-                _forward  = Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3();    //Vector3.Lerp(_forward, GameServices.GetService<Gw2MumbleService>().MumbleBacking.CameraFront.ToXnaVector3(), LERPDURR);
-
-                _view       = Matrix.CreateLookAt(this.Position, this.Position + _forward, Utils.DrawUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
-                _playerView = Matrix.CreateLookAt(this.Position, Player.Position + new Vector3(0, 0, 0.5f), Utils.DrawUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
-                _projection = Matrix.CreatePerspectiveFieldOfView((float)Gw2Mumble.MumbleBacking.Identity.FieldOfView, this.AspectRatio, this.NearPlaneRenderDistance, this.FarPlaneRenderDistance);
+                _view       = Matrix.CreateLookAt(this.Position, this.Position + _forward, VectorUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
+                _playerView = Matrix.CreateLookAt(this.Position, Player.Position + new Vector3(0, 0, 0.5f), VectorUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
+                _projection = Matrix.CreatePerspectiveFieldOfView((float)Gw2Mumble.MumbleBacking.Identity.FieldOfView, Graphics.AspectRatio, this.NearPlaneRenderDistance, this.FarPlaneRenderDistance);
 
                 _worldViewProjection = _view * _projection;
-
-                //Console.WriteLine(Vector3.Distance(_position, Player.Position));
             }
         }
 
