@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
@@ -44,6 +45,43 @@ namespace Blish_HUD
                     _stopwatch.Restart();
                     _hudIsActive = value;
                 }
+            }
+        }
+
+        private bool _subscribed = false;
+
+        private readonly Dictionary<uint, List<Action<object, RawCombatEventArgs>>> _subscriptions = new Dictionary<uint, List<Action<object, RawCombatEventArgs>>>();
+
+        public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds)
+        {
+            if (!_subscribed)
+            {
+                RawCombatEvent += DispatchSkillSubscriptions;
+                _subscribed = true;
+            }
+
+            foreach (var skillId in skillIds)
+            {
+                if (!_subscriptions.ContainsKey(skillId))
+                {
+                    _subscriptions.Add(skillId, new List<Action<object, RawCombatEventArgs>>(1));
+                }
+
+                _subscriptions[skillId].Add(func);
+            }
+        }
+
+        private void DispatchSkillSubscriptions(object sender, RawCombatEventArgs eventHandler)
+        {
+            if (eventHandler.CombatEvent.Ev == null)
+                return;
+            var skillId = eventHandler.CombatEvent.Ev.SkillId;
+            if (!_subscriptions.ContainsKey(skillId))
+                return;
+
+            foreach (var action in _subscriptions[skillId])
+            {
+                action(sender, eventHandler);
             }
         }
 
