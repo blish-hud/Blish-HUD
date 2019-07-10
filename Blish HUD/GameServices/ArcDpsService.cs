@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
@@ -50,7 +50,7 @@ namespace Blish_HUD
 
         private bool _subscribed = false;
 
-        private readonly Dictionary<uint, List<Action<object, RawCombatEventArgs>>> _subscriptions = new Dictionary<uint, List<Action<object, RawCombatEventArgs>>>();
+        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions = new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
 
         public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds)
         {
@@ -64,7 +64,7 @@ namespace Blish_HUD
             {
                 if (!_subscriptions.ContainsKey(skillId))
                 {
-                    _subscriptions.Add(skillId, new List<Action<object, RawCombatEventArgs>>(1));
+                    _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
                 }
 
                 _subscriptions[skillId].Add(func);
