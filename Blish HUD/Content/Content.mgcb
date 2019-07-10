@@ -686,6 +686,35 @@
 /processorParam:TextureFormat=Color
 /build:fonts/menomonia-8-regular_0.tga
 
+#begin fonts/newkrytan/newkrytan-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-12-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-12-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-12-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-12-regular_1.png
+
 #begin models/sphere-poly.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
