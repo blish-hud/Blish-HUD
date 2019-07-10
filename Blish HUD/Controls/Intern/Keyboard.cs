@@ -5,7 +5,10 @@ namespace Blish_HUD.Controls.Intern
 {
     public class Keyboard : IKeyboard
     {
-        public bool HardwareInput = false; // If true, uses normal key input instead of sending messages to GW2's window handle.
+        /// <summary>
+        /// If true, uses normal key input instead of sending key event messages to GW2's window handle.
+        /// </summary>
+        public bool HardwareInput = false;
 
         private const uint WM_KEYDOWN = 0x0100;
         private const uint WM_KEYUP = 0x0101;
@@ -46,10 +49,7 @@ namespace Blish_HUD.Controls.Intern
             {GuildWarsControls.EliteSkill, VirtualKeyShort.KEY_0}
         };
 
-        public Keyboard()
-        {
-            GameService.GameIntegration.FocusGw2();
-        }
+        public Keyboard(){ /** NOOP **/ }
 
         public void Press(GuildWarsControls key)
         {

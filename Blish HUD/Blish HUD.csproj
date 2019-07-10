@@ -105,6 +105,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Content\AsyncTexture2D.cs" />
+    <Compile Include="Controls\BasicWindow.cs" />
+    <Compile Include="Controls\Book.cs" />
     <Compile Include="Controls\HotkeyAssigner.cs" />
     <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
     <Compile Include="Content\DirectoryReader.cs" />
@@ -222,6 +224,7 @@
     <Compile Include="Pathing\Behaviors\Activator\Always.cs" />
     <Compile Include="Pathing\Behaviors\Activator\BehaviorActivatorAttribute.cs" />
     <Compile Include="Pathing\Behaviors\Activator\ZoneActivator.cs" />
+    <Compile Include="Pathing\Behaviors\Message.cs" />
     <Compile Include="Pathing\Behaviors\Bounce.cs" />
     <Compile Include="Pathing\Behaviors\Interactable[TPathable,TEntity].cs" />
     <Compile Include="Pathing\Behaviors\_Types\BehaviorWhen.cs" />
