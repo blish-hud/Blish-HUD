@@ -7,49 +7,9 @@ using System.Linq;
 using System.Threading;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Blish_HUD.Controls;
+using Blish_HUD.Input;
 using Control = Blish_HUD.Controls.Control;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
-
-public class MouseEventArgs : EventArgs {
-    public MouseState MouseState { get; }
-
-    /// <summary>
-    /// The relative mouse position when the event was fired.
-    /// </summary>
-    public Point MousePosition { get; }
-
-    public MouseEventArgs(MouseState ms) {
-        this.MouseState = ms;
-    }
-}
-
-public enum MouseEventType {
-    LeftMouseButtonPressed,
-    LeftMouseButtonReleased,
-    MouseMoved,
-    RightMouseButtonPressed,
-    RightMouseButtonReleased,
-    MouseWheelScrolled
-}
-
-public enum KeyboardEventType {
-    KeyDown = 0x0100,
-    KeyUp = 0x0101
-}
-
-public struct KeyboardMessage {
-
-    public int    uMsg;
-    public KeyboardEventType EventType;
-    public Keys Key;
-
-    public KeyboardMessage(int _uMsg, IntPtr _wParam, int _lParam) {
-        uMsg   = _uMsg;
-        EventType = (KeyboardEventType)_wParam;
-        Key = (Keys)_lParam;
-    }
-
-}
 
 namespace Blish_HUD {
     public class InputService:GameService {

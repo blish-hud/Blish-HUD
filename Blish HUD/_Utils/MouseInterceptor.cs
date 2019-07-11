@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
 
 namespace Blish_HUD {
 

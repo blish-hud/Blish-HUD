@@ -1,6 +1,8 @@
 ﻿using System;
+using Blish_HUD.Content;
 using Blish_HUD.Entities;
 using Blish_HUD.Entities.Primitives;
+using Blish_HUD.Input;
 using Blish_HUD.Pathing.Entities.Effects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,7 +33,7 @@ namespace Blish_HUD.Pathing.Entities {
         private bool                        _autoResize = true;
         private Vector2                     _size       = Vector2.One;
         private float                       _scale      = 1f;
-        private Texture2D                   _texture;
+        private AsyncTexture2D              _texture;
         private BillboardVerticalConstraint _verticalConstraint = BillboardVerticalConstraint.CameraPosition;
         private float                       _fadeNear           = -1;
         private float                       _fadeFar            = -1;
@@ -79,17 +81,17 @@ namespace Blish_HUD.Pathing.Entities {
             set => SetProperty(ref _fadeFar, value);
         }
 
-        public Texture2D Texture {
+        public AsyncTexture2D Texture {
             get => _texture;
             set {
                 if (SetProperty(ref _texture, value) && _texture != null) {
-                    this.VerticalConstraint = _texture.Height == _texture.Width
+                    this.VerticalConstraint = _texture.Texture.Height == _texture.Texture.Width
                                                   ? BillboardVerticalConstraint.CameraPosition
                                                   : BillboardVerticalConstraint.PlayerPosition;
 
                     if (_autoResize) {
-                        this.Size = new Vector2(WorldUtil.GameToWorldCoord(_texture.Width),
-                                                WorldUtil.GameToWorldCoord(_texture.Height));
+                        this.Size = new Vector2(WorldUtil.GameToWorldCoord(_texture.Texture.Width),
+                                                WorldUtil.GameToWorldCoord(_texture.Texture.Height));
                     }
                 }
             }
