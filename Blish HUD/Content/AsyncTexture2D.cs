@@ -5,25 +5,53 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Octokit;
 
 namespace Blish_HUD.Content {
+    /// <summary>
+    /// A thread-safe wrapper on Texture2D that allows you to swap the <see cref="Texture2D"/> backing for a texture already assigned to a property.
+    /// </summary>
     public sealed class AsyncTexture2D : IDisposable {
 
         private Texture2D _stagedTexture2D;
         private Texture2D _activeTexture2D;
 
+        /// <summary>
+        /// <c>true</c>, if the <see cref="AsyncTexture2D"/>'s <see cref="Texture"/> is set.
+        /// </summary>
+        public bool HasTexture => _activeTexture2D != null;
+
+        /// <summary>
+        /// The active <see cref="Texture2D"/> of the <see cref="AsyncTexture2D"/>.
+        /// </summary>
+        public Texture2D Texture {
+            get {
+                if (!this.HasTexture) {
+                    throw new InvalidOperationException($"{nameof(AsyncTexture2D)} object must have a Texture.");
+                }
+
+                return _activeTexture2D;
+            }
+        }
+
+        /// <summary>
+        /// Create an <see cref="AsyncTexture2D"/> where the current <see cref="Texture"/> is a single transparent pixel.
+        /// </summary>
         public AsyncTexture2D() {
             _activeTexture2D = ContentService.Textures.TransparentPixel;
         }
 
+        /// <summary>
+        /// Create an <see cref="AsyncTexture2D"/> where the current <see cref="Texture"/> is the <see cref="Texture2D"/> passed as <param name="defaultTexture"/>.
+        /// </summary>
         public AsyncTexture2D(Texture2D defaultTexture) {
             _activeTexture2D = defaultTexture;
         }
 
-        public Texture2D GetTexture() {
-            return _activeTexture2D;
-        }
-
+        /// <summary>
+        /// Replaces the <see cref="Texture"/> of the <see cref="AsyncTexture2D"/> with the texture provided in <param name="newTexture"/> on the next game cycle loop.
+        /// </summary>
+        /// <param name="newTexture">The new texture to assign.</param>
         public void SwapTexture(Texture2D newTexture) {
             _stagedTexture2D = newTexture;
 
@@ -35,10 +63,17 @@ namespace Blish_HUD.Content {
             _stagedTexture2D = null;
         }
 
-        ///// <inheritdoc />
-        //public override bool Equals(object obj) {
-        //    return Equals(_activeTexture2D, obj);
-        //}
+        /// <inheritdoc />
+        public override bool Equals(object obj) {
+            if (!HasTexture) return obj == null;
+            if (obj == null) return false;
+
+            if (obj is Texture2D tobj) {
+                return _activeTexture2D.Equals(tobj);
+            }
+
+            return this == obj;
+        }
 
         /// <inheritdoc />
         public override int GetHashCode() {

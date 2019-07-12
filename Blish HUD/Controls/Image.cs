@@ -19,7 +19,7 @@ namespace Blish_HUD.Controls {
 
         private Rectangle? _sourceRectangle;
         public Rectangle SourceRectangle {
-            get => _sourceRectangle ?? _texture.GetTexture().Bounds;
+            get => _sourceRectangle ?? _texture.Texture.Bounds;
             set => SetProperty(ref _sourceRectangle, value);
         }
 
@@ -33,7 +33,7 @@ namespace Blish_HUD.Controls {
 
         public Image(AsyncTexture2D texture) {
             this.Texture = texture;
-            this.Size = texture.GetTexture().Bounds.Size;
+            this.Size = texture.Texture.Bounds.Size;
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {

@@ -57,7 +57,7 @@ namespace Blish_HUD.Controls.Intern
             {
                 var nInputs = new[]
                 {
-                    new Input
+                    new Extern.Input
                     {
                         type = InputType.KEYBOARD,
                         U = new InputUnion
@@ -70,7 +70,7 @@ namespace Blish_HUD.Controls.Intern
                         }
                     }
                 };
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, Input.Size);
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             }
             else
             {
@@ -88,7 +88,7 @@ namespace Blish_HUD.Controls.Intern
             {
                 var nInputs = new[]
                 {
-                    new Input
+                    new Extern.Input
                     {
                         type = InputType.KEYBOARD,
                         U = new InputUnion
@@ -102,7 +102,7 @@ namespace Blish_HUD.Controls.Intern
                         }
                     }
                 };
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, Input.Size);
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             }
             else
             {

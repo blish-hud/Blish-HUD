@@ -51,8 +51,8 @@ namespace Blish_HUD.Entities.Primitives {
         public AsyncTexture2D Texture {
             get => _texture;
             set {
-                if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture.GetTexture() != null)
-                    this.Size = _texture.GetTexture().Bounds.Size.ToVector2().ToWorldCoord();
+                if (SetProperty(ref _texture, value) && _autoResizeBillboard && _texture.HasTexture)
+                    this.Size = _texture.Texture.Bounds.Size.ToVector2().ToWorldCoord();
             }
         }
 
@@ -107,7 +107,7 @@ namespace Blish_HUD.Entities.Primitives {
                                                             GameService.Camera.Forward);
 
             _billboardEffect.Alpha = this.Opacity;
-            _billboardEffect.Texture = this.Texture.GetTexture();
+            _billboardEffect.Texture = this.Texture.Texture;
 
             foreach (var pass in _billboardEffect.CurrentTechnique.Passes) {
                 pass.Apply();

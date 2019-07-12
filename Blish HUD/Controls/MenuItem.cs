@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Content;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
@@ -253,16 +254,13 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            if (_canCheck
-             && this.MouseOverIconBox) { /* Mouse was clicked inside of the checkbox */
+            if (_canCheck && this.MouseOverIconBox) { /* Mouse was clicked inside of the checkbox */
 
                 Checked = !Checked;
-            } else if (_overSection
-                    && _children.Any()) { /* Mouse was clicked inside of the mainbody of the MenuItem */
+            } else if (_overSection && _children.Any()) { /* Mouse was clicked inside of the mainbody of the MenuItem */
 
                 ToggleAccordionState();
-            } else if (_overSection
-                    && _canCheck) { /* Mouse was clicked inside of the mainbody of the MenuItem,
+            } else if (_overSection && _canCheck) { /* Mouse was clicked inside of the mainbody of the MenuItem,
                                            but we have no children, so we toggle checkbox */
 
                 Checked = !Checked;

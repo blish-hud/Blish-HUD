@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Blish_HUD.Input;
 
 namespace Blish_HUD.WinAPI {
     internal class KeyboardHook {
