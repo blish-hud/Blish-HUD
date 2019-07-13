@@ -132,7 +132,7 @@ namespace Blish_HUD {
 
         private static Texture2D TextureFromFileSystem(string filepath) {
             if (!File.Exists(REF_FILE)) {
-                Console.WriteLine($"{REF_FILE} is missing!  Lots of assets will be missing!");
+                Logger.Warn("{refFileName} is missing!  Lots of assets will be missing!", REF_FILE);
                 return null;
             }
             
@@ -145,7 +145,7 @@ namespace Blish_HUD {
                             var textureCanSeek = new MemoryStream();
                             textureStream.CopyTo(textureCanSeek);
 
-                            return Texture2D.FromStream(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, textureCanSeek);
+                            return Texture2D.FromStream(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, textureCanSeek);
                         }
                     }
 
@@ -164,7 +164,7 @@ namespace Blish_HUD {
         }
 
         public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
-            return Blish_HUD.BlishHud.ActiveContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
+            return BlishHud.ActiveContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
         }
 
         public void PurgeTextureCache(string textureName) {
@@ -189,9 +189,9 @@ namespace Blish_HUD {
 
             if (cachedTexture == null) {
                 try {
-                    cachedTexture = Blish_HUD.BlishHud.ActiveContentManager.Load<Texture2D>(textureName);
+                    cachedTexture = BlishHud.ActiveContentManager.Load<Texture2D>(textureName);
                 } catch (ContentLoadException ex) {
-                    Logger.Error(ex, "Could not find {textureName} precompiled or in the ref archive.", textureName);
+                    Logger.Warn(ex, "Could not find {textureName} precompiled or in the ref archive.", textureName);
                 }
             }
 
@@ -294,37 +294,6 @@ namespace Blish_HUD {
             }
 
             return _loadedBitmapFonts[fullFontName];
-        }
-
-        private static Stream FileFromSystem(string filepath) {
-            if (!File.Exists(REF_FILE)) {
-                Logger.Warn("{refName} is missing! It should be in the same folder as BlishHUD.exe. Without it, most images and other assets will be missing.");
-                return null;
-            }
-
-            using (var refFs = new FileStream(REF_FILE, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read)) {
-                    var refEntry = refArchive.GetEntry(filepath);
-
-                    if (refEntry != null) {
-                        using (var fileStream = refEntry.Open()) {
-                            var fileCanSeek = new MemoryStream();
-                            fileStream.CopyTo(fileCanSeek);
-
-                            return fileCanSeek;
-                        }
-                    } else {
-#if DEBUG
-                        System.IO.Directory.CreateDirectory(@"ref\to-include");
-
-                        // Makes it easy to know what's in use so that it can be added to the ref archive later
-                        if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
-#endif
-                    }
-
-                    return null;
-                }
-            }
         }
 
         protected override void Unload() {
