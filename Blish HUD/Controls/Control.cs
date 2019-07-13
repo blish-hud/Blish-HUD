@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Blish_HUD.Controls.Effects;
+using Blish_HUD.Input;
 using Newtonsoft.Json;
 
 namespace Blish_HUD.Controls {

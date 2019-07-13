@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Content;
+using Blish_HUD.Input;
 
 namespace Blish_HUD.Controls {
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Blish_HUD.Content;
+using Blish_HUD.Input;
 
 namespace Blish_HUD.Controls {
     public class CornerIcon : Container {
