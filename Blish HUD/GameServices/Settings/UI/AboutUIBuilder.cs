@@ -66,7 +66,7 @@ namespace Blish_HUD.Settings.UI {
 
             var heartMessage = new Label() {
                 Font              = GameService.Content.DefaultFont16,
-                Text              = "Designed and built with all the love in Tyria by\nthe Blish HUD team with help from many more!",
+                Text              = BLISH_HUD_LOVE_MESSAGE,
                 AutoSizeWidth     = true,
                 Height            = lovePanel.Height,
                 Left              = heart.Right,
