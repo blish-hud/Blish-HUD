@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Blish_HUD.ArcDps.Models;
 
 namespace Blish_HUD.ArcDps
@@ -44,7 +45,7 @@ namespace Blish_HUD.ArcDps
             ushort srcMasterInstId;
             ushort dstMasterInstId;
             byte iff;
-            byte buff;
+            bool buff;
             byte result;
             bool isActivation;
             bool isBuffRemove;
@@ -71,7 +72,7 @@ namespace Blish_HUD.ArcDps
             (srcMasterInstId, offset) = U16(data, offset);
             (dstMasterInstId, offset) = U16(data, offset);
             (iff, offset) = U8(data, offset);
-            (buff, offset) = U8(data, offset);
+            (buff, offset) = B(data, offset);
             (result, offset) = U8(data, offset);
             (isActivation, offset) = B(data, offset);
             (isBuffRemove, offset) = B(data, offset);
@@ -111,7 +112,7 @@ namespace Blish_HUD.ArcDps
         {
             ulong length;
             (length, offset) = U64(data, offset);
-            var str = BitConverter.ToString(data, offset, (int)length);
+            var str = Encoding.Default.GetString(data, offset, (int)length);
             return (str, offset+(int)length);
         }
 
