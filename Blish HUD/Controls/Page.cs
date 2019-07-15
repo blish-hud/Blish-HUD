@@ -11,15 +11,22 @@ namespace Blish_HUD.Controls
 {
     public class Page : Control
     {
-        private static BitmapFont PageNumberFont = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
         private const int SHEET_BORDER = 40;
         private const int FIX_WORDCLIPPING_WIDTH = 30;
+
         private readonly Texture2D SheetSprite;
 
-        private FontSize CurrentFontSize = ContentService.FontSize.Size24;
+        private static BitmapFont PageNumberFont = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
 
-        private int PageNumber = 1;
-
+        private int _pageNumber = 1;
+        public int PageNumber {
+            get => _pageNumber;
+            set
+            {
+                if (value == _pageNumber) return;
+                SetProperty(ref _pageNumber, value, true);
+            }
+        }
         private string _text = "";
         /// <summary>
         /// The text to display on the sheet.
@@ -53,18 +60,6 @@ namespace Blish_HUD.Controls
             Size = new Point(420 * scale, 560 * scale);
             SheetSprite = SheetSprite ?? Content.GetTexture("1909316");
         }
-        /// <summary>
-        /// Sets the sheet's page number. Only setable by its parent book.
-        /// </summary>
-        /// <param name="parent">Its parent Book control</param>
-        /// <param name="number">The page number to be displayed.</param>
-        public void SetPageNumber(Book parent, int number)
-        {
-            if (parent == this.Parent)
-            {
-                PageNumber = number;
-            }
-        }
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
         {
             spriteBatch.DrawOnCtrl(this, SheetSprite, bounds, SheetSprite.Bounds, Color.White, 0f, Vector2.Zero, SpriteEffects.None);
@@ -73,7 +68,7 @@ namespace Blish_HUD.Controls
             {
                 Rectangle contentArea = new Rectangle(new Point(SHEET_BORDER, SHEET_BORDER), new Point(this.Size.X - (SHEET_BORDER * 2) - FIX_WORDCLIPPING_WIDTH, this.Size.Y - (SHEET_BORDER * 2)));
                 spriteBatch.DrawStringOnCtrl(this, _text, _textFont, contentArea, Color.Black, true, HorizontalAlignment.Left, VerticalAlignment.Top);
-                string pageNumber = PageNumber + "";
+                string pageNumber = _pageNumber + "";
                 Point pageNumberSize = (Point)PageNumberFont.MeasureString(pageNumber);
                 Point pageNumberCenter = new Point((this.Size.X - pageNumberSize.X) / 2, this.Size.Y - pageNumberSize.Y - (SHEET_BORDER / 2));
                 spriteBatch.DrawStringOnCtrl(this, pageNumber, PageNumberFont, new Rectangle(pageNumberCenter, pageNumberSize), Color.Black, false, HorizontalAlignment.Left, VerticalAlignment.Top);

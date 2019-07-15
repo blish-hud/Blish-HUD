@@ -18,7 +18,7 @@ namespace Blish_HUD.Controls
 
         private static int RIGHT_PADDING = 150;
         private static int TOP_PADDING = 100;
-        private static int SHEET_OFFSET = 20;
+        private static int SHEET_OFFSET_Y = 20;
 
         private bool MouseOverTurnPageLeft;
         private bool MouseOverTurnPageRight;
@@ -54,7 +54,7 @@ namespace Blish_HUD.Controls
             {
                 if (page == null) continue;
                 page.Size = PointExtensions.ResizeKeepAspect(page.Size, ContentRegion.Width - RIGHT_PADDING, ContentRegion.Height - TOP_PADDING, true);
-                page.Location = new Point((ContentRegion.Width - page.Size.X) / 2, (ContentRegion.Height - page.Size.Y) / 2 + SHEET_OFFSET);
+                page.Location = new Point((ContentRegion.Width - page.Size.X) / 2, (ContentRegion.Height - page.Size.Y) / 2 + SHEET_OFFSET_Y);
             }
 
             base.OnResized(e);
@@ -65,8 +65,8 @@ namespace Blish_HUD.Controls
             {
                 Page page = (Page)e.ChangedChild;
                 page.Size = PointExtensions.ResizeKeepAspect(page.Size, ContentRegion.Width - RIGHT_PADDING, ContentRegion.Height - TOP_PADDING, true);
-                page.Location = new Point((ContentRegion.Width - page.Size.X) / 2, (ContentRegion.Height - page.Size.Y) / 2 + SHEET_OFFSET);
-                page.SetPageNumber(this, Pages.Count + 1);
+                page.Location = new Point((ContentRegion.Width - page.Size.X) / 2, (ContentRegion.Height - page.Size.Y) / 2 + SHEET_OFFSET_Y);
+                page.PageNumber = Pages.Count + 1;
                 Pages.Add(page);
 
                 if (Pages.Count == 1) CurrentPage = page;
@@ -79,8 +79,8 @@ namespace Blish_HUD.Controls
         {
             var relPos = this.RelativeMousePosition;
 
-            Rectangle leftButtonBounds = new Rectangle(15, (ContentRegion.Height - TurnPageSprite.Bounds.Height) / 2 + SHEET_OFFSET, TurnPageSprite.Bounds.Width, TurnPageSprite.Bounds.Height);
-            Rectangle rightButtonBounds = new Rectangle(ContentRegion.Width - TurnPageSprite.Bounds.Width - 15, (ContentRegion.Height - TurnPageSprite.Bounds.Height) / 2 + SHEET_OFFSET, TurnPageSprite.Bounds.Width, TurnPageSprite.Bounds.Height);
+            Rectangle leftButtonBounds = new Rectangle(15, (ContentRegion.Height - TurnPageSprite.Bounds.Height) / 2 + SHEET_OFFSET_Y, TurnPageSprite.Bounds.Width, TurnPageSprite.Bounds.Height);
+            Rectangle rightButtonBounds = new Rectangle(ContentRegion.Width - TurnPageSprite.Bounds.Width - 15, (ContentRegion.Height - TurnPageSprite.Bounds.Height) / 2 + SHEET_OFFSET_Y, TurnPageSprite.Bounds.Width, TurnPageSprite.Bounds.Height);
 
             this.MouseOverTurnPageLeft = leftButtonBounds.Contains(relPos);
             this.MouseOverTurnPageRight = rightButtonBounds.Contains(relPos);
@@ -120,8 +120,8 @@ namespace Blish_HUD.Controls
             Rectangle titleDest = new Rectangle((ContentRegion.Width - titleSize.X) / 2, ContentRegion.Top + (TOP_PADDING - titleSize.Y) / 2, titleSize.X, titleSize.Y);
             spriteBatch.DrawStringOnCtrl(this, Title, TitleFont, titleDest, Color.White, false, HorizontalAlignment.Left, VerticalAlignment.Top);
 
-            Rectangle leftButtonBounds = new Rectangle(15, (ContentRegion.Height - TurnPageSprite.Bounds.Height) / 2 + SHEET_OFFSET, TurnPageSprite.Bounds.Width, TurnPageSprite.Bounds.Height);
-            Rectangle rightButtonBounds = new Rectangle(ContentRegion.Width - TurnPageSprite.Bounds.Width - 15, (ContentRegion.Height - TurnPageSprite.Bounds.Height) / 2 + SHEET_OFFSET, TurnPageSprite.Bounds.Width, TurnPageSprite.Bounds.Height);
+            Rectangle leftButtonBounds = new Rectangle(15, (ContentRegion.Height - TurnPageSprite.Bounds.Height) / 2 + SHEET_OFFSET_Y, TurnPageSprite.Bounds.Width, TurnPageSprite.Bounds.Height);
+            Rectangle rightButtonBounds = new Rectangle(ContentRegion.Width - TurnPageSprite.Bounds.Width - 15, (ContentRegion.Height - TurnPageSprite.Bounds.Height) / 2 + SHEET_OFFSET_Y, TurnPageSprite.Bounds.Width, TurnPageSprite.Bounds.Height);
 
             if (!MouseOverTurnPageLeft)
             {
