@@ -112,7 +112,7 @@ namespace Blish_HUD.ArcDps
         {
             ulong length;
             (length, offset) = U64(data, offset);
-            var str = Encoding.Default.GetString(data, offset, (int)length);
+            var str = Encoding.UTF8.GetString(data, offset, (int)length);
             return (str, offset+(int)length);
         }
 
