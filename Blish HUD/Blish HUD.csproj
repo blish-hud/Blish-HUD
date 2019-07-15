@@ -107,6 +107,7 @@
     <Compile Include="Content\AsyncTexture2D.cs" />
     <Compile Include="Controls\BasicWindow.cs" />
     <Compile Include="Controls\Book.cs" />
+    <Compile Include="Controls\Page.cs" />
     <Compile Include="Controls\HotkeyAssigner.cs" />
     <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
     <Compile Include="Content\DirectoryReader.cs" />
