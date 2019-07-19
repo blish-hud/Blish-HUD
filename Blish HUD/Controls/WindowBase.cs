@@ -60,15 +60,6 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _subtitle, value);
         }
 
-        protected bool _hideTitle;
-        /// <summary>
-        /// Toggles drawing title and subtitle in the title bar.
-        /// </summary>
-        public bool HideTitle {
-            get => _hideTitle;
-            set => SetProperty(ref _hideTitle, value);
-        }
-
         protected bool _canResize = false;
         /// <summary>
         /// Allows the window to be resized by dragging the bottom right corner.
@@ -373,7 +364,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _layoutRightTitleBarBounds);
             }
 
-            if (!string.IsNullOrEmpty(_title) && !_hideTitle) {
+            if (!string.IsNullOrEmpty(_title)) {
                 spriteBatch.DrawStringOnCtrl(this,
                                              _title,
                                              Content.DefaultFont32,
