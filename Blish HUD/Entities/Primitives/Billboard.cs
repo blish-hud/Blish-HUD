@@ -56,8 +56,6 @@ namespace Blish_HUD.Entities.Primitives {
             }
         }
 
-        private static BasicEffect _billboardEffect;
-
         public Billboard() :
             this(null, Vector3.Zero, Vector2.Zero) { }
 
@@ -78,9 +76,6 @@ namespace Blish_HUD.Entities.Primitives {
 
         private void Initialize() {
             _verts = new VertexPositionTexture[4];
-
-            _billboardEffect = _billboardEffect ?? new BasicEffect(GameService.Graphics.GraphicsDevice);
-            _billboardEffect.TextureEnabled = true;
         }
 
         private void RecalculateSize(Vector2 newSize, float scale) {
@@ -93,9 +88,9 @@ namespace Blish_HUD.Entities.Primitives {
         public override void Draw(GraphicsDevice graphicsDevice) {
             if (this.Texture == null) return;
 
-            _billboardEffect.View = GameService.Camera.View;
-            _billboardEffect.Projection = GameService.Camera.Projection;
-            _billboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2, this.Size.Y / -2, 0))
+            StandardEffect.View = GameService.Camera.View;
+            StandardEffect.Projection = GameService.Camera.Projection;
+            StandardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2, this.Size.Y / -2, 0))
                                    * Matrix.CreateScale(_scale, _scale, 1)
                                    * Matrix.CreateBillboard(this.Position + this.RenderOffset,
                                                             new Vector3(GameService.Camera.Position.X,
@@ -106,10 +101,10 @@ namespace Blish_HUD.Entities.Primitives {
                                                             new Vector3(0, 0, 1),
                                                             GameService.Camera.Forward);
 
-            _billboardEffect.Alpha = this.Opacity;
-            _billboardEffect.Texture = this.Texture.Texture;
+            StandardEffect.Alpha = this.Opacity;
+            StandardEffect.Texture = this.Texture.Texture;
 
-            foreach (var pass in _billboardEffect.CurrentTechnique.Passes) {
+            foreach (var pass in StandardEffect.CurrentTechnique.Passes) {
                 pass.Apply();
 
                 graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, _verts, 0, 2);
@@ -123,6 +118,16 @@ namespace Blish_HUD.Entities.Primitives {
 
         public override void Update(GameTime gameTime) {
             // NOOP
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                _texture = null;
+                _verts   = null;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

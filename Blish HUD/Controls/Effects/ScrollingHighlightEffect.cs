@@ -17,13 +17,13 @@ namespace Blish_HUD.Controls.Effects {
 
         #region Static Persistant Effect
 
-        private static readonly Effect _masterScrollEffect;
+        private static readonly Effect _scrollEffect;
 
         static ScrollingHighlightEffect() {
-            _masterScrollEffect = BlishHud.ActiveContentManager.Load<Effect>(@"effects\menuitem");
+            _scrollEffect = BlishHud.ActiveContentManager.Load<Effect>(@"effects\menuitem");
 
-            _masterScrollEffect.Parameters[SPARAM_MASK].SetValue(GameService.Content.GetTexture("156072"));
-            _masterScrollEffect.Parameters[SPARAM_OVERLAY].SetValue(GameService.Content.GetTexture("156071"));
+            _scrollEffect.Parameters[SPARAM_MASK].SetValue(GameService.Content.GetTexture("156072"));
+            _scrollEffect.Parameters[SPARAM_OVERLAY].SetValue(GameService.Content.GetTexture("156071"));
         }
 
         #endregion
@@ -31,13 +31,7 @@ namespace Blish_HUD.Controls.Effects {
         private float _scrollRoller = 0;
         public float ScrollRoller {
             get => _scrollRoller;
-            set {
-                _scrollRoller = value;
-
-                if (_forceActive) return;
-
-                _scrollEffect.Parameters[SPARAM_ROLLER].SetValue(_scrollRoller);
-            }
+            set => _scrollRoller = value;
         }
 
         private float _duration = DEFAULT_ANIMATION_DURATION;
@@ -60,23 +54,14 @@ namespace Blish_HUD.Controls.Effects {
 
                 if (_forceActive) {
                     _shaderAnim?.Cancel();
-
-                    _scrollEffect.Parameters[SPARAM_ROLLER].SetValue(1f);
                 }
             }
         }
-
-        private readonly Effect _scrollEffect;
 
         private Glide.Tween _shaderAnim;
         private bool _mouseOver = false;
 
         public ScrollingHighlightEffect(Control assignedControl) : base(assignedControl) {
-            _scrollEffect = _masterScrollEffect.Clone();
-
-            _scrollEffect.Parameters[SPARAM_MASK].SetValue(GameService.Content.GetTexture("156072"));
-            _scrollEffect.Parameters[SPARAM_OVERLAY].SetValue(GameService.Content.GetTexture("156071"));
-
             assignedControl.MouseEntered += AssignedControlOnMouseEntered;
             assignedControl.MouseLeft    += AssignedControlOnMouseLeft;
         }
@@ -124,8 +109,11 @@ namespace Blish_HUD.Controls.Effects {
         }
 
         public override void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (_mouseOver || _forceActive)
+            if (_mouseOver || _forceActive) {
+                _scrollEffect.Parameters[SPARAM_ROLLER].SetValue(_forceActive ? 1f : _scrollRoller);
+
                 spriteBatch.DrawOnCtrl(this.AssignedControl, ContentService.Textures.Pixel, bounds, Color.Transparent);
+            }
         }
 
     }

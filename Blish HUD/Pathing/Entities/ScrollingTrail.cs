@@ -7,15 +7,13 @@ using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 namespace Blish_HUD.Pathing.Entities {
     public class ScrollingTrail : Trail, ITrail {
 
-
         public const float TRAIL_WIDTH = 40 * 0.0254f;
 
         private float _animationSpeed = 1;
-
-        private float _fadeNear = 700;
-        private float _fadeFar = 900;
-        private float _scale = 1;
-        private float _opacity = 1;
+        private float _fadeNear       = 700;
+        private float _fadeFar        = 900;
+        private float _scale          = 1;
+        private float _opacity        = 1;
 
         public float AnimationSpeed {
             get => _animationSpeed;
@@ -110,6 +108,14 @@ namespace Blish_HUD.Pathing.Entities {
             _sections.ForEach(s => s.Draw(graphicsDevice));
         }
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                _sections.ForEach(s => s.Dispose());
+                _sections.Clear();
+            }
 
+            base.Dispose(disposing);
+        }
     }
 }

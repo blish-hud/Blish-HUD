@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Entities;
+using Blish_HUD.Pathing.Entities.Effects;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,10 +11,10 @@ namespace Blish_HUD.Pathing.Entities {
 
         #region Load Static
 
-        private static readonly Effect _basicTrailEffect;
+        private static readonly ScrollingTrailEffect _sharedScrollingTrailEffect;
 
         static ScrollingTrailSection() {
-            _basicTrailEffect = BlishHud.ActiveContentManager.Load<Effect>("effects\\trail");
+            _sharedScrollingTrailEffect = new ScrollingTrailEffect(BlishHud.ActiveContentManager.Load<Effect>("effects\\trail"));
         }
 
         #endregion
@@ -151,37 +152,37 @@ namespace Blish_HUD.Pathing.Entities {
             _vertexBuffer.SetData(this.VertexData);
         }
 
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
-
-            _basicTrailEffect.Parameters["TotalMilliseconds"].SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
-        }
-
         public override void Draw(GraphicsDevice graphicsDevice) {
             if (this.TrailTexture == null || this.VertexData == null || this.VertexData.Length < 3) return;
-
-            _basicTrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.WorldViewProjection);
-            _basicTrailEffect.Parameters["PlayerViewProjection"].SetValue(GameService.Camera.PlayerView * GameService.Camera.Projection);
-            _basicTrailEffect.Parameters["Texture"].SetValue(this.TrailTexture);
-            _basicTrailEffect.Parameters["FlowSpeed"].SetValue(this.AnimationSpeed);
-            _basicTrailEffect.Parameters["PlayerPosition"].SetValue(GameService.Player.Position);
-            _basicTrailEffect.Parameters["FadeNear"].SetValue(this.FadeNear);
-            _basicTrailEffect.Parameters["FadeFar"].SetValue(this.FadeFar);
-            _basicTrailEffect.Parameters["Opacity"].SetValue(this.Opacity);
-            _basicTrailEffect.Parameters["TotalLength"].SetValue(20f);
+            
+            _sharedScrollingTrailEffect.SetEntityState(_trailTexture,
+                                                       _animationSpeed,
+                                                       _fadeNear,
+                                                       _fadeFar,
+                                                       _opacity,
+                                                       20f);
 
             graphicsDevice.SetVertexBuffer(_vertexBuffer, 0);
 
-            foreach (EffectPass trailPass in _basicTrailEffect.CurrentTechnique.Passes) {
+            foreach (EffectPass trailPass in _sharedScrollingTrailEffect.CurrentTechnique.Passes) {
                 trailPass.Apply();
 
                 graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, this._vertexBuffer.VertexCount - 2);
-
-                //graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip,
-                //                                  this.VertexData,
-                //                                  0,
-                //                                  this.VertexData.Length - 2);
             }
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                _vertexBuffer.Dispose();
+                _vertexBuffer = null;
+                _trailTexture = null;
+
+                // TODO: Only use/scope-in VertexData when generating the trail
+                this.VertexData = null;
+            }
+
+            base.Dispose(disposing);
         }
 
     }

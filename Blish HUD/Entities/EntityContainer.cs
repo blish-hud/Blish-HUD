@@ -164,5 +164,15 @@ namespace Blish_HUD.Entities {
 
         #endregion
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                _children.ForEach(c => c.Dispose());
+                _children.Clear();
+            }
+
+            base.Dispose(disposing);
+        }
+
     }
 }

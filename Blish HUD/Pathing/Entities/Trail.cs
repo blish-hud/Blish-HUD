@@ -77,5 +77,14 @@ namespace Blish_HUD.Pathing.Entities {
             }
         }
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                this.VertexData = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
     }
 }

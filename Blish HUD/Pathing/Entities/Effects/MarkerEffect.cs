@@ -10,50 +10,73 @@ namespace Blish_HUD.Pathing.Entities.Effects {
     public class MarkerEffect : Blish_HUD.Entities.Effects.EntityEffect {
 
         // Per-effect parameters
+        private const string PARAMETER_VIEW           = "View";
+        private const string PARAMETER_PROJECTION     = "Projection";
         private const string PARAMETER_PLAYERPOSITION = "PlayerPosition";
 
+        private Matrix _view, _projection;
+        private Vector3 _playerPosition;
+
+        /// <summary>
+        /// Representation of the active camera's look-at matrix.
+        /// </summary>
+        public Matrix View {
+            get => _view;
+            set => SetParameter(PARAMETER_VIEW, ref _view, value);
+        }
+
+        /// <summary>
+        /// The projection matrix created from the camera based on field of view and aspect ratio.
+        /// </summary>
+        public Matrix Projection {
+            get => _projection;
+            set => SetParameter(PARAMETER_PROJECTION, ref _projection, value);
+        }
+
+        public Vector3 PlayerPosition {
+            get => _playerPosition;
+            set => SetParameter(PARAMETER_PLAYERPOSITION, ref _playerPosition, value);
+        }
+
         // Entity-unique parameters
+        private const string PARAMETER_WORLD   = "World";
         private const string PARAMETER_TEXTURE = "Texture";
         private const string PARAMETER_OPACITY = "Opacity";
 
         private const string PARAMETER_FADENEAR = "FadeNear";
         private const string PARAMETER_FADEFAR  = "FadeFar";
 
-        // Per-entity parameter
+        private Matrix    _world;
         private Texture2D _texture;
         private float     _opacity;
         private float     _fadeNear, _fadeFar;
 
+        /// <summary>
+        /// The per-entity matrix.
+        /// </summary>
+        public Matrix World {
+            get => _world;
+            set => SetParameter(PARAMETER_WORLD, ref _world, value);
+        }
+
         public Texture2D Texture {
-            set {
-                if (SetProperty(ref _texture, value)) {
-                    this.Parameters[PARAMETER_TEXTURE].SetValue(_texture);
-                }
-            }
+            get => _texture;
+            set => SetParameter(PARAMETER_TEXTURE, ref _texture, value);
         }
 
         public float Opacity {
-            set {
-                if (SetProperty(ref _opacity, value)) {
-                    this.Parameters[PARAMETER_OPACITY].SetValue(_opacity);
-                }
-            }
+            get => _opacity;
+            set => SetParameter(PARAMETER_OPACITY, ref _opacity, value);
         }
 
         public float FadeNear {
-            set {
-                if (SetProperty(ref _fadeNear, value)) {
-                    this.Parameters[PARAMETER_FADENEAR].SetValue(_fadeNear);
-                }
-            }
+            get => _fadeNear;
+            set => SetParameter(PARAMETER_FADENEAR, ref _fadeNear, value);
         }
 
         public float FadeFar {
-            set {
-                if (SetProperty(ref _fadeFar, value)) {
-                    this.Parameters[PARAMETER_FADEFAR].SetValue(_fadeFar);
-                }
-            }
+            get => _fadeFar;
+            set => SetParameter(PARAMETER_FADEFAR, ref _fadeFar, value);
         }
 
         #region ctors
@@ -79,7 +102,9 @@ namespace Blish_HUD.Pathing.Entities.Effects {
 
         /// <inheritdoc />
         protected override void Update(GameTime gameTime) {
-            this.Parameters[PARAMETER_PLAYERPOSITION].SetValue(GameService.Player.Position);
+            this.PlayerPosition = GameService.Player.Position;
+            this.View           = GameService.Camera.View;
+            this.Projection     = GameService.Camera.Projection;
         }
 
     }

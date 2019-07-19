@@ -28,8 +28,6 @@ namespace Blish_HUD.Pathing.Entities {
 
         #endregion
 
-        private VertexPositionTexture[] _verts;
-
         private bool                        _autoResize = true;
         private Vector2                     _size       = Vector2.One;
         private float                       _scale      = 1f;
@@ -97,8 +95,6 @@ namespace Blish_HUD.Pathing.Entities {
             }
         }
 
-        private Effect _markerEffect;
-
         private DynamicVertexBuffer _vertexBuffer;
 
         public Marker() : this(null, Vector3.Zero, Vector2.Zero) { /* NOOP */ }
@@ -119,17 +115,18 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         private void Initialize() {
-            _verts        = new VertexPositionTexture[4];
             _vertexBuffer = new DynamicVertexBuffer(GameService.Graphics.GraphicsDevice, typeof(VertexPositionTexture), 4, BufferUsage.WriteOnly);
         }
 
         private void RecalculateSize(Vector2 newSize, float scale) {
-            _verts[0] = new VertexPositionTexture(new Vector3(0,                 0,                 0),                    new Vector2(1, 1));
-            _verts[1] = new VertexPositionTexture(new Vector3(newSize.X * scale, 0,                 0),                    new Vector2(0, 1));
-            _verts[2] = new VertexPositionTexture(new Vector3(0,                 newSize.Y * scale, 0),                    new Vector2(1, 0));
-            _verts[3] = new VertexPositionTexture(new Vector3(newSize.X                    * scale, newSize.Y * scale, 0), new Vector2(0, 0));
+            VertexPositionTexture[] verts = new VertexPositionTexture[4];
 
-            _vertexBuffer.SetData(_verts);
+            verts[0] = new VertexPositionTexture(new Vector3(0,                 0,                 0),                    new Vector2(1, 1));
+            verts[1] = new VertexPositionTexture(new Vector3(newSize.X * scale, 0,                 0),                    new Vector2(0, 1));
+            verts[2] = new VertexPositionTexture(new Vector3(0,                 newSize.Y * scale, 0),                    new Vector2(1, 0));
+            verts[3] = new VertexPositionTexture(new Vector3(newSize.X                    * scale, newSize.Y * scale, 0), new Vector2(0, 0));
+
+            _vertexBuffer.SetData(verts);
         }
 
         /// <inheritdoc />
@@ -184,6 +181,17 @@ namespace Blish_HUD.Pathing.Entities {
             
             // Z < 1 means that the point is in front of the camera, not behind it
             _mouseOver = screenPosition.Z < 1 && xdist < 2 && ydist < 2;
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                _vertexBuffer.Dispose();
+                _vertexBuffer = null;
+                _texture      = null;
+            }
+
+            base.Dispose(disposing);
         }
 
     }
