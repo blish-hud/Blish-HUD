@@ -13,7 +13,6 @@ namespace Blish_HUD.Controls
     {
         private readonly BitmapFont TitleFont = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size32, ContentService.FontStyle.Regular);
         private readonly Texture2D TurnPageSprite;
-        private readonly Texture2D BackgroundSprite;
 
         private static int RIGHT_PADDING = 150;
         private static int TOP_PADDING = 100;
@@ -50,7 +49,6 @@ namespace Blish_HUD.Controls
         /// </summary>
         public Book()
         {
-            BackgroundSprite = BackgroundSprite ?? GameService.Content.GetTexture("1909321").Duplicate().GetRegion(0, 0, 680, 800);
             TurnPageSprite = TurnPageSprite ?? GameService.Content.GetTexture("1909317");
         }
         protected override void OnResized(ResizedEventArgs e)
@@ -138,9 +136,6 @@ namespace Blish_HUD.Controls
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
         {
             base.PaintBeforeChildren(spriteBatch, bounds);
-
-            // Draw background
-            spriteBatch.DrawOnCtrl(this, BackgroundSprite, new Rectangle(-15, 0, bounds.Width, bounds.Height), BackgroundSprite.Bounds, Color.White);
 
             // TODO: Title background texture from the original.
 
