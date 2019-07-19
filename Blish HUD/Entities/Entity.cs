@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Blish_HUD.Entities {
-    public abstract class Entity : INotifyPropertyChanged, IUpdatable, IRenderable3D {
+    public abstract class Entity : INotifyPropertyChanged, IUpdatable, IRenderable3D, IDisposable {
 
         protected static BasicEffect StandardEffect { get; } = new BasicEffect(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice) { TextureEnabled = true };
 
@@ -173,6 +173,32 @@ namespace Blish_HUD.Entities {
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
+        #region IDispose
+
+        private protected bool _disposed;
+
+        /// <summary>
+        /// Indicates that <see cref="Dispose"/> has been called on this <see cref="Entity"/> instance.
+        /// </summary>
+        public bool Disposed => _disposed;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                _billboard?.Dispose();
+                _basicTitleTextBillboard?.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        /// <inheritdoc />
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

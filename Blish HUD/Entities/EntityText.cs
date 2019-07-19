@@ -57,5 +57,15 @@ namespace Blish_HUD.Entities {
             }
         }
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                _cachedTextRender.Dispose();
+                _cachedTextRender = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
     }
 }

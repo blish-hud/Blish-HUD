@@ -236,6 +236,7 @@
     <Compile Include="Pathing\Behaviors\Title.cs" />
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
     <Compile Include="Pathing\Entities\Effects\MarkerEffect.cs" />
+    <Compile Include="Pathing\Entities\Effects\ScrollingTrailEffect.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
     <Compile Include="_Utils\MouseInterceptor.cs" />
@@ -273,7 +274,6 @@
     <Compile Include="Pathing\Trails\ITrail.cs" />
     <Compile Include="Pathing\Trails\Route.cs" />
     <Compile Include="Entities\Primitives\Cuboid.cs" />
-    <Compile Include="Entities\Primitives\Face.cs" />
     <Compile Include="Entities\Primitives\Mesh.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="FrameCounter.cs" />

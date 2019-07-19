@@ -37,11 +37,25 @@ namespace Blish_HUD.Entities {
             graphicsDevice.BlendState        = BlendState.AlphaBlend;
             graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
             graphicsDevice.SamplerStates[0]  = SamplerState.LinearWrap;
-            graphicsDevice.RasterizerState   = RasterizerState.CullCounterClockwise;
+            graphicsDevice.RasterizerState   = RasterizerState.CullNone;
 
             foreach (var entity in _sortedEntities.Where(entity => entity.Visible)) {
                 entity.DoDraw(graphicsDevice);
             }
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing) {
+            if (!_disposed && disposing) {
+                foreach (var entity in this.Entities) {
+                    entity.Dispose();
+                }
+
+                this.Entities   = null;
+                _sortedEntities = null;
+            }
+
+            base.Dispose(disposing);
         }
     }
 
