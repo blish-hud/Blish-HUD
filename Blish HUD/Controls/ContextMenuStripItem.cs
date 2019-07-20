@@ -31,8 +31,6 @@ namespace Blish_HUD.Controls {
             this.CheckedChanged?.Invoke(this, e);
         }
 
-        private BitmapFont _font = GameService.Content.DefaultFont14;
-
         private string _text;
         public string Text {
             get => _text;
@@ -66,7 +64,7 @@ namespace Blish_HUD.Controls {
         }
 
         public override void RecalculateLayout() {
-            var textSize = _font.MeasureString(_text);
+            var textSize = GameService.Content.DefaultFont14.MeasureString(_text);
             int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
 
             if (this.Parent != null) {
