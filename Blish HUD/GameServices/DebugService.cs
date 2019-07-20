@@ -154,6 +154,15 @@ namespace Blish_HUD {
                         sentryEvent.SetExtra("Modules", $"Exception: {unknownException.Message}");
                     }
 
+                    try {
+                        // Display GW2 build version
+                        if (GameService.Gw2Mumble.Available) {
+                            sentryEvent.SetExtra("Gw2BuildId", GameService.Gw2Mumble.BuildId);
+                        }
+                    } catch (Exception unknownException) {
+                        sentryEvent.SetExtra("Gw2BuildId", $"Exception: {unknownException.Message}");
+                    }
+
                     return sentryEvent;
                 };
             });

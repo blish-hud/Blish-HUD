@@ -7,7 +7,9 @@ using GW2NET.MumbleLink;
 
 namespace Blish_HUD {
 
-    public class Gw2MumbleService:GameService {
+    public class Gw2MumbleService : GameService {
+
+        private static readonly Logger Logger = Logger.GetLogger(typeof(Gw2MumbleService));
 
         public bool Available => gw2Link != null && this.MumbleBacking != null;
 
@@ -17,6 +19,8 @@ namespace Blish_HUD {
         public TimeSpan TimeSinceTick { get; private set; }
 
         public long UiTick { get; private set; } = -1;
+
+        public int BuildId { get; private set; } = -1;
 
         private MumbleLinkFile gw2Link;
 
@@ -30,12 +34,8 @@ namespace Blish_HUD {
             try {
                 gw2Link = MumbleLinkFile.CreateOrOpen();
             } catch (Exception ex) {
-                // TODO: Make note with debug service that the mumble link could not be established
-                // TODO: Consider trying again a bit later?
-                Console.WriteLine("TryAttachToMumble() failed: " + ex.Message);
+                Logger.Warn(ex, "Failed to attach to MumbleLink API.");
                 this.gw2Link = null;
-
-                //SentryWrapper.CaptureException(ex);
             }
         }
 
@@ -56,6 +56,7 @@ namespace Blish_HUD {
                     if (_mumbleBacking.UiTick > this.UiTick) {
                         this.TimeSinceTick = TimeSpan.Zero;
                         this.UiTick        = _mumbleBacking.UiTick;
+                        this.BuildId       = _mumbleBacking.Context.BuildId;
 
                         GameService.Graphics.UIScale = (GraphicsService.UiScale) _mumbleBacking.Identity.UiScale;
 
