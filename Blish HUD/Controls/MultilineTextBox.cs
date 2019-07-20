@@ -33,13 +33,33 @@ namespace Blish_HUD.Controls {
         private System.Windows.Forms.TextBox _mttb;
         private System.Windows.Forms.Form _ctrlForm;
 
+        public new Container Parent
+        {
+            get => base.Parent;
+            set
+            {
+                base.Parent = value;
+                UpdateParent();
+            }
+        }
 
+        private void UpdateParent()
+        {
+            Parent.Shown += (sender, args) =>
+            {
+                _ctrlForm.Show();
+            };
+            Parent.Hidden += (sender, args) =>
+            {
+                _ctrlForm.Hide();
+            };
+        }
 
         protected static System.Drawing.Text.PrivateFontCollection _fontCollection;
 
         static MultilineTextBox() {
             _fontCollection = new System.Drawing.Text.PrivateFontCollection();
-            _fontCollection.AddFontFile("menomonia.ttf");
+            _fontCollection.AddFontFile("Content/common/menomonia.ttf");
         }
 
         public MultilineTextBox() {
@@ -74,16 +94,28 @@ namespace Blish_HUD.Controls {
             _ctrlForm.Hide();
         }
 
+        public float FontSize
+        {
+            get => _mttb.Font.Size;
+            set => _mttb.Font = new System.Drawing.Font(_fontCollection.Families[0], value);
+        }
+
+        public string Text
+        {
+            get => _mttb.Text;
+            set => _mttb.Text = value;
+        }
+
         protected override void OnMouseEntered(MouseEventArgs e) {
             base.OnMouseEntered(e);
 
-            _ctrlForm.Show();
+            //_ctrlForm.Show();
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
             base.OnMouseLeft(e);
 
-            _ctrlForm.Hide();
+            //_ctrlForm.Hide();
         }
 
         public override void DoUpdate(GameTime gameTime) {

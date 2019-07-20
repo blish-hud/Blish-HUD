@@ -189,13 +189,14 @@
     <Compile Include="Entities\EntityText.cs" />
     <Compile Include="GameServices\ArcDps\AsyncUserToken.cs" />
     <Compile Include="GameServices\ArcDps\CombatParser.cs" />
-    <Compile Include="GameServices\ArcDps\MessageData.cs" />
+    <Compile Include="GameServices\ArcDps\Common\CommonFields.cs" />
+    <Compile Include="GameServices\ArcDps\SocketListener\MessageData.cs" />
     <Compile Include="GameServices\ArcDps\Models\Ag.cs" />
     <Compile Include="GameServices\ArcDps\Models\CombatEvent.cs" />
     <Compile Include="GameServices\ArcDps\Models\Ev.cs" />
-    <Compile Include="GameServices\ArcDps\RawCombatEventArgs.cs" />
+    <Compile Include="GameServices\ArcDps\SocketListener\RawCombatEventArgs.cs" />
     <Compile Include="GameServices\ArcDps\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="GameServices\ArcDps\SocketListener.cs" />
+    <Compile Include="GameServices\ArcDps\SocketListener\SocketListener.cs" />
     <Compile Include="GameServices\Content\RenderServiceTextureSize.cs" />
     <Compile Include="GameServices\Debug\Logger.cs" />
     <Compile Include="GameServices\Gw2ApiService.cs" />
