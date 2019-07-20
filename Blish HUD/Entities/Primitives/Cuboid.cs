@@ -28,12 +28,6 @@ namespace Blish_HUD.Entities.Primitives {
         public Cuboid(float size) : this(new Vector3(size)) { /* NOOP */ }
 
         public Cuboid(Vector3 size) : base() {
-            //_verts = new VertexPositionTexture[24];
-
-            //_renderEffect = StandardEffect; //(BasicEffect)StandardEffect.Clone();
-            //_renderEffect.TextureEnabled = true;
-            //_renderEffect.VertexColorEnabled = false;
-
             this.Texture = ContentService.Textures.Error;
 
             _size = size;
