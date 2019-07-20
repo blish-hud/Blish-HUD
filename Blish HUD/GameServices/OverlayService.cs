@@ -160,8 +160,6 @@ namespace Blish_HUD {
             HandleEnqueuedUpdates(gameTime);
 
             if (GameService.GameIntegration.IsInGame) {
-                CornerIcon.Alignment = CornerIcon.CornerIconAlignment.Left;
-
                 lastTacoCheckTime += gameTime.ElapsedGameTime.TotalSeconds;
 
                 // TODO: Move some of this into the TacO related module
@@ -175,14 +173,6 @@ namespace Blish_HUD {
 
                     lastTacoCheckTime = 0;
                 }
-            } else {
-                    // We are either at a loading screen, or on the character selection screen
-
-                    /* Stick the icons in the middle of the screen because it looks like the character
-                       select screen uses a different icon size and I don't want it to look weird next to
-                       different sized icons */
-
-                    CornerIcon.Alignment = CornerIcon.CornerIconAlignment.Center;
             }
         }
 

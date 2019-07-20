@@ -9,9 +9,15 @@ using Blish_HUD.Input;
 namespace Blish_HUD.Controls {
     public class CornerIcon : Container {
 
-        public enum CornerIconAlignment {
-            Left,
-            Center,
+        private static int _leftOffset = 0;
+        public static int LeftOffset {
+            get => _leftOffset;
+            set {
+                if (_leftOffset == value) return;
+
+                _leftOffset = value;
+                UpdateCornerIconPositions();
+            }
         }
 
         private const int   ICON_POSITION = 10;
@@ -46,28 +52,6 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private static int _leftOffset = 0;
-        public static int LeftOffset {
-            get => _leftOffset;
-            set {
-                if (_leftOffset == value) return;
-
-                _leftOffset = value;
-                UpdateCornerIconPositions();
-            }
-        }
-
-        private static CornerIconAlignment _alignment = CornerIconAlignment.Left;
-        public static CornerIconAlignment Alignment {
-            get => _alignment;
-            set {
-                if (_alignment == value) return;
-
-                _alignment = value;
-                UpdateCornerIconPositions();
-            }
-        }
-
         private static ObservableCollection<CornerIcon> CornerIcons { get; }
 
         private int? _priority;
@@ -96,15 +80,13 @@ namespace Blish_HUD.Controls {
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
 
             GameService.Input.MouseMoved += (sender, e) => {
-                if (Alignment == CornerIconAlignment.Left) {
-                    var scaledMousePos = e.MouseState.Position.ScaleToUi();
-                    if (scaledMousePos.Y < BlishHud.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
-                        foreach (var cornerIcon in CornerIcons) {
-                            cornerIcon.MouseInHouse = scaledMousePos.X < cornerIcon.Left || cornerIcon.MouseOver;
-                        }
-
-                        return;
+                var scaledMousePos = e.MouseState.Position.ScaleToUi();
+                if (scaledMousePos.Y < BlishHud.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
+                    foreach (var cornerIcon in CornerIcons) {
+                        cornerIcon.MouseInHouse = scaledMousePos.X < cornerIcon.Left || cornerIcon.MouseOver;
                     }
+
+                    return;
                 }
 
                 foreach (var cornerIcon in CornerIcons) {
@@ -116,7 +98,7 @@ namespace Blish_HUD.Controls {
         private static void UpdateCornerIconPositions() {
             List<CornerIcon> sortedIcons = CornerIcons.OrderByDescending((cornerIcon) => cornerIcon.Priority).ToList();
 
-            int horizontalOffset = Alignment == CornerIconAlignment.Left ? ICON_SIZE * ICON_POSITION + LeftOffset : Graphics.SpriteScreen.Width / 2 - (CornerIcons.Count * ICON_SIZE / 2);
+            int horizontalOffset = ICON_SIZE * ICON_POSITION + LeftOffset;
 
             for (int i = 0; i < CornerIcons.Count; i++) {
                 sortedIcons[i].Location = new Point(ICON_SIZE * i + horizontalOffset, 0);
