@@ -7,7 +7,17 @@ using System.Runtime.CompilerServices;
 namespace Blish_HUD.Entities {
     public abstract class Entity : INotifyPropertyChanged, IUpdatable, IRenderable3D, IDisposable {
 
-        protected static BasicEffect StandardEffect { get; } = new BasicEffect(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice) { TextureEnabled = true };
+        #region Load Static
+
+        protected static readonly BasicEffect StandardEffect;
+
+        static Entity() {
+            StandardEffect = new BasicEffect(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice) {
+                TextureEnabled = true
+            };
+        }
+
+        #endregion
 
         protected Vector3 _position     = Vector3.Zero;
         protected Vector3 _rotation     = Vector3.Zero;
@@ -24,31 +34,34 @@ namespace Blish_HUD.Entities {
 
         public virtual Vector3 Rotation {
             get => _rotation;
-            set => SetProperty(ref _rotation, value);
+            set {
+                var previousRotation = _rotation;
+
+                if (SetProperty(ref _rotation, value)) {
+                    // We do this to make sure we raise PropertyChanged events for alias properties
+                    if (previousRotation.X != _rotation.X)
+                        OnPropertyChanged(nameof(this.RotationX));
+                    if (previousRotation.Y != _rotation.Y)
+                        OnPropertyChanged(nameof(this.RotationY));
+                    if (previousRotation.Z != _rotation.Z)
+                        OnPropertyChanged(nameof(this.RotationZ));
+                }
+            }
         }
 
         public float RotationX {
             get => _rotation.X;
-            set {
-                if (SetProperty(ref _rotation, new Vector3(value, _rotation.Y, _rotation.Z), false, nameof(Rotation)))
-                    OnPropertyChanged();
-            }
+            set => this.Rotation = new Vector3(value, _rotation.Y, _rotation.Z);
         }
 
         public float RotationY {
             get => _rotation.Y;
-            set {
-                if (SetProperty(ref _rotation, new Vector3(_rotation.X, value, _rotation.Z), false, nameof(Rotation)))
-                    OnPropertyChanged();
-            }
+            set => this.Rotation = new Vector3(_rotation.X, value, _rotation.Z);
         }
 
         public float RotationZ {
             get => _rotation.Z;
-            set {
-                if (SetProperty(ref _rotation, new Vector3(_rotation.X, _rotation.Y, value), false, nameof(Rotation)))
-                    OnPropertyChanged();
-            }
+            set => this.Rotation = new Vector3(_rotation.X, _rotation.Y, value);
         }
 
         /// <summary>
@@ -61,31 +74,34 @@ namespace Blish_HUD.Entities {
         /// </summary>
         public virtual Vector3 RenderOffset {
             get => _renderOffset;
-            set => SetProperty(ref _renderOffset, value);
-        }
-
-        public virtual float VerticalOffset {
-            get => _renderOffset.Z;
             set {
-                if (SetProperty(ref _renderOffset, new Vector3(_renderOffset.X, _renderOffset.Y, value), false, nameof(this.RenderOffset)))
-                    OnPropertyChanged();
+                var previousRenderOffset = _renderOffset;
+
+                if (SetProperty(ref _renderOffset, value)) {
+                    // We do this to make sure we raise PropertyChanged events for alias properties
+                    if (previousRenderOffset.X != _renderOffset.X)
+                        OnPropertyChanged(nameof(this.HorizontalOffset));
+                    if (previousRenderOffset.Y != _renderOffset.Y)
+                        OnPropertyChanged(nameof(this.DepthOffset));
+                    if (previousRenderOffset.Z != _renderOffset.Z)
+                        OnPropertyChanged(nameof(this.VerticalOffset));
+                }
             }
         }
 
         public virtual float HorizontalOffset {
             get => _renderOffset.X;
-            set {
-                if (SetProperty(ref _renderOffset, new Vector3(value, _renderOffset.Y, _renderOffset.Z), false, nameof(this.RenderOffset)))
-                    OnPropertyChanged();
-            }
+            set => this.RenderOffset = new Vector3(value, _renderOffset.Y, _renderOffset.Z);
         }
 
         public virtual float DepthOffset {
             get => _renderOffset.Y;
-            set {
-                if (SetProperty(ref _renderOffset, new Vector3(_renderOffset.X, value, _renderOffset.Y), false, nameof(this.RenderOffset)))
-                    OnPropertyChanged();
-            }
+            set => this.RenderOffset = new Vector3(_renderOffset.X, value, _renderOffset.Z);
+        }
+
+        public virtual float VerticalOffset {
+            get => _renderOffset.Z;
+            set => this.RenderOffset = new Vector3(_renderOffset.X, _renderOffset.Y, value);
         }
 
         public virtual float Opacity {
