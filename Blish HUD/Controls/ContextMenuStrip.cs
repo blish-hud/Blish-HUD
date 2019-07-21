@@ -13,7 +13,7 @@ namespace Blish_HUD.Controls {
 
         private const int BORDER_PADDING = 2;
 
-        private const int ITEM_WIDTH          = 160;
+        private const int ITEM_WIDTH          = 135;
         private const int ITEM_HEIGHT         = 22;
         private const int ITEM_VERTICALMARGIN = 6;
 
