@@ -6,7 +6,7 @@
     public class Ev
     {
         public Ev(ulong time, ulong srcAgent, ulong dstAgent, int value, int buffDmg, uint overStackValue, uint skillId,
-            ushort srcInstId, ushort dstInstId, ushort srcMasterInstId, ushort dstMasterInstId, byte iff, byte buff,
+            ushort srcInstId, ushort dstInstId, ushort srcMasterInstId, ushort dstMasterInstId, byte iff, bool buff,
             byte result, bool isActivation, bool isBuffRemove, bool isNinety, bool isFifty, bool isMoving,
             bool isStateChange, bool isFlanking, bool isShields, bool isOffCycle, byte pad61, byte pad62, byte pad63,
             byte pad64)
@@ -52,7 +52,7 @@
         public ushort SrcMasterInstId { get; }
         public ushort DstMasterInstId { get; }
         public byte Iff { get; }
-        public byte Buff { get; }
+        public bool Buff { get; }
         public byte Result { get; }
         public bool IsActivation { get; }
         public bool IsBuffRemove { get; }

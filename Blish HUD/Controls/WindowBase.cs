@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-    public abstract class WindowBase:Container {
+    public abstract class WindowBase : Container {
 
         private const int COMMON_MARGIN = 16;
         private const int TITLE_OFFSET = 80;
@@ -25,16 +26,16 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureWindowResizableCornerActive;
 
         static WindowBase() {
-            _textureTitleBarLeft        = Content.GetTexture("titlebar-inactive");
-            _textureTitleBarRight       = Content.GetTexture("window-topright");
-            _textureTitleBarLeftActive  = Content.GetTexture("titlebar-active");
+            _textureTitleBarLeft = Content.GetTexture("titlebar-inactive");
+            _textureTitleBarRight = Content.GetTexture("window-topright");
+            _textureTitleBarLeftActive = Content.GetTexture("titlebar-active");
             _textureTitleBarRightActive = Content.GetTexture("window-topright-active");
 
-            _textureExitButton       = Content.GetTexture("button-exit");
+            _textureExitButton = Content.GetTexture("button-exit");
             _textureExitButtonActive = Content.GetTexture("button-exit-active");
 
-            _textureWindowCorner                = Content.GetTexture(@"controls\window\156008");
-            _textureWindowResizableCorner       = Content.GetTexture(@"controls\window\156009");
+            _textureWindowCorner = Content.GetTexture(@"controls\window\156008");
+            _textureWindowResizableCorner = Content.GetTexture(@"controls\window\156009");
             _textureWindowResizableCornerActive = Content.GetTexture(@"controls\window\156010");
         }
 

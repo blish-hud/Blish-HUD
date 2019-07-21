@@ -105,6 +105,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Content\AsyncTexture2D.cs" />
+    <Compile Include="Controls\BasicWindow.cs" />
+    <Compile Include="Controls\Book.cs" />
+    <Compile Include="Controls\Page.cs" />
     <Compile Include="Controls\HotkeyAssigner.cs" />
     <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
     <Compile Include="Content\DirectoryReader.cs" />
@@ -201,6 +204,10 @@
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="Content\IDataReader.cs" />
+    <Compile Include="GameServices\Input\KeyboardEventType.cs" />
+    <Compile Include="GameServices\Input\KeyboardMessage.cs" />
+    <Compile Include="GameServices\Input\MouseEventArgs.cs" />
+    <Compile Include="GameServices\Input\MouseEventType.cs" />
     <Compile Include="GameServices\PersistentStore\Store.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue[T].cs" />

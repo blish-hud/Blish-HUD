@@ -107,9 +107,9 @@ namespace Blish_HUD.Pathing.Entities {
 
                 var pathDirection = nextPoint - currPoint;
 
-                pathDirection.Normalize();
-
                 offset = Vector3.Cross(pathDirection, offsetDirection);
+
+                offset.Normalize();
 
                 var leftPoint = currPoint + (offset * imgScale);
                 var rightPoint = currPoint + (offset * -imgScale);

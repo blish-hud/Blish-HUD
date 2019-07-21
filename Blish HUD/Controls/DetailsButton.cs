@@ -4,6 +4,7 @@ using System.Linq;
 using Blish_HUD.Controls.Effects;
 using Blish_HUD;
 using Blish_HUD.Content;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

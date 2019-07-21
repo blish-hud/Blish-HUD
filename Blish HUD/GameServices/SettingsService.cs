@@ -62,9 +62,9 @@ namespace Blish_HUD {
                 // Likely don't have access to this filesystem
             } catch (Exception ex) {
                 if (alreadyFailed) {
-                    Logger.Error(ex, "Failed to load settings due to an unexpected exception while attempting to read them. Already tried creating a new settings file, so we won't try again.");
+                    Logger.Warn(ex, "Failed to load settings due to an unexpected exception while attempting to read them. Already tried creating a new settings file, so we won't try again.");
                 } else {
-                    Logger.Error(ex, "Failed to load settings due to an unexpected exception while attempting to read them. A new settings file will be generated.");
+                    Logger.Warn(ex, "Failed to load settings due to an unexpected exception while attempting to read them. A new settings file will be generated.");
 
                     // Refresh the settings
                     PrepareSettingsFirstTime();
@@ -91,7 +91,7 @@ namespace Blish_HUD {
                     settingsWriter.Write(rawSettings);
                 }
             } catch (Exception ex) {
-                Logger.Error(ex, "Failed to save settings.");
+                Logger.Warn(ex, "Failed to save settings.");
                 return;
             }
 

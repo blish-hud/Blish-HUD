@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using Color = Microsoft.Xna.Framework.Color;
+using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 

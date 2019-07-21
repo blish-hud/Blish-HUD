@@ -1,5 +1,6 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Content;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -116,7 +117,7 @@ namespace Blish_HUD.Controls {
                     textLeft += ICON_SIZE / 2;
                 }
 
-                var iconSize = _resizeIcon ? new Point(ICON_SIZE) : _icon.GetTexture().Bounds.Size;
+                var iconSize = _resizeIcon ? new Point(ICON_SIZE) : _icon.Texture.Bounds.Size;
 
                 _layoutIconBounds = new Rectangle(textLeft - iconSize.X - ICON_TEXT_OFFSET, _size.Y / 2 - iconSize.Y / 2, iconSize.X, iconSize.Y);
             }

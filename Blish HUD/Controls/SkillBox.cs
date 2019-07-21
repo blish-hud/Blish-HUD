@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Blish_HUD.Content;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;

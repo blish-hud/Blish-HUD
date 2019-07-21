@@ -1,12 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Blish_HUD.Input;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Controls
 {
     public class CounterBox : Control
     {
 
-        private Texture2D MinusSprite;
-        private Texture2D PlusSprite;
+        private readonly Texture2D MinusSprite;
+        private readonly Texture2D PlusSprite;
         private int _valueWidth;
         public int ValueWidth
         {
