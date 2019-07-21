@@ -3,13 +3,11 @@ using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Controls {
-
-    // TODO: Inherit from LabelBase
     public class HealthPoolButton : Control {
 
         private const int BOTTOMEDGE_GAP = 17;
-        private Texture2D HealthPoolSprite;
-        private Texture2D HealthPoolPressedSprite;
+        private readonly Texture2D HealthPoolSprite;
+        private readonly Texture2D HealthPoolPressedSprite;
         private bool IsBeingPressed;
 
         private string _text;
@@ -18,8 +16,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _text, value);
         }
         public HealthPoolButton() {
-            HealthPoolSprite = HealthPoolSprite ?? Content.GetTexture("background_healthpool");
-            HealthPoolPressedSprite = HealthPoolPressedSprite ?? Content.GetTexture("background_healthpool_pressed");
+            HealthPoolSprite = HealthPoolSprite ?? Content.GetTexture("healthpool");
+            HealthPoolPressedSprite = HealthPoolPressedSprite ?? Content.GetTexture("healthpool_pressed");
             this.Size = new Point(111, 111); // set static bounds.
             UpdateLocation(null, null);
             Graphics.SpriteScreen.Resized += UpdateLocation;
