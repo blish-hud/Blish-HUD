@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
@@ -13,6 +14,11 @@ namespace Blish_HUD.Modules {
         /// The module is not loaded.
         /// </summary>
         Unloaded,
+
+        /// <summary>
+        /// The module is initialized and <see cref="Module.LoadAsync"/> is just about to be called.
+        /// </summary>
+        Starting,
 
         /// <summary>
         /// The module is currently still working to complete its initial <see cref="Module.LoadAsync"/>.
@@ -117,9 +123,9 @@ namespace Blish_HUD.Modules {
         }
 
         public void DoLoad() {
-            this.RunState = ModuleRunState.Loading;
+            this.RunState = ModuleRunState.Starting;
 
-            _loadTask = Task.Run(LoadAsync);
+            _loadTask = Task.Factory.StartNew(LoadAsync, TaskCreationOptions.LongRunning);
         }
 
         private void CheckForLoaded() {
@@ -134,6 +140,10 @@ namespace Blish_HUD.Modules {
                         #endif
                     }
                     RunState = ModuleRunState.Loaded;
+                    break;
+
+                case TaskStatus.Running:
+                    this.RunState = ModuleRunState.Loading;
                     break;
 
                 case TaskStatus.RanToCompletion:
@@ -213,19 +223,25 @@ namespace Blish_HUD.Modules {
 
         #region IDispose
 
+        private bool _disposed;
+
+        /// <summary>
+        /// Indicates that <see cref="Dispose"/> has been called on this <see cref="Module"/> instance.
+        /// </summary>
+        public bool Disposed => _disposed;
+
         protected virtual void Dispose(bool disposing) {
-            DoUnload();
+            if (!_disposed && disposing) {
+                DoUnload();
+            }
+
+            _disposed = true;
         }
 
         /// <inheritdoc />
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        /// <inheritdoc />
-        ~Module() {
-            Dispose(false);
         }
 
         #endregion

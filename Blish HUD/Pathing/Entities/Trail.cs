@@ -12,8 +12,6 @@ namespace Blish_HUD.Pathing.Entities {
         protected Texture2D     _trailTexture;
 
         private VertexPositionColor[] VertexData { get; set; }
-
-        private BasicEffect _renderEffect;
         
         public float DistanceFromCamera => float.MaxValue;
 
@@ -48,10 +46,6 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         protected virtual void InitTrailPoints() {
-            _renderEffect                    = _renderEffect ?? (BasicEffect)StandardEffect.Clone();
-            _renderEffect.VertexColorEnabled = true;
-            _renderEffect.TextureEnabled     = false;
-
             if (!_trailPoints.Any()) return;
 
             this.VertexData = new VertexPositionColor[_trailPoints.Count - 1];
@@ -67,7 +61,10 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         public override void Draw(GraphicsDevice graphicsDevice) {
-            foreach (var basicPass in _renderEffect.CurrentTechnique.Passes) {
+            StandardEffect.VertexColorEnabled = true;
+            StandardEffect.TextureEnabled     = false;
+
+            foreach (var basicPass in StandardEffect.CurrentTechnique.Passes) {
                 basicPass.Apply();
 
                 graphicsDevice.DrawUserPrimitives(PrimitiveType.LineStrip,
@@ -75,6 +72,9 @@ namespace Blish_HUD.Pathing.Entities {
                                                   0,
                                                   this.VertexData.Length - 1);
             }
+
+            StandardEffect.VertexColorEnabled = false;
+            StandardEffect.TextureEnabled     = true;
         }
 
         /// <inheritdoc />
