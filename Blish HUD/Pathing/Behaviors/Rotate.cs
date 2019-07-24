@@ -32,7 +32,7 @@ namespace Blish_HUD.Pathing.Behaviors {
 
         public Rotate(TPathable managedPathable) : base(managedPathable) { }
 
-        public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {
+        public void LoadWithAttributes(IEnumerable<PathableAttribute> attributes) {
             float rotateX = 0f;
             float rotateY = 0f;
             float rotateZ = 0f;

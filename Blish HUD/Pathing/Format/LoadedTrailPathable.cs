@@ -41,7 +41,7 @@ namespace Blish_HUD.Pathing.Format {
             base.PrepareAttributes();
 
             // ITrail:Texture
-            RegisterAttribute("texture", delegate(XmlAttribute attribute) {
+            RegisterAttribute("texture", delegate(PathableAttribute attribute) {
                                   if (!string.IsNullOrEmpty(attribute.Value)) {
                                       this.TextureReferencePath = attribute.Value.Trim();
 

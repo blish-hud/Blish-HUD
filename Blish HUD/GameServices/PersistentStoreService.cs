@@ -78,12 +78,15 @@ namespace Blish_HUD {
         }
 
         public void Save() {
-            string rawStore = JsonConvert.SerializeObject(_stores, Formatting.None, _jsonSettings);
-
             try {
+                string rawStore = JsonConvert.SerializeObject(_stores, Formatting.None, _jsonSettings);
+
                 using (var settingsWriter = new StreamWriter(_persistentStorePath, false)) {
                     settingsWriter.Write(rawStore);
                 }
+            } catch (InvalidOperationException e) {
+                // Likely that the collection was modified while we were attempting to serialize the stores
+                Logger.Warn(e, "Failed to save persistent store.");
             } catch (Exception e) {
                 Logger.Warn(e, "Failed to write persistent store to file!");
             }

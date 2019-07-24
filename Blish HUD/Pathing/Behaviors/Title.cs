@@ -27,7 +27,7 @@ namespace Blish_HUD.Pathing.Behaviors {
 
         public Title(TPathable managedPathable) : base(managedPathable) { }
 
-        public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {
+        public void LoadWithAttributes(IEnumerable<PathableAttribute> attributes) {
             bool colorSet = false;
 
             foreach (var attr in attributes) {

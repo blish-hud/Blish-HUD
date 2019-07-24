@@ -128,7 +128,7 @@ namespace Blish_HUD.Pathing.Behaviors {
                                                             .Ease(Ease.BounceOut);
         }
 
-        public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {
+        public void LoadWithAttributes(IEnumerable<PathableAttribute> attributes) {
             float fOut;
 
             foreach (var attr in attributes) {

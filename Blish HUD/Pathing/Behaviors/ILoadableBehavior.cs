@@ -4,7 +4,7 @@ using System.Xml;
 namespace Blish_HUD.Pathing.Behaviors {
     public interface ILoadableBehavior {
 
-        void LoadWithAttributes(IEnumerable<XmlAttribute> attributes);
+        void LoadWithAttributes(IEnumerable<PathableAttribute> attributes);
 
         void Load();
 
