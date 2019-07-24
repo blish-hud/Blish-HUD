@@ -10,7 +10,7 @@ namespace Blish_HUD.Pathing {
     /// <summary>
     /// A collection of <see cref="PathableAttribute"/>.
     /// </summary>
-    public class PathableAttributeCollection : KeyedCollection<string, PathableAttribute> {
+    public sealed class PathableAttributeCollection : KeyedCollection<string, PathableAttribute> {
 
         public PathableAttributeCollection() : base(StringComparer.OrdinalIgnoreCase) { /* NOOP */ }
 
@@ -22,12 +22,27 @@ namespace Blish_HUD.Pathing {
             this.AddRange(attributeCollection);
         }
 
-        public void SetOrUpdateAttributes(PathableAttributeCollection attributes) {
-            foreach (var newAttribute in attributes) {
-                if (this.Contains(newAttribute.Name)) {
-                    this.Remove(newAttribute.Name);
-                }
-                this.Add(newAttribute);
+        /// <summary>
+        /// If an attribute with the provided <param name="attribute"></param>s
+        /// name already exists, it is replaced with the provided attribute.
+        /// Otherwise, the attribute is added to the collection.
+        /// </summary>
+        /// <param name="attribute">The attribute to update or insert into the collection.</param>
+        public void AddOrUpdateAttribute(PathableAttribute attribute) {
+            if (this.Contains(attribute.Name)) {
+                this.Remove(attribute.Name);
+            }
+            this.Add(attribute);
+        }
+
+        /// <summary>
+        /// Calls <see cref="AddOrUpdateAttribute"/> on each of the provided attributes
+        /// in <param name="attributes"></param>.
+        /// </summary>
+        /// <param name="attributes">The <see cref="PathableAttribute"/>s to add to the collection.</param>
+        public void AddOrUpdateAttributes(IEnumerable<PathableAttribute> attributes) {
+            foreach (var attribute in attributes) {
+                AddOrUpdateAttribute(attribute);
             }
         }
 
