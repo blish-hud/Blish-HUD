@@ -239,6 +239,8 @@
     <Compile Include="Pathing\Behaviors\Title.cs" />
     <Compile Include="Pathing\Content\PathableResourceManager.cs" />
     <Compile Include="Pathing\Entities\Effects\MarkerEffect.cs" />
+    <Compile Include="Pathing\PathableAttribute.cs" />
+    <Compile Include="Pathing\PathableAttributeCollection.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
     <Compile Include="_Utils\MouseInterceptor.cs" />

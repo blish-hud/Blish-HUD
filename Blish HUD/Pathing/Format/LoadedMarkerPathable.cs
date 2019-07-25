@@ -11,13 +11,13 @@ namespace Blish_HUD.Pathing.Format {
 
     public class LoadedPathableAttributeDescription {
 
-        public Func<XmlAttribute, bool> LoadAttributeFunc { get; }
+        public Func<PathableAttribute, bool> LoadAttributeFunc { get; }
 
         public bool Required { get; }
 
         public bool Loaded { get; set; }
 
-        public LoadedPathableAttributeDescription(Func<XmlAttribute, bool> loadAttributeFunc, bool required) {
+        public LoadedPathableAttributeDescription(Func<PathableAttribute, bool> loadAttributeFunc, bool required) {
             this.LoadAttributeFunc = loadAttributeFunc;
             this.Required = required;
             this.Loaded = false;
@@ -78,7 +78,7 @@ namespace Blish_HUD.Pathing.Format {
             base.PrepareAttributes();
 
             // IMarker:MinimumSize
-            RegisterAttribute("minSize", delegate (XmlAttribute attribute) {
+            RegisterAttribute("minSize", delegate (PathableAttribute attribute) {
                 if (!InvariantUtil.TryParseFloat(attribute.Value, out float fOut)) return false;
 
                 this.MinimumSize = fOut;
@@ -86,7 +86,7 @@ namespace Blish_HUD.Pathing.Format {
             });
 
             // IMarker:MaximumSize
-            RegisterAttribute("maxSize", delegate (XmlAttribute attribute) {
+            RegisterAttribute("maxSize", delegate (PathableAttribute attribute) {
                 if (!InvariantUtil.TryParseFloat(attribute.Value, out float fOut)) return false;
 
                 this.MaximumSize = fOut;
@@ -94,7 +94,7 @@ namespace Blish_HUD.Pathing.Format {
             });
 
             // IMarker:Icon
-            RegisterAttribute("iconFile", delegate (XmlAttribute attribute) {
+            RegisterAttribute("iconFile", delegate (PathableAttribute attribute) {
                 if (!string.IsNullOrEmpty(attribute.Value)) {
                     this.IconReferencePath = attribute.Value.Trim();
 

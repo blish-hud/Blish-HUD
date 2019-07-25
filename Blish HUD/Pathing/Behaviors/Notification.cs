@@ -64,7 +64,7 @@ namespace Blish_HUD.Pathing.Behaviors {
         }
 
         /// <inheritdoc />
-        public void LoadWithAttributes(IEnumerable<XmlAttribute> attributes) {
+        public void LoadWithAttributes(IEnumerable<PathableAttribute> attributes) {
             foreach (var attr in attributes) {
                 switch (attr.Name.ToLower()) {
                     case "notification":

@@ -38,7 +38,7 @@ namespace Blish_HUD.Pathing.Format {
         }
 
         private Dictionary<string, LoadedPathableAttributeDescription> _attributeLoaders;
-        private List<XmlAttribute> _leftOverAttributes;
+        private List<PathableAttribute> _leftOverAttributes;
 
         public LoadedPathable(TEntity pathableEntity, PathableResourceManager pathableManager) : base(pathableEntity) {
             this.PathableManager = pathableManager;
@@ -46,14 +46,14 @@ namespace Blish_HUD.Pathing.Format {
 
         protected abstract void BeginLoad();
 
-        protected void LoadAttributes(XmlNode sourceNode) {
+        protected void LoadAttributes(PathableAttributeCollection sourceAttributes) {
             _attributeLoaders = new Dictionary<string, LoadedPathableAttributeDescription>(StringComparer.OrdinalIgnoreCase);
-            _leftOverAttributes = new List<XmlAttribute>();
+            _leftOverAttributes = new List<PathableAttribute>();
 
             PrepareAttributes();
 
-            if (sourceNode.Attributes != null) {
-                ProcessAttributes(sourceNode.Attributes);
+            if (sourceAttributes.Any()) {
+                ProcessAttributes(sourceAttributes);
             }
 
             var requiredAttributesRemain = false;
@@ -61,7 +61,7 @@ namespace Blish_HUD.Pathing.Format {
                 if (attributeDescription.Value.Required && !attributeDescription.Value.Loaded) {
                     // Required attribute wasn't found in the node
                     Logger.Warn($"Required attribute '{attributeDescription.Key}' could not be found in the pathable, so it will not be displayed:");
-                    Logger.Warn(sourceNode.ToString(3));
+                    Logger.Warn(sourceAttributes.ToString());
                     requiredAttributesRemain = true;
                 }
             }
@@ -78,8 +78,8 @@ namespace Blish_HUD.Pathing.Format {
             _leftOverAttributes = null;
         }
 
-        protected void ProcessAttributes(XmlAttributeCollection attributes) {
-            foreach (XmlAttribute attribute in attributes) {
+        protected void ProcessAttributes(PathableAttributeCollection attributes) {
+            foreach (PathableAttribute attribute in attributes) {
                 if (_attributeLoaders.TryGetValue(attribute.Name, out LoadedPathableAttributeDescription attributeDescription)) {
                     if (attributeDescription.LoadAttributeFunc.Invoke(attribute)) {
                         attributeDescription.Loaded = true;
@@ -100,13 +100,13 @@ namespace Blish_HUD.Pathing.Format {
             }
         }
 
-        protected void RegisterAttribute(string attributeName, Func<XmlAttribute, bool> loadAttribute, bool required = false) {
+        protected void RegisterAttribute(string attributeName, Func<PathableAttribute, bool> loadAttribute, bool required = false) {
             _attributeLoaders.Add(attributeName, new LoadedPathableAttributeDescription(loadAttribute, required));
         }
 
         protected virtual void PrepareAttributes() {
             // IPathable:MapId
-            RegisterAttribute("MapId", delegate (XmlAttribute attribute) {
+            RegisterAttribute("MapId", delegate (PathableAttribute attribute) {
                 if (!InvariantUtil.TryParseInt(attribute.Value, out int iOut)) return false;
 
                 this.MapId = iOut;
@@ -117,7 +117,7 @@ namespace Blish_HUD.Pathing.Format {
             RegisterAttribute("GUID", attribute => (!string.IsNullOrEmpty(this.Guid = attribute.Value)));
 
             // IPathable:Opacity
-            RegisterAttribute("opacity", delegate (XmlAttribute attribute) {
+            RegisterAttribute("opacity", delegate (PathableAttribute attribute) {
                 if (!InvariantUtil.TryParseFloat(attribute.Value, out float fOut)) return false;
 
                 this.Opacity = fOut;
@@ -134,7 +134,7 @@ namespace Blish_HUD.Pathing.Format {
             RegisterAttribute("zPos", attribute => !InvariantUtil.TryParseFloat(attribute.Value, out _zPos));
 
             // IPathable:Scale
-            RegisterAttribute("scale", delegate (XmlAttribute attribute) {
+            RegisterAttribute("scale", delegate (PathableAttribute attribute) {
                 if (!InvariantUtil.TryParseFloat(attribute.Value, out float fOut)) return false;
 
                 this.Scale = fOut;
