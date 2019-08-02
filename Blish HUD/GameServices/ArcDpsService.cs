@@ -139,16 +139,19 @@ namespace Blish_HUD
                 case (byte) MessageType.ImGui:
                     HudIsActive = data.Message[1] != 0;
                     break;
-                case (byte) MessageType.Combat:
-                    ProcessCombat(data.Message);
+                case (byte) MessageType.CombatArea:
+                    ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
+                    break;
+                case (byte)MessageType.CombatLocal:
+                    ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
                     break;
             }
         }
 
-        private void ProcessCombat(byte[] data)
+        private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType)
         {
             var message = CombatParser.ProcessCombat(data);
-            OnRawCombatEvent(new RawCombatEventArgs(message));
+            OnRawCombatEvent(new RawCombatEventArgs(message, eventType));
         }
 
         private void OnRawCombatEvent(RawCombatEventArgs e)
@@ -159,7 +162,8 @@ namespace Blish_HUD
         private enum MessageType
         {
             ImGui = 1,
-            Combat = 2
+            CombatArea = 2,
+            CombatLocal = 3
         }
     }
 }

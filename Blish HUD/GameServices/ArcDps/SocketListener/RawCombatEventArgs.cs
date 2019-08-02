@@ -5,11 +5,20 @@ namespace Blish_HUD.ArcDps
 {
     public class RawCombatEventArgs : EventArgs
     {
-        public RawCombatEventArgs(CombatEvent combatEvent)
+        public RawCombatEventArgs(CombatEvent combatEvent, CombatEventType eventType)
         {
             CombatEvent = combatEvent;
+            EventType = eventType;
         }
 
-        public CombatEvent CombatEvent { get; private set; }
+        public CombatEventType EventType { get; }
+
+        public CombatEvent CombatEvent { get; }
+
+        public enum CombatEventType
+        {
+            Area,
+            Local
+        }
     }
 }
