@@ -13,7 +13,7 @@ namespace Blish_HUD.Controls {
 
         private const int BORDER_PADDING = 2;
 
-        private const int ITEM_WIDTH          = 160;
+        private const int ITEM_WIDTH          = 135;
         private const int ITEM_HEIGHT         = 22;
         private const int ITEM_VERTICALMARGIN = 6;
 
@@ -33,13 +33,14 @@ namespace Blish_HUD.Controls {
             this.Visible = false;
             this.Width = CONTROL_WIDTH;
             this.ZIndex = Screen.CONTEXTMENU_BASEINDEX;
-            this.Parent = GameService.Graphics.SpriteScreen;
 
-            Input.LeftMouseButtonPressed += MouseButtonPressed;
+            Input.LeftMouseButtonPressed  += MouseButtonPressed;
             Input.RightMouseButtonPressed += MouseButtonPressed;
         }
 
         protected override void OnShown(EventArgs e) {
+            this.Parent = GameService.Graphics.SpriteScreen;
+
             // If we have no children, don't display (and don't even call 'Shown' event)
             if (!_children.Any()) {
                 this.Visible = false;
@@ -47,6 +48,13 @@ namespace Blish_HUD.Controls {
             }
             
             base.OnShown(e);
+        }
+
+        /// <inheritdoc />
+        protected override void OnHidden(EventArgs e) {
+            this.Parent = null;
+
+            base.OnHidden(e);
         }
 
         public void Show(Point position) {
@@ -112,7 +120,6 @@ namespace Blish_HUD.Controls {
                 }
 
                 newChild.Height = ITEM_HEIGHT;
-                newChild.Left = BORDER_PADDING;
 
                 newChild.MouseEntered += ChildOnMouseEntered;
                 newChild.Resized      += ChildOnResized;
@@ -122,14 +129,6 @@ namespace Blish_HUD.Controls {
             }
 
             this.Invalidate();
-
-            int lastBottom = -4;
-            e.ResultingChildren.Where(c => c.Visible).ToList().ForEach(child => {
-                                            child.Top = lastBottom + ITEM_VERTICALMARGIN;
-                                            lastBottom = child.Bottom;
-            });
-
-            this.Height = lastBottom + BORDER_PADDING;
         }
 
         private void ChildOnMouseEntered(object sender, MouseEventArgs e) {
@@ -149,27 +148,34 @@ namespace Blish_HUD.Controls {
 
         public override void RecalculateLayout() {
             if (_children.Any()) {
-                int maxChildWidth = Math.Max(_children.Where(c => c.Visible).Max(c => c.Width), CONTROL_WIDTH);
+                int maxChildWidth = CONTROL_WIDTH;
 
-                this.Width = maxChildWidth + BORDER_PADDING * 2;
+                int lastChildBottom = BORDER_PADDING - ITEM_VERTICALMARGIN;
+
+                foreach (var menuItem in _children.Where(c => c.Visible)) {
+                    maxChildWidth = Math.Max(menuItem.Width, maxChildWidth);
+
+                    menuItem.Location = new Point(BORDER_PADDING, lastChildBottom + ITEM_VERTICALMARGIN);
+
+                    lastChildBottom = menuItem.Bottom;
+                }
+
+                _size = new Point(maxChildWidth   + BORDER_PADDING * 2,
+                                  lastChildBottom + BORDER_PADDING);
 
                 foreach (var childItem in this.Children) {
                     childItem.Width = maxChildWidth;
                 }
-            } else {
-                this.Width = CONTROL_WIDTH + BORDER_PADDING * 2;
             }
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this,
                                    ContentService.Textures.Pixel,
-                                   new Rectangle(
-                                                 BORDER_PADDING,
+                                   new Rectangle(BORDER_PADDING,
                                                  BORDER_PADDING,
                                                  _size.X - BORDER_PADDING * 2,
-                                                 _size.Y - BORDER_PADDING * 2
-                                                ),
+                                                 _size.Y - BORDER_PADDING * 2),
                                    Color.FromNonPremultiplied(33, 32, 33, 255));
 
             // Left line
