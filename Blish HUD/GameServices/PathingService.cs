@@ -36,27 +36,7 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-           BuildCornerIcon();
-        }
-
-        public CornerIcon Icon;
-        public ContextMenuStrip IconContextMenu;
-
-        private Panel BuildCornerIcon() {
-            Icon = new CornerIcon() {
-                BasicTooltipText = "Pathing",
-                Icon             = Content.GetTexture("marker-pathing-icon"),
-                Parent           = Graphics.SpriteScreen,
-                Priority         = Int32.MaxValue - 1,
-            };
-
-            IconContextMenu = new ContextMenuStrip();
-
-            Icon.Click += delegate {
-                IconContextMenu.Show(Icon);
-            };
-
-            return null;
+           /* NOOP */
         }
 
         private void ProcessPathableState(IPathable<Entity> pathable) {
