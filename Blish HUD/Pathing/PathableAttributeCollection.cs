@@ -19,7 +19,7 @@ namespace Blish_HUD.Pathing {
         /// </summary>
         /// <param name="attributeCollection"></param>
         public PathableAttributeCollection(IEnumerable<PathableAttribute> attributeCollection) : base(StringComparer.OrdinalIgnoreCase) {
-            this.AddRange(attributeCollection);
+            this.AddRange(attributeCollection.GroupBy(a => a.Name).Select(g => g.Last()));
         }
 
         /// <summary>
