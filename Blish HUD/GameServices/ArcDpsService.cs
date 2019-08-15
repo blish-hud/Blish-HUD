@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
@@ -44,6 +45,43 @@ namespace Blish_HUD
                     _stopwatch.Restart();
                     _hudIsActive = value;
                 }
+            }
+        }
+
+        private bool _subscribed = false;
+
+        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions = new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
+
+        public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds)
+        {
+            if (!_subscribed)
+            {
+                RawCombatEvent += DispatchSkillSubscriptions;
+                _subscribed = true;
+            }
+
+            foreach (var skillId in skillIds)
+            {
+                if (!_subscriptions.ContainsKey(skillId))
+                {
+                    _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
+                }
+
+                _subscriptions[skillId].Add(func);
+            }
+        }
+
+        private void DispatchSkillSubscriptions(object sender, RawCombatEventArgs eventHandler)
+        {
+            if (eventHandler.CombatEvent.Ev == null)
+                return;
+            var skillId = eventHandler.CombatEvent.Ev.SkillId;
+            if (!_subscriptions.ContainsKey(skillId))
+                return;
+
+            foreach (var action in _subscriptions[skillId])
+            {
+                action(sender, eventHandler);
             }
         }
 
@@ -101,16 +139,19 @@ namespace Blish_HUD
                 case (byte) MessageType.ImGui:
                     HudIsActive = data.Message[1] != 0;
                     break;
-                case (byte) MessageType.Combat:
-                    ProcessCombat(data.Message);
+                case (byte) MessageType.CombatArea:
+                    ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
+                    break;
+                case (byte)MessageType.CombatLocal:
+                    ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
                     break;
             }
         }
 
-        private void ProcessCombat(byte[] data)
+        private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType)
         {
             var message = CombatParser.ProcessCombat(data);
-            OnRawCombatEvent(new RawCombatEventArgs(message));
+            OnRawCombatEvent(new RawCombatEventArgs(message, eventType));
         }
 
         private void OnRawCombatEvent(RawCombatEventArgs e)
@@ -121,7 +162,8 @@ namespace Blish_HUD
         private enum MessageType
         {
             ImGui = 1,
-            Combat = 2
+            CombatArea = 2,
+            CombatLocal = 3
         }
     }
 }
