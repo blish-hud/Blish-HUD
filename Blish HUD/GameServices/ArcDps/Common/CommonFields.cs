@@ -8,9 +8,9 @@ namespace Blish_HUD.ArcDps.Common
         ///     Delegate which will be invoked in <see cref="CommonFields.PlayerAdded" /> and
         ///     <see cref="CommonFields.PlayerRemoved" />
         /// </summary>
-        public delegate void PresentPlayersChange(string characterName, string accountName);
+        public delegate void PresentPlayersChange(Player player);
 
-        private readonly Dictionary<string, string> _playersInSquad = new Dictionary<string, string>();
+        private readonly Dictionary<string, Player> _playersInSquad = new Dictionary<string, Player>();
 
         private bool _enabled;
 
@@ -31,7 +31,7 @@ namespace Blish_HUD.ArcDps.Common
         public event PresentPlayersChange PlayerRemoved;
 
         /// <summary>
-        ///     Activates the <see cref="CommonFields"/> service.
+        ///     Activates the <see cref="CommonFields" /> service.
         /// </summary>
         public void Activate()
         {
@@ -54,8 +54,10 @@ namespace Blish_HUD.ArcDps.Common
             {
                 if (!_playersInSquad.ContainsKey(args.CombatEvent.Src.Name))
                 {
-                    _playersInSquad.Add(args.CombatEvent.Src.Name, args.CombatEvent.Dst.Name);
-                    PlayerAdded?.Invoke(args.CombatEvent.Src.Name, args.CombatEvent.Dst.Name);
+                    var player = new Player(args.CombatEvent.Src.Name, args.CombatEvent.Dst.Name,
+                        args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite);
+                    _playersInSquad.Add(args.CombatEvent.Src.Name, player);
+                    PlayerAdded?.Invoke(player);
                 }
             }
             /* remove */
@@ -63,11 +65,30 @@ namespace Blish_HUD.ArcDps.Common
             {
                 if (_playersInSquad.ContainsKey(args.CombatEvent.Src.Name))
                 {
-                    var accountName = _playersInSquad[args.CombatEvent.Src.Name];
+                    var player = _playersInSquad[args.CombatEvent.Src.Name];
                     _playersInSquad.Remove(args.CombatEvent.Src.Name);
-                    PlayerRemoved?.Invoke(args.CombatEvent.Src.Name, accountName);
+                    PlayerRemoved?.Invoke(player);
                 }
             }
+        }
+
+        public class Player
+        {
+            public Player(string characterName, string accountName, uint profession, uint elite)
+            {
+                CharacterName = characterName;
+                AccountName = accountName;
+                Profession = profession;
+                Elite = elite;
+            }
+
+            public string CharacterName { get; }
+
+            public string AccountName { get; }
+
+            public uint Profession { get; }
+
+            public uint Elite { get; }
         }
     }
 }
