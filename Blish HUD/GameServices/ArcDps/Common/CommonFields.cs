@@ -4,22 +4,6 @@ namespace Blish_HUD.ArcDps.Common
 {
     public class CommonFields
     {
-        public class Player
-        {
-            public string CharacterName { get; }
-
-            public string AccountName { get; }
-
-            public uint Elite { get; }
-
-            public Player(string characterName, string accountName, uint elite)
-            {
-                CharacterName = characterName;
-                AccountName = accountName;
-                Elite = elite;
-            }
-        }
-
         /// <summary>
         ///     Delegate which will be invoked in <see cref="CommonFields.PlayerAdded" /> and
         ///     <see cref="CommonFields.PlayerRemoved" />
@@ -47,7 +31,7 @@ namespace Blish_HUD.ArcDps.Common
         public event PresentPlayersChange PlayerRemoved;
 
         /// <summary>
-        ///     Activates the <see cref="CommonFields"/> service.
+        ///     Activates the <see cref="CommonFields" /> service.
         /// </summary>
         public void Activate()
         {
@@ -70,7 +54,8 @@ namespace Blish_HUD.ArcDps.Common
             {
                 if (!_playersInSquad.ContainsKey(args.CombatEvent.Src.Name))
                 {
-                    var player = new Player(args.CombatEvent.Src.Name, args.CombatEvent.Dst.Name, args.CombatEvent.Dst.Elite);
+                    var player = new Player(args.CombatEvent.Src.Name, args.CombatEvent.Dst.Name,
+                        args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite);
                     _playersInSquad.Add(args.CombatEvent.Src.Name, player);
                     PlayerAdded?.Invoke(player);
                 }
@@ -85,6 +70,25 @@ namespace Blish_HUD.ArcDps.Common
                     PlayerRemoved?.Invoke(player);
                 }
             }
+        }
+
+        public class Player
+        {
+            public Player(string characterName, string accountName, uint profession, uint elite)
+            {
+                CharacterName = characterName;
+                AccountName = accountName;
+                Profession = profession;
+                Elite = elite;
+            }
+
+            public string CharacterName { get; }
+
+            public string AccountName { get; }
+
+            public uint Profession { get; }
+
+            public uint Elite { get; }
         }
     }
 }
