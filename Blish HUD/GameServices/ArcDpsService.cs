@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using Blish_HUD.ArcDps;
+using Blish_HUD.ArcDps.Common;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD
@@ -15,11 +16,22 @@ namespace Blish_HUD
         public static long Counter;
 #endif
         private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
+
+        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions =
+            new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
+
         private bool _hudIsActive;
 
         private SocketListener _server;
 
         private Stopwatch _stopwatch;
+
+        private bool _subscribed;
+
+        /// <summary>
+        ///     Provides common fields that multiple modules might want to track
+        /// </summary>
+        public CommonFields Common { get; } = new CommonFields();
 
         /// <summary>
         ///     Indicates if arcdps updated <see cref="HudIsActive" /> in the last second (it should every in-game frame)
@@ -48,10 +60,6 @@ namespace Blish_HUD
             }
         }
 
-        private bool _subscribed = false;
-
-        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions = new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
-
         public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds)
         {
             if (!_subscribed)
@@ -63,9 +71,7 @@ namespace Blish_HUD
             foreach (var skillId in skillIds)
             {
                 if (!_subscriptions.ContainsKey(skillId))
-                {
                     _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
-                }
 
                 _subscriptions[skillId].Add(func);
             }
@@ -79,10 +85,7 @@ namespace Blish_HUD
             if (!_subscriptions.ContainsKey(skillId))
                 return;
 
-            foreach (var action in _subscriptions[skillId])
-            {
-                action(sender, eventHandler);
-            }
+            foreach (var action in _subscriptions[skillId]) action(sender, eventHandler);
         }
 
         /// <remarks>
@@ -142,7 +145,7 @@ namespace Blish_HUD
                 case (byte) MessageType.CombatArea:
                     ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
                     break;
-                case (byte)MessageType.CombatLocal:
+                case (byte) MessageType.CombatLocal:
                     ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
                     break;
             }
