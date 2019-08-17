@@ -18,7 +18,7 @@ namespace Blish_HUD.ArcDps.Common
         ///     Contains every player in the current group or squad.
         ///     Key: Character Name, Value: Account Name
         /// </summary>
-        public IReadOnlyDictionary<string, string> PlayersInSquad => _playersInSquad;
+        public IReadOnlyDictionary<string, Player> PlayersInSquad => _playersInSquad;
 
         /// <summary>
         ///     Gets invoked whenever someone joins the squad or group.
