@@ -14,16 +14,6 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 namespace Blish_HUD {
     public class InputService:GameService {
 
-        internal class MouseEvent {
-            public WinAPI.MouseHook.MouseMessages EventMessage { get; protected set; }
-            public WinAPI.MouseHook.MSLLHOOKSTRUCT EventDetails { get; protected set; }
-
-            public MouseEvent(WinAPI.MouseHook.MouseMessages message, WinAPI.MouseHook.MSLLHOOKSTRUCT hookdetails) {
-                this.EventMessage = message;
-                this.EventDetails = hookdetails;
-            }
-        }
-
         public event EventHandler<MouseEventArgs> LeftMouseButtonPressed;
         public event EventHandler<MouseEventArgs> LeftMouseButtonReleased;
         public event EventHandler<MouseEventArgs> MouseMoved;
@@ -34,17 +24,13 @@ namespace Blish_HUD {
         public MouseState MouseState { get; private set; }
         public KeyboardState KeyboardState { get; private set; }
 
-        internal static WinAPI.MouseHook    mouseHook;
-        internal static WinAPI.KeyboardHook keyboardHook;
-
-        public bool MouseHidden {
-            get => mouseHook.NonClick;
-        }
+        internal static MouseHook    mouseHook;
+        internal static KeyboardHook keyboardHook;
 
         public bool HudFocused { get; private set; }
 
-        private Controls.Control _activeControl = null;
-        public Controls.Control ActiveControl {
+        private Control _activeControl = null;
+        public Control ActiveControl {
             get => _activeControl;
             set {
                 this.HudFocused = value != null;
@@ -70,7 +56,7 @@ namespace Blish_HUD {
         private Thread _thrdKeyboardHook;
 
         private static void HookMouse() {
-            mouseHook = new WinAPI.MouseHook();
+            mouseHook = new MouseHook();
             mouseHook.HookMouse();
 
             System.Windows.Forms.Application.Run();
@@ -79,7 +65,7 @@ namespace Blish_HUD {
         }
 
         private static void HookKeyboard() {
-            keyboardHook = new WinAPI.KeyboardHook();
+            keyboardHook = new KeyboardHook();
             keyboardHook.HookKeyboard();
 
             System.Windows.Forms.Application.Run();
@@ -150,19 +136,19 @@ namespace Blish_HUD {
 
             // Handle mouse left pressed/released (through mouse hook)
             if (this.ClickState != null) {
-                if (this.ClickState.EventMessage == WinAPI.MouseHook.MouseMessages.WM_LeftButtonDown) {
+                if (this.ClickState.EventMessage == MouseHook.MouseMessages.WM_LeftButtonDown) {
                     this.LeftMouseButtonPressed?.Invoke(null, new MouseEventArgs(newMouseState));
                     Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonPressed, newMouseState);
-                } else if (this.ClickState.EventMessage == WinAPI.MouseHook.MouseMessages.WM_LeftButtonUp) {
+                } else if (this.ClickState.EventMessage == MouseHook.MouseMessages.WM_LeftButtonUp) {
                     this.LeftMouseButtonReleased?.Invoke(null, new MouseEventArgs(newMouseState));
                     Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.LeftMouseButtonReleased, newMouseState);
-                } else if (this.ClickState.EventMessage == WinAPI.MouseHook.MouseMessages.WM_RightButtonDown) {
+                } else if (this.ClickState.EventMessage == MouseHook.MouseMessages.WM_RightButtonDown) {
                     this.RightMouseButtonPressed?.Invoke(null, new MouseEventArgs(newMouseState));
                     Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonPressed, newMouseState);
-                } else if (this.ClickState.EventMessage == WinAPI.MouseHook.MouseMessages.WM_RightButtonUp) {
+                } else if (this.ClickState.EventMessage == MouseHook.MouseMessages.WM_RightButtonUp) {
                     this.RightMouseButtonReleased?.Invoke(null, new MouseEventArgs(newMouseState));
                     Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.RightMouseButtonReleased, newMouseState);
-                } else if (this.ClickState.EventMessage == WinAPI.MouseHook.MouseMessages.WM_MouseWheel) {
+                } else if (this.ClickState.EventMessage == MouseHook.MouseMessages.WM_MouseWheel) {
                     this.MouseWheelScrolled?.Invoke(null, new MouseEventArgs(newMouseState));
                     Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseWheelScrolled, newMouseState);
                 }

@@ -48,7 +48,7 @@ namespace Blish_HUD {
         private bool _gw2HasFocus = false;
         public bool Gw2HasFocus {
             get => _gw2HasFocus;
-            set {
+            private set {
                 if (_gw2HasFocus == value) return;
 
                 _gw2HasFocus = value;
@@ -69,10 +69,11 @@ namespace Blish_HUD {
 
                 _gw2IsRunning = value;
 
-                if (_gw2IsRunning)
+                if (_gw2IsRunning) {
                     this.Gw2Started?.Invoke(this, EventArgs.Empty);
-                else
+                } else {
                     this.Gw2Closed?.Invoke(this, EventArgs.Empty);
+                }
             }
         }
 
@@ -166,8 +167,7 @@ namespace Blish_HUD {
         private void CreateTrayIcon() {
             this.TrayIconMenu = new ContextMenuStrip();
             
-            // Found this here: https://stackoverflow.com/a/25409865/595437
-            // Gross - not sure if there is a nicer way to just pull the application icon...
+            // Extract the tray icon from our assembly
             this.TrayIcon = new NotifyIcon() {
                 Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
                 Text = "Blish HUD",
@@ -208,16 +208,11 @@ namespace Blish_HUD {
                     this.Gw2Process.EnableRaisingEvents =  true;
                     this.Gw2Process.Exited              += OnGw2Exit;
                 } catch (Win32Exception ex) /* [BLISHHUD-W] */ {
-                    // We should probably switch methods of determining when the application has closed
-                    // TODO: This needs to catch exceptions nicely - it can *sometimes* glitch out when multiboxing (experienced once)
-                    // System.ComponentModel.Win32Exception
-                    // Access is denied
-
-                    Console.WriteLine(ex.Message);
-                } catch (InvalidOperationException ex) /* [BLISHHUD-1H] */ {
-                    // Can get thrown if the game is closed if we just launched it
-
-                    Console.WriteLine(ex.Message);
+                    // Observed as "Access is denied"
+                    Logger.Warn(ex, "A Win32Exception was encountered while trying to monitor the Gw2 process. It might be running with different permissions.");
+                } catch (InvalidOperationException e) /* [BLISHHUD-1H] */ {
+                    // Can get thrown if the game is closed just as we launched it
+                    OnGw2Exit(null, EventArgs.Empty);
                 }
 
                 BlishHud.Form.Invoke((MethodInvoker) (() => { BlishHud.Form.Show(); }));
@@ -228,7 +223,7 @@ namespace Blish_HUD {
             // Check to see if 64-bit Gw2 process is running (since it's likely the most common at this point)
             Process[] gw2Processes = Process.GetProcessesByName(GW2_64_BIT_PROCESSNAME);
 
-            if (!gw2Processes.Any()) {
+            if (gw2Processes.Length == 0) {
                 // 64-bit process not found so see if they're using a 32-bit client instead
                 gw2Processes = Process.GetProcessesByName(GW2_32_BIT_PROCESSNAME);
             }
@@ -242,7 +237,7 @@ namespace Blish_HUD {
             return null;
         }
 
-        private void OnGw2Exit(object sender, System.EventArgs e) {
+        private void OnGw2Exit(object sender, EventArgs e) {
             this.Gw2Process = null;
 
             Logger.Info("Guild Wars 2 application has exited!");
@@ -267,11 +262,19 @@ namespace Blish_HUD {
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
-                var overlayUpdateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
-                if (overlayUpdateResult == WindowUtil.OverlayUpdateResponse.Errored) { 
-                    this.Gw2Process = null;
-                } else {
-                    this.Gw2HasFocus = (overlayUpdateResult == WindowUtil.OverlayUpdateResponse.WithFocus);
+                switch (WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus)) {
+                    case WindowUtil.OverlayUpdateResponse.WithFocus:
+                        this.Gw2HasFocus = true;
+                        break;
+
+                    case WindowUtil.OverlayUpdateResponse.WithoutFocus:
+                        this.Gw2HasFocus = false;
+                        break;
+
+                    case WindowUtil.OverlayUpdateResponse.Errored:
+                        this.Gw2Process = null;
+                        break;
+
                 }
             } else {
                 _lastGw2Check += gameTime.ElapsedGameTime.TotalSeconds;
@@ -287,10 +290,9 @@ namespace Blish_HUD {
         public void FocusGw2() {
             if (this.Gw2Process != null) {
                 try {
-                    var gw2WindowHandle = this.Gw2Process.MainWindowHandle;
-                    WindowUtil.SetForegroundWindowEx(gw2WindowHandle);
-                } catch (NullReferenceException ex) {
-                    Console.WriteLine("gw2Process.MainWindowHandle > NullReferenceException: Ignored and skipping gw2 focus.");
+                    WindowUtil.SetForegroundWindowEx(this.Gw2Process.MainWindowHandle);
+                } catch (NullReferenceException e) {
+                    Logger.Warn(e, "Failed to give focus to GW2 handle.");
                 }
             }
         }
