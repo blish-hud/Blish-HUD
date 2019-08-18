@@ -54,9 +54,15 @@ namespace Blish_HUD.ArcDps.Common
             {
                 if (!_playersInSquad.ContainsKey(args.CombatEvent.Src.Name))
                 {
-                    var player = new Player(args.CombatEvent.Src.Name, args.CombatEvent.Dst.Name,
+                    var accountName = args.CombatEvent.Dst.Name.StartsWith(":")
+                        ? args.CombatEvent.Dst.Name.Substring(1)
+                        : args.CombatEvent.Dst.Name;
+
+                    var player = new Player(args.CombatEvent.Src.Name, accountName,
                         args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite);
+
                     _playersInSquad.Add(args.CombatEvent.Src.Name, player);
+
                     PlayerAdded?.Invoke(player);
                 }
             }
@@ -66,7 +72,9 @@ namespace Blish_HUD.ArcDps.Common
                 if (_playersInSquad.ContainsKey(args.CombatEvent.Src.Name))
                 {
                     var player = _playersInSquad[args.CombatEvent.Src.Name];
+
                     _playersInSquad.Remove(args.CombatEvent.Src.Name);
+
                     PlayerRemoved?.Invoke(player);
                 }
             }
