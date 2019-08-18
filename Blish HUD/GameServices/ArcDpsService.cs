@@ -31,7 +31,7 @@ namespace Blish_HUD
         /// <summary>
         ///     Provides common fields that multiple modules might want to track
         /// </summary>
-        public CommonFields Common { get; } = new CommonFields();
+        public CommonFields Common { get; private set; }
 
         /// <summary>
         ///     Indicates if arcdps updated <see cref="HudIsActive" /> in the last second (it should every in-game frame)
@@ -103,6 +103,7 @@ namespace Blish_HUD
 
         protected override void Initialize()
         {
+            Common = new CommonFields();
             _stopwatch = new Stopwatch();
             _server = new SocketListener(10, 200_000);
             _server.ReceivedMessage += MessageHandler;
