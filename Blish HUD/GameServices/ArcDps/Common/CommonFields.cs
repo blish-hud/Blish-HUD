@@ -59,7 +59,7 @@ namespace Blish_HUD.ArcDps.Common
                         : args.CombatEvent.Dst.Name;
 
                     var player = new Player(args.CombatEvent.Src.Name, accountName,
-                        args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite);
+                        args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite, args.CombatEvent.Dst.Self != 0);
 
                     _playersInSquad.Add(args.CombatEvent.Src.Name, player);
 
@@ -82,21 +82,39 @@ namespace Blish_HUD.ArcDps.Common
 
         public class Player
         {
-            public Player(string characterName, string accountName, uint profession, uint elite)
+            public Player(string characterName, string accountName, uint profession, uint elite, bool self)
             {
                 CharacterName = characterName;
                 AccountName = accountName;
                 Profession = profession;
                 Elite = elite;
+                Self = self;
             }
 
+            /// <summary>
+            ///     The current character name
+            /// </summary>
             public string CharacterName { get; }
 
+            /// <summary>
+            ///     The account name
+            /// </summary>
             public string AccountName { get; }
 
+            /// <summary>
+            ///     The core profession
+            /// </summary>
             public uint Profession { get; }
 
+            /// <summary>
+            ///     The elite if any is used
+            /// </summary>
             public uint Elite { get; }
+
+            /// <summary>
+            ///     Whether it's the account currently logged in on this gw2 instance
+            /// </summary>
+            public bool Self { get; }
         }
     }
 }
