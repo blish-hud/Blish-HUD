@@ -207,6 +207,7 @@
     <Compile Include="Content\IDataReader.cs" />
     <Compile Include="GameServices\Input\KeyboardEventType.cs" />
     <Compile Include="GameServices\Input\KeyboardMessage.cs" />
+    <Compile Include="GameServices\Input\MouseEvent.cs" />
     <Compile Include="GameServices\Input\MouseEventArgs.cs" />
     <Compile Include="GameServices\Input\MouseEventType.cs" />
     <Compile Include="GameServices\PersistentStore\Store.cs" />
@@ -247,7 +248,7 @@
     <Compile Include="_Utils\MouseInterceptor.cs" />
     <Compile Include="_Utils\StringUtil.cs" />
     <Compile Include="_Utils\VectorUtil.cs" />
-    <Compile Include="_Utils\WinAPI\Extern.cs" />
+    <Compile Include="GameServices\Input\HookExtern.cs" />
     <Compile Include="_Enums\Gw2Locale.cs" />
     <Compile Include="_Enums\Gw2Profession.cs" />
     <Compile Include="_Enums\Gw2Race.cs" />
@@ -316,8 +317,8 @@
     <Compile Include="_Utils\DrawUtil.cs" />
     <Compile Include="_Utils\WindowUtil.cs" />
     <Compile Include="_Utils\WorldUtil.cs" />
-    <Compile Include="_Utils\WinAPI\KeyboardHook.cs" />
-    <Compile Include="_Utils\WinAPI\MouseHook.cs" />
+    <Compile Include="GameServices\Input\KeyboardHook.cs" />
+    <Compile Include="GameServices\Input\MouseHook.cs" />
     <Compile Include="_Extensions\DictionaryExtension.cs" />
     <Compile Include="_Extensions\PointExtensions.cs" />
     <Compile Include="_Extensions\RectangleExtension.cs" />

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 // ReSharper disable InconsistentNaming
 
-namespace Blish_HUD.WinAPI {
+namespace Blish_HUD.Input {
     public class MouseHook {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(MouseHook));
@@ -59,7 +59,7 @@ namespace Blish_HUD.WinAPI {
             Logger.Debug("Enabling mouse hook.");
 
             if (_mouseHook == IntPtr.Zero) {
-                _mouseHook = SetWindowsHookExW(WH_MOUSE_LL, _mouseProc, Extern.GetModuleHandleW(IntPtr.Zero), 0);
+                _mouseHook = SetWindowsHookExW(WH_MOUSE_LL, _mouseProc, HookExtern.GetModuleHandleW(IntPtr.Zero), 0);
             }
 
             return _mouseHook != IntPtr.Zero;
@@ -70,25 +70,27 @@ namespace Blish_HUD.WinAPI {
 
             if (_mouseHook == IntPtr.Zero) return;
 
-            Extern.UnhookWindowsHookEx(_mouseHook);
+            HookExtern.UnhookWindowsHookEx(_mouseHook);
             _mouseHook = IntPtr.Zero;
         }
 
-        internal bool NonClick { get; private set; } = false;
+        private bool _cameraDragging;
 
         private Int32 MouseHookProc(Int32 nCode, IntPtr wParam, ref MSLLHOOKSTRUCT lParam) {
             int action = wParam.ToInt32();
-            if (this.NonClick && action == 517) {
-                this.NonClick = false;
+            if (_cameraDragging && action == 517) { // If the player has been holding WM_RightButtonDown, then we ignore WM_RightButtonUp (they are just releasing the camera)
+                _cameraDragging = false;
 
             } else if (action > 512 && GameService.Input.HudFocused && action < 523 && !GameService.Input.HookOverride) {
-                GameService.Input.ClickState = new InputService.MouseEvent((MouseMessages)action, lParam);
+                GameService.Input.ClickState = new MouseEvent((MouseMessages)action, lParam);
 
                 if (action != 514)
                     return 1;
-            } else if (action == 516) {
-                this.NonClick = true;
+
+            } else if (action == 516) { // If WM_RightButtonDown, we ignore it so that we don't accidentally intercept the player moving the camera
+                _cameraDragging = true;
             }
+
             return CallNextHookEx(WH_MOUSE_LL, nCode, wParam, ref lParam);
         }
     }

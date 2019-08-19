@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Blish_HUD.Input;
 
-namespace Blish_HUD.WinAPI {
+namespace Blish_HUD.Input {
     internal class KeyboardHook {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(KeyboardHook));
@@ -24,7 +22,7 @@ namespace Blish_HUD.WinAPI {
             Logger.Debug("Enabling keyboard hook.");
 
             if (_keyboardHook == IntPtr.Zero) {
-                _keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, Extern.GetModuleHandleW(IntPtr.Zero), 0);
+                _keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, HookExtern.GetModuleHandleW(IntPtr.Zero), 0);
             }
 
             return _keyboardHook != IntPtr.Zero;
@@ -35,7 +33,7 @@ namespace Blish_HUD.WinAPI {
 
             if (_keyboardHook == IntPtr.Zero) return;
 
-            Extern.UnhookWindowsHookEx(_keyboardHook);
+            HookExtern.UnhookWindowsHookEx(_keyboardHook);
             _keyboardHook = IntPtr.Zero;
         }
 
