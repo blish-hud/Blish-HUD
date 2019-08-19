@@ -166,7 +166,8 @@ namespace Blish_HUD {
 
         private void CreateTrayIcon() {
             this.TrayIconMenu = new ContextMenuStrip();
-            
+
+            // Found this here: https://stackoverflow.com/a/25409865/595437
             // Extract the tray icon from our assembly
             this.TrayIcon = new NotifyIcon() {
                 Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
