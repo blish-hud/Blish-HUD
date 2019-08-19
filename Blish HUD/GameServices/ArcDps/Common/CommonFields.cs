@@ -80,7 +80,7 @@ namespace Blish_HUD.ArcDps.Common
             }
         }
 
-        public class Player
+        public struct Player
         {
             public Player(string characterName, string accountName, uint profession, uint elite, bool self)
             {
