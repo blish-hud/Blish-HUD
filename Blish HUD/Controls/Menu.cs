@@ -100,10 +100,6 @@ namespace Blish_HUD.Controls {
 
             newChild.MenuItemHeight = this.MenuItemHeight;
 
-            // Ensure child items remains the same width as us
-            //Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Width,
-            //                                     () => this.Width, applyLeft: true);
-
             // We'll bind the top of the control to the bottom of the last control we added
             var lastItem = _children.LastOrDefault();
             if (lastItem != null) {
@@ -128,24 +124,24 @@ namespace Blish_HUD.Controls {
         }
 
         public override void UpdateContainer(GameTime gameTime) {
-            int totalItemHeight = _children.Where(c => c.Visible).Max(c => c.Bottom);
+            int totalItemHeight = 0;
+
+            for (int i = 0; i < _children.Count; i++) {
+                totalItemHeight = Math.Max(_children[i].Bottom, totalItemHeight);
+            }
 
             this.Height = totalItemHeight;
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw items dark every other one
-            int totalItemHeight = _children.Where(c => c.Visible).Max(c => c.Bottom);
-
-            for (int sec = 0; sec < totalItemHeight / MenuItemHeight; sec += 2) {
+            for (int sec = 0; sec < _size.Y / MenuItemHeight; sec += 2) {
                 spriteBatch.DrawOnCtrl(this,
                                        _textureMenuItemFade,
-                                       new Rectangle(
-                                                     0,
+                                       new Rectangle(0,
                                                      MenuItemHeight * sec - VerticalScrollOffset,
                                                      _size.X,
-                                                     MenuItemHeight
-                                                    ),
+                                                     MenuItemHeight),
                                        Color.Black * 0.7f);
             }
         }
