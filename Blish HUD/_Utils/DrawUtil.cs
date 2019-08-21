@@ -44,6 +44,8 @@ namespace Blish_HUD {
 
         /// <remarks> Source: https://stackoverflow.com/a/15987581/595437 </remarks>
         public static string WrapText(BitmapFont spriteFont, string text, float maxLineWidth) {
+            if (string.IsNullOrEmpty(text)) return "";
+
             string[] words      = text.Split(' ');
             var      sb         = new StringBuilder();
             float    lineWidth  = 0f;
