@@ -14,16 +14,15 @@ namespace Blish_HUD.Controls {
     /// <summary>
     /// A control that is capable of having child controls that are drawn when the container is drawn.
     /// Classes that inherit should be packaged controls that that manage their own controls internally.
-    /// For a Container with accessible children for non-packaged controls, use <see cref="AccessibleContainer"/>.
     /// </summary>
-    public abstract class Container:Control, IEnumerable<Control> {
+    public abstract class Container : Control, IEnumerable<Control> {
 
         public event EventHandler<ChildChangedEventArgs> ChildAdded;
         public event EventHandler<ChildChangedEventArgs> ChildRemoved;
 
         public event EventHandler<RegionChangedEventArgs> ContentResized;
 
-        protected List<Control> _children;
+        protected readonly List<Control> _children;
         [Newtonsoft.Json.JsonIgnore]
         public IReadOnlyCollection<Control> Children => _children.AsReadOnly();
 
@@ -49,8 +48,9 @@ namespace Blish_HUD.Controls {
             /* ContentRegion defaults to match our control size until one is manually set,
                so we do squeeze in OnPropertyChanged for it if the control hasn't had a
                ContentRegion specified and then resizes */
-            if (!_contentRegion.HasValue)
+            if (!_contentRegion.HasValue) {
                 OnPropertyChanged(nameof(this.ContentRegion));
+            }
         }
 
         public bool AddChild(Control child) {
@@ -90,7 +90,7 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
-        private Rectangle? _contentRegion;
+        protected Rectangle? _contentRegion;
         public Rectangle ContentRegion {
             get => _contentRegion ?? new Rectangle(Point.Zero, this.Size);
             protected set {
