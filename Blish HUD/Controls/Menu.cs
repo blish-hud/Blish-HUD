@@ -110,7 +110,7 @@ namespace Blish_HUD.Controls {
             ShouldShift = e.ResultingChildren.Any(mi => {
                                                       MenuItem cmi = (MenuItem) mi;
 
-                                                      return cmi.CanCheck || cmi.Icon != null || cmi.Children.Any() ;
+                                                      return cmi.CanCheck || cmi.Icon != null || cmi.Children.Any();
                                                   });
 
             base.OnChildAdded(e);
