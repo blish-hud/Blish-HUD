@@ -75,13 +75,10 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            this.BlishMenuIcon = new CornerIcon() {
-                Icon             = Content.GetTexture("logo"),
-                HoverIcon        = Content.GetTexture("logo-big"),
-                Menu             = new ContextMenuStrip(),
-                BasicTooltipText = Properties.Strings.General_BlishHUD,
-                Priority         = int.MaxValue,
-                Parent           = Graphics.SpriteScreen,
+            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Properties.Strings.General_BlishHUD) {
+                Menu     = new ContextMenuStrip(),
+                Priority = int.MaxValue,
+                Parent   = Graphics.SpriteScreen,
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
