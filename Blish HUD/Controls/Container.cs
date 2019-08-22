@@ -22,7 +22,8 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<RegionChangedEventArgs> ContentResized;
 
-        protected readonly List<Control> _children;
+        protected List<Control> _children;
+
         [Newtonsoft.Json.JsonIgnore]
         public IReadOnlyCollection<Control> Children => _children.AsReadOnly();
 
@@ -124,6 +125,16 @@ namespace Blish_HUD.Controls {
             }
 
             return allDescendants;
+        }
+
+        public void ClearChildren() {
+            Control[] oldChildren = _children.ToArray();
+
+            _children = new List<Control>();
+
+            for (int i = 0; i < oldChildren.Length; i++) {
+                oldChildren[i].Parent = null;
+            }
         }
 
         public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
