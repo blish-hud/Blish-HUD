@@ -21,6 +21,9 @@ namespace Blish_HUD {
         public CornerIcon BlishMenuIcon { get; protected set; }
         public ContextMenuStrip BlishContextMenu { get; protected set; }
 
+        private GameTime _currentGameTime;
+        public GameTime CurrentGameTime => _currentGameTime;
+
         private SettingEntry<Gw2Locale> _userLocale;
         private SettingEntry<bool> _stayInTray;
 
@@ -157,6 +160,8 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
+            _currentGameTime = gameTime;
+
             HandleEnqueuedUpdates(gameTime);
 
             if (GameService.GameIntegration.IsInGame) {
