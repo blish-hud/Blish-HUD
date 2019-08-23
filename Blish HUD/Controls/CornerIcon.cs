@@ -22,6 +22,8 @@ namespace Blish_HUD.Controls {
 
         private static ObservableCollection<CornerIcon> CornerIcons { get; }
 
+        private static readonly Rectangle _standardIconBounds;
+
         private const int   ICON_POSITION = 10;
         private const int   ICON_SIZE     = 32;
         private const float ICON_TRANS    = 0.4f;
@@ -99,6 +101,8 @@ namespace Blish_HUD.Controls {
         static CornerIcon() {
             CornerIcons = new ObservableCollection<CornerIcon>();
 
+            _standardIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
+
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
 
             GameService.Input.MouseMoved += (sender, e) => {
@@ -155,21 +159,17 @@ namespace Blish_HUD.Controls {
             base.OnClick(e);
         }
 
-        private Rectangle _layoutIconBounds;
-
         private bool _isLoading = false;
 
         /// <inheritdoc />
         public override void RecalculateLayout() {
-            _layoutIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
-
             _isLoading = !string.IsNullOrEmpty(_loadingMessage);
             _size = new Point(ICON_SIZE, _isLoading ? ICON_SIZE * 2 : ICON_SIZE);
         }
 
         /// <inheritdoc />
         protected override void OnMouseMoved(MouseEventArgs e) {
-            if (_isLoading && _mouseOver && !_layoutIconBounds.Contains(this.RelativeMousePosition)) {
+            if (_isLoading && _mouseOver && !(this.RelativeMousePosition.Y < _standardIconBounds.Bottom)) {
                 this.BasicTooltipText = _loadingMessage;
             } else {
                 this.BasicTooltipText = _iconName;
@@ -183,10 +183,10 @@ namespace Blish_HUD.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_icon == null) return;
 
-            if (this.MouseOver && this.RelativeMousePosition.Y <= _layoutIconBounds.Bottom) {
-                spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _layoutIconBounds);
+            if (this.MouseOver && this.RelativeMousePosition.Y <= _standardIconBounds.Bottom) {
+                spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _standardIconBounds);
             } else {
-                spriteBatch.DrawOnCtrl(this, _icon, _layoutIconBounds, Color.White * _hoverTrans);
+                spriteBatch.DrawOnCtrl(this, _icon, _standardIconBounds, Color.White * _hoverTrans);
             }
 
             if (_isLoading) {
