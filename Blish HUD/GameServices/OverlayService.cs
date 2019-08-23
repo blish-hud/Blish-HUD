@@ -21,6 +21,9 @@ namespace Blish_HUD {
         public CornerIcon BlishMenuIcon { get; protected set; }
         public ContextMenuStrip BlishContextMenu { get; protected set; }
 
+        private GameTime _currentGameTime;
+        public GameTime CurrentGameTime => _currentGameTime;
+
         private SettingEntry<Gw2Locale> _userLocale;
         private SettingEntry<bool> _stayInTray;
 
@@ -72,13 +75,10 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            this.BlishMenuIcon = new CornerIcon() {
-                Icon             = Content.GetTexture("logo"),
-                HoverIcon        = Content.GetTexture("logo-big"),
-                Menu             = new ContextMenuStrip(),
-                BasicTooltipText = Properties.Strings.General_BlishHUD,
-                Priority         = int.MaxValue,
-                Parent           = Graphics.SpriteScreen,
+            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Properties.Strings.General_BlishHUD) {
+                Menu     = new ContextMenuStrip(),
+                Priority = int.MaxValue,
+                Parent   = Graphics.SpriteScreen,
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
@@ -157,6 +157,8 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
+            _currentGameTime = gameTime;
+
             HandleEnqueuedUpdates(gameTime);
 
             if (GameService.GameIntegration.IsInGame) {

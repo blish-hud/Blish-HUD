@@ -10,13 +10,13 @@ namespace Blish_HUD.Controls {
 
     public class TabbedWindow : WindowBase {
 
-        private const int TAB_HEIGHT = 52;
-        private const int TAB_WIDTH = 104;
+        private const int TAB_HEIGHT    = 52;
+        private const int TAB_WIDTH     = 104;
         private const int TAB_ICON_SIZE = 32;
 
         private const int TAB_SECTION_WIDTH = 46;
 
-        private const int WINDOWCONTENT_WIDTH = 1024;
+        private const int WINDOWCONTENT_WIDTH  = 1024;
         private const int WINDOWCONTENT_HEIGHT = 700;
 
         #region Load Static
@@ -39,7 +39,7 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<EventArgs> TabChanged;
 
-        protected int _selectedTabIndex = -1;
+        protected int _selectedTabIndex = 0;
         public int SelectedTabIndex {
             get => _selectedTabIndex;
             set {
@@ -49,7 +49,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public WindowTab SelectedTab => Tabs[_selectedTabIndex];
+        public WindowTab SelectedTab => Tabs.Count > _selectedTabIndex ? Tabs[_selectedTabIndex] : null;
 
         private int _hoveredTabIndex = 0;
         private int HoveredTabIndex {
@@ -63,7 +63,7 @@ namespace Blish_HUD.Controls {
 
             this.ConstructWindow(tabWindowTexture, new Vector2(25, 33), new Rectangle(0, 0, 1100, 745), new Thickness(60, 75, 45, 25), 40);
 
-            ContentRegion = new Rectangle(TAB_WIDTH / 2, 48, WINDOWCONTENT_WIDTH, WINDOWCONTENT_HEIGHT);
+            _contentRegion = new Rectangle(TAB_WIDTH / 2, 48, WINDOWCONTENT_WIDTH, WINDOWCONTENT_HEIGHT);
         }
 
         protected virtual void OnTabChanged(EventArgs e) {
@@ -222,27 +222,30 @@ namespace Blish_HUD.Controls {
         public override void RecalculateLayout() {
             base.RecalculateLayout();
 
-            var firstTabBounds = TabBoundsFromIndex(0);
-            var selectedTabBounds = TabRegions[this.SelectedTab];
-            var lastTabBounds = TabBoundsFromIndex(TabRegions.Count - 1);
+            if (this.Tabs.Count == 0) return;
 
-            _layoutTopTabBarBounds = new Rectangle(0, 0, TAB_SECTION_WIDTH, firstTabBounds.Top);
+            var firstTabBounds    = TabBoundsFromIndex(0);
+            var selectedTabBounds = TabRegions[this.SelectedTab];
+            var lastTabBounds     = TabBoundsFromIndex(TabRegions.Count - 1);
+
+            _layoutTopTabBarBounds    = new Rectangle(0, 0,                    TAB_SECTION_WIDTH, firstTabBounds.Top);
             _layoutBottomTabBarBounds = new Rectangle(0, lastTabBounds.Bottom, TAB_SECTION_WIDTH, _size.Y - lastTabBounds.Bottom);
 
-            int topSplitHeight = selectedTabBounds.Top - ContentRegion.Top;
-            int bottomSplitHeight = ContentRegion.Bottom - selectedTabBounds.Bottom;
+            int topSplitHeight    = selectedTabBounds.Top - ContentRegion.Top;
+            int bottomSplitHeight = ContentRegion.Bottom  - selectedTabBounds.Bottom;
 
             _layoutTopSplitLineBounds = new Rectangle(ContentRegion.X - _textureSplitLine.Width + 1,
                                                       ContentRegion.Y,
                                                       _textureSplitLine.Width,
                                                       topSplitHeight);
-            _layoutTopSplitLineSourceBounds = new Rectangle(0, 0, _textureSplitLine.Width, topSplitHeight);
 
+            _layoutTopSplitLineSourceBounds = new Rectangle(0, 0, _textureSplitLine.Width, topSplitHeight);
 
             _layoutBottomSplitLineBounds = new Rectangle(ContentRegion.X - _textureSplitLine.Width + 1,
                                                          selectedTabBounds.Bottom,
                                                          _textureSplitLine.Width,
                                                          bottomSplitHeight);
+
             _layoutBottomSplitLineSourceBounds = new Rectangle(0, _textureSplitLine.Height - bottomSplitHeight, _textureSplitLine.Width, bottomSplitHeight);
         }
 

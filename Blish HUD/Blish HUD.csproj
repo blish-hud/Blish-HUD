@@ -245,6 +245,7 @@
     <Compile Include="GameServices\Pathing\PathableAttributeCollection.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
+    <Compile Include="_Utils\LoadingSpinnerUtil.cs" />
     <Compile Include="_Utils\MouseInterceptor.cs" />
     <Compile Include="_Utils\StringUtil.cs" />
     <Compile Include="_Utils\VectorUtil.cs" />

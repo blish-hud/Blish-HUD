@@ -7,7 +7,7 @@ using Blish_HUD.Content;
 using Blish_HUD.Input;
 
 namespace Blish_HUD.Controls {
-    public class CornerIcon : Container {
+    public class CornerIcon : Control {
 
         private static int _leftOffset = 0;
         public static int LeftOffset {
@@ -20,21 +20,13 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        private static ObservableCollection<CornerIcon> CornerIcons { get; }
+
+        private static readonly Rectangle _standardIconBounds;
+
         private const int   ICON_POSITION = 10;
         private const int   ICON_SIZE     = 32;
         private const float ICON_TRANS    = 0.4f;
-
-        private AsyncTexture2D _icon;
-        public AsyncTexture2D Icon {
-            get => _icon;
-            set => SetProperty(ref _icon, value);
-        }
-
-        private AsyncTexture2D _hoverIcon;
-        public AsyncTexture2D HoverIcon {
-            get => _hoverIcon;
-            set => SetProperty(ref _hoverIcon, value);
-        }
         
         private float _hoverTrans = ICON_TRANS;
         public float HoverTrans {
@@ -52,10 +44,34 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private static ObservableCollection<CornerIcon> CornerIcons { get; }
+        private AsyncTexture2D _icon;
+        /// <summary>
+        /// The icon shown when the <see cref="CornerIcon"/> is not currently being hovered over.
+        /// </summary>
+        public AsyncTexture2D Icon {
+            get => _icon;
+            set => SetProperty(ref _icon, value);
+        }
+
+        private AsyncTexture2D _hoverIcon;
+        /// <summary>
+        /// The icon shown when the <see cref="CornerIcon"/> is hovered over.
+        /// </summary>
+        public AsyncTexture2D HoverIcon {
+            get => _hoverIcon;
+            set => SetProperty(ref _hoverIcon, value);
+        }
+
+        private string _iconName;
+        /// <summary>
+        /// The name of the <see cref="CornerIcon"/> that is shown when moused over.
+        /// </summary>
+        public string IconName {
+            get => _iconName;
+            set => SetProperty(ref _iconName, value);
+        }
 
         private int? _priority;
-
         /// <summary>
         /// <see cref="CornerIcon"/>s are sorted by priority so that, from left to right, priority goes from the highest to lowest.
         /// </summary>
@@ -69,13 +85,23 @@ namespace Blish_HUD.Controls {
         }
 
         private string _loadingMessage;
+        /// <summary>
+        /// If defined, a loading spinner is shown below the <see cref="CornerIcon"/> and this text will be
+        /// shown in a tooltip when the loading spinner is moused over.
+        /// </summary>
         public string LoadingMessage {
             get => _loadingMessage;
-            set => SetProperty(ref _loadingMessage, value, true);
+            set {
+                if (SetProperty(ref _loadingMessage, value, true) && _mouseOver) {
+                    this.BasicTooltipText = _loadingMessage;
+                }
+            }
         }
 
         static CornerIcon() {
             CornerIcons = new ObservableCollection<CornerIcon>();
+
+            _standardIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
 
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
 
@@ -105,18 +131,20 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private readonly LoadingSpinner _iconLoader;
         public CornerIcon() {
-            this.Parent        = Graphics.SpriteScreen;
-            this.Size          = new Point(ICON_SIZE, ICON_SIZE);
-            this.ContentRegion = new Rectangle(0, ICON_SIZE, ICON_SIZE, ICON_SIZE);
-
-            _iconLoader = new LoadingSpinner() {
-                Parent = this,
-                Size   = this.ContentRegion.Size,
-            };
+            this.Parent = Graphics.SpriteScreen;
+            this.Size   = new Point(ICON_SIZE, ICON_SIZE);
 
             CornerIcons.Add(this);
+        }
+
+        public CornerIcon(AsyncTexture2D icon, string iconName) : this() {
+            _icon     = icon;
+            _iconName = iconName;
+        }
+
+        public CornerIcon(AsyncTexture2D icon, AsyncTexture2D hoverIcon, string iconName) : this(icon, iconName) {
+            _hoverIcon = hoverIcon;
         }
 
         /// <inheritdoc />
@@ -131,27 +159,38 @@ namespace Blish_HUD.Controls {
             base.OnClick(e);
         }
 
-        private Rectangle _layoutIconBounds;
+        private bool _isLoading = false;
+
         /// <inheritdoc />
-
         public override void RecalculateLayout() {
-            _layoutIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
+            _isLoading = !string.IsNullOrEmpty(_loadingMessage);
+            _size = new Point(ICON_SIZE, _isLoading ? ICON_SIZE * 2 : ICON_SIZE);
+        }
 
-            bool isLoading = !string.IsNullOrEmpty(_loadingMessage);
-            this.Size = new Point(ICON_SIZE, isLoading ? ICON_SIZE * 2 : ICON_SIZE);
-            _iconLoader.Visible = isLoading;
-            _iconLoader.BasicTooltipText = _loadingMessage;
+        /// <inheritdoc />
+        protected override void OnMouseMoved(MouseEventArgs e) {
+            if (_isLoading && _mouseOver && !(this.RelativeMousePosition.Y < _standardIconBounds.Bottom)) {
+                this.BasicTooltipText = _loadingMessage;
+            } else {
+                this.BasicTooltipText = _iconName;
+            }
+
+            base.OnMouseMoved(e);
         }
 
         // TODO: Use a shader to replace "HoverIcon"
         /// <inheritdoc />
-        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_icon == null) return;
 
-            if (this.MouseOver && this.RelativeMousePosition.Y <= _layoutIconBounds.Bottom) {
-                spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _layoutIconBounds);
+            if (this.MouseOver && this.RelativeMousePosition.Y <= _standardIconBounds.Bottom) {
+                spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _standardIconBounds);
             } else {
-                spriteBatch.DrawOnCtrl(this, _icon, _layoutIconBounds, Color.White * _hoverTrans);
+                spriteBatch.DrawOnCtrl(this, _icon, _standardIconBounds, Color.White * _hoverTrans);
+            }
+
+            if (_isLoading) {
+                LoadingSpinnerUtil.DrawLoadingSpinner(this, spriteBatch, new Rectangle(0, ICON_SIZE, ICON_SIZE, ICON_SIZE));
             }
         }
 

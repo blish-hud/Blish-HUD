@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
 
-    public struct WindowTab {
+    public class WindowTab {
         public string         Name     { get; set; }
         public AsyncTexture2D Icon     { get; set; }
         public int            Priority { get; set; }
