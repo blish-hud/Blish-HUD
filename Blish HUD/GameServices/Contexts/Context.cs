@@ -10,7 +10,6 @@ namespace Blish_HUD.Contexts {
         /// <summary>
         /// Fired when the context has finished loading.
         /// </summary>
-
         public event EventHandler<EventArgs> Readied;
 
         private void OnReadied(EventArgs e) {
