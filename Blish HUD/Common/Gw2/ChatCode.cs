@@ -3,18 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Blish_HUD
+namespace Blish_HUD.Common.Gw2
 {
-    public class Gw2ChatCodeService : GameService
+    public static class ChatCode
     {
-        private static Logger Logger = Logger.GetLogger(typeof(Gw2ChatCodeService));
-        protected override void Initialize(){ /** NOOP **/ }
-
-        protected override void Load(){ /** NOOP **/ }
-
-        protected override void Unload(){ /** NOOP **/ }
-
-        protected override void Update(GameTime gameTime){ /** NOOP **/}
+        private static Logger Logger = Logger.GetLogger(typeof(ChatCode));
 
         /// <author>The original code was made in a JSFiddle by the GW2 Wikiuser Fam. Translation to C# by Andy</author>
         /// <seealso cref="https://jsfiddle.net/fffam/cg3njdu6/"/>
@@ -22,9 +15,9 @@ namespace Blish_HUD
         /// <summary>
         /// Decodes a Guild Wars 2 chat code.
         /// </summary>
-        /// <param name="fullcode">This needs to be the item code (i.e. from trading post or gw2spidy) not the wardrobe ID</param>
-        /// <returns>0 if invalid or item code</returns>
-        public static int DecodeChatCodeForItemOrSkin(string fullcode)
+        /// <param name="fullcode">This needs to be the item code or chat code (i.e. from trading post or gw2spidy) not the wardrobe ID</param>
+        /// <returns>Item ID or 0, if invalid.</returns>
+        public static int DecodeChatCode(string fullcode)
         {
             if (!Regex.IsMatch(fullcode, @"^\[\&")) {
                 return 0;
@@ -60,13 +53,13 @@ namespace Blish_HUD
         /// <summary>
         /// Generates a chat code with the given parameters.
         /// </summary>
-        /// <param name="itemId"></param>
-        /// <param name="quantity">This can be evidence of witchcraft. Careful when showing off in-game.</param>
-        /// <param name="upgrade1Id">An upgrade id if item has one upgrade slot.</param>
-        /// <param name="upgrade2Id">An upgrade id if item has two upgrade slots.</param>
-        /// <param name="skinId">A skin id if item is transmutable.</param>
+        /// <param name="itemId">The item identifier to generate a chat code for.</param>
+        /// <param name="quantity">Optional: Quantity of the item.</param>
+        /// <param name="upgrade1Id">Optional: An upgrade id if item has one upgrade slot.</param>
+        /// <param name="upgrade2Id">Optional: An upgrade id if item has two upgrade slots.</param>
+        /// <param name="skinId">Optional: A skin id if item is transmutable.</param>
         /// <returns>A Guild Wars 2 chat code</returns>
-        public static string GenerateChatCodeForItem(int itemId, int quantity, int upgrade1Id = 0, int upgrade2Id = 0, int skinId = 0)
+        public static string GenerateChatCode(int itemId, int quantity = 1, int upgrade1Id = 0, int upgrade2Id = 0, int skinId = 0)
         {
 
             // Figure out which header we need based on what components

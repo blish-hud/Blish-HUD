@@ -104,7 +104,7 @@
     <StartupObject>Blish_HUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GameServices\Gw2ChatCodeService.cs" />
+    <Compile Include="Common\Gw2\ChatCode.cs" />
     <Compile Include="GameServices\Content\AsyncTexture2D.cs" />
     <Compile Include="Controls\BasicWindow.cs" />
     <Compile Include="Controls\Book.cs" />

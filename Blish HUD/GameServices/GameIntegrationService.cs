@@ -77,7 +77,7 @@ namespace Blish_HUD {
             }
         }
 
-        private IntPtr Gw2WindowHandle { get; set; }
+        public IntPtr Gw2WindowHandle { get; private set; }
 
         private Process _gw2Process;
         public Process Gw2Process {

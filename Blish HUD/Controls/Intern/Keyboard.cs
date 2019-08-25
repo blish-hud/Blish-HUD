@@ -45,7 +45,7 @@ namespace Blish_HUD.Controls.Intern
                 ExtraKeyInfo lParam = new ExtraKeyInfo(){
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Process.MainWindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
 
@@ -85,7 +85,7 @@ namespace Blish_HUD.Controls.Intern
                     prevKeyState = 1,
                     transitionState = 1
                 };
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Process.MainWindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
         }
     }
