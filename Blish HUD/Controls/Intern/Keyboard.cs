@@ -3,13 +3,8 @@ using System.Collections.Generic;
 using Blish_HUD.Controls.Extern;
 namespace Blish_HUD.Controls.Intern
 {
-    public class Keyboard : IKeyboard
+    public static class Keyboard
     {
-        /// <summary>
-        /// If true, uses normal key input instead of sending key event messages to GW2's window handle.
-        /// </summary>
-        public bool HardwareInput = false;
-
         private const uint WM_KEYDOWN = 0x0100;
         private const uint WM_KEYUP = 0x0101;
         private const uint WM_CHAR = 0x0102;
@@ -19,41 +14,13 @@ namespace Blish_HUD.Controls.Intern
         private const uint MAPVK_VSC_TO_VK_EX = 0x03;
         private const uint MAPVK_VK_TO_VSC_EX = 0x04;
 
-        private IntPtr Gw2WndHandle = GameService.GameIntegration.Gw2Process.MainWindowHandle;
-
-        private static readonly Dictionary<GuildWarsControls, ScanCodeShort> ScanCodeShorts = new Dictionary<GuildWarsControls, ScanCodeShort>
+        /// <summary>
+        /// Presses a key.
+        /// </summary>
+        /// <param name="key">Virtual Key Short</param>
+        public static void Press(VirtualKeyShort key)
         {
-            {GuildWarsControls.WeaponSkill1, ScanCodeShort.KEY_1},
-            {GuildWarsControls.WeaponSkill2, ScanCodeShort.KEY_2},
-            {GuildWarsControls.WeaponSkill3, ScanCodeShort.KEY_3},
-            {GuildWarsControls.WeaponSkill4, ScanCodeShort.KEY_4},
-            {GuildWarsControls.WeaponSkill5, ScanCodeShort.KEY_5},
-            {GuildWarsControls.HealingSkill, ScanCodeShort.KEY_6},
-            {GuildWarsControls.UtilitySkill1, ScanCodeShort.KEY_7},
-            {GuildWarsControls.UtilitySkill2, ScanCodeShort.KEY_8},
-            {GuildWarsControls.UtilitySkill3, ScanCodeShort.KEY_9},
-            {GuildWarsControls.EliteSkill, ScanCodeShort.KEY_0}
-        };
-
-        private static readonly Dictionary<GuildWarsControls, VirtualKeyShort> VirtualKeyShorts = new Dictionary<GuildWarsControls, VirtualKeyShort>
-        {
-            {GuildWarsControls.WeaponSkill1, VirtualKeyShort.KEY_1},
-            {GuildWarsControls.WeaponSkill2, VirtualKeyShort.KEY_2},
-            {GuildWarsControls.WeaponSkill3, VirtualKeyShort.KEY_3},
-            {GuildWarsControls.WeaponSkill4, VirtualKeyShort.KEY_4},
-            {GuildWarsControls.WeaponSkill5, VirtualKeyShort.KEY_5},
-            {GuildWarsControls.HealingSkill, VirtualKeyShort.KEY_6},
-            {GuildWarsControls.UtilitySkill1, VirtualKeyShort.KEY_7},
-            {GuildWarsControls.UtilitySkill2, VirtualKeyShort.KEY_8},
-            {GuildWarsControls.UtilitySkill3, VirtualKeyShort.KEY_9},
-            {GuildWarsControls.EliteSkill, VirtualKeyShort.KEY_0}
-        };
-
-        public Keyboard(){ /** NOOP **/ }
-
-        public void Press(GuildWarsControls key)
-        {
-            if (HardwareInput || !GameService.GameIntegration.Gw2IsRunning)
+            if (!GameService.GameIntegration.Gw2IsRunning)
             {
                 var nInputs = new[]
                 {
@@ -64,8 +31,8 @@ namespace Blish_HUD.Controls.Intern
                         {
                             ki = new KeybdInput
                             {
-                                wScan = ScanCodeShorts[key],
-                                wVk = VirtualKeyShorts[key]
+                                wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                wVk = key
                             }
                         }
                     }
@@ -74,17 +41,21 @@ namespace Blish_HUD.Controls.Intern
             }
             else
             {
-                uint vkCode = (uint)VirtualKeyShorts[key];
+                uint vkCode = (uint)key;
                 ExtraKeyInfo lParam = new ExtraKeyInfo(){
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
-                PInvoke.PostMessage(Gw2WndHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Process.MainWindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
 
-        public void Release(GuildWarsControls key)
+        /// <summary>
+        /// Releases a key.
+        /// </summary>
+        /// <param name="key">Virtual Key Short</param>
+        public static void Release(VirtualKeyShort key)
         {
-            if (HardwareInput || !GameService.GameIntegration.Gw2IsRunning)
+            if (!GameService.GameIntegration.Gw2IsRunning)
             {
                 var nInputs = new[]
                 {
@@ -95,8 +66,8 @@ namespace Blish_HUD.Controls.Intern
                         {
                             ki = new KeybdInput
                             {
-                                wScan = ScanCodeShorts[key],
-                                wVk = VirtualKeyShorts[key],
+                                wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                wVk = key,
                                 dwFlags = KeyEventF.KEYUP
                             }
                         }
@@ -106,7 +77,7 @@ namespace Blish_HUD.Controls.Intern
             }
             else
             {
-                uint vkCode = (uint)VirtualKeyShorts[key];
+                uint vkCode = (uint)key;
                 ExtraKeyInfo lParam = new ExtraKeyInfo
                 {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
@@ -114,7 +85,7 @@ namespace Blish_HUD.Controls.Intern
                     prevKeyState = 1,
                     transitionState = 1
                 };
-                PInvoke.PostMessage(Gw2WndHandle, WM_KEYUP, vkCode, lParam.GetInt());
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Process.MainWindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
         }
     }

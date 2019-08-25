@@ -104,6 +104,7 @@
     <StartupObject>Blish_HUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GameServices\Gw2ChatCodeService.cs" />
     <Compile Include="GameServices\Content\AsyncTexture2D.cs" />
     <Compile Include="Controls\BasicWindow.cs" />
     <Compile Include="Controls\Book.cs" />
@@ -254,7 +255,6 @@
     <Compile Include="_Enums\Gw2Profession.cs" />
     <Compile Include="_Enums\Gw2Race.cs" />
     <Compile Include="_Events\ValueChangedEventArgs[T].cs" />
-    <Compile Include="_Interfaces\IKeyboard.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
     <Compile Include="GameServices\Modules\ManifestV1.cs" />
     <Compile Include="GameServices\Pathing\Behaviors\Copy.cs" />
