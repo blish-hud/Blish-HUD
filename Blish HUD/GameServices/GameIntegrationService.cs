@@ -116,21 +116,33 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _gw2ExecutablePath = settings.DefineSetting("Gw2ExecutablePath", GetGw2PathFromRegistry(), "Gw2-64.exe Path", "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
+            const string UNDEFINED_EXECPATH = "NotDetected";
+
+            _gw2ExecutablePath = settings.DefineSetting("Gw2ExecutablePath", UNDEFINED_EXECPATH, "Gw2-64.exe Path", "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
+
+            // We do this to avoid trying to detect in the registry
+            // unless we have never detected the true path
+            if (_gw2ExecutablePath.Value == UNDEFINED_EXECPATH) {
+                _gw2ExecutablePath.Value = GetGw2PathFromRegistry();
+            }
         }
 
         private string GetGw2PathFromRegistry() {
-            using (var gw2Key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(GW2_REGISTRY_KEY, RegistryRights.ReadKey)) {
-                if (gw2Key != null) {
-                    string gw2Path = gw2Key.GetValue(GW2_REGISTRY_PATH_SV).ToString();
+            try {
+                using (var gw2Key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(GW2_REGISTRY_KEY, RegistryRights.ReadKey)) {
+                    if (gw2Key != null) {
+                        string gw2Path = gw2Key.GetValue(GW2_REGISTRY_PATH_SV).ToString();
 
-                    if (File.Exists(gw2Path)) {
-                        return gw2Path;
+                        if (File.Exists(gw2Path)) {
+                            return gw2Path;
+                        }
                     }
                 }
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to read Guild Wars 2 path from registry value {registryKey} located at {registryPath}.", GW2_REGISTRY_PATH_SV, GW2_REGISTRY_KEY);
             }
 
-            return null;
+            return string.Empty;
         }
 
         private void LaunchGw2(bool autologin = false) {
@@ -177,18 +189,16 @@ namespace Blish_HUD {
             };
 
             // Populate TrayIconMenu items
-            if (!string.IsNullOrEmpty(this.Gw2ExecutablePath)) {
-                ts_launchGw2Auto = this.TrayIconMenu.Items.Add("Launch Guild Wars 2 - Autologin");
-                ts_launchGw2     = this.TrayIconMenu.Items.Add("Launch Guild Wars 2");
+            ts_launchGw2Auto = this.TrayIconMenu.Items.Add("Launch Guild Wars 2 - Autologin");
+            ts_launchGw2     = this.TrayIconMenu.Items.Add("Launch Guild Wars 2");
 
-                ts_launchGw2Auto.Click += delegate { LaunchGw2(true); };
-                ts_launchGw2.Click     += delegate { LaunchGw2(false); };
+            ts_launchGw2Auto.Click += delegate { LaunchGw2(true); };
+            ts_launchGw2.Click     += delegate { LaunchGw2(false); };
 
-                this.TrayIcon.DoubleClick += delegate {
-                    if (!this.Gw2IsRunning)
-                        LaunchGw2(true);
-                };
-            }
+            this.TrayIcon.DoubleClick += delegate {
+                if (!this.Gw2IsRunning)
+                    LaunchGw2(true);
+            };
 
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
             ts_exit = this.TrayIconMenu.Items.Add("Close Blish HUD");
