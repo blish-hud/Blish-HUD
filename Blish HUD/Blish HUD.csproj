@@ -201,6 +201,12 @@
     <Compile Include="GameServices\ArcDps\SocketAsyncEventArgsPool.cs" />
     <Compile Include="GameServices\ArcDps\SocketListener\SocketListener.cs" />
     <Compile Include="GameServices\Content\RenderServiceTextureSize.cs" />
+    <Compile Include="GameServices\ContextsService.cs" />
+    <Compile Include="GameServices\Contexts\CdnInfoContext.cs" />
+    <Compile Include="GameServices\Contexts\Gw2ClientContext.cs" />
+    <Compile Include="GameServices\Contexts\Context.cs" />
+    <Compile Include="GameServices\Contexts\ContextResult[T].cs" />
+    <Compile Include="GameServices\Contexts\ContextAvailability.cs" />
     <Compile Include="GameServices\Debug\Logger.cs" />
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
