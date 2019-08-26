@@ -169,8 +169,13 @@ namespace Blish_HUD.Controls {
                     _tabRegions[_tabs[i]] = TabBoundsFromIndex(i);
                 }
 
+                // Update tab index without making tab switch noise
                 if (_selectedTabIndex == -1) {
-                    this.SelectedTabIndex = _tabs.IndexOf(prevTab);
+                    _subtitle         = prevTab.Name;
+                    _selectedTabIndex = _tabs.IndexOf(prevTab);
+                    this.ActivePanel  = panel;
+                } else {
+                    _selectedTabIndex = _tabs.IndexOf(prevTab);
                 }
 
                 Invalidate();
@@ -272,7 +277,7 @@ namespace Blish_HUD.Controls {
                 if (active) {
                     spriteBatch.DrawOnCtrl(this, _textureDefaultBackround,
                                            tabBounds,
-                                           tabBounds.OffsetBy(_windowBackgroundOrigin.ToPoint()).Add(0, -35, 0, 0).Add(tabBounds.Width / 3, 0, -tabBounds.Width / 3, 0),
+                                           tabBounds.OffsetBy(_windowBackgroundOrigin.ToPoint()).OffsetBy(-5, -13).Add(0, -35, 0, 0).Add(tabBounds.Width / 3, 0, -tabBounds.Width / 3, 0),
                                      Color.White);
 
                     spriteBatch.DrawOnCtrl(this, _textureTabActive, tabBounds);
