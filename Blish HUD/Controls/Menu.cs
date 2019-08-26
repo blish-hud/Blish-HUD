@@ -100,6 +100,8 @@ namespace Blish_HUD.Controls {
 
             newChild.MenuItemHeight = this.MenuItemHeight;
 
+            e.ChangedChild.Width = this.Width;
+
             // We'll bind the top of the control to the bottom of the last control we added
             var lastItem = _children.LastOrDefault();
             if (lastItem != null) {
