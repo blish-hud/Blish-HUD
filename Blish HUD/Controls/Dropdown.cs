@@ -22,8 +22,9 @@ namespace Blish_HUD.Controls {
             private DropdownPanel(Dropdown assocDropdown) {
                 _assocDropdown = assocDropdown;
 
-                this.Location = _assocDropdown.AbsoluteBounds.Location + new Point(0, assocDropdown.Height - 1);
-                this.Size = new Point(_assocDropdown.Width, _assocDropdown.Height * _assocDropdown.Items.Count);
+                this.Height = _assocDropdown.Height * _assocDropdown.Items.Count;
+                this.Location = _assocDropdown.AbsoluteBounds.Location + new Point(0, assocDropdown.UpwardDirection ? 1 - this.Height : assocDropdown.Height - 1);
+                this.Width = _assocDropdown.Width;
                 this.Parent = Graphics.SpriteScreen;
                 this.ZIndex = int.MaxValue;
 
@@ -159,6 +160,18 @@ namespace Blish_HUD.Controls {
                 OnPropertyChanged();
 
                 OnValueChanged(new ValueChangedEventArgs(previousValue, _selectedItem));
+            }
+        }
+
+        private bool _upwardDirection;
+        public bool UpwardDirection
+        {
+            get => _upwardDirection;
+            set
+            {
+                if (value == _upwardDirection) return;
+                _upwardDirection = value;
+                OnPropertyChanged();
             }
         }
 
