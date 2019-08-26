@@ -54,6 +54,42 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        protected Rectangle? _contentRegion;
+        public Rectangle ContentRegion {
+            get => _contentRegion ?? new Rectangle(Point.Zero, this.Size);
+            protected set {
+                var previousRegion = this.ContentRegion;
+
+                if (SetProperty(ref _contentRegion, value, true)) {
+                    OnContentResized(new RegionChangedEventArgs(previousRegion, this.ContentRegion));
+                }
+            }
+        }
+        
+        private int _verticalScrollOffset;
+        public int VerticalScrollOffset {
+            get => _verticalScrollOffset;
+            set => SetProperty(ref _verticalScrollOffset, value);
+        }
+
+        private int _horizontalScrollOffset;
+        public int HorizontalScrollOffset {
+            get => _horizontalScrollOffset;
+            set => SetProperty(ref _horizontalScrollOffset, value);
+        }
+
+        public List<Control> GetDescendants() {
+            var allDescendants = _children.ToList();
+
+            foreach (var child in _children) {
+                if (!(child is Container container)) continue;
+
+                allDescendants.AddRange(container.GetDescendants());
+            }
+
+            return allDescendants;
+        }
+
         public bool AddChild(Control child) {
             if (_children.Contains(child)) return true;
 
@@ -91,54 +127,14 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
-        protected Rectangle? _contentRegion;
-        public Rectangle ContentRegion {
-            get => _contentRegion ?? new Rectangle(Point.Zero, this.Size);
-            protected set {
-                var previousRegion = this.ContentRegion;
-
-                if (SetProperty(ref _contentRegion, value, true)) {
-                    OnContentResized(new RegionChangedEventArgs(previousRegion, this.ContentRegion));
-                }
-            }
-        }
-        
-        private int _verticalScrollOffset;
-        public int VerticalScrollOffset {
-            get => _verticalScrollOffset;
-            set => SetProperty(ref _verticalScrollOffset, value);
-        }
-
-        private int _horizontalScrollOffset;
-        public int HorizontalScrollOffset {
-            get => _horizontalScrollOffset;
-            set => SetProperty(ref _horizontalScrollOffset, value);
-        }
-
-        public List<Control> GetDescendants() {
-            var allDescendants = _children.ToList();
-
-            foreach (var child in _children) {
-                if (!(child is Container container)) continue;
-
-                allDescendants.AddRange(container.GetDescendants());
-            }
-
-            return allDescendants;
-        }
-
         public void ClearChildren() {
-            Control[] oldChildren = _children.ToArray();
-
-            _children = new List<Control>();
-
-            for (int i = 0; i < oldChildren.Length; i++) {
-                oldChildren[i].Parent = null;
+            while (_children.Count > 0) {
+                _children[0].Parent = null;
             }
         }
 
         public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            List<Control> zSortedChildren = _children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => _children.IndexOf(c)).ToList();
+            Control[] zSortedChildren = _children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => _children.IndexOf(c)).ToArray();
 
             Control thisResult  = null;
             Control childResult = null;
@@ -147,7 +143,9 @@ namespace Blish_HUD.Controls {
                 thisResult = base.TriggerMouseInput(mouseEventType, ms);
             }
 
-            foreach (var childControl in zSortedChildren) {
+            for (int i = 0; i < zSortedChildren.Length; i++) {
+                ref var childControl = ref zSortedChildren[i];
+
                 if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
                     childResult = childControl.TriggerMouseInput(mouseEventType, ms);
 
@@ -165,11 +163,16 @@ namespace Blish_HUD.Controls {
         public sealed override void DoUpdate(GameTime gameTime) {
             UpdateContainer(gameTime);
 
+            Control[] children = _children.ToArray();
+
             // Update our children
-            foreach (var childControl in _children.ToList()) {
+            for (int i = 0; i < children.Length; i++) {
+                ref var childControl = ref children[i];
+
                 // Update child if it is visible or if it hasn't rendered yet (needs a first time calc)
-                if (childControl.Visible || childControl.LayoutState != LayoutState.Ready)
+                if (childControl.Visible || childControl.LayoutState != LayoutState.Ready) {
                     childControl.Update(gameTime);
+                }
             }
         }
 
@@ -196,10 +199,12 @@ namespace Blish_HUD.Controls {
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
             var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
 
-            List<Control> zSortedChildren = _children.OrderBy(i => i.ZIndex).ToList();
+            Control[] zSortedChildren = _children.OrderBy(i => i.ZIndex).ToArray();
 
             // Render each visible child
-            foreach (var childControl in zSortedChildren) {
+            for (int i = 0; i < zSortedChildren.Length; i++) {
+                ref var childControl = ref zSortedChildren[i];
+
                 if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
                     var childBounds = new Rectangle(Point.Zero, childControl.Size);
 

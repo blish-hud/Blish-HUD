@@ -91,24 +91,25 @@ namespace Blish_HUD.Controls {
             _lastInvalidate = DateTime.MinValue.TimeOfDay;
 
             _mttb = new System.Windows.Forms.TextBox() {
-                Parent = BlishHud.Form,
-                Size = new Size(20, 20),
-                Location = new System.Drawing.Point(-500),
-                AutoCompleteMode = AutoCompleteMode.Append,
-                AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource,
-                AutoCompleteCustomSource = new System.Windows.Forms.AutoCompleteStringCollection(),
-                ShortcutsEnabled = true,
-                TabStop = false
+                Parent                   = BlishHud.Form,
+                Size                     = new Size(20, 20),
+                Location                 = new System.Drawing.Point(-500),
+                AutoCompleteMode         = AutoCompleteMode.Append,
+                AutoCompleteSource       = AutoCompleteSource.CustomSource,
+                AutoCompleteCustomSource = new AutoCompleteStringCollection(),
+                ShortcutsEnabled         = true,
+                TabStop                  = false
             };
 
             _sharedInterceptor.LeftMouseButtonReleased += delegate {
-                if (_sharedInterceptor.ActiveControl == this) 
+                if (_sharedInterceptor.ActiveControl == this) {
                     Textbox_LeftMouseButtonReleased(null, null);
+                }
             };
-            
+
             _mttb.TextChanged += InternalTextBox_TextChanged;
-            _mttb.KeyDown += InternalTextBox_KeyDown;
-            _mttb.KeyUp += InternalTextBox_KeyUp;
+            _mttb.KeyDown     += InternalTextBox_KeyDown;
+            _mttb.KeyUp       += InternalTextBox_KeyUp;
 
             this.Size = Standard.Size;
 
@@ -117,14 +118,21 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
+            bool restoreFocus = _mttb.Focused;
+
             _sharedInterceptor.Show(this);
+
+            if (restoreFocus) {
+                Textbox_LeftMouseButtonReleased(null, null);
+            }
 
             base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            if (_sharedInterceptor.ActiveControl == this)
+            if (_sharedInterceptor.ActiveControl == this) {
                 _sharedInterceptor.Hide();
+            }
 
             base.OnMouseLeft(e);
         }
@@ -132,13 +140,14 @@ namespace Blish_HUD.Controls {
         public override void TriggerKeyboardInput(KeyboardMessage e) {
         }
 
-        protected override CaptureType CapturesInput() { return CaptureType.Mouse | CaptureType.ForceNone; }
+        protected override CaptureType CapturesInput() { return CaptureType.Mouse; }
 
         private void InternalTextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
             /* Supress up and down keys because they move the cursor left and
                right for some silly reason */
-            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down) {
                 e.SuppressKeyPress = true;
+            }
             
             this.KeyDown?.Invoke(this, (Microsoft.Xna.Framework.Input.Keys)e.KeyCode);
 
@@ -166,6 +175,7 @@ namespace Blish_HUD.Controls {
         private void Input_MouseButtonPressed(object sender, MouseEventArgs e) {
             if (_mttb.Focused && !this.MouseOver) {
                 _sharedUnfocusLabel.Select();
+                GameService.GameIntegration.FocusGw2();
                 Invalidate();
             }
         }
@@ -210,8 +220,9 @@ namespace Blish_HUD.Controls {
 
         public override void DoUpdate(GameTime gameTime) {
             // Keep MouseInterceptor on top of us
-            if (_sharedInterceptor.Visible && _sharedInterceptor.ActiveControl == this)
+            if (_sharedInterceptor.Visible && _sharedInterceptor.ActiveControl == this) {
                 _sharedInterceptor.Show(this);
+            }
 
             // Determines if the blinking caret is currently visible
             this.CaretVisible = _mttb.Focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75);

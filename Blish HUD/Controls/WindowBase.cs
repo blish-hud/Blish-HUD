@@ -112,7 +112,6 @@ namespace Blish_HUD.Controls {
             }
         }
 
-
         private readonly Glide.Tween _animFade;
 
         protected bool  Dragging  = false;

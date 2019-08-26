@@ -39,7 +39,7 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<EventArgs> TabChanged;
 
-        protected int _selectedTabIndex = 0;
+        protected int _selectedTabIndex = -1;
         public int SelectedTabIndex {
             get => _selectedTabIndex;
             set {
@@ -49,13 +49,20 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public WindowTab SelectedTab => Tabs.Count > _selectedTabIndex ? Tabs[_selectedTabIndex] : null;
+        public WindowTab SelectedTab => _tabs.Count > _selectedTabIndex ? _tabs[_selectedTabIndex] : null;
 
         private int _hoveredTabIndex = 0;
         private int HoveredTabIndex {
             get => _hoveredTabIndex;
             set => SetProperty(ref _hoveredTabIndex, value);
         }
+
+        private readonly Dictionary<WindowTab, Rectangle> _tabRegions = new Dictionary<WindowTab, Rectangle>();
+        private readonly Dictionary<WindowTab, Panel>     _panels     = new Dictionary<WindowTab, Panel>();
+        private          List<WindowTab>                  _tabs       = new List<WindowTab>();
+
+        // TODO: Remove public access to _panels - only kept currently as it is used by KillProof.me module (need more robust "Navigate()" call for panel history)
+        public Dictionary<WindowTab, Panel> Panels => _panels;
 
         public TabbedWindow() {
             var tabWindowTexture = _textureDefaultBackround;
@@ -73,7 +80,7 @@ namespace Blish_HUD.Controls {
 
             this.Subtitle = SelectedTab.Name;
 
-            Navigate(Panels[this.SelectedTab], false);
+            Navigate(_panels[this.SelectedTab], false);
 
             this.TabChanged?.Invoke(this, e);
         }
@@ -92,10 +99,10 @@ namespace Blish_HUD.Controls {
             bool newSet = false;
 
             if (RelativeMousePosition.X < StandardTabBounds.Right && RelativeMousePosition.Y > StandardTabBounds.Y) {
-                var tabList = TabRegions.ToList();
-                for (int tabIndex = 0; tabIndex < Tabs.Count; tabIndex++) {
-                    var tab = Tabs[tabIndex];
-                    if (TabRegions[tab].Contains(RelativeMousePosition)) {
+                var tabList = _tabRegions.ToList();
+                for (int tabIndex = 0; tabIndex < _tabs.Count; tabIndex++) {
+                    var tab = _tabs[tabIndex];
+                    if (_tabRegions[tab].Contains(RelativeMousePosition)) {
                         HoveredTabIndex       = tabIndex;
                         newSet                = true;
                         this.BasicTooltipText = tab.Name;
@@ -116,10 +123,10 @@ namespace Blish_HUD.Controls {
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             if (RelativeMousePosition.X < StandardTabBounds.Right && RelativeMousePosition.Y > StandardTabBounds.Y) {
-                var tabList = Tabs.ToList();
-                for (int tabIndex = 0; tabIndex < Tabs.Count; tabIndex++) {
+                var tabList = _tabs.ToList();
+                for (int tabIndex = 0; tabIndex < _tabs.Count; tabIndex++) {
                     var tab = tabList[tabIndex];
-                    if (TabRegions[tab].Contains(RelativeMousePosition)) {
+                    if (_tabRegions[tab].Contains(RelativeMousePosition)) {
                         SelectedTabIndex = tabIndex;
 
                         break;
@@ -132,10 +139,6 @@ namespace Blish_HUD.Controls {
         }
 
         #region Tab Handling
-
-        public Dictionary<WindowTab, Rectangle> TabRegions = new Dictionary<WindowTab, Rectangle>();
-        public Dictionary<WindowTab, Panel> Panels = new Dictionary<WindowTab, Panel>();
-        public List<WindowTab> Tabs = new List<WindowTab>();
 
         public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel, int priority) {
             var tab = new WindowTab(name, icon, priority);
@@ -150,28 +153,30 @@ namespace Blish_HUD.Controls {
         }
 
         public void AddTab(WindowTab tab, Panel panel) {
-            if (!Tabs.Contains(tab)) {
-                var prevTab = Tabs.Count > 0 ? Tabs[this.SelectedTabIndex] : tab;
+            if (!_tabs.Contains(tab)) {
+                var prevTab = _tabs.Count > 0 ? _tabs[this.SelectedTabIndex] : tab;
 
                 panel.Visible = false;
-                panel.Parent = this;
+                panel.Parent  = this;
 
-                Tabs.Add(tab);
-                TabRegions.Add(tab, TabBoundsFromIndex(TabRegions.Count));
-                Panels.Add(tab, panel);
+                _tabs.Add(tab);
+                _tabRegions.Add(tab, TabBoundsFromIndex(_tabRegions.Count));
+                _panels.Add(tab, panel);
 
-                Tabs = Tabs.OrderBy(t => t.Priority).ToList();
+                _tabs = _tabs.OrderBy(t => t.Priority).ToList();
 
-                var i = 0;
-                foreach (var etab in Tabs.ToList()) {
-                    TabRegions[etab] = TabBoundsFromIndex(i);
-                    i++;
+                for (int i = 0; i < _tabs.Count; i++) {
+                    _tabRegions[_tabs[i]] = TabBoundsFromIndex(i);
                 }
 
-                if (_selectedTabIndex > -1)
-                    _selectedTabIndex = Tabs.IndexOf(prevTab);
-                else
-                    SelectedTabIndex = Tabs.IndexOf(prevTab);
+                // Update tab index without making tab switch noise
+                if (_selectedTabIndex == -1) {
+                    _subtitle         = prevTab.Name;
+                    _selectedTabIndex = _tabs.IndexOf(prevTab);
+                    this.ActivePanel  = panel;
+                } else {
+                    _selectedTabIndex = _tabs.IndexOf(prevTab);
+                }
 
                 Invalidate();
             }
@@ -179,23 +184,23 @@ namespace Blish_HUD.Controls {
 
         public void RemoveTab(WindowTab tab) {
             // TODO: If the last tab is for some reason removed, this will crash the application
-            var prevTab = Tabs.Count > 0 ? Tabs[this.SelectedTabIndex] : Tabs[0];
+            var prevTab = _tabs.Count > 0 ? _tabs[this.SelectedTabIndex] : _tabs[0];
 
-            if (Tabs.Contains(tab)) {
-                Tabs.Remove(tab);
-                TabRegions.Remove(tab);
-                Panels.Remove(tab);
+            if (_tabs.Contains(tab)) {
+                _tabs.Remove(tab);
+                _tabRegions.Remove(tab);
+                _panels.Remove(tab);
             }
 
-            Tabs = Tabs.OrderBy(t => t.Priority).ToList();
+            _tabs = _tabs.OrderBy(t => t.Priority).ToList();
 
-            for (var tabIndex = 0; tabIndex < TabRegions.Count; tabIndex++) {
-                var curTab = Tabs[tabIndex];
-                TabRegions[curTab] = TabBoundsFromIndex(tabIndex);
+            for (var tabIndex = 0; tabIndex < _tabRegions.Count; tabIndex++) {
+                var curTab = _tabs[tabIndex];
+                _tabRegions[curTab] = TabBoundsFromIndex(tabIndex);
             }
 
-            if (Tabs.Contains(prevTab)) {
-                _selectedTabIndex = Tabs.IndexOf(prevTab);
+            if (_tabs.Contains(prevTab)) {
+                _selectedTabIndex = _tabs.IndexOf(prevTab);
             }
 
             Invalidate();
@@ -222,11 +227,11 @@ namespace Blish_HUD.Controls {
         public override void RecalculateLayout() {
             base.RecalculateLayout();
 
-            if (this.Tabs.Count == 0) return;
+            if (_tabs.Count == 0) return;
 
             var firstTabBounds    = TabBoundsFromIndex(0);
-            var selectedTabBounds = TabRegions[this.SelectedTab];
-            var lastTabBounds     = TabBoundsFromIndex(TabRegions.Count - 1);
+            var selectedTabBounds = _tabRegions[this.SelectedTab];
+            var lastTabBounds     = TabBoundsFromIndex(_tabRegions.Count - 1);
 
             _layoutTopTabBarBounds    = new Rectangle(0, 0,                    TAB_SECTION_WIDTH, firstTabBounds.Top);
             _layoutBottomTabBarBounds = new Rectangle(0, lastTabBounds.Bottom, TAB_SECTION_WIDTH, _size.Y - lastTabBounds.Bottom);
@@ -262,17 +267,17 @@ namespace Blish_HUD.Controls {
 
             // Draw tabs
             int i = 0;
-            foreach (var tab in Tabs) {
+            foreach (var tab in _tabs) {
                 bool active = (i == this.SelectedTabIndex);
                 bool hovered = (i == this.HoveredTabIndex);
 
-                var tabBounds = TabRegions[tab];
+                var tabBounds = _tabRegions[tab];
                 var subBounds = new Rectangle(tabBounds.X + tabBounds.Width / 2, tabBounds.Y, TAB_WIDTH / 2, tabBounds.Height);
 
                 if (active) {
                     spriteBatch.DrawOnCtrl(this, _textureDefaultBackround,
                                            tabBounds,
-                                           tabBounds.OffsetBy(_windowBackgroundOrigin.ToPoint()).Add(0, -35, 0, 0).Add(tabBounds.Width / 3, 0, -tabBounds.Width / 3, 0),
+                                           tabBounds.OffsetBy(_windowBackgroundOrigin.ToPoint()).OffsetBy(-5, -13).Add(0, -35, 0, 0).Add(tabBounds.Width / 3, 0, -tabBounds.Width / 3, 0),
                                      Color.White);
 
                     spriteBatch.DrawOnCtrl(this, _textureTabActive, tabBounds);
