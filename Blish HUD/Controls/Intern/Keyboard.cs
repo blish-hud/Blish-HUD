@@ -18,9 +18,10 @@ namespace Blish_HUD.Controls.Intern
         /// Presses a key.
         /// </summary>
         /// <param name="key">Virtual Key Short</param>
-        public static void Press(VirtualKeyShort key)
+        /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
+        public static void Press(VirtualKeyShort key, bool sendToSystem = false)
         {
-            if (!GameService.GameIntegration.Gw2IsRunning)
+            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
             {
                 var nInputs = new[]
                 {
@@ -53,9 +54,10 @@ namespace Blish_HUD.Controls.Intern
         /// Releases a key.
         /// </summary>
         /// <param name="key">Virtual Key Short</param>
-        public static void Release(VirtualKeyShort key)
+        /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
+        public static void Release(VirtualKeyShort key, bool sendToSystem = false)
         {
-            if (!GameService.GameIntegration.Gw2IsRunning)
+            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
             {
                 var nInputs = new[]
                 {
