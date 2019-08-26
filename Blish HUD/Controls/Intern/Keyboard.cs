@@ -18,9 +18,10 @@ namespace Blish_HUD.Controls.Intern
         /// Presses a key.
         /// </summary>
         /// <param name="key">Virtual Key Short</param>
-        public static void Press(VirtualKeyShort key)
+        /// <param name="ForGameWindowOnly">Key is sent as window message. Set to false if key message (or a combination of such) is not correctly interpreted by the game.</param>
+        public static void Press(VirtualKeyShort key, bool ForGameWindowOnly = true)
         {
-            if (!GameService.GameIntegration.Gw2IsRunning)
+            if (!GameService.GameIntegration.Gw2IsRunning || !ForGameWindowOnly)
             {
                 var nInputs = new[]
                 {
@@ -53,9 +54,10 @@ namespace Blish_HUD.Controls.Intern
         /// Releases a key.
         /// </summary>
         /// <param name="key">Virtual Key Short</param>
-        public static void Release(VirtualKeyShort key)
+        /// <param name="ForGameWindowOnly">Key is sent as window message. Set to false if key message (or a combination of such) is not correctly interpreted by the game.</param>
+        public static void Release(VirtualKeyShort key, bool ForGameWindowOnly = true)
         {
-            if (!GameService.GameIntegration.Gw2IsRunning)
+            if (!GameService.GameIntegration.Gw2IsRunning || !ForGameWindowOnly)
             {
                 var nInputs = new[]
                 {
