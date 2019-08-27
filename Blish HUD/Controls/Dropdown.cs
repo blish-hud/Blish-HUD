@@ -7,13 +7,16 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
-    public class Dropdown:Control {
+    /// <summary>
+    /// Represents a Guild Wars 2 Dropdown control.
+    /// </summary>
+    public class Dropdown : Control {
 
-        private class DropdownPanel:Control {
+        private class DropdownPanel : Control {
 
             private Dropdown _assocDropdown;
 
-            protected int _highlightedItem = -1;
+            private int _highlightedItem = -1;
             private int HighlightedItem {
                 get => _highlightedItem;
                 set => SetProperty(ref _highlightedItem, value);
@@ -22,13 +25,24 @@ namespace Blish_HUD.Controls {
             private DropdownPanel(Dropdown assocDropdown) {
                 _assocDropdown = assocDropdown;
 
-                this.Location = _assocDropdown.AbsoluteBounds.Location + new Point(0, assocDropdown.Height - 1);
-                this.Size = new Point(_assocDropdown.Width, _assocDropdown.Height * _assocDropdown.Items.Count);
-                this.Parent = Graphics.SpriteScreen;
-                this.ZIndex = int.MaxValue;
+                _size     = new Point(_assocDropdown.Width, _assocDropdown.Height * _assocDropdown.Items.Count);
+                _location = GetPanelLocation();
+                _zIndex   = int.MaxValue;
 
-                Input.LeftMouseButtonPressed += Input_MousedOffDropdownPanel;
+                this.Parent = Graphics.SpriteScreen;
+
+                Input.LeftMouseButtonPressed  += Input_MousedOffDropdownPanel;
                 Input.RightMouseButtonPressed += Input_MousedOffDropdownPanel;
+            }
+
+            private Point GetPanelLocation() {
+                var dropdownLocation = _assocDropdown.AbsoluteBounds.Location;
+
+                if (dropdownLocation.Y + _assocDropdown.Height + _size.Y < Graphics.SpriteScreen.Bottom) {
+                    return dropdownLocation + new Point(0, _assocDropdown.Height - 1);
+                }
+
+                return dropdownLocation - new Point(0, _size.Y + 1);
             }
 
             public static DropdownPanel ShowPanel(Dropdown assocDropdown) {
@@ -37,8 +51,7 @@ namespace Blish_HUD.Controls {
 
             private void Input_MousedOffDropdownPanel(object sender, MouseEventArgs e) {
                 if (!this.MouseOver) {
-                    if (_assocDropdown.MouseOver) _assocDropdown._hadPanel = true;
-                    Dispose();
+                    _assocDropdown.HideDropdownPanel();
                 }
             }
 
@@ -63,33 +76,24 @@ namespace Blish_HUD.Controls {
                 foreach (string item in _assocDropdown.Items) {
 
                     if (index == this.HighlightedItem) {
-                        spriteBatch.DrawOnCtrl(
-                                               this,
+                        spriteBatch.DrawOnCtrl(this,
                                                ContentService.Textures.Pixel,
-                                               new Rectangle(
-                                                             2,
+                                               new Rectangle(2,
                                                              2                     + _assocDropdown.Height * index,
                                                              _size.X - 12          - _textureArrow.Width,
-                                                             _assocDropdown.Height - 4
-                                                            ),
-                                               new Color(45, 37, 25, 255)
-                                              );
+                                                             _assocDropdown.Height - 4),
+                                               new Color(45, 37, 25, 255));
 
-                        spriteBatch.DrawStringOnCtrl(
-                                                     this,
+                        spriteBatch.DrawStringOnCtrl(this,
                                                      item,
                                                      Content.DefaultFont14,
-                                                     new Rectangle(
-                                                                   8,
+                                                     new Rectangle(8,
                                                                    _assocDropdown.Height * index,
                                                                    bounds.Width - 13 - _textureArrow.Width,
-                                                                   _assocDropdown.Height
-                                                                  ),
-                                                     ContentService.Colors.Chardonnay
-                                                    );
+                                                                   _assocDropdown.Height),
+                                                     ContentService.Colors.Chardonnay);
                     } else {
-                        spriteBatch.DrawStringOnCtrl(
-                                                     this,
+                        spriteBatch.DrawStringOnCtrl(this,
                                                      item,
                                                      Content.DefaultFont14,
                                                      new Rectangle(8,
@@ -109,7 +113,7 @@ namespace Blish_HUD.Controls {
                     _assocDropdown = null;
                 }
 
-                Input.LeftMouseButtonPressed -= Input_MousedOffDropdownPanel;
+                Input.LeftMouseButtonPressed  -= Input_MousedOffDropdownPanel;
                 Input.RightMouseButtonPressed -= Input_MousedOffDropdownPanel;
 
                 base.DisposeControl();
@@ -139,6 +143,9 @@ namespace Blish_HUD.Controls {
 
         #region Events
 
+        /// <summary>
+        /// Occurs when the <see cref="SelectedItem"/> property has changed.
+        /// </summary>
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
         protected virtual void OnValueChanged(ValueChangedEventArgs e) {
@@ -147,24 +154,32 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        /// <summary>
+        /// The collection of items contained in this <see cref="Dropdown"/>.
+        /// </summary>
         public ObservableCollection<string> Items { get; }
 
         private string _selectedItem;
+        /// <summary>
+        /// Gets or sets the currently selected item in the <see cref="Dropdown"/>.
+        /// </summary>
         public string SelectedItem {
             get => _selectedItem;
             set {
                 string previousValue = _selectedItem;
 
-                _selectedItem = value;
-                OnPropertyChanged();
-
-                OnValueChanged(new ValueChangedEventArgs(previousValue, _selectedItem));
+                if (SetProperty(ref _selectedItem, value)) {
+                    OnValueChanged(new ValueChangedEventArgs(previousValue, _selectedItem));
+                }
             }
         }
 
         private DropdownPanel _lastPanel = null;
         private bool          _hadPanel  = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Dropdown"/> class.
+        /// </summary>
         public Dropdown() {
             this.Items = new ObservableCollection<string>();
 
@@ -176,6 +191,14 @@ namespace Blish_HUD.Controls {
             this.Size = Standard.Size;
         }
 
+        /// <summary>
+        /// If the Dropdown box items are currently being shown, they are hidden.
+        /// </summary>
+        public void HideDropdownPanel() {
+            _hadPanel = _mouseOver;
+            _lastPanel?.Dispose();
+        }
+
         /// <inheritdoc />
         protected override CaptureType CapturesInput() {
             return CaptureType.Mouse;
@@ -184,14 +207,17 @@ namespace Blish_HUD.Controls {
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 
-            if (_lastPanel == null && !_hadPanel)
+            if (_lastPanel == null && !_hadPanel) {
                 _lastPanel = DropdownPanel.ShowPanel(this);
-            else if (_hadPanel)
+            } else if (_hadPanel) {
                 _hadPanel = false;
+            }
         }
 
         private void ItemsUpdated() {
-            if (string.IsNullOrEmpty(this.SelectedItem)) this.SelectedItem = this.Items.FirstOrDefault();
+            if (string.IsNullOrEmpty(this.SelectedItem)) {
+                this.SelectedItem = this.Items.FirstOrDefault();
+            }
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
@@ -199,48 +225,33 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this,
                                    _textureInputBox,
                                    new Rectangle(Point.Zero, _size).Subtract(new Rectangle(0, 0, 5, 0)),
-                                   new Rectangle(
-                                                 0, 0,
+                                   new Rectangle(0, 0,
                                                  Math.Min(_textureInputBox.Width - 5, this.Width - 5),
-                                                 _textureInputBox.Height
-                                                )
-                                  );
+                                                 _textureInputBox.Height));
 
             // Draw right side of dropdown
-            spriteBatch.DrawOnCtrl(
-                                   this,
+            spriteBatch.DrawOnCtrl(this,
                                    _textureInputBox,
                                    new Rectangle(_size.X - 5, 0, 5, _size.Y),
-                                   new Rectangle(
-                                                 _textureInputBox.Width - 5, 0,
-                                                 5, _textureInputBox.Height
-                                                )
-                                  );
+                                   new Rectangle(_textureInputBox.Width - 5, 0,
+                                                 5, _textureInputBox.Height));
             
             // Draw dropdown arrow
-            spriteBatch.DrawOnCtrl(
-                                   this,
+            spriteBatch.DrawOnCtrl(this,
                                    this.MouseOver ? _textureArrowActive : _textureArrow,
-                                   new Rectangle(
-                                                 _size.X - _textureArrow.Width - 5,
+                                   new Rectangle(_size.X - _textureArrow.Width - 5,
                                                  _size.Y / 2                 - _textureArrow.Height / 2,
                                                  _textureArrow.Width,
-                                                 _textureArrow.Height
-                                                )
-                                  );
+                                                 _textureArrow.Height));
 
             // Draw text
-            spriteBatch.DrawStringOnCtrl(
-                                         this,
+            spriteBatch.DrawStringOnCtrl(this,
                                          _selectedItem,
                                          Content.DefaultFont14,
-                                         new Rectangle(
-                                                       5, 0,
+                                         new Rectangle(5, 0,
                                                        _size.X - 10 - _textureArrow.Width,
-                                                       _size.Y
-                                                      ),
-                                         Color.FromNonPremultiplied(239, 240, 239, 255)
-                                        );
+                                                       _size.Y),
+                                         Color.FromNonPremultiplied(239, 240, 239, 255));
         }
 
     }
