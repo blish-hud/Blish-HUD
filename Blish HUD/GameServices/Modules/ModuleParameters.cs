@@ -16,7 +16,7 @@ namespace Blish_HUD.Modules {
 
         public Manifest Manifest => _manifest;
 
-        public Managers.SettingsManager SettingsManager => _settingsManager;
+        public SettingsManager SettingsManager => _settingsManager;
 
         public ContentsManager ContentsManager => _contentsManager;
 
@@ -31,7 +31,7 @@ namespace Blish_HUD.Modules {
                     break;
 
                 default:
-                    Logger.Warn($"Unsupported manifest version '{manifest.ManifestVersion}'. The module manifest will not be loaded.");
+                    Logger.Warn("Module {module} is using an unsupported manifest version {manifestVersion}. The module manifest will not be loaded.", module, manifest.ManifestVersion);
                     break;
             }
 
@@ -39,18 +39,28 @@ namespace Blish_HUD.Modules {
         }
 
         private static ModuleParameters BuildFromManifest(ManifestV1 manifest, ModuleManager module) {
-            var builtModuleParameters = new ModuleParameters();
+            var builtModuleParameters = new ModuleParameters {
+                _manifest = manifest,
 
-            builtModuleParameters._manifest = manifest;
+                // TODO: Change manager registers so that they only need an instance of the ExternalModule and not specific params
+                _settingsManager    = SettingsManager.GetModuleInstance(module),
+                _contentsManager    = ContentsManager.GetModuleInstance(module),
+                _directoriesManager = DirectoriesManager.GetModuleInstance(module),
+                _gw2ApiManager      = GameService.Gw2Api.RegisterGw2ApiConnection(manifest, module.State.UserEnabledPermissions ?? new TokenPermission[0])
+            };
+
 
             // TODO: Change manager registers so that they only need an instance of the ExternalModule and not specific params
-            builtModuleParameters._settingsManager    = SettingsManager.GetModuleInstance(module);
-            builtModuleParameters._contentsManager    = ContentsManager.GetModuleInstance(module);
-            builtModuleParameters._directoriesManager = DirectoriesManager.GetModuleInstance(module);
-            builtModuleParameters._gw2ApiManager      = GameService.Gw2Api.RegisterGw2ApiConnection(manifest, module.State.UserEnabledPermissions ?? new TokenPermission[0]);
 
             if (builtModuleParameters._gw2ApiManager == null) {
-                // Indicates a conflict of user granted permissions and module required permissions
+                /* Indicates a conflict of user granted permissions and module required permissions
+                 * How this could happen (without manually modifying settings):
+                 *  1. User approves all required permissions for a module.
+                 *  2. The user enables the module.
+                 *  3. The user updates the module to a version that has a new required permission which hasn't been explicitly approved.
+                 */
+                // TODO: Show a popup instead that just asks the user if the new permission(s) is/are okay
+                Logger.Warn("An attempt was made to enable the module {module} before all of the required API permissions have been approved.", module.ToString());
                 return null;
             }
 
