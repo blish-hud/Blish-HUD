@@ -235,6 +235,10 @@
     <Compile Include="GameServices\Modules\UI\Presenters\ModuleManagementPresenter.cs" />
     <Compile Include="GameServices\Modules\UI\Views\ModuleDependencyView.cs" />
     <Compile Include="GameServices\Modules\UI\Views\ModuleManagementView.cs" />
+    <Compile Include="GameServices\Overlay\UI\Presenters\AboutPresenter.cs" />
+    <Compile Include="GameServices\Overlay\UI\Presenters\HomeTabPresenter.cs" />
+    <Compile Include="GameServices\Overlay\UI\Views\AboutView.cs" />
+    <Compile Include="GameServices\Overlay\UI\Views\HomeTabView.cs" />
     <Compile Include="GameServices\PersistentStore\Store.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue[T].cs" />
@@ -470,7 +474,6 @@
   <ItemGroup>
     <Folder Include="GameServices\Hotkeys\" />
     <Folder Include="GameServices\Module\" />
-    <Folder Include="GameServices\Overlay\" />
     <Folder Include="ref\" />
   </ItemGroup>
   <ItemGroup>
