@@ -214,6 +214,8 @@
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="GameServices\Content\IDataReader.cs" />
+    <Compile Include="GameServices\Gw2Api\UI\Presenters\ManageApiKeyPresenter.cs" />
+    <Compile Include="GameServices\Gw2Api\UI\Views\ManageApiKeyView.cs" />
     <Compile Include="GameServices\Input\KeyboardEventType.cs" />
     <Compile Include="GameServices\Input\KeyboardMessage.cs" />
     <Compile Include="GameServices\Input\MouseEvent.cs" />
