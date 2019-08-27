@@ -44,7 +44,7 @@ namespace Blish_HUD.Modules {
             if (string.Equals(this.Namespace, BLISHHUD_DEPENDENCY_NAME, StringComparison.InvariantCultureIgnoreCase)) {
                 if (VersionRange.IsSatisfied(Program.OverlayVersion.BaseVersion())) {
                     return new ModuleDependencyCheckDetails("Blish HUD", ModuleDependencyCheckResult.Available);
-                };
+                }
                 return new ModuleDependencyCheckDetails("Blish HUD", ModuleDependencyCheckResult.AvailableWrongVersion);
             }
 
