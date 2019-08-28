@@ -32,29 +32,19 @@
         private bool IsStandardClientType(int currentBuildId, out ContextAvailability contextAvailability) {
             contextAvailability = GameService.Contexts.GetContext<CdnInfoContext>().TryGetStandardCdnInfo(out var standardCdnContextResult);
 
-            if (contextAvailability == ContextAvailability.Available) {
-                int standardBuildId = standardCdnContextResult.Value.BuildId;
+            if (contextAvailability != ContextAvailability.Available)
+                return false;
 
-                if (currentBuildId == standardBuildId) {
-                    return true;
-                }
-            }
-
-            return false;
+            return currentBuildId == standardCdnContextResult.Value.BuildId;
         }
 
         private bool IsChineseClientType(int currentBuildId, out ContextAvailability contextAvailability) {
             contextAvailability = GameService.Contexts.GetContext<CdnInfoContext>().TryGetChineseCdnInfo(out var chineseCdnContextResult);
 
-            if (contextAvailability == ContextAvailability.Available) {
-                int chineseBuildId = chineseCdnContextResult.Value.BuildId;
+            if (contextAvailability != ContextAvailability.Available)
+                return false;
 
-                if (currentBuildId == chineseBuildId) {
-                    return true;
-                }
-            }
-
-            return false;
+            return currentBuildId == chineseCdnContextResult.Value.BuildId;
         }
 
         #endregion
