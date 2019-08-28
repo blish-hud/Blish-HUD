@@ -27,7 +27,7 @@ namespace Blish_HUD.Contexts {
 
                 bool parsedSuccessfully = true;
 
-                if (cdnVars.Length == 5) {
+                if (cdnVars.Length == 5 || (parsedSuccessfully = false)) {
                     parsedSuccessfully &= int.TryParse(cdnVars[0], out _buildId);
                     parsedSuccessfully &= int.TryParse(cdnVars[1], out _exeFileId);
                     parsedSuccessfully &= int.TryParse(cdnVars[2], out _exeFileSize);
