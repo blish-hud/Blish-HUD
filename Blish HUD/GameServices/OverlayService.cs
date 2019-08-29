@@ -4,14 +4,18 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
 namespace Blish_HUD {
 
-    public class OverlayService:GameService {
+    public class OverlayService : GameService {
+
+        private static readonly Logger Logger = Logger.GetLogger(typeof(OverlayService));
 
         private const string APPLICATION_SETTINGS = "OverlayConfiguration";
 
@@ -21,24 +25,24 @@ namespace Blish_HUD {
         public CornerIcon BlishMenuIcon { get; protected set; }
         public ContextMenuStrip BlishContextMenu { get; protected set; }
 
-        private GameTime _currentGameTime;
-        public GameTime CurrentGameTime => _currentGameTime;
+        public GameTime CurrentGameTime { get; private set; }
 
-        private SettingEntry<Gw2Locale> _userLocale;
-        private SettingEntry<bool> _stayInTray;
+        internal SettingCollection       _applicationSettings;
+        private  SettingEntry<Gw2Locale> _userLocale;
+        private  SettingEntry<bool>      _stayInTray;
 
         public Gw2Locale UserLocale => _userLocale.Value;
+        public bool      StayInTray => _stayInTray.Value;
 
-        public bool StayInTray => _stayInTray.Value;
-
-        internal SettingCollection _applicationSettings;
+        private bool                        _checkedClient;
+        private Gw2ClientContext.ClientType _clientType;
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
         /// <summary>
         /// Allows you to enqueue a call that will occur during the next time the update loop executes.
         /// </summary>
-        /// <param name="call">A method accepting <see="GameTime" /> as a parameter.</param>
+        /// <param name="call">A method accepting <see cref="GameTime" /> as a parameter.</param>
         public void QueueMainThreadUpdate(Action<GameTime> call) {
             _queuedUpdates.Enqueue(call);
         }
@@ -102,6 +106,47 @@ namespace Blish_HUD {
             };
 
             this.BlishHudWindow.AddTab(Properties.Strings.Service_DirectorService_Tab_Home, Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);
+
+            PrepareClientDetection();
+        }
+
+        private void PrepareClientDetection() {
+            GameService.GameIntegration.Gw2Closed += GameIntegrationOnGw2Closed;
+            GameService.Gw2Mumble.BuildIdChanged  += Gw2MumbleOnBuildIdChanged;
+
+            GameService.Contexts.GetContext<CdnInfoContext>().Readied += CdnInfoContextOnReadied;
+        }
+
+        private void Gw2MumbleOnBuildIdChanged(object sender, EventArgs e) {
+            if (!_checkedClient) {
+                DetectClientType();
+            }
+        }
+
+        private void CdnInfoContextOnReadied(object sender, EventArgs e) {
+            if (!_checkedClient) {
+                DetectClientType();
+            }
+        }
+
+        private void GameIntegrationOnGw2Closed(object sender, EventArgs e) {
+            _checkedClient = false;
+        }
+
+        private void DetectClientType() {
+            if (GameService.Contexts.GetContext<Gw2ClientContext>().TryGetClientType(out var contextResult) == ContextAvailability.Available) {
+                _clientType = contextResult.Value;
+
+                if (_clientType == Gw2ClientContext.ClientType.Unknown) {
+                    Logger.Warn("Failed to detect current Guild Wars 2 client version: {statusForUnknown}.", contextResult.Status);
+                } else {
+                    Logger.Info("Detected Guild Wars 2 client to be the {clientVersionType} version.", _clientType);
+                }
+
+                _checkedClient = true;
+            } else {
+                Logger.Warn("Failed to detect current Guild Wars 2 client version: {statusForUnknown}", contextResult.Status);
+            }
         }
 
         private Panel BuildHomePanel(WindowBase wndw) {
@@ -147,8 +192,7 @@ namespace Blish_HUD {
             this.BlishHudWindow.Dispose();
         }
 
-        // TODO: Move into a TacO compatibility module
-        private double lastTacoCheckTime = 5;
+        private double _lastTacoCheckTime = 5;
 
         private void HandleEnqueuedUpdates(GameTime gameTime) {
             while (_queuedUpdates.TryDequeue(out Action<GameTime> updateCall)) {
@@ -157,23 +201,24 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            _currentGameTime = gameTime;
+            this.CurrentGameTime = gameTime;
 
             HandleEnqueuedUpdates(gameTime);
 
             if (GameService.GameIntegration.IsInGame) {
-                lastTacoCheckTime += gameTime.ElapsedGameTime.TotalSeconds;
+                _lastTacoCheckTime += gameTime.ElapsedGameTime.TotalSeconds;
 
                 // TODO: Move some of this into the TacO related module
-                if (lastTacoCheckTime > 3) {
+                if (_lastTacoCheckTime > 3) {
                     Process[] tacoApp = Process.GetProcessesByName("GW2TacO");
 
-                    if (tacoApp.Length > 0)
-                        CornerIcon.LeftOffset = 32 + 4;
-                    else
-                        CornerIcon.LeftOffset = 0;
+                    if (tacoApp.Length > 0) {
+                        CornerIcon.LeftOffset = 36 * (_clientType == Gw2ClientContext.ClientType.Chinese ? 2 : 1);
+                    } else {
+                        CornerIcon.LeftOffset = _clientType == Gw2ClientContext.ClientType.Chinese ? 36 : 0;
+                    }
 
-                    lastTacoCheckTime = 0;
+                    _lastTacoCheckTime = 0;
                 }
             }
         }

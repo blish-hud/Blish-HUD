@@ -2,6 +2,8 @@
 
     public class Gw2ClientContext : Context {
 
+        private static Logger Logger = Logger.GetLogger(typeof(Gw2ClientContext));
+
         /// <summary>
         /// The type of the client currently running.
         /// </summary>
@@ -32,6 +34,8 @@
         private bool IsStandardClientType(int currentBuildId, out ContextAvailability contextAvailability) {
             contextAvailability = GameService.Contexts.GetContext<CdnInfoContext>().TryGetStandardCdnInfo(out var standardCdnContextResult);
 
+            Logger.Info("{contextName} ({contextAvailability}) reported the Standard client build ID to be {standardBuildId}.", nameof(CdnInfoContext), contextAvailability, standardCdnContextResult.Value.BuildId);
+
             if (contextAvailability != ContextAvailability.Available)
                 return false;
 
@@ -40,6 +44,8 @@
 
         private bool IsChineseClientType(int currentBuildId, out ContextAvailability contextAvailability) {
             contextAvailability = GameService.Contexts.GetContext<CdnInfoContext>().TryGetChineseCdnInfo(out var chineseCdnContextResult);
+
+            Logger.Info("{contextName} ({contextAvailability}) reported the Chinese client build ID to be {chineseBuildId}.", nameof(CdnInfoContext), contextAvailability, chineseCdnContextResult.Value.BuildId);
 
             if (contextAvailability != ContextAvailability.Available)
                 return false;
@@ -74,7 +80,7 @@
                 return ContextAvailability.Available;
             }
 
-            contextResult = new ContextResult<ClientType>(ClientType.Unknown, "The build ID reported by the Mumble Link API did not match the standard or the Chinese client build IDs provided by the CDN.");
+            contextResult = new ContextResult<ClientType>(ClientType.Unknown, $"The build ID reported by the Mumble Link API ({currentBuildId}) could not be matched against a CDN provided build ID.");
             return ContextAvailability.Failed;
         }
 

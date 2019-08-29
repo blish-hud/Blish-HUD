@@ -5,9 +5,16 @@
     public enum ContextAvailability {
         /// <summary>
         /// The value provided by this context is not available.
-        /// <see cref="ContextResult{T}.Status"/> should detail why it is not available.
+        /// <see cref="ContextResult{T}.Status"/> should detail why it
+        /// is not available (e.g. missing dependency).
         /// </summary>
         Unavailable,
+
+        /// <summary>
+        /// The value provided by this context is not ready or the
+        /// context has been unloaded.
+        /// </summary>
+        NotReady,
 
         /// <summary>
         /// The value provided by this context is available.

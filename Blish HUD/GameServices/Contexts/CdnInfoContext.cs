@@ -22,25 +22,6 @@ namespace Blish_HUD.Contexts {
             public int ManifestFileId   => _manifestFileId;
             public int ManifestFileSize => _manifestFileSize;
 
-            public CdnInfo(string rawCdnResponse) : this() {
-                string[] cdnVars = rawCdnResponse.Split(' ');
-
-                bool parsedSuccessfully = true;
-
-                if (cdnVars.Length == 5 || (parsedSuccessfully = false)) {
-                    parsedSuccessfully &= int.TryParse(cdnVars[0], out _buildId);
-                    parsedSuccessfully &= int.TryParse(cdnVars[1], out _exeFileId);
-                    parsedSuccessfully &= int.TryParse(cdnVars[2], out _exeFileSize);
-                    parsedSuccessfully &= int.TryParse(cdnVars[3], out _manifestFileId);
-                    parsedSuccessfully &= int.TryParse(cdnVars[4], out _manifestFileSize);
-                }
-
-                if (!parsedSuccessfully) {
-                    _buildId = -1;
-                    Logger.Warn("Failed to parse CDN response {rawCdnResponse}.", rawCdnResponse);
-                }
-            }
-
             public CdnInfo(int buildId, int exeFileId, int exeFileSize, int manifestFileId, int manifestFileSize) {
                 _buildId          = buildId;
                 _exeFileId        = exeFileId;
@@ -48,6 +29,8 @@ namespace Blish_HUD.Contexts {
                 _manifestFileId   = manifestFileId;
                 _manifestFileSize = manifestFileSize;
             }
+
+            public static CdnInfo Invalid => new CdnInfo(-1, -1, -1, -1, -1);
 
         }
 
@@ -59,21 +42,70 @@ namespace Blish_HUD.Contexts {
         private CdnInfo _standardCdnInfo;
         private CdnInfo _chineseCdnInfo;
 
-        private int _loadCount = 0;
+        private bool _loading   = false;
+        private int  _loadCount = 0;
 
-        #region Context Loading
+        #region Context Management
 
+        public CdnInfoContext() {
+            GameService.GameIntegration.Gw2Started += GameIntegrationOnGw2Started;
+        }
+
+        /// <inheritdoc />
         protected override void Load() {
-            GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith((cdnInfo) => SetCdnInfo(ref _standardCdnInfo, cdnInfo.Result));
+            if (_loading) return;
+
+            _loading = true;
+
+            GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith((cdnInfo) => SetCdnInfo(ref _standardCdnInfo,   cdnInfo.Result));
             GetCdnInfoFromCdnUrl(GW2_CN_ASSETCDN_URL).ContinueWith((cdnInfo) => SetCdnInfo(ref _chineseCdnInfo, cdnInfo.Result));
         }
 
-        private void SetCdnInfo(ref CdnInfo cdnInfo, string result) {
-            if (string.IsNullOrEmpty(result)) return;
+        /// <inheritdoc />
+        protected override void Unload() {
+            _loadCount = 0;
+        }
 
-            cdnInfo = new CdnInfo(result);
+        private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
+            this.DoUnload();
+            this.DoLoad();
+        }
+
+        private CdnInfo ParseCdnInfo(string rawCdnResponse) {
+            if (string.IsNullOrEmpty(rawCdnResponse)) {
+                Logger.Warn("Failed to parse null or empty CDN response.");
+                return CdnInfo.Invalid;
+            }
+
+            string[] cdnVars = rawCdnResponse.Split(' ');
+
+            if (cdnVars.Length == 5) {
+                bool parsedSuccessfully = true;
+
+                parsedSuccessfully &= int.TryParse(cdnVars[0], out int buildId);
+                parsedSuccessfully &= int.TryParse(cdnVars[1], out int exeFileId);
+                parsedSuccessfully &= int.TryParse(cdnVars[2], out int exeFileSize);
+                parsedSuccessfully &= int.TryParse(cdnVars[3], out int manifestFileId);
+                parsedSuccessfully &= int.TryParse(cdnVars[4], out int manifestFileSize);
+                
+                if (parsedSuccessfully) {
+                    return new CdnInfo(buildId, exeFileId, exeFileSize, manifestFileId, manifestFileSize);
+                }
+
+                Logger.Warn("Failed to parse CDN response {rawCdnResponse}.", rawCdnResponse);
+                return CdnInfo.Invalid;
+            }
+
+            Logger.Warn("Unexpected number of values provided by CDN response {rawCdnResponse}.", rawCdnResponse);
+            return CdnInfo.Invalid;
+        }
+
+        private void SetCdnInfo(ref CdnInfo cdnInfo, string result) {
+            cdnInfo = ParseCdnInfo(result);
 
             if (++_loadCount >= TOTAL_CDN_ENDPOINTS) {
+                _loading = false;
+
                 ConfirmReady();
             }
         }
@@ -81,8 +113,14 @@ namespace Blish_HUD.Contexts {
         private async Task<string> GetCdnInfoFromCdnUrl(string cdnUrl) {
             try {
                 return await cdnUrl.GetStringAsync();
+            } catch (FlurlHttpException ex) {
+                if (ex.Call.Response != null) {
+                    Logger.Warn(ex, "Failed to get CDN information from {cdnUrl}.  HTTP response status was ({httpStatusCode}) {statusReason}.", cdnUrl, (int)ex.Call.Response.StatusCode, ex.Call.Response.ReasonPhrase);
+                } else {
+                    Logger.Warn(ex, "Failed to get CDN information from {cdnUrl}.  No response was received.", cdnUrl);
+                }
             } catch (Exception ex) {
-                Logger.Warn(ex, "Failed to get CDN information from {cdnUrl}.", cdnUrl);
+                Logger.Warn(ex, "Failed to get CDN information from {cdnUrl}.  An unexpected exception occurred.", cdnUrl);
             }
 
             return null;
@@ -91,7 +129,7 @@ namespace Blish_HUD.Contexts {
         #endregion
 
         private ContextAvailability TryGetCdnInfo(ref CdnInfo cdnInfo, out ContextResult<CdnInfo> contextResult) {
-            if (!this.Ready) return NotReady(out contextResult);
+            if (_loading) return NotReady(out contextResult);
 
             if (cdnInfo.BuildId > 0) {
                 contextResult = new ContextResult<CdnInfo>(cdnInfo, true);
@@ -99,7 +137,7 @@ namespace Blish_HUD.Contexts {
             }
 
             if (cdnInfo.BuildId < 0) {
-                contextResult = new ContextResult<CdnInfo>(cdnInfo, true);
+                contextResult = new ContextResult<CdnInfo>(cdnInfo, false);
                 return ContextAvailability.Failed;
             }
 
