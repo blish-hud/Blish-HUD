@@ -49,7 +49,6 @@ namespace Blish_HUD.Controls.Intern
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
-
         /// <summary>
         /// Releases a key.
         /// </summary>
@@ -89,6 +88,16 @@ namespace Blish_HUD.Controls.Intern
                 };
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
+        }
+        /// <summary>
+        /// Performs a keystroke inwhich a key is pressed and immediately released once.
+        /// </summary>
+        /// <param name="key">Virtual Key Short</param>
+        /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
+        public static void Stroke(VirtualKeyShort key, bool sendToSystem = false)
+        {
+            Press(key, sendToSystem);
+            Release(key, sendToSystem);
         }
     }
     class ExtraKeyInfo
