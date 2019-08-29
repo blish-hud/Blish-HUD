@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Blish_HUD.Controls.Extern;
 namespace Blish_HUD.Controls.Intern
 {
@@ -70,8 +71,9 @@ namespace Blish_HUD.Controls.Intern
         {
             if (xPos == -1 || yPos == -1)
             {
-                xPos = GameService.Input.MouseState.X;
-                yPos = GameService.Input.MouseState.Y;
+                var pos = GetPosition();
+                xPos = pos.X;
+                yPos = pos.Y;
             }
             if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
             {
@@ -113,8 +115,9 @@ namespace Blish_HUD.Controls.Intern
         {
             if (xPos == -1 || yPos == -1)
             {
-                xPos = GameService.Input.MouseState.X;
-                yPos = GameService.Input.MouseState.Y;
+                var pos = GetPosition();
+                xPos = pos.X;
+                yPos = pos.Y;
             }
             if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
             {
@@ -160,8 +163,9 @@ namespace Blish_HUD.Controls.Intern
 
             if (xPos == -1 || yPos == -1)
             {
-                xPos = GameService.Input.MouseState.X;
-                yPos = GameService.Input.MouseState.Y;
+                var pos = GetPosition();
+                xPos = pos.X;
+                yPos = pos.Y;
             }
             if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
             {
@@ -193,7 +197,7 @@ namespace Blish_HUD.Controls.Intern
             }
         }
         /// <summary>
-        /// Sets the cursors absolute position.
+        /// Sets the cursors absolute screen position.
         /// </summary>
         /// <param name="xPos">The X coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current X coordinate.</param>
         /// <param name="yPos">The Y coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current Y coordinate.</param>
@@ -209,6 +213,15 @@ namespace Blish_HUD.Controls.Intern
                 int lParam = xPos | (yPos << 16);
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_MOUSEMOVE, 0, lParam);
             }
+        }
+        /// <summary>
+        /// Gets the cursors absolute screen position.
+        /// </summary>
+        public static Point GetPosition()
+        {
+            POINT lpPoint;
+            PInvoke.GetCursorPos(out lpPoint);
+            return lpPoint;
         }
         /// <summary>
         /// Presses and immediately releases a mouse button ONCE.
@@ -243,8 +256,9 @@ namespace Blish_HUD.Controls.Intern
             {
                 if (xPos == -1 || yPos == -1)
                 {
-                    xPos = GameService.Input.MouseState.X;
-                    yPos = GameService.Input.MouseState.Y;
+                    var pos = GetPosition();
+                    xPos = pos.X;
+                    yPos = pos.Y;
                 }
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
