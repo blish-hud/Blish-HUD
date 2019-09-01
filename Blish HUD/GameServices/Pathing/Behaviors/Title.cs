@@ -32,12 +32,12 @@ namespace Blish_HUD.Pathing.Behaviors {
             bool colorSet = false;
 
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower(CultureInfo.InvariantCulture)) {
+                switch (attr.Name.ToLowerInvariant()) {
                     case "title":
                         this.TitleText = attr.Value;
                         break;
                     case "title-color":
-                        switch (attr.Value.ToLower(CultureInfo.InvariantCulture)) {
+                        switch (attr.Value.ToLowerInvariant()) {
                             case "white":
                                 this.TitleColor = Color.White;
                                 break;

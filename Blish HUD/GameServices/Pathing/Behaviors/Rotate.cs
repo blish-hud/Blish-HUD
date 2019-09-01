@@ -39,7 +39,7 @@ namespace Blish_HUD.Pathing.Behaviors {
             float rotateZ = 0f;
 
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower(CultureInfo.InvariantCulture)) {
+                switch (attr.Name.ToLowerInvariant()) {
                     case "rotate-x":
                         InvariantUtil.TryParseFloat(attr.Value, out rotateX);
                         break;

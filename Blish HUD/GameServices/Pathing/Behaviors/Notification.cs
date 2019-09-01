@@ -67,7 +67,7 @@ namespace Blish_HUD.Pathing.Behaviors {
         /// <inheritdoc />
         public void LoadWithAttributes(IEnumerable<PathableAttribute> attributes) {
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower(CultureInfo.InvariantCulture)) {
+                switch (attr.Name.ToLowerInvariant()) {
                     case "notification":
                         _notificationMessage = attr.Value;
                         break;

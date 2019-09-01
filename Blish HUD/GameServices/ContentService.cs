@@ -284,10 +284,10 @@ namespace Blish_HUD {
 #endregion
 
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
-            string fullFontName = $"{font.ToString().ToLower(CultureInfo.InvariantCulture)}-{((int)size).ToString()}-{style.ToString().ToLower(CultureInfo.InvariantCulture)}";
+            string fullFontName = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{style.ToString().ToLowerInvariant()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
-                var loadedFont = Blish_HUD.BlishHud.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower(CultureInfo.InvariantCulture)}\\{fullFontName}");
+                var loadedFont = Blish_HUD.BlishHud.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
                 loadedFont.LetterSpacing = -1;
                 _loadedBitmapFonts.TryAdd(fullFontName, loadedFont);
 

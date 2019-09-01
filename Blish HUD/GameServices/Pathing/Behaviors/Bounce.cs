@@ -133,7 +133,7 @@ namespace Blish_HUD.Pathing.Behaviors {
             float fOut;
 
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower(CultureInfo.InvariantCulture)) {
+                switch (attr.Name.ToLowerInvariant()) {
                     case "bounce":
                     case "bounce-height":
                         InvariantUtil.TryParseFloat(attr.Value, out _bounceHeight);
