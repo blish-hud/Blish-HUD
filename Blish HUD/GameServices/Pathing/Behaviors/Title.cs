@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,12 +32,12 @@ namespace Blish_HUD.Pathing.Behaviors {
             bool colorSet = false;
 
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower()) {
+                switch (attr.Name.ToLower(CultureInfo.InvariantCulture)) {
                     case "title":
                         this.TitleText = attr.Value;
                         break;
                     case "title-color":
-                        switch (attr.Value.ToLower()) {
+                        switch (attr.Value.ToLower(CultureInfo.InvariantCulture)) {
                             case "white":
                                 this.TitleColor = Color.White;
                                 break;

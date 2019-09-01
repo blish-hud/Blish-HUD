@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
@@ -27,7 +28,7 @@ namespace Blish_HUD.Pathing.Behaviors {
 
         public void LoadWithAttributes(IEnumerable<PathableAttribute> attributes) {
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower()) {
+                switch (attr.Name.ToLower(CultureInfo.InvariantCulture)) {
                     case "copy":
                         this.CopyValue = attr.Value;
                         break;

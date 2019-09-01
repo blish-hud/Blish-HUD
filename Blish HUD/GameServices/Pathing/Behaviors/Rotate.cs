@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace Blish_HUD.Pathing.Behaviors {
             float rotateZ = 0f;
 
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower()) {
+                switch (attr.Name.ToLower(CultureInfo.InvariantCulture)) {
                     case "rotate-x":
                         InvariantUtil.TryParseFloat(attr.Value, out rotateX);
                         break;

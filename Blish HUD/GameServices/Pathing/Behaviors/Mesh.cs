@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace Blish_HUD.Pathing.Behaviors {
         /// <inheritdoc />
         public void LoadWithAttributes(IEnumerable<PathableAttribute> attributes) {
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower()) {
+                switch (attr.Name.ToLower(CultureInfo.InvariantCulture)) {
                     case "mesh":
                         _meshName = attr.Value.Trim();
                         break;
