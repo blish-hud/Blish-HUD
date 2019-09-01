@@ -12,7 +12,7 @@
 
         /// <summary>
         /// The value provided by this context is not ready or the
-        /// context has been unloaded.
+        /// <see cref="Context.State"/> is not <see cref="ContextState.Ready"/>.
         /// </summary>
         NotReady,
 

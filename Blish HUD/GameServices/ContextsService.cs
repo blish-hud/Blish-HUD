@@ -7,6 +7,20 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD {
     public class ContextsService : GameService {
 
+        private class ContextHandle<TContext> {
+
+            private readonly TContext _contextReference;
+
+            public ContextHandle(TContext context) {
+                _contextReference = context;
+            }
+
+            public void Expire() {
+                GameService.Contexts.DeregisterContext<TContext>();
+            }
+
+        }
+
         private readonly Dictionary<Type, Context> _registeredContexts = new Dictionary<Type, Context>();
 
         /// <inheritdoc />
@@ -25,7 +39,7 @@ namespace Blish_HUD {
             _registeredContexts.Add(context.GetType(), context);
         }
 
-        public void UnregisterContext<TContext>() {
+        private void DeregisterContext<TContext>() {
             if (_registeredContexts.ContainsKey(typeof(TContext))) {
                 var context = _registeredContexts[typeof(TContext)];
 
@@ -45,11 +59,7 @@ namespace Blish_HUD {
         protected override void Unload() { /* NOOP */ }
 
         /// <inheritdoc />
-        protected override void Update(GameTime gameTime) {
-            foreach (var context in _registeredContexts.Values) {
-                context.DoUpdate(gameTime);
-            }
-        }
+        protected override void Update(GameTime gameTime) { /* NOOP */ }
 
     }
 }
