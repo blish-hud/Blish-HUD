@@ -11,6 +11,12 @@ namespace Blish_HUD {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(Gw2MumbleService));
 
+        public event EventHandler<EventArgs> BuildIdChanged;
+
+        private void OnBuildIdChanged(EventArgs e) {
+            BuildIdChanged?.Invoke(this, e);
+        }
+
         public bool Available => gw2Link != null && this.MumbleBacking != null;
 
         private Avatar _mumbleBacking;
@@ -20,7 +26,17 @@ namespace Blish_HUD {
 
         public long UiTick { get; private set; } = -1;
 
-        public int BuildId { get; private set; } = -1;
+        private int _buildId = -1;
+        public int BuildId {
+            get => _buildId;
+            private set {
+                if (_buildId == value) return;
+
+                _buildId = value;
+
+                OnBuildIdChanged(EventArgs.Empty);
+            }
+        }
 
         private MumbleLinkFile gw2Link;
 

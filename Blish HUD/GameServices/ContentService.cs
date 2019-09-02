@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
@@ -283,10 +284,10 @@ namespace Blish_HUD {
 #endregion
 
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
-            string fullFontName = $"{font.ToString().ToLower()}-{((int)size).ToString()}-{style.ToString().ToLower()}";
+            string fullFontName = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{style.ToString().ToLowerInvariant()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
-                var loadedFont = Blish_HUD.BlishHud.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLower()}\\{fullFontName}");
+                var loadedFont = Blish_HUD.BlishHud.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
                 loadedFont.LetterSpacing = -1;
                 _loadedBitmapFonts.TryAdd(fullFontName, loadedFont);
 

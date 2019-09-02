@@ -127,4 +127,10 @@
   <data name="General_Close" xml:space="preserve">
     <value>Close</value>
   </data>
+  <data name="Context_StateNotReady" xml:space="preserve">
+    <value>Not ready</value>
+  </data>
+  <data name="Context_ResultSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
 </root>
