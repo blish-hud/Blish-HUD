@@ -71,6 +71,16 @@ namespace Blish_HUD.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Succeeded.
+        /// </summary>
+        public static string Context_ResultSuccess {
+            get {
+                Contract.Ensures(Contract.Result<string>() != null);
+                return ResourceManager.GetString("Context_ResultSuccess", resourceCulture) ?? string.Empty;
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Not ready.
         /// </summary>
         public static string Context_StateNotReady {
@@ -121,6 +131,10 @@ namespace Blish_HUD.Properties {
     [global::System.Runtime.CompilerServices.CompilerGenerated]
     public enum StringResourceKey
     {
+        /// <summary>
+        ///   Looks up a localized string similar to Succeeded.
+        /// </summary>
+        Context_ResultSuccess,
         /// <summary>
         ///   Looks up a localized string similar to Not ready.
         /// </summary>

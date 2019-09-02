@@ -4,26 +4,6 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Contexts {
 
     /// <summary>
-    /// The current state of the <see cref="Context"/>.
-    /// </summary>
-    public enum ContextState {
-        /// <summary>
-        /// The <see cref="Context"/> is currently loading.
-        /// </summary>
-        Loading,
-
-        /// <summary>
-        /// The <see cref="Context"/> has loaded.
-        /// </summary>
-        Ready,
-
-        /// <summary>
-        /// The <see cref="Context"/> has been unregistered and should no longer be used or referenced.
-        /// </summary>
-        Expired
-    }
-
-    /// <summary>
     /// Provides context about something.
     /// </summary>
     public abstract class Context {
@@ -37,15 +17,15 @@ namespace Blish_HUD.Contexts {
             this.StateChanged?.Invoke(this, e);
         }
 
-        private ContextState _state = ContextState.Loading;
+        private ContextState _state = ContextState.None;
 
         /// <summary>
-        /// The current load state of the <see cref="Context"/>.
+        /// Gets the current load state of the <see cref="Context"/>.
         /// </summary>
         public ContextState State {
             get => _state;
-            set {
-                if (_state == value) return;
+            private set {
+                if (_state == value || _state == ContextState.Expired) return;
 
                 _state = value;
 
@@ -54,6 +34,8 @@ namespace Blish_HUD.Contexts {
         }
 
         public void DoLoad() {
+            if (this.State == ContextState.Expired) return;
+
             this.State = ContextState.Loading;
 
             this.Load();
@@ -65,6 +47,9 @@ namespace Blish_HUD.Contexts {
             this.Unload();
         }
 
+        /// <summary>
+        /// Called to confirm that the context is now <see cref="ContextState.Ready"/>.
+        /// </summary>
         protected void ConfirmReady() {
             this.State = ContextState.Ready;
         }

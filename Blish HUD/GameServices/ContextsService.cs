@@ -3,20 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Contexts;
 using Microsoft.Xna.Framework;
+using SharpDX.WIC;
 
 namespace Blish_HUD {
     public class ContextsService : GameService {
 
-        private class ContextHandle<TContext> {
+        /// <summary>
+        /// Returned by the <see cref="ContextsService"/> when registering
+        /// a new <see cref="Context"/>.  This handle can be used to later
+        /// unregister the <see cref="Context"/> by calling <see cref="Expire"/>
+        /// on the handle.
+        /// </summary>
+        public class ContextHandle<TContext> where TContext : Context {
 
-            private readonly TContext _contextReference;
+            private bool _hasExpired;
 
-            public ContextHandle(TContext context) {
-                _contextReference = context;
-            }
-
+            /// <summary>
+            /// Unloads and invalidates the <see cref="Context"/> marking it
+            /// as <see cref="ContextState.Expired"/>.  The <see cref="Context"/>
+            /// is then unregistered from the <see cref="ContextsService"/>.
+            /// </summary>
             public void Expire() {
-                GameService.Contexts.DeregisterContext<TContext>();
+                if (_hasExpired) return;
+
+                _hasExpired = true;
+
+                GameService.Contexts.UnregisterContext<TContext>();
             }
 
         }
@@ -25,7 +37,7 @@ namespace Blish_HUD {
 
         /// <inheritdoc />
         protected override void Initialize() {
-            // Temporary register
+            // Built-in contexts
             RegisterContext(new Gw2ClientContext());
             RegisterContext(new CdnInfoContext());
         }
@@ -33,13 +45,21 @@ namespace Blish_HUD {
         /// <inheritdoc />
         protected override void Load() { /* NOOP */ }
 
-        public void RegisterContext(Context context) {
+        /// <summary>
+        /// Registers and then loads an instance of a <see cref="Context"/>.
+        /// </summary>
+        /// <typeparam name="TContext">The type of <see cref="Context"/> that will be registered.</typeparam>
+        /// <param name="context">An instance of a <see cref="Context"/>.</param>
+        /// <returns>A <see cref="ContextHandle{TContext}"/> which can be used to later unregister the <see cref="Context"/>.</returns>
+        public ContextHandle<TContext> RegisterContext<TContext>(TContext context) where TContext : Context {
             context.DoLoad();
 
             _registeredContexts.Add(context.GetType(), context);
+
+            return new ContextHandle<TContext>();
         }
 
-        private void DeregisterContext<TContext>() {
+        private void UnregisterContext<TContext>() {
             if (_registeredContexts.ContainsKey(typeof(TContext))) {
                 var context = _registeredContexts[typeof(TContext)];
 
@@ -49,7 +69,16 @@ namespace Blish_HUD {
             }
         }
 
-        public TContext GetContext<TContext>() where TContext : class {
+        /// <summary>
+        /// Gets a registered <see cref="Context"/> by type.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the <see cref="Context"/> to retrieve.</typeparam>
+        /// <returns>
+        /// The registered <see cref="Context"/> of type <c>TContext</c> or
+        /// <c>null</c> if not <see cref="Context"/> of that type is
+        /// currently registered.
+        /// </returns>
+        public TContext GetContext<TContext>() where TContext : Context {
             if (!_registeredContexts.ContainsKey(typeof(TContext))) return null;
 
             return _registeredContexts[typeof(TContext)] as TContext;

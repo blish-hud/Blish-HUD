@@ -4,10 +4,16 @@ using Flurl.Http;
 
 namespace Blish_HUD.Contexts {
 
+    /// <summary>
+    /// Provides build information provided by the asset CDNs.
+    /// </summary>
     public class CdnInfoContext : Context {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(CdnInfoContext));
-        
+
+        /// <summary>
+        /// Structured information provided by one of the asset CDNs.
+        /// </summary>
         public struct CdnInfo {
 
             private readonly int _buildId;
@@ -42,8 +48,7 @@ namespace Blish_HUD.Contexts {
         private CdnInfo _standardCdnInfo;
         private CdnInfo _chineseCdnInfo;
 
-        private bool _loading   = false;
-        private int  _loadCount = 0;
+        private int _loadCount = 0;
 
         #region Context Management
 
@@ -53,10 +58,6 @@ namespace Blish_HUD.Contexts {
 
         /// <inheritdoc />
         protected override void Load() {
-            if (_loading) return;
-
-            _loading = true;
-
             GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith((cdnInfo) => SetCdnInfo(ref _standardCdnInfo,   cdnInfo.Result));
             GetCdnInfoFromCdnUrl(GW2_CN_ASSETCDN_URL).ContinueWith((cdnInfo) => SetCdnInfo(ref _chineseCdnInfo, cdnInfo.Result));
         }
@@ -67,7 +68,9 @@ namespace Blish_HUD.Contexts {
         }
 
         private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
-            this.DoUnload();
+            // Unload without DoUnload to avoid expiring the context
+            this.Unload();
+
             this.DoLoad();
         }
 
@@ -104,8 +107,6 @@ namespace Blish_HUD.Contexts {
             cdnInfo = ParseCdnInfo(result);
 
             if (++_loadCount >= TOTAL_CDN_ENDPOINTS) {
-                _loading = false;
-
                 ConfirmReady();
             }
         }
@@ -129,19 +130,19 @@ namespace Blish_HUD.Contexts {
         #endregion
 
         private ContextAvailability TryGetCdnInfo(ref CdnInfo cdnInfo, out ContextResult<CdnInfo> contextResult) {
-            if (_loading) return NotReady(out contextResult);
+            if (this.State != ContextState.Ready) return NotReady(out contextResult);
 
             if (cdnInfo.BuildId > 0) {
-                contextResult = new ContextResult<CdnInfo>(cdnInfo, true);
+                contextResult = new ContextResult<CdnInfo>(cdnInfo);
                 return ContextAvailability.Available;
             }
 
             if (cdnInfo.BuildId < 0) {
-                contextResult = new ContextResult<CdnInfo>(cdnInfo, false);
+                contextResult = new ContextResult<CdnInfo>(cdnInfo, "Failed to determine build ID from CDN.");
                 return ContextAvailability.Failed;
             }
 
-            contextResult = new ContextResult<CdnInfo>(cdnInfo, false);
+            contextResult = new ContextResult<CdnInfo>(cdnInfo, "Build ID has not been requested from the CDN.");
             return ContextAvailability.Unavailable;
         }
 
