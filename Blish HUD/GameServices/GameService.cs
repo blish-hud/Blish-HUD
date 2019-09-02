@@ -65,6 +65,7 @@ namespace Blish_HUD {
         public static readonly ModuleService          Module;
         public static readonly PersistentStoreService Store;
         public static readonly ArcDpsService          ArcDps;
+        public static readonly ContextsService        Contexts;
 
         #endregion
 
@@ -87,6 +88,7 @@ namespace Blish_HUD {
             Pathing         = new PathingService();
             Module          = new ModuleService();
             ArcDps          = new ArcDpsService();
+            Contexts        = new ContextsService();
 
             _allServices = new GameService[] {
                 Debug,
@@ -105,7 +107,8 @@ namespace Blish_HUD {
                 Hotkeys,
                 Pathing,
                 Module,
-                ArcDps
+                ArcDps,
+                Contexts
             };
 
         }
