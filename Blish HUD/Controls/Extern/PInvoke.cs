@@ -37,5 +37,8 @@ namespace Blish_HUD.Controls.Extern
 
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("user32.Dll", SetLastError = true)]
+        internal static extern long SetCursorPos(int x, int y);
     }
 }

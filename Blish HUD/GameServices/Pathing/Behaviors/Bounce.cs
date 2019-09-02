@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -132,7 +133,7 @@ namespace Blish_HUD.Pathing.Behaviors {
             float fOut;
 
             foreach (var attr in attributes) {
-                switch (attr.Name.ToLower()) {
+                switch (attr.Name.ToLowerInvariant()) {
                     case "bounce":
                     case "bounce-height":
                         InvariantUtil.TryParseFloat(attr.Value, out _bounceHeight);

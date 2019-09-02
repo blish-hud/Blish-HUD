@@ -104,6 +104,9 @@
     <StartupObject>Blish_HUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\Gw2\ChatCode.cs" />
+    <Compile Include="Controls\ViewContainer.cs" />
+    <Compile Include="Controls\_Types\ViewState.cs" />
     <Compile Include="GameServices\Content\AsyncTexture2D.cs" />
     <Compile Include="Controls\BasicWindow.cs" />
     <Compile Include="Controls\Book.cs" />
@@ -209,6 +212,12 @@
     <Compile Include="GameServices\Contexts\ContextResult[T].cs" />
     <Compile Include="GameServices\Contexts\ContextAvailability.cs" />
     <Compile Include="GameServices\Debug\Logger.cs" />
+    <Compile Include="GameServices\Graphics\UI\IPresenter.cs" />
+    <Compile Include="GameServices\Graphics\UI\IPresenter[TView].cs" />
+    <Compile Include="GameServices\Graphics\UI\IView.cs" />
+    <Compile Include="GameServices\Graphics\UI\IView[TPresenter].cs" />
+    <Compile Include="GameServices\Graphics\UI\Presenter[TView,TPresenter].cs" />
+    <Compile Include="GameServices\Graphics\UI\View[TPresenter].cs" />
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="GameServices\Content\IDataReader.cs" />
@@ -261,7 +270,6 @@
     <Compile Include="_Enums\Gw2Profession.cs" />
     <Compile Include="_Enums\Gw2Race.cs" />
     <Compile Include="_Events\ValueChangedEventArgs[T].cs" />
-    <Compile Include="_Interfaces\IKeyboard.cs" />
     <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
     <Compile Include="GameServices\Modules\ManifestV1.cs" />
     <Compile Include="GameServices\Pathing\Behaviors\Copy.cs" />
