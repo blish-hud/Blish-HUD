@@ -1,8 +1,23 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Controls.Extern
 {
+    /// <summary>
+    /// Struct representing a point.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct POINT
+    {
+        public int X;
+        public int Y;
+
+        public static implicit operator Point(POINT point)
+        {
+            return new Point(point.X, point.Y);
+        }
+    }
     internal static class PInvoke
     {
         [DllImport("user32.dll")]
@@ -40,5 +55,8 @@ namespace Blish_HUD.Controls.Extern
 
         [DllImport("user32.Dll", SetLastError = true)]
         internal static extern long SetCursorPos(int x, int y);
+
+        [DllImport("user32.dll")]
+        internal static extern bool GetCursorPos(out POINT lpPoint);
     }
 }
