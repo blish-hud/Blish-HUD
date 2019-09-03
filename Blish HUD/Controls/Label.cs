@@ -105,7 +105,6 @@ namespace Blish_HUD.Controls {
             _cacheLabel = false;
         }
 
-
         public override void RecalculateLayout() {
             base.RecalculateLayout();
 
