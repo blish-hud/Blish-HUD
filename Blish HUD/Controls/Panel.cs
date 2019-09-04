@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -65,6 +66,16 @@ namespace Blish_HUD.Controls {
         public string Title {
             get => _title;
             set => SetProperty(ref _title, value, true);
+        }
+
+        protected AsyncTexture2D _backgroundTexture;
+
+        /// <summary>
+        /// A texture to be drawn on the <see cref="Panel"/> before children are drawn.
+        /// </summary>
+        public AsyncTexture2D BackgroundTexture {
+            get => _backgroundTexture;
+            set => SetProperty(ref _backgroundTexture, value);
         }
 
         protected bool _showBorder;
@@ -281,6 +292,10 @@ namespace Blish_HUD.Controls {
         }
         
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            if (_backgroundTexture != null) {
+                spriteBatch.DrawOnCtrl(this, _backgroundTexture, bounds);
+            }
+
             if (_showTint) {
                 spriteBatch.DrawOnCtrl(this,
                                        ContentService.Textures.Pixel,
