@@ -48,17 +48,15 @@ namespace Blish_HUD.Controls {
             _showShadow = true;
             _strokeText = true;
             _font = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
-            this.Size = new Point((int)(CONTROL_WIDTH * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), (int)(CONTROL_HEIGHT * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)));
-            this.Location = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
-            this.Opacity = 0f;
-            this.Visible = false;
+            _size = new Point((int)(CONTROL_WIDTH * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), (int)(CONTROL_HEIGHT * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)));
+            _location = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
+            _opacity = 0f;
+            _visible = false;
             this.Parent = Graphics.SpriteScreen;
 
             Graphics.SpriteScreen.Resized += delegate {
-                this.Location = new Point(
-                                          (int) (Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), 
-                                          (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)) - CONTROL_HEIGHT * _verticalIndex
-                                          );
+                this.Location = new Point((int) (Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), 
+                                          (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)) - CONTROL_HEIGHT * _verticalIndex);
             };
         }
 

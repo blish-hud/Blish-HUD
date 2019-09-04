@@ -9,7 +9,7 @@ namespace Blish_HUD.Controls {
     // TODO: Checkbox needs to shrink on mousedown (animation)
     public class Checkbox : LabelBase, ICheckable {
 
-        public const int CHECKBOX_SIZE = 32;
+        private const int CHECKBOX_SIZE = 32;
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
 
@@ -36,7 +36,7 @@ namespace Blish_HUD.Controls {
         }
 
         public Checkbox() : base() {
-            this.Height = CHECKBOX_SIZE / 2;
+            _size = new Point(64, CHECKBOX_SIZE / 2);
 
             _autoSizeWidth     = true;
             _textColor         = Color.White;
@@ -46,7 +46,7 @@ namespace Blish_HUD.Controls {
         public override void RecalculateLayout() {
             base.RecalculateLayout();
 
-            this.Size = new Point(CHECKBOX_SIZE / 3 * 2 + LabelRegion.X, _size.Y);
+            _size = new Point(CHECKBOX_SIZE / 3 * 2 + LabelRegion.X, _size.Y);
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
