@@ -83,7 +83,9 @@ namespace Blish_HUD.Controls {
         protected Size2 GetTextDimensions(string text = null) {
             text = text ?? _text;
 
-            if (!_autoSizeWidth && _wrapText) text = Blish_HUD.DrawUtil.WrapText(_font, text, LabelRegion.X > 0 ? LabelRegion.X : _size.X);
+            if (!_autoSizeWidth && _wrapText) {
+                text = DrawUtil.WrapText(_font, text, LabelRegion.X > 0 ? LabelRegion.X : _size.X);
+            }
 
             return _font.MeasureString(text ?? _text);
         }
@@ -91,15 +93,17 @@ namespace Blish_HUD.Controls {
         protected void DrawText(SpriteBatch spriteBatch, Rectangle bounds, string text = null) {
             text = text ?? _text;
 
-            if (_font == null || string.IsNullOrEmpty(text)) { return; }
+            if (_font == null || string.IsNullOrEmpty(text)) return;
 
-            if (_showShadow && !_strokeText)
+            if (_showShadow && !_strokeText) {
                 spriteBatch.DrawStringOnCtrl(this, text, _font, bounds.OffsetBy(1, 1), _shadowColor, false, _horizontalAlignment, _verticalAlignment);
+            }
             
-            if (_cacheLabel && _labelRender != null)
+            if (_cacheLabel && _labelRender != null) {
                 spriteBatch.DrawOnCtrl(this, _labelRender.CachedRender, bounds);
-            else
+            } else {
                 spriteBatch.DrawStringOnCtrl(this, text, _font, bounds, _textColor, _wrapText, _strokeText, 1, _horizontalAlignment, _verticalAlignment);
+            }
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {

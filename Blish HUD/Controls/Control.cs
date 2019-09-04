@@ -83,8 +83,7 @@ namespace Blish_HUD.Controls {
         private static readonly SpriteBatchParameters _defaultSpriteBatchParameters;
 
         #endregion
-
-
+        
         private static readonly Tooltip _sharedTooltip;
         private static readonly Label   _sharedTooltipLabel;
 
@@ -319,8 +318,7 @@ namespace Blish_HUD.Controls {
                 if (_size == value) return;
 
                 // To render, the control must have positive dimensions
-                if (_size.X <= 0 || _size.Y <= 0) return;
-                    //throw new ArgumentOutOfRangeException($"{nameof(this.Size)} must have at least an area of 1 to render.");
+                if (value.X < 0 || value.Y < 0) return;
 
                 var previousSize = _size;
 
@@ -524,7 +522,9 @@ namespace Blish_HUD.Controls {
         }
 
         #region Render Properties
-        
+
+        private bool _layoutSuspended = false;
+
         [JsonIgnore]
         internal LayoutState LayoutState { get; private set; } = LayoutState.SkipDraw;
 
@@ -581,6 +581,40 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public virtual void Invalidate() {
             this.LayoutState = LayoutState.Invalidated;
+
+            UpdateLayout();
+        }
+
+        /// <summary>
+        /// The layout of the <see cref="Control"/> will be suspended until
+        /// <see cref="ResumeLayout"/> is called.
+        /// </summary>
+        public void SuspendLayout() {
+            _layoutSuspended = true;
+        }
+
+        /// <summary>
+        /// Allows the layout of the control to be calculated on the next
+        /// invalidate, if the layout is currently suspended.
+        /// </summary>
+        /// <param name="forceRecalculate">If <c>true</c>, will force the layout to update now instead of on the next invalidation.</param>
+        public void ResumeLayout(bool forceRecalculate = false) {
+            _layoutSuspended = false;
+
+            if (forceRecalculate) {
+                UpdateLayout();
+            }
+        }
+
+        private void UpdateLayout() {
+            if (this.LayoutState != LayoutState.Ready && !_layoutSuspended) {
+                SuspendLayout();
+
+                RecalculateLayout();
+                this.LayoutState = LayoutState.Ready;
+
+                ResumeLayout();
+            }
         }
 
         /// <summary>
@@ -673,10 +707,7 @@ namespace Blish_HUD.Controls {
         public void Update(GameTime gameTime) {
             DoUpdate(gameTime);
 
-            if (this.LayoutState != LayoutState.Ready) {
-                RecalculateLayout();
-                this.LayoutState = LayoutState.Ready;
-            }
+            UpdateLayout();
 
             CheckMouseLeft();
         }
