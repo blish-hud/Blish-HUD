@@ -26,7 +26,7 @@ namespace Blish_HUD {
         // check to see if GW2 is running
         private const int GW2_EXE_CHECKRATE = 15;
 
-        private const string GW2_REGISTRY_KEY = @"SOFTWARE\ArenaNet\Guild Wars 2";
+        private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
         private const string GW2_64_BIT_PROCESSNAME = "Gw2-64";
@@ -35,7 +35,7 @@ namespace Blish_HUD {
         private const string GW2_32_BIT_PROCESSNAME = "Gw2";
 
         private const string GW2_PATCHWINDOW_NAME = "ArenaNet";
-        private const string GW2_GAMEWINDOW_NAME = "ArenaNet_Dx_Window_Class";
+        private const string GW2_GAMEWINDOW_NAME  = "ArenaNet_Dx_Window_Class";
 
         private const string GAMEINTEGRATION_SETTINGS = "GameIntegrationConfiguration";
 
