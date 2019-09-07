@@ -64,8 +64,6 @@ namespace Blish_HUD {
             FormHandle = this.Window.Handle;
             Form       = System.Windows.Forms.Control.FromHandle(FormHandle).FindForm();
 
-            Form.HandleCreated += delegate { Console.WriteLine("HANDLE CREATED!"); };
-
             this.Window.IsBorderless = true;
             this.Window.AllowAltF4   = false;
 
