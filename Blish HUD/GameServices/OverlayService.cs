@@ -30,9 +30,12 @@ namespace Blish_HUD {
         internal SettingCollection       _applicationSettings;
         private  SettingEntry<Gw2Locale> _userLocale;
         private  SettingEntry<bool>      _stayInTray;
+        private  SettingEntry<bool>      _showInTaskbar;
 
-        public Gw2Locale UserLocale => _userLocale.Value;
-        public bool      StayInTray => _stayInTray.Value;
+        public Gw2Locale UserLocale    => _userLocale.Value;
+        public bool      StayInTray    => _stayInTray.Value;
+        public bool      ShowInTaskbar => _showInTaskbar.Value;
+
 
         private bool                        _checkedClient;
         private Gw2ClientContext.ClientType _clientType;
@@ -51,11 +54,24 @@ namespace Blish_HUD {
             _applicationSettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
 
             DefineSettings(_applicationSettings);
+
+            ApplySettings();
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _userLocale = settings.DefineSetting("AppCulture", GetGw2LocaleFromCurrentUICulture(), "Application & API Language", "Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API.");
-            _stayInTray = settings.DefineSetting("StayInTray", true, "Minimize to tray when Guild Wars 2 Closes", "If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.\nYou can also use the Blish HUD icon in the tray to launch Guild Wars 2.");
+            _userLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), "Application & API Language",                "Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API.");
+            _stayInTray    = settings.DefineSetting("StayInTray",    true,                               "Minimize to tray when Guild Wars 2 Closes", "If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.\nYou can also use the Blish HUD icon in the tray to launch Guild Wars 2.");
+            _showInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              "Show in Taskbar",                           "When enabled, Blish HUD will be shown in the taskbar.");
+
+            _showInTaskbar.SettingChanged += OverlaySettingChanged;
+        }
+
+        private void ApplySettings() {
+            WindowUtil.SetShowInTaskbar(BlishHud.FormHandle, _showInTaskbar.Value);
+        }
+
+        private void OverlaySettingChanged(object sender, ValueChangedEventArgs<bool> e) {
+            ApplySettings();
         }
 
         private Gw2Locale GetGw2LocaleFromCurrentUICulture() {
@@ -101,8 +117,9 @@ namespace Blish_HUD {
             // Center the window so that you don't have to drag it over every single time (which is really annoying)
             // TODO: Save window positions to settings so that they remember where they were last
             Graphics.SpriteScreen.Resized += delegate {
-                if (!this.BlishHudWindow.Visible)
+                if (!this.BlishHudWindow.Visible) {
                     this.BlishHudWindow.Location = new Point(Graphics.WindowWidth / 2 - this.BlishHudWindow.Width / 2, Graphics.WindowHeight / 2 - this.BlishHudWindow.Height / 2);
+                }
             };
 
             this.BlishHudWindow.AddTab(Properties.Strings.Service_DirectorService_Tab_Home, Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);

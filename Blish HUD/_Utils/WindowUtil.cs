@@ -15,10 +15,14 @@ namespace Blish_HUD {
         private static readonly Logger Logger = Logger.GetLogger(typeof(WindowUtil));
 
         private const uint WS_EX_TRANSPARENT = 0x00000020;
+        private const uint WS_EX_APPWINDOW   = 0x00040000;
         private const uint WS_EX_LAYERED     = 0x00080000;
 
         private const int GWL_STYLE   = -16;
         private const int GWL_EXSTYLE = -20;
+
+        private const int SW_HIDE = 0;
+        private const int SW_SHOW = 5;
 
         private const uint CS_VREDRAW = 0x0001;
         private const uint CS_HREDRAW = 0x0002;
@@ -42,6 +46,9 @@ namespace Blish_HUD {
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool GetClientRect(IntPtr hWnd, ref RECT lpRect);
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
@@ -89,12 +96,23 @@ namespace Blish_HUD {
 
         private static int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong) => IntPtr.Size != 8 ? SetWindowLong32(hWnd, nIndex, dwNewLong) : (int) SetWindowLongPtr64(hWnd, nIndex, new UIntPtr(dwNewLong));
 
+        internal static void SetShowInTaskbar(IntPtr winHandle, bool showInTaskbar) {
+            if (showInTaskbar) {
+                ShowWindow(winHandle, SW_HIDE);
+                SetWindowLong(winHandle, GWL_EXSTYLE, (uint)GetWindowLong(winHandle, GWL_EXSTYLE) | WS_EX_APPWINDOW);
+                ShowWindow(winHandle, SW_SHOW);
+            } else {
+                SetWindowLong(winHandle, GWL_EXSTYLE, (uint)GetWindowLong(winHandle, GWL_EXSTYLE) & ~WS_EX_APPWINDOW);
+            }
+        }
+
         internal static void SetupOverlay(IntPtr winHandle) {
             SetWindowLong(winHandle, GWL_STYLE, CS_HREDRAW | CS_VREDRAW);
 
             SetWindowLong(winHandle, GWL_EXSTYLE, (uint)GetWindowLong(winHandle, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+            SetWindowLong(winHandle, GWL_EXSTYLE, (uint)GetWindowLong(winHandle, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
 
-            SetLayeredWindowAttributes(winHandle, 0, 0, 1);
+            SetLayeredWindowAttributes(winHandle, 0, 0,   1);
             SetLayeredWindowAttributes(winHandle, 0, 255, 2);
         }
 
