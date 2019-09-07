@@ -62,10 +62,12 @@ namespace Blish_HUD {
         /// </summary>
         protected override void Initialize() {
             FormHandle = this.Window.Handle;
-            Form = System.Windows.Forms.Control.FromHandle(FormHandle).FindForm();
+            Form       = System.Windows.Forms.Control.FromHandle(FormHandle).FindForm();
+
+            Form.HandleCreated += delegate { Console.WriteLine("HANDLE CREATED!"); };
 
             this.Window.IsBorderless = true;
-            this.Window.AllowAltF4 = false;
+            this.Window.AllowAltF4   = false;
 
 #if DEBUG
             ActiveGraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
@@ -74,8 +76,9 @@ namespace Blish_HUD {
 #endif
 
             // Initialize all game services
-            foreach (var service in GameService.All)
+            foreach (var service in GameService.All) {
                 service.DoInitialize(this);
+            }
 
             base.Initialize();
         }
@@ -95,8 +98,9 @@ namespace Blish_HUD {
         /// </summary>
         protected override void UnloadContent() {
             // Let all of the game services have a chance to unload
-            foreach (var service in GameService.All)
+            foreach (var service in GameService.All) {
                 service.DoUnload();
+            }
         }
 
         protected override void BeginRun() {

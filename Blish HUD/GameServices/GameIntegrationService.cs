@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Security.AccessControl;
 using System.Windows.Forms;
@@ -88,7 +87,7 @@ namespace Blish_HUD {
                 _gw2Process = value;
 
                 if (value == null || _gw2Process.MainWindowHandle == IntPtr.Zero) {
-                    BlishHud.Form.Invoke((MethodInvoker) (() => { BlishHud.Form.Hide(); }));
+                    BlishHud.Form.Invoke((MethodInvoker) (() => { BlishHud.Form.Visible = false; }));
 
                     _gw2Process = null;
                 } else {
@@ -103,6 +102,8 @@ namespace Blish_HUD {
             }
         }
 
+        private System.Windows.Forms.Form _formWrapper;
+
         private SettingCollection _gameIntegrationSettings;
 
         private SettingEntry<string> _gw2ExecutablePath;
@@ -110,6 +111,11 @@ namespace Blish_HUD {
         public string Gw2ExecutablePath => _gw2ExecutablePath.Value;
 
         protected override void Initialize() {
+            _formWrapper = new Form();
+            BlishHud.Form.Hide();
+            BlishHud.Form.Show(_formWrapper);
+            BlishHud.Form.Visible = false;
+
             _gameIntegrationSettings = Settings.RegisterRootSettingCollection(GAMEINTEGRATION_SETTINGS);
 
             DefineSettings(_gameIntegrationSettings);
@@ -226,7 +232,9 @@ namespace Blish_HUD {
                     OnGw2Exit(null, EventArgs.Empty);
                 }
 
-                BlishHud.Form.Invoke((MethodInvoker) (() => { BlishHud.Form.Show(); }));
+                BlishHud.Form.Invoke((MethodInvoker) (() => {
+                    BlishHud.Form.Visible = true;
+                }));
             }
         }
 
@@ -285,7 +293,6 @@ namespace Blish_HUD {
                     case WindowUtil.OverlayUpdateResponse.Errored:
                         this.Gw2Process = null;
                         break;
-
                 }
             } else {
                 _lastGw2Check += gameTime.ElapsedGameTime.TotalSeconds;

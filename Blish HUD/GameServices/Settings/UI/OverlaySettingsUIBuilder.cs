@@ -15,7 +15,7 @@ namespace Blish_HUD.Settings.UI {
                 Width       = settingPanels.ContentRegion.Width - 8,
                 Title       = "Application Settings",
                 CanCollapse = true,
-                Height      = 128,
+                Height      = 168,
                 Parent      = settingPanels,
             };
 
