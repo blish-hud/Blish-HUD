@@ -21,6 +21,7 @@ namespace Blish_HUD.Pathing.Behaviors {
         private float _bounceDelay;
         private float _bounceHeight = 2f;
         private float _bounceDuration = 1f;
+        private float _bounceDistance = 2f;
 
         private float _originalVerticalOffset;
 
@@ -56,6 +57,14 @@ namespace Blish_HUD.Pathing.Behaviors {
             }
         }
 
+        public float BounceDistance {
+            get => _bounceDistance;
+            set {
+                _bounceDistance = value;
+                UpdateBounceState();
+            }
+        }
+
         public Bounce(TPathable managedPathable) : base(managedPathable) {
             _originalVerticalOffset = managedPathable.ManagedEntity.VerticalOffset;
         }
@@ -82,11 +91,11 @@ namespace Blish_HUD.Pathing.Behaviors {
             switch (this.BounceWhen) {
                 case BehaviorWhen.InZone:
                     this.Activator = new ZoneActivator<TPathable, TEntity>(this) {
-                        ActivationDistance = 2f,
-                        DistanceFrom = DistanceFrom.Player
+                        ActivationDistance = _bounceDistance,
+                        DistanceFrom       = DistanceFrom.Player
                     };
 
-                    this.Activator.Activated += BounceActivatorOnActivated;
+                    this.Activator.Activated   += BounceActivatorOnActivated;
                     this.Activator.Deactivated += BounceActivatorOnDeactivated;
 
                     break;
@@ -143,6 +152,9 @@ namespace Blish_HUD.Pathing.Behaviors {
                         break;
                     case "bounce-duration":
                         InvariantUtil.TryParseFloat(attr.Value, out _bounceDuration);
+                        break;
+                    case "bounce-distance":
+                        InvariantUtil.TryParseFloat(attr.Value, out _bounceDistance);
                         break;
                     case "bounce-when":
                         Enum.TryParse(attr.Value, true, out _bounceWhen);
