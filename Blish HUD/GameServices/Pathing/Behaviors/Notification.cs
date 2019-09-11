@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -18,6 +18,7 @@ namespace Blish_HUD.Pathing.Behaviors {
         where TEntity : Entity {
 
         private string _notificationMessage = string.Empty;
+        private float _notificationDistance = 2f;
         private ScreenNotification.NotificationType _notificationType = ScreenNotification.NotificationType.Info;
 
         private bool _canResendMessage = true;
@@ -25,6 +26,15 @@ namespace Blish_HUD.Pathing.Behaviors {
         public string NotificationMessage {
             get => _notificationMessage;
             set => _notificationMessage = value;
+        }
+
+        public float NotificationDistance {
+            get => _notificationDistance;
+            set {
+                _notificationDistance = value;
+                Load();
+            }
+
         }
 
         public ScreenNotification.NotificationType NotificationType {
@@ -45,7 +55,7 @@ namespace Blish_HUD.Pathing.Behaviors {
             }
 
             this.Activator = new ZoneActivator<TPathable, TEntity>(this) {
-                ActivationDistance = 4f,
+                ActivationDistance = _notificationDistance,
                 DistanceFrom       = DistanceFrom.Player
             };
 
@@ -70,6 +80,9 @@ namespace Blish_HUD.Pathing.Behaviors {
                 switch (attr.Name.ToLowerInvariant()) {
                     case "notification":
                         _notificationMessage = attr.Value;
+                        break;
+                    case "notification-distance":
+                        InvariantUtil.TryParseFloat(attr.Value, out _notificationDistance);
                         break;
                     case "notification-type":
                         Enum.TryParse(attr.Value, true, out _notificationType);
