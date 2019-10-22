@@ -129,4 +129,22 @@
   <data name="Options" xml:space="preserve">
     <value>Optionen</value>
   </data>
+  <data name="Context_FestivalContext_DragonBash" xml:space="preserve">
+    <value>Dragon Bash</value>
+  </data>
+  <data name="Context_FestivalContext_FestivalOfTheFourWinds" xml:space="preserve">
+    <value>Festival of the Four Winds</value>
+  </data>
+  <data name="Context_FestivalContext_Halloween" xml:space="preserve">
+    <value>Halloween</value>
+  </data>
+  <data name="Context_FestivalContext_LunarNewYear" xml:space="preserve">
+    <value>Lunar New Year</value>
+  </data>
+  <data name="Context_FestivalContext_SuperAdventureFestival" xml:space="preserve">
+    <value>Super Adventure Festival</value>
+  </data>
+  <data name="Context_FestivalContext_Wintersday" xml:space="preserve">
+    <value>Wintersday</value>
+  </data>
 </root>

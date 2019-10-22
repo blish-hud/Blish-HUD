@@ -40,6 +40,7 @@ namespace Blish_HUD {
             // Built-in contexts
             RegisterContext(new Gw2ClientContext());
             RegisterContext(new CdnInfoContext());
+            RegisterContext(new FestivalContext());
         }
 
         /// <inheritdoc />
