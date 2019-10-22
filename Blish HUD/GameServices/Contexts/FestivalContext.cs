@@ -40,6 +40,10 @@ namespace Blish_HUD.Contexts {
                 _displayName = displayName;
             }
 
+            public bool IsActive() {
+
+            }
+
             // Known festivals
 
             /// <summary>
@@ -138,7 +142,12 @@ namespace Blish_HUD.Contexts {
             }
         }
 
-        public ContextAvailability TryGetCurrentFestivals(out ContextResult<ReadOnlyCollection<Festival>> contextResult) {
+        /// <summary>
+        /// If <see cref="ContextAvailability.Available"/>, returns
+        /// <see cref="ReadOnlyCollection{Festival}"/> containing a
+        /// collection of all currently active festivals.
+        /// </summary>
+        public ContextAvailability TryGetActiveFestivals(out ContextResult<ReadOnlyCollection<Festival>> contextResult) {
             if (this.State != ContextState.Ready) return NotReady(out contextResult);
 
             ReadOnlyCollection<Festival> festivals = _activeFestivals.AsReadOnly();
