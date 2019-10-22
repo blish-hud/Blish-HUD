@@ -22,6 +22,8 @@ namespace Blish_HUD.Contexts {
         /// </summary>
         public struct Festival {
 
+            private static FestivalContext _context;
+
             private readonly string _name;
             private readonly string _displayName;
 
@@ -40,8 +42,17 @@ namespace Blish_HUD.Contexts {
                 _displayName = displayName;
             }
 
+            /// <summary>
+            /// Indicates if this festival is currently active.
+            /// </summary>
+            /// <returns><c>true</c> if the festival is active.</returns>
             public bool IsActive() {
+                if (_context == null) {
+                    _context = GameService.Contexts.GetContext<FestivalContext>();
+                }
 
+                // _context can still be null if it has not registered with the ContextService yet
+                return _context?.FestivalIsActive(this) ?? false;
             }
 
             // Known festivals
@@ -75,17 +86,18 @@ namespace Blish_HUD.Contexts {
             /// Guild Wars 2 Dragon Bash Festival.
             /// </summary>
             public static readonly Festival DragonBash = new Festival("dragonbash", Strings.Context_FestivalContext_DragonBash);
+
         }
 
         private const string DAILY_GROUP_ID = "18DB115A-8637-4290-A636-821362A3C4A8";
 
         private readonly Dictionary<int, Festival> _knownFestivalCategories = new Dictionary<int, Festival> {
-            { 79, Festival.Halloween },
-            { 98,  Festival.Wintersday},
-            { 162, Festival.SuperAdventureFestival },
-            { 201, Festival.LunarNewYear },
-            { 213, Festival.FestivalOfTheFourWinds },
-            { 233, Festival.DragonBash }
+            {79, Festival.Halloween},
+            {98, Festival.Wintersday},
+            {162, Festival.SuperAdventureFestival},
+            {201, Festival.LunarNewYear},
+            {213, Festival.FestivalOfTheFourWinds},
+            {233, Festival.DragonBash}
         };
 
         private CancellationTokenSource _contextLoadCancellationTokenSource;
@@ -97,7 +109,7 @@ namespace Blish_HUD.Contexts {
         public FestivalContext() {
             GameService.GameIntegration.Gw2Started += GameIntegrationOnGw2Started;
         }
-        
+
         /// <inheritdoc />
         protected override void Load() {
             _contextLoadCancellationTokenSource?.Dispose();
@@ -142,24 +154,44 @@ namespace Blish_HUD.Contexts {
             }
         }
 
+        private bool FestivalIsActive(Festival festival) {
+            return _activeFestivals.Contains(festival);
+        }
+
         /// <summary>
         /// If <see cref="ContextAvailability.Available"/>, returns
         /// <see cref="ReadOnlyCollection{Festival}"/> containing a
         /// collection of all currently active festivals.
         /// </summary>
         public ContextAvailability TryGetActiveFestivals(out ContextResult<ReadOnlyCollection<Festival>> contextResult) {
-            if (this.State != ContextState.Ready) return NotReady(out contextResult);
-
-            ReadOnlyCollection<Festival> festivals = _activeFestivals.AsReadOnly();
-
             if (!string.IsNullOrEmpty(_fault)) {
-                contextResult = new ContextResult<ReadOnlyCollection<Festival>>(festivals, _fault);
+                contextResult = new ContextResult<ReadOnlyCollection<Festival>>(default, _fault);
                 return ContextAvailability.Failed;
             }
+
+            if (this.State != ContextState.Ready) return NotReady(out contextResult);
 
             contextResult = new ContextResult<ReadOnlyCollection<Festival>>(_activeFestivals.AsReadOnly());
             return ContextAvailability.Available;
         }
 
+        /// <summary>
+        /// If <see cref="ContextAvailability.Available"/>, returns
+        /// a <c>bool</c> indicating if the provided<param name="festival">festival</param>
+        /// is currently active or not.
+        /// </summary>
+        public ContextAvailability TryCheckIfFestivalIsActive(Festival festival, out ContextResult<bool> contextResult) {
+            if (!string.IsNullOrEmpty(_fault)) {
+                contextResult = new ContextResult<bool>(false, _fault);
+                return ContextAvailability.Failed;
+            }
+
+            if (this.State != ContextState.Ready) return NotReady(out contextResult);
+
+            contextResult = new ContextResult<bool>(FestivalIsActive(festival));
+            return ContextAvailability.Available;
+        }
+
     }
+
 }
