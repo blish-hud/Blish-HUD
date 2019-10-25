@@ -35,16 +35,16 @@ namespace Blish_HUD.Controls {
 
         private void BuildChildElements() {
             var assignInputsLbl = new Label() {
-                Text = $"Assign inputs to: {_hotkeyDefinition.Name}",
-                Location = new Point(40, 35),
-                ShowShadow = true,
-                AutoSizeWidth = true,
+                Text           = string.Format(Strings.GameServices.InputService.Hotkey_AssignInputsTo, _hotkeyDefinition.Name),
+                Location       = new Point(40, 35),
+                ShowShadow     = true,
+                AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent = this
+                Parent         = this
             };
 
             var unbindBttn = new StandardButton() {
-                Text     = "Unbind",
+                Text     = Strings.GameServices.InputService.Hotkey_Unbind,
                 Location = new Point(275, 85),
                 Width    = 70,
                 Height   = 25,
@@ -53,6 +53,7 @@ namespace Blish_HUD.Controls {
 
             var cancelBttn = new StandardButton() {
                 Text     = "Cancel",
+                Text     = Strings.Common.Action_Cancel,
                 Location = new Point(275, 140),
                 Width    = 70,
                 Height   = 25,
