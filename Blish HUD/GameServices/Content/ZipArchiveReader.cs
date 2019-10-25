@@ -42,7 +42,7 @@ namespace Blish_HUD.Content {
             var validEntries = _archive.Entries.Where(e => e.Name.EndsWith($"{fileExtension}", StringComparison.OrdinalIgnoreCase)).ToList();
 
             foreach (var entry in validEntries) {
-                progress?.Report($"Loading {entry.Name}");
+                progress?.Report(string.Format(Strings.GameServices.ContentService.LoadingEntry, entry.Name));
                 var entryStream = GetFileStream(entry.FullName);
 
                 loadFileFunc.Invoke(entryStream, this);

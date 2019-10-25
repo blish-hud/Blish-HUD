@@ -162,8 +162,7 @@ namespace Blish_HUD {
             LoadRenderers();
 
             Overlay.FinishedLoading += delegate {
-                Overlay.BlishHudWindow
-                        .AddTab("Settings", Content.GetTexture("155052"), BuildSettingPanel(GameService.Overlay.BlishHudWindow), int.MaxValue - 1);
+                Overlay.BlishHudWindow.AddTab(Strings.GameServices.SettingsService.SettingsTab, Content.GetTexture("155052"), BuildSettingPanel(GameService.Overlay.BlishHudWindow), int.MaxValue - 1);
             };
         }
 
@@ -227,7 +226,7 @@ namespace Blish_HUD {
                 Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20, baseSettingsPanel.Height - 50 - 24),
                 Location   = new Point(5, 50),
                 CanScroll  = true,
-                Title      = "Settings",
+                Title      = Strings.GameServices.SettingsService.SettingsTab,
                 Parent     = baseSettingsPanel
             };
 
@@ -244,11 +243,11 @@ namespace Blish_HUD {
                 Parent   = baseSettingsPanel
             };
 
-            var settingsMi_About    = settingsListMenu.AddMenuItem("About",                Content.GetTexture("440023"));
-            var settingsMi_App      = settingsListMenu.AddMenuItem("Application Settings", Content.GetTexture("156736"));
-            var settingsMi_Controls = settingsListMenu.AddMenuItem("Hotkey Settings",      Content.GetTexture("156734"));
-            var settingsMi_API      = settingsListMenu.AddMenuItem("API Settings",         Content.GetTexture("156684"));
-            var settingsMi_Modules  = settingsListMenu.AddMenuItem("Manage Modules",       Content.GetTexture("156764-noarrow"));
+            var settingsMi_About    = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.AboutSection,         Content.GetTexture("440023"));
+            var settingsMi_App      = settingsListMenu.AddMenuItem("Application Settings",                                   Content.GetTexture("156736"));
+            var settingsMi_Controls = settingsListMenu.AddMenuItem("Hotkey Settings",                                        Content.GetTexture("156734"));
+            var settingsMi_API      = settingsListMenu.AddMenuItem("API Settings",                                           Content.GetTexture("156684"));
+            var settingsMi_Modules  = settingsListMenu.AddMenuItem(Strings.GameServices.ModulesService.ManageModulesSection, Content.GetTexture("156764-noarrow"));
 
             //settingsMi_Modules.Click += (object sender, MouseEventArgs e) => { wndw.Navigate(BuildModulePanel(wndw)); };
 

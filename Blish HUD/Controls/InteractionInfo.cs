@@ -6,13 +6,11 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Controls {
     public class InteractionInfo : LabelBase {
 
-        private const int CONTROL_WIDTH = 170;
+        private const int CONTROL_WIDTH  = 170;
         private const int CONTROL_HEIGHT = 85;
 
         private const float LEFT_OFFSET = 0.67f;
-        private const float TOP_OFFSET = 0.71f;
-
-        private const string DEFAULT_INFO_TEXT = "Info";
+        private const float TOP_OFFSET  = 0.71f;
 
         private Tween _fadeAnimation;
 
@@ -32,22 +30,20 @@ namespace Blish_HUD.Controls {
         }
 
         public InteractionInfo() {
-            _text = DEFAULT_INFO_TEXT;
+            _text              = Strings.Controls.InteractionInfo_Info;
             _verticalAlignment = VerticalAlignment.Middle;
-            _showShadow = true;
-            _strokeText = true;
-            _font = Content.DefaultFont12;
-            this.Size = new Point(CONTROL_WIDTH, CONTROL_HEIGHT);
-            this.Location = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
-            this.Opacity = 0f;
-            this.Visible = false;
-            this.Parent = Graphics.SpriteScreen;
+            _showShadow        = true;
+            _strokeText        = true;
+            _font              = Content.DefaultFont12;
+            this.Size          = new Point(CONTROL_WIDTH,                             CONTROL_HEIGHT);
+            this.Location      = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
+            this.Opacity       = 0f;
+            this.Visible       = false;
+            this.Parent        = Graphics.SpriteScreen;
 
             Graphics.SpriteScreen.Resized += delegate {
-                this.Location = new Point(
-                                          (int)(Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)),
-                                          (int)(Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)) - CONTROL_HEIGHT * _verticalIndex
-                                         );
+                this.Location = new Point((int) (Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)),
+                                          (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)) - CONTROL_HEIGHT * _verticalIndex);
             };
 
         }

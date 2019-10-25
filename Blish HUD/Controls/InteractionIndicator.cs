@@ -7,13 +7,11 @@ using Microsoft.Xna.Framework.Input;
 namespace Blish_HUD.Controls {
     public class InteractionIndicator : LabelBase {
 
-        private const int CONTROL_WIDTH = 256;
+        private const int CONTROL_WIDTH  = 256;
         private const int CONTROL_HEIGHT = 64;
 
         private const float LEFT_OFFSET = 0.65f;
-        private const float TOP_OFFSET = 0.67f;
-
-        private const string DEFAULT_INTERACT_TEXT = "Interact";
+        private const float TOP_OFFSET  = 0.67f;
 
         private Tween _fadeAnimation;
 
@@ -43,16 +41,16 @@ namespace Blish_HUD.Controls {
         }
 
         public InteractionIndicator() {
-            _text = DEFAULT_INTERACT_TEXT;
+            _text              = Strings.Controls.InteractionIndicator_Interact;
             _verticalAlignment = VerticalAlignment.Middle;
-            _showShadow = true;
-            _strokeText = true;
-            _font = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
-            _size = new Point((int)(CONTROL_WIDTH * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), (int)(CONTROL_HEIGHT * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)));
-            _location = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET), (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
-            _opacity = 0f;
-            _visible = false;
-            this.Parent = Graphics.SpriteScreen;
+            _showShadow        = true;
+            _strokeText        = true;
+            _font              = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
+            _size              = new Point((int)(CONTROL_WIDTH        * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), (int)(CONTROL_HEIGHT * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)));
+            _location          = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET),                                           (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
+            _opacity           = 0f;
+            _visible           = false;
+            this.Parent        = Graphics.SpriteScreen;
 
             Graphics.SpriteScreen.Resized += delegate {
                 this.Location = new Point((int) (Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), 

@@ -52,7 +52,6 @@ namespace Blish_HUD.Controls {
             };
 
             var cancelBttn = new StandardButton() {
-                Text     = "Cancel",
                 Text     = Strings.Common.Action_Cancel,
                 Location = new Point(275, 140),
                 Width    = 70,
@@ -61,7 +60,7 @@ namespace Blish_HUD.Controls {
             };
 
             var overwriteBttn = new StandardButton() {
-                Text     = "Overwrite",
+                Text     = Strings.GameServices.InputService.Hotkey_Overwrite,
                 Width    = 105,
                 Height   = 25,
                 Parent   = this
