@@ -66,7 +66,7 @@ namespace Blish_HUD.Settings.UI {
 
             var heartMessage = new Label() {
                 Font              = GameService.Content.DefaultFont16,
-                Text              = BLISH_HUD_LOVE_MESSAGE,
+                Text              = Strings.GameServices.OverlayService.AboutLoveMessage,
                 AutoSizeWidth     = true,
                 Height            = lovePanel.Height,
                 Left              = heart.Right,

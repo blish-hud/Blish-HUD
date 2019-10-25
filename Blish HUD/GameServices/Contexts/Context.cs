@@ -61,7 +61,7 @@ namespace Blish_HUD.Contexts {
         /// with the status set to "not ready".
         /// </summary>
         protected ContextAvailability NotReady<T>(out ContextResult<T> contextResult) {
-            contextResult = new ContextResult<T>(default, Properties.Strings.Context_StateNotReady);
+            contextResult = new ContextResult<T>(default, Strings.GameServices.ContextsService.State_NotReady);
 
             return ContextAvailability.NotReady;
         }

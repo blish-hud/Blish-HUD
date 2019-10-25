@@ -188,15 +188,15 @@ namespace Blish_HUD {
             // Found this here: https://stackoverflow.com/a/25409865/595437
             // Extract the tray icon from our assembly
             this.TrayIcon = new NotifyIcon() {
-                Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
-                Text = "Blish HUD",
-                Visible = true,
+                Icon             = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
+                Text             = Strings.Common.BlishHUD,
+                Visible          = true,
                 ContextMenuStrip = this.TrayIconMenu
             };
 
             // Populate TrayIconMenu items
-            ts_launchGw2Auto = this.TrayIconMenu.Items.Add("Launch Guild Wars 2 - Autologin");
-            ts_launchGw2     = this.TrayIconMenu.Items.Add("Launch Guild Wars 2");
+            ts_launchGw2Auto = this.TrayIconMenu.Items.Add($"{Strings.GameServices.GameIntegrationService.TrayIcon_LaunchGuildWars2} - {Strings.GameServices.GameIntegrationService.TrayIcon_Autologin}");
+            ts_launchGw2     = this.TrayIconMenu.Items.Add(Strings.GameServices.GameIntegrationService.TrayIcon_LaunchGuildWars2);
 
             ts_launchGw2Auto.Click += delegate { LaunchGw2(true); };
             ts_launchGw2.Click     += delegate { LaunchGw2(false); };
@@ -207,7 +207,7 @@ namespace Blish_HUD {
             };
 
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
-            ts_exit = this.TrayIconMenu.Items.Add("Close Blish HUD");
+            ts_exit = this.TrayIconMenu.Items.Add($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}");
 
             ts_exit.Click += delegate { ActiveBlishHud.Exit(); };
 

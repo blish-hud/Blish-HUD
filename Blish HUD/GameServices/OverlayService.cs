@@ -59,9 +59,9 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _userLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), "Application & API Language",                "Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API.");
-            _stayInTray    = settings.DefineSetting("StayInTray",    true,                               "Minimize to tray when Guild Wars 2 Closes", "If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.\nYou can also use the Blish HUD icon in the tray to launch Guild Wars 2.");
-            _showInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              "Show in Taskbar",                           "When enabled, Blish HUD will be shown in the taskbar.");
+            _userLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    Strings.GameServices.OverlayService.Setting_AppCulture_Description);
+            _stayInTray    = settings.DefineSetting("StayInTray",    true,                               Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    Strings.GameServices.OverlayService.Setting_StayInTray_Description);
+            _showInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
 
             _showInTaskbar.SettingChanged += OverlaySettingChanged;
         }
@@ -95,18 +95,18 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Properties.Strings.General_BlishHUD) {
+            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Strings.Common.BlishHUD) {
                 Menu     = new ContextMenuStrip(),
                 Priority = int.MaxValue,
                 Parent   = Graphics.SpriteScreen,
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem($"{Properties.Strings.General_Close} {Properties.Strings.General_BlishHUD}").Click += delegate { ActiveBlishHud.Exit(); };
+            this.BlishContextMenu.AddMenuItem($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}").Click += delegate { ActiveBlishHud.Exit(); };
 
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
-                Title  = Properties.Strings.General_BlishHUD,
+                Title  = Strings.Common.BlishHUD,
                 Emblem = Content.GetTexture("test-window-icon9")
             };
 
@@ -122,7 +122,7 @@ namespace Blish_HUD {
                 }
             };
 
-            this.BlishHudWindow.AddTab(Properties.Strings.Service_DirectorService_Tab_Home, Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);
+            this.BlishHudWindow.AddTab(Strings.GameServices.OverlayService.HomeTab, Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);
 
             PrepareClientDetection();
         }

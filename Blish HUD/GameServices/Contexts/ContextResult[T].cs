@@ -1,6 +1,4 @@
-﻿using Blish_HUD.Properties;
-
-namespace Blish_HUD.Contexts {
+﻿namespace Blish_HUD.Contexts {
 
     /// <summary>
     /// The result when querying a <see cref="Context"/>.
@@ -42,7 +40,7 @@ namespace Blish_HUD.Contexts {
         /// <param name="value">The result to send back to the caller.</param>
         public ContextResult(T value) {
             this.Value  = value;
-            this.Status = Strings.Context_ResultSuccess;
+            this.Status = Strings.GameServices.ContextsService.State_Success;
         }
 
         public static implicit operator T(ContextResult<T> contextResult) {
