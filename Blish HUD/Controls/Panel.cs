@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Blish_HUD.Controls {
 
-    /// <summary>7
+    /// <summary>
     /// Used to group collections of controls. Can have an accented border and title, if enabled.
     /// </summary>
     public class Panel : Container, IAccordion {
@@ -56,7 +56,7 @@ namespace Blish_HUD.Controls {
         public bool CanScroll {
             get => _canScroll;
             set {
-                if (!SetProperty(ref _canScroll, value)) return;
+                if (!SetProperty(ref _canScroll, value, true)) return;
 
                 UpdateScrollbar();
             }
