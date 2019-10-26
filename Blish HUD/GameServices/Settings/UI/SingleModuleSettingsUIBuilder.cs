@@ -2,6 +2,7 @@
 using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD;
+using Blish_HUD.Modules;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Settings.UI {
