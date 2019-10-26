@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using System.Linq;
 using System.Threading.Tasks;
-using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 

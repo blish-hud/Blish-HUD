@@ -27,24 +27,31 @@ namespace Blish_HUD.Modules {
 
         // Recommended attributes
 
-        [JsonProperty("description")] public string Description { get; private set; }
+        [JsonProperty("description")]
+        public string Description { get; private set; }
 
         [JsonProperty("dependencies"), JsonConverter(typeof(ModuleDependency.VersionDependenciesConverter))]
         public List<ModuleDependency> Dependencies { get; private set; }
 
-        [JsonProperty("url")] public string Url { get; private set; } = "";
+        [JsonProperty("url")]
+        public string Url { get; private set; } = "";
 
-        [JsonProperty("author")] public ModuleContributor Author { get; private set; }
+        [JsonProperty("author")]
+        public ModuleContributor Author { get; private set; }
 
-        [JsonProperty("contributors")] public List<ModuleContributor> Contributors { get; private set; }
+        [JsonProperty("contributors")]
+        public List<ModuleContributor> Contributors { get; private set; }
 
         // Optional attributes
 
-        [JsonProperty("directories")] public List<string> Directories { get; private set; }
+        [JsonProperty("directories")]
+        public List<string> Directories { get; private set; }
 
-        [JsonProperty("enable_without_gw2")] public bool EnabledWithoutGW2 { get; private set; }
+        [JsonProperty("enable_without_gw2")]
+        public bool EnabledWithoutGW2 { get; private set; }
 
-        [JsonProperty("api_permissions")] public Dictionary<TokenPermission, ModuleApiPermissions> ApiPermissions { get; private set; } = new Dictionary<TokenPermission, ModuleApiPermissions>();
+        [JsonProperty("api_permissions")]
+        public Dictionary<TokenPermission, ModuleApiPermissions> ApiPermissions { get; private set; } = new Dictionary<TokenPermission, ModuleApiPermissions>();
 
         public Manifest() {
             // Ensure nothing is empty, despite manifest version and contents
