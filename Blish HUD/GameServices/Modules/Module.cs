@@ -8,38 +8,6 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Modules {
 
-    public enum ModuleRunState {
-        /// <summary>
-        /// The module is not loaded.
-        /// </summary>
-        Unloaded,
-
-        /// <summary>
-        /// The module is currently still working to complete its initial <see cref="Module.LoadAsync"/>.
-        /// </summary>
-        Loading,
-
-        /// <summary>
-        /// The module has completed loading and is enabled.
-        /// </summary>
-        Loaded,
-
-        /// <summary>
-        /// The module has been disabled and is currently unloading the resources it has.
-        /// </summary>
-        Unloading
-    }
-
-    public class ModuleRunStateChangedEventArgs : EventArgs {
-
-        public ModuleRunState RunState { get; }
-
-        public ModuleRunStateChangedEventArgs(ModuleRunState runState) {
-            this.RunState = runState;
-        }
-
-    }
-
     public abstract class Module : IDisposable {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(Module));
@@ -70,6 +38,10 @@ namespace Blish_HUD.Modules {
 
         protected void OnModuleException(UnobservedTaskExceptionEventArgs e) {
             ModuleException?.Invoke(this, e);
+
+            if (!e.Observed) {
+                this.RunState = ModuleRunState.FatalError;
+            }
         }
 
         #endregion
@@ -77,9 +49,9 @@ namespace Blish_HUD.Modules {
         protected readonly ModuleParameters ModuleParameters;
 
         private ModuleRunState _runState = ModuleRunState.Unloaded;
-        private ModuleRunState RunState {
+        public ModuleRunState RunState {
             get => _runState;
-            set {
+            private set {
                 if (_runState == value) return;
 
                 _runState = value;
@@ -127,13 +99,15 @@ namespace Blish_HUD.Modules {
                 case TaskStatus.Faulted:
                     var loadError = new UnobservedTaskExceptionEventArgs(_loadTask.Exception);
                     OnModuleException(loadError);
+
                     if (!loadError.Observed) {
                         Logger.Error(_loadTask.Exception, "Module '{$moduleName} ({$moduleNamespace})' had an unhandled exception while loading:", this.Name, this.Namespace);
                         #if DEBUG
                         throw _loadTask.Exception;
                         #endif
+                    } else {
+                        RunState = ModuleRunState.Loaded;
                     }
-                    RunState = ModuleRunState.Loaded;
                     break;
 
                 case TaskStatus.RanToCompletion:
