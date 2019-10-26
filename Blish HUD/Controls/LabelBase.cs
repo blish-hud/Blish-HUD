@@ -96,7 +96,7 @@ namespace Blish_HUD.Controls {
             if (_font == null || string.IsNullOrEmpty(text)) return;
 
             if (_showShadow && !_strokeText) {
-                spriteBatch.DrawStringOnCtrl(this, text, _font, bounds.OffsetBy(1, 1), _shadowColor, false, _horizontalAlignment, _verticalAlignment);
+                spriteBatch.DrawStringOnCtrl(this, text, _font, bounds.OffsetBy(1, 1), _shadowColor, _wrapText, _horizontalAlignment, _verticalAlignment);
             }
             
             if (_cacheLabel && _labelRender != null) {
