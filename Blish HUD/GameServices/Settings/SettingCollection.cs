@@ -14,8 +14,9 @@ namespace Blish_HUD.Settings {
             public override void WriteJson(JsonWriter writer, SettingCollection value, JsonSerializer serializer) {
                 var settingCollectionObject = new JObject();
 
-                if (value.LazyLoaded)
+                if (value.LazyLoaded) {
                     settingCollectionObject.Add("Lazy", value.LazyLoaded);
+                }
 
                 var entryArray = value._entryTokens as JArray;
                 if (value.Loaded) {
@@ -43,8 +44,9 @@ namespace Blish_HUD.Settings {
                     isLazy = jObj["Lazy"].Value<bool>();
                 }
 
-                if (jObj["Entries"] != null)
+                if (jObj["Entries"] != null) {
                     return new SettingCollection(isLazy, jObj["Entries"]);
+                }
 
                 return new SettingCollection(isLazy);
             }
@@ -87,23 +89,14 @@ namespace Blish_HUD.Settings {
         public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName = null, string description = null, SettingsService.SettingTypeRendererDelegate renderer = null) {
             // We don't need to check if we've loaded because the first check uses this[key] which
             // will load if we haven't already since it references this.Entries instead of _entries
-            var existingEntry = this[entryKey];
-
-            var definedValue = defaultValue;
-
-            if (existingEntry is SettingEntry<TEntry> matchingEntry) {
-                definedValue = matchingEntry.Value;
+            if (!(this[entryKey] is SettingEntry<TEntry> definedEntry)) {
+                definedEntry = SettingEntry<TEntry>.InitSetting(entryKey, defaultValue);
+                _entries.Add(definedEntry);
             }
-
-            _entries.Remove(existingEntry);
-
-            SettingEntry<TEntry> definedEntry = SettingEntry<TEntry>.InitSetting(entryKey, definedValue);
-
-            _entries.Add(definedEntry);
 
             definedEntry.DisplayName = displayName;
             definedEntry.Description = description;
-            definedEntry.Renderer = renderer;
+            definedEntry.Renderer    = renderer;
 
             return definedEntry;
         }
