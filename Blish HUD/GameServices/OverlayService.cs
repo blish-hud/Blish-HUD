@@ -54,8 +54,6 @@ namespace Blish_HUD {
             _applicationSettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
 
             DefineSettings(_applicationSettings);
-
-            ApplySettings();
         }
 
         private void DefineSettings(SettingCollection settings) {
@@ -63,15 +61,53 @@ namespace Blish_HUD {
             _stayInTray    = settings.DefineSetting("StayInTray",    true,                               Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    Strings.GameServices.OverlayService.Setting_StayInTray_Description);
             _showInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
 
-            _showInTaskbar.SettingChanged += OverlaySettingChanged;
+            _showInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
+            _userLocale.SettingChanged    += UserLocaleOnSettingChanged;
+
+            ApplyInitialSettings();
         }
 
-        private void ApplySettings() {
-            WindowUtil.SetShowInTaskbar(BlishHud.FormHandle, _showInTaskbar.Value);
+        private void ApplyInitialSettings() {
+            ShowInTaskbarOnSettingChanged(_showInTaskbar, new ValueChangedEventArgs<bool>(true, _showInTaskbar.Value));
+            UserLocaleOnSettingChanged(_userLocale, new ValueChangedEventArgs<Gw2Locale>(GetGw2LocaleFromCurrentUICulture(), _userLocale.Value));
         }
 
-        private void OverlaySettingChanged(object sender, ValueChangedEventArgs<bool> e) {
-            ApplySettings();
+        private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
+            WindowUtil.SetShowInTaskbar(BlishHud.FormHandle, e.NewValue);
+        }
+
+        private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Gw2Locale> e) {
+            CultureInfo.CurrentUICulture = GetCultureFromGw2Locale(e.NewValue);
+        }
+
+        private CultureInfo GetCultureFromGw2Locale(Gw2Locale gw2Locale) {
+            switch (gw2Locale) {
+                case Gw2Locale.German:
+                    return CultureInfo.GetCultureInfo(7); // German (de-DE)
+                    break;
+
+                case Gw2Locale.English:
+                    return CultureInfo.GetCultureInfo(9); // English (en-US)
+                    break;
+
+                case Gw2Locale.Spanish:
+                    return CultureInfo.GetCultureInfo(10); // Spanish (es-ES)
+                    break;
+
+                case Gw2Locale.French:
+                    return CultureInfo.GetCultureInfo(12); // French (fr-FR)
+                    break;
+
+                case Gw2Locale.Korean:
+                    return CultureInfo.GetCultureInfo(18); // Korean (ko-KR)
+                    break;
+
+                case Gw2Locale.Chinese:
+                    return CultureInfo.GetCultureInfo(30724); // Chinese (zh-CN)
+                    break;
+            }
+
+            return CultureInfo.GetCultureInfo(9); // English (en-US)
         }
 
         private Gw2Locale GetGw2LocaleFromCurrentUICulture() {
