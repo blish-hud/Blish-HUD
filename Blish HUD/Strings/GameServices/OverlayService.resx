@@ -105,27 +105,31 @@
     <value>About</value>
     <comment>The name of the about menu item and section that is shown in the settings.</comment>
   </data>
-  <data name="Setting_AppCulture_DisplayName" xml:space="preserve">
-    <value>Application &amp; API Language</value>
-  </data>
-  <data name="Setting_AppCulture_Description" xml:space="preserve">
-    <value>Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API.</value>
-  </data>
-  <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
-    <value>Minimize to tray when Guild Wars 2 Closes</value>
-  </data>
-  <data name="Setting_StayInTray_Description" xml:space="preserve">
-    <value>If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.
-You can also use the Blish HUD icon in the tray to launch Guild Wars 2.</value>
-  </data>
-  <data name="Setting_ShowInTaskbar_DisplayName" xml:space="preserve">
-    <value>Show in Taskbar</value>
-  </data>
-  <data name="Setting_ShowInTaskbar_Description" xml:space="preserve">
-    <value>When enabled, Blish HUD will be shown in the taskbar while running.</value>
+  <data name="OverlaySettingsSection" xml:space="preserve">
+    <value>Overlay Settings</value>
+    <comment>The name of the overlay settings menu item and section that is shown in the settings.</comment>
   </data>
   <data name="AboutLoveMessage" xml:space="preserve">
     <value>Designed and built with all the love in Tyria by
 the Blish HUD team with help from many more!</value>
+  </data>
+  <data name="Setting_ShowInTaskbar_Description" xml:space="preserve">
+    <value>When enabled, Blish HUD will be shown in the taskbar while running.</value>
+  </data>
+  <data name="Setting_ShowInTaskbar_DisplayName" xml:space="preserve">
+    <value>Show in Taskbar</value>
+  </data>
+  <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
+    <value>Minimize to tray when Guild Wars 2 Closes</value>
+  </data>
+  <data name="Setting_AppCulture_Description" xml:space="preserve">
+    <value>Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API.</value>
+  </data>
+  <data name="Setting_AppCulture_DisplayName" xml:space="preserve">
+    <value>Application &amp; API Language</value>
+  </data>
+  <data name="Setting_StayInTray_Description" xml:space="preserve">
+    <value>If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.
+You can also use the Blish HUD icon in the tray to launch Guild Wars 2.</value>
   </data>
 </root>

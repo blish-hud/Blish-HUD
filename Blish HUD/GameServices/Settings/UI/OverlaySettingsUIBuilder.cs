@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Settings.UI {
     public static class OverlaySettingsUIBuilder {
 
-        public static void BuildSingleModuleSettings(Panel buildPanel, object nothing) {
+        public static void BuildOverlaySettings(Panel buildPanel, object nothing) {
             var settingPanels = new FlowPanel() {
                 Size        = buildPanel.ContentRegion.Size,
                 ShowBorder  = true,
@@ -13,7 +13,7 @@ namespace Blish_HUD.Settings.UI {
 
             var applicationSettingsPanel = new Panel() {
                 Width       = settingPanels.ContentRegion.Width - 8,
-                Title       = "Application Settings",
+                Title       = "General",
                 CanCollapse = true,
                 Height      = 168,
                 Parent      = settingPanels,

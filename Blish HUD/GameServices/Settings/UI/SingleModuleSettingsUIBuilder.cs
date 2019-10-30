@@ -187,11 +187,11 @@ namespace Blish_HUD.Settings.UI {
 
             var descriptionPanel = new Panel() {
                 Size       = new Point(collapsePanel.ContentRegion.Width, 155),
-                CanScroll  = true,
-                Location = new Point(0, moduleName.Bottom + 32 + 4),
+                Location   = new Point(0,                                 moduleName.Bottom + 32 + 4),
                 Title      = "Description",
                 ShowBorder = true,
-                Parent     = collapsePanel
+                Parent     = collapsePanel,
+                CanScroll  = true
             };
 
             var descriptionLabel = new Label() {

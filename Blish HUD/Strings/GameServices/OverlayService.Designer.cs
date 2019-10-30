@@ -89,6 +89,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Overlay Settings.
+        /// </summary>
+        internal static string OverlaySettingsSection {
+            get {
+                return ResourceManager.GetString("OverlaySettingsSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API..
         /// </summary>
         internal static string Setting_AppCulture_Description {

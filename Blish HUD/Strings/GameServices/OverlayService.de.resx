@@ -117,15 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Setting_AppCulture_DisplayName" xml:space="preserve">
-    <value>App &amp; API-Sprache</value>
-  </data>
-  <data name="Setting_AppCulture_Description" xml:space="preserve">
-    <value>Legt die Sprache fest, die bei der Anzeige von Blish-HUD-Text und bei Anfragen an die GW2-Web-API verwendet wird.</value>
-  </data>
-  <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
-    <value>In die Symbolleiste minimieren, wenn Guild Wars 2 geschlossen wird.</value>
-  </data>
   <data name="Setting_StayInTray_Description" xml:space="preserve">
     <value>Aktiviert, wird Blish HUD beim Schließen von GW2 automatisch minimiert und läuft weiter, bis GW2 erneut gestartet wird.
 Sie können auch das Symbol für Blish HUD in der Taskleiste verwenden, um Guild Wars 2 zu starten.</value>
@@ -139,5 +130,14 @@ dem Blish HUD-Team mit Hilfe von vielen anderen!</value>
   </data>
   <data name="AboutSection" xml:space="preserve">
     <value>Über</value>
+  </data>
+  <data name="Setting_AppCulture_DisplayName" xml:space="preserve">
+    <value>App &amp; API-Sprache</value>
+  </data>
+  <data name="Setting_AppCulture_Description" xml:space="preserve">
+    <value>Legt die Sprache fest, die bei der Anzeige von Blish-HUD-Text und bei Anfragen an die GW2-Web-API verwendet wird.</value>
+  </data>
+  <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
+    <value>In die Symbolleiste minimieren, wenn Guild Wars 2 geschlossen wird.</value>
   </data>
 </root>
