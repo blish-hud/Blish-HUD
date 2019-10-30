@@ -227,7 +227,7 @@ namespace Blish_HUD {
                 Size = wndw.ContentRegion.Size
             };
 
-            var settingsMenuSection = new Panel() {
+            var settingsMenuSection = new ViewContainer() {
                 ShowBorder = true,
                 Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20, baseSettingsPanel.Height - 50 - 24),
                 Location   = new Point(5, 50),
