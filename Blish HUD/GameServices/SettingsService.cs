@@ -125,43 +125,6 @@ namespace Blish_HUD {
                 Adhesive.Binding.CreateTwoWayBinding(() => settingCtrl.Checked,
                                                      () => strongSetting.Value);
             });
-
-            // enum setting renderer
-            SettingTypeRenderers.Add(typeof(Enum), (setting, panel) => {
-                //var strongSetting = (SettingEntry<>) setting;
-
-                var enumType = setting.SettingType;
-
-                var settingDisplayName = new Label() {
-                    Size             = new Point(panel.Width - 128, panel.Height),
-                    Text             = $"{setting.DisplayName}:",
-                    BasicTooltipText = setting.Description,
-                    Parent           = panel
-                };
-
-                var settingDropDown = new Dropdown() {
-                    Size             = new Point(128, 25),
-                    Location         = new Point(panel.Width - 128,   0),
-                    BasicTooltipText = setting.Description,
-                    Parent           = panel,
-                };
-
-                string[] values = Enum.GetNames(enumType);
-
-                foreach (string enumOption in values) {
-                    settingDropDown.Items.Add(enumOption.ToString());
-                }
-            });
-
-            // hotkey setting renderer
-            SettingTypeRenderers.Add(typeof(Hotkey), (setting, panel) => {
-                var strongSetting = (SettingEntry<Hotkey>) setting;
-
-                var hotkeyAssigner = new HotkeyAssigner(strongSetting.Value) {
-                    Size   = panel.Size,
-                    Parent = panel
-                };
-            });
         }
 
         protected override void Load() {
@@ -227,7 +190,7 @@ namespace Blish_HUD {
                 Size = wndw.ContentRegion.Size
             };
 
-            var settingsMenuSection = new ViewContainer() {
+            var settingsMenuSection = new Panel() {
                 ShowBorder = true,
                 Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20, baseSettingsPanel.Height - 50 - 24),
                 Location   = new Point(5, 50),
@@ -243,7 +206,7 @@ namespace Blish_HUD {
                 CanSelect      = true,
             };
 
-            Panel cPanel = new Panel() {
+            Panel cPanel = new ViewContainer() {
                 Size     = new Point(748, baseSettingsPanel.Size.Y - 24 * 2),
                 Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 24),
                 Parent   = baseSettingsPanel
