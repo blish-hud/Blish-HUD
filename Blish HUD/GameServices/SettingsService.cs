@@ -193,10 +193,10 @@ namespace Blish_HUD {
             var settingsMenuSection = new Panel() {
                 ShowBorder = true,
                 Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20, baseSettingsPanel.Height - 50 - 24),
-                Location   = new Point(5, 50),
-                CanScroll  = true,
+                Location   = new Point(5,                                                50),
                 Title      = Strings.GameServices.SettingsService.SettingsTab,
-                Parent     = baseSettingsPanel
+                Parent     = baseSettingsPanel,
+                CanScroll  = true,
             };
 
             var settingsListMenu = new Menu() {
