@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -33,7 +32,8 @@ namespace Blish_HUD {
         private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
 
-        private const uint SWP_SHOWWINDOW = 0x0040;
+        private const uint SWP_NOSIZE         = 0x0001;
+        private const uint SWP_NOMOVE         = 0x0002;
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool ClientToScreen(IntPtr hWnd, ref System.Drawing.Point lpPoint);
@@ -75,8 +75,7 @@ namespace Blish_HUD {
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
 
         [DllImport("user32.dll")]
-        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy,
-            uint uFlags);
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT {
@@ -92,6 +91,19 @@ namespace Blish_HUD {
             public int cyTopHeight;
             public int cyBottomHeight;
         }
+
+        private enum GW : uint {
+            HWNDFIRST    = 0,
+            HWNDLAST     = 1,
+            HWNDNEXT     = 2,
+            HWNDPREV     = 3,
+            OWNER        = 4,
+            CHILD        = 5,
+            ENABLEDPOPUP = 6
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr GetWindow(IntPtr hWnd, GW uCmd);
 
         internal static void SetForegroundWindowEx(IntPtr handle) => SetForegroundWindow(handle);
 
@@ -147,13 +159,6 @@ namespace Blish_HUD {
                 return OverlayUpdateResponse.Errored;
             }
 
-            var marg = new Margins {
-                cxLeftWidth = 0,
-                cyTopHeight = 0,
-                cxRightWidth = clientRect.Right,
-                cyBottomHeight = clientRect.Bottom
-            };
-
             var screenPoint = System.Drawing.Point.Empty;
             bool errClientToScreen = ClientToScreen(gw2WindowHandle, ref screenPoint);
 
@@ -167,12 +172,16 @@ namespace Blish_HUD {
             var activeWindowHandle = GetForegroundWindow();
             GameService.Debug.StopTimeFunc("GetForegroundWindow");
 
-            // If gw2 is not the focused application, stop being
-            // topmost so that whatever is active can render on top
+            // If Guild Wars 2 is not the focused application, set Blish HUD to
+            // be above Guild Wars 2, but below the next application's window in z-order
             if (activeWindowHandle != gw2WindowHandle && Form.ActiveForm == null) {
                 if (wasOnTop) {
                     Logger.Debug("GW2 is no longer the active window.");
-                    SetWindowPos(winHandle,  HWND_NOTOPMOST, pos.X, pos.Y, pos.Width, pos.Height, 0);
+
+                    var nextHandle = GetWindow(gw2WindowHandle, GW.HWNDPREV);
+                    if (nextHandle != IntPtr.Zero && nextHandle != winHandle) {
+                        SetWindowPos(winHandle, nextHandle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+                    }
                 }
                 return OverlayUpdateResponse.WithoutFocus;
             }
@@ -195,7 +204,14 @@ namespace Blish_HUD {
                 );
 
                 SetWindowPos(winHandle, HWND_TOPMOST, clientRect.Left + screenPoint.X, clientRect.Top + screenPoint.Y, clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top, 0);
-                
+
+                var marg = new Margins {
+                    cxLeftWidth    = 0,
+                    cyTopHeight    = 0,
+                    cxRightWidth   = clientRect.Right,
+                    cyBottomHeight = clientRect.Bottom
+                };
+
                 DwmExtendFrameIntoClientArea(winHandle, ref marg);
             }
 
