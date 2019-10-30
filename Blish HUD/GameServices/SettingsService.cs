@@ -249,16 +249,16 @@ namespace Blish_HUD {
                 Parent   = baseSettingsPanel
             };
 
-            var settingsMiAbout   = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.AboutSection,         Content.GetTexture("440023"));
-            var settingsMiApp     = settingsListMenu.AddMenuItem("Application Settings",                                   Content.GetTexture("156736"));
-            var settingsMiModules = settingsListMenu.AddMenuItem(Strings.GameServices.ModulesService.ManageModulesSection, Content.GetTexture("156764-noarrow"));
+            var settingsMiAbout   = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.AboutSection,           Content.GetTexture("440023"));
+            var settingsMiOverlay = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, Content.GetTexture("156736"));
+            var settingsMiModules = settingsListMenu.AddMenuItem(Strings.GameServices.ModulesService.ManageModulesSection,   Content.GetTexture("156764-noarrow"));
 
             settingsMiAbout.Click += delegate {
                 cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.AboutUIBuilder.BuildAbout, null);
             };
 
-            settingsMiApp.Click += delegate {
-                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.OverlaySettingsUIBuilder.BuildSingleModuleSettings, null);
+            settingsMiOverlay.Click += delegate {
+                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.OverlaySettingsUIBuilder.BuildOverlaySettings, null);
             };
 
             GameService.Module.FinishedLoading += delegate {
