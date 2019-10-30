@@ -54,17 +54,23 @@ namespace Blish_HUD {
         }
 
         private void LoadSettings(bool alreadyFailed = false) {
+            string rawSettings = null;
+
             try {
-                string rawSettings = File.ReadAllText(_settingsPath);
+                rawSettings = File.ReadAllText(_settingsPath);
 
                 this.Settings = JsonConvert.DeserializeObject<SettingCollection>(rawSettings, JsonReaderSettings) ?? new SettingCollection(false);
-            } catch (FileNotFoundException) {
-                // Likely don't have access to this filesystem
             } catch (Exception ex) {
                 if (alreadyFailed) {
                     Logger.Warn(ex, "Failed to load settings due to an unexpected exception while attempting to read them. Already tried creating a new settings file, so we won't try again.");
                 } else {
                     Logger.Warn(ex, "Failed to load settings due to an unexpected exception while attempting to read them. A new settings file will be generated.");
+
+                    if (!string.IsNullOrEmpty(rawSettings)) {
+                        Logger.Info(rawSettings);
+                    } else {
+                        Logger.Warn("Settings were empty or could not be read.");
+                    }
 
                     // Refresh the settings
                     PrepareSettingsFirstTime();
