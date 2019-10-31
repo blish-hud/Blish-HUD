@@ -2,7 +2,7 @@
 
     public class Gw2ClientContext : Context {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(Gw2ClientContext));
+        private static readonly Logger Logger = Logger.GetLogger<Gw2ClientContext>();
 
         /// <summary>
         /// The type of the client currently running.

@@ -1,10 +1,5 @@
 [
   {
-    "project": "Discord RPC",
-    "repository": "https://github.com/discordapp/discord-rpc",
-    "license": "https://raw.githubusercontent.com/discordapp/discord-rpc/master/LICENSE"
-  },
-  {
     "project": "Flurl",
     "repository": "https://github.com/tmenier/Flurl",
     "license": "https://raw.githubusercontent.com/tmenier/Flurl/dev/LICENSE"
@@ -40,16 +35,6 @@
     "license": "https://raw.githubusercontent.com/mgravell/protobuf-net/master/Licence.txt"
   },
   {
-    "project": "sentry",
-    "repository": "https://github.com/getsentry/sentry",
-    "license": "https://raw.githubusercontent.com/getsentry/sentry/master/LICENSE"
-  },
-  {
-    "project": "Praeclarum.Bind",
-    "repository": "https://github.com/praeclarum/Bind",
-    "license": "https://raw.githubusercontent.com/praeclarum/Bind/master/License.md"
-  },
-  {
     "project": "Glide",
     "repository": "https://bitbucket.org/jacobalbano/glide/src",
     "license": "https://bitbucket.org/jacobalbano/glide/raw/0fdc77df4b381a6820b1eb4ea09ac4e55ec6ec51/license.txt"
@@ -63,10 +48,5 @@
     "project": "Costura.Fody",
     "repository": "https://github.com/Fody/Costura",
     "license": "https://raw.githubusercontent.com/Fody/Costura/master/license.txt"
-  },
-  {
-    "project": "HaxlSharp",
-    "repository": "https://github.com/joashc/HaxlSharp",
-    "license": "https://raw.githubusercontent.com/joashc/HaxlSharp/master/LICENCE"
   }
 ]

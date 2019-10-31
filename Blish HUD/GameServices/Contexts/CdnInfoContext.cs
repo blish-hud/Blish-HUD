@@ -9,7 +9,7 @@ namespace Blish_HUD.Contexts {
     /// </summary>
     public class CdnInfoContext : Context {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(CdnInfoContext));
+        private static readonly Logger Logger = Logger.GetLogger<CdnInfoContext>();
 
         /// <summary>
         /// Structured information provided by one of the asset CDNs.

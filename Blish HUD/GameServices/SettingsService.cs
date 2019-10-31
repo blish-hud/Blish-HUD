@@ -15,7 +15,7 @@ namespace Blish_HUD {
     [JsonObject]
     public class SettingsService : GameService {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(SettingsService));
+        private static readonly Logger Logger = Logger.GetLogger<SettingsService>();
 
         private const string SETTINGS_FILENAME = "settings.json";
 

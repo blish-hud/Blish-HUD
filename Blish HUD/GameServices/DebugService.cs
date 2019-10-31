@@ -2,23 +2,24 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Text;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using Blish_HUD.Debug;
 using Humanizer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using NLog;
+using MonoGame.Extended.BitmapFonts;
 using NLog.Config;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
-using Sentry;
-using Sentry.Protocol;
 
 namespace Blish_HUD {
     public class DebugService:GameService {
+
+        #region Logging
 
         private static Logger Logger;
 
@@ -62,11 +63,10 @@ namespace Blish_HUD {
             _logConfiguration.AddRule(NLog.LogLevel.Info,  NLog.LogLevel.Fatal,  asyncLogFile);
 
             AddDebugTarget(_logConfiguration);
-            AddSentryTarget(_logConfiguration);
 
             NLog.LogManager.Configuration = _logConfiguration;
 
-            Logger = Logger.GetLogger(typeof(DebugService));
+            Logger = Logger.GetLogger<DebugService>();
         }
 
         public static void TargetDebug(string time, string level, string logger, string message) {
@@ -99,144 +99,87 @@ namespace Blish_HUD {
             var e = (Exception)args.ExceptionObject;
 
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
-
-            FlushSentry();
         }
 
-        [Conditional("SENTRY")]
-        private static void FlushSentry() {
-            SentrySdk.Close();
-        }
+        #endregion
 
-        [Conditional("SENTRY")]
-        private static void AddSentryTarget(LoggingConfiguration logConfig) {
-            const string SENTRY_DSN = "https://e11516741a32440ca7a72b68d5af93df@sentry.do-ny3.svr.gw2blishhud.com/2";
-            const string BREADCRUMB_LAYOUT = "${logger}: ${message}";
+        #region FPS
 
-            logConfig.AddSentry(sentry => {
-                sentry.Dsn              = new Dsn(SENTRY_DSN);
-                sentry.Release          = $"blish_hud@{Program.OverlayVersion.Major}.{Program.OverlayVersion.Minor}.{Program.OverlayVersion.Patch}";
-                sentry.Environment      = string.IsNullOrEmpty(Program.OverlayVersion.PreRelease) ? "Release" : Program.OverlayVersion.PreRelease;
-                sentry.Debug            = true;
-                sentry.BreadcrumbLayout = BREADCRUMB_LAYOUT;
-                sentry.MaxBreadcrumbs   = 20;
-
-                // We do this ourselves for our other logging
-                // It's not working right now, though, for some reason
-                //sentry.DisableAppDomainUnhandledExceptionCapture();
-
-                sentry.BeforeBreadcrumb = delegate(Breadcrumb breadcrumb) {
-                    string filteredMessage = StringUtil.ReplaceUsingStringComparison(breadcrumb.Message, Environment.UserName, "<filtered-username>", StringComparison.OrdinalIgnoreCase);
-
-                    return new Breadcrumb(filteredMessage, breadcrumb.Type, breadcrumb.Data, breadcrumb.Category, breadcrumb.Level);
-                };
-
-                sentry.BeforeSend = delegate(SentryEvent sentryEvent) {
-                    sentryEvent.SetTag("locale", CultureInfo.CurrentUICulture.DisplayName);
-
-                    if (!string.IsNullOrEmpty(Program.OverlayVersion.Build)) {
-                        sentryEvent.SetTag("Build", Program.OverlayVersion.Build);
-                    }
-
-                    try {
-                        // Display installed modules
-                        if (GameService.Module != null && GameService.Module.Loaded) {
-                            var moduleDetails = GameService.Module.Modules.Select(m => new {
-                                m.Manifest.Name,
-                                m.Manifest.Namespace,
-                                Version = m.Manifest.Version.ToString(),
-                                m.Enabled
-                            });
-
-                            sentryEvent.SetExtra("Modules", moduleDetails.ToArray());
-                        }
-                    } catch (Exception unknownException) {
-                        sentryEvent.SetExtra("Modules", $"Exception: {unknownException.Message}");
-                    }
-
-                    try {
-                        // Display GW2 build version
-                        if (GameService.Gw2Mumble.Available) {
-                            sentryEvent.SetExtra("Gw2BuildId", GameService.Gw2Mumble.BuildId);
-                        }
-                    } catch (Exception unknownException) {
-                        sentryEvent.SetExtra("Gw2BuildId", $"Exception: {unknownException.Message}");
-                    }
-
-                    return sentryEvent;
-                };
-            });
-        }
+        private const int FRAME_DURATION_SAMPLES = 100;
 
         public FrameCounter FrameCounter { get; private set; }
 
-        internal class FuncClock {
+        #endregion
 
-            private const int BUFFER_LENGTH = 60;
+        #region Measuring
 
-            public long LastTime { get; private set; }
+        private const int DEFAULT_DEBUGCOUNTER_SAMPLES = 60;
 
-            public double AverageRuntime {
-                get {
-                    float totalRuntime = 0;
-                    
-                    for (int i = 0; i < _timeBuffer.Count - 1; i++) {
-                        totalRuntime += _timeBuffer[i];
-                    }
+        private ConcurrentDictionary<string, DebugCounter> _funcTimes;
 
-                    return totalRuntime / _timeBuffer.Count;
-                }
-            }
-
-            private readonly List<long> _timeBuffer;
-            private readonly Stopwatch _funcStopwatch;
-
-            public FuncClock() {
-                _timeBuffer = new List<long>();
-                _funcStopwatch = new Stopwatch();
-            }
-
-            public void Start() {
-                _funcStopwatch.Start();
-            }
-
-            public void Stop() {
-                _funcStopwatch.Stop();
-
-                if (_timeBuffer.Count > BUFFER_LENGTH) _timeBuffer.RemoveAt(0);
-
-                this.LastTime = _funcStopwatch.ElapsedMilliseconds;
-                _timeBuffer.Add(_funcStopwatch.ElapsedMilliseconds);
-
-                _funcStopwatch.Reset();
-            }
-
-        }
-
-        internal ConcurrentDictionary<string, FuncClock> _funcTimes;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="func"></param>
         [Conditional("DEBUG")]
         public void StartTimeFunc(string func) {
-            if (!_funcTimes.ContainsKey(func)) {
-                _funcTimes.TryAdd(func, new FuncClock());
-            }
+            StartTimeFunc(func, DEFAULT_DEBUGCOUNTER_SAMPLES);
+        }
 
-            _funcTimes[func]?.Start();
+        [Conditional("DEBUG")]
+        public void StartTimeFunc(string func, int length) {
+            if (!_funcTimes.ContainsKey(func)) {
+                _funcTimes.TryAdd(func, new DebugCounter(length));
+            } else {
+                _funcTimes[func].StartInterval();
+            }
         }
 
         [Conditional("DEBUG")]
         public void StopTimeFunc(string func) {
-            _funcTimes[func]?.Stop();
+            _funcTimes[func].EndInterval();
         }
 
         [Conditional("DEBUG")]
         public void StopTimeFuncAndOutput(string func) {
-            _funcTimes[func]?.Stop();
-            Logger.Debug("{funcName} ran for {$funcTime}.", func, _funcTimes[func]?.LastTime.Milliseconds().Humanize());
+            _funcTimes[func].EndInterval();
+            Logger.Debug("{funcName} ran for {$funcTime}.", func, _funcTimes[func]?.GetTotal().Seconds().Humanize());
         }
 
+        #endregion
+
+        #region Debug Overlay
+
+        public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
+            int debugLeft = Graphics.WindowWidth - 750;
+
+            spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.CurrentAverage, 0)}", new Vector2(debugLeft, 25), Color.Red);
+
+            int i = 0;
+            foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
+                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Orange);
+                i++;
+            }
+
+            spriteBatch.DrawString(Content.DefaultFont14, $"3D Entities Displayed: {Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(Content.DefaultFont14, "IsHudActive: " + (ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+#if DEBUG
+            i++;
+            spriteBatch.DrawString(Content.DefaultFont14, "Counter: " + Interlocked.Read(ref ArcDpsService.Counter), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+#endif
+        }
+
+#endregion
+
+#region Service Implementation
+
         protected override void Initialize() {
-            this.FrameCounter = new FrameCounter();
+            this.FrameCounter = new FrameCounter(FRAME_DURATION_SAMPLES);
 
 #if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -244,7 +187,7 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            _funcTimes = new ConcurrentDictionary<string, FuncClock>();
+            _funcTimes = new ConcurrentDictionary<string, DebugCounter>();
         }
 
         protected override void Update(GameTime gameTime) {
@@ -252,5 +195,8 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() { /* NOOP */ }
+
+#endregion
+
     }
 }

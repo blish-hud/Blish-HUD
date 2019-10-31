@@ -16,7 +16,7 @@ namespace Blish_HUD.Pathing.Entities {
 
     public class Marker : Entity {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(Marker));
+        private static readonly Logger Logger = Logger.GetLogger<Marker>();
 
         #region Load Static
 

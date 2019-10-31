@@ -10,7 +10,7 @@ namespace Blish_HUD {
     [JsonObject]
     public class PersistentStoreService : GameService {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(PersistentStoreService));
+        private static readonly Logger Logger = Logger.GetLogger<PersistentStoreService>();
 
         private Store _stores;
 

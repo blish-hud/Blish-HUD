@@ -7,7 +7,7 @@ namespace Blish_HUD.Common.Gw2
 {
     public static class ChatCode
     {
-        private static Logger Logger = Logger.GetLogger(typeof(ChatCode));
+        private static readonly Logger Logger = Logger.GetLogger(typeof(ChatCode));
 
         /// <author>The original code was made in a JSFiddle by the GW2 Wikiuser Fam. Translation to C# by Andy</author>
         /// <seealso cref="https://jsfiddle.net/fffam/cg3njdu6/"/>

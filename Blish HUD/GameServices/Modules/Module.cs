@@ -8,7 +8,7 @@ namespace Blish_HUD.Modules {
 
     public abstract class Module : IDisposable {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(Module));
+        private static readonly Logger Logger = Logger.GetLogger<Module>();
 
         #region Module Events
 

@@ -146,31 +146,7 @@ namespace Blish_HUD {
 #if DEBUG
             _basicSpriteBatch.Begin();
 
-            var fps = string.Format("FPS: {0}", Math.Round(GameService.Debug.FrameCounter.AverageFramesPerSecond, 0));
-
-            int debugLeft = GameService.Graphics.WindowWidth - 750;
-
-            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, fps, new Vector2(debugLeft, 25), Color.Red);
-
-            int i = 0;
-            foreach (KeyValuePair<string, DebugService.FuncClock> timedFuncPair in GameService.Debug._funcTimes.Where(ft => ft.Value.AverageRuntime > 1).OrderByDescending(ft => ft.Value.AverageRuntime)) {
-                _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.AverageRuntime)} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Orange);
-                i++;
-            }
-
-            //_basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, $"Pathables Available: {Modules.MarkersAndPaths.PackFormat.OverlayDataReader.Pathables.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            //i++;
-            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, $"3D Entities Displayed: {GameService.Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            //i++;
-            //spriteBatch.DrawString(GameService.Content.DefaultFont14, $"Controls Displayed: {GameService.Graphics.SpriteScreen.GetDescendants().Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
-            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
-            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "ArcDPS Bridge: " + (GameService.ArcDps.RenderPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
-            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "IsHudActive: " + (GameService.ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
-            _basicSpriteBatch.DrawString(GameService.Content.DefaultFont14, "Counter: " + Interlocked.Read(ref ArcDpsService.Counter), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
 #endif
 
             _basicSpriteBatch.End();

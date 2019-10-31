@@ -15,7 +15,7 @@ namespace Blish_HUD {
 
     public class OverlayService : GameService {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(OverlayService));
+        private static readonly Logger Logger = Logger.GetLogger<OverlayService>();
 
         private const string APPLICATION_SETTINGS = "OverlayConfiguration";
 
