@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Blish_HUD.Input {
     internal class KeyboardHook {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(KeyboardHook));
+        private static readonly Logger Logger = Logger.GetLogger<KeyboardHook>();
 
         private const  int                  WH_KEYBOARD_LL = 13;
         private const  int                  WM_KEYDOWN     = 0x0100;

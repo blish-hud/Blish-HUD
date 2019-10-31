@@ -5,7 +5,7 @@ namespace Blish_HUD.Modules {
 
     public class ModuleParameters {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(ModuleParameters));
+        private static readonly Logger Logger = Logger.GetLogger<ModuleParameters>();
 
         private Manifest           _manifest;
         private SettingsManager    _settingsManager;

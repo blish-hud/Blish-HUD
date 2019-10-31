@@ -9,7 +9,7 @@ namespace Blish_HUD {
 
     public class Gw2MumbleService : GameService {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(Gw2MumbleService));
+        private static readonly Logger Logger = Logger.GetLogger<Gw2MumbleService>();
 
         public event EventHandler<EventArgs> BuildIdChanged;
 

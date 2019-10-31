@@ -13,7 +13,7 @@ namespace Blish_HUD.PersistentStore {
 
         public class StoreValueConverter : JsonConverter<StoreValue> {
 
-            private static readonly Logger Logger = Logger.GetLogger(typeof(StoreValueConverter));
+            private static readonly Logger Logger = Logger.GetLogger<StoreValueConverter>();
 
             public override void WriteJson(JsonWriter writer, StoreValue value, JsonSerializer serializer) {
                 JToken.FromObject(value._value, serializer).WriteTo(writer);

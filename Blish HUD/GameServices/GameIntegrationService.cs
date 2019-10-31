@@ -14,7 +14,7 @@ namespace Blish_HUD {
 
     public class GameIntegrationService : GameService {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(GameIntegrationService));
+        private static readonly Logger Logger = Logger.GetLogger<GameIntegrationService>();
 
         public event EventHandler<EventArgs> Gw2Closed;
         public event EventHandler<EventArgs> Gw2Started;

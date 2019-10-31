@@ -66,7 +66,7 @@ namespace Blish_HUD {
 
             NLog.LogManager.Configuration = _logConfiguration;
 
-            Logger = Logger.GetLogger(typeof(DebugService));
+            Logger = Logger.GetLogger<DebugService>();
         }
 
         public static void TargetDebug(string time, string level, string logger, string message) {

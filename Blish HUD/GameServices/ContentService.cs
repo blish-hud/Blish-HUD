@@ -20,7 +20,7 @@ namespace Blish_HUD {
 
     public class ContentService : GameService {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(ContentService));
+        private static readonly Logger Logger = Logger.GetLogger<ContentService>();
 
         private const string REF_FILE = "ref.dat";
 

@@ -15,7 +15,7 @@ namespace Blish_HUD {
 
     public class Gw2ApiService : GameService {
 
-        private static Logger Logger = Logger.GetLogger(typeof(Gw2ApiService));
+        private static Logger Logger = Logger.GetLogger<Gw2ApiService>();
 
         private static string GW2API_SETTINGS = "Gw2ApiConfiguration";
 

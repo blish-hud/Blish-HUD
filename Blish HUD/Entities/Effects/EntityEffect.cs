@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Entities.Effects {
     public abstract class EntityEffect : Effect {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(EntityEffect));
+        private static readonly Logger Logger = Logger.GetLogger<EntityEffect>();
 
         private static readonly HashSet<EntityEffect> _loadedEffects = new HashSet<EntityEffect>();
 

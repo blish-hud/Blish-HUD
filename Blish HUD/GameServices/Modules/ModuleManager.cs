@@ -9,7 +9,7 @@ namespace Blish_HUD.Modules {
 
     public class ModuleManager {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(ModuleManager));
+        private static readonly Logger Logger = Logger.GetLogger<ModuleManager>();
 
         public event EventHandler<EventArgs> ModuleEnabled;
         public event EventHandler<EventArgs> ModuleDisabled;

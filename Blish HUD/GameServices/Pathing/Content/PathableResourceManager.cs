@@ -7,7 +7,7 @@ using System.Net;
 namespace Blish_HUD.Pathing.Content {
     public class PathableResourceManager : IDisposable {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(PathableResourceManager));
+        private static readonly Logger Logger = Logger.GetLogger<PathableResourceManager>();
 
         private readonly Dictionary<string, Texture2D> _textureCache;
         private readonly HashSet<string> _pendingTextureUse;

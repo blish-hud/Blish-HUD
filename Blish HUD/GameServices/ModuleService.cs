@@ -14,7 +14,7 @@ namespace Blish_HUD {
 
     public class ModuleService : GameService {
 
-        private static readonly Logger Logger = Logger.GetLogger(typeof(ModuleService));
+        private static readonly Logger Logger = Logger.GetLogger<ModuleService>();
 
         private const string MODULE_SETTINGS = "ModuleConfiguration";
 
