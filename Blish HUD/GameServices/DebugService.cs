@@ -168,20 +168,22 @@ namespace Blish_HUD {
             spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
             i++;
             spriteBatch.DrawString(Content.DefaultFont14, "IsHudActive: " + (ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+#if DEBUG
             i++;
             spriteBatch.DrawString(Content.DefaultFont14, "Counter: " + Interlocked.Read(ref ArcDpsService.Counter), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+#endif
         }
 
-        #endregion
+#endregion
 
-        #region Service Implementation
+#region Service Implementation
 
         protected override void Initialize() {
             this.FrameCounter = new FrameCounter(FRAME_DURATION_SAMPLES);
 
-            #if !DEBUG
+#if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            #endif
+#endif
         }
 
         protected override void Load() {
@@ -194,7 +196,7 @@ namespace Blish_HUD {
 
         protected override void Unload() { /* NOOP */ }
 
-        #endregion
+#endregion
 
     }
 }
