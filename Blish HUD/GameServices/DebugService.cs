@@ -10,12 +10,9 @@ using System.Text;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using NLog;
 using NLog.Config;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
-using Sentry;
-using Sentry.Protocol;
 
 namespace Blish_HUD {
     public class DebugService:GameService {
@@ -62,7 +59,6 @@ namespace Blish_HUD {
             _logConfiguration.AddRule(NLog.LogLevel.Info,  NLog.LogLevel.Fatal,  asyncLogFile);
 
             AddDebugTarget(_logConfiguration);
-            AddSentryTarget(_logConfiguration);
 
             NLog.LogManager.Configuration = _logConfiguration;
 
@@ -99,73 +95,6 @@ namespace Blish_HUD {
             var e = (Exception)args.ExceptionObject;
 
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
-
-            FlushSentry();
-        }
-
-        [Conditional("SENTRY")]
-        private static void FlushSentry() {
-            SentrySdk.Close();
-        }
-
-        [Conditional("SENTRY")]
-        private static void AddSentryTarget(LoggingConfiguration logConfig) {
-            const string SENTRY_DSN = "https://e11516741a32440ca7a72b68d5af93df@sentry.do-ny3.svr.gw2blishhud.com/2";
-            const string BREADCRUMB_LAYOUT = "${logger}: ${message}";
-
-            logConfig.AddSentry(sentry => {
-                sentry.Dsn              = new Dsn(SENTRY_DSN);
-                sentry.Release          = $"blish_hud@{Program.OverlayVersion.Major}.{Program.OverlayVersion.Minor}.{Program.OverlayVersion.Patch}";
-                sentry.Environment      = string.IsNullOrEmpty(Program.OverlayVersion.PreRelease) ? "Release" : Program.OverlayVersion.PreRelease;
-                sentry.Debug            = true;
-                sentry.BreadcrumbLayout = BREADCRUMB_LAYOUT;
-                sentry.MaxBreadcrumbs   = 20;
-
-                // We do this ourselves for our other logging
-                // It's not working right now, though, for some reason
-                //sentry.DisableAppDomainUnhandledExceptionCapture();
-
-                sentry.BeforeBreadcrumb = delegate(Breadcrumb breadcrumb) {
-                    string filteredMessage = StringUtil.ReplaceUsingStringComparison(breadcrumb.Message, Environment.UserName, "<filtered-username>", StringComparison.OrdinalIgnoreCase);
-
-                    return new Breadcrumb(filteredMessage, breadcrumb.Type, breadcrumb.Data, breadcrumb.Category, breadcrumb.Level);
-                };
-
-                sentry.BeforeSend = delegate(SentryEvent sentryEvent) {
-                    sentryEvent.SetTag("locale", CultureInfo.CurrentUICulture.DisplayName);
-
-                    if (!string.IsNullOrEmpty(Program.OverlayVersion.Build)) {
-                        sentryEvent.SetTag("Build", Program.OverlayVersion.Build);
-                    }
-
-                    try {
-                        // Display installed modules
-                        if (GameService.Module != null && GameService.Module.Loaded) {
-                            var moduleDetails = GameService.Module.Modules.Select(m => new {
-                                m.Manifest.Name,
-                                m.Manifest.Namespace,
-                                Version = m.Manifest.Version.ToString(),
-                                m.Enabled
-                            });
-
-                            sentryEvent.SetExtra("Modules", moduleDetails.ToArray());
-                        }
-                    } catch (Exception unknownException) {
-                        sentryEvent.SetExtra("Modules", $"Exception: {unknownException.Message}");
-                    }
-
-                    try {
-                        // Display GW2 build version
-                        if (GameService.Gw2Mumble.Available) {
-                            sentryEvent.SetExtra("Gw2BuildId", GameService.Gw2Mumble.BuildId);
-                        }
-                    } catch (Exception unknownException) {
-                        sentryEvent.SetExtra("Gw2BuildId", $"Exception: {unknownException.Message}");
-                    }
-
-                    return sentryEvent;
-                };
-            });
         }
 
         public FrameCounter FrameCounter { get; private set; }
