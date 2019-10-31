@@ -73,7 +73,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;WINDOWS;</DefineConstants>
+    <DefineConstants>WINDOWS;</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <PlatformTarget>x64</PlatformTarget>
@@ -199,7 +199,10 @@
     <Compile Include="GameServices\Contexts\Context.cs" />
     <Compile Include="GameServices\Contexts\ContextResult[T].cs" />
     <Compile Include="GameServices\Contexts\ContextAvailability.cs" />
+    <Compile Include="GameServices\Debug\DebugCounter.cs" />
+    <Compile Include="GameServices\Debug\FrameCounter.cs" />
     <Compile Include="GameServices\Debug\Logger.cs" />
+    <Compile Include="GameServices\Debug\RingBuffer[T].cs" />
     <Compile Include="GameServices\Graphics\UI\IPresenter.cs" />
     <Compile Include="GameServices\Graphics\UI\IPresenter[TView].cs" />
     <Compile Include="GameServices\Graphics\UI\IView.cs" />
@@ -298,7 +301,6 @@
     <Compile Include="Entities\Primitives\Face.cs" />
     <Compile Include="Entities\Primitives\Mesh.cs" />
     <Compile Include="Entities\World.cs" />
-    <Compile Include="FrameCounter.cs" />
     <Compile Include="GameServices\OverlayService.cs" />
     <Compile Include="GameServices\HotkeysService.cs" />
     <Compile Include="GameServices\PathingService.cs" />

@@ -2,20 +2,24 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Text;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using Blish_HUD.Debug;
 using Humanizer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using MonoGame.Extended.BitmapFonts;
 using NLog.Config;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
 
 namespace Blish_HUD {
     public class DebugService:GameService {
+
+        #region Logging
 
         private static Logger Logger;
 
@@ -97,83 +101,91 @@ namespace Blish_HUD {
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
         }
 
+        #endregion
+
+        #region FPS
+
+        private const int FRAME_DURATION_SAMPLES = 100;
+
         public FrameCounter FrameCounter { get; private set; }
 
-        internal class FuncClock {
+        #endregion
 
-            private const int BUFFER_LENGTH = 60;
+        #region Measuring
 
-            public long LastTime { get; private set; }
+        private const int DEFAULT_DEBUGCOUNTER_SAMPLES = 60;
 
-            public double AverageRuntime {
-                get {
-                    float totalRuntime = 0;
-                    
-                    for (int i = 0; i < _timeBuffer.Count - 1; i++) {
-                        totalRuntime += _timeBuffer[i];
-                    }
+        private ConcurrentDictionary<string, DebugCounter> _funcTimes;
 
-                    return totalRuntime / _timeBuffer.Count;
-                }
-            }
-
-            private readonly List<long> _timeBuffer;
-            private readonly Stopwatch _funcStopwatch;
-
-            public FuncClock() {
-                _timeBuffer = new List<long>();
-                _funcStopwatch = new Stopwatch();
-            }
-
-            public void Start() {
-                _funcStopwatch.Start();
-            }
-
-            public void Stop() {
-                _funcStopwatch.Stop();
-
-                if (_timeBuffer.Count > BUFFER_LENGTH) _timeBuffer.RemoveAt(0);
-
-                this.LastTime = _funcStopwatch.ElapsedMilliseconds;
-                _timeBuffer.Add(_funcStopwatch.ElapsedMilliseconds);
-
-                _funcStopwatch.Reset();
-            }
-
-        }
-
-        internal ConcurrentDictionary<string, FuncClock> _funcTimes;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="func"></param>
         [Conditional("DEBUG")]
         public void StartTimeFunc(string func) {
-            if (!_funcTimes.ContainsKey(func)) {
-                _funcTimes.TryAdd(func, new FuncClock());
-            }
+            StartTimeFunc(func, DEFAULT_DEBUGCOUNTER_SAMPLES);
+        }
 
-            _funcTimes[func]?.Start();
+        [Conditional("DEBUG")]
+        public void StartTimeFunc(string func, int length) {
+            if (!_funcTimes.ContainsKey(func)) {
+                _funcTimes.TryAdd(func, new DebugCounter(length));
+            } else {
+                _funcTimes[func].StartInterval();
+            }
         }
 
         [Conditional("DEBUG")]
         public void StopTimeFunc(string func) {
-            _funcTimes[func]?.Stop();
+            _funcTimes[func].EndInterval();
         }
 
         [Conditional("DEBUG")]
         public void StopTimeFuncAndOutput(string func) {
-            _funcTimes[func]?.Stop();
-            Logger.Debug("{funcName} ran for {$funcTime}.", func, _funcTimes[func]?.LastTime.Milliseconds().Humanize());
+            _funcTimes[func].EndInterval();
+            Logger.Debug("{funcName} ran for {$funcTime}.", func, _funcTimes[func]?.GetTotal().Seconds().Humanize());
         }
 
-        protected override void Initialize() {
-            this.FrameCounter = new FrameCounter();
+        #endregion
 
-#if !DEBUG
+        #region Debug Overlay
+
+        public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
+            int debugLeft = Graphics.WindowWidth - 750;
+
+            spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.CurrentAverage, 0)}", new Vector2(debugLeft, 25), Color.Red);
+
+            int i = 0;
+            foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
+                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Orange);
+                i++;
+            }
+
+            spriteBatch.DrawString(Content.DefaultFont14, $"3D Entities Displayed: {Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(Content.DefaultFont14, "IsHudActive: " + (ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+            i++;
+            spriteBatch.DrawString(Content.DefaultFont14, "Counter: " + Interlocked.Read(ref ArcDpsService.Counter), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
+        }
+
+        #endregion
+
+        #region Service Implementation
+
+        protected override void Initialize() {
+            this.FrameCounter = new FrameCounter(FRAME_DURATION_SAMPLES);
+
+            #if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-#endif
+            #endif
         }
 
         protected override void Load() {
-            _funcTimes = new ConcurrentDictionary<string, FuncClock>();
+            _funcTimes = new ConcurrentDictionary<string, DebugCounter>();
         }
 
         protected override void Update(GameTime gameTime) {
@@ -181,5 +193,8 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() { /* NOOP */ }
+
+        #endregion
+
     }
 }
