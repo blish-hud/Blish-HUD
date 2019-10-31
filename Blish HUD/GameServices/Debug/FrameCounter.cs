@@ -1,5 +1,4 @@
-﻿
-namespace Blish_HUD.Debug {
+﻿namespace Blish_HUD.Debug {
     public class FrameCounter {
 
         public float CurrentAverage { get; private set; }
