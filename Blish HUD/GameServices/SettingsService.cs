@@ -206,7 +206,7 @@ namespace Blish_HUD {
                 CanSelect      = true,
             };
 
-            Panel cPanel = new ViewContainer() {
+            var cPanel = new ViewContainer() {
                 Size     = new Point(748, baseSettingsPanel.Size.Y - 24 * 2),
                 Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 24),
                 Parent   = baseSettingsPanel
