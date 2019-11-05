@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Blish_HUD.Common.UI.Views;
 using Blish_HUD.Controls;
+using Blish_HUD.Modules.UI.Views;
+using Blish_HUD.Overlay.UI.Presenters;
+using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
-using Flurl.Http;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Container = Blish_HUD.Controls.Container;
@@ -33,7 +36,7 @@ namespace Blish_HUD {
         [JsonIgnore]
         private string _settingsPath;
 
-        internal SettingCollection Settings { get; private set; }
+        private SettingCollection Settings { get; set; }
 
         protected override void Initialize() {
             JsonReaderSettings = new JsonSerializerSettings() {
@@ -185,7 +188,7 @@ namespace Blish_HUD {
             }
         }
 
-        private Panel BuildSettingPanel(Controls.WindowBase wndw) {
+        private Panel BuildSettingPanel(WindowBase wndw) {
             var baseSettingsPanel = new Panel() {
                 Size = wndw.ContentRegion.Size
             };
@@ -217,11 +220,17 @@ namespace Blish_HUD {
             var settingsMiModules = settingsListMenu.AddMenuItem(Strings.GameServices.ModulesService.ManageModulesSection,   Content.GetTexture("156764-noarrow"));
 
             settingsMiAbout.Click += delegate {
-                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.AboutUIBuilder.BuildAbout, null);
+                cPanel.Show(new AboutView());
             };
 
             settingsMiOverlay.Click += delegate {
-                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.OverlaySettingsUIBuilder.BuildOverlaySettings, null);
+                var overlaySettingsView = new RepeatedView<IEnumerable<ApplicationSettingsPresenter.SettingsCategory>>();
+                overlaySettingsView.Presenter = new ApplicationSettingsPresenter(overlaySettingsView,
+                                                                                 new List<ApplicationSettingsPresenter.SettingsCategory>() {
+                                                                                     new ApplicationSettingsPresenter.SettingsCategory("General", GameService.Overlay._applicationSettings)
+                                                                                 });
+
+                cPanel.Show(overlaySettingsView);
             };
 
             GameService.Module.FinishedLoading += delegate {
@@ -232,7 +241,7 @@ namespace Blish_HUD {
                     };
 
                     moduleMi.Click += delegate {
-                        cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.SingleModuleSettingsUIBuilder.BuildSingleModuleSettings, module);
+                        cPanel.Show(new ModuleManagementView(module));
                     };
                 }
             };

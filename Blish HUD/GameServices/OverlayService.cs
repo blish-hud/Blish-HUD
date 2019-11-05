@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Reflection;
+using Blish_HUD.Common.UI.Views;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
-using Blish_HUD.Input;
+using Blish_HUD.Overlay.UI.Presenters;
+using Blish_HUD.Overlay.UI.Views;
+using Blish_HUD.Overlay.UI.Views.Widgets;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
 
 namespace Blish_HUD {
 
@@ -138,6 +139,7 @@ namespace Blish_HUD {
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
+            this.BlishContextMenu.AddMenuItem($"Restart {Strings.Common.BlishHUD}").Click += delegate { System.Windows.Forms.Application.Restart(); Environment.Exit(0); };
             this.BlishContextMenu.AddMenuItem($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}").Click += delegate { ActiveBlishHud.Exit(); };
 
             this.BlishHudWindow = new TabbedWindow() {
@@ -202,40 +204,24 @@ namespace Blish_HUD {
             }
         }
 
-        private Panel BuildHomePanel(WindowBase wndw) {
-            var hPanel = new Panel() {
-                Size = wndw.ContentRegion.Size
+        private Panel BuildHomePanel(WindowBase window) {
+            var hPanel = new ViewContainer() {
+                Size = window.ContentRegion.Size
             };
 
-            var colPanel = new Panel() {
-                Size     = new Point(450, 256),
-                Location = new Point(24, 24),
-                Parent = hPanel,
-                Title = " ",
-                ShowBorder = true,
-                CanCollapse = true
+            var homeWidgets = new List<IHomeWidgetView> {
+                new RssWidgetView("Game Release Notes",     @"https://en-forum.guildwars2.com/categories/game-release-notes/feed.rss"),
+                new RssWidgetView("News and Announcements", @"https://en-forum.guildwars2.com/categories/news-and-announcements/feed.rss"),
+                new RssWidgetView("Community News",         @"https://www.guildwars2.com/en/feed/")
             };
 
-            var testLabel = new Label() {
-                Text           = "This is a test label!",
-                Parent         = colPanel,
-                Location       = colPanel.Size - new Point(colPanel.Width / 2 - 50, colPanel.Height / 2 - 10),
-                AutoSizeWidth  = true,
-                AutoSizeHeight = true
+            var homeWidgetsView = new RepeatedView<IEnumerable<IHomeWidgetView>>() {
+                FlowDirection = ControlFlowDirection.LeftToRight
             };
 
-            //bttn7.Click += async delegate {
-            //    //File.Move("Blish HUD.exe", "Blish HUD.exe.temp");
+            homeWidgetsView.Presenter = new HomeWidgetPresenter(homeWidgetsView, homeWidgets);
 
-            //    var upgradeCheck = new Octokit.GitHubClient(new ProductHeaderValue("BlishHUD", Program.OverlayVersion.ToString()));
-            //    var dir = await upgradeCheck.Repository.Content.GetAllContentsByRef("blish-hud", "Versions", @"/Blish-HUD/", "master");
-
-            //    foreach (var d in dir) {
-            //        if (d.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) {
-            //            Console.WriteLine(JsonConvert.SerializeObject(d));
-            //        }
-            //    }
-            //};
+            hPanel.Show(homeWidgetsView);
 
             return hPanel;
         }

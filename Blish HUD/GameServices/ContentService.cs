@@ -77,7 +77,10 @@ namespace Blish_HUD {
         public BitmapFont DefaultFont14 => _defaultFont14 ?? (_defaultFont14 = GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular));
 
         private BitmapFont _defaultFont16;
-        public BitmapFont DefaultFont16 => _defaultFont16 ?? (_defaultFont16 = GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular));
+        public  BitmapFont DefaultFont16 => _defaultFont16 ?? (_defaultFont16 = GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular));
+
+        private BitmapFont _defaultFont24;
+        public  BitmapFont DefaultFont24 => _defaultFont24 ?? (_defaultFont24 = GetFont(FontFace.Menomonia, FontSize.Size24, FontStyle.Regular));
 
         private BitmapFont _defaultFont32;
         public BitmapFont DefaultFont32 => _defaultFont32 ?? (_defaultFont32 = GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular));

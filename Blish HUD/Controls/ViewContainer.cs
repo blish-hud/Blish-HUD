@@ -62,7 +62,7 @@ namespace Blish_HUD.Controls {
 
         private void BuildView(Task<bool> loadResult) {
             if (loadResult.Result) {
-                _currentView.DoBuild(_buildPanel);
+                _currentView.DoBuild(this);
             }
         }
 

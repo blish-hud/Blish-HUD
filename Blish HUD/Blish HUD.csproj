@@ -91,7 +91,18 @@
     <StartupObject>Blish_HUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\EventValueArgs.cs" />
     <Compile Include="Common\Gw2\ChatCode.cs" />
+    <Compile Include="Common\UI\IReturningView.cs" />
+    <Compile Include="Common\UI\Presenters\AchievementPresenter.cs" />
+    <Compile Include="Common\UI\Presenters\CenterPresenter.cs" />
+    <Compile Include="Common\UI\Presenters\IControlPresenter.cs" />
+    <Compile Include="Common\UI\Presenters\NullPresenter.cs" />
+    <Compile Include="Common\UI\Presenters\RepeatedPresenter.cs" />
+    <Compile Include="Common\UI\Views\CenteredView.cs" />
+    <Compile Include="Common\UI\Views\ControlView.cs" />
+    <Compile Include="Common\UI\Views\RepeatedView.cs" />
+    <Compile Include="Common\UI\Views\TintedScreenView.cs" />
     <Compile Include="Controls\Intern\Mouse.cs" />
     <Compile Include="Controls\ViewContainer.cs" />
     <Compile Include="Controls\_Types\ViewState.cs" />
@@ -212,6 +223,10 @@
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="GameServices\Content\IDataReader.cs" />
+    <Compile Include="GameServices\Gw2Api\UI\Presenters\ManageApiKeyPresenter.cs" />
+    <Compile Include="GameServices\Gw2Api\UI\Presenters\PermissionItemPresenter.cs" />
+    <Compile Include="GameServices\Gw2Api\UI\Views\ManageApiKeyView.cs" />
+    <Compile Include="GameServices\Gw2Api\UI\Views\PermissionItemView.cs" />
     <Compile Include="GameServices\Input\KeyboardEventType.cs" />
     <Compile Include="GameServices\Input\KeyboardMessage.cs" />
     <Compile Include="GameServices\Input\MouseEvent.cs" />
@@ -228,12 +243,31 @@
     <Compile Include="GameServices\Modules\ModuleRunStateChangedEventArgs.cs" />
     <Compile Include="GameServices\Modules\ModuleState.cs" />
     <Compile Include="GameServices\Modules\SupportedModuleManifestVersion.cs" />
+    <Compile Include="GameServices\Modules\UI\Controls\StatusMenuItem.cs" />
+    <Compile Include="GameServices\Modules\UI\Presenters\DetailsButtonPresenter.cs" />
+    <Compile Include="GameServices\Modules\UI\Presenters\ModuleDependencyPresenter.cs" />
+    <Compile Include="GameServices\Modules\UI\Presenters\ModuleManagementPresenter.cs" />
+    <Compile Include="GameServices\Modules\UI\Presenters\ModuleWebApiPermissionsPresenter.cs" />
+    <Compile Include="GameServices\Modules\UI\Presenters\ModuleWebApiPromptPresenter.cs" />
+    <Compile Include="GameServices\Modules\UI\Views\ModuleDependencyView.cs" />
+    <Compile Include="GameServices\Modules\UI\Views\ModuleManagementView.cs" />
+    <Compile Include="GameServices\Modules\UI\Views\ModuleWebApiPermissionsView.cs" />
+    <Compile Include="GameServices\Modules\UI\Views\ModuleWebApiPromptView.cs" />
+    <Compile Include="GameServices\Overlay\UI\Presenters\AboutPresenter.cs" />
+    <Compile Include="GameServices\Overlay\UI\Presenters\ApplicationSettingsPresenter.cs" />
+    <Compile Include="GameServices\Overlay\UI\Presenters\HomeWidgetPresenter.cs" />
+    <Compile Include="GameServices\Overlay\UI\Presenters\Widgets\RssWidgetPresenter.cs" />
+    <Compile Include="GameServices\Overlay\UI\Views\AboutView.cs" />
+    <Compile Include="GameServices\Overlay\UI\Views\Widgets\HomeWidgetView.cs" />
+    <Compile Include="GameServices\Overlay\UI\Views\Widgets\RssWidgetView.cs" />
     <Compile Include="GameServices\PersistentStore\Store.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue[T].cs" />
     <Compile Include="GameServices\Settings\UI\AboutUIBuilder.cs" />
     <Compile Include="GameServices\Settings\UI\OverlaySettingsUIBuilder.cs" />
     <Compile Include="GameServices\Settings\UI\HotkeysSettingsUIBuilder.cs" />
+    <Compile Include="GameServices\Settings\UI\Presenters\SettingPresenter.cs" />
+    <Compile Include="GameServices\Settings\UI\Presenters\SettingsPresenter.cs" />
     <Compile Include="GameServices\Settings\UI\SingleModuleSettingsUIBuilder.cs" />
     <Compile Include="GameServices\Settings\SettingCollection.cs" />
     <Compile Include="GameServices\Settings\SettingEntry.cs" />
@@ -261,6 +295,11 @@
     <Compile Include="GameServices\Pathing\Entities\Effects\MarkerEffect.cs" />
     <Compile Include="GameServices\Pathing\PathableAttribute.cs" />
     <Compile Include="GameServices\Pathing\PathableAttributeCollection.cs" />
+    <Compile Include="GameServices\Settings\UI\Views\SettingsView.cs" />
+    <Compile Include="GameServices\Settings\UI\Views\SettingViews\BoolSettingView.cs" />
+    <Compile Include="GameServices\Settings\UI\Views\SettingViews\EnumSettingView.cs" />
+    <Compile Include="GameServices\Settings\UI\Views\SettingViews\SettingView.cs" />
+    <Compile Include="GameServices\Settings\UI\Views\SettingViews\StringSettingView.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
     <Compile Include="_Utils\LoadingSpinnerUtil.cs" />
@@ -495,7 +534,6 @@
   <ItemGroup>
     <Folder Include="GameServices\Hotkeys\" />
     <Folder Include="GameServices\Module\" />
-    <Folder Include="GameServices\Overlay\" />
     <Folder Include="ref\" />
   </ItemGroup>
   <ItemGroup>

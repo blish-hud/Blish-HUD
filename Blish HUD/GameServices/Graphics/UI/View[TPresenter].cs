@@ -24,6 +24,8 @@ namespace Blish_HUD.Graphics.UI {
             set => _presenter = value;
         }
 
+        protected Panel ViewTarget { get; private set; }
+
         protected View(TPresenter presenter) {
             _presenter = presenter;
         }
@@ -43,6 +45,8 @@ namespace Blish_HUD.Graphics.UI {
 
         /// <inheritdoc />
         public void DoBuild(Panel buildPanel) {
+            this.ViewTarget = buildPanel;
+
             Build(buildPanel);
 
             this.Built?.Invoke(this, EventArgs.Empty);
