@@ -263,16 +263,11 @@
     <Compile Include="GameServices\PersistentStore\Store.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue[T].cs" />
-    <Compile Include="GameServices\Settings\UI\AboutUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\UI\OverlaySettingsUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\UI\HotkeysSettingsUIBuilder.cs" />
     <Compile Include="GameServices\Settings\UI\Presenters\SettingPresenter.cs" />
     <Compile Include="GameServices\Settings\UI\Presenters\SettingsPresenter.cs" />
-    <Compile Include="GameServices\Settings\UI\SingleModuleSettingsUIBuilder.cs" />
     <Compile Include="GameServices\Settings\SettingCollection.cs" />
     <Compile Include="GameServices\Settings\SettingEntry.cs" />
     <Compile Include="GameServices\Settings\SettingEntry[T].cs" />
-    <Compile Include="GameServices\Settings\UI\UpdateUIBuilder.cs" />
     <Compile Include="GameServices\Modules\Module.cs" />
     <Compile Include="GameServices\Modules\Managers\ContentsManager.cs" />
     <Compile Include="GameServices\Modules\Managers\DirectoriesManager.cs" />
