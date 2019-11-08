@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing.Design;
 using Blish_HUD.Controls;
 using Blish_HUD.Settings.UI.Presenters;
 using Blish_HUD.Graphics.UI;

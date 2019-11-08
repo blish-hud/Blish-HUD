@@ -97,6 +97,7 @@
     <Compile Include="Common\UI\Presenters\AchievementPresenter.cs" />
     <Compile Include="Common\UI\Presenters\CenterPresenter.cs" />
     <Compile Include="Common\UI\Presenters\IControlPresenter.cs" />
+    <Compile Include="Common\UI\Presenters\IControlPresenter[T].cs" />
     <Compile Include="Common\UI\Presenters\NullPresenter.cs" />
     <Compile Include="Common\UI\Presenters\RepeatedPresenter.cs" />
     <Compile Include="Common\UI\Views\CenteredView.cs" />
@@ -293,7 +294,9 @@
     <Compile Include="GameServices\Settings\UI\Views\SettingsView.cs" />
     <Compile Include="GameServices\Settings\UI\Views\SettingViews\BoolSettingView.cs" />
     <Compile Include="GameServices\Settings\UI\Views\SettingViews\EnumSettingView.cs" />
+    <Compile Include="GameServices\Settings\UI\Views\SettingViews\EnumSettingView[T].cs" />
     <Compile Include="GameServices\Settings\UI\Views\SettingViews\SettingView.cs" />
+    <Compile Include="GameServices\Settings\UI\Views\SettingViews\SettingView[T].cs" />
     <Compile Include="GameServices\Settings\UI\Views\SettingViews\StringSettingView.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
