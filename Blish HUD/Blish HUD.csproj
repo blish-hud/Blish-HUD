@@ -102,6 +102,8 @@
     <Compile Include="Common\UI\Presenters\RepeatedPresenter.cs" />
     <Compile Include="Common\UI\Views\CenteredView.cs" />
     <Compile Include="Common\UI\Views\ControlView.cs" />
+    <Compile Include="Common\UI\Views\ControlView[T].cs" />
+    <Compile Include="Common\UI\Views\IControlView.cs" />
     <Compile Include="Common\UI\Views\RepeatedView.cs" />
     <Compile Include="Common\UI\Views\TintedScreenView.cs" />
     <Compile Include="Controls\Intern\Mouse.cs" />
