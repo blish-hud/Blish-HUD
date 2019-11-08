@@ -33,7 +33,9 @@ namespace Blish_HUD.Overlay.UI.Presenters {
                 var settingView = new SettingsView(settingCategory.Settings);
                 this.View.Views.Add(settingView);
 
-                settingView.CategoryTitle = settingCategory.Name;
+                settingView.Built += delegate {
+                    settingView.CategoryTitle = settingCategory.Name;
+                };
             }
         }
 

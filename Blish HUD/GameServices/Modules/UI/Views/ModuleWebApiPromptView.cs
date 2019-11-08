@@ -139,7 +139,7 @@ namespace Blish_HUD.Modules.UI.Views {
                     };
 
                     foreach (var permission in permissions) {
-                        var permissionConsent = new PermissionItemPresenter.PermissionConsent(permission, required, (this.Presenter.Model.State.UserEnabledPermissions ?? new TokenPermission[0]).Contains(permission));
+                        var permissionConsent = new PermissionItemPresenter.PermissionConsent(permission, required, (this.Presenter.Model.State.UserEnabledPermissions ?? new TokenPermission[1] {permission}).Contains(permission));
                         var permissionView    = new PermissionItemView(permissionConsent);
 
                         var permissionContainer = new ViewContainer() {

@@ -210,6 +210,7 @@ namespace Blish_HUD {
             };
 
             var cPanel = new ViewContainer() {
+                FadeView = true,
                 Size     = new Point(748, baseSettingsPanel.Size.Y - 24 * 2),
                 Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 24),
                 Parent   = baseSettingsPanel

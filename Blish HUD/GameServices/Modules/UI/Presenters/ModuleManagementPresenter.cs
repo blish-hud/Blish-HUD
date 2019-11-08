@@ -76,6 +76,8 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             RefreshViewModuleState();
             RefreshViewEnableDisableButton();
+
+            RefreshModuleSettingsView();
         }
 
         private void ModelOnModuleDisabled(object sender, EventArgs e) {
@@ -83,6 +85,8 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             RefreshViewModuleState();
             RefreshViewEnableDisableButton();
+
+            RefreshModuleSettingsView();
         }
 
         private void ModuleInstanceOnModuleRunStateChanged(object sender, ModuleRunStateChangedEventArgs e) {

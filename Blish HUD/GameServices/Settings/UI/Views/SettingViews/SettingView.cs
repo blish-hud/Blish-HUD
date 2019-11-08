@@ -15,7 +15,7 @@ namespace Blish_HUD.Settings.UI.Views.SettingViews {
 
         private static readonly Dictionary<Type, Func<SettingEntry, int, IView>> _typeLookup = new Dictionary<Type, Func<SettingEntry, int, IView>> {
             { typeof(bool), (settingEntry,   definedWidth) => new BoolSettingView(settingEntry as SettingEntry<bool>, definedWidth) },
-            { typeof(string), (settingEntry, definedWidth) => new StringSettingView(settingEntry as SettingEntry<string>, definedWidth) },
+            /* { typeof(string), (settingEntry, definedWidth) => new StringSettingView(settingEntry as SettingEntry<string>, definedWidth) }, */ // Currently fails because textbox controls aren't thread-safe.
         };
 
         public static IView FromType(SettingEntry setting, int definedWidth) {

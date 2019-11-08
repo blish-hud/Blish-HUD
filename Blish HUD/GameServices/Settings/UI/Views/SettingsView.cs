@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing.Design;
 using Blish_HUD.Controls;
 using Blish_HUD.Settings.UI.Presenters;
 using Blish_HUD.Graphics.UI;
@@ -14,7 +15,10 @@ namespace Blish_HUD.Settings.UI.Views {
 
         public string CategoryTitle {
             get => this.ViewTarget.Title;
-            set => this.ViewTarget.Title = value;
+            set {
+                this.ViewTarget.Title      = value;
+                this.ViewTarget.ShowBorder = !string.IsNullOrEmpty(value);
+            }
         }
 
         public SettingsView(SettingCollection settings) {
