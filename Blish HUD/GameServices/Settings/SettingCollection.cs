@@ -22,8 +22,7 @@ namespace Blish_HUD.Settings {
                 if (value.Loaded) {
                     entryArray = new JArray();
 
-                    foreach (var entry in value._entries.Where(e => !e.IsNull)) {
-                        var entryObject = JObject.FromObject(entry, serializer);
+                    foreach (var entryObject in value._entries.Where(e => !e.IsNull).Select(entry => JObject.FromObject(entry, serializer))) {
                         entryArray.Add(entryObject);
                     }
                 }
@@ -112,7 +111,7 @@ namespace Blish_HUD.Settings {
         private void Load() {
             if (_entryTokens == null) return;
 
-            _entries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings);
+            _entries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings).Where((se) => se != null).ToList();
 
             _entryTokens = null;
         }
