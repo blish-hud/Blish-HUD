@@ -8,25 +8,37 @@ namespace Blish_HUD.Settings {
 
     public abstract class SettingEntry : INotifyPropertyChanged {
 
+        protected const string SETTINGTYPE_KEY  = "T";
+        protected const string SETTINGNAME_KEY  = "Key";
+        protected const string SETTINGVALUE_KEY = "Value";
+
         public class SettingEntryConverter : JsonConverter<SettingEntry> {
 
+            private static readonly Logger Logger = Logger.GetLogger<SettingEntryConverter>();
+
             public override void WriteJson(JsonWriter writer, SettingEntry value, JsonSerializer serializer) {
-                JObject entryObject = new JObject();
+                var entryObject = new JObject();
 
-                Type entryType = value.GetSettingType();
+                var entryType = value.GetSettingType();
 
-                entryObject.Add("T", $"{entryType.FullName}, {entryType.Assembly.GetName().Name}");
-                entryObject.Add("Key", value.EntryKey);
-                entryObject.Add("Value", JToken.FromObject(value.GetSettingValue(), serializer));
+                entryObject.Add(SETTINGTYPE_KEY,  $"{entryType.FullName}, {entryType.Assembly.GetName().Name}");
+                entryObject.Add(SETTINGNAME_KEY,  value.EntryKey);
+                entryObject.Add(SETTINGVALUE_KEY, JToken.FromObject(value.GetSettingValue(), serializer));
 
                 entryObject.WriteTo(writer);
             }
 
             public override SettingEntry ReadJson(JsonReader reader, Type objectType, SettingEntry existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                JObject jObj = JObject.Load(reader);
+                var jObj = JObject.Load(reader);
 
-                var entryTypeString = jObj["T"].Value<string>();
-                var entryType = Type.GetType(entryTypeString);
+                string entryTypeString = jObj[SETTINGTYPE_KEY].Value<string>();
+                var    entryType       = Type.GetType(entryTypeString);
+
+                if (entryType == null) {
+                    Logger.Warn("Failed to load setting of missing type '{settingDefinedType}'.", entryTypeString);
+
+                    return null;
+                }
 
                 var entryGeneric = Activator.CreateInstance(typeof(SettingEntry<>).MakeGenericType(entryType));
 
@@ -46,7 +58,7 @@ namespace Blish_HUD.Settings {
         [JsonIgnore]
         public SettingsService.SettingTypeRendererDelegate Renderer { get; set; }
 
-        [JsonProperty("Key")]
+        [JsonProperty(SETTINGNAME_KEY)]
         /// <summary>
         /// The unique key used to identify the <see cref="SettingEntry"/> in the <see cref="SettingCollection"/>.
         /// </summary>
@@ -54,7 +66,7 @@ namespace Blish_HUD.Settings {
 
         protected abstract Type GetSettingType();
 
-        protected abstract Object GetSettingValue();
+        protected abstract object GetSettingValue();
 
         [JsonIgnore]
         public bool IsNull => this.GetSettingValue() == null;

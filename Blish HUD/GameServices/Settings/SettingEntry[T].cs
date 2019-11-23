@@ -18,7 +18,7 @@ namespace Blish_HUD.Settings {
 
         private T _value;
 
-        [JsonProperty, JsonRequired]
+        [JsonProperty(SETTINGVALUE_KEY), JsonRequired]
         public T Value {
             get => _value;
             set {
