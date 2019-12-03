@@ -214,6 +214,7 @@
     <Compile Include="GameServices\Content\IDataReader.cs" />
     <Compile Include="GameServices\Input\Hook.cs" />
     <Compile Include="GameServices\Input\InputManager.cs" />
+    <Compile Include="GameServices\Input\KeyBinding.cs" />
     <Compile Include="GameServices\Input\KeyboardEventArgs.cs" />
     <Compile Include="GameServices\Input\KeyboardEventType.cs" />
     <Compile Include="GameServices\Input\KeyboardManager.cs" />
