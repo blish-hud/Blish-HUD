@@ -159,7 +159,7 @@ namespace Blish_HUD.Controls {
 
             this.ZIndex = Screen.WINDOW_BASEZINDEX;
 
-            Input.LeftMouseButtonReleased += delegate { Dragging = false; };
+            Input.Mouse.LeftMouseButtonReleased += delegate { Dragging = false; };
 
             _animFade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
             _animFade.Pause();
@@ -251,7 +251,7 @@ namespace Blish_HUD.Controls {
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             if (MouseOverTitleBar) {
                 Dragging  = true;
-                DragStart = Input.MouseState.Position;
+                DragStart = Input.Mouse.Position;
             } else if (MouseOverExitButton) {
                 Hide();
             }
@@ -324,10 +324,10 @@ namespace Blish_HUD.Controls {
 
         public override void UpdateContainer(GameTime gameTime) {
             if (Dragging) {
-                var nOffset = Input.MouseState.Position - DragStart;
+                var nOffset = Input.Mouse.Position - DragStart;
                 Location += nOffset;
 
-                DragStart = Input.MouseState.Position;
+                DragStart = Input.Mouse.Position;
             }
         }
 

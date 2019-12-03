@@ -31,8 +31,8 @@ namespace Blish_HUD.Controls {
 
                 this.Parent = Graphics.SpriteScreen;
 
-                Input.LeftMouseButtonPressed  += Input_MousedOffDropdownPanel;
-                Input.RightMouseButtonPressed += Input_MousedOffDropdownPanel;
+                Input.Mouse.LeftMouseButtonPressed  += Input_MousedOffDropdownPanel;
+                Input.Mouse.RightMouseButtonPressed += Input_MousedOffDropdownPanel;
             }
 
             private Point GetPanelLocation() {
@@ -113,8 +113,8 @@ namespace Blish_HUD.Controls {
                     _assocDropdown = null;
                 }
 
-                Input.LeftMouseButtonPressed  -= Input_MousedOffDropdownPanel;
-                Input.RightMouseButtonPressed -= Input_MousedOffDropdownPanel;
+                Input.Mouse.LeftMouseButtonPressed  -= Input_MousedOffDropdownPanel;
+                Input.Mouse.RightMouseButtonPressed -= Input_MousedOffDropdownPanel;
 
                 base.DisposeControl();
             }

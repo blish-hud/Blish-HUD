@@ -113,8 +113,8 @@ namespace Blish_HUD.Controls {
 
             this.Size = Standard.Size;
 
-            Input.LeftMouseButtonPressed  += Input_MouseButtonPressed;
-            Input.RightMouseButtonPressed += Input_MouseButtonPressed;
+            Input.Mouse.LeftMouseButtonPressed  += Input_MouseButtonPressed;
+            Input.Mouse.RightMouseButtonPressed += Input_MouseButtonPressed;
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
@@ -135,9 +135,6 @@ namespace Blish_HUD.Controls {
             }
 
             base.OnMouseLeft(e);
-        }
-
-        public override void TriggerKeyboardInput(KeyboardMessage e) {
         }
 
         protected override CaptureType CapturesInput() { return CaptureType.Mouse; }

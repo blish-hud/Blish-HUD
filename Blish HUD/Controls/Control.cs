@@ -228,9 +228,9 @@ namespace Blish_HUD.Controls {
                 _mouseOver = value;
 
                 if (_mouseOver) {
-                    OnMouseEntered(new MouseEventArgs(Input.MouseState));
+                    OnMouseEntered(new MouseEventArgs(MouseEventType.MouseEntered));
                 } else {
-                    OnMouseLeft(new MouseEventArgs(Input.MouseState));
+                    OnMouseLeft(new MouseEventArgs(MouseEventType.MouseLeft));
                 }
 
                 OnPropertyChanged();
@@ -412,7 +412,7 @@ namespace Blish_HUD.Controls {
         }
 
         [JsonIgnore]
-        public Point RelativeMousePosition => Input.MouseState.Position - this.AbsoluteBounds.Location;
+        public Point RelativeMousePosition => Input.Mouse.Position - this.AbsoluteBounds.Location;
 
         private ContextMenuStrip _menu;
         /// <summary>
@@ -563,15 +563,15 @@ namespace Blish_HUD.Controls {
 
             /* We're going to assume nobody has a display so small that the ContextMenuStrip
                just can't fit in any direction */
-            int topPos = Input.MouseState.Position.Y + this.Menu.Height > Graphics.SpriteScreen.Height
+            int topPos = Input.Mouse.Position.Y + this.Menu.Height > Graphics.SpriteScreen.Height
                              ? -this.Menu.Height
                              : 0;
 
-            int leftPos = Input.MouseState.Position.X + this.Menu.Width < Graphics.SpriteScreen.Width
+            int leftPos = Input.Mouse.Position.X + this.Menu.Width < Graphics.SpriteScreen.Width
                               ? 0
                               : -this.Menu.Width;
 
-            this.Menu.Location = Input.MouseState.Position + new Point(leftPos, topPos);
+            this.Menu.Location = Input.Mouse.Position + new Point(leftPos, topPos);
 
             this.Menu.Visible = true;
         }
@@ -650,8 +650,6 @@ namespace Blish_HUD.Controls {
             return CaptureType.Filter;
         }
 
-        public virtual void TriggerKeyboardInput(KeyboardMessage e) { /* NOOP */ }
-
         public virtual Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
             var inputCapture = CapturesInput();
 
@@ -659,28 +657,28 @@ namespace Blish_HUD.Controls {
 
             switch (mouseEventType) {
                 case MouseEventType.LeftMouseButtonPressed:
-                    OnLeftMouseButtonPressed(new MouseEventArgs(ms));
+                    OnLeftMouseButtonPressed(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed));
                     return this;
                     break;
                 case MouseEventType.LeftMouseButtonReleased:
-                    OnLeftMouseButtonReleased(new MouseEventArgs(ms));
+                    OnLeftMouseButtonReleased(new MouseEventArgs(MouseEventType.LeftMouseButtonReleased));
                     return this;
                     break;
                 case MouseEventType.RightMouseButtonPressed:
-                    OnRightMouseButtonPressed(new MouseEventArgs(ms));
+                    OnRightMouseButtonPressed(new MouseEventArgs(MouseEventType.RightMouseButtonPressed));
                     return this;
                     break;
                 case MouseEventType.RightMouseButtonReleased:
-                    OnRightMouseButtonReleased(new MouseEventArgs(ms));
+                    OnRightMouseButtonReleased(new MouseEventArgs(MouseEventType.RightMouseButtonReleased));
                     return this;
                     break;
                 case MouseEventType.MouseMoved:
-                    OnMouseMoved(new MouseEventArgs(ms));
+                    OnMouseMoved(new MouseEventArgs(MouseEventType.MouseMoved));
                     this.MouseOver = true;
                     return this;
                     break;
                 case MouseEventType.MouseWheelScrolled:
-                    OnMouseWheelScrolled(new MouseEventArgs(ms));
+                    OnMouseWheelScrolled(new MouseEventArgs(MouseEventType.MouseWheelScrolled));
                     return inputCapture.HasFlag(CaptureType.MouseWheel) ? this : null;
                     break;
             }
@@ -713,7 +711,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void CheckMouseLeft() {
-            if (_mouseOver && !this.AbsoluteBounds.Contains(Input.MouseState.Position)) {
+            if (_mouseOver && !this.AbsoluteBounds.Contains(Input.Mouse.Position)) {
                 this.MouseOver = false;
             }
         }
