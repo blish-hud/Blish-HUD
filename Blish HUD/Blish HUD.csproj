@@ -92,6 +92,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\Gw2\ChatCode.cs" />
+    <Compile Include="Common\Gw2\KeyBindings.cs" />
     <Compile Include="Controls\Intern\Mouse.cs" />
     <Compile Include="Controls\ViewContainer.cs" />
     <Compile Include="Controls\_Types\ViewState.cs" />
