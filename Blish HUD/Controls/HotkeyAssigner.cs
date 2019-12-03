@@ -34,10 +34,10 @@ namespace Blish_HUD.Controls {
 
         private DateTime _lastClickTime;
 
-        private Hotkey _hotkeyDefinition;
+        private KeyBinding _keyBindingDefinition;
 
-        public HotkeyAssigner(Hotkey hotkey) {
-            _hotkeyDefinition = hotkey;
+        public HotkeyAssigner(KeyBinding keyBinding) {
+            _keyBindingDefinition = keyBinding;
 
             this.Size = new Point(256, 16);
 
@@ -57,7 +57,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void SetupNewAssignmentWindow() {
-            var newHkAssign = new HotkeyAssignmentWindow(_hotkeyDefinition);
+            var newHkAssign = new HotkeyAssignmentWindow(_keyBindingDefinition);
             newHkAssign.Location = new Point(Graphics.WindowWidth / 2 - newHkAssign.Width / 2, Graphics.WindowHeight / 2 - newHkAssign.Height / 2);
             newHkAssign.Parent = Graphics.SpriteScreen;
 
@@ -84,25 +84,25 @@ namespace Blish_HUD.Controls {
                              );
 
             // Draw name shadow
-            Blish_HUD.DrawUtil.DrawAlignedText(
-                                                spriteBatch,
-                                                Content.DefaultFont14,
-                                                _hotkeyDefinition.Name,
-                                                this.NameRegion.OffsetBy(UNIVERSAL_PADDING + 1, 1),
-                                                Color.Black,
-                                                HorizontalAlignment.Left,
-                                                VerticalAlignment.Middle
-                                               );
+            //Blish_HUD.DrawUtil.DrawAlignedText(
+            //                                    spriteBatch,
+            //                                    Content.DefaultFont14,
+            //                                    _keyBindingDefinition.Name,
+            //                                    this.NameRegion.OffsetBy(UNIVERSAL_PADDING + 1, 1),
+            //                                    Color.Black,
+            //                                    HorizontalAlignment.Left,
+            //                                    VerticalAlignment.Middle
+            //                                   );
 
             // Draw name
-            Blish_HUD.DrawUtil.DrawAlignedText(spriteBatch,
-                                                Content.DefaultFont14,
-                                                _hotkeyDefinition.Name,
-                                                this.NameRegion.OffsetBy(UNIVERSAL_PADDING, 0),
-                                                Color.White,
-                                                HorizontalAlignment.Left,
-                                                VerticalAlignment.Middle
-                                               );
+            //Blish_HUD.DrawUtil.DrawAlignedText(spriteBatch,
+            //                                    Content.DefaultFont14,
+            //                                    _keyBindingDefinition.Name,
+            //                                    this.NameRegion.OffsetBy(UNIVERSAL_PADDING, 0),
+            //                                    Color.White,
+            //                                    HorizontalAlignment.Left,
+            //                                    VerticalAlignment.Middle
+            //                                   );
 
             // Draw white panel for hotkey
             spriteBatch.Draw(
@@ -112,7 +112,7 @@ namespace Blish_HUD.Controls {
                             );
 
             // Easy way to get a string representation of the hotkeys
-            string hotkeyRep = string.Join(" + ", _hotkeyDefinition.Keys);
+            string hotkeyRep = string.Join(" + ", _keyBindingDefinition.PrimaryKey);
 
             // Draw hotkey shadow
             Blish_HUD.DrawUtil.DrawAlignedText(
