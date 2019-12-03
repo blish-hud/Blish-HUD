@@ -60,7 +60,6 @@ namespace Blish_HUD {
         public static readonly CameraService          Camera;
         public static readonly InputService           Input;
         public static readonly GameIntegrationService GameIntegration;
-        public static readonly HotkeysService         Hotkeys;
         public static readonly PathingService         Pathing;
         public static readonly ModuleService          Module;
         public static readonly PersistentStoreService Store;
@@ -84,7 +83,6 @@ namespace Blish_HUD {
             Player          = new PlayerService();
             Camera          = new CameraService();
             GameIntegration = new GameIntegrationService();
-            Hotkeys         = new HotkeysService();
             Pathing         = new PathingService();
             Module          = new ModuleService();
             ArcDps          = new ArcDpsService();
@@ -104,7 +102,6 @@ namespace Blish_HUD {
                 Camera,
                 Input,
                 GameIntegration,
-                Hotkeys,
                 Pathing,
                 Module,
                 ArcDps,
