@@ -100,8 +100,6 @@
     <Compile Include="Controls\BasicWindow.cs" />
     <Compile Include="Controls\Book.cs" />
     <Compile Include="Controls\Page.cs" />
-    <Compile Include="Controls\HotkeyAssigner.cs" />
-    <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
     <Compile Include="GameServices\Content\DirectoryReader.cs" />
     <Compile Include="GameServices\Content\Serialization\SemVerConverter.cs" />
     <Compile Include="GameServices\Content\ZipArchiveReader.cs" />
