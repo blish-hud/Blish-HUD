@@ -67,10 +67,10 @@ namespace Blish_HUD.Input {
 
         internal override void Update() {
             while (_inputBuffer.TryDequeue(out var keyboardEvent)) {
-                _keysDown.Remove(keyboardEvent.Key);
-
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
                     _keysDown.Add(keyboardEvent.Key);
+                } else {
+                    _keysDown.Remove(keyboardEvent.Key);
                 }
 
                 Keys[] downArray = _keysDown.ToArray();
