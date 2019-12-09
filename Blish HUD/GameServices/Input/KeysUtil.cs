@@ -34,7 +34,6 @@ namespace Blish_HUD.Input {
                 {Keys.NumPad7, "7 (NUM)"},
                 {Keys.NumPad8, "8 (NUM)"},
                 {Keys.NumPad9, "9 (NUM)"},
-                {Keys.OemClear, "5"},
                 {Keys.PageDown, "Page Down"},
                 {Keys.PageUp, "Page Up"},
                 {Keys.RightControl, "Right Ctrl"},
