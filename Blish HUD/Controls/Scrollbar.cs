@@ -104,7 +104,7 @@ namespace Blish_HUD.Controls {
 
             this.Width = CONTROL_WIDTH;
 
-            Input.LeftMouseButtonReleased += delegate { if (Scrolling) { Scrolling = false; /* Invalidate(); */ } };
+            Input.Mouse.LeftMouseButtonReleased += delegate { if (Scrolling) { Scrolling = false; /* Invalidate(); */ } };
 
             _associatedContainer.MouseWheelScrolled += HandleWheelScroll;
         }
@@ -126,11 +126,13 @@ namespace Blish_HUD.Controls {
                 ctrl = ctrl.Parent;
             }
 
-            float normalScroll = (float)Input.ClickState.EventDetails.wheelDelta / (float)Math.Abs(Input.ClickState.EventDetails.wheelDelta);
+            if (e.MouseState.ScrollWheelValue == 0) return;
+
+            float normalScroll = e.MouseState.ScrollWheelValue / (float)Math.Abs(e.MouseState.ScrollWheelValue);
             
             _targetScrollDistanceAnim?.Cancel();
             
-            this.TargetScrollDistance += normalScroll * -0.08f;
+            this.TargetScrollDistance += normalScroll * -0.08f * System.Windows.Forms.SystemInformation.MouseWheelScrollLines;
 
             _targetScrollDistanceAnim = Animation.Tweener
                                                 .Tween(this, new {ScrollDistance = this.TargetScrollDistance}, 0.35f)
@@ -166,7 +168,7 @@ namespace Blish_HUD.Controls {
             base.DoUpdate(gameTime);
 
             if (Scrolling) {
-                var relMousePos = Input.MouseState.Position - this.AbsoluteBounds.Location - new Point(0, ScrollingOffset) - TrackBounds.Location;
+                var relMousePos = Input.Mouse.Position - this.AbsoluteBounds.Location - new Point(0, ScrollingOffset) - TrackBounds.Location;
                 
                 this.ScrollDistance = (float)relMousePos.Y / (float)(this.TrackLength - this.ScrollbarHeight);
                 this.TargetScrollDistance = this.ScrollDistance;
@@ -197,12 +199,26 @@ namespace Blish_HUD.Controls {
         private void RecalculateScrollbarSize() {
             if (_associatedContainer == null) return;
 
-            _containerLowestContent = Math.Max(_associatedContainer.Children.Any(c => c.Visible)
-                                                   ? _associatedContainer.Children.Where(c => c.Visible).Max(c => c.Bottom)
-                                                   : 0,
-                                               _associatedContainer.ContentRegion.Height);
+            var tempContainerChidlren = _associatedContainer.Children.ToArray();
 
-            ScrollbarPercent = (double)_associatedContainer.ContentRegion.Height / (double)_containerLowestContent;
+            _containerLowestContent = 0;
+
+            for (int i = 0; i < tempContainerChidlren.Length; i++) {
+                ref var child = ref tempContainerChidlren[i];
+
+                if (child.Visible) {
+                    _containerLowestContent = Math.Max(_containerLowestContent, child.Bottom);
+                }
+            }
+
+            _containerLowestContent = Math.Max(_containerLowestContent, _associatedContainer.ContentRegion.Height);
+
+            //_containerLowestContent = Math.Max(tempContainerChidlren.Any(c => c.Visible)
+            //                                       ? tempContainerChidlren.Where(c => c.Visible).Max(c => c.Bottom)
+            //                                       : 0,
+            //                                   _associatedContainer.ContentRegion.Height);
+
+            ScrollbarPercent = _associatedContainer.ContentRegion.Height / (double)_containerLowestContent;
 
             this.ScrollbarHeight = (int)Math.Max(Math.Floor(this.TrackLength * ScrollbarPercent) - 1, MIN_LENGTH);
 

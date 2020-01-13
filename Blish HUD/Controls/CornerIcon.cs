@@ -105,7 +105,7 @@ namespace Blish_HUD.Controls {
 
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
 
-            GameService.Input.MouseMoved += (sender, e) => {
+            GameService.Input.Mouse.MouseMoved += (sender, e) => {
                 var scaledMousePos = e.MouseState.Position.ScaleToUi();
                 if (scaledMousePos.Y < BlishHud.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
                     foreach (var cornerIcon in CornerIcons) {

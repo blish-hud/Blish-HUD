@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Blish_HUD.Input;
 using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
 
 namespace Blish_HUD {
@@ -105,26 +106,26 @@ namespace Blish_HUD {
         }
 
         private void BackingFormOnMouseEnter(object sender, EventArgs e) {
-            OnMouseEntered(new MouseEventArgs(GameService.Input.MouseState));
+            OnMouseEntered(new MouseEventArgs(MouseEventType.MouseEntered));
         }
 
         private void BackingFormOnMouseLeave(object sender, EventArgs e) {
-            OnMouseLeft(new MouseEventArgs(GameService.Input.MouseState));
+            OnMouseLeft(new MouseEventArgs(MouseEventType.MouseLeft));
         }
 
         private void BackingFormOnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
-                OnLeftMouseButtonPressed(new MouseEventArgs(GameService.Input.MouseState));
+                OnLeftMouseButtonPressed(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed));
             } else if (e.Button == MouseButtons.Right) {
-                OnRightMouseButtonPressed(new MouseEventArgs(GameService.Input.MouseState));
+                OnRightMouseButtonPressed(new MouseEventArgs(MouseEventType.RightMouseButtonPressed));
             }
         }
 
         private void BackingFormOnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
-                OnLeftMouseButtonReleased(new MouseEventArgs(GameService.Input.MouseState));
+                OnLeftMouseButtonReleased(new MouseEventArgs(MouseEventType.LeftMouseButtonReleased));
             } else if (e.Button == MouseButtons.Right) {
-                OnRightMouseButtonReleased(new MouseEventArgs(GameService.Input.MouseState));
+                OnRightMouseButtonReleased(new MouseEventArgs(MouseEventType.RightMouseButtonReleased));
             }
         }
 

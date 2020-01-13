@@ -54,7 +54,7 @@ namespace Blish_HUD.Controls {
             this.Size = new Point(256, 16);
 
             this.LeftMouseButtonPressed += TrackBar_LeftMouseButtonPressed;
-            Input.LeftMouseButtonReleased += Input_LeftMouseButtonReleased;
+            Input.Mouse.LeftMouseButtonReleased += Input_LeftMouseButtonReleased;
         }
 
         private void Input_LeftMouseButtonReleased(object sender, MouseEventArgs e) {

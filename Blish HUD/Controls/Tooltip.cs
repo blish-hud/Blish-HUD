@@ -29,7 +29,7 @@ namespace Blish_HUD.Controls {
 
             Control.ActiveControlChanged += ControlOnActiveControlChanged;
 
-            Input.MouseMoved += delegate(object sender, MouseEventArgs args) {
+            Input.Mouse.MouseMoved += delegate(object sender, MouseEventArgs args) {
                 if (ActiveControl?.Tooltip != null) {
                     ActiveControl.Tooltip.CurrentControl = ActiveControl;
                     UpdateTooltipPosition(ActiveControl.Tooltip);
@@ -67,15 +67,15 @@ namespace Blish_HUD.Controls {
         }
 
         private static void UpdateTooltipPosition(Tooltip tooltip) {
-            int topPos = Input.MouseState.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height > 0
+            int topPos = Input.Mouse.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height > 0
                              ? -Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height
                              : Tooltip.MOUSE_VERTICAL_MARGIN * 2;
 
-            int leftPos = Input.MouseState.Position.X + tooltip.Width < Graphics.SpriteScreen.Width
+            int leftPos = Input.Mouse.Position.X + tooltip.Width < Graphics.SpriteScreen.Width
                               ? 0
                               : -tooltip.Width;
 
-            tooltip.Location = Input.MouseState.Position + new Point(leftPos, topPos);
+            tooltip.Location = Input.Mouse.Position + new Point(leftPos, topPos);
         }
 
         #endregion

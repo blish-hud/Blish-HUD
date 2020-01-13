@@ -58,7 +58,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS;NODIRMODULES;NOMOUSEHOOK</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;NODIRMODULES;</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -92,6 +92,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\Gw2\ChatCode.cs" />
+    <Compile Include="Common\Gw2\KeyBindings.cs" />
     <Compile Include="Controls\Intern\Mouse.cs" />
     <Compile Include="Controls\ViewContainer.cs" />
     <Compile Include="Controls\_Types\ViewState.cs" />
@@ -99,8 +100,6 @@
     <Compile Include="Controls\BasicWindow.cs" />
     <Compile Include="Controls\Book.cs" />
     <Compile Include="Controls\Page.cs" />
-    <Compile Include="Controls\HotkeyAssigner.cs" />
-    <Compile Include="Controls\HotkeyAssignmentWindow.cs" />
     <Compile Include="GameServices\Content\DirectoryReader.cs" />
     <Compile Include="GameServices\Content\Serialization\SemVerConverter.cs" />
     <Compile Include="GameServices\Content\ZipArchiveReader.cs" />
@@ -212,11 +211,20 @@
     <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="GameServices\Content\IDataReader.cs" />
+    <Compile Include="GameServices\Input\Hook.cs" />
+    <Compile Include="GameServices\Input\InputManager.cs" />
+    <Compile Include="GameServices\Input\KeyBinding.cs" />
+    <Compile Include="GameServices\Input\KeyboardEventArgs.cs" />
     <Compile Include="GameServices\Input\KeyboardEventType.cs" />
-    <Compile Include="GameServices\Input\KeyboardMessage.cs" />
-    <Compile Include="GameServices\Input\MouseEvent.cs" />
+    <Compile Include="GameServices\Input\KeyboardManager.cs" />
+    <Compile Include="GameServices\Input\KeysUtil.cs" />
+    <Compile Include="GameServices\Input\ModifierKeys.cs" />
     <Compile Include="GameServices\Input\MouseEventArgs.cs" />
     <Compile Include="GameServices\Input\MouseEventType.cs" />
+    <Compile Include="GameServices\Input\MouseManager.cs" />
+    <Compile Include="GameServices\Input\WinApi\HookExtern.cs" />
+    <Compile Include="GameServices\Input\WinApi\HookType.cs" />
+    <Compile Include="GameServices\Input\WinApi\MouseLLHookStruct.cs" />
     <Compile Include="GameServices\Modules\Manifest.cs" />
     <Compile Include="GameServices\Modules\ModuleApiPermissions.cs" />
     <Compile Include="GameServices\Modules\ModuleContributor.cs" />
@@ -233,7 +241,6 @@
     <Compile Include="GameServices\PersistentStore\StoreValue[T].cs" />
     <Compile Include="GameServices\Settings\UI\AboutUIBuilder.cs" />
     <Compile Include="GameServices\Settings\UI\OverlaySettingsUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\UI\HotkeysSettingsUIBuilder.cs" />
     <Compile Include="GameServices\Settings\UI\SingleModuleSettingsUIBuilder.cs" />
     <Compile Include="GameServices\Settings\SettingCollection.cs" />
     <Compile Include="GameServices\Settings\SettingEntry.cs" />
@@ -267,7 +274,6 @@
     <Compile Include="_Utils\MouseInterceptor.cs" />
     <Compile Include="_Utils\StringUtil.cs" />
     <Compile Include="_Utils\VectorUtil.cs" />
-    <Compile Include="GameServices\Input\HookExtern.cs" />
     <Compile Include="_Enums\Gw2Locale.cs" />
     <Compile Include="_Enums\Gw2Profession.cs" />
     <Compile Include="_Enums\Gw2Race.cs" />
@@ -302,7 +308,6 @@
     <Compile Include="Entities\Primitives\Mesh.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="GameServices\OverlayService.cs" />
-    <Compile Include="GameServices\HotkeysService.cs" />
     <Compile Include="GameServices\PathingService.cs" />
     <Compile Include="GameServices\ModuleService.cs" />
     <Compile Include="GameServices\GameIntegrationService.cs" />
@@ -329,8 +334,6 @@
     <Compile Include="_Utils\DrawUtil.cs" />
     <Compile Include="_Utils\WindowUtil.cs" />
     <Compile Include="_Utils\WorldUtil.cs" />
-    <Compile Include="GameServices\Input\KeyboardHook.cs" />
-    <Compile Include="GameServices\Input\MouseHook.cs" />
     <Compile Include="_Extensions\DictionaryExtension.cs" />
     <Compile Include="_Extensions\PointExtensions.cs" />
     <Compile Include="_Extensions\RectangleExtension.cs" />
@@ -493,9 +496,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="GameServices\Hotkeys\" />
-    <Folder Include="GameServices\Module\" />
-    <Folder Include="GameServices\Overlay\" />
     <Folder Include="ref\" />
   </ItemGroup>
   <ItemGroup>

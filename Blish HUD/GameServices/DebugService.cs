@@ -93,8 +93,7 @@ namespace Blish_HUD {
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
-            InputService.mouseHook?.UnhookMouse();
-            InputService.keyboardHook?.UnhookKeyboard();
+            GameService.Input.DisableHooks();
 
             var e = (Exception)args.ExceptionObject;
 

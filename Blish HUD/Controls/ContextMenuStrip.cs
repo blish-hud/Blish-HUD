@@ -34,8 +34,8 @@ namespace Blish_HUD.Controls {
             this.Width = CONTROL_WIDTH;
             this.ZIndex = Screen.CONTEXTMENU_BASEINDEX;
 
-            Input.LeftMouseButtonPressed  += MouseButtonPressed;
-            Input.RightMouseButtonPressed += MouseButtonPressed;
+            Input.Mouse.LeftMouseButtonPressed  += MouseButtonPressed;
+            Input.Mouse.RightMouseButtonPressed += MouseButtonPressed;
         }
 
         protected override void OnShown(EventArgs e) {
@@ -95,7 +95,7 @@ namespace Blish_HUD.Controls {
         private void MouseButtonPressed(object sender, MouseEventArgs e) {
             if (!this.Visible) return;
 
-            if (Input.ActiveControl is ContextMenuStripItem menuStrip) {
+            if (Input.Mouse.ActiveControl is ContextMenuStripItem menuStrip) {
                 if (menuStrip.CanCheck) {
                     return;
                 }
