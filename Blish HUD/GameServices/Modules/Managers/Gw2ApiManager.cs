@@ -1,6 +1,7 @@
 ﻿using Gw2Sharp.WebApi;
 using System.Collections.Generic;
 using System.Linq;
+using Gw2Sharp;
 using Gw2Sharp.WebApi.V2;
 using Gw2Sharp.WebApi.V2.Models;
 
@@ -22,7 +23,7 @@ namespace Blish_HUD.Modules.Managers {
 
             UpdateToken();
 
-            _gw2ApiClient = new Gw2WebApiClient(_gw2ApiConnection);
+            //_gw2ApiClient = new Gw2WebApiClient(_gw2ApiConnection);
         }
 
         private void UpdateToken() {
@@ -31,9 +32,9 @@ namespace Blish_HUD.Modules.Managers {
                 return;
             }
 
-            string apiSubtoken = GameService.Gw2Api.RequestSubtoken(_permissions, 7);
+            //string apiSubtoken = GameService.Gw2WebApi.RequestSubtoken(_permissions, 7);
 
-            _gw2ApiConnection = new Connection(apiSubtoken, Locale.English);
+            //_gw2ApiConnection = new Connection(apiSubtoken, Locale.English);
         }
 
         public bool HavePermission(TokenPermission permission) {

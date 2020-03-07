@@ -40,15 +40,15 @@ namespace Blish_HUD {
                 this.MapIdChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged();
 
-                Task<Map> mapNameTask = GameService.Gw2Api.SharedClient.V2.Maps.GetAsync(_mapId);
-                mapNameTask.ContinueWith(mapTsk => {
-                                             if (!mapTsk.IsFaulted) {
-                                                 _map = mapTsk.Result;
+                //Task<Map> mapNameTask = GameService.Gw2WebApi.SharedClient.V2.Maps.GetAsync(_mapId);
+                //mapNameTask.ContinueWith(mapTsk => {
+                //                             if (!mapTsk.IsFaulted) {
+                //                                 _map = mapTsk.Result;
 
-                                                 OnPropertyChanged(nameof(this.Map));
-                                                 this.MapChanged?.Invoke(this, EventArgs.Empty);
-                                             }
-                                         });
+                //                                 OnPropertyChanged(nameof(this.Map));
+                //                                 this.MapChanged?.Invoke(this, EventArgs.Empty);
+                //                             }
+                //                         });
             }
         }
 
@@ -152,20 +152,20 @@ namespace Blish_HUD {
         protected override void Initialize() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) {
-            if (GameService.Gw2Mumble.MumbleBacking != null) {
-                this.Position = GameService.Gw2Mumble.MumbleBacking.AvatarPosition.ToXnaVector3();
-                this.Forward  = GameService.Gw2Mumble.MumbleBacking.AvatarFront.ToXnaVector3();
+            if (GameService.Gw2Mumble.SharedGw2MumbleClient != null) {
+                this.Position = GameService.Gw2Mumble.SharedGw2MumbleClient.AvatarPosition.ToXnaVector3();
+                this.Forward  = GameService.Gw2Mumble.SharedGw2MumbleClient.AvatarFront.ToXnaVector3();
 
-                this.MapId    = GameService.Gw2Mumble.MumbleBacking.Context.MapId;
-                this.MapType  = GameService.Gw2Mumble.MumbleBacking.Context.MapType;
-                this.ShardId  = GameService.Gw2Mumble.MumbleBacking.Context.ShardId;
-                this.Instance = GameService.Gw2Mumble.MumbleBacking.Context.Instance;
+                this.MapId    = GameService.Gw2Mumble.SharedGw2MumbleClient.MapId;
+                this.MapType  = (int)GameService.Gw2Mumble.SharedGw2MumbleClient.MapType;
+                this.ShardId  = (int)GameService.Gw2Mumble.SharedGw2MumbleClient.ShardId;
+                this.Instance = (int)GameService.Gw2Mumble.SharedGw2MumbleClient.Instance;
 
-                this.CharacterName       = GameService.Gw2Mumble.MumbleBacking.Identity.Name;
-                this.CharacterProfession = (int)GameService.Gw2Mumble.MumbleBacking.Identity.Profession;
-                this.Race                = (int)GameService.Gw2Mumble.MumbleBacking.Identity.Race;
+                this.CharacterName       = GameService.Gw2Mumble.SharedGw2MumbleClient.CharacterName;
+                this.CharacterProfession = (int)GameService.Gw2Mumble.SharedGw2MumbleClient.Profession;
+                //this.Race                = (int)GameService.Gw2Mumble.SharedGw2MumbleClient.Race;
 
-                this.UiScale = GameService.Gw2Mumble.MumbleBacking.Identity.UiScale;
+                this.UiScale = (int)GameService.Gw2Mumble.SharedGw2MumbleClient.UiSize;
             }
         }
 

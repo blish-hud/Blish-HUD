@@ -21,10 +21,10 @@ namespace Blish_HUD {
         #endregion
 
         public enum UiScale {
-            Small,  // 47 x 47
-            Normal, // 52 x 52
-            Large,  // 58 x 58
-            Larger  // 64 x 64
+            Small  = 0, // 47 x 47
+            Normal = 1, // 52 x 52
+            Large  = 2, // 58 x 58
+            Larger = 3  // 64 x 64
         }
 
         public float GetScaleRatio(UiScale currScale) {

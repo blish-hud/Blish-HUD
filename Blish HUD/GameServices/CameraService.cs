@@ -26,12 +26,12 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             if (GameService.Gw2Mumble.Available) {
-                _position = Gw2Mumble.MumbleBacking.CameraPosition.ToXnaVector3();
-                _forward  = Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3();   
+                _position = Gw2Mumble.SharedGw2MumbleClient.CameraPosition.ToXnaVector3();
+                _forward  = Gw2Mumble.SharedGw2MumbleClient.CameraFront.ToXnaVector3();   
 
-                _view       = Matrix.CreateLookAt(this.Position, this.Position + _forward, VectorUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
-                _playerView = Matrix.CreateLookAt(this.Position, Player.Position + new Vector3(0, 0, 0.5f), VectorUtil.UpVectorFromCameraForward(Gw2Mumble.MumbleBacking.CameraFront.ToXnaVector3()));
-                _projection = Matrix.CreatePerspectiveFieldOfView((float)Gw2Mumble.MumbleBacking.Identity.FieldOfView, Graphics.AspectRatio, this.NearPlaneRenderDistance, this.FarPlaneRenderDistance);
+                _view       = Matrix.CreateLookAt(this.Position, this.Position + _forward, VectorUtil.UpVectorFromCameraForward(Gw2Mumble.SharedGw2MumbleClient.CameraFront.ToXnaVector3()));
+                _playerView = Matrix.CreateLookAt(this.Position, Player.Position + new Vector3(0, 0, 0.5f), VectorUtil.UpVectorFromCameraForward(Gw2Mumble.SharedGw2MumbleClient.CameraFront.ToXnaVector3()));
+                _projection = Matrix.CreatePerspectiveFieldOfView((float)Gw2Mumble.SharedGw2MumbleClient.FieldOfView, Graphics.AspectRatio, this.NearPlaneRenderDistance, this.FarPlaneRenderDistance);
 
                 _worldViewProjection = _view * _projection;
             }
