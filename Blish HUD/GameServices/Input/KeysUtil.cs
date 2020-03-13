@@ -9,7 +9,7 @@ namespace Blish_HUD.Input {
     public static class KeysUtil {
 
         [DllImport("user32.dll")]
-        private static extern int MapVirtualKey(uint uCode, uint uMapType);
+        private static extern uint MapVirtualKey(uint uCode, uint uMapType);
 
         private static readonly Dictionary<Keys, string> _friendlyKeyNames;
 
@@ -54,7 +54,8 @@ namespace Blish_HUD.Input {
             foreach (Keys key in Enum.GetValues(typeof(Keys))) {
                 if (_friendlyKeyNames.ContainsKey(key)) continue;
 
-                int mappedCharCode = MapVirtualKey((uint) key, 2); // 2 = key down
+                // 2 = MAPVK_VK_TO_CHAR and then we mask out the dead key indicator
+                uint mappedCharCode = MapVirtualKey((uint) key, 2) & 0x0FFFFFFF;
 
                 char mappedChar;
 
