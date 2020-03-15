@@ -2,6 +2,7 @@
 {
     public enum GuildWarsControls
     {
+        SwapWeapons,
         WeaponSkill1,
         WeaponSkill2,
         WeaponSkill3,
@@ -11,6 +12,12 @@
         UtilitySkill1,
         UtilitySkill2,
         UtilitySkill3,
-        EliteSkill
+        EliteSkill,
+        ProfessionSkill1,
+        ProfessionSkill2,
+        ProfessionSkill3,
+        ProfessionSkill4,
+        ProfessionSkill5,
+        SpecialAction
     }
 }
