@@ -132,12 +132,14 @@ namespace Blish_HUD {
         }
 
         private static Texture2D TextureFromFileSystem(string filepath) {
-            if (!File.Exists(REF_FILE)) {
-                Logger.Warn("{refFileName} is missing!  Lots of assets will be missing!", REF_FILE);
+            string refPath = ApplicationSettings.Instance.RefPath ?? REF_FILE;
+
+            if (!File.Exists(refPath)) {
+                Logger.Warn("{refFileName} is missing!  Lots of assets will be missing!", refPath);
                 return null;
             }
             
-            using (var refFs = new FileStream(REF_FILE, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+            using (var refFs = new FileStream(refPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read)) {
                     var refEntry = refArchive.GetEntry(filepath);
 

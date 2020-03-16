@@ -98,7 +98,11 @@ namespace Blish_HUD {
                     }
                 }
 
-                this.Gw2IsRunning = _gw2Process != null && WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
+                // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
+                // window is the game window name (so we know we are passed the login screen)
+                this.Gw2IsRunning = _gw2Process != null
+                                 && WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == (ApplicationSettings.Instance.WindowName
+                                                                                                       ?? GW2_GAMEWINDOW_NAME);
             }
         }
 
@@ -240,7 +244,7 @@ namespace Blish_HUD {
 
         private Process GetGw2Process() {
             // Check to see if 64-bit Gw2 process is running (since it's likely the most common at this point)
-            Process[] gw2Processes = Process.GetProcessesByName(GW2_64_BIT_PROCESSNAME);
+            Process[] gw2Processes = Process.GetProcessesByName(ApplicationSettings.Instance.ProcessName ?? GW2_64_BIT_PROCESSNAME);
 
             if (gw2Processes.Length == 0) {
                 // 64-bit process not found so see if they're using a 32-bit client instead

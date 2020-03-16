@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using EntryPoint;
 
 namespace Blish_HUD {
 
@@ -10,11 +11,11 @@ namespace Blish_HUD {
     /// </summary>
     public static class Program {
 
-        private static readonly Logger Logger;
+        private static Logger Logger;
 
         public static SemVer.Version OverlayVersion { get; } = new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
 
-        static Program() {
+        private static void EnableLogging() {
             // Make sure logging and logging services are available as soon as possible
             DebugService.InitDebug();
             Logger = Logger.GetLogger(typeof(Program));
@@ -33,7 +34,11 @@ namespace Blish_HUD {
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main() {
+        static void Main(string[] args) {
+            Cli.Parse<ApplicationSettings>(args);
+
+            EnableLogging();
+
             if (IsMoreThanOneInstance()) {
                 Logger.Warn("Blish HUD is already running!");
                 return;
