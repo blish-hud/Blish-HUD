@@ -98,8 +98,8 @@ namespace Blish_HUD {
                     }
                 }
 
-                // GW2 is running if the "_gw2Process" isn't null and the name of the process
-                // is the game window name (so we know we are passed the login screen)
+                // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
+                // window is the game window name (so we know we are passed the login screen)
                 this.Gw2IsRunning = _gw2Process != null
                                  && WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == (ApplicationSettings.Instance.WindowName
                                                                                                        ?? GW2_GAMEWINDOW_NAME);
