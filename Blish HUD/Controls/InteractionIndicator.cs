@@ -1,5 +1,6 @@
 ﻿using Blish_HUD;
 using Glide;
+using Gw2Sharp.Mumble.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -31,7 +32,7 @@ namespace Blish_HUD.Controls {
             get => _verticalIndex;
             set {
                 if (SetProperty(ref _verticalIndex, value, invalidateLayout: true))
-                    this.Top = (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)) - CONTROL_HEIGHT * _verticalIndex;
+                    this.Top = (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(UiSize.Large)) - CONTROL_HEIGHT * _verticalIndex;
             }
         }
 
@@ -46,15 +47,15 @@ namespace Blish_HUD.Controls {
             _showShadow        = true;
             _strokeText        = true;
             _font              = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular);
-            _size              = new Point((int)(CONTROL_WIDTH        * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), (int)(CONTROL_HEIGHT * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)));
+            _size              = new Point((int)(CONTROL_WIDTH        * Graphics.GetScaleRatio(UiSize.Large)), (int)(CONTROL_HEIGHT * Graphics.GetScaleRatio(UiSize.Large)));
             _location          = new Point((int)(Graphics.WindowWidth * LEFT_OFFSET),                                           (int)(Graphics.WindowHeight * TOP_OFFSET) - CONTROL_HEIGHT * _verticalIndex);
             _opacity           = 0f;
             _visible           = false;
             this.Parent        = Graphics.SpriteScreen;
 
             Graphics.SpriteScreen.Resized += delegate {
-                this.Location = new Point((int) (Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)), 
-                                          (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)) - CONTROL_HEIGHT * _verticalIndex);
+                this.Location = new Point((int) (Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(UiSize.Large)), 
+                                          (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(UiSize.Large)) - CONTROL_HEIGHT * _verticalIndex);
             };
         }
 

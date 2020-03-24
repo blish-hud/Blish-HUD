@@ -51,14 +51,12 @@ namespace Blish_HUD {
         public static readonly   DebugService           Debug;
         public static readonly   SettingsService        Settings;
         public static readonly   ContentService         Content;
-        public static readonly   AnimationService       Animation;
-        public static readonly   GraphicsService        Graphics;
-        public static readonly   OverlayService         Overlay;
         public static readonly   Gw2WebApiService       Gw2WebApi;
         public static readonly   Gw2MumbleService       Gw2Mumble;
         internal static readonly Gw2ApiService          Gw2Api;
-        public static readonly   PlayerService          Player;
-        public static readonly   CameraService          Camera;
+        public static readonly   AnimationService       Animation;
+        public static readonly   GraphicsService        Graphics;
+        public static readonly   OverlayService         Overlay;
         public static readonly   InputService           Input;
         public static readonly   GameIntegrationService GameIntegration;
         public static readonly   PathingService         Pathing;
@@ -76,14 +74,12 @@ namespace Blish_HUD {
             Store           = new PersistentStoreService();
             Settings        = new SettingsService();
             Content         = new ContentService();
-            Animation       = new AnimationService();
-            Graphics        = new GraphicsService();
-            Overlay         = new OverlayService();
             Gw2WebApi       = new Gw2WebApiService();
             Gw2Mumble       = new Gw2MumbleService();
             Gw2Api          = new Gw2ApiService();
-            Player          = new PlayerService();
-            Camera          = new CameraService();
+            Animation       = new AnimationService();
+            Graphics        = new GraphicsService();
+            Overlay         = new OverlayService();
             GameIntegration = new GameIntegrationService();
             Pathing         = new PathingService();
             Module          = new ModuleService();
@@ -95,14 +91,12 @@ namespace Blish_HUD {
                 Store,
                 Settings,
                 Content,
-                Animation,
-                Graphics,
-                Overlay,
                 Gw2WebApi,
                 Gw2Mumble,
                 Gw2Api,
-                Player,
-                Camera,
+                Animation,
+                Graphics,
+                Overlay,
                 Input,
                 GameIntegration,
                 Pathing,

@@ -160,11 +160,11 @@ namespace Blish_HUD.Pathing.Entities {
         public override void Draw(GraphicsDevice graphicsDevice) {
             if (this.TrailTexture == null || this.VertexData == null || this.VertexData.Length < 3) return;
 
-            _basicTrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Camera.WorldViewProjection);
-            _basicTrailEffect.Parameters["PlayerViewProjection"].SetValue(GameService.Camera.PlayerView * GameService.Camera.Projection);
+            _basicTrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Gw2Mumble.PlayerCamera.WorldViewProjection);
+            _basicTrailEffect.Parameters["PlayerViewProjection"].SetValue(GameService.Gw2Mumble.PlayerCamera.PlayerView * GameService.Gw2Mumble.PlayerCamera.Projection);
             _basicTrailEffect.Parameters["Texture"].SetValue(this.TrailTexture);
             _basicTrailEffect.Parameters["FlowSpeed"].SetValue(this.AnimationSpeed);
-            _basicTrailEffect.Parameters["PlayerPosition"].SetValue(GameService.Player.Position);
+            _basicTrailEffect.Parameters["PlayerPosition"].SetValue(GameService.Gw2Mumble.PlayerCharacter.Position);
             _basicTrailEffect.Parameters["FadeNear"].SetValue(this.FadeNear);
             _basicTrailEffect.Parameters["FadeFar"].SetValue(this.FadeFar);
             _basicTrailEffect.Parameters["Opacity"].SetValue(this.Opacity);

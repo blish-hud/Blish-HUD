@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
+using Gw2Sharp.Mumble.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -20,41 +21,19 @@ namespace Blish_HUD {
 
         #endregion
 
-        public enum UiScale {
-            Small  = 0, // 47 x 47
-            Normal = 1, // 52 x 52
-            Large  = 2, // 58 x 58
-            Larger = 3  // 64 x 64
-        }
-
-        public float GetScaleRatio(UiScale currScale) {
+        public float GetScaleRatio(UiSize currScale) {
             switch (currScale) {
-                case UiScale.Small:
+                case UiSize.Small:
                     return 0.810f;
-                case UiScale.Normal:
+                case UiSize.Normal:
                     return 0.897f;
-                case UiScale.Large:
+                case UiSize.Large:
                     return 1f;
-                case UiScale.Larger:
+                case UiSize.Larger:
                     return 1.103f;
             }
 
             return 1f;
-        }
-
-        private UiScale _uiScale = UiScale.Normal;
-        public UiScale UIScale {
-            get => _uiScale;
-            set {
-                if (_uiScale == value) return;
-
-                _uiScale = value;
-
-                _uiScaleMultiplier = GetScaleRatio(value);
-                this.SpriteScreen.Size = new Point((int)(BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferWidth / _uiScaleMultiplier), (int)(BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / _uiScaleMultiplier));
-
-                _uiScaleTransform = Matrix.CreateScale(_uiScaleMultiplier);
-            }
         }
 
         private Matrix _uiScaleTransform = Matrix.Identity;
@@ -118,7 +97,7 @@ namespace Blish_HUD {
             // Might do better error handling later on
             ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { System.Windows.Forms.Application.Restart(); };
 
-            _uiScaleMultiplier = GetScaleRatio(this.UIScale);
+            _uiScaleMultiplier = GetScaleRatio(UiSize.Normal);
             _uiScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
         }
 
@@ -147,7 +126,16 @@ namespace Blish_HUD {
             GameService.Debug.StopTimeFunc("Render Queue");
         }
 
-        protected override void Load() { /* NOOP */ }
+        protected override void Load() {
+            GameService.Gw2Mumble.UI.UISizeChanged += UIOnUISizeChanged;
+        }
+
+        private void UIOnUISizeChanged(object sender, ValueEventArgs<UiSize> e) {
+            _uiScaleMultiplier     = GetScaleRatio(e.Value);
+            this.SpriteScreen.Size = new Point((int)(BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferWidth / _uiScaleMultiplier), (int)(BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / _uiScaleMultiplier));
+
+            _uiScaleTransform = Matrix.CreateScale(_uiScaleMultiplier);
+        }
 
         protected override void Unload() { /* NOOP */ }
 

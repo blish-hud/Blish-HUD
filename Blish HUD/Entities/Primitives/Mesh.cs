@@ -20,8 +20,8 @@ namespace Blish_HUD.Entities.Primitives {
         public override void Draw(GraphicsDevice graphicsDevice) {
             foreach (var mesh in _model.Meshes) {
                 foreach (BasicEffect effect in mesh.Effects) {
-                    effect.View = GameService.Camera.View;
-                    effect.Projection = GameService.Camera.Projection;
+                    effect.View = GameService.Gw2Mumble.PlayerCamera.View;
+                    effect.Projection = GameService.Gw2Mumble.PlayerCamera.Projection;
                     effect.World = Matrix.CreateScale(this.Size) * Matrix.CreateTranslation(this.Position);
                 }
 

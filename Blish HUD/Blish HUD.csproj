@@ -58,7 +58,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS;NODIRMODULES;</DefineConstants>
+    <DefineConstants>DEBUG;NOMOUSEHOOK;NOKEYBOARDHOOK</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -208,6 +208,7 @@
     <Compile Include="GameServices\Graphics\UI\Presenter[TView,TPresenter].cs" />
     <Compile Include="GameServices\Graphics\UI\View[TPresenter].cs" />
     <Compile Include="GameServices\Gw2ApiService.cs" />
+    <Compile Include="GameServices\Gw2Mumble\CurrentMap.cs" />
     <Compile Include="GameServices\Gw2WebApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="GameServices\Content\IDataReader.cs" />
@@ -236,9 +237,13 @@
     <Compile Include="GameServices\Modules\ModuleRunStateChangedEventArgs.cs" />
     <Compile Include="GameServices\Modules\ModuleState.cs" />
     <Compile Include="GameServices\Modules\SupportedModuleManifestVersion.cs" />
+    <Compile Include="GameServices\Gw2Mumble\Info.cs" />
     <Compile Include="GameServices\PersistentStore\Store.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue.cs" />
     <Compile Include="GameServices\PersistentStore\StoreValue[T].cs" />
+    <Compile Include="GameServices\Gw2Mumble\PlayerCharacter.cs" />
+    <Compile Include="GameServices\Gw2Mumble\PlayerCamera.cs" />
+    <Compile Include="GameServices\Gw2Mumble\UI.cs" />
     <Compile Include="GameServices\Settings\UI\AboutUIBuilder.cs" />
     <Compile Include="GameServices\Settings\UI\OverlaySettingsUIBuilder.cs" />
     <Compile Include="GameServices\Settings\UI\SingleModuleSettingsUIBuilder.cs" />
@@ -268,7 +273,7 @@
     <Compile Include="GameServices\Pathing\Entities\Effects\MarkerEffect.cs" />
     <Compile Include="GameServices\Pathing\PathableAttribute.cs" />
     <Compile Include="GameServices\Pathing\PathableAttributeCollection.cs" />
-    <Compile Include="_Extensions\ColorExtensions.cs" />
+    <Compile Include="_Events\ValueEventArgs[T].cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
     <Compile Include="_Utils\LoadingSpinnerUtil.cs" />
@@ -325,11 +330,9 @@
     <Compile Include="BlishHud.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GameServices\CameraService.cs" />
     <Compile Include="GameServices\Gw2MumbleService.cs" />
     <Compile Include="GameServices\InputService.cs" />
     <Compile Include="GameServices\GameService.cs" />
-    <Compile Include="GameServices\PlayerService.cs" />
     <Compile Include="GameServices\GraphicsService.cs" />
     <Compile Include="_Utils\RandomUtil.cs" />
     <Compile Include="_Utils\DrawUtil.cs" />
@@ -398,12 +401,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="GW2NET.Core">
-      <HintPath>.\GW2NET.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="GW2NET.MumbleLink">
-      <HintPath>.\GW2NET.MumbleLink.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
@@ -521,7 +518,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Gw2Sharp">
-      <Version>0.8.2</Version>
+      <Version>0.9.0-0-9.50</Version>
     </PackageReference>
     <PackageReference Include="Humanizer.Core.de">
       <Version>2.6.2</Version>

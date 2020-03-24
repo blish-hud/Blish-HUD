@@ -31,8 +31,8 @@ namespace Blish_HUD.Pathing.Behaviors.Activator {
 
         public override void Update(GameTime gameTime) {
             var farPoint = this.DistanceFrom == DistanceFrom.Player
-                               ? GameService.Player.Position
-                               : GameService.Camera.Position;
+                               ? GameService.Gw2Mumble.PlayerCharacter.Position
+                               : GameService.Gw2Mumble.PlayerCamera.Position;
 
             if (Vector3.Distance(AssociatedBehavior.ManagedPathable.Position, farPoint) <= this.ActivationDistance) {
                 if (!this.Active)

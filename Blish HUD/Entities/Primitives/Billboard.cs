@@ -93,18 +93,18 @@ namespace Blish_HUD.Entities.Primitives {
         public override void Draw(GraphicsDevice graphicsDevice) {
             if (this.Texture == null) return;
 
-            _billboardEffect.View = GameService.Camera.View;
-            _billboardEffect.Projection = GameService.Camera.Projection;
+            _billboardEffect.View = GameService.Gw2Mumble.PlayerCamera.View;
+            _billboardEffect.Projection = GameService.Gw2Mumble.PlayerCamera.Projection;
             _billboardEffect.World = Matrix.CreateTranslation(new Vector3(this.Size.X / -2, this.Size.Y / -2, 0))
                                    * Matrix.CreateScale(_scale, _scale, 1)
                                    * Matrix.CreateBillboard(this.Position + this.RenderOffset,
-                                                            new Vector3(GameService.Camera.Position.X,
-                                                                        GameService.Camera.Position.Y,
+                                                            new Vector3(GameService.Gw2Mumble.PlayerCamera.Position.X,
+                                                                        GameService.Gw2Mumble.PlayerCamera.Position.Y,
                                                                         _verticalConstraint == BillboardVerticalConstraint.CameraPosition
-                                                                            ? GameService.Camera.Position.Z
-                                                                            : GameService.Player.Position.Z),
+                                                                            ? GameService.Gw2Mumble.PlayerCamera.Position.Z
+                                                                            : GameService.Gw2Mumble.PlayerCharacter.Position.Z),
                                                             new Vector3(0, 0, 1),
-                                                            GameService.Camera.Forward);
+                                                            GameService.Gw2Mumble.PlayerCamera.Forward);
 
             _billboardEffect.Alpha = this.Opacity;
             _billboardEffect.Texture = this.Texture.Texture;

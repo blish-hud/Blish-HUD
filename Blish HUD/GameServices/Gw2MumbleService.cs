@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Blish_HUD.Gw2Mumble;
 using Microsoft.Xna.Framework;
-using GW2NET.MumbleLink;
 using Gw2Sharp.Mumble;
 
 namespace Blish_HUD {
@@ -14,70 +14,98 @@ namespace Blish_HUD {
 
         internal IGw2MumbleClient SharedGw2MumbleClient => GameService.Gw2Api.SharedApiClient.Mumble;
 
-        public event EventHandler<EventArgs> BuildIdChanged;
+        #region Categorized Mumble Data
 
-        private void OnBuildIdChanged(EventArgs e) {
-            BuildIdChanged?.Invoke(this, e);
-        }
+        private Info            _info;
+        private PlayerCharacter _playerCharacter;
+        private PlayerCamera    _playerCamera;
+        private CurrentMap             _currentMap;
+        private UI              _ui;
 
-        public bool Available => true;
+        /// <summary>
+        /// Provides information about the Mumble connection and about the game instance in realtime.
+        /// </summary>
+        public Info            Info            => _info;
+
+        /// <summary>
+        /// Provides data about the active player's character in realtime.
+        /// </summary>
+        public PlayerCharacter PlayerCharacter => _playerCharacter;
+
+        /// <summary>
+        /// Provides data about the active player's camera in realtime.
+        /// </summary>
+        public PlayerCamera PlayerCamera => _playerCamera;
+
+        /// <summary>
+        /// Provides data about the in-game UI state in realtime.
+        /// </summary>
+        public UI UI => _ui;
+
+        /// <summary>
+        /// Provides data about the map the player is currently on in realtime.
+        /// </summary>
+        public CurrentMap CurrentMap => _currentMap;
+
+        #endregion
+
+        /// <inheritdoc cref="IGw2MumbleClient.IsAvailable"/>
+        public bool IsAvailable => SharedGw2MumbleClient.IsAvailable;
 
         public TimeSpan TimeSinceTick { get; private set; }
 
-        public long UiTick { get; private set; } = -1;
+        private int _prevTick = -1;
 
-        private int _buildId = -1;
-        public int BuildId {
-            get => _buildId;
-            private set {
-                if (_buildId == value) return;
-
-                _buildId = value;
-
-                OnBuildIdChanged(EventArgs.Empty);
-            }
-        }
-
-        private MumbleLinkFile gw2Link;
+        public int Tick => SharedGw2MumbleClient.Tick;
 
         protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
-
+            _info            = new Info(this);
+            _playerCharacter = new PlayerCharacter(this);
+            _playerCamera    = new PlayerCamera(this);
+            _currentMap      = new CurrentMap(this);
+            _ui              = new UI(this);
         }
 
-        private double lastMumbleCheck = 0;
+        private double _lastMumbleCheck = 0;
         
         public int _delayedTicks = 0;
 
         private readonly Queue<int> _uiTickRates = new Queue<int>();
-        public float AverageFramesPerUITick => (float)_uiTickRates.Sum(t => t) / _uiTickRates.Count;
+        public float AverageFramesPerTick => (float)_uiTickRates.Sum(t => t) / _uiTickRates.Count;
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
 
             SharedGw2MumbleClient.Update();
 
-            if (SharedGw2MumbleClient.Tick > this.UiTick) {
+            if (SharedGw2MumbleClient.Tick > _prevTick) {
+                _prevTick = SharedGw2MumbleClient.Tick;
+
                 this.TimeSinceTick = TimeSpan.Zero;
-
-                this.UiTick  = SharedGw2MumbleClient.Tick;
-                this.BuildId = SharedGw2MumbleClient.BuildId;
-
-                Graphics.UIScale = (GraphicsService.UiScale)SharedGw2MumbleClient.UiSize;
 
                 if (_uiTickRates.Count > 10) _uiTickRates.Dequeue();
 
                 _uiTickRates.Enqueue(_delayedTicks);
                 _delayedTicks = 0;
+
+                UpdateDetails(gameTime);
             } else {
                 _delayedTicks++;
             }
         }
 
-        protected override void Unload() {
-            
+        private void UpdateDetails(GameTime gameTime) {
+            _info.Update(gameTime);
+            _playerCharacter.Update(gameTime);
+            _playerCamera.Update(gameTime);
+            _currentMap.Update(gameTime);
+            _ui.Update(gameTime);
         }
+
+        protected override void Unload() { /* NOOP */ }
+
     }
 
 }

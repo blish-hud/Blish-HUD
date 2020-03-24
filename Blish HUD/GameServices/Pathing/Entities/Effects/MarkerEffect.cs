@@ -79,7 +79,7 @@ namespace Blish_HUD.Pathing.Entities.Effects {
 
         /// <inheritdoc />
         protected override void Update(GameTime gameTime) {
-            this.Parameters[PARAMETER_PLAYERPOSITION].SetValue(GameService.Player.Position);
+            this.Parameters[PARAMETER_PLAYERPOSITION].SetValue(GameService.Gw2Mumble.PlayerCharacter.Position);
         }
 
     }

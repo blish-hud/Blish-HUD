@@ -153,8 +153,8 @@ namespace Blish_HUD {
         }
 
         private void PrepareClientDetection() {
-            GameService.GameIntegration.Gw2Closed += GameIntegrationOnGw2Closed;
-            GameService.Gw2Mumble.BuildIdChanged  += Gw2MumbleOnBuildIdChanged;
+            GameService.GameIntegration.Gw2Closed     += GameIntegrationOnGw2Closed;
+            GameService.Gw2Mumble.Info.BuildIdChanged += Gw2MumbleOnBuildIdChanged;
 
             GameService.Contexts.GetContext<CdnInfoContext>().StateChanged += CdnInfoContextOnStateChanged;
         }

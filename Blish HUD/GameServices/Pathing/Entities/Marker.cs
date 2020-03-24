@@ -145,13 +145,13 @@ namespace Blish_HUD.Pathing.Entities {
 
             if (this.Rotation == Vector3.Zero) {
                 modelMatrix *= Matrix.CreateBillboard(this.Position + this.RenderOffset,
-                                                      new Vector3(GameService.Camera.Position.X,
-                                                                  GameService.Camera.Position.Y,
+                                                      new Vector3(GameService.Gw2Mumble.PlayerCamera.Position.X,
+                                                                  GameService.Gw2Mumble.PlayerCamera.Position.Y,
                                                                   _verticalConstraint == BillboardVerticalConstraint.CameraPosition
-                                                                      ? GameService.Camera.Position.Z
-                                                                      : GameService.Player.Position.Z),
+                                                                      ? GameService.Gw2Mumble.PlayerCamera.Position.Z
+                                                                      : GameService.Gw2Mumble.PlayerCharacter.Position.Z),
                                                       new Vector3(0, 0, 1),
-                                                      GameService.Camera.Forward);
+                                                      GameService.Gw2Mumble.PlayerCamera.Forward);
             } else {
                 modelMatrix *= Matrix.CreateRotationX(this.Rotation.X)
                              * Matrix.CreateRotationY(this.Rotation.Y)
@@ -177,7 +177,7 @@ namespace Blish_HUD.Pathing.Entities {
         private bool _mouseOver = false;
 
         private void InputOnMouseMoved(object sender, MouseEventArgs e) {
-            var screenPosition = GameService.Graphics.GraphicsDevice.Viewport.Project(this.Position, GameService.Camera.Projection, GameService.Camera.View, Matrix.Identity);
+            var screenPosition = GameService.Graphics.GraphicsDevice.Viewport.Project(this.Position, GameService.Gw2Mumble.PlayerCamera.Projection, GameService.Gw2Mumble.PlayerCamera.View, Matrix.Identity);
 
             float xdist = screenPosition.X - e.MouseState.Position.X;
             float ydist = screenPosition.Y - e.MouseState.Position.Y;

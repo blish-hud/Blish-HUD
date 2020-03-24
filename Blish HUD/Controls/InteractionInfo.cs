@@ -1,5 +1,6 @@
 ﻿using Blish_HUD;
 using Glide;
+using Gw2Sharp.Mumble.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -42,8 +43,8 @@ namespace Blish_HUD.Controls {
             this.Parent        = Graphics.SpriteScreen;
 
             Graphics.SpriteScreen.Resized += delegate {
-                this.Location = new Point((int) (Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)),
-                                          (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(GraphicsService.UiScale.Large)) - CONTROL_HEIGHT * _verticalIndex);
+                this.Location = new Point((int) (Graphics.WindowWidth * LEFT_OFFSET * Graphics.GetScaleRatio(UiSize.Large)),
+                                          (int) (Graphics.WindowHeight * TOP_OFFSET * Graphics.GetScaleRatio(UiSize.Large)) - CONTROL_HEIGHT * _verticalIndex);
             };
 
         }
