@@ -48,21 +48,21 @@ namespace Blish_HUD {
 
         #region Static Service References
 
-        public static readonly   DebugService           Debug;
-        public static readonly   SettingsService        Settings;
-        public static readonly   ContentService         Content;
-        public static readonly   Gw2WebApiService       Gw2WebApi;
-        public static readonly   Gw2MumbleService       Gw2Mumble;
-        public static readonly   AnimationService       Animation;
-        public static readonly   GraphicsService        Graphics;
-        public static readonly   OverlayService         Overlay;
-        public static readonly   InputService           Input;
-        public static readonly   GameIntegrationService GameIntegration;
-        public static readonly   PathingService         Pathing;
-        public static readonly   ModuleService          Module;
-        public static readonly   PersistentStoreService Store;
-        public static readonly   ArcDpsService          ArcDps;
-        public static readonly   ContextsService        Contexts;
+        public static readonly DebugService           Debug;
+        public static readonly SettingsService        Settings;
+        public static readonly ContentService         Content;
+        public static readonly Gw2MumbleService       Gw2Mumble;
+        public static readonly Gw2WebApiService       Gw2WebApi;
+        public static readonly AnimationService       Animation;
+        public static readonly GraphicsService        Graphics;
+        public static readonly OverlayService         Overlay;
+        public static readonly InputService           Input;
+        public static readonly GameIntegrationService GameIntegration;
+        public static readonly PathingService         Pathing;
+        public static readonly ModuleService          Module;
+        public static readonly PersistentStoreService Store;
+        public static readonly ArcDpsService          ArcDps;
+        public static readonly ContextsService        Contexts;
 
         #endregion
 
@@ -73,8 +73,8 @@ namespace Blish_HUD {
             Store           = new PersistentStoreService();
             Settings        = new SettingsService();
             Content         = new ContentService();
-            Gw2WebApi       = new Gw2WebApiService();
             Gw2Mumble       = new Gw2MumbleService();
+            Gw2WebApi       = new Gw2WebApiService();
             Animation       = new AnimationService();
             Graphics        = new GraphicsService();
             Overlay         = new OverlayService();
@@ -89,8 +89,8 @@ namespace Blish_HUD {
                 Store,
                 Settings,
                 Content,
-                Gw2WebApi,
                 Gw2Mumble,
+                Gw2WebApi,
                 Animation,
                 Graphics,
                 Overlay,

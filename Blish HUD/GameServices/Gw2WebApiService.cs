@@ -62,7 +62,8 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _apiKeyRepository = ((SettingEntry<SettingCollection>)settings[SETTINGS_ENTRY_APIKEYS]).Value ?? settings.AddSubCollection(SETTINGS_ENTRY_APIKEYS);
+            _apiKeyRepository = ((SettingEntry<SettingCollection>)settings[SETTINGS_ENTRY_APIKEYS]).Value
+                             ?? settings.AddSubCollection(SETTINGS_ENTRY_APIKEYS);
         }
 
         protected override void Load() {
@@ -70,7 +71,26 @@ namespace Blish_HUD {
 
             _characterRepository = new ConcurrentDictionary<string, string>();
 
-            RefreshRegisteredKeys();
+            Gw2Mumble.PlayerCharacter.NameChanged += PlayerCharacterOnNameChanged;
+        }
+
+        private void UpdateActiveApiKey() {
+            if (_characterRepository.TryGetValue(Gw2Mumble.PlayerCharacter.Name, out string charApiKey)) {
+                ((Connection)_baseConnection.Connection).AccessToken = charApiKey;
+                Logger.Debug($"Associated key {charApiKey} with user {Gw2Mumble.PlayerCharacter.Name}.");
+            } else {
+                ((Connection)_baseConnection.Connection).AccessToken = string.Empty;
+                Logger.Info("Could not find registered API key associated with character {characterName}", Gw2Mumble.PlayerCharacter.Name);
+            }
+        }
+
+        private void PlayerCharacterOnNameChanged(object sender, ValueEventArgs<string> e) {
+            if (!_characterRepository.ContainsKey(e.Value)) {
+                // We don't currently have an API key associated to this character so we double-check the characters on each key
+                RefreshRegisteredKeys();
+            } else {
+                UpdateActiveApiKey();
+            }
         }
 
         private void RefreshRegisteredKeys() {
@@ -100,6 +120,8 @@ namespace Blish_HUD {
                 } else {
                     Logger.Warn(charactersResponse.Exception, "Failed to get list of associated characters for API key {keyName}.", definedKey.EntryKey);
                 }
+
+                UpdateActiveApiKey();
             });
         }
 

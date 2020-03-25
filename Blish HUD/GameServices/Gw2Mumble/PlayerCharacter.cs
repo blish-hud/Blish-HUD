@@ -10,16 +10,19 @@ namespace Blish_HUD.Gw2Mumble {
 
         #region Events
 
-        public event EventHandler<ValueEventArgs<string>> CharacterChanged;
+        /// <summary>
+        /// Fires when the current character's name changes such as when the player switches to a different character.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<string>> NameChanged;
 
-        private void OnCharacterChanged(ValueEventArgs<string> e) => CharacterChanged?.Invoke(this, e);
+        private void OnNameChanged(ValueEventArgs<string> e) => this.NameChanged?.Invoke(this, e);
 
         private string _prevName;
 
         private void HandleEvents() {
             if (_prevName != this.Name) {
                 _prevName = this.Name;
-                OnCharacterChanged(new ValueEventArgs<string>(_prevName));
+                OnNameChanged(new ValueEventArgs<string>(_prevName));
             }
         }
 
@@ -59,6 +62,8 @@ namespace Blish_HUD.Gw2Mumble {
         internal void Update(GameTime gameTime) {
             _position = _service.RawClient.AvatarPosition.ToXnaVector3();
             _forward  = _service.RawClient.AvatarFront.ToXnaVector3();
+
+            HandleEvents();
         }
 
     }
