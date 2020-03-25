@@ -75,10 +75,10 @@ namespace Blish_HUD {
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
 
-            this.RawClient.Update();
+            _rawClient.Update();
 
-            if (this.RawClient.Tick > _prevTick) {
-                _prevTick = this.RawClient.Tick;
+            if (_rawClient.Tick > _prevTick) {
+                _prevTick = _rawClient.Tick;
 
                 this.TimeSinceTick = TimeSpan.Zero;
 
