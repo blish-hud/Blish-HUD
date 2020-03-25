@@ -70,10 +70,10 @@ namespace Blish_HUD {
 
             _characterRepository = new ConcurrentDictionary<string, string>();
 
-            LoadRegisteredKeys();
+            RefreshRegisteredKeys();
         }
 
-        private void LoadRegisteredKeys() {
+        private void RefreshRegisteredKeys() {
             foreach (var key in _apiKeyRepository) {
                 UpdateCharacterList((SettingEntry<string>)key);
             }

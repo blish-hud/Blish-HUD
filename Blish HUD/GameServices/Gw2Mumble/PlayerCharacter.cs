@@ -1,4 +1,5 @@
-﻿using Gw2Sharp.Models;
+﻿using System;
+using Gw2Sharp.Models;
 using Gw2Sharp.Mumble;
 using Microsoft.Xna.Framework;
 
@@ -6,6 +7,23 @@ namespace Blish_HUD.Gw2Mumble {
     public class PlayerCharacter {
 
         private readonly Gw2MumbleService _service;
+
+        #region Events
+
+        public event EventHandler<ValueEventArgs<string>> CharacterChanged;
+
+        private void OnCharacterChanged(ValueEventArgs<string> e) => CharacterChanged?.Invoke(this, e);
+
+        private string _prevName;
+
+        private void HandleEvents() {
+            if (_prevName != this.Name) {
+                _prevName = this.Name;
+                OnCharacterChanged(new ValueEventArgs<string>(_prevName));
+            }
+        }
+
+        #endregion
 
         private Vector3 _position = Vector3.Zero;
         private Vector3 _forward  = Vector3.Forward;

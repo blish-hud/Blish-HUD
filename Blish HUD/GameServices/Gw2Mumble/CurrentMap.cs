@@ -13,7 +13,7 @@ namespace Blish_HUD.Gw2Mumble {
         /// <summary>
         /// Fires when the in-game map changes.
         /// </summary>
-        public event EventHandler<EventArgs> MapChanged;
+        public event EventHandler<ValueEventArgs<int>> MapChanged;
 
         private void OnMapChanged(ValueEventArgs<int> e) => MapChanged?.Invoke(this, e);
 
