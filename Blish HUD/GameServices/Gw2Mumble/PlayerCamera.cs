@@ -35,7 +35,7 @@ namespace Blish_HUD.Gw2Mumble {
         public Vector3 Forward => _forward;
 
         /// <inheritdoc cref="IGw2MumbleClient.FieldOfView"/>
-        public float FieldOfView => MathHelper.Clamp(_fieldOfView, 0.01f, (float)Math.PI * 2f - 0.01f);
+        public float FieldOfView => MathHelper.Clamp(_fieldOfView, 0.01f, (float)Math.PI - 0.01f);
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace Blish_HUD.Gw2Mumble {
             // Calculated
             _view       = Matrix.CreateLookAt(_position, _position                         + _forward,                VectorUtil.UpVectorFromCameraForward(_forward));
             _playerView = Matrix.CreateLookAt(_position, _service.PlayerCharacter.Position + new Vector3(0, 0, 0.5f), VectorUtil.UpVectorFromCameraForward(_forward));
-            _projection = Matrix.CreatePerspectiveFieldOfView(_fieldOfView, GameService.Graphics.AspectRatio, this.NearPlaneRenderDistance, this.FarPlaneRenderDistance);
+            _projection = Matrix.CreatePerspectiveFieldOfView(this.FieldOfView, GameService.Graphics.AspectRatio, this.NearPlaneRenderDistance, this.FarPlaneRenderDistance);
 
             _worldViewProjection = _view * _projection;
         }

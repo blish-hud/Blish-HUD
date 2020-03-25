@@ -135,7 +135,7 @@ namespace Blish_HUD {
         internal static void SetupOverlay(IntPtr winHandle) {
             SetWindowLong(winHandle, GWL_STYLE, CS_HREDRAW | CS_VREDRAW);
 
-            SetWindowParam(winHandle, GameService.Overlay.ShowInTaskbar);
+            SetWindowParam(winHandle, GameService.Overlay.ShowInTaskbar.Value);
 
             SetLayeredWindowAttributes(winHandle, 0, 0,   1);
             SetLayeredWindowAttributes(winHandle, 0, 255, 2);

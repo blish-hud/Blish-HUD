@@ -8,6 +8,7 @@ using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
@@ -27,15 +28,11 @@ namespace Blish_HUD {
 
         public GameTime CurrentGameTime { get; private set; }
 
-        internal SettingCollection       _applicationSettings;
-        private  SettingEntry<Gw2Locale> _userLocale;
-        private  SettingEntry<bool>      _stayInTray;
-        private  SettingEntry<bool>      _showInTaskbar;
+        internal SettingCollection    _applicationSettings;
 
-        public Gw2Locale UserLocale    => _userLocale.Value;
-        public bool      StayInTray    => _stayInTray.Value;
-        public bool      ShowInTaskbar => _showInTaskbar.Value;
-
+        public SettingEntry<Locale> UserLocale    { get; private set; }
+        public SettingEntry<bool>   StayInTray    { get; private set; }
+        public SettingEntry<bool>   ShowInTaskbar { get; private set; }
 
         private bool                        _checkedClient;
         private Gw2ClientContext.ClientType _clientType;
@@ -57,65 +54,65 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _userLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    Strings.GameServices.OverlayService.Setting_AppCulture_Description);
-            _stayInTray    = settings.DefineSetting("StayInTray",    true,                               Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    Strings.GameServices.OverlayService.Setting_StayInTray_Description);
-            _showInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
+            this.UserLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    Strings.GameServices.OverlayService.Setting_AppCulture_Description);
+            this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    Strings.GameServices.OverlayService.Setting_StayInTray_Description);
+            this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
 
-            _showInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
-            _userLocale.SettingChanged    += UserLocaleOnSettingChanged;
+            this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
+            this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
 
             ApplyInitialSettings();
         }
 
         private void ApplyInitialSettings() {
-            ShowInTaskbarOnSettingChanged(_showInTaskbar, new ValueChangedEventArgs<bool>(true, _showInTaskbar.Value));
-            UserLocaleOnSettingChanged(_userLocale, new ValueChangedEventArgs<Gw2Locale>(GetGw2LocaleFromCurrentUICulture(), _userLocale.Value));
+            ShowInTaskbarOnSettingChanged(this.ShowInTaskbar, new ValueChangedEventArgs<bool>(true, this.ShowInTaskbar.Value));
+            UserLocaleOnSettingChanged(this.UserLocale, new ValueChangedEventArgs<Locale>(GetGw2LocaleFromCurrentUICulture(), this.UserLocale.Value));
         }
 
         private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
             WindowUtil.SetShowInTaskbar(BlishHud.FormHandle, e.NewValue);
         }
 
-        private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Gw2Locale> e) {
+        private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             CultureInfo.CurrentUICulture = GetCultureFromGw2Locale(e.NewValue);
         }
 
-        private CultureInfo GetCultureFromGw2Locale(Gw2Locale gw2Locale) {
-            switch (gw2Locale) {
-                case Gw2Locale.German:
+        private CultureInfo GetCultureFromGw2Locale(Locale locale) {
+            switch (locale) {
+                case Locale.German:
                     return CultureInfo.GetCultureInfo(7); // German (de-DE)
-                case Gw2Locale.English:
+                case Locale.English:
                     return CultureInfo.GetCultureInfo(9); // English (en-US)
-                case Gw2Locale.Spanish:
+                case Locale.Spanish:
                     return CultureInfo.GetCultureInfo(10); // Spanish (es-ES)
-                case Gw2Locale.French:
+                case Locale.French:
                     return CultureInfo.GetCultureInfo(12); // French (fr-FR)
-                case Gw2Locale.Korean:
+                case Locale.Korean:
                     return CultureInfo.GetCultureInfo(18); // Korean (ko-KR)
-                case Gw2Locale.Chinese:
+                case Locale.Chinese:
                     return CultureInfo.GetCultureInfo(30724); // Chinese (zh-CN)
             }
 
             return CultureInfo.GetCultureInfo(9); // English (en-US)
         }
 
-        private Gw2Locale GetGw2LocaleFromCurrentUICulture() {
+        private Locale GetGw2LocaleFromCurrentUICulture() {
             string currLocale = CultureInfo.CurrentUICulture.EnglishName.Split(' ')[0];
 
             switch (currLocale) {
                 case "Chinese":
-                    return Gw2Locale.Chinese;
+                    return Locale.Chinese;
                 case "French":
-                    return Gw2Locale.French;
+                    return Locale.French;
                 case "German":
-                    return Gw2Locale.German;
+                    return Locale.German;
                 case "Korean":
-                    return Gw2Locale.Korean;
+                    return Locale.Korean;
                 case "Spanish":
-                    return Gw2Locale.Spanish;
+                    return Locale.Spanish;
                 case "English":
                 default:
-                    return Gw2Locale.English;
+                    return Locale.English;
             }
         }
 

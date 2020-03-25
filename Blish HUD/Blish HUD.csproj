@@ -207,11 +207,11 @@
     <Compile Include="GameServices\Graphics\UI\IView[TPresenter].cs" />
     <Compile Include="GameServices\Graphics\UI\Presenter[TView,TPresenter].cs" />
     <Compile Include="GameServices\Graphics\UI\View[TPresenter].cs" />
-    <Compile Include="GameServices\Gw2ApiService.cs" />
     <Compile Include="GameServices\Gw2Mumble\CurrentMap.cs" />
     <Compile Include="GameServices\Gw2WebApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="GameServices\Content\IDataReader.cs" />
+    <Compile Include="GameServices\Gw2WebApi\ManagedConnection.cs" />
     <Compile Include="GameServices\Input\Hook.cs" />
     <Compile Include="GameServices\Input\InputManager.cs" />
     <Compile Include="GameServices\Input\KeyBinding.cs" />
