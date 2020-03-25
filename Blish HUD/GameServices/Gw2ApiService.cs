@@ -12,7 +12,7 @@ namespace Blish_HUD {
 
         private static Logger Logger = Logger.GetLogger<Gw2ApiService>();
 
-        private static string GW2API_SETTINGS = "Gw2ApiConfiguration";
+        private const string GW2API_SETTINGS = "Gw2ApiConfiguration";
 
         public event EventHandler<EventArgs> ConnectionUpdated;
 
@@ -22,8 +22,7 @@ namespace Blish_HUD {
 
         private IConnection _internalConnection;
 
-        protected override void Initialize() {
-        }
+        protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
             UpdateConnection();
@@ -38,12 +37,12 @@ namespace Blish_HUD {
                                                  GameService.Gw2WebApi.GetWebCacheMethod(),
                                                  GameService.Content.GetRenderServiceCacheMethod());
 
+            ((Connection) _internalConnection).AccessToken = "test";
+
             ConnectionUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        protected override void Update(GameTime gameTime) {
-            
-        }
+        protected override void Update(GameTime gameTime) { /* NOOP */ }
 
         protected override void Unload() {
             _sharedApiClient?.Dispose();

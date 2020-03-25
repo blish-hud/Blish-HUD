@@ -57,9 +57,9 @@ namespace Blish_HUD.Gw2Mumble {
         }
 
         internal void Update(GameTime gameTime) {
-            _position    = _service.SharedGw2MumbleClient.CameraPosition.ToXnaVector3();
-            _forward     = _service.SharedGw2MumbleClient.CameraFront.ToXnaVector3();
-            _fieldOfView = (float)_service.SharedGw2MumbleClient.FieldOfView;
+            _position    = _service.RawClient.CameraPosition.ToXnaVector3();
+            _forward     = _service.RawClient.CameraFront.ToXnaVector3();
+            _fieldOfView = (float)_service.RawClient.FieldOfView;
 
             // Calculated
             _view       = Matrix.CreateLookAt(_position, _position                         + _forward,                VectorUtil.UpVectorFromCameraForward(_forward));

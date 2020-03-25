@@ -51,22 +51,22 @@ namespace Blish_HUD.Gw2Mumble {
         #endregion
 
         /// <inheritdoc cref="IGw2MumbleClient.BuildId"/>
-        public int BuildId => _service.SharedGw2MumbleClient.BuildId;
+        public int BuildId => _service.RawClient.BuildId;
 
         /// <inheritdoc cref="IGw2MumbleClient.DoesGameHaveFocus"/>
-        public bool IsGameFocused => _service.SharedGw2MumbleClient.DoesGameHaveFocus;
+        public bool IsGameFocused => _service.RawClient.DoesGameHaveFocus;
 
         /// <inheritdoc cref="IGw2MumbleClient.ServerAddress"/>
-        public string ServerAddress => _service.SharedGw2MumbleClient.ServerAddress;
+        public string ServerAddress => _service.RawClient.ServerAddress;
 
         /// <inheritdoc cref="IGw2MumbleClient.ServerPort"/>
-        public ushort ServerPort => _service.SharedGw2MumbleClient.ServerPort;
+        public ushort ServerPort => _service.RawClient.ServerPort;
 
         /// <inheritdoc cref="IGw2MumbleClient.ShardId"/>
-        public uint ShardId => _service.SharedGw2MumbleClient.ShardId;
+        public uint ShardId => _service.RawClient.ShardId;
 
         /// <inheritdoc cref="IGw2MumbleClient.Version"/>
-        public int Version => _service.SharedGw2MumbleClient.Version;
+        public int Version => _service.RawClient.Version;
 
         internal Info(Gw2MumbleService service) {
             _service      = service;

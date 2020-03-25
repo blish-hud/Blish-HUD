@@ -33,13 +33,13 @@ namespace Blish_HUD.Gw2Mumble {
         #endregion
 
         /// <inheritdoc cref="IGw2MumbleClient.MapId"/>
-        public int Id => _service.SharedGw2MumbleClient.MapId;
+        public int Id => _service.RawClient.MapId;
 
         /// <inheritdoc cref="IGw2MumbleClient.MapType"/>
-        public MapType Type => _service.SharedGw2MumbleClient.MapType;
+        public MapType Type => _service.RawClient.MapType;
 
         /// <inheritdoc cref="IGw2MumbleClient.IsCompetitiveMode"/>
-        public bool IsCompetitiveMode => _service.SharedGw2MumbleClient.IsCompetitiveMode;
+        public bool IsCompetitiveMode => _service.RawClient.IsCompetitiveMode;
 
         internal CurrentMap(Gw2MumbleService service) {
             _service = service;

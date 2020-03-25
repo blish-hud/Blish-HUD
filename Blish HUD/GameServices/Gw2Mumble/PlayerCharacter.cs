@@ -22,30 +22,30 @@ namespace Blish_HUD.Gw2Mumble {
         public Vector3 Forward => _forward;
 
         /// <inheritdoc cref="IGw2MumbleClient.CharacterName"/>
-        public string Name => _service.SharedGw2MumbleClient.CharacterName;
+        public string Name => _service.RawClient.CharacterName;
 
         /// <inheritdoc cref="IGw2MumbleClient.Profession"/>
-        public ProfessionType Profession => _service.SharedGw2MumbleClient.Profession;
+        public ProfessionType Profession => _service.RawClient.Profession;
 
         /// <inheritdoc cref="IGw2MumbleClient.Race"/>
-        public RaceType Race => _service.SharedGw2MumbleClient.Race;
+        public RaceType Race => _service.RawClient.Race;
 
         /// <inheritdoc cref="IGw2MumbleClient.Specialization"/>
-        public int Specialization => _service.SharedGw2MumbleClient.Specialization;
+        public int Specialization => _service.RawClient.Specialization;
 
         /// <inheritdoc cref="IGw2MumbleClient.TeamColorId"/>
-        public int TeamColorId => _service.SharedGw2MumbleClient.TeamColorId;
+        public int TeamColorId => _service.RawClient.TeamColorId;
 
         /// <inheritdoc cref="IGw2MumbleClient.IsCommander"/>
-        public bool IsCommander => _service.SharedGw2MumbleClient.IsCommander;
+        public bool IsCommander => _service.RawClient.IsCommander;
 
         internal PlayerCharacter(Gw2MumbleService service) {
             _service      = service;
         }
 
         internal void Update(GameTime gameTime) {
-            _position = _service.SharedGw2MumbleClient.AvatarPosition.ToXnaVector3();
-            _forward  = _service.SharedGw2MumbleClient.AvatarFront.ToXnaVector3();
+            _position = _service.RawClient.AvatarPosition.ToXnaVector3();
+            _forward  = _service.RawClient.AvatarFront.ToXnaVector3();
         }
 
     }

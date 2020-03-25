@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Configuration;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.WebApi;
 using Gw2Sharp.WebApi.Caching;
@@ -24,10 +25,20 @@ namespace Blish_HUD {
             return _sharedWebCache ?? (_sharedWebCache = new MemoryCacheMethod());
         }
 
-        public IGw2WebApiV2Client SharedWebApiV2Client => GameService.Gw2Api.SharedApiClient.WebApi.V2;
+        public IGw2WebApiV2Client SharedWebClient => GameService.Gw2Api.SharedApiClient.WebApi.V2;
+
+
+        private Dictionary<string, string> _characterRepository;
+
+        private SettingCollection                      _apiSettings;
+        private SettingEntry<Dictionary<Guid, string>> _apiKeyRepository;
 
         protected override void Initialize() {
-            
+            //_apiSettings = Settings.RegisterRootSettingCollection(GW2API_SETTINGS);
+        }
+
+        private void DefineSettings(SettingCollection settings) {
+
         }
 
         protected override void Load() {

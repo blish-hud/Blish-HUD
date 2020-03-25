@@ -117,34 +117,34 @@ namespace Blish_HUD.Gw2Mumble {
         #endregion
 
         /// <inheritdoc cref="IGw2MumbleClient.Compass"/>
-        public Size CompassSize => _service.SharedGw2MumbleClient.Compass;
+        public Size CompassSize => _service.RawClient.Compass;
 
         /// <inheritdoc cref="IGw2MumbleClient.CompassRotation"/>
-        public double CompassRotation => _service.SharedGw2MumbleClient.CompassRotation;
+        public double CompassRotation => _service.RawClient.CompassRotation;
 
         /// <inheritdoc cref="IGw2MumbleClient.IsCompassRotationEnabled"/>
-        public bool IsCompassRotationEnabled => _service.SharedGw2MumbleClient.IsCompassRotationEnabled;
+        public bool IsCompassRotationEnabled => _service.RawClient.IsCompassRotationEnabled;
 
         /// <inheritdoc cref="IGw2MumbleClient.IsCompassTopRight"/>
-        public bool IsCompassTopRight => _service.SharedGw2MumbleClient.IsCompassTopRight;
+        public bool IsCompassTopRight => _service.RawClient.IsCompassTopRight;
 
         /// <inheritdoc cref="IGw2MumbleClient.IsMapOpen"/>
-        public bool IsMapOpen => _service.SharedGw2MumbleClient.IsMapOpen;
+        public bool IsMapOpen => _service.RawClient.IsMapOpen;
 
         /// <inheritdoc cref="IGw2MumbleClient.MapCenter"/>
-        public Coordinates2 MapCenter => _service.SharedGw2MumbleClient.MapCenter;
+        public Coordinates2 MapCenter => _service.RawClient.MapCenter;
 
         /// <inheritdoc cref="IGw2MumbleClient.MapScale"/>
-        public double MapScale => _service.SharedGw2MumbleClient.MapScale;
+        public double MapScale => _service.RawClient.MapScale;
 
         /// <inheritdoc cref="IGw2MumbleClient.PlayerLocationMap"/>
-        public Coordinates2 MapPosition => _service.SharedGw2MumbleClient.PlayerLocationMap;
+        public Coordinates2 MapPosition => _service.RawClient.PlayerLocationMap;
 
         /// <inheritdoc cref="IGw2MumbleClient.DoesAnyInputHaveFocus"/>
-        public bool IsTextInputFocused => _service.SharedGw2MumbleClient.DoesAnyInputHaveFocus;
+        public bool IsTextInputFocused => _service.RawClient.DoesAnyInputHaveFocus;
 
         /// <inheritdoc cref="IGw2MumbleClient.UiSize"/>
-        public UiSize UISize => _service.SharedGw2MumbleClient.UiSize;
+        public UiSize UISize => _service.RawClient.UiSize;
 
         internal UI(Gw2MumbleService service) {
             _service = service;

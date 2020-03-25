@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Blish_HUD.Gw2Mumble;
+using Gw2Sharp;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.Mumble;
 
@@ -12,20 +13,23 @@ namespace Blish_HUD {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2MumbleService>();
 
-        internal IGw2MumbleClient SharedGw2MumbleClient => GameService.Gw2Api.SharedApiClient.Mumble;
+        private IGw2MumbleClient _rawClient;
+
+        /// <inheritdoc cref="Gw2MumbleClient"/>
+        public IGw2MumbleClient RawClient => _rawClient;
 
         #region Categorized Mumble Data
 
         private Info            _info;
         private PlayerCharacter _playerCharacter;
         private PlayerCamera    _playerCamera;
-        private CurrentMap             _currentMap;
+        private CurrentMap      _currentMap;
         private UI              _ui;
 
         /// <summary>
         /// Provides information about the Mumble connection and about the game instance in realtime.
         /// </summary>
-        public Info            Info            => _info;
+        public Info Info => _info;
 
         /// <summary>
         /// Provides data about the active player's character in realtime.
@@ -48,17 +52,20 @@ namespace Blish_HUD {
         public CurrentMap CurrentMap => _currentMap;
 
         #endregion
-
+        
         /// <inheritdoc cref="IGw2MumbleClient.IsAvailable"/>
-        public bool IsAvailable => SharedGw2MumbleClient.IsAvailable;
+        public bool IsAvailable => _rawClient.IsAvailable;
 
         public TimeSpan TimeSinceTick { get; private set; }
 
+        private int _delayedTicks = 0;
         private int _prevTick = -1;
 
-        public int Tick => SharedGw2MumbleClient.Tick;
+        public int Tick => _rawClient.Tick;
 
-        protected override void Initialize() { /* NOOP */ }
+        protected override void Initialize() {
+            _rawClient = new Gw2Client().Mumble;
+        }
 
         protected override void Load() {
             _info            = new Info(this);
@@ -68,26 +75,16 @@ namespace Blish_HUD {
             _ui              = new UI(this);
         }
 
-        private double _lastMumbleCheck = 0;
-        
-        public int _delayedTicks = 0;
-
-        private readonly Queue<int> _uiTickRates = new Queue<int>();
-        public float AverageFramesPerTick => (float)_uiTickRates.Sum(t => t) / _uiTickRates.Count;
-
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
 
-            SharedGw2MumbleClient.Update();
+            this.RawClient.Update();
 
-            if (SharedGw2MumbleClient.Tick > _prevTick) {
-                _prevTick = SharedGw2MumbleClient.Tick;
+            if (this.RawClient.Tick > _prevTick) {
+                _prevTick = this.RawClient.Tick;
 
                 this.TimeSinceTick = TimeSpan.Zero;
 
-                if (_uiTickRates.Count > 10) _uiTickRates.Dequeue();
-
-                _uiTickRates.Enqueue(_delayedTicks);
                 _delayedTicks = 0;
 
                 UpdateDetails(gameTime);
@@ -104,7 +101,9 @@ namespace Blish_HUD {
             _ui.Update(gameTime);
         }
 
-        protected override void Unload() { /* NOOP */ }
+        protected override void Unload() {
+            _rawClient.Dispose();
+        }
 
     }
 
