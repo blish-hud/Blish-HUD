@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gw2Sharp.Models;
+﻿using Gw2Sharp.Models;
 using Gw2Sharp.Mumble;
 using Microsoft.Xna.Framework;
 

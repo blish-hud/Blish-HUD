@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gw2Sharp.Mumble;
 using Microsoft.Xna.Framework;
 
@@ -39,7 +35,7 @@ namespace Blish_HUD.Gw2Mumble {
         public Vector3 Forward => _forward;
 
         /// <inheritdoc cref="IGw2MumbleClient.FieldOfView"/>
-        public float FieldOfView => _fieldOfView;
+        public float FieldOfView => MathHelper.Clamp(_fieldOfView, 0.01f, (float)Math.PI * 2f - 0.01f);
 
         #endregion
 

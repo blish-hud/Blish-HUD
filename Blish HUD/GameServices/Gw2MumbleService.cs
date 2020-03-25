@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
 using Blish_HUD.Gw2Mumble;
 using Gw2Sharp;
 using Microsoft.Xna.Framework;
