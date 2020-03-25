@@ -7,7 +7,7 @@ using Gw2Sharp.WebApi;
 using Gw2Sharp.WebApi.Caching;
 using Gw2Sharp.WebApi.V2.Models;
 using System.Threading.Tasks;
-using Blish_HUD.GameServices.Gw2WebApi;
+using Blish_HUD.Gw2WebApi;
 using Blish_HUD.Settings;
 using Gw2Sharp;
 

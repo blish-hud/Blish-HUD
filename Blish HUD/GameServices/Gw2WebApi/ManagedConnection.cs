@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Gw2Sharp;
 using Gw2Sharp.WebApi;
 using Gw2Sharp.WebApi.Caching;
 
-namespace Blish_HUD.GameServices.Gw2WebApi {
+namespace Blish_HUD.Gw2WebApi {
     public class ManagedConnection {
 
         private static readonly Logger Logger = Logger.GetLogger<ManagedConnection>();
