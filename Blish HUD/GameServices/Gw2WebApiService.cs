@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Blish_HUD.Gw2WebApi;
 using Blish_HUD.Settings;
 using Gw2Sharp;
+using Gw2Sharp.WebApi.Http;
 
 namespace Blish_HUD {
 
@@ -49,8 +50,9 @@ namespace Blish_HUD {
         }
 
         #endregion
-        
-        private ConcurrentDictionary<string, string> _characterRepository;
+
+        private ConcurrentDictionary<string, string>            _characterRepository;
+        private ConcurrentDictionary<string, TokenPermission[]> _permissionDetails;
 
         private SettingCollection _apiSettings;
         private SettingCollection _apiKeyRepository;
@@ -72,14 +74,19 @@ namespace Blish_HUD {
             _characterRepository = new ConcurrentDictionary<string, string>();
 
             Gw2Mumble.PlayerCharacter.NameChanged += PlayerCharacterOnNameChanged;
+
+            RequestSubtoken("asdfA", new List<TokenPermission>() { TokenPermission.Account }, 1).ContinueWith(
+                                                                                                                                                                             (Task<string> s) => {
+                                                                                                                                                                                 Console.WriteLine(s.Result);
+                                                                                                                                                                             });
         }
 
         private void UpdateActiveApiKey() {
             if (_characterRepository.TryGetValue(Gw2Mumble.PlayerCharacter.Name, out string charApiKey)) {
-                ((Connection)_baseConnection.Connection).AccessToken = charApiKey;
+                _baseConnection.SetApiKey(charApiKey);
                 Logger.Debug($"Associated key {charApiKey} with user {Gw2Mumble.PlayerCharacter.Name}.");
             } else {
-                ((Connection)_baseConnection.Connection).AccessToken = string.Empty;
+                _baseConnection.SetApiKey(String.Empty);
                 Logger.Info("Could not find registered API key associated with character {characterName}", Gw2Mumble.PlayerCharacter.Name);
             }
         }
@@ -125,30 +132,43 @@ namespace Blish_HUD {
             });
         }
 
-        private static IGw2WebApiClient GetTempClient(string apiKey) {
-            return new Gw2Client(new Connection(apiKey)).WebApi;
+        private IGw2WebApiClient GetTempClient(string apiKey) {
+            return new Gw2Client(GetConnection(apiKey).Connection).WebApi;
         }
 
-        private static async Task<List<string>> GetCharacters(string apiKey) {
+        private async Task<List<string>> GetCharacters(string apiKey) {
             return (await GetTempClient(apiKey).V2.Characters.IdsAsync()).ToList();
         }
 
-        private static async Task<TokenInfo> GetTokenInfo(string apiKey) {
+        private async Task<TokenInfo> GetTokenInfo(string apiKey) {
             return await GetTempClient(apiKey).V2.TokenInfo.GetAsync();
         }
 
-        private static async Task<Account> GetAccount(string apiKey) {
+        private async Task<Account> GetAccount(string apiKey) {
             return await GetTempClient(apiKey).V2.Account.GetAsync();
         }
 
         public async Task<string> RequestSubtoken(string apiKey, IEnumerable<TokenPermission> permissions, int days) {
-            return (await GetTempClient(apiKey).V2.CreateSubtoken
-                                               .WithPermissions(permissions)
-                                               .Expires(DateTime.UtcNow.AddDays(days))
-                                               .GetAsync()).Subtoken;
+            try {
+                return (await GetTempClient(apiKey)
+                             .V2.CreateSubtoken
+                             .WithPermissions(permissions)
+                             .Expires(DateTime.UtcNow.AddDays(days))
+                             .GetAsync()).Subtoken;
+            } catch (InvalidAccessTokenException ex) {
+                Logger.Warn(ex, "The provided API token is invalid and can not be used to request a subtoken.");
+            } catch (UnexpectedStatusException ex) {
+                Logger.Warn(ex, "The provided API token could not be used to request a subtoken.");
+            }
+
+            return "";
         }
 
         #endregion
+
+        public ManagedConnection GetConnection(string accessToken) {
+            return new ManagedConnection(accessToken, _sharedWebCache, _sharedRenderCache);
+        }
 
         protected override void Unload() { /* NOOP */ }
 

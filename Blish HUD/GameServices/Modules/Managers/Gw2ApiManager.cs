@@ -1,6 +1,7 @@
 ﻿using Gw2Sharp.WebApi;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Gw2WebApi;
 using Gw2Sharp;
 using Gw2Sharp.WebApi.V2;
 using Gw2Sharp.WebApi.V2.Models;
@@ -10,7 +11,7 @@ namespace Blish_HUD.Modules.Managers {
 
         private readonly HashSet<TokenPermission> _permissions;
 
-        private Connection _gw2ApiConnection;
+        private ManagedConnection _connection;
 
         private Gw2WebApiClient _gw2ApiClient;
 
@@ -28,7 +29,7 @@ namespace Blish_HUD.Modules.Managers {
 
         private void UpdateToken() {
             if (_permissions == null || !_permissions.Any()) {
-                _gw2ApiConnection = new Connection(Locale.English);
+                //_connection = new ManagedConnection();
                 return;
             }
 
