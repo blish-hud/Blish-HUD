@@ -2,6 +2,7 @@
 {
     public enum GuildWarsControls
     {
+        None,
         SwapWeapons,
         WeaponSkill1,
         WeaponSkill2,
