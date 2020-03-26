@@ -51,80 +51,14 @@ namespace Blish_HUD.Controls
                     return;
 
                 _color = value;
-                _colorId = value?.Id ?? -1;
 
-                OnPropertyChanged("ColorId");
+                OnPropertyChanged(nameof(this.ColorId));
                 OnPropertyChanged();
                 this.OnColorChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        private static Gw2Sharp.WebApi.V2.Models.Color[] Colors = new Gw2Sharp.WebApi.V2.Models.Color[]
-        {
-            new Gw2Sharp.WebApi.V2.Models.Color()
-            {
-                Id =  10,
-                Name = "Sky",
-                BaseRgb = new List<int>() {128, 26, 26},
-                Cloth = new ColorMaterial()
-                {
-                    Brightness = 22,
-                    Contrast = 1.25,
-                    Hue = 196,
-                    Saturation = 0.742188,
-                    Lightness = 1.32813,
-                    Rgb = new List<int>() {91, 123, 146}
-                },
-                Leather = new ColorMaterial()
-                {
-                    Brightness = 22,
-                    Contrast = 1.25,
-                    Hue = 196,
-                    Saturation = 0.664063,
-                    Lightness = 1.32813,
-                    Rgb = new List<int>() {61, 123, 146}
-                },
-                Metal = new ColorMaterial()
-                {
-                    Brightness = 22,
-                    Contrast = 1.28906,
-                    Hue = 196,
-                    Saturation = 0.546875,
-                    Lightness = 1.32813,
-                    Rgb = new List<int>() {65, 123, 146}
-                },
-                Fur = new ColorMaterial()
-                {
-                    Brightness = 22,
-                    Contrast = 1.25,
-                    Hue = 196,
-                    Saturation = 0.742188,
-                    Lightness = 1.32813,
-                    Rgb = new List<int>() {54, 123, 146}
-                },
-                Item = 20370,
-                Categories = new List<string>() {"Blue", "Vibrant", "Rare"}
-            }
-        };
-
-        private int _colorId;
-        public int ColorId
-        {
-            get { return _colorId; }
-            set
-            {
-                if (_colorId == value)
-                    return;
-
-                _colorId = value;
-                _color = Colors.FirstOrDefault(x => x.Id == this.ColorId);
-
-                OnPropertyChanged();
-                OnPropertyChanged("Color");
-                this.OnColorChanged?.Invoke(this, EventArgs.Empty);
-
-            }
-        }
+        public int ColorId => this.Color?.Id ?? -1;
 
         #region "Statics (Sprites & Shared Resources)"
 
