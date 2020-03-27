@@ -56,11 +56,10 @@ namespace Blish_HUD.Controls {
 
         public int ColorId => this.Color?.Id ?? -1;
 
-        private static TextureRegion2D[] _possibleDrawVariations;
-        private static TextureRegion2D   _spriteHighlight;
+        private static readonly TextureRegion2D[] _possibleDrawVariations;
+        private static readonly TextureRegion2D   _spriteHighlight;
 
-        private static void LoadStatics() {
-            if (_possibleDrawVariations != null) return;
+        static ColorBox() {
 
             // Load static sprite regions
             _possibleDrawVariations = new TextureRegion2D[] {
@@ -73,8 +72,6 @@ namespace Blish_HUD.Controls {
 
 
         public ColorBox() : base() {
-            LoadStatics();
-
             Size = new Point(DEFAULT_COLOR_SIZE);
 
             drawVariation = RandomUtil.GetRandom(0, _possibleDrawVariations.Length - 1);
