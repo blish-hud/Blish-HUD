@@ -13,12 +13,11 @@ using Blish_HUD._Extensions;
 
 namespace Blish_HUD.Controls {
 
-    // TODO: Need to have events updated in ColorBox to match the standard applied in Control class
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class ColorBox : Control {
 
-        public event EventHandler<EventArgs> OnColorChanged;
-        public event EventHandler<EventArgs> OnSelected;
+        public event EventHandler<EventArgs> ColorChanged;
+        public event EventHandler<EventArgs> Selected;
 
         private const int    DEFAULT_COLOR_SIZE                = 32;
         private const string COLOR_CHANGE_SOUND_NAME           = "audio/color-change";
@@ -30,13 +29,13 @@ namespace Blish_HUD.Controls {
 
         private readonly int drawVariation;
 
-        private bool selected = false;
+        private bool isSelected = false;
 
-        public bool Selected {
-            get => selected;
+        public bool IsSelected {
+            get => isSelected;
             set {
-                if (SetProperty(ref selected, value)) {
-                    this.OnSelected?.Invoke(this, EventArgs.Empty);
+                if (SetProperty(ref isSelected, value)) {
+                    this.Selected?.Invoke(this, EventArgs.Empty);
 
                     if (this.Visible) Content.PlaySoundEffectByName(COLOR_CHANGE_SOUND_NAME);
                 }
@@ -54,7 +53,7 @@ namespace Blish_HUD.Controls {
 
                 OnPropertyChanged(nameof(this.ColorId));
                 OnPropertyChanged();
-                this.OnColorChanged?.Invoke(this, EventArgs.Empty);
+                this.ColorChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -97,7 +96,7 @@ namespace Blish_HUD.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this, _possibleDrawVariations[drawVariation], bounds, this.Color?.Cloth?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
 
-            if (this.MouseOver || this.Selected) spriteBatch.DrawOnCtrl(this, _spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White * 0.7f);
+            if (this.MouseOver || this.IsSelected) spriteBatch.DrawOnCtrl(this, _spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White * 0.7f);
         }
 
     }
