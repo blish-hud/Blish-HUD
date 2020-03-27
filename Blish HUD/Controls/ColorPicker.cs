@@ -15,6 +15,8 @@ namespace Blish_HUD.Controls {
         private const int    COLOR_PADDING           = 3;
         private const string BACKGROUND_TEXTURE_NAME = @"common\solid";
 
+        private static readonly Texture2D _backgroundTexture;
+
         public event EventHandler<EventArgs> SelectedColorChanged;
 
         public ObservableCollection<Gw2Sharp.WebApi.V2.Models.Color> Colors { get; protected set; }
@@ -46,6 +48,10 @@ namespace Blish_HUD.Controls {
                     this.SelectedColor            = this.AssociatedColorBox.Color;
                 }
             }
+        }
+
+        static ColorPicker() {
+            _backgroundTexture = Content.GetTexture(BACKGROUND_TEXTURE_NAME);
         }
 
         public ColorPicker() : base() {
@@ -118,7 +124,7 @@ namespace Blish_HUD.Controls {
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw background
-            spriteBatch.DrawOnCtrl(this, Content.GetTexture(BACKGROUND_TEXTURE_NAME), bounds, Color.Black * 0.5f);
+            spriteBatch.DrawOnCtrl(this, _backgroundTexture, bounds, Color.Black * 0.5f);
         }
 
     }
