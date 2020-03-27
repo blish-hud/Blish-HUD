@@ -65,20 +65,43 @@ namespace Blish_HUD.Input {
             _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
         }
 
+        private void UpdateStates() {
+            Keys[] downArray = _keysDown.ToArray();
+
+            this.State           = new KeyboardState(downArray);
+            this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
+        }
+
         internal override void Update() {
             while (_inputBuffer.TryDequeue(out var keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
+                    // Avoid firing on held keys
+                    if (_keysDown.Contains(keyboardEvent.Key)) {
+                        continue;
+                    }
+
                     _keysDown.Add(keyboardEvent.Key);
                 } else {
                     _keysDown.Remove(keyboardEvent.Key);
                 }
 
-                Keys[] downArray = _keysDown.ToArray();
-
-                this.State           = new KeyboardState(downArray);
-                this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
+                UpdateStates();
 
                 OnKeyStateChanged(keyboardEvent);
+            }
+        }
+
+        protected override void OnDisable() {
+            // Ensure that key states don't get stuck if the
+            // application focus is lost while keys were down.
+
+            Keys[] passingKeys = _keysDown.ToArray();
+            _keysDown.Clear();
+
+            UpdateStates();
+
+            foreach (var key in passingKeys) {
+                OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
             }
         }
 

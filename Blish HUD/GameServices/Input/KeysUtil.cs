@@ -106,6 +106,24 @@ namespace Blish_HUD.Input {
         }
 
         /// <summary>
+        /// Gets a display string representing a <see cref="ModifierKeys"/> and
+        /// <see cref="Keys"/> pair suitable for display in the UI.
+        /// </summary>
+        public static string GetFriendlyName(ModifierKeys modifierKeys, Keys primaryKey) {
+            string displayText = "";
+
+            if (primaryKey != Keys.None) {
+                if (modifierKeys != ModifierKeys.None) {
+                    displayText = $"{modifierKeys.ToString().Replace(", ", " + ")} + ";
+                }
+
+                displayText += GetFriendlyName(primaryKey);
+            }
+
+            return displayText;
+        }
+
+        /// <summary>
         /// Returns a flag indicating the set <see cref="ModifierKeys"/> and the remaining <see cref="Keys"/> value
         /// suitable for a <see cref="KeyBinding"/> from an <see cref="Enumerable"/> of <see cref="Keys"/>.
         /// </summary>
@@ -116,10 +134,6 @@ namespace Blish_HUD.Input {
             var firstModifier = Keys.None;
 
             foreach (var providedKey in keys) {
-                if (key == Keys.None) {
-                    key = providedKey;
-                }
-
                 var modifier = ModifierKeyFromKey(providedKey);
 
                 if (modifier == ModifierKeys.None) { 
