@@ -102,19 +102,7 @@ namespace Blish_HUD.Input {
         /// Gets a display string representing the <see cref="KeyBinding"/> suitable
         /// for display in the UI.
         /// </summary>
-        public string GetBindingDisplayText() {
-            string displayText = "";
-
-            if (this.PrimaryKey != Keys.None) {
-                if (this.ModifierKeys != ModifierKeys.None) {
-                    displayText = $"{this.ModifierKeys.ToString().Replace(", ", " + ")} + ";
-                }
-
-                displayText += KeysUtil.GetFriendlyName(this.PrimaryKey);
-            }
-
-            return displayText;
-        }
+        public string GetBindingDisplayText() => KeysUtil.GetFriendlyName(this.ModifierKeys, this.PrimaryKey);
 
         /// <summary>
         /// Manually triggers the actions bound to this <see cref="KeyBinding"/>.
