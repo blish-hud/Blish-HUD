@@ -47,13 +47,10 @@ namespace Blish_HUD.Controls {
         public Gw2Sharp.WebApi.V2.Models.Color Color {
             get => color;
             set {
-                if (color == value) return;
-
-                color = value;
-
-                OnPropertyChanged(nameof(this.ColorId));
-                OnPropertyChanged();
-                this.ColorChanged?.Invoke(this, EventArgs.Empty);
+                if (SetProperty(ref color, value)) {
+                    OnPropertyChanged(nameof(this.ColorId));
+                    this.ColorChanged?.Invoke(this, EventArgs.Empty);
+                }
             }
         }
 

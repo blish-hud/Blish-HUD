@@ -27,9 +27,7 @@ namespace Blish_HUD.Controls {
         public Gw2Sharp.WebApi.V2.Models.Color SelectedColor {
             get => selectedColor;
             protected set {
-                if (selectedColor != value) {
-                    selectedColor = value;
-
+                if (SetProperty(ref selectedColor, value)) {
                     if (this.AssociatedColorBox != null) {
                         this.AssociatedColorBox.Color = value;
                     }
@@ -43,12 +41,9 @@ namespace Blish_HUD.Controls {
         public ColorBox AssociatedColorBox {
             get => associatedColorBox;
             set {
-                if (associatedColorBox != value) {
-                    if (associatedColorBox != null) associatedColorBox.Selected = false;
-
-                    associatedColorBox          = value;
-                    associatedColorBox.Selected = true;
-                    this.SelectedColor          = this.AssociatedColorBox.Color;
+                if (SetProperty(ref associatedColorBox, value)) {
+                    associatedColorBox.IsSelected = true;
+                    this.SelectedColor            = this.AssociatedColorBox.Color;
                 }
             }
         }
@@ -88,11 +83,11 @@ namespace Blish_HUD.Controls {
 
                         colorBox.LeftMouseButtonPressed += delegate {
                             foreach (var box in colorBoxes.Values) {
-                                box.Selected = false;
+                                box.IsSelected = false;
                             }
 
-                            colorBox.Selected  = true;
-                            this.SelectedColor = colorBox.Color;
+                            colorBox.IsSelected = true;
+                            this.SelectedColor  = colorBox.Color;
                         };
                     }
                 }
