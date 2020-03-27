@@ -4,9 +4,11 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 using Blish_HUD.Controls.Effects;
 using Blish_HUD.Input;
 using Newtonsoft.Json;
+using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
 
 namespace Blish_HUD.Controls {
 
@@ -154,11 +156,20 @@ namespace Blish_HUD.Controls {
             this.LeftMouseButtonPressed?.Invoke(this, e);
         }
 
+        private double _lastClickTime = 0;
+
         protected virtual void OnLeftMouseButtonReleased(MouseEventArgs e) {
             this.LeftMouseButtonReleased?.Invoke(this, e);
 
-            if (_enabled)
-                OnClick(e);
+            if (_enabled) {
+                // Distinguish click from double-click
+                if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastClickTime < SystemInformation.DoubleClickTime) {
+                    OnClick(new MouseEventArgs(e.EventType, true));
+                } else {
+                    _lastClickTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
+                    OnClick(e);
+                }
+            }
         }
 
         protected virtual void OnMouseMoved(MouseEventArgs e) {
@@ -185,9 +196,6 @@ namespace Blish_HUD.Controls {
             this.MouseLeft?.Invoke(this, e);
         }
 
-        /// <summary>
-        /// Fires <see cref="OnLeftMouseButtonReleased"/> if the control is enabled.
-        /// </summary>
         protected virtual void OnClick(MouseEventArgs e) {
             this.Click?.Invoke(this, e);
         }

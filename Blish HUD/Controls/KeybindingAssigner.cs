@@ -8,8 +8,6 @@ namespace Blish_HUD.Controls {
 
         private const int UNIVERSAL_PADDING = 2;
 
-        private const int DOUBLE_CLICK_THRESHOLD = 600;
-
         private int _nameWidth = 183;
 
         /// <summary>
@@ -34,8 +32,7 @@ namespace Blish_HUD.Controls {
         private Rectangle _nameRegion;
         private Rectangle _hotkeyRegion;
 
-        private DateTime _lastClickTime;
-        private bool     _overHotkey;
+        private bool _overHotkey;
 
         public KeyBinding KeyBinding {
             get => _keyBinding;
@@ -51,18 +48,11 @@ namespace Blish_HUD.Controls {
             _cacheLabel = false;
 
             this.Size = new Point(340, 16);
-
-            _lastClickTime = DateTime.MinValue;
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            if (_overHotkey) {
-                // This is used to make it require a double-click to open the assignment window instead of just a single-click
-                if (DateTime.Now.Subtract(_lastClickTime).TotalMilliseconds < DOUBLE_CLICK_THRESHOLD) {
-                    SetupNewAssignmentWindow();
-                } else {
-                    _lastClickTime = DateTime.Now;
-                }
+            if (_overHotkey && e.IsDoubleClick) {
+                SetupNewAssignmentWindow();
             }
 
             base.OnClick(e);
