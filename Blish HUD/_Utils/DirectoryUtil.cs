@@ -22,7 +22,8 @@ namespace Blish_HUD {
 
         static DirectoryUtil() {
             // Prepare user documents directory
-            BasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
+            BasePath = ApplicationSettings.Instance.UserSettingsPath
+                    ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                Environment.SpecialFolderOption.DoNotVerify),
                                      ADDON_DIR);
 
