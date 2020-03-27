@@ -134,10 +134,6 @@ namespace Blish_HUD.Input {
             var firstModifier = Keys.None;
 
             foreach (var providedKey in keys) {
-                //if (key == Keys.None) {
-                //    key = providedKey;
-                //}
-
                 var modifier = ModifierKeyFromKey(providedKey);
 
                 if (modifier == ModifierKeys.None) { 
