@@ -108,8 +108,8 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public override void Invalidate() {
-            base.Invalidate();
+        public override void RecalculateLayout() {
+            base.RecalculateLayout();
 
             colorsPerRow = (this.Width - 10) / (COLOR_SIZE + COLOR_PADDING);
 
