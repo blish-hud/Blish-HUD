@@ -8,8 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
 
-    // TODO: The ColorPicker needs updates for events, it should probably inherit from FlowPanel,
-    // and needs to get reconnected once we have Gorrik.NET included in the project
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class ColorPicker : Panel {
 
