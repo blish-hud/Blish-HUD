@@ -58,7 +58,7 @@ namespace Blish_HUD.Controls {
             this.Colors = new ObservableCollection<Gw2Sharp.WebApi.V2.Models.Color>();
             this.Colors.CollectionChanged += Colors_CollectionChanged;
 
-            this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - (COLOR_PADDING * 2) - 10, this.Height - (COLOR_PADDING * 2));
+            this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, (this.Width - 10) - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
 
             colorBoxes = new Dictionary<Gw2Sharp.WebApi.V2.Models.Color, ColorBox>();
         }
