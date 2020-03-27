@@ -48,13 +48,10 @@ namespace Blish_HUD.Controls {
             get => color;
             set {
                 if (SetProperty(ref color, value)) {
-                    OnPropertyChanged(nameof(this.ColorId));
                     this.ColorChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
-
-        public int ColorId => this.Color?.Id ?? -1;
 
         private static readonly TextureRegion2D[] _possibleDrawVariations;
         private static readonly TextureRegion2D   _spriteHighlight;
