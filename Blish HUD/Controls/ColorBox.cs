@@ -14,20 +14,20 @@ using Blish_HUD._Extensions;
 namespace Blish_HUD.Controls {
 
     // TODO: Need to have events updated in ColorBox to match the standard applied in Control class
-    // TODO: Need to revisit the implementation of ColorBox
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class ColorBox : Control {
 
         public event EventHandler<EventArgs> OnColorChanged;
         public event EventHandler<EventArgs> OnSelected;
 
-        private const int ColorSize = 32;
-        private const string ColorChangeSoundName = @"audio\color-change";
-        private const string DrawVariationVersionOneName = "colorpicker/cp-clr-v1";
-        private const string DrawVariationVersionTwoName = "colorpicker/cp-clr-v2";
-        private const string DrawVariationVersionThreeName = "colorpicker/cp-clr-v3";
-        private const string DrawVariationVersionFourName = "colorpicker/cp-clr-v4";
-        private const string HighlightName = "colorpicker/cp-clr-active";
+        private const int DEFAULT_COLOR_SIZE = 32;
+        private const string COLOR_CHANGE_SOUND_NAME = @"audio\color-change";
+        private const string DRAW_VARIATION_VERSION_ONE_NAME = "colorpicker/cp-clr-v1";
+        private const string DRAW_VARIATION_VERSION_TWO_NAME = "colorpicker/cp-clr-v2";
+        private const string DRAW_VARIATION_VERSION_THREE_NAME = "colorpicker/cp-clr-v3";
+        private const string DRAW_VARIATION_VERSION_FOUR_NAME = "colorpicker/cp-clr-v4";
+        private const string HIGHLIGHT_NAME = "colorpicker/cp-clr-active";
+
         private readonly int drawVariation;
 
         private bool selected = false;
@@ -39,7 +39,7 @@ namespace Blish_HUD.Controls {
                     this.OnSelected?.Invoke(this, EventArgs.Empty);
 
                     if (this.Visible)
-                        Content.PlaySoundEffectByName(ColorChangeSoundName);
+                        Content.PlaySoundEffectByName(COLOR_CHANGE_SOUND_NAME);
                 }
             }
         }
@@ -71,20 +71,20 @@ namespace Blish_HUD.Controls {
 
             // Load static sprite regions
             _possibleDrawVariations = new TextureRegion2D[] {
-                Resources.Control.TextureAtlasControl.GetRegion(DrawVariationVersionOneName),
-                Resources.Control.TextureAtlasControl.GetRegion(DrawVariationVersionTwoName), 
-                Resources.Control.TextureAtlasControl.GetRegion(DrawVariationVersionThreeName),
-                Resources.Control.TextureAtlasControl.GetRegion(DrawVariationVersionFourName),
+                Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_ONE_NAME),
+                Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_TWO_NAME),
+                Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_THREE_NAME),
+                Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_FOUR_NAME),
             };
 
-            _spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion(HighlightName);
+            _spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion(HIGHLIGHT_NAME);
         }
 
 
         public ColorBox() : base() {
             LoadStatics();
 
-            Size = new Point(ColorSize);
+            Size = new Point(DEFAULT_COLOR_SIZE);
 
             drawVariation = RandomUtil.GetRandom(0, _possibleDrawVariations.Length - 1);
         }
@@ -100,7 +100,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.DrawOnCtrl(this, _possibleDrawVariations[drawVariation], bounds, this.Color?.Fur?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
+            spriteBatch.DrawOnCtrl(this, _possibleDrawVariations[drawVariation], bounds, this.Color?.Cloth?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
 
             if (this.MouseOver || this.Selected)
                 spriteBatch.DrawOnCtrl(this, _spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White * 0.7f);
