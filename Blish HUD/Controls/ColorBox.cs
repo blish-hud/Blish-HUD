@@ -11,46 +11,48 @@ using MonoGame.Extended.TextureAtlases;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Blish_HUD._Extensions;
 
-namespace Blish_HUD.Controls
-{
+namespace Blish_HUD.Controls {
 
     // TODO: Need to have events updated in ColorBox to match the standard applied in Control class
     // TODO: Need to revisit the implementation of ColorBox
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class ColorBox : Control
-    {
+    public class ColorBox : Control {
 
         public event EventHandler<EventArgs> OnColorChanged;
         public event EventHandler<EventArgs> OnSelected;
 
-        private const int COLOR_SIZE = 32;
+        private const int ColorSize = 32;
+        private const string ColorChangeSoundName = @"audio\color-change";
+        private const string DrawVariationVersionOneName = "colorpicker/cp-clr-v1";
+        private const string DrawVariationVersionTwoName = "colorpicker/cp-clr-v2";
+        private const string DrawVariationVersionThreeName = "colorpicker/cp-clr-v3";
+        private const string DrawVariationVersionFourName = "colorpicker/cp-clr-v4";
+        private const string HighlightName = "colorpicker/cp-clr-active";
+        private readonly int drawVariation;
 
-        private bool _selected = false;
-        public bool Selected
-        {
-            get => _selected;
-            set
-            {
-                if (SetProperty(ref _selected, value))
-                {
+        private bool selected = false;
+
+        public bool Selected {
+            get => selected;
+            set {
+                if (SetProperty(ref selected, value)) {
                     this.OnSelected?.Invoke(this, EventArgs.Empty);
+
                     if (this.Visible)
-                        Content.PlaySoundEffectByName(@"audio\color-change");
+                        Content.PlaySoundEffectByName(ColorChangeSoundName);
                 }
             }
         }
 
-        private Gw2Sharp.WebApi.V2.Models.Color _color;
+        private Gw2Sharp.WebApi.V2.Models.Color color;
 
-        public Gw2Sharp.WebApi.V2.Models.Color Color
-        {
-            get => _color;
-            set
-            {
-                if (_color == value)
+        public Gw2Sharp.WebApi.V2.Models.Color Color {
+            get => color;
+            set {
+                if (color == value)
                     return;
 
-                _color = value;
+                color = value;
 
                 OnPropertyChanged(nameof(this.ColorId));
                 OnPropertyChanged();
@@ -60,54 +62,48 @@ namespace Blish_HUD.Controls
 
         public int ColorId => this.Color?.Id ?? -1;
 
-        #region "Statics (Sprites & Shared Resources)"
+        private static TextureRegion2D[] _possibleDrawVariations;
+        private static TextureRegion2D _spriteHighlight;
 
-        private static TextureRegion2D[] spriteBoxes;
-        private static TextureRegion2D spriteHighlight;
-
-        private static void LoadStatics()
-        {
-            if (spriteBoxes != null)
+        private static void LoadStatics() {
+            if (_possibleDrawVariations != null)
                 return;
 
             // Load static sprite regions
-            spriteBoxes = new TextureRegion2D[] {
-                Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v1"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v2"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v3"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v4"),
+            _possibleDrawVariations = new TextureRegion2D[] {
+                Resources.Control.TextureAtlasControl.GetRegion(DrawVariationVersionOneName),
+                Resources.Control.TextureAtlasControl.GetRegion(DrawVariationVersionTwoName), 
+                Resources.Control.TextureAtlasControl.GetRegion(DrawVariationVersionThreeName),
+                Resources.Control.TextureAtlasControl.GetRegion(DrawVariationVersionFourName),
             };
-            spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-active");
+
+            _spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion(HighlightName);
         }
 
-        #endregion
 
-        private readonly int _drawVariation;
-
-        public ColorBox() : base()
-        {
+        public ColorBox() : base() {
             LoadStatics();
 
-            this.Size = new Point(COLOR_SIZE);
+            Size = new Point(ColorSize);
 
-            _drawVariation = RandomUtil.GetRandom(0, 3);
+            drawVariation = RandomUtil.GetRandom(0, _possibleDrawVariations.Length - 1);
         }
 
-        protected override void OnMouseMoved(MouseEventArgs e)
-        {
+        protected override void OnMouseMoved(MouseEventArgs e) {
             base.OnMouseMoved(e);
 
-            this.BasicTooltipText = this.Color?.Id.ToString() ?? "None";
+            this.BasicTooltipText = this.Color?.Name ?? "None";
         }
 
-        protected override CaptureType CapturesInput()
-        {
+        protected override CaptureType CapturesInput() {
             return CaptureType.Mouse;
         }
 
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
-        {
-            spriteBatch.DrawOnCtrl(this, spriteBoxes[_drawVariation], bounds, this.Color?.Fur?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            spriteBatch.DrawOnCtrl(this, _possibleDrawVariations[drawVariation], bounds, this.Color?.Fur?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
 
             if (this.MouseOver || this.Selected)
-                spriteBatch.DrawOnCtrl(this, spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White * 0.7f);
+                spriteBatch.DrawOnCtrl(this, _spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White * 0.7f);
         }
 
     }
