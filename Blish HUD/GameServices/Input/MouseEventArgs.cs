@@ -19,10 +19,19 @@ namespace Blish_HUD.Input {
         /// </summary>
         public Point MousePosition => GameService.Input.Mouse.Position;
 
+        /// <summary>
+        /// Indicates if the click event is considered a double-click.
+        /// </summary>
+        public bool IsDoubleClick { get; }
+
         internal MouseLLHookStruct Details { get; }
 
         public MouseEventArgs(MouseEventType eventType) {
             this.EventType = eventType;
+        }
+
+        public MouseEventArgs(MouseEventType eventType, bool isDoubleClick) : this(eventType) {
+            this.IsDoubleClick = isDoubleClick;
         }
 
         internal MouseEventArgs(MouseEventType eventType, MouseLLHookStruct details) : this(eventType) {

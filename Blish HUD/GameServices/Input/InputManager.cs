@@ -29,11 +29,18 @@ namespace Blish_HUD.Input {
             _hookThread              = new Thread(DoHook);
             _hookThread.IsBackground = true;
             _hookThread.Start();
+
+            OnEnable();
         }
 
         internal void Disable() {
             _hook.DisableHook();
+
+            OnDisable();
         }
+
+        protected virtual void OnEnable() { /* NOOP */ }
+        protected virtual void OnDisable() { /* NOOP */ }
 
         internal abstract void Update();
 
