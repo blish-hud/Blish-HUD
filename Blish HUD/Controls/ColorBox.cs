@@ -21,7 +21,7 @@ namespace Blish_HUD.Controls {
         public event EventHandler<EventArgs> OnSelected;
 
         private const int DEFAULT_COLOR_SIZE = 32;
-        private const string COLOR_CHANGE_SOUND_NAME = @"audio\color-change";
+        private const string COLOR_CHANGE_SOUND_NAME = "audio/color-change";
         private const string DRAW_VARIATION_VERSION_ONE_NAME = "colorpicker/cp-clr-v1";
         private const string DRAW_VARIATION_VERSION_TWO_NAME = "colorpicker/cp-clr-v2";
         private const string DRAW_VARIATION_VERSION_THREE_NAME = "colorpicker/cp-clr-v3";
