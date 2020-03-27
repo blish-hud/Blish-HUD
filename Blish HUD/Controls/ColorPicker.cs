@@ -8,108 +8,125 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
 
-    // TODO: The ColorPicker needs updates for events, it should probably inherit from FlowPanel,
-    // and needs to get reconnected once we have Gorrik.NET included in the project
-    //[EditorBrowsable(EditorBrowsableState.Never)]
-    //public class ColorPicker:Container {
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public class ColorPicker : Panel {
 
-    //    private const int COLOR_SIZE = 32;
-    //    private const int COLOR_PADDING = 0;
+        private const int    COLOR_SIZE              = 32;
+        private const int    COLOR_PADDING           = 3;
+        private const string BACKGROUND_TEXTURE_NAME = @"common\solid";
 
-    //    public event EventHandler<EventArgs> SelectedColorChanged;
+        private static readonly Texture2D _backgroundTexture;
 
-    //    public ObservableCollection<BHGw2Api.DyeColor> Colors { get; protected set; }
+        public event EventHandler<EventArgs> SelectedColorChanged;
 
-    //    private Dictionary<BHGw2Api.DyeColor, ColorBox> ColorBoxes;
-        
-    //    private int hColors;
+        public ObservableCollection<Gw2Sharp.WebApi.V2.Models.Color> Colors { get; protected set; }
 
-    //    private BHGw2Api.DyeColor _selectedColor;
-    //    public BHGw2Api.DyeColor SelectedColor { get { return _selectedColor; } protected set { if (_selectedColor != value) { _selectedColor = value; if (this.AssociatedColorBox != null) {
-    //        this.AssociatedColorBox.Color = value; } this.SelectedColorChanged?.Invoke(this, new EventArgs()); } } }
+        private readonly Dictionary<Gw2Sharp.WebApi.V2.Models.Color, ColorBox> colorBoxes;
 
-    //    private ColorBox _associatedColorBox;
-    //    public ColorBox AssociatedColorBox {
-    //        get {
-    //            return _associatedColorBox;
-    //        }
-    //        set {
-    //            if (_associatedColorBox != value) {
-    //                if (_associatedColorBox != null) _associatedColorBox.Selected = false;
+        private int colorsPerRow;
 
-    //                _associatedColorBox = value;
-    //                _associatedColorBox.Selected = true;
-    //                this.SelectedColor = this.AssociatedColorBox.Color;
-    //            }
-    //        }
-    //    }
+        private Gw2Sharp.WebApi.V2.Models.Color selectedColor;
+        public Gw2Sharp.WebApi.V2.Models.Color SelectedColor {
+            get => selectedColor;
+            protected set {
+                if (SetProperty(ref selectedColor, value)) {
+                    if (this.AssociatedColorBox != null) {
+                        this.AssociatedColorBox.Color = value;
+                    }
 
-    //    public ColorPicker() : base() {
-    //        this.Colors = new ObservableCollection<BHGw2Api.DyeColor>();
-    //        ColorBoxes = new Dictionary<BHGw2Api.DyeColor, ColorBox>();
+                    this.SelectedColorChanged?.Invoke(this, new EventArgs());
+                }
+            }
+        }
 
-    //        this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
+        private ColorBox associatedColorBox;
+        public ColorBox AssociatedColorBox {
+            get => associatedColorBox;
+            set {
+                if (SetProperty(ref associatedColorBox, value)) {
+                    associatedColorBox.IsSelected = true;
+                    this.SelectedColor            = this.AssociatedColorBox.Color;
+                }
+            }
+        }
 
-    //        this.Colors.CollectionChanged += Colors_CollectionChanged;
-    //    }
+        static ColorPicker() {
+            _backgroundTexture = Content.GetTexture(BACKGROUND_TEXTURE_NAME);
+        }
 
-    //    private void Colors_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
-    //        // Remove any items that were removed (first because moving an item in a collection will put
-    //        // that item in both OldItems and NewItems)
-    //        if (e.OldItems != null) {
-    //            foreach (BHGw2Api.DyeColor delItem in e.OldItems) {
-    //                if (ColorBoxes.ContainsKey(delItem)) {
-    //                    ColorBoxes[delItem].Dispose();
-    //                    ColorBoxes.Remove(delItem);
-    //                }
-    //            }
-    //        }
+        public ColorPicker() : base() {
+            this.Colors                   =  new ObservableCollection<Gw2Sharp.WebApi.V2.Models.Color>();
+            this.Colors.CollectionChanged += Colors_CollectionChanged;
 
-    //        if (e.NewItems != null) {
-    //            foreach (BHGw2Api.DyeColor addItem in e.NewItems) {
-    //                if (!ColorBoxes.ContainsKey(addItem)) {
-    //                    var cb = new ColorBox() {
-    //                        Color = addItem,
-    //                        Parent = this
-    //                    };
-    //                    ColorBoxes.Add(addItem, cb);
-                        
-    //                    cb.LeftMouseButtonPressed += delegate {
-    //                        ColorBoxes.Values.ToList().ForEach(box => box.Selected = false);
+            this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - (COLOR_PADDING * 2) - 10, this.Height - (COLOR_PADDING * 2));
 
-    //                        cb.Selected = true;
-    //                        this.SelectedColor = cb.Color;
-    //                    };
-    //                }
-    //            }
-    //        }
+            colorBoxes = new Dictionary<Gw2Sharp.WebApi.V2.Models.Color, ColorBox>();
+        }
 
-    //        // Relayout the color grid
-    //        for (int i = 0; i < this.Colors.Count; i++) {
-    //            var curColor = this.Colors[i];
-    //            var curBox = ColorBoxes[curColor];
+        private void Colors_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            // Remove any items that were removed (first because moving an item in a collection will put
+            // that item in both OldItems and NewItems)
+            if (e.OldItems != null) {
+                foreach (var deletedItem in e
+                                           .OldItems
+                                           .Cast<Gw2Sharp.WebApi.V2.Models.Color>()
+                                           .Where(delItem => colorBoxes.ContainsKey(delItem))) {
+                    colorBoxes[deletedItem].Dispose();
+                    colorBoxes.Remove(deletedItem);
+                }
+            }
 
-    //            int hPos = i % hColors;
-    //            int vPos = i / hColors;
+            if (e.NewItems != null) {
+                foreach (Gw2Sharp.WebApi.V2.Models.Color addedItem in e.NewItems) {
+                    if (!colorBoxes.ContainsKey(addedItem)) {
+                        var colorBox = new ColorBox() {
+                            Color  = addedItem,
+                            Parent = this,
+                            Size   = new Point(COLOR_SIZE),
+                        };
 
-    //            curBox.Location = new Point(
-    //                hPos * (curBox.Width + COLOR_PADDING),
-    //                vPos * (curBox.Width + COLOR_PADDING)
-    //            );
-    //        }
-    //    }
+                        colorBoxes[addedItem] = colorBox;
 
-    //    public override void Invalidate() {
-    //        base.Invalidate();
+                        colorBox.LeftMouseButtonPressed += delegate {
+                            foreach (var box in colorBoxes.Values) {
+                                box.IsSelected = false;
+                            }
 
-    //        hColors = this.Width / (COLOR_SIZE + COLOR_PADDING);
-    //        this.Width = Math.Max(hColors * (COLOR_SIZE + COLOR_PADDING) + COLOR_PADDING, COLOR_SIZE + COLOR_PADDING * 2);
-    //        this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
-    //    }
+                            colorBox.IsSelected = true;
+                            this.SelectedColor  = colorBox.Color;
+                        };
+                    }
+                }
+            }
 
-    //    public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
-    //        // Draw background
-    //        spriteBatch.Draw(Content.GetTexture(@"common\solid"), bounds, Color.Black * 0.3f);
-    //    }
-    //}
+            // Relayout the color grid
+            for (int i = 0; i < this.Colors.Count; i++) {
+                var currentColor = this.Colors[i];
+                var currentBox   = colorBoxes[currentColor];
+
+                int horizontalPosition = i % colorsPerRow;
+                int verticalPosition   = i / colorsPerRow;
+
+                currentBox.Location = new Point(
+                                                horizontalPosition * (currentBox.Width + COLOR_PADDING),
+                                                verticalPosition   * (currentBox.Width + COLOR_PADDING)
+                                               );
+            }
+        }
+
+        public override void RecalculateLayout() {
+            base.RecalculateLayout();
+
+            colorsPerRow = (this.Width - 10) / (COLOR_SIZE + COLOR_PADDING);
+
+            this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, (this.Width - 10) - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
+        }
+
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+            // Draw background
+            spriteBatch.DrawOnCtrl(this, _backgroundTexture, bounds, Color.Black * 0.5f);
+        }
+
+    }
+
 }

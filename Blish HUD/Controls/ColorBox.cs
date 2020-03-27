@@ -1,114 +1,95 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
+using Blish_HUD.Input;
+using Gw2Sharp.WebApi.V2.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using Blish_HUD._Extensions;
 
 namespace Blish_HUD.Controls {
 
-    // TODO: Need to have events updated in ColorBox to match the standard applied in Control class
-    // TODO: Need to revisit the implementation of ColorBox
-    //[EditorBrowsable(EditorBrowsableState.Never)]
-    //public class ColorBox:Control {
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public class ColorBox : Control {
 
-        //public event EventHandler<EventArgs> OnColorChanged;
-        //public event EventHandler<EventArgs> OnSelected;
+        public event EventHandler<EventArgs> ColorChanged;
+        public event EventHandler<EventArgs> Selected;
 
-        //private const int COLOR_SIZE = 32;
+        private const int    DEFAULT_COLOR_SIZE                = 32;
+        private const string COLOR_CHANGE_SOUND_NAME           = "audio/color-change";
+        private const string DRAW_VARIATION_VERSION_ONE_NAME   = "colorpicker/cp-clr-v1";
+        private const string DRAW_VARIATION_VERSION_TWO_NAME   = "colorpicker/cp-clr-v2";
+        private const string DRAW_VARIATION_VERSION_THREE_NAME = "colorpicker/cp-clr-v3";
+        private const string DRAW_VARIATION_VERSION_FOUR_NAME  = "colorpicker/cp-clr-v4";
+        private const string HIGHLIGHT_NAME                    = "colorpicker/cp-clr-active";
 
-        //private bool _selected = false;
-        //public bool Selected {
-        //    get => _selected;
-        //    set {
-        //        if (SetProperty(ref _selected, value)) {
-        //            this.OnSelected?.Invoke(this, EventArgs.Empty);
-        //            if (this.Visible)
-        //                Content.PlaySoundEffectByName(@"audio\color-change");
-        //        }
-        //    }
-        //}
+        private readonly int drawVariation;
 
-        //private DyeColor _color;
+        private bool isSelected = false;
 
-        //public DyeColor Color {
-        //    get => _color;
-        //    set {
-        //        if (_color == value) return;
+        public bool IsSelected {
+            get => isSelected;
+            set {
+                if (SetProperty(ref isSelected, value)) {
+                    this.Selected?.Invoke(this, EventArgs.Empty);
 
-        //        _color = value;
-        //        _colorId = value?.Id ?? -1;
+                    if (this.Visible) Content.PlaySoundEffectByName(COLOR_CHANGE_SOUND_NAME);
+                }
+            }
+        }
 
-        //        OnPropertyChanged("ColorId");
-        //        OnPropertyChanged();
-        //        this.OnColorChanged?.Invoke(this, EventArgs.Empty);
-        //    }
-        //}
+        private Gw2Sharp.WebApi.V2.Models.Color color;
 
-        //private int _colorId;
-        //public int ColorId {
-        //    get { return _colorId; }
-        //    set {
-        //        if (_colorId == value) return;
-                
-        //        Task<DyeColor> aDye = BHGw2Api.DyeColor.GetById(this.ColorId);
-        //        aDye.ContinueWith(clr => {
-        //            if (!clr.IsFaulted) {
-        //                _colorId = value;
-        //                _color = aDye.Result;
+        public Gw2Sharp.WebApi.V2.Models.Color Color {
+            get => color;
+            set {
+                if (SetProperty(ref color, value)) {
+                    this.ColorChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
 
-        //                OnPropertyChanged();
-        //                OnPropertyChanged("Color");
-        //                this.OnColorChanged?.Invoke(this, EventArgs.Empty);
-        //            }
-        //        });
-        //    }
-        //}
+        private static readonly TextureRegion2D[] _possibleDrawVariations;
+        private static readonly TextureRegion2D   _spriteHighlight;
 
-        //#region "Statics (Sprites & Shared Resources)"
+        static ColorBox() {
 
-        //private static TextureRegion2D[] spriteBoxes;
-        //private static TextureRegion2D spriteHighlight;
+            // Load static sprite regions
+            _possibleDrawVariations = new TextureRegion2D[] {
+                Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_ONE_NAME), Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_TWO_NAME),
+                Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_THREE_NAME), Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_FOUR_NAME),
+            };
 
-        //private static void LoadStatics() {
-        //    if (spriteBoxes != null) return;
+            _spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion(HIGHLIGHT_NAME);
+        }
 
-        //    // Load static sprite regions
-        //    spriteBoxes = new TextureRegion2D[] {
-        //        Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v1"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v2"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v3"), Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-v4"),
-        //    };
-        //    spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion("colorpicker/cp-clr-active");
-        //}
 
-        //#endregion
+        public ColorBox() : base() {
+            Size = new Point(DEFAULT_COLOR_SIZE);
 
-        //private readonly int _drawVariation;
+            drawVariation = RandomUtil.GetRandom(0, _possibleDrawVariations.Length - 1);
+        }
 
-        //public ColorBox() : base() {
-        //    LoadStatics();
+        protected override void OnMouseMoved(MouseEventArgs e) {
+            base.OnMouseMoved(e);
 
-        //    this.Size = new Point(COLOR_SIZE);
+            this.BasicTooltipText = this.Color?.Name ?? "None";
+        }
 
-        //    _drawVariation = RandomUtil.GetRandom(0, 3);
-        //}
+        protected override CaptureType CapturesInput() {
+            return CaptureType.Mouse;
+        }
 
-        //protected override void OnMouseMoved(MouseEventArgs e) {
-        //    base.OnMouseMoved(e);
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            spriteBatch.DrawOnCtrl(this, _possibleDrawVariations[drawVariation], bounds, this.Color?.Cloth?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
 
-        //    this.BasicTooltipText = this.Color?.Id.ToString() ?? "None";
-        //}
+            if (this.MouseOver || this.IsSelected) spriteBatch.DrawOnCtrl(this, _spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White * 0.7f);
+        }
 
-        //protected override CaptureType CapturesInput() {
-        //    return CaptureType.Mouse;
-        //}
-
-        //protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-        //    spriteBatch.Draw(spriteBoxes[_drawVariation], bounds, this.Color?.Fur?.Rgb.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
-
-        //    if (this.MouseOver || this.Selected)
-        //        spriteBatch.Draw(spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White * 0.7f);
-        //}
-
-    //}
+    }
 
 }
