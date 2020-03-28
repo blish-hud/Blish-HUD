@@ -8,6 +8,16 @@ namespace Blish_HUD.Controls {
 
         private const int UNIVERSAL_PADDING = 2;
 
+        /// <summary>
+        /// Fires when the keybinding on the assigned <see cref="KeyBinding"/> is updated
+        /// through this control.
+        /// </summary>
+        public event EventHandler<EventArgs> BindingChanged;
+
+        protected void OnBindingChanged(EventArgs e) {
+            this.BindingChanged?.Invoke(this, e);
+        }
+
         private int _nameWidth = 183;
 
         /// <summary>
@@ -83,6 +93,8 @@ namespace Blish_HUD.Controls {
             newHkAssign.AssignmentAccepted += delegate {
                 _keyBinding.ModifierKeys = newHkAssign.ModifierKeys;
                 _keyBinding.PrimaryKey   = newHkAssign.PrimaryKey;
+
+                OnBindingChanged(EventArgs.Empty);
             };
 
             newHkAssign.Show();
