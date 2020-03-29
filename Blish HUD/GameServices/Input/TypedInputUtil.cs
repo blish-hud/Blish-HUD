@@ -1,7 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿/*
+ * This code has been adapted from Ciantic's `keyboardlistener.cs` (https://gist.github.com/Ciantic/471698#file-keyboardlistener-cs-L224-L427)
+ * We include adaptions for dead-key handling from Urutar (https://gist.github.com/Ciantic/471698#gistcomment-1448512)
+ */
+
+using System;
 using System.Runtime.InteropServices;
-using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
     internal static class TypedInputUtil {
