@@ -26,8 +26,6 @@ namespace Blish_HUD {
         /// </summary>
         internal static Microsoft.Xna.Framework.Content.ContentManager ActiveContentManager => _activeContentManager;
 
-        internal static Game Instance;
-
         #endregion
 
         public static IntPtr FormHandle { get; private set; }
@@ -41,8 +39,6 @@ namespace Blish_HUD {
         private SpriteBatch _basicSpriteBatch;
 
         public BlishHud() {
-            Instance = this;
-
             _activeGraphicsDeviceManager = new GraphicsDeviceManager(this);
             _activeGraphicsDeviceManager.PreparingDeviceSettings += delegate(object sender, PreparingDeviceSettingsEventArgs args) {
                 args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 4;

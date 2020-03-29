@@ -2,7 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using Blish_HUD.Input.WinApi;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
@@ -24,6 +26,8 @@ namespace Blish_HUD.Input {
         /// Occurs when the state of any key changes.
         /// </summary>
         public event EventHandler<KeyboardEventArgs> KeyStateChanged;
+
+        public event EventHandler<ValueEventArgs<string>> TextInputAsync;
 
         private void OnKeyStateChanged(KeyboardEventArgs e) {
             if (e.EventType == KeyboardEventType.KeyDown) {
@@ -105,6 +109,17 @@ namespace Blish_HUD.Input {
             }
         }
 
+        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
+            this.TextInputAsync?.EndInvoke(asyncResult);
+        }
+
+        private void ProcessInput(KeyboardEventType eventType, Keys key) {
+            string chars = TypedInputUtil.VKCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
+            this.TextInputAsync?.BeginInvoke(this, new ValueEventArgs<string>(chars), EndTextInputAsyncInvoke, null);
+
+            _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
+        }
+
         protected override bool HandleNewInput(IntPtr wParam, IntPtr lParam) {
             if (_hookGeneralBlock)
                 return true;
@@ -112,7 +127,7 @@ namespace Blish_HUD.Input {
             var eventType = (KeyboardEventType)((uint)wParam % 2 + 256); // filter out SysKeyDown & SysKeyUp
             var key       = (Keys)Marshal.ReadInt32(lParam);
 
-            _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
+            ProcessInput(eventType, key);
 
             // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
 
