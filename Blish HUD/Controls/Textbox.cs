@@ -60,6 +60,10 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
+                                                                            /*   PanelOffset */ new Point(5,   2),
+                                                                            /* ControlOffset */ Control.ControlStandard.ControlOffset);
+
         public event EventHandler<EventArgs> TextChanged;
         public event EventHandler<EventArgs> EnterPressed;
         public event EventHandler<Keys> KeyPressed;
@@ -170,10 +174,10 @@ namespace Blish_HUD.Controls {
 
             Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
             Input.Keyboard.KeyPressed           += OnGlobalKeyboardKeyPressed;
-            Input.Keyboard.TextInputAsync       += OnGlobalKeyboardTextInputAsync;
+            Input.Keyboard.TextInput       += OnGlobalKeyboardTextInput;
         }
 
-        private void OnGlobalKeyboardTextInputAsync(object sender, ValueEventArgs<string> e) {
+        private void OnGlobalKeyboardTextInput(object sender, ValueEventArgs<string> e) {
             if (!_focused && _enabled) return;
 
             foreach (char c in e.Value) {
@@ -372,6 +376,12 @@ namespace Blish_HUD.Controls {
 
         private string ProcessText(string value) {
             value = value?.Replace("\r", string.Empty);
+
+            //foreach (char c in value) {
+            //    if (this.Font.GetCharacterRegion(c) == null) {
+            //        value = value.Replace(c.ToString(), string.Empty);
+            //    }
+            //}
 
             return value;
         }

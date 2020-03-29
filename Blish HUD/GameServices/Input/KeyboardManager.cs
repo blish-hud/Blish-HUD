@@ -27,7 +27,11 @@ namespace Blish_HUD.Input {
         /// </summary>
         public event EventHandler<KeyboardEventArgs> KeyStateChanged;
 
-        public event EventHandler<ValueEventArgs<string>> TextInputAsync;
+        public event EventHandler<ValueEventArgs<string>> TextInput;
+
+        private void OnTextInputAsync(ValueEventArgs<string> e) {
+            this.TextInput?.Invoke(this, e);
+        }
 
         private void OnKeyStateChanged(KeyboardEventArgs e) {
             if (e.EventType == KeyboardEventType.KeyDown) {
@@ -64,9 +68,15 @@ namespace Blish_HUD.Input {
         /// </summary>
         public IReadOnlyList<Keys> KeysDown => _keysDown.AsReadOnly();
 
+        private delegate void TextInputAsync(ValueEventArgs<string> e);
+
+        private TextInputAsync _textInputCaller;
+
         internal KeyboardManager() : base(HookType.WH_KEYBOARD_LL) {
             _keysDown    = new List<Keys>();
             _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
+
+            _textInputCaller = OnTextInputAsync;
         }
 
         private void UpdateStates() {
@@ -110,12 +120,13 @@ namespace Blish_HUD.Input {
         }
 
         private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
-            this.TextInputAsync?.EndInvoke(asyncResult);
+            _textInputCaller.EndInvoke(asyncResult);
         }
 
         private void ProcessInput(KeyboardEventType eventType, Keys key) {
             string chars = TypedInputUtil.VKCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
-            this.TextInputAsync?.BeginInvoke(this, new ValueEventArgs<string>(chars), EndTextInputAsyncInvoke, null);
+
+            _textInputCaller.BeginInvoke(new ValueEventArgs<string>(chars), EndTextInputAsyncInvoke, null);
 
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
         }
