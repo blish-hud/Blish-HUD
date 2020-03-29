@@ -109,10 +109,6 @@ namespace Blish_HUD.Input {
                 case 1:
                     ret = sbString[0].ToString();
 
-                    if (GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftShift)) {
-                        ret = ret.ToUpper();
-                    }
-
                     break;
 
                 // Two or more (only two of them is relevant)
