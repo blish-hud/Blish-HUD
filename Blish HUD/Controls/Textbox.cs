@@ -611,7 +611,7 @@ namespace Blish_HUD.Controls {
 
         public override void DoUpdate(GameTime gameTime) {
             // Determines if the blinking caret is currently visible
-            _caretVisible = _focused && Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75;
+            _caretVisible = _focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75);
 
             if (_textWasChanged) {
                 _lastInvalidate = gameTime.TotalGameTime;
