@@ -82,7 +82,6 @@ namespace Blish_HUD.Input {
                 default:
                     Logger.Debug("Got unsupported input {mouseDataMessage}.", e.EventType);
                     return false;
-                    break;
             }
 
             return true;
