@@ -27,12 +27,6 @@ namespace Blish_HUD.Input {
         /// </summary>
         public event EventHandler<KeyboardEventArgs> KeyStateChanged;
 
-        public event EventHandler<ValueEventArgs<string>> TextInput;
-
-        private void OnTextInputAsync(ValueEventArgs<string> e) {
-            this.TextInput?.Invoke(this, e);
-        }
-
         private void OnKeyStateChanged(KeyboardEventArgs e) {
             if (e.EventType == KeyboardEventType.KeyDown) {
                 this.KeyPressed?.Invoke(this, e);
@@ -68,15 +62,11 @@ namespace Blish_HUD.Input {
         /// </summary>
         public IReadOnlyList<Keys> KeysDown => _keysDown.AsReadOnly();
 
-        private delegate void TextInputAsync(ValueEventArgs<string> e);
-
-        private TextInputAsync _textInputCaller;
+        private Action<string> _textInputDelegate;
 
         internal KeyboardManager() : base(HookType.WH_KEYBOARD_LL) {
             _keysDown    = new List<Keys>();
             _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
-
-            _textInputCaller = OnTextInputAsync;
         }
 
         private void UpdateStates() {
@@ -119,16 +109,32 @@ namespace Blish_HUD.Input {
             }
         }
 
-        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
-            _textInputCaller.EndInvoke(asyncResult);
+        public void SetTextInputListner(Action<string> input) {
+            _textInputDelegate = input;
         }
 
-        private void ProcessInput(KeyboardEventType eventType, Keys key) {
-            string chars = TypedInputUtil.VKCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
+        public void UnsetTextInputListner(Action<string> input) {
+            if (input == _textInputDelegate) {
+                _textInputDelegate = null;
+            }
+        }
 
-            _textInputCaller.BeginInvoke(new ValueEventArgs<string>(chars), EndTextInputAsyncInvoke, null);
+        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
+            _textInputDelegate.EndInvoke(asyncResult);
+        }
 
+        private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
+
+            if (_textInputDelegate != null) {
+                string chars = TypedInputUtil.VKCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
+                _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);
+                return true;
+            }
+
+            // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
+
+            return false;
         }
 
         protected override bool HandleNewInput(IntPtr wParam, IntPtr lParam) {
@@ -138,11 +144,7 @@ namespace Blish_HUD.Input {
             var eventType = (KeyboardEventType)((uint)wParam % 2 + 256); // filter out SysKeyDown & SysKeyUp
             var key       = (Keys)Marshal.ReadInt32(lParam);
 
-            ProcessInput(eventType, key);
-
-            // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
-
-            return false;
+            return ProcessInput(eventType, key);
         }
 
     }

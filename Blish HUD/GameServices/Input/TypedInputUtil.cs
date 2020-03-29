@@ -111,7 +111,6 @@ namespace Blish_HUD.Input {
                 // Single character in buffer
                 case 1:
                     ret = sbString[0].ToString();
-
                     break;
 
                 // Two or more (only two of them is relevant)
@@ -129,19 +128,15 @@ namespace Blish_HUD.Input {
             if (lastVKCode != 0 && lastIsDead) {
                 System.Text.StringBuilder sbTemp = new System.Text.StringBuilder(5);
                 ToUnicodeEx(lastVKCode, lastScanCode, lastKeyState, sbTemp, sbTemp.Capacity, (uint)0, HKL);
-
-                if (!string.IsNullOrEmpty(ret)) {
-                    lastVKCode = 0;
-                    lastIsDead = false;
-                }
+                lastVKCode = 0;
 
                 return ret;
             }
 
             // Save these
             lastScanCode = lScanCode;
-            lastVKCode = VKCode;
-            lastIsDead = isDead;
+            lastVKCode   = VKCode;
+            lastIsDead   = isDead;
             lastKeyState = (byte[])bKeyState.Clone();
 
             return ret;
