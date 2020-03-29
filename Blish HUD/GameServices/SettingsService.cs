@@ -25,7 +25,7 @@ namespace Blish_HUD {
         public Dictionary<Type, SettingTypeRendererDelegate> SettingTypeRenderers = new Dictionary<Type, SettingTypeRendererDelegate>();
 
         [JsonIgnore]
-        internal JsonSerializerSettings JsonReaderSettings;
+        internal JsonSerializerSettings JsonReaderSettings { get; private set; }
 
         [JsonIgnore]
         internal JsonSerializer SettingsReader;
