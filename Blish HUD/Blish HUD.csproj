@@ -178,7 +178,6 @@
     <Compile Include="Entities\Effects\EntityEffect.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityBillboard.cs" />
-    <Compile Include="Entities\EntityContainer.cs" />
     <Compile Include="Entities\EntityText.cs" />
     <Compile Include="GameServices\ArcDps\AsyncUserToken.cs" />
     <Compile Include="GameServices\ArcDps\CombatParser.cs" />
