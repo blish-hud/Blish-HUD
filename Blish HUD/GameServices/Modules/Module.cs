@@ -74,7 +74,7 @@ namespace Blish_HUD.Modules {
         private Task _loadTask;
 
         [ImportingConstructor]
-        public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) {
+        protected Module([Import("ModuleParameters")] ModuleParameters moduleParameters) {
             ModuleParameters = moduleParameters;
         }
 
