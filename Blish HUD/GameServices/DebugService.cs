@@ -24,7 +24,7 @@ namespace Blish_HUD {
         private static Logger Logger;
 
         private static LoggingConfiguration _logConfiguration;
-        // ${message}
+
         private const string STANDARD_LAYOUT = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}${onexception:${newline}${exception:format=toString}${newline}}";
 
         internal static void InitDebug() {
