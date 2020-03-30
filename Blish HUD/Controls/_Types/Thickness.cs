@@ -20,13 +20,11 @@
         }
 
         public Thickness(float verticalThickness, float horizontalThickness) : this(verticalThickness, horizontalThickness, verticalThickness, horizontalThickness) { /* ALIAS */ }
-
         public Thickness(float topThickness,      float horizontalThickness, float bottomThickness) : this(topThickness, horizontalThickness, bottomThickness, horizontalThickness) { /* ALIAS */ }
-
         public Thickness(float thickness) : this(thickness, thickness, thickness, thickness) { /* ALIAS */ }
 
         #endregion
-        
+
         #region Operator Behavior
         public static Thickness operator +(Thickness t1, Thickness t2) {
             return new Thickness(t1.Top + t2.Top, t1.Right + t2.Right, t1.Bottom + t2.Bottom, t1.Left + t2.Left);
@@ -40,7 +38,7 @@
         /// <summary>
         /// Represents a <see cref="Thickness"/> where the <see cref="Top"/>, <see cref="Right"/>, <see cref="Bottom"/>, and <see cref="Left"/> are 0.
         /// </summary>
-        public static Thickness Zero = new Thickness(0, 0, 0, 0);
+        public static readonly Thickness Zero = new Thickness(0, 0, 0, 0);
 
     }
 }
