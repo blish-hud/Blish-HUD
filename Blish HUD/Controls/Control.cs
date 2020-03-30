@@ -127,8 +127,7 @@ namespace Blish_HUD.Controls {
                 _sharedTooltipLabel.Text      = e.ActivatedControl._basicTooltipText;
             }
 
-            // TODO: _activeControl is probably not what should be passed as the sender...
-            ActiveControlChanged?.Invoke(_activeControl, e);
+            ActiveControlChanged?.Invoke(null, e);
         }
 
         #endregion
