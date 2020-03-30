@@ -84,27 +84,16 @@ namespace Blish_HUD {
             switch (gw2Locale) {
                 case Gw2Locale.German:
                     return CultureInfo.GetCultureInfo(7); // German (de-DE)
-                    break;
-
                 case Gw2Locale.English:
                     return CultureInfo.GetCultureInfo(9); // English (en-US)
-                    break;
-
                 case Gw2Locale.Spanish:
                     return CultureInfo.GetCultureInfo(10); // Spanish (es-ES)
-                    break;
-
                 case Gw2Locale.French:
                     return CultureInfo.GetCultureInfo(12); // French (fr-FR)
-                    break;
-
                 case Gw2Locale.Korean:
                     return CultureInfo.GetCultureInfo(18); // Korean (ko-KR)
-                    break;
-
                 case Gw2Locale.Chinese:
                     return CultureInfo.GetCultureInfo(30724); // Chinese (zh-CN)
-                    break;
             }
 
             return CultureInfo.GetCultureInfo(9); // English (en-US)
@@ -207,36 +196,6 @@ namespace Blish_HUD {
                 Size = wndw.ContentRegion.Size
             };
 
-            var colPanel = new Panel() {
-                Size     = new Point(450, 256),
-                Location = new Point(24, 24),
-                Parent = hPanel,
-                Title = " ",
-                ShowBorder = true,
-                CanCollapse = true
-            };
-
-            var testLabel = new Label() {
-                Text           = "This is a test label!",
-                Parent         = colPanel,
-                Location       = colPanel.Size - new Point(colPanel.Width / 2 - 50, colPanel.Height / 2 - 10),
-                AutoSizeWidth  = true,
-                AutoSizeHeight = true
-            };
-
-            //bttn7.Click += async delegate {
-            //    //File.Move("Blish HUD.exe", "Blish HUD.exe.temp");
-
-            //    var upgradeCheck = new Octokit.GitHubClient(new ProductHeaderValue("BlishHUD", Program.OverlayVersion.ToString()));
-            //    var dir = await upgradeCheck.Repository.Content.GetAllContentsByRef("blish-hud", "Versions", @"/Blish-HUD/", "master");
-
-            //    foreach (var d in dir) {
-            //        if (d.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) {
-            //            Console.WriteLine(JsonConvert.SerializeObject(d));
-            //        }
-            //    }
-            //};
-
             return hPanel;
         }
 
@@ -261,7 +220,6 @@ namespace Blish_HUD {
             if (GameService.GameIntegration.IsInGame) {
                 _lastTacoCheckTime += gameTime.ElapsedGameTime.TotalSeconds;
 
-                // TODO: Move some of this into the TacO related module
                 if (_lastTacoCheckTime > 3) {
                     Process[] tacoApp = Process.GetProcessesByName("GW2TacO");
 
