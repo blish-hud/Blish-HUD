@@ -109,20 +109,6 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            /*
-            RegisterModule(new Modules.DebugText());
-            RegisterModule(new Modules.DiscordRichPresence());
-            RegisterModule(new Modules.BeetleRacing.BeetleRacing());
-            RegisterModule(new Modules.EventTimers.EventTimers());
-            RegisterModule(new Modules.Compass());
-            RegisterModule(new Modules.PoiLookup.PoiLookup());
-            RegisterModule(new Modules.MarkersAndPaths.MarkersAndPaths());
-            RegisterModule(new Modules.Musician.Musician());
-            */
-            // RegisterModule(new Modules.LoadingScreenHints.LoadingScreenHints());
-            // RegisterModule(new Modules.RangeCircles());
-            // RegisterModule(new Modules.MouseUsability.MouseUsability());
-
 #if DEBUG && !NODIRMODULES
             // Allows devs to symlink the output directories of modules in development straight to the modules folder
             foreach (string manifestPath in Directory.GetFiles(this.ModulesDirectory, "manifest.json", SearchOption.AllDirectories)) {
