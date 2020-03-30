@@ -666,28 +666,22 @@ namespace Blish_HUD.Controls {
                 case MouseEventType.LeftMouseButtonPressed:
                     OnLeftMouseButtonPressed(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed));
                     return this;
-                    break;
                 case MouseEventType.LeftMouseButtonReleased:
                     OnLeftMouseButtonReleased(new MouseEventArgs(MouseEventType.LeftMouseButtonReleased));
                     return this;
-                    break;
                 case MouseEventType.RightMouseButtonPressed:
                     OnRightMouseButtonPressed(new MouseEventArgs(MouseEventType.RightMouseButtonPressed));
                     return this;
-                    break;
                 case MouseEventType.RightMouseButtonReleased:
                     OnRightMouseButtonReleased(new MouseEventArgs(MouseEventType.RightMouseButtonReleased));
                     return this;
-                    break;
                 case MouseEventType.MouseMoved:
                     OnMouseMoved(new MouseEventArgs(MouseEventType.MouseMoved));
                     this.MouseOver = true;
                     return this;
-                    break;
                 case MouseEventType.MouseWheelScrolled:
                     OnMouseWheelScrolled(new MouseEventArgs(MouseEventType.MouseWheelScrolled));
                     return inputCapture.HasFlag(CaptureType.MouseWheel) ? this : null;
-                    break;
             }
 
             return null;
