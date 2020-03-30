@@ -164,8 +164,6 @@ namespace Blish_HUD.Controls {
                     _animFill?.Cancel();
                     _animFill = null;
 
-                    float diffLength = Math.Abs(this.DisplayedFill - _currentFill) / (float)this.MaxFill;
-
                     _animFill = Animation.Tweener.Tween(this, new { DisplayedFill = _currentFill }, 0.65f, 0, true).Ease(Glide.Ease.QuintIn);
                 }
             }
@@ -216,9 +214,8 @@ namespace Blish_HUD.Controls {
         public DetailsHighlightType HighlightType {
             get => _highlightType;
             set {
-                if (SetProperty(ref _highlightType, value)) {
-                    if (this.EffectBehind != null) 
-                        this.EffectBehind.Enabled = _highlightType == DetailsHighlightType.ScrollingHighlight;
+                if (SetProperty(ref _highlightType, value) && this.EffectBehind != null) {
+                    this.EffectBehind.Enabled = _highlightType == DetailsHighlightType.ScrollingHighlight;
                 }
             }
         }
@@ -305,7 +302,7 @@ namespace Blish_HUD.Controls {
                                  : !_showVignette ? 10 : 0;
 
             float fillPercent = _maxFill > 0
-                                    ? (float)this.DisplayedFill / _maxFill
+                                    ? this.DisplayedFill / _maxFill
                                     : 1f;
 
             float fillSpace = iconSize * fillPercent;
