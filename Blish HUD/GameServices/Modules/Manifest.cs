@@ -53,8 +53,8 @@ namespace Blish_HUD.Modules {
         [JsonProperty("api_permissions")]
         public Dictionary<TokenPermission, ModuleApiPermissions> ApiPermissions { get; private set; } = new Dictionary<TokenPermission, ModuleApiPermissions>();
 
-        public Manifest() {
-            // Ensure nothing is empty, despite manifest version and contents
+        protected Manifest() {
+            // Ensure nothing is empty, regardless of manifest version and contents
             this.Description    = this.Description    ?? "";
             this.Dependencies   = this.Dependencies   ?? new List<ModuleDependency>(0);
             this.Url            = this.Url            ?? "";
