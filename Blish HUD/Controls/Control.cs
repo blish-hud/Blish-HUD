@@ -786,8 +786,6 @@ namespace Blish_HUD.Controls {
                     this.DisposeControl();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
                 _disposedValue = true;
             }
         }
