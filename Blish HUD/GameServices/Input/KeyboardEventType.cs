@@ -1,6 +1,6 @@
 ﻿namespace Blish_HUD.Input {
 
-    public enum KeyboardEventType : int {
+    public enum KeyboardEventType {
         /// <summary>
         /// A key was pressed.
         /// </summary>
