@@ -27,7 +27,6 @@ namespace Blish_HUD.Modules {
             switch (manifest.ManifestVersion) {
                 case SupportedModuleManifestVersion.V1:
                     return BuildFromManifest(manifest as ManifestV1, module);
-                    break;
 
                 default:
                     Logger.Warn("Module {module} is using an unsupported manifest version {manifestVersion}. The module manifest will not be loaded.", module, manifest.ManifestVersion);
