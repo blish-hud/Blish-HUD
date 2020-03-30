@@ -355,7 +355,7 @@ namespace Blish_HUD.Controls {
             this.Height = this.MenuItemHeight;
         }
 
-        private void DrawDropdownArrow(SpriteBatch spriteBatch, Rectangle bounds) {
+        private void DrawDropdownArrow(SpriteBatch spriteBatch) {
             var arrowOrigin = new Vector2((float)ARROW_SIZE / 2, (float)ARROW_SIZE / 2);
 
             var arrowDest = new Rectangle(5 + ARROW_SIZE / 2,
@@ -377,7 +377,7 @@ namespace Blish_HUD.Controls {
 
             // If MenuItem has children, show dropdown arrow
             if (_children.Any())
-                DrawDropdownArrow(spriteBatch, bounds);
+                DrawDropdownArrow(spriteBatch);
 
             TextureRegion2D firstItemSprite = null;
 
