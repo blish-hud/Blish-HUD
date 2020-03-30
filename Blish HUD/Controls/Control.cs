@@ -816,7 +816,6 @@ namespace Blish_HUD.Controls {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
             if (invalidateLayout) {
-                //Console.WriteLine($"[INVALIDATED LAYOUT] {this.GetType().Name} > {propertyName}");
                 Invalidate();
             }
         }
