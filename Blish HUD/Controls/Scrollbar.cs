@@ -76,7 +76,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private double ScrollbarPercent = 1.0;
+        private double _scrollbarPercent = 1.0;
 
         private Container _associatedContainer;
         public Container AssociatedContainer {
@@ -86,27 +86,31 @@ namespace Blish_HUD.Controls {
 
         private int TrackLength => (_size.Y - _textureUpArrow.Height - _textureDownArrow.Height);
 
-        private bool Scrolling = false;
-        private int ScrollingOffset = 0;
+        private bool _scrolling       = false;
+        private int  _scrollingOffset = 0;
 
-        private Rectangle UpArrowBounds;
-        private Rectangle DownArrowBounds;
-        private Rectangle BarBounds;
-        private Rectangle TrackBounds;
+        private Rectangle _upArrowBounds;
+        private Rectangle _downArrowBounds;
+        private Rectangle _barBounds;
+        private Rectangle _trackBounds;
 
-        public Scrollbar(Container container) : base() {
+        public Scrollbar(Container container) {
             _associatedContainer = container;
 
-            UpArrowBounds = Rectangle.Empty;
-            DownArrowBounds = Rectangle.Empty;
-            BarBounds = Rectangle.Empty;
-            TrackBounds = Rectangle.Empty;
+            _upArrowBounds   = Rectangle.Empty;
+            _downArrowBounds = Rectangle.Empty;
+            _barBounds       = Rectangle.Empty;
+            _trackBounds     = Rectangle.Empty;
 
             this.Width = CONTROL_WIDTH;
 
-            Input.Mouse.LeftMouseButtonReleased += delegate { if (Scrolling) { Scrolling = false; /* Invalidate(); */ } };
+            Input.Mouse.LeftMouseButtonReleased += MouseOnLeftMouseButtonReleased;
 
             _associatedContainer.MouseWheelScrolled += HandleWheelScroll;
+        }
+
+        private void MouseOnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
+            _scrolling = false;
         }
 
         protected override void OnMouseWheelScrolled(MouseEventArgs e) {
@@ -117,7 +121,7 @@ namespace Blish_HUD.Controls {
 
         private void HandleWheelScroll(object sender, MouseEventArgs e) {
             // Don't scroll if the scrollbar isn't visible
-            if (!this.Visible || ScrollbarPercent > 0.99) return;
+            if (!this.Visible || _scrollbarPercent > 0.99) return;
 
             // Avoid scrolling nested panels
             var ctrl = (Control) sender;
@@ -128,7 +132,7 @@ namespace Blish_HUD.Controls {
 
             if (e.MouseState.ScrollWheelValue == 0) return;
 
-            float normalScroll = e.MouseState.ScrollWheelValue / (float)Math.Abs(e.MouseState.ScrollWheelValue);
+            float normalScroll = GameService.Input.Mouse.State.ScrollWheelValue / (float)Math.Abs(GameService.Input.Mouse.State.ScrollWheelValue);
             
             _targetScrollDistanceAnim?.Cancel();
             
@@ -151,15 +155,15 @@ namespace Blish_HUD.Controls {
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
 
-            var relMousePos = e.MouseState.Position - this.AbsoluteBounds.Location;
+            var relMousePos = Input.Mouse.Position - this.AbsoluteBounds.Location;
 
-            if (BarBounds.Contains(relMousePos)) {
-                Scrolling = true;
-                ScrollingOffset = relMousePos.Y - BarBounds.Y;
+            if (_barBounds.Contains(relMousePos)) {
+                _scrolling                = true;
+                _scrollingOffset          = relMousePos.Y - _barBounds.Y;
                 this.TargetScrollDistance = this.ScrollDistance;
-            } else if (UpArrowBounds.Contains(relMousePos)) {
+            } else if (_upArrowBounds.Contains(relMousePos)) {
                 this.ScrollDistance -= 0.02f;
-            } else if (DownArrowBounds.Contains(relMousePos)) {
+            } else if (_downArrowBounds.Contains(relMousePos)) {
                 this.ScrollDistance += 0.02f;
             }
         }
@@ -167,10 +171,10 @@ namespace Blish_HUD.Controls {
         public override void DoUpdate(GameTime gameTime) {
             base.DoUpdate(gameTime);
 
-            if (Scrolling) {
-                var relMousePos = Input.Mouse.Position - this.AbsoluteBounds.Location - new Point(0, ScrollingOffset) - TrackBounds.Location;
+            if (_scrolling) {
+                var relMousePos = Input.Mouse.Position - this.AbsoluteBounds.Location - new Point(0, _scrollingOffset) - _trackBounds.Location;
                 
-                this.ScrollDistance = (float)relMousePos.Y / (float)(this.TrackLength - this.ScrollbarHeight);
+                this.ScrollDistance = relMousePos.Y / (float)(this.TrackLength - this.ScrollbarHeight);
                 this.TargetScrollDistance = this.ScrollDistance;
             }
 
@@ -178,19 +182,19 @@ namespace Blish_HUD.Controls {
         }
 
         public override void Invalidate() {
-            var _lastVal = this.ScrollbarPercent;
+            var lastVal = _scrollbarPercent;
             RecalculateScrollbarSize();
 
-            if (_lastVal != this.ScrollbarPercent && _associatedContainer != null) {
+            if (lastVal != _scrollbarPercent && _associatedContainer != null) {
                 this.ScrollDistance = 0;
                 this.TargetScrollDistance = 0;
             }
 
-            UpArrowBounds = new Rectangle(this.Width / 2 - _textureUpArrow.Width / 2, 0, _textureUpArrow.Width, _textureUpArrow.Height);
-            DownArrowBounds = new Rectangle(this.Width / 2 - _textureDownArrow.Width / 2, this.Height - _textureDownArrow.Height, _textureDownArrow.Width, _textureDownArrow.Height);
-            BarBounds = new Rectangle(this.Width / 2 - _textureBar.Width / 2, (int)(this.ScrollDistance * (this.TrackLength - this.ScrollbarHeight)) + _textureUpArrow.Height, _textureBar.Width, this.ScrollbarHeight);
-            TrackBounds = new Rectangle(this.Width / 2 - _textureTrack.Width / 2, UpArrowBounds.Bottom, _textureTrack.Width, this.TrackLength);
-            
+            _upArrowBounds   = new Rectangle(this.Width / 2 - _textureUpArrow.Width   / 2, 0,                                                                                                 _textureUpArrow.Width,   _textureUpArrow.Height);
+            _downArrowBounds = new Rectangle(this.Width / 2 - _textureDownArrow.Width / 2, this.Height                                                            - _textureDownArrow.Height, _textureDownArrow.Width, _textureDownArrow.Height);
+            _barBounds       = new Rectangle(this.Width / 2 - _textureBar.Width       / 2, (int)(this.ScrollDistance * (this.TrackLength - this.ScrollbarHeight)) + _textureUpArrow.Height,   _textureBar.Width,       this.ScrollbarHeight);
+            _trackBounds     = new Rectangle(this.Width / 2 - _textureTrack.Width     / 2, _upArrowBounds.Bottom,                                                                             _textureTrack.Width,     this.TrackLength);
+
             base.Invalidate();
         }
 
@@ -213,39 +217,34 @@ namespace Blish_HUD.Controls {
 
             _containerLowestContent = Math.Max(_containerLowestContent, _associatedContainer.ContentRegion.Height);
 
-            //_containerLowestContent = Math.Max(tempContainerChidlren.Any(c => c.Visible)
-            //                                       ? tempContainerChidlren.Where(c => c.Visible).Max(c => c.Bottom)
-            //                                       : 0,
-            //                                   _associatedContainer.ContentRegion.Height);
+            _scrollbarPercent = _associatedContainer.ContentRegion.Height / (double)_containerLowestContent;
 
-            ScrollbarPercent = _associatedContainer.ContentRegion.Height / (double)_containerLowestContent;
-
-            this.ScrollbarHeight = (int)Math.Max(Math.Floor(this.TrackLength * ScrollbarPercent) - 1, MIN_LENGTH);
+            this.ScrollbarHeight = (int)Math.Max(Math.Floor(this.TrackLength * _scrollbarPercent) - 1, MIN_LENGTH);
 
             UpdateAssocContainer();
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Don't show the scrollbar if there is nothing to scroll
-            if (ScrollbarPercent > 0.99) return;
+            if (_scrollbarPercent > 0.99) return;
 
-            var drawTint = !Scrolling && this.MouseOver || (_associatedContainer != null && _associatedContainer.MouseOver)
+            var drawTint = !_scrolling && this.MouseOver || (_associatedContainer != null && _associatedContainer.MouseOver)
                                ? Color.White
                                : ContentService.Colors.Darkened(0.6f);
 
-            drawTint = Scrolling
+            drawTint = _scrolling
                            ? ContentService.Colors.Darkened(0.9f)
                            : drawTint;
 
-            spriteBatch.DrawOnCtrl(this, _textureTrack, TrackBounds);
+            spriteBatch.DrawOnCtrl(this, _textureTrack, _trackBounds);
 
-            spriteBatch.DrawOnCtrl(this, _textureUpArrow, UpArrowBounds, drawTint);
-            spriteBatch.DrawOnCtrl(this, _textureDownArrow, DownArrowBounds, drawTint);
+            spriteBatch.DrawOnCtrl(this, _textureUpArrow,   _upArrowBounds,   drawTint);
+            spriteBatch.DrawOnCtrl(this, _textureDownArrow, _downArrowBounds, drawTint);
 
-            spriteBatch.DrawOnCtrl(this, _textureBar, BarBounds, drawTint);
-            spriteBatch.DrawOnCtrl(this, _textureTopCap, new Rectangle(this.Width / 2 - _textureTopCap.Width / 2, BarBounds.Top - CAP_SLACK, _textureTopCap.Width, _textureTopCap.Height));
-            spriteBatch.DrawOnCtrl(this, _textureBottomCap, new Rectangle(this.Width / 2 - _textureBottomCap.Width / 2, BarBounds.Bottom - _textureBottomCap.Height + CAP_SLACK, _textureBottomCap.Width, _textureBottomCap.Height));
-            spriteBatch.DrawOnCtrl(this, _textureThumb, new Rectangle(this.Width / 2 - _textureThumb.Width / 2, BarBounds.Top + (this.ScrollbarHeight / 2 - _textureThumb.Height / 2), _textureThumb.Width, _textureThumb.Height), drawTint);
+            spriteBatch.DrawOnCtrl(this, _textureBar,       _barBounds, drawTint);
+            spriteBatch.DrawOnCtrl(this, _textureTopCap,    new Rectangle(this.Width / 2 - _textureTopCap.Width    / 2, _barBounds.Top                               - CAP_SLACK,                                             _textureTopCap.Width,    _textureTopCap.Height));
+            spriteBatch.DrawOnCtrl(this, _textureBottomCap, new Rectangle(this.Width / 2 - _textureBottomCap.Width / 2, _barBounds.Bottom - _textureBottomCap.Height + CAP_SLACK,                                             _textureBottomCap.Width, _textureBottomCap.Height));
+            spriteBatch.DrawOnCtrl(this, _textureThumb,     new Rectangle(this.Width / 2 - _textureThumb.Width     / 2, _barBounds.Top                               + (this.ScrollbarHeight / 2 - _textureThumb.Height / 2), _textureThumb.Width,     _textureThumb.Height), drawTint);
         }
 
     }
