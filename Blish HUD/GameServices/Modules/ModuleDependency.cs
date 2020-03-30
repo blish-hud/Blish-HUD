@@ -8,7 +8,6 @@ namespace Blish_HUD.Modules {
 
     public class ModuleDependency {
 
-        private const bool   VERSIONRANGE_LOOSE       = false;
         private const string BLISHHUD_DEPENDENCY_NAME = "bh.blishhud";
 
         internal class VersionDependenciesConverter : JsonConverter<List<ModuleDependency>> {
