@@ -197,7 +197,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateContentRegionBounds(object sender, EventArgs e) {
-            //UpdateScrollbar();
+            UpdateScrollbar();
         }
 
         private Rectangle _layoutHeaderBounds;
