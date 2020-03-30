@@ -7,43 +7,30 @@ using MonoGame.Extended.BitmapFonts;
 namespace Blish_HUD.Controls {
     public abstract class LabelBase : Control {
 
-        private CachedStringRender _labelRender;
-
-        protected bool _cacheLabel = false;
-
-        protected string _text;
-
-        protected BitmapFont _font;
-
-        protected Color _textColor = Color.White;
-
+        private   CachedStringRender  _labelRender;
+        protected string              _text;
+        protected BitmapFont          _font;
+        protected bool                _cacheLabel          = false;
+        protected Color               _textColor           = Color.White;
         protected HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
+        protected VerticalAlignment   _verticalAlignment   = VerticalAlignment.Middle;
+        protected bool                _wrapText            = false;
+        protected bool                _showShadow          = false;
+        protected bool                _strokeText          = false;
+        protected Color               _shadowColor         = Color.Black;
+        protected bool                _autoSizeWidth       = false;
+        protected bool                _autoSizeHeight      = false;
 
-        protected VerticalAlignment _verticalAlignment = VerticalAlignment.Middle;
-
-        protected bool _wrapText = false;
-
-        protected bool _showShadow = false;
-
-        protected bool _strokeText = false;
-
-        protected Color _shadowColor = Color.Black;
-
-        protected bool _autoSizeWidth = false;
-
-        protected bool _autoSizeHeight = false;
-
-        public LabelBase() {
+        protected LabelBase() {
             _font = Content.DefaultFont14;
         }
 
         protected override CaptureType CapturesInput() {
-            //return string.IsNullOrEmpty(this.BasicTooltipText) ? CaptureType.None : CaptureType.Mouse;
             return CaptureType.Filter;
         }
 
         /// <summary>
-        /// If either <see cref="AutoSizeWidth"/> or <see cref="AutoSizeHeight"/> is enabled,
+        /// If either <see cref="_autoSizeWidth"/> or <see cref="_autoSizeHeight"/> is enabled,
         /// this will indicate the size of the label region after <see cref="RecalculateLayout"/>
         /// has completed.
         /// </summary>
@@ -108,10 +95,6 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             DrawText(spriteBatch, bounds, _text);
-        }
-
-        protected override void DisposeControl() {
-
         }
 
     }
