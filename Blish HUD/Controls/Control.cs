@@ -127,8 +127,7 @@ namespace Blish_HUD.Controls {
                 _sharedTooltipLabel.Text      = e.ActivatedControl._basicTooltipText;
             }
 
-            // TODO: _activeControl is probably not what should be passed as the sender...
-            ActiveControlChanged?.Invoke(_activeControl, e);
+            ActiveControlChanged?.Invoke(null, e);
         }
 
         #endregion
@@ -667,28 +666,22 @@ namespace Blish_HUD.Controls {
                 case MouseEventType.LeftMouseButtonPressed:
                     OnLeftMouseButtonPressed(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed));
                     return this;
-                    break;
                 case MouseEventType.LeftMouseButtonReleased:
                     OnLeftMouseButtonReleased(new MouseEventArgs(MouseEventType.LeftMouseButtonReleased));
                     return this;
-                    break;
                 case MouseEventType.RightMouseButtonPressed:
                     OnRightMouseButtonPressed(new MouseEventArgs(MouseEventType.RightMouseButtonPressed));
                     return this;
-                    break;
                 case MouseEventType.RightMouseButtonReleased:
                     OnRightMouseButtonReleased(new MouseEventArgs(MouseEventType.RightMouseButtonReleased));
                     return this;
-                    break;
                 case MouseEventType.MouseMoved:
                     OnMouseMoved(new MouseEventArgs(MouseEventType.MouseMoved));
                     this.MouseOver = true;
                     return this;
-                    break;
                 case MouseEventType.MouseWheelScrolled:
                     OnMouseWheelScrolled(new MouseEventArgs(MouseEventType.MouseWheelScrolled));
                     return inputCapture.HasFlag(CaptureType.MouseWheel) ? this : null;
-                    break;
             }
 
             return null;
@@ -793,8 +786,6 @@ namespace Blish_HUD.Controls {
                     this.DisposeControl();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
                 _disposedValue = true;
             }
         }
@@ -825,7 +816,6 @@ namespace Blish_HUD.Controls {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
             if (invalidateLayout) {
-                //Console.WriteLine($"[INVALIDATED LAYOUT] {this.GetType().Name} > {propertyName}");
                 Invalidate();
             }
         }

@@ -75,15 +75,12 @@ namespace Blish_HUD.Input {
                 case Keys.LeftControl:
                 case Keys.RightControl:
                     return ModifierKeys.Ctrl;
-                    break;
                 case Keys.LeftAlt:
                 case Keys.RightAlt:
                     return ModifierKeys.Alt;
-                    break;
                 case Keys.LeftShift:
                 case Keys.RightShift:
                     return ModifierKeys.Shift;
-                    break;
             }
 
             return ModifierKeys.None;

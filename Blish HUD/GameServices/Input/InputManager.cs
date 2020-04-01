@@ -10,7 +10,7 @@ namespace Blish_HUD.Input {
         private Hook   _hook;
         private Thread _hookThread;
 
-        protected internal InputManager(HookType hookType) {
+        protected InputManager(HookType hookType) {
             _hookType = hookType;
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace Blish_HUD.Input {
 
-    public enum MouseEventType : int {
+    public enum MouseEventType {
 
         /// <summary>
         /// Occurs when the mouse has moved.

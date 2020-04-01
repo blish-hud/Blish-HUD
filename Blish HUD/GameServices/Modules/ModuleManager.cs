@@ -96,19 +96,22 @@ namespace Blish_HUD.Modules {
             byte[] assemblyData = _dataReader.GetFileBytes(dllName);
             byte[] symbolData   = _dataReader.GetFileBytes(symbolsPath) ?? new byte[0];
 
-            Assembly moduleAssembly;
-
-            try {
-                moduleAssembly = Assembly.Load(assemblyData, symbolData);
-            } catch (ReflectionTypeLoadException ex) {
-                Logger.Warn(ex, "Module {module} failed to load due to a type exception. Ensure that you are using the correct version of the Module", this);
-                return;
-            } catch (BadImageFormatException ex) {
-                Logger.Warn(ex, "Module {module} failed to load.  Check that it is a compiled module.", this);
-                return;
+            if (_moduleAssembly == null) {
+                try {
+                    _moduleAssembly = Assembly.Load(assemblyData, symbolData);
+                } catch (ReflectionTypeLoadException ex) {
+                    Logger.Warn(ex, "Module {module} failed to load due to a type exception. Ensure that you are using the correct version of the Module", this);
+                    return;
+                } catch (BadImageFormatException ex) {
+                    Logger.Warn(ex, "Module {module} failed to load.  Check that it is a compiled module.", this);
+                    return;
+                } catch (Exception ex) {
+                    Logger.Warn(ex, "Module {module} failed to load due to an unexpected error.", this);
+                    return;
+                }
             }
 
-            var catalog   = new AssemblyCatalog(moduleAssembly);
+            var catalog   = new AssemblyCatalog(_moduleAssembly);
             var container = new CompositionContainer(catalog);
 
             container.ComposeExportedValue("ModuleParameters", parameters);

@@ -141,7 +141,6 @@
     <Compile Include="Controls\ICheckable.cs" />
     <Compile Include="Controls\InteractionIndicator.cs" />
     <Compile Include="Controls\InteractionInfo.cs" />
-    <Compile Include="Controls\MultilineTextBox.cs" />
     <Compile Include="Controls\IMenuItem.cs" />
     <Compile Include="Controls\BackButton.cs" />
     <Compile Include="Controls\Checkbox.cs" />
@@ -161,7 +160,6 @@
     <Compile Include="Controls\Panel.cs" />
     <Compile Include="Controls\Screen.cs" />
     <Compile Include="Controls\Scrollbar.cs" />
-    <Compile Include="Controls\SkillBox.cs" />
     <Compile Include="Controls\StandardButton.cs" />
     <Compile Include="Controls\TabbedWindow.cs" />
     <Compile Include="Controls\TextBox.cs" />
@@ -176,12 +174,10 @@
     <Compile Include="Controls\_Types\LayoutState.cs" />
     <Compile Include="Controls\_Types\Thickness.cs" />
     <Compile Include="Controls\_Types\VerticalAlignment.cs" />
-    <Compile Include="CustomBlendStates.cs" />
     <Compile Include="Entities\Cube.cs" />
     <Compile Include="Entities\Effects\EntityEffect.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityBillboard.cs" />
-    <Compile Include="Entities\EntityContainer.cs" />
     <Compile Include="Entities\EntityText.cs" />
     <Compile Include="GameServices\ArcDps\AsyncUserToken.cs" />
     <Compile Include="GameServices\ArcDps\CombatParser.cs" />

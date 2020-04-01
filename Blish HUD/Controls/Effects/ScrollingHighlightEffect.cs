@@ -81,7 +81,7 @@ namespace Blish_HUD.Controls.Effects {
             assignedControl.MouseLeft    += AssignedControlOnMouseLeft;
         }
 
-        public override SpriteBatchParameters GetSpriteBatchParameters() {
+        protected override SpriteBatchParameters GetSpriteBatchParameters() {
             return new SpriteBatchParameters(SpriteSortMode.Immediate,
                                              BlendState.AlphaBlend,
                                              SamplerState.LinearWrap,

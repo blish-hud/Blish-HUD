@@ -94,12 +94,7 @@ namespace Blish_HUD.Controls {
 
         private void MouseButtonPressed(object sender, MouseEventArgs e) {
             if (!this.Visible) return;
-
-            if (Input.Mouse.ActiveControl is ContextMenuStripItem menuStrip) {
-                if (menuStrip.CanCheck) {
-                    return;
-                }
-            }
+            if (Input.Mouse.ActiveControl is ContextMenuStripItem menuStrip && menuStrip.CanCheck) return;
 
             if (!this.MouseOver)
                 this.Hide();

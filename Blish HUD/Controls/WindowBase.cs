@@ -153,7 +153,7 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        public WindowBase() {
+        protected WindowBase() {
             this.Opacity = 0f;
             this.Visible = false;
 
@@ -173,15 +173,14 @@ namespace Blish_HUD.Controls {
         protected virtual void ConstructWindow(Texture2D background, Vector2 backgroundOrigin, Rectangle? windowBackgroundBounds = null, Thickness outerPadding = default, int titleBarHeight = 0, bool standardWindow = true) {
             StandardWindow = standardWindow;
 
-            _windowBackground = background;
-            _windowBackgroundOrigin = backgroundOrigin; //.OffsetBy(0, -titleBarHeight);
+            _windowBackground       = background;
+            _windowBackgroundOrigin = backgroundOrigin;
 
             Rectangle tempBounds = windowBackgroundBounds ?? background.Bounds;
 
             _titleBarBounds = new Rectangle(0, 0, tempBounds.Width, titleBarHeight);
 
-            this.Size = tempBounds.Size;
-
+            this.Size    = tempBounds.Size;
             this.Padding = outerPadding;
 
             _windowBackgroundBounds = new Rectangle(0, titleBarHeight, tempBounds.Width + (int)_padding.Right + (int)_padding.Left, tempBounds.Height + (int)_padding.Bottom);

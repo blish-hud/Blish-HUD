@@ -47,31 +47,32 @@ namespace Blish_HUD.Controls {
 
         public int RoundedValue => (int)Math.Round(_value, 0);
 
-        private bool Dragging = false;
-        private int DraggingOffset = 0;
+        private bool _dragging   = false;
+        private int  _dragOffset = 0;
 
         public TrackBar() {
             this.Size = new Point(256, 16);
 
-            this.LeftMouseButtonPressed += TrackBar_LeftMouseButtonPressed;
-            Input.Mouse.LeftMouseButtonReleased += Input_LeftMouseButtonReleased;
+            Input.Mouse.LeftMouseButtonReleased += InputOnLeftMouseButtonReleased;
         }
 
-        private void Input_LeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            Dragging = false;
+        private void InputOnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
+            _dragging = false;
         }
 
-        private void TrackBar_LeftMouseButtonPressed(object sender, MouseEventArgs e) {
+        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
+            base.OnLeftMouseButtonPressed(e);
+
             if (_layoutNubBounds.Contains(this.RelativeMousePosition)) {
-                Dragging = true;
-                DraggingOffset = this.RelativeMousePosition.X - _layoutNubBounds.X;
+                _dragging       = true;
+                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X;
             }
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            if (Dragging) {
-                var relMousePos = this.RelativeMousePosition - new Point(DraggingOffset, 0);
-                this.Value = ((float)relMousePos.X / (float)(this.Width - BUFFER_WIDTH * 2 - _textureNub.Width)) * (this.MaxValue - this.MinValue);
+            if (_dragging) {
+                var relMousePos = this.RelativeMousePosition - new Point(_dragOffset, 0);
+                this.Value = (relMousePos.X / (float)(this.Width - BUFFER_WIDTH * 2 - _textureNub.Width)) * (this.MaxValue - this.MinValue);
             }
         }
 

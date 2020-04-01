@@ -43,11 +43,11 @@ namespace Blish_HUD.Controls.Effects {
             }
         }
 
-        public ControlEffect(Control assignedControl) {
+        protected ControlEffect(Control assignedControl) {
             this.AssignedControl = assignedControl;
         }
 
-        public abstract SpriteBatchParameters GetSpriteBatchParameters();
+        protected abstract SpriteBatchParameters GetSpriteBatchParameters();
 
         protected virtual void OnEnable() { /* NOOP */ }
         protected virtual void OnDisable() { /* NOOP */ }

@@ -106,7 +106,7 @@ namespace Blish_HUD.Controls {
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
 
             GameService.Input.Mouse.MouseMoved += (sender, e) => {
-                var scaledMousePos = e.MouseState.Position.ScaleToUi();
+                var scaledMousePos = Input.Mouse.State.Position.ScaleToUi();
                 if (scaledMousePos.Y < BlishHud.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
                     foreach (var cornerIcon in CornerIcons) {
                         cornerIcon.MouseInHouse = scaledMousePos.X < cornerIcon.Left || cornerIcon.MouseOver;
@@ -169,7 +169,7 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc />
         protected override void OnMouseMoved(MouseEventArgs e) {
-            if (_isLoading && _mouseOver && !(this.RelativeMousePosition.Y < _standardIconBounds.Bottom)) {
+            if (_isLoading && _mouseOver && this.RelativeMousePosition.Y >= _standardIconBounds.Bottom) {
                 this.BasicTooltipText = _loadingMessage;
             } else {
                 this.BasicTooltipText = _iconName;

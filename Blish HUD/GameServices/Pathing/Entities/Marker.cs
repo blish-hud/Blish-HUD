@@ -115,7 +115,7 @@ namespace Blish_HUD.Pathing.Entities {
             this.Size     = size;
             this.Texture  = texture;
 
-            //GameService.Input.MouseMoved += Input_MouseMoved;
+            //GameService.Input.MouseMoved += InputOnMouseMoved;
         }
 
         private void Initialize() {
@@ -176,7 +176,7 @@ namespace Blish_HUD.Pathing.Entities {
 
         private bool _mouseOver = false;
 
-        private void Input_MouseMoved(object sender, MouseEventArgs e) {
+        private void InputOnMouseMoved(object sender, MouseEventArgs e) {
             var screenPosition = GameService.Graphics.GraphicsDevice.Viewport.Project(this.Position, GameService.Camera.Projection, GameService.Camera.View, Matrix.Identity);
 
             float xdist = screenPosition.X - e.MouseState.Position.X;

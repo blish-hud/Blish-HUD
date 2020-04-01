@@ -56,14 +56,14 @@ namespace Blish_HUD.Controls {
 
         public ColorPicker() : base() {
             this.Colors                   =  new ObservableCollection<Gw2Sharp.WebApi.V2.Models.Color>();
-            this.Colors.CollectionChanged += Colors_CollectionChanged;
+            this.Colors.CollectionChanged += ColorsOnCollectionChanged;
 
             this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - (COLOR_PADDING * 2) - 10, this.Height - (COLOR_PADDING * 2));
 
             colorBoxes = new Dictionary<Gw2Sharp.WebApi.V2.Models.Color, ColorBox>();
         }
 
-        private void Colors_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+        private void ColorsOnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
             // Remove any items that were removed (first because moving an item in a collection will put
             // that item in both OldItems and NewItems)
             if (e.OldItems != null) {

@@ -24,7 +24,7 @@ namespace Blish_HUD {
         private static Logger Logger;
 
         private static LoggingConfiguration _logConfiguration;
-        // ${message}
+
         private const string STANDARD_LAYOUT = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}${onexception:${newline}${exception:format=toString}${newline}}";
 
         internal static void InitDebug() {
@@ -92,7 +92,7 @@ namespace Blish_HUD {
             _logConfiguration.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logDebug);
         }
 
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
+        private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
             GameService.Input.DisableHooks();
 
             var e = (Exception)args.ExceptionObject;
@@ -181,7 +181,7 @@ namespace Blish_HUD {
             this.FrameCounter = new FrameCounter(FRAME_DURATION_SAMPLES);
 
 #if !DEBUG
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 #endif
         }
 
