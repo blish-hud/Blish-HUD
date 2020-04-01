@@ -181,7 +181,7 @@ namespace Blish_HUD {
             this.FrameCounter = new FrameCounter(FRAME_DURATION_SAMPLES);
 
 #if !DEBUG
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 #endif
         }
 
