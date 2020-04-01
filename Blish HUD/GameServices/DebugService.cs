@@ -92,7 +92,7 @@ namespace Blish_HUD {
             _logConfiguration.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logDebug);
         }
 
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
+        private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
             GameService.Input.DisableHooks();
 
             var e = (Exception)args.ExceptionObject;

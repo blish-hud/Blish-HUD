@@ -89,23 +89,35 @@ namespace Blish_HUD.Controls {
 
             this.Padding = new Thickness(PADDING);
 
-            this.ChildAdded   += Tooltip_ChildChanged;
-            this.ChildRemoved += Tooltip_ChildChanged;
-
             _allTooltips.Add(this);
         }
 
-        private void Tooltip_ChildChanged(object sender, ChildChangedEventArgs e) {
+        protected override void OnChildAdded(ChildChangedEventArgs e) {
+            base.OnChildAdded(e);
+
+            HandleChildChanged(this, e);
+        }
+
+        protected override void OnChildRemoved(ChildChangedEventArgs e) {
+            base.OnChildRemoved(e);
+
+            HandleChildChanged(this, e);
+        }
+
+        private void HandleChildChanged(object sender, ChildChangedEventArgs e) {
             Invalidate();
 
             // Ensure we don't miss it if a child control is resized or is moved
             if (e.Added) {
-                e.ChangedChild.Resized += delegate { Invalidate(); };
-                e.ChangedChild.Moved += delegate { Invalidate(); };
+                e.ChangedChild.Resized += Invalidate;
+                e.ChangedChild.Moved   += Invalidate;
             } else {
-                // TODO: Remove handlers
+                e.ChangedChild.Resized -= Invalidate;
+                e.ChangedChild.Moved   -= Invalidate;
             }
         }
+
+        private void Invalidate(object sender, EventArgs e) => Invalidate();
 
         public override void UpdateContainer(GameTime gameTime) {
             if (this.CurrentControl != null && !this.CurrentControl.Visible) {

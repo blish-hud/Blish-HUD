@@ -100,9 +100,9 @@ namespace Blish_HUD.Controls
         {
             MinusSprite = MinusSprite ?? Content.GetTexture("minus");
             PlusSprite = PlusSprite ?? Content.GetTexture("plus");
-            this.MouseMoved += CounterBox_MouseMoved;
-            this.MouseLeft += CounterBox_MouseLeft;
-            this.LeftMouseButtonPressed += CounterBox_LeftMouseButtonPressed;
+            this.MouseMoved += CounterBoxOnMouseMoved;
+            this.MouseLeft += CounterBoxOnMouseLeft;
+            this.LeftMouseButtonPressed += CounterBoxOnLeftMouseButtonPressed;
             this.Size = new Point(150, 20);
         }
         private bool _mouseOverPlus = false;
@@ -127,12 +127,12 @@ namespace Blish_HUD.Controls
                 Invalidate();
             }
         }
-        private void CounterBox_MouseLeft(object sender, MouseEventArgs e)
+        private void CounterBoxOnMouseLeft(object sender, MouseEventArgs e)
         {
             this.MouseOverPlus = false;
             this.MouseOverMinus = false;
         }
-        private void CounterBox_MouseMoved(object sender, MouseEventArgs e)
+        private void CounterBoxOnMouseMoved(object sender, MouseEventArgs e)
         {
             var relPos = e.MouseState.Position - this.AbsoluteBounds.Location;
 
@@ -149,7 +149,7 @@ namespace Blish_HUD.Controls
                 this.MouseOverPlus = false;
             }
         }
-        private void CounterBox_LeftMouseButtonPressed(object sender, MouseEventArgs e)
+        private void CounterBoxOnLeftMouseButtonPressed(object sender, MouseEventArgs e)
         {
             if (this.MouseOverMinus) {
                 if (this.Exponential)
