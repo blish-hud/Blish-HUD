@@ -1,4 +1,5 @@
 ﻿using System;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -33,6 +34,35 @@ namespace Blish_HUD.Controls {
             _multiline = false;
 
             this.Size = new Point(STANDARD_CONTROLWIDTH, STANDARD_CONTROLHEIGHT);
+        }
+
+        protected override void OnClick(MouseEventArgs e) {
+            base.OnClick(e);
+
+            int newIndex = GetCursorIndexFromFromPosition(this.RelativeMousePosition.X - TEXT_LEFTPADDING);
+
+            if (_cursorIndex == newIndex && e.IsDoubleClick) {
+                SelectAll();
+            } else {
+                UserSetCursorIndex(newIndex);
+                ResetSelection();
+            }
+        }
+
+        private int GetCursorIndexFromFromPosition(int x) {
+            int charIndex = 0;
+
+            var glyphs = _font.GetGlyphs(_text);
+
+            foreach (var glyph in glyphs) {
+                if (glyph.Position.X + glyph.FontRegion.Width > _horizontalOffset + x) {
+                    break;
+                }
+
+                charIndex++;
+            }
+
+            return charIndex;
         }
 
         protected override void UpdateScrolling() {

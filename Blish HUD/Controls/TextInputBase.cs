@@ -351,7 +351,7 @@ namespace Blish_HUD.Controls {
             ResetSelection();
         }
 
-        private void UserSetCursorIndex(int newIndex) {
+        protected void UserSetCursorIndex(int newIndex) {
             if (newIndex > this.Length) {
                 newIndex = this.Length;
             }
@@ -363,7 +363,7 @@ namespace Blish_HUD.Controls {
             this.CursorIndex = newIndex;
         }
 
-        private void ResetSelection() {
+        protected void ResetSelection() {
             this.SelectionStart = this.SelectionEnd = this.CursorIndex;
         }
 
@@ -379,11 +379,11 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void MoveLine(int delta) {
+        protected void MoveLine(int delta) {
 
         }
 
-        private void SelectAll() {
+        protected void SelectAll() {
             this.SelectionStart = 0;
             this.SelectionEnd   = this.Length;
         }
@@ -398,7 +398,7 @@ namespace Blish_HUD.Controls {
             return value;
         }
 
-        private bool SetText(string value, bool byUser) {
+        protected bool SetText(string value, bool byUser) {
             string prevText = _text;
 
             value = ProcessText(value);
@@ -469,7 +469,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void HandleCopy() {
+        protected void HandleCopy() {
             if (_selectionEnd != _selectionStart) {
                 int selectStart = Math.Min(_selectionStart, _selectionEnd);
                 int selectEnd   = Math.Max(_selectionStart, _selectionEnd);
@@ -485,12 +485,12 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void HandleCut() {
+        protected void HandleCut() {
             HandleCopy();
             DeleteSelection();
         }
 
-        private void HandlePaste() {
+        protected void HandlePaste() {
             ClipboardUtil.WindowsClipboardService.GetTextAsync()
                          .ContinueWith((Task<string> clipboardTask) => {
                               if (!clipboardTask.IsFaulted) {
@@ -503,15 +503,15 @@ namespace Blish_HUD.Controls {
                           });
         }
 
-        private void HandleUndo() {
+        protected void HandleUndo() {
             UndoRedo(_undoStack, _redoStack);
         }
 
-        private void HandleRedo() {
+        protected void HandleRedo() {
             UndoRedo(_redoStack, _undoStack);
         }
 
-        private void HandleBackspace() {
+        protected void HandleBackspace() {
             if (_selectionStart == _selectionEnd) {
                 if (Delete(_cursorIndex - 1, 1)) {
                     UserSetCursorIndex(_cursorIndex - 1);
@@ -522,7 +522,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void HandleDelete() {
+        protected void HandleDelete() {
             if (_selectionStart == _selectionEnd) {
                 Delete(_cursorIndex, 1);
             } else {
@@ -530,7 +530,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void HandleHome(bool ctrlDown) {
+        protected void HandleHome(bool ctrlDown) {
             int newIndex = 0;
 
             if (!ctrlDown && !string.IsNullOrEmpty(_text)) {
@@ -545,7 +545,7 @@ namespace Blish_HUD.Controls {
             UpdateSelectionIfShiftDown();
         }
 
-        private void HandleEnd(bool ctrlDown) {
+        protected void HandleEnd(bool ctrlDown) {
             int newIndex = this.Length;
 
             if (!ctrlDown) {
