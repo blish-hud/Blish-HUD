@@ -38,23 +38,11 @@ namespace Blish_HUD.Controls {
         protected override void UpdateScrolling() {
             Size2 leftPos = _font.MeasureString(_text.Substring(0, _cursorIndex));
 
-            int oldHorizontal = _horizontalOffset;
-
             if (_cursorIndex > _prevCursorIndex) {
-                // Cursor moved right
-                //_horizontalOffset = (int)MathHelper.Clamp(_horizontalOffset, leftPos.Width - _size.X - (TEXT_LEFTPADDING * 2), leftPos.Width);
-                //Logger.Debug($"[ {leftPos.Width - _size.X - (TEXT_LEFTPADDING * 2)} == {oldHorizontal} == {leftPos.Width}] == ({_horizontalOffset})");
-
                 _horizontalOffset = (int)Math.Max(_horizontalOffset, leftPos.Width - _size.X);
-
             } else {
-                // Cursor moved left
                 _horizontalOffset = (int)Math.Min(_horizontalOffset, leftPos.Width);
-                //_horizontalOffset = (int)MathHelper.Clamp(_horizontalOffset, leftPos.Width, leftPos.Width + _size.X - (TEXT_LEFTPADDING * 2));
-                //Logger.Debug($"[ {leftPos.Width} == {oldHorizontal} == {leftPos.Width + _size.X - (TEXT_LEFTPADDING * 2)}] == ({_horizontalOffset})");
             }
-
-            Logger.Debug($"{_horizontalOffset}");
 
             _prevCursorIndex = _cursorIndex;
         }
