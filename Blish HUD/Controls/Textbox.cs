@@ -1,54 +1,16 @@
-﻿/*
- *  This code is heavily adapted from the Myra TextBox (https://github.com/rds1983/Myra/blob/a9dbf7a1ceedc19f9e416c754eaf38e89a89a746/src/Myra/Graphics2D/UI/TextBox.cs)
- *
- *  MIT License
- *
- *  Copyright (c) 2017-2020 The Myra Team
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
-
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
- */
-
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Blish_HUD.Controls.Resources;
-using Blish_HUD.Input;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
-using Keys = Microsoft.Xna.Framework.Input.Keys;
-using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
+using MonoGame.Extended;
 
 namespace Blish_HUD.Controls {
-
-    /// <summary>
-    /// Represents a textbox control.
-    /// </summary>
-    public class TextBox : Control {
-
-        private static readonly Logger Logger = Logger.GetLogger<TextBox>();
+    public class TextBox : TextInputBase {
 
         private const int STANDARD_CONTROLWIDTH  = 250;
         private const int STANDARD_CONTROLHEIGHT = 27;
 
-        private const char NEWLINE = '\n';
+        private const int TEXT_TOPPADDING  = 2;
+        private const int TEXT_LEFTPADDING = 10;
 
         #region Load Static
 
@@ -62,561 +24,39 @@ namespace Blish_HUD.Controls {
 
         public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
                                                                             /*   PanelOffset */ new Point(5,   2),
-                                                                            /* ControlOffset */ Control.ControlStandard.ControlOffset);
+                                                                            /* ControlOffset */ ControlStandard.ControlOffset);
 
-        public event EventHandler<EventArgs> TextChanged;
-        public event EventHandler<EventArgs> EnterPressed;
-        public event EventHandler<Keys> KeyPressed;
-        public event EventHandler<Keys> KeyDown;
-        public event EventHandler<Keys> KeyUp;
-        public event EventHandler<ValueEventArgs<int>> CursorIndexChanged;
-        
-        protected void OnCursorIndexChanged(ValueEventArgs<int> e) {
-            UpdateScrolling();
-
-            CursorIndexChanged?.Invoke(this, e);
-        }
-
-        protected void OnTextChanged(ValueChangedEventArgs<string> e) {
-            TextChanged?.Invoke(this, e);
-        }
-
-        private string _text = string.Empty;
-        public string Text {
-            get => _text;
-            set => SetText(value, false);
-        }
-
-        private string UserText {
-            get => _text;
-            set => SetText(value, true);
-        }
-
-        private string _placeholderText;
-        public string PlaceholderText {
-            get => _placeholderText;
-            set => SetProperty(ref _placeholderText, value);
-        }
-
-        private Color _foreColor = Color.FromNonPremultiplied(239, 240, 239, 255);
-        public Color ForeColor {
-            get => _foreColor;
-            set => SetProperty(ref _foreColor, value);
-        }
-
-        private BitmapFont _font = Content.DefaultFont14;
-        public BitmapFont Font {
-            get => _font;
-            set => SetProperty(ref _font, value, true);
-        }
-
-        private bool _focused = false;
-        public bool Focused {
-            get => _focused;
-            set => SetProperty(ref _focused, value);
-        }
-
-        private int _selectionStart;
-        public int SelectionStart {
-            get => _selectionStart;
-            set => SetProperty(ref _selectionStart, value);
-        }
-
-        private int _selectionEnd;
-        public int SelectionEnd {
-            get => _selectionEnd;
-            set => SetProperty(ref _selectionEnd, value);
-        }
-
-        private int _cursorIndex;
-        public int CursorIndex {
-            get => _cursorIndex;
-            set {
-                if (SetProperty(ref _cursorIndex, value)) {
-                    OnCursorIndexChanged(new ValueEventArgs<int>(value));
-                }
-            }
-        }
-
-        private bool _multiline;
-        public bool Multiline {
-            get => _multiline;
-            set => SetProperty(ref _multiline, value, true);
-        }
-
-        private bool _wrapText;
-        public bool WrapText {
-            get => _wrapText;
-            set => SetProperty(ref _wrapText, value, true);
-        }
-
-        public int Length => _text.Length;
-
-        private bool IsShiftDown         => GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftShift) || GameService.Input.Keyboard.KeysDown.Contains(Keys.RightShift);
-        private bool IsCtrlDown          => GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftControl) || GameService.Input.Keyboard.KeysDown.Contains(Keys.RightControl);
-        private int  CursorWidth         => SystemInformation.CaretWidth;
-        private int  CursorBlinkInterval => SystemInformation.CaretBlinkTime;
-
-        private TimeSpan _lastInvalidate;
-        private bool     _textWasChanged = false;
-        private bool     _caretVisible   = false;
-        private bool     _insertMode     = false;
-
-        private bool _suppressRedoStackReset;
-
-        private readonly UndoRedoStack _undoStack = new UndoRedoStack();
-        private readonly UndoRedoStack _redoStack = new UndoRedoStack();
+        private int _prevCursorIndex  = 0;
+        private int _horizontalOffset = 0;
 
         public TextBox() {
-            _lastInvalidate = DateTime.MinValue.TimeOfDay;
+            _multiline = false;
 
             this.Size = new Point(STANDARD_CONTROLWIDTH, STANDARD_CONTROLHEIGHT);
-
-            Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
-            Input.Keyboard.KeyPressed           += OnGlobalKeyboardKeyPressed;
         }
 
-        private void OnTextInput(string value) {
-            bool ctrlDown = this.IsCtrlDown;
+        protected override void UpdateScrolling() {
+            Size2 leftPos = _font.MeasureString(_text.Substring(0, _cursorIndex));
 
-            foreach (char c in value) {
-                if (char.IsControl(c)) continue;
-                if (_font.GetCharacterRegion(c) == null) continue;
+            int oldHorizontal = _horizontalOffset;
 
-                if (ctrlDown) {
-                    switch (c) {
-                        case 'c':
-                            HandleCopy();
-                            return;
-                        case 'x':
-                            HandleCut();
-                            return;
-                        case 'v':
-                            HandlePaste();
-                            return;
-                        case 'z':
-                            HandleUndo();
-                            return;
-                        case 'y':
-                            HandleRedo();
-                            return;
-                        case 'a':
-                            SelectAll();
-                            return;
-                    }
-                }
+            if (_cursorIndex > _prevCursorIndex) {
+                // Cursor moved right
+                //_horizontalOffset = (int)MathHelper.Clamp(_horizontalOffset, leftPos.Width - _size.X - (TEXT_LEFTPADDING * 2), leftPos.Width);
+                //Logger.Debug($"[ {leftPos.Width - _size.X - (TEXT_LEFTPADDING * 2)} == {oldHorizontal} == {leftPos.Width}] == ({_horizontalOffset})");
 
-                InputChar(c);
-            }
-        }
+                _horizontalOffset = (int)Math.Max(_horizontalOffset, leftPos.Width - _size.X);
 
-        private void DeleteChars(int index, int length) {
-            if (length <= 0) return;
-
-            UserText = UserText.Substring(0, index) + UserText.Substring(index + length);
-        }
-
-        private string RemoveUnsupportedCharacters(string value) {
-            foreach (char c in value) {
-                if (_font.GetCharacterRegion(c) == null) {
-                    return RemoveUnsupportedCharacters(value.Replace(c.ToString(), string.Empty));
-                }
-            }
-
-            return value;
-        }
-
-        private bool InsertChars(int index, string value, out int length) {
-            if (string.IsNullOrEmpty(value)) {
-                length = 0;
-                return false;
-            }
-
-            value = RemoveUnsupportedCharacters(value);
-
-            if (string.IsNullOrEmpty(_text)) {
-                this.UserText = value;
             } else {
-                this.UserText = this.UserText.Substring(0, index) + value + this.UserText.Substring(index);
+                // Cursor moved left
+                _horizontalOffset = (int)Math.Min(_horizontalOffset, leftPos.Width);
+                //_horizontalOffset = (int)MathHelper.Clamp(_horizontalOffset, leftPos.Width, leftPos.Width + _size.X - (TEXT_LEFTPADDING * 2));
+                //Logger.Debug($"[ {leftPos.Width} == {oldHorizontal} == {leftPos.Width + _size.X - (TEXT_LEFTPADDING * 2)}] == ({_horizontalOffset})");
             }
 
-            length = value.Length;
-            return true;
-        }
+            Logger.Debug($"{_horizontalOffset}");
 
-        private bool InsertChar(int index, char value) {
-            if (string.IsNullOrEmpty(_text)) {
-                this.UserText = value.ToString();
-            } else {
-                this.UserText = UserText.Substring(0, index) + value + this.UserText.Substring(index);
-            }
-
-            return true;
-        }
-
-        public void Insert(int index, string value) {
-            if (string.IsNullOrEmpty(value)) return;
-
-            if (InsertChars(index, value, out int length) && length > 0) {
-                _undoStack.MakeInsert(index, length);
-                this.CursorIndex += length;
-            }
-        }
-
-        public void Replace(int index, int length, string value) {
-            if (length <= 0) {
-                Insert(index, value);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(value)) {
-                Delete(index, length);
-                return;
-            }
-
-            _undoStack.MakeReplace(value, index, length, value.Length);
-            this.UserText = this.UserText.Substring(0, index) + value + this.UserText.Substring(index + length);
-        }
-
-        public void ReplaceAll(string value) {
-            Replace(0, 
-                    string.IsNullOrEmpty(value) 
-                        ? 0 
-                        : value.Length,
-                    value);
-        }
-
-        private bool Delete(int index, int length) {
-            if (index < 0 || index >= this.Length || length < 0) return false;
-
-            _undoStack.MakeDelete(_text, index, length);
-            DeleteChars(index, length);
-
-            return true;
-        }
-
-        private void DeleteSelection() {
-            if (_selectionStart == _selectionEnd) return;
-
-            if (_selectionStart < _selectionEnd) {
-                Delete(_selectionStart, _selectionEnd - _selectionStart);
-                this.SelectionEnd = this.CursorIndex = this.SelectionStart;
-            } else {
-                Delete(_selectionEnd, _selectionStart - _selectionEnd);
-                this.SelectionStart = this.CursorIndex = this.SelectionEnd;
-            }
-        }
-
-        private bool Paste(string value) {
-            DeleteSelection();
-
-            if (InsertChars(_cursorIndex, value, out var length) && length > 0) {
-                _undoStack.MakeInsert(_cursorIndex, length);
-                this.CursorIndex += length;
-                return true;
-            }
-
-            return false;
-        }
-
-        private void InputChar(char value) {
-            if (!_multiline && value == NEWLINE) return;
-            if (_font.GetCharacterRegion(value) == null) return;
-
-            if (_insertMode && _selectionStart == _selectionEnd && _cursorIndex < this.Length) {
-                _undoStack.MakeReplace(_text, _cursorIndex, 1, 1);
-                DeleteChars(_cursorIndex, 1);
-
-                if (InsertChar(_cursorIndex, value)) {
-                    UserSetCursorIndex(_cursorIndex + 1);
-                }
-            } else {
-                DeleteSelection();
-
-                if (InsertChar(_cursorIndex, value)) {
-                    _undoStack.MakeInsert(_cursorIndex, 1);
-                    UserSetCursorIndex(_cursorIndex + 1);
-                }
-            }
-
-            ResetSelection();
-        }
-
-        private void UndoRedo(UndoRedoStack undoStack, UndoRedoStack redoStack) {
-            if (undoStack.Stack.Count == 0) return;
-
-            var record = undoStack.Stack.Pop();
-
-            try {
-                _suppressRedoStackReset = true;
-
-                switch (record.OperationType) {
-                    case OperationType.Insert:
-                        redoStack.MakeDelete(_text, record.Index, record.Length);
-                        DeleteChars(record.Index, record.Length);
-                        UserSetCursorIndex(record.Index);
-                        break;
-                    case OperationType.Delete:
-                        if (InsertChars(record.Index, record.Data, out int length)) {
-                            redoStack.MakeInsert(record.Index, length);
-                            UserSetCursorIndex(record.Index + length);
-                        }
-
-                        break;
-                    case OperationType.Replace:
-                        redoStack.MakeReplace(_text, record.Index, record.Length, record.Data.Length);
-                        DeleteChars(record.Index, record.Length);
-                        InsertChars(record.Index, record.Data, out _);
-                        break;
-                }
-            } finally {
-                _suppressRedoStackReset = false;
-            }
-
-            ResetSelection();
-        }
-
-        private void UserSetCursorIndex(int newIndex) {
-            if (newIndex > this.Length) {
-                newIndex = this.Length;
-            }
-
-            if (newIndex < 0) {
-                newIndex = 0;
-            }
-
-            this.CursorIndex = newIndex;
-        }
-
-        private void ResetSelection() {
-            this.SelectionStart = this.SelectionEnd = this.CursorIndex;
-        }
-
-        private void UpdateSelection() {
-            this.SelectionEnd = _cursorIndex;
-        }
-
-        private void UpdateSelectionIfShiftDown() {
-            if (this.IsShiftDown) {
-                UpdateSelection();
-            } else {
-                ResetSelection();
-            }
-        }
-
-        private void MoveLine(int delta) {
-
-        }
-
-        private void SelectAll() {
-            this.SelectionStart = 0;
-            this.SelectionEnd   = this.Length;
-        }
-
-        private string ProcessText(string value) {
-            value = value?.Replace("\r", string.Empty);
-
-            if (!_multiline) {
-                value = value?.Replace("\n", string.Empty);
-            }
-
-            return value;
-        }
-
-        private bool SetText(string value, bool byUser) {
-            string prevText = _text;
-
-            value = ProcessText(value);
-
-            if (!SetProperty(ref _text, value)) return false;
-
-            // TODO: Update formatted text?
-
-            if (!byUser) {
-                this.CursorIndex = this.SelectionStart = this.SelectionEnd = 0;
-            }
-
-            if (!_suppressRedoStackReset) {
-                _redoStack.Reset();
-            }
-
-            // TODO: Invalidate measure
-
-            _textWasChanged = true;
-
-            OnTextChanged(new ValueChangedEventArgs<string>(prevText, value));
-
-            return true;
-        }
-
-        private void OnGlobalKeyboardKeyPressed(object sender, KeyboardEventArgs e) {
-            if (!_focused && _enabled) return;
-
-            bool ctrlDown  = this.IsCtrlDown;
-
-            switch (e.Key) {
-                case Keys.Insert:
-                    _insertMode = !_insertMode;
-                    break;
-                case Keys.Left:
-                    if (_cursorIndex > 0) {
-                        UserSetCursorIndex(_cursorIndex - 1);
-                        UpdateSelectionIfShiftDown();
-                    }
-                    break;
-                case Keys.Right:
-                    if (_cursorIndex < this.Length) {
-                        UserSetCursorIndex(_cursorIndex + 1);
-                        UpdateSelectionIfShiftDown();
-                    }
-                    break;
-                case Keys.Up:
-                    MoveLine(-1);
-                    break;
-                case Keys.Down:
-                    MoveLine(1);
-                    break;
-                case Keys.Back:
-                    HandleBackspace();
-                    break;
-                case Keys.Delete:
-                    HandleDelete();
-                    break;
-                case Keys.Home:
-                    HandleHome(ctrlDown);
-                    break;
-                case Keys.End:
-                    HandleEnd(ctrlDown);
-                    break;
-                case Keys.Enter:
-                    InputChar(NEWLINE);
-                    break;
-            }
-        }
-
-        private void HandleCopy() {
-            if (_selectionEnd != _selectionStart) {
-                int selectStart = Math.Min(_selectionStart, _selectionEnd);
-                int selectEnd   = Math.Max(_selectionStart, _selectionEnd);
-
-                string clipboardText = _text.Substring(selectStart, selectEnd - selectStart);
-
-                ClipboardUtil.WindowsClipboardService.SetTextAsync(clipboardText)
-                             .ContinueWith((clipboardResult) => {
-                                               if (clipboardResult.IsFaulted) {
-                                                   Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {clipboardText}!", clipboardText);
-                                               }
-                                           });
-            }
-        }
-
-        private void HandleCut() {
-            HandleCopy();
-            DeleteSelection();
-        }
-
-        private void HandlePaste() {
-            ClipboardUtil.WindowsClipboardService.GetTextAsync()
-                         .ContinueWith((Task<string> clipboardTask) => {
-                              if (!clipboardTask.IsFaulted) {
-                                  if (!string.IsNullOrEmpty(clipboardTask.Result)) {
-                                      Paste(clipboardTask.Result);
-                                  }
-                              } else {
-                                 Logger.Warn(clipboardTask.Exception, "Failed to read clipboard text from system clipboard!");
-                             }
-                          });
-        }
-
-        private void HandleUndo() {
-            UndoRedo(_undoStack, _redoStack);
-        }
-
-        private void HandleRedo() {
-            UndoRedo(_redoStack, _undoStack);
-        }
-
-        private void HandleBackspace() {
-            if (_selectionStart == _selectionEnd) {
-                if (Delete(_cursorIndex - 1, 1)) {
-                    UserSetCursorIndex(_cursorIndex - 1);
-                    ResetSelection();
-                }
-            } else {
-                DeleteSelection();
-            }
-        }
-
-        private void HandleDelete() {
-            if (_selectionStart == _selectionEnd) {
-                Delete(_cursorIndex, 1);
-            } else {
-                DeleteSelection();
-            }
-        }
-
-        private void HandleHome(bool ctrlDown) {
-            int newIndex = 0;
-
-            if (!ctrlDown && !string.IsNullOrEmpty(_text)) {
-                newIndex = _cursorIndex;
-
-                while (newIndex > 0 && (newIndex - 1 >= this.Length || _text[newIndex - 1] != NEWLINE)) {
-                    --newIndex;
-                }
-            }
-
-            UserSetCursorIndex(newIndex);
-            UpdateSelectionIfShiftDown();
-        }
-
-        private void HandleEnd(bool ctrlDown) {
-            int newIndex = this.Length;
-
-            if (!ctrlDown) {
-                while (newIndex < this.Length && _text[newIndex] != NEWLINE) {
-                    ++newIndex;
-                }
-            }
-
-            UserSetCursorIndex(newIndex);
-            UpdateSelectionIfShiftDown();
-        }
-
-        private void UpdateScrolling() {
-
-        }
-
-        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            this.Focused = _mouseOver && _enabled;
-
-            if (_focused) {
-                GameService.Input.Keyboard.SetTextInputListner(OnTextInput);
-            } else  {
-                GameService.Input.Keyboard.UnsetTextInputListner(OnTextInput);
-                _undoStack.Reset();
-                _redoStack.Reset();
-            }
-        }
-
-        protected override void OnMouseEntered(MouseEventArgs e) {
-            base.OnMouseEntered(e);
-        }
-
-        protected override void OnMouseLeft(MouseEventArgs e) {
-            base.OnMouseLeft(e);
-        }
-
-        protected override CaptureType CapturesInput() { return CaptureType.Mouse; }
-
-        public override void DoUpdate(GameTime gameTime) {
-            // Determines if the blinking caret is currently visible
-            _caretVisible = _focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75);
-
-            if (_textWasChanged) {
-                _lastInvalidate = gameTime.TotalGameTime;
-                _textWasChanged = false;
-            }
+            _prevCursorIndex = _cursorIndex;
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
@@ -630,8 +70,10 @@ namespace Blish_HUD.Controls {
                                    new Rectangle(_textureTextbox.Width - 5, 0,
                                                  5, _textureTextbox.Height));
 
-            var textBounds = new Rectangle(Point.Zero, _size);
-            textBounds.Inflate(-10, -2);
+            var textBounds = new Rectangle(TEXT_LEFTPADDING - _horizontalOffset,
+                                           TEXT_TOPPADDING,
+                                           _size.X - TEXT_LEFTPADDING * 2,
+                                           _size.Y - TEXT_TOPPADDING  * 2);
 
             // Draw the Textbox placeholder text
             if (!_focused && _text.Length == 0) {
@@ -653,7 +95,7 @@ namespace Blish_HUD.Controls {
                                         ContentService.Textures.Pixel,
                                         new Rectangle((int)highlightLeftOffset - 1, 3, (int)highlightWidth, _size.Y - 9),
                                         new Color(92, 80, 103, 150));
-            } else if (_focused /*&& _caretVisible*/) {
+            } else if (_focused && _caretVisible) {
                 float textOffset  = this.Font.MeasureString(_text.Substring(0, _cursorIndex)).Width;
                 var   caretOffset = new Rectangle(textBounds.X + (int)textOffset - 2, textBounds.Y, textBounds.Width, textBounds.Height);
                 spriteBatch.DrawStringOnCtrl(this, "|", _font, caretOffset, _foreColor);
