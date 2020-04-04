@@ -42,7 +42,7 @@ namespace Blish_HUD.Controls {
 
         protected static readonly Logger Logger = Logger.GetLogger<TextInputBase>();
 
-        private const char NEWLINE = '\n';
+        protected const char NEWLINE = '\n';
 
         public event EventHandler<EventArgs>           TextChanged;
         public event EventHandler<EventArgs>           EnterPressed;
@@ -295,8 +295,9 @@ namespace Blish_HUD.Controls {
         }
 
         private void InputChar(char value) {
-            if (!_multiline && value == NEWLINE) return;
-            if (_font.GetCharacterRegion(value) == null) return;
+            if (value == NEWLINE) {
+                if (!_multiline) return;
+            } else if (_font.GetCharacterRegion(value) == null) return;
 
             if (_insertMode && _selectionStart == _selectionEnd && _cursorIndex < this.Length) {
                 _undoStack.MakeReplace(_text, _cursorIndex, 1, 1);
