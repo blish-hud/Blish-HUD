@@ -193,7 +193,7 @@ namespace Blish_HUD.Controls {
 
         private string RemoveUnsupportedCharacters(string value) {
             foreach (char c in value) {
-                if (_font.GetCharacterRegion(c) == null) {
+                if (_font.GetCharacterRegion(c) == null && !(_multiline && c == NEWLINE)) {
                     return RemoveUnsupportedCharacters(value.Replace(c.ToString(), string.Empty));
                 }
             }
@@ -368,7 +368,7 @@ namespace Blish_HUD.Controls {
             this.SelectionStart = this.SelectionEnd = this.CursorIndex;
         }
 
-        private void UpdateSelection() {
+        protected void UpdateSelection() {
             this.SelectionEnd = _cursorIndex;
         }
 

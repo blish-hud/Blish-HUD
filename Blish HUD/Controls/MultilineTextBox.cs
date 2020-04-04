@@ -29,8 +29,49 @@ namespace Blish_HUD.Controls {
             _multiline = true;
         }
 
+        protected override void OnClick(MouseEventArgs e) {
+            base.OnClick(e);
+
+            int newIndex = GetCursorIndexFromFromPosition(this.RelativeMousePosition - new Point(TEXT_LEFTPADDING, TEXT_TOPPADDING));
+
+            if (_cursorIndex == newIndex && e.IsDoubleClick) {
+                SelectAll();
+            } else {
+                UserSetCursorIndex(newIndex);
+                ResetSelection();
+            }
+        }
+
+        private int GetCursorIndexFromFromPosition(Point clickPos) {
+            string[] lines = _text.Split(NEWLINE);
+
+            int predictedLine = clickPos.Y / _font.LineHeight;
+
+            if (predictedLine > lines.Length - 1) {
+                return this.Length;
+            }
+
+            var glyphs = _font.GetGlyphs(lines[predictedLine]);
+
+            int charIndex = 0;
+
+            foreach (var glyph in glyphs) {
+                if (glyph.Position.X + glyph.FontRegion.Width > _horizontalOffset + clickPos.X) {
+                    break;
+                }
+
+                charIndex++;
+            }
+
+            for (int i = 0; i < predictedLine; i++) {
+                charIndex += lines[i].Length + 1;
+            }
+
+            return charIndex;
+        }
+
         protected override void UpdateScrolling() {
-            
+
         }
 
         public override void DoUpdate(GameTime gameTime) {
