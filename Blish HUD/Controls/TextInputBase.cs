@@ -114,7 +114,7 @@ namespace Blish_HUD.Controls {
         public int CursorIndex {
             get => _cursorIndex;
             set {
-                if (SetProperty(ref _cursorIndex, value)) {
+                if (SetProperty(ref _cursorIndex, value, true)) {
                     OnCursorIndexChanged(new ValueEventArgs<int>(value));
                 }
             }

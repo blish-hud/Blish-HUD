@@ -67,6 +67,46 @@ namespace Blish_HUD.Controls {
             return charIndex;
         }
 
+        private Rectangle _caretRegion = Rectangle.Empty;
+        private Rectangle _textRegion  = Rectangle.Empty;
+
+        private void UpdateCaretRegion() {
+            int lineIndex = 0;
+            int lineStart = 0;
+
+            for (int n = 0; n < _cursorIndex; n++) {
+                if (_text[n] == NEWLINE) {
+                    lineIndex++;
+                    lineStart = n;
+                };
+            }
+
+            var glyphs = _font.GetGlyphs(_text.Substring(lineStart, _cursorIndex - lineStart));
+
+            var offset = Point.Zero;
+
+            if (_cursorIndex > 0) {
+                var last = glyphs.Last();
+
+                offset = new Point((int)last.Position.X + (last.FontRegion?.Width ?? 0),
+                                   _font.LineHeight * lineIndex);
+            }
+
+            _caretRegion = new Rectangle(_textRegion.X + offset.X - 2,
+                                         _textRegion.Y + offset.Y + 2,
+                                         2,
+                                         _font.LineHeight - 4);
+        }
+
+        public override void RecalculateLayout() {
+            _textRegion = new Rectangle(TEXT_LEFTPADDING,
+                                        TEXT_TOPPADDING,
+                                        _size.X - TEXT_LEFTPADDING * 2,
+                                        _size.Y - TEXT_TOPPADDING  * 2);
+
+            UpdateCaretRegion();
+        }
+
         protected override void UpdateScrolling() { /* NOOP */ }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
@@ -80,24 +120,19 @@ namespace Blish_HUD.Controls {
                                    new Rectangle(_textureTextbox.Width - 5, 0,
                                                  5, _textureTextbox.Height));
 
-            var textBounds = new Rectangle(TEXT_LEFTPADDING,
-                                           TEXT_TOPPADDING,
-                                           _size.X - TEXT_LEFTPADDING * 2,
-                                           _size.Y - TEXT_TOPPADDING  * 2);
-
             // Draw the Textbox placeholder text
             if (!_focused && _text.Length == 0) {
-                spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, textBounds, Color.LightGray, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
+                spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, _textRegion, Color.LightGray, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
             }
 
             // Draw the Textbox text
-            spriteBatch.DrawStringOnCtrl(this, this.Text, _font, textBounds, _foreColor, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
+            spriteBatch.DrawStringOnCtrl(this, this.Text, _font, _textRegion, _foreColor, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
 
             int selectionStart  = Math.Min(_selectionStart, _selectionEnd);
             int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
 
             if (selectionLength > 0) {
-                float highlightLeftOffset = _font.MeasureString(_text.Substring(0, selectionStart)).Width + textBounds.Left;
+                float highlightLeftOffset = _font.MeasureString(_text.Substring(0, selectionStart)).Width + _textRegion.Left;
                 float highlightWidth      = _font.MeasureString(_text.Substring(selectionStart, selectionLength)).Width;
 
                 spriteBatch.DrawOnCtrl(this,
@@ -105,32 +140,7 @@ namespace Blish_HUD.Controls {
                                        new Rectangle((int)highlightLeftOffset - 1, 3, (int)highlightWidth, _size.Y - 9),
                                        new Color(92, 80, 103, 150));
             } else if (_focused && _caretVisible) {
-                int lineIndex = 0;
-                int lineStart = 0;
-
-                for (int n = 0; n < _cursorIndex; n++) {
-                    if (_text[n] == NEWLINE) {
-                        lineIndex++;
-                        lineStart = n;
-                    };
-                }
-
-                var glyphs = _font.GetGlyphs(_text.Substring(lineStart, _cursorIndex - lineStart));
-
-                var offset = Point.Zero;
-
-                if (_cursorIndex > 0) {
-                    var last = glyphs.Last();
-
-                    offset = new Point((int)last.Position.X + (last.FontRegion?.Width ?? 0),
-                                       _font.LineHeight * lineIndex);
-                }
-
-                var   caretOffset = new Rectangle(textBounds.X + offset.X - 2,
-                                                  textBounds.Y + offset.Y,
-                                                  textBounds.Width,
-                                                  textBounds.Height);
-                spriteBatch.DrawStringOnCtrl(this, "|", _font, caretOffset, _foreColor, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, _caretRegion, _foreColor);
             }
         }
     }
