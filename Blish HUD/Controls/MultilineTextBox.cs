@@ -22,9 +22,6 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        private int _prevCursorIndex  = 0;
-        private int _horizontalOffset = 0;
-
         public MultilineTextBox() {
             _multiline = true;
         }
@@ -56,7 +53,7 @@ namespace Blish_HUD.Controls {
             int charIndex = 0;
 
             foreach (var glyph in glyphs) {
-                if (glyph.Position.X + glyph.FontRegion.Width > _horizontalOffset + clickPos.X) {
+                if (glyph.Position.X + glyph.FontRegion.Width > clickPos.X) {
                     break;
                 }
 
@@ -70,17 +67,7 @@ namespace Blish_HUD.Controls {
             return charIndex;
         }
 
-        protected override void UpdateScrolling() {
-
-        }
-
-        public override void DoUpdate(GameTime gameTime) {
-            if (_cursorMoved) {
-
-            }
-
-            base.DoUpdate(gameTime);
-        }
+        protected override void UpdateScrolling() { /* NOOP */ }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this,
@@ -93,7 +80,7 @@ namespace Blish_HUD.Controls {
                                    new Rectangle(_textureTextbox.Width - 5, 0,
                                                  5, _textureTextbox.Height));
 
-            var textBounds = new Rectangle(TEXT_LEFTPADDING - _horizontalOffset,
+            var textBounds = new Rectangle(TEXT_LEFTPADDING,
                                            TEXT_TOPPADDING,
                                            _size.X - TEXT_LEFTPADDING * 2,
                                            _size.Y - TEXT_TOPPADDING  * 2);
