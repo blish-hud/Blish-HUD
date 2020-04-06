@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
     public class MultilineTextBox : TextInputBase {
@@ -67,10 +69,38 @@ namespace Blish_HUD.Controls {
             return charIndex;
         }
 
-        private Rectangle _caretRegion = Rectangle.Empty;
-        private Rectangle _textRegion  = Rectangle.Empty;
+        private Rectangle   _textRegion       = Rectangle.Empty;
+        private Rectangle[] _highlightRegions = Array.Empty<Rectangle>();
+        private Rectangle   _cursorRegion     = Rectangle.Empty;
 
-        private void UpdateCaretRegion() {
+        private (int Line, int Character) GetSplitIndex(int index) {
+            int lineIndex = 0;
+            int charIndex = 0;
+
+            for (int i = 0; i < index; i++) {
+                charIndex++;
+
+                if (_text[lineIndex] == NEWLINE) {
+                    lineIndex++;
+                    charIndex = 0;
+                };
+            }
+
+            return (lineIndex, charIndex);
+        }
+
+        private Rectangle[] CalculateHighlightRegions() {
+            return Array.Empty<Rectangle>();
+        }
+
+        private Rectangle CalculateTextRegion() {
+            return new Rectangle(TEXT_LEFTPADDING,
+                                 TEXT_TOPPADDING,
+                                 _size.X - TEXT_LEFTPADDING * 2,
+                                 _size.Y - TEXT_TOPPADDING  * 2);
+        }
+
+        private Rectangle CalculateCursorRegion() {
             int lineIndex = 0;
             int lineStart = 0;
 
@@ -92,19 +122,16 @@ namespace Blish_HUD.Controls {
                                    _font.LineHeight * lineIndex);
             }
 
-            _caretRegion = new Rectangle(_textRegion.X + offset.X - 2,
-                                         _textRegion.Y + offset.Y + 2,
-                                         2,
-                                         _font.LineHeight - 4);
+            return new Rectangle(_textRegion.X + offset.X - 2,
+                                 _textRegion.Y + offset.Y + 2,
+                                 2,
+                                 _font.LineHeight - 4);
         }
 
         public override void RecalculateLayout() {
-            _textRegion = new Rectangle(TEXT_LEFTPADDING,
-                                        TEXT_TOPPADDING,
-                                        _size.X - TEXT_LEFTPADDING * 2,
-                                        _size.Y - TEXT_TOPPADDING  * 2);
-
-            UpdateCaretRegion();
+            _textRegion       = CalculateTextRegion();
+            _highlightRegions = CalculateHighlightRegions();
+            _cursorRegion     = CalculateCursorRegion();
         }
 
         protected override void UpdateScrolling() { /* NOOP */ }
@@ -117,30 +144,16 @@ namespace Blish_HUD.Controls {
 
             spriteBatch.DrawOnCtrl(this, _textureTextbox,
                                    new Rectangle(_size.X - 5, 0, 5, _size.Y),
-                                   new Rectangle(_textureTextbox.Width - 5, 0,
-                                                 5, _textureTextbox.Height));
+                                   new Rectangle(_textureTextbox.Width - 5, 0, 5, _textureTextbox.Height));
 
-            // Draw the Textbox placeholder text
-            if (!_focused && _text.Length == 0) {
-                spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, _textRegion, Color.LightGray, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
-            }
-
-            // Draw the Textbox text
-            spriteBatch.DrawStringOnCtrl(this, this.Text, _font, _textRegion, _foreColor, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
-
-            int selectionStart  = Math.Min(_selectionStart, _selectionEnd);
-            int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
-
-            if (selectionLength > 0) {
-                float highlightLeftOffset = _font.MeasureString(_text.Substring(0, selectionStart)).Width + _textRegion.Left;
-                float highlightWidth      = _font.MeasureString(_text.Substring(selectionStart, selectionLength)).Width;
-
-                spriteBatch.DrawOnCtrl(this,
-                                       ContentService.Textures.Pixel,
-                                       new Rectangle((int)highlightLeftOffset - 1, 3, (int)highlightWidth, _size.Y - 9),
-                                       new Color(92, 80, 103, 150));
-            } else if (_focused && _caretVisible) {
-                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, _caretRegion, _foreColor);
+            PaintText(spriteBatch, _textRegion);
+            
+            if (_highlightRegions.Length > 0) {
+                foreach (var highlightRegion in _highlightRegions) {
+                    PaintHighlight(spriteBatch, highlightRegion);
+                }
+            } else {
+                PaintCursor(spriteBatch, _cursorRegion);
             }
         }
     }

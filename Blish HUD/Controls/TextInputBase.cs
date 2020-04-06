@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using Blish_HUD.Controls.Resources;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using Microsoft.Xna.Framework.Input;
 
@@ -41,6 +42,16 @@ namespace Blish_HUD.Controls {
     public abstract class TextInputBase : Control {
 
         protected static readonly Logger Logger = Logger.GetLogger<TextInputBase>();
+
+        #region Load Static
+
+        private static readonly Color _highlightColor;
+
+        static TextInputBase() {
+            _highlightColor = new Color(92, 80, 103, 150);
+        }
+
+        #endregion
 
         protected const char NEWLINE = '\n';
 
@@ -101,13 +112,13 @@ namespace Blish_HUD.Controls {
         protected int _selectionStart;
         public int SelectionStart {
             get => _selectionStart;
-            set => SetProperty(ref _selectionStart, value);
+            set => SetProperty(ref _selectionStart, value, true);
         }
 
         protected int _selectionEnd;
         public int SelectionEnd {
             get => _selectionEnd;
-            set => SetProperty(ref _selectionEnd, value);
+            set => SetProperty(ref _selectionEnd, value, true);
         }
 
         protected int _cursorIndex;
@@ -275,10 +286,10 @@ namespace Blish_HUD.Controls {
 
             if (_selectionStart < _selectionEnd) {
                 Delete(_selectionStart, _selectionEnd - _selectionStart);
-                this.SelectionEnd = this.CursorIndex = this.SelectionStart;
+                this.SelectionEnd = _cursorIndex = _selectionStart;
             } else {
                 Delete(_selectionEnd, _selectionStart - _selectionEnd);
-                this.SelectionStart = this.CursorIndex = this.SelectionEnd;
+                this.SelectionStart = _cursorIndex = _selectionEnd;
             }
         }
 
@@ -365,7 +376,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected void ResetSelection() {
-            this.SelectionStart = this.SelectionEnd = this.CursorIndex;
+            this.SelectionStart = _selectionEnd = _cursorIndex;
         }
 
         protected void UpdateSelection() {
@@ -409,14 +420,12 @@ namespace Blish_HUD.Controls {
             // TODO: Update formatted text?
 
             if (!byUser) {
-                this.CursorIndex = this.SelectionStart = this.SelectionEnd = 0;
+                this.CursorIndex = _selectionStart = _selectionEnd = 0;
             }
 
             if (!_suppressRedoStackReset) {
                 _redoStack.Reset();
             }
-
-            // TODO: Invalidate measure
 
             _cursorMoved = true;
 
@@ -573,15 +582,30 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected override void OnMouseEntered(MouseEventArgs e) {
-            base.OnMouseEntered(e);
-        }
-
-        protected override void OnMouseLeft(MouseEventArgs e) {
-            base.OnMouseLeft(e);
-        }
-
         protected override CaptureType CapturesInput() { return CaptureType.Mouse; }
+
+        protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion) {
+            // Draw the placeholder text
+            if (!_focused && this.Length == 0) {
+                spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, textRegion, Color.LightGray, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
+            }
+
+            // Draw the text
+            spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, _foreColor, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
+        }
+
+        protected void PaintHighlight(SpriteBatch spriteBatch, Rectangle highlightRegion) {
+            spriteBatch.DrawOnCtrl(this,
+                                   ContentService.Textures.Pixel,
+                                   highlightRegion,
+                                   _highlightColor);
+        }
+
+        protected void PaintCursor(SpriteBatch spriteBatch, Rectangle cursorRegion) {
+            if (_caretVisible) {
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, cursorRegion, _foreColor);
+            }
+        }
 
         public override void DoUpdate(GameTime gameTime) {
             // Determines if the blinking caret is currently visible
