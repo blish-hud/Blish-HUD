@@ -9,9 +9,7 @@ using MonoGame.Extended.BitmapFonts;
 namespace Blish_HUD.Controls {
     public class MultilineTextBox : TextInputBase {
 
-        private const int PADDING = 2;
-
-        private const int TEXT_TOPPADDING  = 2;
+        private const int TEXT_TOPPADDING  = 7;
         private const int TEXT_LEFTPADDING = 10;
 
         #region Load Static
@@ -137,14 +135,24 @@ namespace Blish_HUD.Controls {
         protected override void UpdateScrolling() { /* NOOP */ }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureTextbox,
-                                   new Rectangle(Point.Zero, _size - new Point(5, 0)),
-                                   new Rectangle(0,          0, Math.Min(_textureTextbox.Width - 5, _size.X - 5), _textureTextbox.Height));
+            // Background tint
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 1, bounds.Width - 2, bounds.Height - 2), Color.Black * 0.5f);
 
-            spriteBatch.DrawOnCtrl(this, _textureTextbox,
-                                   new Rectangle(_size.X - 5, 0, 5, _size.Y),
-                                   new Rectangle(_textureTextbox.Width - 5, 0, 5, _textureTextbox.Height));
+            // Top
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 0, bounds.Width - 2, 2), Color.Black * 0.3f);
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 0, bounds.Width - 2, 1), Color.Black * 0.2f);
+
+            // Left
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 1, 2, bounds.Height - 2), Color.Black * 0.3f);
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 1, 1, bounds.Height - 2), Color.Black * 0.2f);
+
+            // Bottom
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, bounds.Height - 2, bounds.Width - 2, 2), Color.Black * 0.3f);
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, bounds.Height - 2, bounds.Width - 2, 1), Color.Black * 0.2f);
+
+            // Right
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(bounds.Width - 2, 1, 2, bounds.Height - 2), Color.Black * 0.3f);
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(bounds.Width - 2, 1, 1, bounds.Height - 2), Color.Black * 0.2f);
 
             PaintText(spriteBatch, _textRegion);
             
