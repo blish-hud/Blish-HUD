@@ -33,7 +33,7 @@ namespace Blish_HUD.Controls {
             int predictedLine = clickPos.Y / _font.LineHeight;
 
             if (predictedLine > lines.Length - 1) {
-                return this.Length;
+                return _text.Length;
             }
 
             var glyphs = _font.GetGlyphs(lines[predictedLine]);
@@ -79,7 +79,7 @@ namespace Blish_HUD.Controls {
             int selectionStart  = Math.Min(_selectionStart, _selectionEnd);
             int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
 
-            if (selectionLength <= 0 || selectionStart + selectionLength > this.Length) return Array.Empty<Rectangle>();
+            if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) return Array.Empty<Rectangle>();
 
             string[] lines = _text.Split(NEWLINE);
 

@@ -98,7 +98,7 @@ namespace Blish_HUD.Controls {
             get => _maxLength;
             set {
                 if (SetProperty(ref _maxLength, value)) {
-                    this.Text = _text.Substring(0, Math.Min(_maxLength, this.Length));
+                    this.Text = _text.Substring(0, Math.Min(_maxLength, _text.Length));
                 }
             }
         }
@@ -269,7 +269,7 @@ namespace Blish_HUD.Controls {
                 this.UserText = _text.Substring(0, index) + value + _text.Substring(index);
             }
 
-            length = this.Length - startLength;
+            length = _text.Length - startLength;
             return true;
         }
 
@@ -316,7 +316,7 @@ namespace Blish_HUD.Controls {
         }
 
         private bool Delete(int index, int length) {
-            if (index < 0 || index >= this.Length || length < 0) return false;
+            if (index < 0 || index >= _text.Length || length < 0) return false;
 
             _undoStack.MakeDelete(_text, index, length);
             DeleteChars(index, length);
@@ -353,7 +353,7 @@ namespace Blish_HUD.Controls {
                 if (!_multiline) return;
             } else if (_font.GetCharacterRegion(value) == null) return;
 
-            if (_insertMode && _selectionStart == _selectionEnd && _cursorIndex < this.Length) {
+            if (_insertMode && _selectionStart == _selectionEnd && _cursorIndex < _text.Length) {
                 _undoStack.MakeReplace(_text, _cursorIndex, 1, 1);
                 DeleteChars(_cursorIndex, 1);
 
@@ -407,8 +407,8 @@ namespace Blish_HUD.Controls {
         }
 
         protected void UserSetCursorIndex(int newIndex) {
-            if (newIndex > this.Length) {
-                newIndex = this.Length;
+            if (newIndex > _text.Length) {
+                newIndex = _text.Length;
             }
 
             if (newIndex < 0) {
@@ -440,7 +440,7 @@ namespace Blish_HUD.Controls {
 
         protected void SelectAll() {
             this.SelectionStart = 0;
-            this.SelectionEnd   = this.Length;
+            this.SelectionEnd   = _text.Length;
         }
 
         protected float MeasureStringWidth(string text) {
@@ -505,7 +505,7 @@ namespace Blish_HUD.Controls {
                     }
                     break;
                 case Keys.Right:
-                    if (_cursorIndex < this.Length) {
+                    if (_cursorIndex < _text.Length) {
                         UserSetCursorIndex(_cursorIndex + 1);
                         UpdateSelectionIfShiftDown();
                     }
@@ -543,10 +543,10 @@ namespace Blish_HUD.Controls {
 
                 ClipboardUtil.WindowsClipboardService.SetTextAsync(clipboardText)
                              .ContinueWith((clipboardResult) => {
-                                               if (clipboardResult.IsFaulted) {
-                                                   Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {clipboardText}!", clipboardText);
-                                               }
-                                           });
+                                  if (clipboardResult.IsFaulted) {
+                                      Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {clipboardText}!", clipboardText);
+                                  }
+                              });
             }
         }
 
@@ -557,14 +557,14 @@ namespace Blish_HUD.Controls {
 
         protected void HandlePaste() {
             ClipboardUtil.WindowsClipboardService.GetTextAsync()
-                         .ContinueWith((Task<string> clipboardTask) => {
+                         .ContinueWith((clipboardTask) => {
                               if (!clipboardTask.IsFaulted) {
                                   if (!string.IsNullOrEmpty(clipboardTask.Result)) {
                                       Paste(clipboardTask.Result);
                                   }
                               } else {
                                  Logger.Warn(clipboardTask.Exception, "Failed to read clipboard text from system clipboard!");
-                             }
+                              }
                           });
         }
 
@@ -601,7 +601,7 @@ namespace Blish_HUD.Controls {
             if (!ctrlDown && !string.IsNullOrEmpty(_text)) {
                 newIndex = _cursorIndex;
 
-                while (newIndex > 0 && (newIndex - 1 >= this.Length || _text[newIndex - 1] != NEWLINE)) {
+                while (newIndex > 0 && (newIndex - 1 >= _text.Length || _text[newIndex - 1] != NEWLINE)) {
                     --newIndex;
                 }
             }
@@ -611,10 +611,12 @@ namespace Blish_HUD.Controls {
         }
 
         protected void HandleEnd(bool ctrlDown) {
-            int newIndex = this.Length;
+            int newIndex = _text.Length;
 
             if (!ctrlDown) {
-                while (newIndex < this.Length && _text[newIndex] != NEWLINE) {
+                newIndex = _cursorIndex;
+
+                while (newIndex < _text.Length && _text[newIndex] != NEWLINE) {
                     ++newIndex;
                 }
             }
@@ -641,7 +643,7 @@ namespace Blish_HUD.Controls {
 
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion) {
             // Draw the placeholder text
-            if (!_focused && this.Length == 0) {
+            if (!_focused && _text.Length == 0) {
                 spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, textRegion, Color.LightGray, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
             }
 
@@ -668,7 +670,7 @@ namespace Blish_HUD.Controls {
 
             if (_cursorMoved) {
                 _lastInvalidate = gameTime.TotalGameTime;
-                _cursorMoved = false;
+                _cursorMoved    = false;
             }
         }
 
