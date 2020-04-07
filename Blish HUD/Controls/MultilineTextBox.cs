@@ -69,7 +69,7 @@ namespace Blish_HUD.Controls {
                 if (_text[lineIndex] == NEWLINE) {
                     lineIndex++;
                     charIndex = 0;
-                };
+                }
             }
 
             return (lineIndex, charIndex);
@@ -94,7 +94,7 @@ namespace Blish_HUD.Controls {
                 if (_text[n] == NEWLINE) {
                     lineIndex++;
                     lineStart = n;
-                };
+                }
             }
 
             var glyphs = _font.GetGlyphs(_text.Substring(lineStart, _cursorIndex - lineStart));
