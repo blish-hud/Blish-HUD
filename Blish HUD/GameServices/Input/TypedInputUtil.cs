@@ -37,19 +37,19 @@ namespace Blish_HUD.Input {
         [DllImport("kernel32.dll")]
         private static extern uint GetCurrentThreadId();
 
-        private static uint   lastVKCode   = 0;
-        private static uint   lastScanCode = 0;
-        private static byte[] lastKeyState = new byte[255];
-        private static bool   lastIsDead   = false;
+        private static uint   _lastVkCode   = 0;
+        private static uint   _lastScanCode = 0;
+        private static byte[] _lastKeyState = new byte[255];
+        private static bool   _lastIsDead   = false;
 
         /// <summary>
         /// Convert VKCode to Unicode.
         /// <remarks>isKeyDown is required for because of keyboard state inconsistencies!</remarks>
         /// </summary>
-        /// <param name="VKCode">VKCode</param>
+        /// <param name="vkCode">VKCode</param>
         /// <param name="isKeyDown">Is the key down event?</param>
         /// <returns>String representing single unicode character.</returns>
-        public static string VKCodeToString(uint VKCode, bool isKeyDown) {
+        public static string VkCodeToString(uint vkCode, bool isKeyDown) {
             // ToUnicodeEx needs StringBuilder, it populates that during execution.
             System.Text.StringBuilder sbString = new System.Text.StringBuilder(5);
 
@@ -58,20 +58,19 @@ namespace Blish_HUD.Input {
             bool isDead = false;
 
             // Gets the current windows window handle, threadID, processID
-            IntPtr currentHWnd = GetForegroundWindow();
-            uint currentProcessID;
-            uint currentWindowThreadID = GetWindowThreadProcessId(currentHWnd, out currentProcessID);
+            var  currentHWnd           = GetForegroundWindow();
+            uint currentWindowThreadId = GetWindowThreadProcessId(currentHWnd, out _);
 
             // This programs Thread ID
             uint thisProgramThreadId = GetCurrentThreadId();
 
             // Attach to active thread so we can get that keyboard state
-            if (AttachThreadInput(thisProgramThreadId, currentWindowThreadID, true)) {
+            if (AttachThreadInput(thisProgramThreadId, currentWindowThreadId, true)) {
                 // Current state of the modifiers in keyboard
                 bKeyStateStatus = GetKeyboardState(bKeyState);
 
                 // Detach
-                AttachThreadInput(thisProgramThreadId, currentWindowThreadID, false);
+                AttachThreadInput(thisProgramThreadId, currentWindowThreadId, false);
             } else {
                 // Could not attach, perhaps it is this process?
                 bKeyStateStatus = GetKeyboardState(bKeyState);
@@ -82,17 +81,17 @@ namespace Blish_HUD.Input {
                 return "";
 
             // Gets the layout of keyboard
-            IntPtr HKL = GetKeyboardLayout(currentWindowThreadID);
+            var hkl = GetKeyboardLayout(currentWindowThreadId);
 
             // Maps the virtual keycode
-            uint lScanCode = MapVirtualKeyEx(VKCode, 0, HKL);
+            uint lScanCode = MapVirtualKeyEx(vkCode, 0, hkl);
 
             // Keyboard state goes inconsistent if this is not in place. In other words, we need to call above commands in UP events also.
             if (!isKeyDown)
                 return "";
 
             // Converts the VKCode to unicode
-            int relevantKeyCountInBuffer = ToUnicodeEx(VKCode, lScanCode, bKeyState, sbString, sbString.Capacity, (uint)0, HKL);
+            int relevantKeyCountInBuffer = ToUnicodeEx(vkCode, lScanCode, bKeyState, sbString, sbString.Capacity, 0, hkl);
 
             string ret = "";
 
@@ -102,7 +101,7 @@ namespace Blish_HUD.Input {
                     isDead = true;
 
                     // We must clear the buffer because ToUnicodeEx messed it up, see below.
-                    ClearKeyboardBuffer(VKCode, lScanCode, HKL);
+                    ClearKeyboardBuffer(vkCode, lScanCode, hkl);
                     break;
 
                 case 0:
@@ -125,19 +124,19 @@ namespace Blish_HUD.Input {
             //   http://www.experts-exchange.com/Programming/System/Windows__Programming/Q_23453780.html
             //   http://blogs.msdn.com/michkap/archive/2005/01/19/355870.aspx
             //   http://blogs.msdn.com/michkap/archive/2007/10/27/5717859.aspx
-            if (lastVKCode != 0 && lastIsDead) {
+            if (_lastVkCode != 0 && _lastIsDead) {
                 System.Text.StringBuilder sbTemp = new System.Text.StringBuilder(5);
-                ToUnicodeEx(lastVKCode, lastScanCode, lastKeyState, sbTemp, sbTemp.Capacity, (uint)0, HKL);
-                lastVKCode = 0;
+                ToUnicodeEx(_lastVkCode, _lastScanCode, _lastKeyState, sbTemp, sbTemp.Capacity, 0, hkl);
+                _lastVkCode = 0;
 
                 return ret;
             }
 
             // Save these
-            lastScanCode = lScanCode;
-            lastVKCode   = VKCode;
-            lastIsDead   = isDead;
-            lastKeyState = (byte[])bKeyState.Clone();
+            _lastScanCode = lScanCode;
+            _lastVkCode   = vkCode;
+            _lastIsDead   = isDead;
+            _lastKeyState = (byte[])bKeyState.Clone();
 
             return ret;
         }

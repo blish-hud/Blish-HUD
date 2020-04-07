@@ -85,6 +85,16 @@ namespace Blish_HUD.Controls {
             set => SetText(value, true);
         }
 
+        protected int _maxLength = 20;
+        public int MaxLength {
+            get => _maxLength;
+            set {
+                if (SetProperty(ref _maxLength, value)) {
+                    this.Text = _text.Substring(0, Math.Min(_maxLength, this.Length));
+                }
+            }
+        }
+
         protected string _placeholderText;
         public string PlaceholderText {
             get => _placeholderText;
@@ -199,7 +209,7 @@ namespace Blish_HUD.Controls {
         private void DeleteChars(int index, int length) {
             if (length <= 0) return;
 
-            UserText = UserText.Substring(0, index) + UserText.Substring(index + length);
+            this.UserText = _text.Substring(0, index) + _text.Substring(index + length);
         }
 
         private string RemoveUnsupportedCharacters(string value) {
@@ -220,13 +230,15 @@ namespace Blish_HUD.Controls {
 
             value = RemoveUnsupportedCharacters(value);
 
+            int startLength = _text.Length;
+
             if (string.IsNullOrEmpty(_text)) {
                 this.UserText = value;
             } else {
-                this.UserText = this.UserText.Substring(0, index) + value + this.UserText.Substring(index);
+                this.UserText = _text.Substring(0, index) + value + _text.Substring(index);
             }
 
-            length = value.Length;
+            length = this.Length - startLength;
             return true;
         }
 
@@ -234,7 +246,7 @@ namespace Blish_HUD.Controls {
             if (string.IsNullOrEmpty(_text)) {
                 this.UserText = value.ToString();
             } else {
-                this.UserText = UserText.Substring(0, index) + value + this.UserText.Substring(index);
+                this.UserText = _text.Substring(0, index) + value + _text.Substring(index);
             }
 
             return true;
@@ -405,6 +417,10 @@ namespace Blish_HUD.Controls {
 
             if (!_multiline) {
                 value = value?.Replace("\n", string.Empty);
+            }
+
+            if (value?.Length > _maxLength) {
+                value = value.Substring(0, _maxLength);
             }
 
             return value;

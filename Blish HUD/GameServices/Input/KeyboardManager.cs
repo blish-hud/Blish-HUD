@@ -127,9 +127,9 @@ namespace Blish_HUD.Input {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
             if (_textInputDelegate != null) {
-                string chars = TypedInputUtil.VKCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
+                string chars = TypedInputUtil.VkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
                 _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);
-                return true;
+                return key != Keys.LeftShift && key != Keys.RightShift;
             }
 
             // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
