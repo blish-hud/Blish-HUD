@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Blish_HUD.Controls.Resources;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
@@ -37,11 +36,13 @@ using Microsoft.Xna.Framework.Input;
 namespace Blish_HUD.Controls {
 
     /// <summary>
-    /// Represents a textbox control.
+    /// The base of controls such as the <see cref="TextBox"/> or <see cref="MultilineTextBox"/> which accept text input from the user.
     /// </summary>
     public abstract class TextInputBase : Control {
 
-        protected static readonly Logger Logger = Logger.GetLogger<TextInputBase>();
+        private static readonly Logger Logger = Logger.GetLogger<TextInputBase>();
+
+        protected static readonly char[] WordSeperators = { ' ', '\n', '`', '~', '!', '@', '#', '%', '^', '&', '*', '(', ')', '-', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?' };
 
         #region Load Static
 
@@ -55,12 +56,17 @@ namespace Blish_HUD.Controls {
 
         protected const char NEWLINE = '\n';
 
-        public event EventHandler<EventArgs>           TextChanged;
-        public event EventHandler<EventArgs>           EnterPressed;
-        public event EventHandler<Keys>                KeyPressed;
-        public event EventHandler<Keys>                KeyDown;
-        public event EventHandler<Keys>                KeyUp;
+        /// <summary>
+        /// Fires when the <see cref="Text"/> is changed.
+        /// </summary>
+        public event EventHandler<EventArgs> TextChanged;
+
+        /// <summary>
+        /// Fires when the <see cref="CursorIndex"/> is changed.
+        /// </summary>
         public event EventHandler<ValueEventArgs<int>> CursorIndexChanged;
+
+        protected void OnTextChanged(ValueChangedEventArgs<string> e) => TextChanged?.Invoke(this, e);
 
         protected void OnCursorIndexChanged(ValueEventArgs<int> e) {
             _cursorMoved = true;
@@ -70,14 +76,10 @@ namespace Blish_HUD.Controls {
             CursorIndexChanged?.Invoke(this, e);
         }
 
-        protected void OnTextChanged(ValueChangedEventArgs<string> e) {
-            TextChanged?.Invoke(this, e);
-        }
-
         protected string _text = string.Empty;
 
         /// <summary>
-        /// The text of the control.
+        /// Gets or sets the text of the control.
         /// </summary>
         public string Text {
             get => _text;
@@ -92,7 +94,7 @@ namespace Blish_HUD.Controls {
         protected int _maxLength = int.MaxValue;
 
         /// <summary>
-        /// The maximum character length of the control.
+        /// Gets or sets the maximum character length of the control.
         /// </summary>
         public int MaxLength {
             get => _maxLength;
@@ -106,7 +108,7 @@ namespace Blish_HUD.Controls {
         protected string _placeholderText;
 
         /// <summary>
-        /// The placeholder text to show when there is no text entered.
+        /// Gets or sets the placeholder text to show when there is no text entered.
         /// </summary>
         public string PlaceholderText {
             get => _placeholderText;
@@ -116,7 +118,7 @@ namespace Blish_HUD.Controls {
         protected Color _foreColor = Color.FromNonPremultiplied(239, 240, 239, 255);
 
         /// <summary>
-        /// The forecolor of the text.
+        /// Gets or sets the forecolor of the text.
         /// </summary>
         public Color ForeColor {
             get => _foreColor;
@@ -126,7 +128,7 @@ namespace Blish_HUD.Controls {
         protected BitmapFont _font = Content.DefaultFont14;
 
         /// <summary>
-        /// The font to be used for the text.
+        /// Gets or sets the font to be used for the text.
         /// </summary>
         public BitmapFont Font {
             get => _font;
@@ -136,7 +138,7 @@ namespace Blish_HUD.Controls {
         protected bool _focused = false;
 
         /// <summary>
-        /// If the text box is currently focused.
+        /// Gets or sets if the text box is currently focused.
         /// </summary>
         public bool Focused {
             get => _focused;
@@ -146,7 +148,7 @@ namespace Blish_HUD.Controls {
         protected int _selectionStart;
 
         /// <summary>
-        /// The starting index of a selection of text.
+        /// Gets or sets the starting index of a selection of text.
         /// </summary>
         public int SelectionStart {
             get => _selectionStart;
@@ -156,7 +158,7 @@ namespace Blish_HUD.Controls {
         protected int _selectionEnd;
 
         /// <summary>
-        /// The ending index of a selection of text.
+        /// Gets or sets the ending index of a selection of text.
         /// </summary>
         public int SelectionEnd {
             get => _selectionEnd;
@@ -166,7 +168,7 @@ namespace Blish_HUD.Controls {
         protected int _cursorIndex;
 
         /// <summary>
-        /// The current index of the cursor within the text.
+        /// Gets or sets the current index of the cursor within the text.
         /// </summary>
         public int CursorIndex {
             get => _cursorIndex;
@@ -178,7 +180,7 @@ namespace Blish_HUD.Controls {
         }
 
         /// <summary>
-        /// The length of the text.
+        /// Gets the length of the text.
         /// </summary>
         public int Length => _text.Length;
 
@@ -490,23 +492,15 @@ namespace Blish_HUD.Controls {
         private void OnGlobalKeyboardKeyPressed(object sender, KeyboardEventArgs e) {
             if (!_focused && _enabled) return;
 
-            bool ctrlDown  = this.IsCtrlDown;
-
             switch (e.Key) {
                 case Keys.Insert:
                     _insertMode = !_insertMode;
                     break;
                 case Keys.Left:
-                    if (_cursorIndex > 0) {
-                        UserSetCursorIndex(_cursorIndex - 1);
-                        UpdateSelectionIfShiftDown();
-                    }
+                    HandleLeft(this.IsCtrlDown);
                     break;
                 case Keys.Right:
-                    if (_cursorIndex < _text.Length) {
-                        UserSetCursorIndex(_cursorIndex + 1);
-                        UpdateSelectionIfShiftDown();
-                    }
+                    HandleRight(this.IsCtrlDown);
                     break;
                 case Keys.Up:
                     MoveLine(-1);
@@ -521,18 +515,18 @@ namespace Blish_HUD.Controls {
                     HandleDelete();
                     break;
                 case Keys.Home:
-                    HandleHome(ctrlDown);
+                    HandleHome(this.IsCtrlDown);
                     break;
                 case Keys.End:
-                    HandleEnd(ctrlDown);
+                    HandleEnd(this.IsCtrlDown);
                     break;
                 case Keys.Enter:
-                    InputChar(NEWLINE);
+                    HandleEnter();
                     break;
             }
         }
 
-        protected void HandleCopy() {
+        protected virtual void HandleCopy() {
             if (_selectionEnd != _selectionStart) {
                 int selectStart = Math.Min(_selectionStart, _selectionEnd);
                 int selectEnd   = Math.Max(_selectionStart, _selectionEnd);
@@ -548,12 +542,12 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected void HandleCut() {
+        protected virtual void HandleCut() {
             HandleCopy();
             DeleteSelection();
         }
 
-        protected void HandlePaste() {
+        protected virtual void HandlePaste() {
             ClipboardUtil.WindowsClipboardService.GetTextAsync()
                          .ContinueWith((clipboardTask) => {
                               if (!clipboardTask.IsFaulted) {
@@ -566,15 +560,15 @@ namespace Blish_HUD.Controls {
                           });
         }
 
-        protected void HandleUndo() {
+        protected virtual void HandleUndo() {
             UndoRedo(_undoStack, _redoStack);
         }
 
-        protected void HandleRedo() {
+        protected virtual void HandleRedo() {
             UndoRedo(_redoStack, _undoStack);
         }
 
-        protected void HandleBackspace() {
+        protected virtual void HandleBackspace() {
             if (_selectionStart == _selectionEnd) {
                 if (Delete(_cursorIndex - 1, 1)) {
                     UserSetCursorIndex(_cursorIndex - 1);
@@ -585,7 +579,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected void HandleDelete() {
+        protected virtual void HandleDelete() {
             if (_selectionStart == _selectionEnd) {
                 Delete(_cursorIndex, 1);
             } else {
@@ -593,7 +587,33 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected void HandleHome(bool ctrlDown) {
+        protected virtual void HandleLeft(bool ctrlDown) {
+            int newIndex = _cursorIndex - 1;
+
+            if (ctrlDown) {
+                while (newIndex > 0 && (newIndex - 1 >= _text.Length || !WordSeperators.Contains(_text[newIndex - 1]))) {
+                    --newIndex;
+                }
+            }
+
+            UserSetCursorIndex(newIndex);
+            UpdateSelectionIfShiftDown();
+        }
+
+        protected virtual void HandleRight(bool ctrlDown) {
+            int newIndex = _cursorIndex + 1;
+
+            if (ctrlDown) {
+                while (newIndex < _text.Length && !WordSeperators.Contains(_text[newIndex])) {
+                    ++newIndex;
+                }
+            }
+
+            UserSetCursorIndex(newIndex);
+            UpdateSelectionIfShiftDown();
+        }
+
+        protected virtual void HandleHome(bool ctrlDown) {
             int newIndex = 0;
 
             if (!ctrlDown && !string.IsNullOrEmpty(_text)) {
@@ -608,7 +628,7 @@ namespace Blish_HUD.Controls {
             UpdateSelectionIfShiftDown();
         }
 
-        protected void HandleEnd(bool ctrlDown) {
+        protected virtual void HandleEnd(bool ctrlDown) {
             int newIndex = _text.Length;
 
             if (!ctrlDown) {
@@ -621,6 +641,10 @@ namespace Blish_HUD.Controls {
 
             UserSetCursorIndex(newIndex);
             UpdateSelectionIfShiftDown();
+        }
+
+        protected virtual void HandleEnter() {
+            InputChar(NEWLINE);
         }
 
         protected abstract void UpdateScrolling();

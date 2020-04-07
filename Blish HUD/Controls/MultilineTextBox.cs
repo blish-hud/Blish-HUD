@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +11,7 @@ namespace Blish_HUD.Controls {
 
         public MultilineTextBox() {
             _multiline = true;
+            _maxLength = 524288;
         }
 
         protected override void MoveLine(int delta) {

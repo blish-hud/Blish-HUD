@@ -2,6 +2,7 @@
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Controls {
     public class TextBox : TextInputBase {
@@ -25,13 +26,25 @@ namespace Blish_HUD.Controls {
                                                                             /*   PanelOffset */ new Point(5,   2),
                                                                             /* ControlOffset */ ControlStandard.ControlOffset);
 
+        /// <summary>
+        /// Fires when <see cref="Keys.Enter"/> is pressed while this <see cref="TextBox"/> is focused (<see cref="TextInputBase.Focused" /> is <c>true</c>).
+        /// </summary>
+        public event EventHandler<EventArgs> EnterPressed;
+
+        protected virtual void OnEnterPressed(EventArgs e) => EnterPressed?.Invoke(this, e);
+
         private int _prevCursorIndex  = 0;
         private int _horizontalOffset = 0;
 
         public TextBox() {
             _multiline = false;
+            _maxLength = 2048;
 
             this.Size = new Point(STANDARD_CONTROLWIDTH, STANDARD_CONTROLHEIGHT);
+        }
+
+        protected override void HandleEnter() {
+            OnEnterPressed(EventArgs.Empty);
         }
 
         protected override void MoveLine(int delta) { /* NOOP */ }
@@ -82,7 +95,7 @@ namespace Blish_HUD.Controls {
             int selectionStart  = Math.Min(_selectionStart, _selectionEnd);
             int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
 
-            if (selectionLength <= 0 || selectionStart + selectionLength > this.Length) return Rectangle.Empty;
+            if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) return Rectangle.Empty;
 
             float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
             float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
