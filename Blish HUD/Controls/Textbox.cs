@@ -2,7 +2,6 @@
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 
 namespace Blish_HUD.Controls {
     public class TextBox : TextInputBase {

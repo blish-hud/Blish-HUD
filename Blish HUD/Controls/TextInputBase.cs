@@ -89,7 +89,7 @@ namespace Blish_HUD.Controls {
             set => SetText(value, true);
         }
 
-        protected int _maxLength = 20;
+        protected int _maxLength = int.MaxValue;
 
         /// <summary>
         /// The maximum character length of the control.
