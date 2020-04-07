@@ -26,7 +26,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Blish_HUD.Controls.Resources {
+namespace Blish_HUD.Controls {
 	internal enum OperationType {
         Insert,
         Delete,

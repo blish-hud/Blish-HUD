@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 
-namespace Blish_HUD.Controls.Resources {
+namespace Blish_HUD.Controls {
     internal class UndoRedoStack {
 
         private readonly Stack<UndoRedoRecord> _stack = new Stack<UndoRedoRecord>();

@@ -25,8 +25,8 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Blish_HUD.Controls.Resources;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -198,11 +198,14 @@ namespace Blish_HUD.Controls {
         private readonly UndoRedoStack _undoStack = new UndoRedoStack();
         private readonly UndoRedoStack _redoStack = new UndoRedoStack();
 
+        private readonly Dictionary<Keys, KeyRepeatState> _keyRepeatStates;
+
         public TextInputBase() {
-            _lastInvalidate = DateTime.MinValue.TimeOfDay;
+            _lastInvalidate  = DateTime.MinValue.TimeOfDay;
+            _keyRepeatStates = new Dictionary<Keys, KeyRepeatState>();
 
             Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
-            Input.Keyboard.KeyPressed           += OnGlobalKeyboardKeyPressed;
+            Input.Keyboard.KeyStateChanged      += OnGlobalKeyboardKeyStateChanged;
         }
 
         private void OnTextInput(string value) {
@@ -489,8 +492,13 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
-        private void OnGlobalKeyboardKeyPressed(object sender, KeyboardEventArgs e) {
+        private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
             if (!_focused && _enabled) return;
+
+            if (e.EventType == KeyboardEventType.KeyUp) {
+                _keyRepeatStates.Remove(e.Key);
+                return;
+            }
 
             switch (e.Key) {
                 case Keys.Insert:
@@ -523,6 +531,13 @@ namespace Blish_HUD.Controls {
                 case Keys.Enter:
                     HandleEnter();
                     break;
+                default:
+                    // Skip key repeat state
+                    return;
+            }
+
+            if (!_keyRepeatStates.ContainsKey(e.Key)) {
+                _keyRepeatStates.Add(e.Key, new KeyRepeatState(GameService.Overlay.CurrentGameTime, e));
             }
         }
 
@@ -656,6 +671,7 @@ namespace Blish_HUD.Controls {
                 GameService.Input.Keyboard.SetTextInputListner(OnTextInput);
             } else  {
                 GameService.Input.Keyboard.UnsetTextInputListner(OnTextInput);
+                _keyRepeatStates.Clear();
                 _undoStack.Reset();
                 _redoStack.Reset();
             }
@@ -687,12 +703,19 @@ namespace Blish_HUD.Controls {
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            // Determines if the blinking caret is currently visible
-            _caretVisible = _focused && (Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75);
+            if (_focused) {
+                // Determines if the blinking caret is currently visible
+                _caretVisible = Math.Round(gameTime.TotalGameTime.TotalSeconds) % 2 == 1 || gameTime.TotalGameTime.Subtract(_lastInvalidate).TotalSeconds < 0.75;
 
-            if (_cursorMoved) {
-                _lastInvalidate = gameTime.TotalGameTime;
-                _cursorMoved    = false;
+                if (_cursorMoved) {
+                    _lastInvalidate = gameTime.TotalGameTime;
+                    _cursorMoved    = false;
+                }
+
+                // Repeat pressed keys
+                foreach (var keyRepeatState in _keyRepeatStates.Values) {
+                    keyRepeatState.HandleUpdate(gameTime, OnGlobalKeyboardKeyStateChanged);
+                }
             }
         }
 
