@@ -34,6 +34,8 @@ namespace Blish_HUD.Controls {
             this.Size = new Point(STANDARD_CONTROLWIDTH, STANDARD_CONTROLHEIGHT);
         }
 
+        protected override void MoveLine(int delta) { /* NOOP */ }
+
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 

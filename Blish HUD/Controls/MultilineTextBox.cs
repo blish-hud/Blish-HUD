@@ -14,6 +14,44 @@ namespace Blish_HUD.Controls {
             _multiline = true;
         }
 
+        protected override void MoveLine(int delta) {
+            int newIndex = 0; // if targetLine is < 0, we set cursor index to 0
+
+            string[] lines = _text.Split(NEWLINE);
+
+            var cursor = GetSplitIndex(_cursorIndex);
+
+            int targetLine = cursor.Line + delta;
+
+            if (targetLine >= lines.Length) {
+                newIndex = _text.Length;
+            } else if (targetLine >= 0) {
+                float cursorLeft   = MeasureStringWidth(lines[cursor.Line].Substring(0, cursor.Character));
+                float minOffset    = cursorLeft;
+                int   currentIndex = 0;
+
+                var glyphs = _font.GetGlyphs(lines[targetLine]);
+
+                foreach (var glyph in glyphs) {
+                    float localOffset = Math.Abs(glyph.Position.X - cursorLeft);
+
+                    if (localOffset < minOffset) {
+                        newIndex  = currentIndex;
+                        minOffset = localOffset;
+                    }
+
+                    currentIndex++;
+                }
+
+                for (int i = 0; i < targetLine; i++) {
+                    newIndex += lines[i].Length + 1;
+                }
+            }
+
+            UserSetCursorIndex(newIndex);
+            UpdateSelectionIfShiftDown();
+        }
+
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 

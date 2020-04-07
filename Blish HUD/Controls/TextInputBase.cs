@@ -426,7 +426,7 @@ namespace Blish_HUD.Controls {
             this.SelectionEnd = _cursorIndex;
         }
 
-        private void UpdateSelectionIfShiftDown() {
+        protected void UpdateSelectionIfShiftDown() {
             if (this.IsShiftDown) {
                 UpdateSelection();
             } else {
@@ -434,9 +434,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected void MoveLine(int delta) {
-
-        }
+        protected abstract void MoveLine(int delta);
 
         protected void SelectAll() {
             this.SelectionStart = 0;
