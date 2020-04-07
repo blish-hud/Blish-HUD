@@ -82,8 +82,8 @@ namespace Blish_HUD.Controls {
 
             if (selectionLength <= 0 || selectionStart + selectionLength > this.Length) return Rectangle.Empty;
 
-            float highlightLeftOffset = _font.MeasureString(_text.Substring(0, selectionStart)).Width;
-            float highlightWidth      = _font.MeasureString(_text.Substring(selectionStart, selectionLength)).Width;
+            float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
+            float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
 
             return new Rectangle(_textRegion.Left + (int)highlightLeftOffset - 1,
                                  _textRegion.Y,
@@ -92,8 +92,8 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle CalculateCursorRegion() {
-            float textOffset  = this.Font.MeasureString(_text.Substring(0, _cursorIndex)).Width;
-            
+            float textOffset = MeasureStringWidth(_text.Substring(0, _cursorIndex));
+
             return new Rectangle(_textRegion.X + (int)textOffset - 2,
                                  _textRegion.Y + 2,
                                  2,
@@ -107,12 +107,12 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void UpdateScrolling() {
-            var leftPos = _font.MeasureString(_text.Substring(0, _cursorIndex));
+            float lineWidth = MeasureStringWidth(_text.Substring(0, _cursorIndex));
 
             if (_cursorIndex > _prevCursorIndex) {
-                _horizontalOffset = (int)Math.Max(_horizontalOffset, leftPos.Width - _size.X);
+                _horizontalOffset = (int)Math.Max(_horizontalOffset, lineWidth - _size.X);
             } else {
-                _horizontalOffset = (int)Math.Min(_horizontalOffset, leftPos.Width);
+                _horizontalOffset = (int)Math.Min(_horizontalOffset, lineWidth);
             }
 
             _prevCursorIndex = _cursorIndex;

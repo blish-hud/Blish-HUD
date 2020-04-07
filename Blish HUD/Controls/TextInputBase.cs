@@ -443,6 +443,14 @@ namespace Blish_HUD.Controls {
             this.SelectionEnd   = this.Length;
         }
 
+        protected float MeasureStringWidth(string text) {
+            if (string.IsNullOrEmpty(text)) return 0;
+
+            var lastGlyph = _font.GetGlyphs(text).Last();
+
+            return lastGlyph.Position.X + (lastGlyph.FontRegion?.Width ?? 0);
+        }
+
         private string ProcessText(string value) {
             value = value?.Replace("\r", string.Empty);
 

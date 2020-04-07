@@ -66,7 +66,7 @@ namespace Blish_HUD.Controls {
             for (int i = 0; i < index; i++) {
                 charIndex++;
 
-                if (_text[lineIndex] == NEWLINE) {
+                if (_text[i] == NEWLINE) {
                     lineIndex++;
                     charIndex = 0;
                 }
@@ -76,7 +76,58 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle[] CalculateHighlightRegions() {
-            return Array.Empty<Rectangle>();
+            int selectionStart  = Math.Min(_selectionStart, _selectionEnd);
+            int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
+
+            if (selectionLength <= 0 || selectionStart + selectionLength > this.Length) return Array.Empty<Rectangle>();
+
+            string[] lines = _text.Split(NEWLINE);
+
+            var startIndex = GetSplitIndex(selectionStart);
+            var endIndex   = GetSplitIndex(selectionStart + selectionLength);
+
+            int lineSpans = endIndex.Line - startIndex.Line;
+
+            var regions = new Rectangle[lineSpans + 1];
+
+            if (lineSpans == 0) {
+                float highlightLeftOffset = MeasureStringWidth(lines[startIndex.Line].Substring(0, startIndex.Character));
+                float highlightWidth      = MeasureStringWidth(lines[startIndex.Line].Substring(startIndex.Character, selectionLength));
+
+                regions[0] = new Rectangle(_textRegion.Left + (int)highlightLeftOffset - 1,
+                                           _textRegion.Top + (startIndex.Line * _font.LineHeight),
+                                           (int)highlightWidth,
+                                           _font.LineHeight - 1);
+            } else {
+                // First line
+                float firstHighlightLeftOffset = MeasureStringWidth(lines[startIndex.Line].Substring(0, startIndex.Character));
+                float firstHighlightWidth      = MeasureStringWidth(lines[startIndex.Line].Substring(startIndex.Character));
+
+                regions[0] = new Rectangle(_textRegion.Left + (int) firstHighlightLeftOffset - 1,
+                                           _textRegion.Top  + (startIndex.Line * _font.LineHeight),
+                                           (int) firstHighlightWidth,
+                                           _font.LineHeight - 1);
+
+                // Middle lines
+                for (int i = startIndex.Line + 1; i < endIndex.Line; i++) {
+                    float fullWidth = MeasureStringWidth(lines[i]);
+
+                    regions[i - startIndex.Line] = new Rectangle(_textRegion.Left - 1,
+                                                                 _textRegion.Top  + (i * _font.LineHeight),
+                                                                 (int) fullWidth,
+                                                                 _font.LineHeight - 1);
+                }
+
+                // Last line
+                float lastHighlightWidth = MeasureStringWidth(lines[endIndex.Line].Substring(0, endIndex.Character));
+
+                regions[lineSpans] = new Rectangle(_textRegion.Left - 1,
+                                                   _textRegion.Top  + (endIndex.Line * _font.LineHeight),
+                                                   (int) lastHighlightWidth,
+                                                   _font.LineHeight - 1);
+            }
+
+            return regions;
         }
 
         private Rectangle CalculateTextRegion() {
@@ -87,25 +138,17 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle CalculateCursorRegion() {
-            int lineIndex = 0;
-            int lineStart = 0;
+            var cursor = GetSplitIndex(_cursorIndex);
 
-            for (int n = 0; n < _cursorIndex; n++) {
-                if (_text[n] == NEWLINE) {
-                    lineIndex++;
-                    lineStart = n;
-                }
-            }
+            string[] lines = _text.Split(NEWLINE);
 
-            var glyphs = _font.GetGlyphs(_text.Substring(lineStart, _cursorIndex - lineStart));
+            float cursorLeft = MeasureStringWidth(lines[cursor.Line].Substring(0, cursor.Character));
 
             var offset = Point.Zero;
 
             if (_cursorIndex > 0) {
-                var last = glyphs.Last();
-
-                offset = new Point((int)last.Position.X + (last.FontRegion?.Width ?? 0),
-                                   _font.LineHeight * lineIndex);
+                offset = new Point((int)cursorLeft,
+                                   _font.LineHeight * cursor.Line);
             }
 
             return new Rectangle(_textRegion.X + offset.X - 2,
