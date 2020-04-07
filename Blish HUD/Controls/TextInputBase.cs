@@ -75,6 +75,10 @@ namespace Blish_HUD.Controls {
         }
 
         protected string _text = string.Empty;
+
+        /// <summary>
+        /// The text of the control.
+        /// </summary>
         public string Text {
             get => _text;
             set => SetText(value, false);
@@ -86,6 +90,10 @@ namespace Blish_HUD.Controls {
         }
 
         protected int _maxLength = 20;
+
+        /// <summary>
+        /// The maximum character length of the control.
+        /// </summary>
         public int MaxLength {
             get => _maxLength;
             set {
@@ -96,42 +104,70 @@ namespace Blish_HUD.Controls {
         }
 
         protected string _placeholderText;
+
+        /// <summary>
+        /// The placeholder text to show when there is no text entered.
+        /// </summary>
         public string PlaceholderText {
             get => _placeholderText;
             set => SetProperty(ref _placeholderText, value);
         }
 
         protected Color _foreColor = Color.FromNonPremultiplied(239, 240, 239, 255);
+
+        /// <summary>
+        /// The forecolor of the text.
+        /// </summary>
         public Color ForeColor {
             get => _foreColor;
             set => SetProperty(ref _foreColor, value);
         }
 
         protected BitmapFont _font = Content.DefaultFont14;
+
+        /// <summary>
+        /// The font to be used for the text.
+        /// </summary>
         public BitmapFont Font {
             get => _font;
             set => SetProperty(ref _font, value, true);
         }
 
         protected bool _focused = false;
+
+        /// <summary>
+        /// If the text box is currently focused.
+        /// </summary>
         public bool Focused {
             get => _focused;
             set => SetProperty(ref _focused, value);
         }
 
         protected int _selectionStart;
+
+        /// <summary>
+        /// The starting index of a selection of text.
+        /// </summary>
         public int SelectionStart {
             get => _selectionStart;
             set => SetProperty(ref _selectionStart, value, true);
         }
 
         protected int _selectionEnd;
+
+        /// <summary>
+        /// The ending index of a selection of text.
+        /// </summary>
         public int SelectionEnd {
             get => _selectionEnd;
             set => SetProperty(ref _selectionEnd, value, true);
         }
 
         protected int _cursorIndex;
+
+        /// <summary>
+        /// The current index of the cursor within the text.
+        /// </summary>
         public int CursorIndex {
             get => _cursorIndex;
             set {
@@ -140,19 +176,14 @@ namespace Blish_HUD.Controls {
                 }
             }
         }
-        
-        private bool _wrapText;
-        public bool WrapText {
-            get => _wrapText;
-            set => SetProperty(ref _wrapText, value, true);
-        }
 
+        /// <summary>
+        /// The length of the text.
+        /// </summary>
         public int Length => _text.Length;
 
-        protected bool IsShiftDown         => GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftShift) || GameService.Input.Keyboard.KeysDown.Contains(Keys.RightShift);
-        protected bool IsCtrlDown          => GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftControl) || GameService.Input.Keyboard.KeysDown.Contains(Keys.RightControl);
-        protected int  CursorWidth         => System.Windows.Forms.SystemInformation.CaretWidth;
-        protected int  CursorBlinkInterval => System.Windows.Forms.SystemInformation.CaretBlinkTime;
+        protected bool IsShiftDown => GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftShift)   || GameService.Input.Keyboard.KeysDown.Contains(Keys.RightShift);
+        protected bool IsCtrlDown  => GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftControl) || GameService.Input.Keyboard.KeysDown.Contains(Keys.RightControl);
 
         protected bool _multiline;
         protected bool _caretVisible;

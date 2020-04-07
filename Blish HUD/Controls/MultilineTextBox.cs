@@ -12,16 +12,6 @@ namespace Blish_HUD.Controls {
         private const int TEXT_TOPPADDING  = 7;
         private const int TEXT_LEFTPADDING = 10;
 
-        #region Load Static
-
-        private static readonly Texture2D _textureTextbox;
-
-        static MultilineTextBox() {
-            _textureTextbox = Content.GetTexture("textbox");
-        }
-
-        #endregion
-
         public MultilineTextBox() {
             _multiline = true;
         }
