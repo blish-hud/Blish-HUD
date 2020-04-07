@@ -86,11 +86,6 @@ namespace Blish_HUD.Controls {
             set => SetText(value, false);
         }
 
-        private string UserText {
-            get => _text;
-            set => SetText(value, true);
-        }
-
         protected int _maxLength = int.MaxValue;
 
         /// <summary>
@@ -184,8 +179,8 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int Length => _text.Length;
 
-        protected bool IsShiftDown => GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftShift)   || GameService.Input.Keyboard.KeysDown.Contains(Keys.RightShift);
-        protected bool IsCtrlDown  => GameService.Input.Keyboard.KeysDown.Contains(Keys.LeftControl) || GameService.Input.Keyboard.KeysDown.Contains(Keys.RightControl);
+        protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
+        protected bool IsCtrlDown  => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
 
         protected bool _multiline;
         protected bool _caretVisible;
@@ -245,7 +240,7 @@ namespace Blish_HUD.Controls {
         private void DeleteChars(int index, int length) {
             if (length <= 0) return;
 
-            this.UserText = _text.Substring(0, index) + _text.Substring(index + length);
+            SetText(_text.Substring(0, index) + _text.Substring(index + length), true);
         }
 
         private string RemoveUnsupportedCharacters(string value) {
@@ -269,9 +264,9 @@ namespace Blish_HUD.Controls {
             int startLength = _text.Length;
 
             if (string.IsNullOrEmpty(_text)) {
-                this.UserText = value;
+                SetText(value, true);
             } else {
-                this.UserText = _text.Substring(0, index) + value + _text.Substring(index);
+                SetText(_text.Substring(0, index) + value + _text.Substring(index), true);
             }
 
             length = _text.Length - startLength;
@@ -280,9 +275,9 @@ namespace Blish_HUD.Controls {
 
         private bool InsertChar(int index, char value) {
             if (string.IsNullOrEmpty(_text)) {
-                this.UserText = value.ToString();
+                SetText(value.ToString(), true);
             } else {
-                this.UserText = _text.Substring(0, index) + value + _text.Substring(index);
+                SetText(_text.Substring(0, index) + value + _text.Substring(index), true);
             }
 
             return true;
@@ -309,7 +304,7 @@ namespace Blish_HUD.Controls {
             }
 
             _undoStack.MakeReplace(value, index, length, value.Length);
-            this.UserText = this.UserText.Substring(0, index) + value + this.UserText.Substring(index + length);
+            SetText(_text.Substring(0, index) + value + _text.Substring(index + length), true);
         }
 
         public void ReplaceAll(string value) {
