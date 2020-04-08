@@ -9,6 +9,16 @@ using Gw2Sharp.WebApi.V2.Models;
 namespace Blish_HUD.Modules.Managers {
     public class Gw2ApiManager {
 
+        private const int SUBTOKEN_LIFETIME = 7;
+
+        private static readonly List<Gw2ApiManager> _apiManagers = new List<Gw2ApiManager>();
+
+        internal static void RenewAllSubtokens() {
+            foreach (var apiManager in _apiManagers.ToArray()) {
+                apiManager.RenewSubtoken();
+            }
+        }
+
         private readonly HashSet<TokenPermission> _permissions;
 
         private ManagedConnection _connection;
@@ -17,21 +27,27 @@ namespace Blish_HUD.Modules.Managers {
 
         public List<TokenPermission> Permissions => _permissions.ToList();
 
-        public Gw2ApiManager(IEnumerable<TokenPermission> permissions) {
+        private Gw2ApiManager(IEnumerable<TokenPermission> permissions) {
+            _apiManagers.Add(this);
+
             _permissions = permissions.ToHashSet();
 
-            UpdateToken();
+            RenewSubtoken();
         }
 
-        private void UpdateToken() {
-            if (_permissions == null || !_permissions.Any()) {
-                //_connection = new ManagedConnection();
-                return;
-            }
+        internal static Gw2ApiManager GetModuleInstance(ModuleManager module) {
+            return new Gw2ApiManager(module.State.UserEnabledPermissions ?? new TokenPermission[0]);
+        }
 
-            //string apiSubtoken = GameService.Gw2WebApi.RequestSubtoken(_permissions, 7);
+        private void RenewSubtoken() {
+            // Default to anonymous if permissions aren't requested
+            // and while we wait for subtoken response.
+            _connection = GameService.Gw2WebApi.AnonymousConnection;
 
-            //_gw2ApiConnection = new Connection(apiSubtoken, Locale.English);
+            if (_permissions == null || !_permissions.Any()) return;
+
+            GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
+                       .ContinueWith((subtokenTask) => _connection.SetApiKey(subtokenTask.Result));
         }
 
         public bool HavePermission(TokenPermission permission) {

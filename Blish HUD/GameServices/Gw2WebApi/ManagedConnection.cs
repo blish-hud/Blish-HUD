@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Gw2Sharp;
 using Gw2Sharp.WebApi;
@@ -6,7 +7,7 @@ using Gw2Sharp.WebApi.Caching;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Gw2WebApi {
-    public class ManagedConnection {
+    public sealed class ManagedConnection {
 
         private static readonly Logger Logger = Logger.GetLogger<ManagedConnection>();
 
@@ -45,8 +46,12 @@ namespace Blish_HUD.Gw2WebApi {
             Logger.Debug($"{nameof(ManagedConnection)} updated locale to {e.NewValue} (was {e.PrevousValue}).");
         }
 
-        public void SetApiKey(string apiKey) {
+        public bool SetApiKey(string apiKey) {
+            if (string.Equals(_internalConnection.AccessToken, apiKey)) return false;
+
             _internalConnection.AccessToken = apiKey;
+
+            return true;
         }
 
     }

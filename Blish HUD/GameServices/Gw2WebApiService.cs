@@ -37,18 +37,24 @@ namespace Blish_HUD {
 
         #region Init Cache, Connection, & Client
 
-        private ManagedConnection _baseConnection;
+        private ManagedConnection _anonymousConnection;
+        private ManagedConnection _privilegedConnection;
 
         private void CreateInternalConnection() {
             InitCache();
 
-            _baseConnection = new ManagedConnection(string.Empty, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            _anonymousConnection  = new ManagedConnection(string.Empty, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            _privilegedConnection = new ManagedConnection(string.Empty, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
         }
+
+        public ManagedConnection AnonymousConnection => _anonymousConnection;
 
         #endregion
 
         private ConcurrentDictionary<string, string>            _characterRepository;
         private ConcurrentDictionary<string, TokenPermission[]> _permissionDetails;
+
+        private ConcurrentDictionary<string, ManagedConnection> _cachedConnections;
 
         private SettingCollection _apiSettings;
         private SettingCollection _apiKeyRepository;
@@ -60,7 +66,7 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _apiKeyRepository = ((SettingEntry<SettingCollection>)settings[SETTINGS_ENTRY_APIKEYS]).Value
+            _apiKeyRepository = ((SettingEntry<SettingCollection>)settings[SETTINGS_ENTRY_APIKEYS])?.Value
                              ?? settings.AddSubCollection(SETTINGS_ENTRY_APIKEYS);
         }
 
@@ -69,15 +75,23 @@ namespace Blish_HUD {
 
             _characterRepository = new ConcurrentDictionary<string, string>();
 
+            _cachedConnections = new ConcurrentDictionary<string, ManagedConnection>();
+
             Gw2Mumble.PlayerCharacter.NameChanged += PlayerCharacterOnNameChanged;
+        }
+
+        private void UpdateBaseConnection(string apiKey) {
+            if (_privilegedConnection.SetApiKey(apiKey)) {
+                Modules.Managers.Gw2ApiManager.RenewAllSubtokens();
+            }
         }
 
         private void UpdateActiveApiKey() {
             if (_characterRepository.TryGetValue(Gw2Mumble.PlayerCharacter.Name, out string charApiKey)) {
-                _baseConnection.SetApiKey(charApiKey);
+                UpdateBaseConnection(charApiKey);
                 Logger.Debug($"Associated key {charApiKey} with user {Gw2Mumble.PlayerCharacter.Name}.");
             } else {
-                _baseConnection.SetApiKey(String.Empty);
+                UpdateBaseConnection(string.Empty);
                 Logger.Info("Could not find registered API key associated with character {characterName}", Gw2Mumble.PlayerCharacter.Name);
             }
         }
@@ -108,7 +122,7 @@ namespace Blish_HUD {
         }
 
         private void UpdateCharacterList(SettingEntry<string> definedKey) {
-            GetCharacters(definedKey.Value).ContinueWith((Task<List<string>> charactersResponse) => {
+            GetCharacters(GetConnection(definedKey.Value)).ContinueWith((charactersResponse) => {
                 if (charactersResponse.Result != null) {
                     foreach (string characterId in charactersResponse.Result) {
                         _characterRepository.AddOrUpdate(characterId, definedKey.Value, (k, o) => definedKey.Value);
@@ -123,29 +137,29 @@ namespace Blish_HUD {
             });
         }
 
-        private IGw2WebApiClient GetTempClient(string apiKey) {
-            return new Gw2Client(GetConnection(apiKey).Connection).WebApi;
+        private async Task<List<string>> GetCharacters(ManagedConnection connection) {
+            return (await connection.Client.V2.Characters.IdsAsync()).ToList();
         }
 
-        private async Task<List<string>> GetCharacters(string apiKey) {
-            return (await GetTempClient(apiKey).V2.Characters.IdsAsync()).ToList();
+        private async Task<TokenInfo> GetTokenInfo(ManagedConnection connection) {
+            return await connection.Client.V2.TokenInfo.GetAsync();
         }
 
-        private async Task<TokenInfo> GetTokenInfo(string apiKey) {
-            return await GetTempClient(apiKey).V2.TokenInfo.GetAsync();
+        private async Task<Account> GetAccount(ManagedConnection connection) {
+            return await connection.Client.V2.Account.GetAsync();
         }
 
-        private async Task<Account> GetAccount(string apiKey) {
-            return await GetTempClient(apiKey).V2.Account.GetAsync();
+        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) {
+            return await RequestSubtoken(_privilegedConnection, permissions, days);
         }
 
-        public async Task<string> RequestSubtoken(string apiKey, IEnumerable<TokenPermission> permissions, int days) {
+        public async Task<string> RequestSubtoken(ManagedConnection connection, IEnumerable<TokenPermission> permissions, int days) {
             try {
-                return (await GetTempClient(apiKey)
-                             .V2.CreateSubtoken
-                             .WithPermissions(permissions)
-                             .Expires(DateTime.UtcNow.AddDays(days))
-                             .GetAsync()).Subtoken;
+                return (await connection.Client
+                                        .V2.CreateSubtoken
+                                        .WithPermissions(permissions)
+                                        .Expires(DateTime.UtcNow.AddDays(days))
+                                        .GetAsync()).Subtoken;
             } catch (InvalidAccessTokenException ex) {
                 Logger.Warn(ex, "The provided API token is invalid and can not be used to request a subtoken.");
             } catch (UnexpectedStatusException ex) {
@@ -158,7 +172,7 @@ namespace Blish_HUD {
         #endregion
 
         public ManagedConnection GetConnection(string accessToken) {
-            return new ManagedConnection(accessToken, _sharedWebCache, _sharedRenderCache);
+            return _cachedConnections.GetOrAdd(accessToken, (token) => new ManagedConnection(token, _sharedWebCache, _sharedRenderCache));
         }
 
         protected override void Unload() { /* NOOP */ }

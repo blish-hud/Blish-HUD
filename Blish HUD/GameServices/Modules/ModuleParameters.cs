@@ -44,7 +44,7 @@ namespace Blish_HUD.Modules {
                 _settingsManager    = SettingsManager.GetModuleInstance(module),
                 _contentsManager    = ContentsManager.GetModuleInstance(module),
                 _directoriesManager = DirectoriesManager.GetModuleInstance(module),
-                //_gw2ApiManager      = GameService.Gw2WebApi.RegisterGw2ApiConnection(manifest, module.State.UserEnabledPermissions ?? new TokenPermission[0])
+                _gw2ApiManager      = Gw2ApiManager.GetModuleInstance(module)
             };
 
             if (builtModuleParameters._gw2ApiManager == null) {
@@ -56,7 +56,7 @@ namespace Blish_HUD.Modules {
                  */
                 // TODO: Show a popup instead that just asks the user if the new permission(s) is/are okay
                 Logger.Warn("An attempt was made to enable the module {module} before all of the required API permissions have been approved.", module.ToString());
-                //return null;
+                return null;
             }
 
             return builtModuleParameters;
