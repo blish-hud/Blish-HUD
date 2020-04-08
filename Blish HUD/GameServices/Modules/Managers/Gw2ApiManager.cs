@@ -13,9 +13,7 @@ namespace Blish_HUD.Modules.Managers {
 
         private ManagedConnection _connection;
 
-        private Gw2WebApiClient _gw2ApiClient;
-
-        public IGw2WebApiV2Client Gw2ApiClient => _gw2ApiClient.V2;
+        public IGw2WebApiClient Gw2ApiClient => _connection.Client;
 
         public List<TokenPermission> Permissions => _permissions.ToList();
 
@@ -23,8 +21,6 @@ namespace Blish_HUD.Modules.Managers {
             _permissions = permissions.ToHashSet();
 
             UpdateToken();
-
-            //_gw2ApiClient = new Gw2WebApiClient(_gw2ApiConnection);
         }
 
         private void UpdateToken() {

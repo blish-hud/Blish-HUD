@@ -39,14 +39,10 @@ namespace Blish_HUD {
 
         private ManagedConnection _baseConnection;
 
-        private IGw2WebApiClient _rawClient;
-
         private void CreateInternalConnection() {
             InitCache();
 
             _baseConnection = new ManagedConnection(string.Empty, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
-
-            _rawClient = new Gw2Client(_baseConnection.Connection).WebApi;
         }
 
         #endregion
@@ -74,11 +70,6 @@ namespace Blish_HUD {
             _characterRepository = new ConcurrentDictionary<string, string>();
 
             Gw2Mumble.PlayerCharacter.NameChanged += PlayerCharacterOnNameChanged;
-
-            RequestSubtoken("asdfA", new List<TokenPermission>() { TokenPermission.Account }, 1).ContinueWith(
-                                                                                                                                                                             (Task<string> s) => {
-                                                                                                                                                                                 Console.WriteLine(s.Result);
-                                                                                                                                                                             });
         }
 
         private void UpdateActiveApiKey() {
