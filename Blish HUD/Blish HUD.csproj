@@ -274,6 +274,7 @@
     <Compile Include="GameServices\Pathing\PathableAttribute.cs" />
     <Compile Include="GameServices\Pathing\PathableAttributeCollection.cs" />
     <Compile Include="_Events\ValueEventArgs[T].cs" />
+    <Compile Include="_Extensions\ColorExtensions.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
     <Compile Include="_Utils\LoadingSpinnerUtil.cs" />
