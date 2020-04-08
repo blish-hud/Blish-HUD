@@ -14,37 +14,37 @@ namespace Blish_HUD.Gw2Mumble {
         /// <summary>
         /// Fires when the user changes the compass size.
         /// </summary>
-        public event EventHandler<ValueEventArgs<Size>>   CompassSizeChanged;
+        public event EventHandler<ValueEventArgs<Size>> CompassSizeChanged;
 
         /// <summary>
         /// Fires when the user toggles compass rotation.
         /// </summary>
-        public event EventHandler<ValueEventArgs<bool>>   CompassRotationEnabledChanged;
+        public event EventHandler<ValueEventArgs<bool>> CompassRotationEnabledChanged;
 
         /// <summary>
         /// Fires when the user moves the compass between the top-right and the bottom-right.
         /// </summary>
-        public event EventHandler<ValueEventArgs<bool>>   CompassTopRightChanged;
+        public event EventHandler<ValueEventArgs<bool>> CompassTopRightChanged;
 
         /// <summary>
         /// Fires when the player selects a Guild Wars 2 text field (chat bar, search, etc.).
         /// </summary>
-        public event EventHandler<EventArgs>              TextInputAcquiredFocus;
+        public event EventHandler<EventArgs> TextInputAcquiredFocus;
 
         /// <summary>
         /// Fires when the player unselects a Guild Wars 2 text field (chat bar, search, etc.).
         /// </summary>
-        public event EventHandler<EventArgs>              TextInputLostFocus;
+        public event EventHandler<EventArgs> TextInputLostFocus;
 
         /// <summary>
         /// Fires when the world map is opened.
         /// </summary>
-        public event EventHandler<EventArgs>              MapOpened;
+        public event EventHandler<EventArgs> MapOpened;
 
         /// <summary>
         /// Fires when the world map is closed.
         /// </summary>
-        public event EventHandler<EventArgs>              MapClosed;
+        public event EventHandler<EventArgs> MapClosed;
 
         /// <summary>
         /// Fires when the user changes their in-game interface size.
