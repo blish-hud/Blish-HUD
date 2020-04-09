@@ -92,7 +92,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ApplicationSettings.cs" />
-    <Compile Include="Common\Gw2\ChatCode.cs" />
     <Compile Include="Common\Gw2\KeyBindings.cs" />
     <Compile Include="Controls\KeybindingAssignmentWindow.cs" />
     <Compile Include="Controls\KeybindingAssigner.cs" />
