@@ -35,7 +35,7 @@ namespace Blish_HUD.Gw2Mumble {
         public Vector3 Forward => _forward;
 
         /// <inheritdoc cref="IGw2MumbleClient.FieldOfView"/>
-        public float FieldOfView => MathHelper.Clamp(_fieldOfView, 0.01f, (float)Math.PI - 0.01f);
+        public float FieldOfView => _fieldOfView;
 
         #endregion
 
@@ -49,13 +49,13 @@ namespace Blish_HUD.Gw2Mumble {
         #endregion
 
         internal PlayerCamera(Gw2MumbleService service) {
-            _service      = service;
+            _service = service;
         }
 
         internal void Update(GameTime gameTime) {
             _position    = _service.RawClient.CameraPosition.ToXnaVector3();
             _forward     = _service.RawClient.CameraFront.ToXnaVector3();
-            _fieldOfView = (float)_service.RawClient.FieldOfView;
+            _fieldOfView = MathHelper.Clamp((float)_service.RawClient.FieldOfView, 0.01f, (float)Math.PI - 0.01f);
 
             // Calculated
             _view       = Matrix.CreateLookAt(_position, _position                         + _forward,                VectorUtil.UpVectorFromCameraForward(_forward));

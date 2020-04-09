@@ -20,7 +20,7 @@ namespace Blish_HUD.Gw2WebApi {
         public IGw2WebApiClient Client => _internalClient;
 
         public ManagedConnection(string accessToken, ICacheMethod webApiCache, ICacheMethod renderCache = null, TimeSpan? renderCacheDuration = null) {
-            string ua = $"BlishHUD/{Program.OverlayVersion} ";
+            string ua = $"BlishHUD/{Program.OverlayVersion}";
 
             _internalConnection = new Connection(accessToken,
                                                  GameService.Overlay.UserLocale.Value,
