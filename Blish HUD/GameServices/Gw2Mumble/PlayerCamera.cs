@@ -19,12 +19,12 @@ namespace Blish_HUD.Gw2Mumble {
         /// <summary>
         /// The closest distance entities are rendered.
         /// </summary>
-        public float NearPlaneRenderDistance { get; set; } = 0.01f;
+        public float NearPlaneRenderDistance { get; } = 0.01f;
 
         /// <summary>
         /// The farthest distance entities are rendered.
         /// </summary>
-        public float FarPlaneRenderDistance  { get; set; } = 1000.0f;
+        public float FarPlaneRenderDistance  { get; } = 1000.0f;
 
         #region Mumble Proxied Fields
 
