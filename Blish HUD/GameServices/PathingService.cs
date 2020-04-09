@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Blish_HUD.Controls;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing;
 using Blish_HUD.Pathing.Content;
 using Blish_HUD.PersistentStore;
 using Microsoft.Xna.Framework;
-using Panel = Blish_HUD.Controls.Panel;
 
 namespace Blish_HUD {
 
@@ -30,17 +28,15 @@ namespace Blish_HUD {
 
         public Store PathingStore => _pathingStore ?? (_pathingStore = Store.RegisterStore(PATHING_STORENAME));
 
-        protected override void Initialize() {
-            // Subscribe to map changes so that we can hide or show markers for the new map
-            Player.MapIdChanged += PlayerMapIdChanged;
-        }
+        protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
-           /* NOOP */
+            // Subscribe to map changes so that we can hide or show markers for the new map
+            Gw2Mumble.CurrentMap.MapChanged += PlayerMapIdChanged;
         }
 
         private void ProcessPathableState(IPathable<Entity> pathable) {
-            if (pathable.MapId == Player.MapId || pathable.MapId == -1) {
+            if (pathable.MapId == Gw2Mumble.CurrentMap.Id || pathable.MapId == -1) {
                 //pathable.Active = true;
                 Graphics.World.Entities.Add(pathable.ManagedEntity);
             } else if (Graphics.World.Entities.Contains(pathable.ManagedEntity)) {

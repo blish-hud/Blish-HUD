@@ -63,8 +63,8 @@
         public ContextAvailability TryGetClientType(out ContextResult<ClientType> contextResult) {
             int currentBuildId;
 
-            if (GameService.Gw2Mumble.Available) {
-                currentBuildId = GameService.Gw2Mumble.BuildId;
+            if (GameService.Gw2Mumble.IsAvailable) {
+                currentBuildId = GameService.Gw2Mumble.Info.BuildId;
             } else {
                 contextResult = new ContextResult<ClientType>(ClientType.Unknown, "The Guild Wars 2 Mumble Link API was not available.");
                 return ContextAvailability.Unavailable;

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
+using Blish_HUD.Gw2Mumble;
+using Gw2Sharp;
 using Microsoft.Xna.Framework;
-using GW2NET.MumbleLink;
+using Gw2Sharp.Mumble;
 
 namespace Blish_HUD {
 
@@ -11,98 +10,98 @@ namespace Blish_HUD {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2MumbleService>();
 
-        public event EventHandler<EventArgs> BuildIdChanged;
+        private IGw2MumbleClient _rawClient;
 
-        private void OnBuildIdChanged(EventArgs e) {
-            BuildIdChanged?.Invoke(this, e);
-        }
+        /// <inheritdoc cref="Gw2MumbleClient"/>
+        public IGw2MumbleClient RawClient => _rawClient;
 
-        public bool Available => gw2Link != null && this.MumbleBacking != null;
+        #region Categorized Mumble Data
 
-        private Avatar _mumbleBacking;
-        public Avatar MumbleBacking => _mumbleBacking;
+        private Info            _info;
+        private PlayerCharacter _playerCharacter;
+        private PlayerCamera    _playerCamera;
+        private CurrentMap      _currentMap;
+        private UI              _ui;
+
+        /// <summary>
+        /// Provides information about the Mumble connection and about the game instance in realtime.
+        /// </summary>
+        public Info Info => _info;
+
+        /// <summary>
+        /// Provides data about the active player's character in realtime.
+        /// </summary>
+        public PlayerCharacter PlayerCharacter => _playerCharacter;
+
+        /// <summary>
+        /// Provides data about the active player's camera in realtime.
+        /// </summary>
+        public PlayerCamera PlayerCamera => _playerCamera;
+
+        /// <summary>
+        /// Provides data about the in-game UI state in realtime.
+        /// </summary>
+        public UI UI => _ui;
+
+        /// <summary>
+        /// Provides data about the map the player is currently on in realtime.
+        /// </summary>
+        public CurrentMap CurrentMap => _currentMap;
+
+        #endregion
+        
+        /// <inheritdoc cref="IGw2MumbleClient.IsAvailable"/>
+        public bool IsAvailable => _rawClient.IsAvailable;
 
         public TimeSpan TimeSinceTick { get; private set; }
 
-        public long UiTick { get; private set; } = -1;
+        private int _delayedTicks = 0;
+        private int _prevTick = -1;
 
-        private int _buildId = -1;
-        public int BuildId {
-            get => _buildId;
-            private set {
-                if (_buildId == value) return;
+        public int Tick => _rawClient.Tick;
 
-                _buildId = value;
-
-                OnBuildIdChanged(EventArgs.Empty);
-            }
+        protected override void Initialize() {
+            _rawClient = new Gw2Client().Mumble;
         }
-
-        private MumbleLinkFile gw2Link;
-
-        protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
-            TryAttachToMumble();
+            _info            = new Info(this);
+            _playerCharacter = new PlayerCharacter(this);
+            _playerCamera    = new PlayerCamera(this);
+            _currentMap      = new CurrentMap(this);
+            _ui              = new UI(this);
         }
-
-        private void TryAttachToMumble() {
-            try {
-                gw2Link = MumbleLinkFile.CreateOrOpen();
-            } catch (Exception ex) {
-                Logger.Warn(ex, "Failed to attach to MumbleLink API.");
-                this.gw2Link = null;
-            }
-        }
-
-        private double lastMumbleCheck = 0;
-        
-        public int _delayedTicks = 0;
-
-        private Queue<int> _uiTickRates = new Queue<int>();
-        public float AverageFramesPerUITick => (float)_uiTickRates.Sum(t => t) / _uiTickRates.Count;
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
 
-            if (gw2Link != null) {
-                try {
-                    _mumbleBacking = gw2Link.Read();
+            _rawClient.Update();
 
-                    if (_mumbleBacking.UiTick > this.UiTick) {
-                        this.TimeSinceTick = TimeSpan.Zero;
-                        this.UiTick        = _mumbleBacking.UiTick;
-                        this.BuildId       = _mumbleBacking.Context.BuildId;
+            if (_rawClient.Tick > _prevTick) {
+                _prevTick = _rawClient.Tick;
 
-                        GameService.Graphics.UIScale = (GraphicsService.UiScale) _mumbleBacking.Identity.UiScale;
+                this.TimeSinceTick = TimeSpan.Zero;
 
-                        if (_uiTickRates.Count > 10) _uiTickRates.Dequeue();
-                        _uiTickRates.Enqueue(_delayedTicks);
-                        _delayedTicks = 0;
-                    } else {
-                        _delayedTicks += 1;
-                    }
-                } catch (NullReferenceException ex) /* [BLISHHUD-X] */ {
-                    Console.WriteLine("Mumble connection failed.");
-                    _mumbleBacking = null;
-                } catch (SerializationException ex) /* [BLISHHUD-10] */ {
-                    Console.WriteLine("Failed to deserialize Mumble API structure.");
-                    _mumbleBacking = null;
-                }
+                _delayedTicks = 0;
+
+                UpdateDetails(gameTime);
             } else {
-                lastMumbleCheck += gameTime.ElapsedGameTime.TotalSeconds;
-
-                if (lastMumbleCheck > 10) {
-                    TryAttachToMumble();
-
-                    lastMumbleCheck = 0;
-                }
+                _delayedTicks++;
             }
         }
 
-        protected override void Unload() {
-            gw2Link?.Dispose();
+        private void UpdateDetails(GameTime gameTime) {
+            _info.Update(gameTime);
+            _playerCharacter.Update(gameTime);
+            _playerCamera.Update(gameTime);
+            _currentMap.Update(gameTime);
+            _ui.Update(gameTime);
         }
+
+        protected override void Unload() {
+            _rawClient.Dispose();
+        }
+
     }
 
 }

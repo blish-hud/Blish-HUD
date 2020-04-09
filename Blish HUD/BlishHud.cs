@@ -70,7 +70,7 @@ namespace Blish_HUD {
 #if DEBUG
             ActiveGraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
             this.IsFixedTimeStep = false;
-            //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
+            //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
 #endif
 
             // Initialize all game services

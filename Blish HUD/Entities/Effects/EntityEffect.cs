@@ -21,8 +21,8 @@ namespace Blish_HUD.Entities.Effects {
                     continue;
                 }
 
-                loadedEffect.View       = GameService.Camera.View;
-                loadedEffect.Projection = GameService.Camera.Projection;
+                loadedEffect.View       = GameService.Gw2Mumble.PlayerCamera.View;
+                loadedEffect.Projection = GameService.Gw2Mumble.PlayerCamera.Projection;
 
                 loadedEffect.Update(gameTime);
             }

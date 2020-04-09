@@ -51,13 +51,11 @@ namespace Blish_HUD {
         public static readonly DebugService           Debug;
         public static readonly SettingsService        Settings;
         public static readonly ContentService         Content;
+        public static readonly Gw2MumbleService       Gw2Mumble;
+        public static readonly Gw2WebApiService       Gw2WebApi;
         public static readonly AnimationService       Animation;
         public static readonly GraphicsService        Graphics;
         public static readonly OverlayService         Overlay;
-        public static readonly Gw2ApiService          Gw2Api;
-        public static readonly Gw2MumbleService       Gw2Mumble;
-        public static readonly PlayerService          Player;
-        public static readonly CameraService          Camera;
         public static readonly InputService           Input;
         public static readonly GameIntegrationService GameIntegration;
         public static readonly PathingService         Pathing;
@@ -75,13 +73,11 @@ namespace Blish_HUD {
             Store           = new PersistentStoreService();
             Settings        = new SettingsService();
             Content         = new ContentService();
+            Gw2Mumble       = new Gw2MumbleService();
+            Gw2WebApi       = new Gw2WebApiService();
             Animation       = new AnimationService();
             Graphics        = new GraphicsService();
             Overlay         = new OverlayService();
-            Gw2Api          = new Gw2ApiService();
-            Gw2Mumble       = new Gw2MumbleService();
-            Player          = new PlayerService();
-            Camera          = new CameraService();
             GameIntegration = new GameIntegrationService();
             Pathing         = new PathingService();
             Module          = new ModuleService();
@@ -93,13 +89,11 @@ namespace Blish_HUD {
                 Store,
                 Settings,
                 Content,
+                Gw2Mumble,
+                Gw2WebApi,
                 Animation,
                 Graphics,
                 Overlay,
-                Gw2Api,
-                Gw2Mumble,
-                Player,
-                Camera,
                 Input,
                 GameIntegration,
                 Pathing,

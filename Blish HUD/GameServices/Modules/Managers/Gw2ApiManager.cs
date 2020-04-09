@@ -1,39 +1,53 @@
 ﻿using Gw2Sharp.WebApi;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Gw2WebApi;
+using Gw2Sharp;
 using Gw2Sharp.WebApi.V2;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules.Managers {
     public class Gw2ApiManager {
 
+        private const int SUBTOKEN_LIFETIME = 7;
+
+        private static readonly List<Gw2ApiManager> _apiManagers = new List<Gw2ApiManager>();
+
+        internal static void RenewAllSubtokens() {
+            foreach (var apiManager in _apiManagers) {
+                apiManager.RenewSubtoken();
+            }
+        }
+
         private readonly HashSet<TokenPermission> _permissions;
 
-        private Connection _gw2ApiConnection;
+        private ManagedConnection _connection;
 
-        private Gw2WebApiClient _gw2ApiClient;
-
-        public IGw2WebApiV2Client Gw2ApiClient => _gw2ApiClient.V2;
+        public IGw2WebApiClient Gw2ApiClient => _connection.Client;
 
         public List<TokenPermission> Permissions => _permissions.ToList();
 
-        public Gw2ApiManager(IEnumerable<TokenPermission> permissions) {
+        private Gw2ApiManager(IEnumerable<TokenPermission> permissions) {
+            _apiManagers.Add(this);
+
             _permissions = permissions.ToHashSet();
 
-            UpdateToken();
-
-            _gw2ApiClient = new Gw2WebApiClient(_gw2ApiConnection);
+            RenewSubtoken();
         }
 
-        private void UpdateToken() {
-            if (_permissions == null || !_permissions.Any()) {
-                _gw2ApiConnection = new Connection(Locale.English);
-                return;
-            }
+        internal static Gw2ApiManager GetModuleInstance(ModuleManager module) {
+            return new Gw2ApiManager(module.State.UserEnabledPermissions ?? new TokenPermission[0]);
+        }
 
-            string apiSubtoken = GameService.Gw2Api.RequestSubtoken(_permissions, 7);
+        private void RenewSubtoken() {
+            // Default to anonymous if permissions aren't requested
+            // and while we wait for subtoken response.
+            _connection = GameService.Gw2WebApi.AnonymousConnection;
 
-            _gw2ApiConnection = new Connection(apiSubtoken, Locale.English);
+            if (_permissions == null || !_permissions.Any()) return;
+
+            GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
+                       .ContinueWith((subtokenTask) => _connection.SetApiKey(subtokenTask.Result));
         }
 
         public bool HavePermission(TokenPermission permission) {

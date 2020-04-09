@@ -136,8 +136,8 @@ namespace Blish_HUD.Entities.Primitives {
         public override void Draw(GraphicsDevice graphicsDevice) {
             if (_geometryBuffer == null) return;
 
-            _renderEffect.View       = GameService.Camera.View;
-            _renderEffect.Projection = GameService.Camera.Projection;
+            _renderEffect.View       = GameService.Gw2Mumble.PlayerCamera.View;
+            _renderEffect.Projection = GameService.Gw2Mumble.PlayerCamera.Projection;
             _renderEffect.World      = Matrix.CreateTranslation(_position);
 
             graphicsDevice.SetVertexBuffer(_geometryBuffer, 0);

@@ -9,6 +9,7 @@ using Blish_HUD.Content;
 using Blish_HUD.GameServices.Content;
 using Blish_HUD.Modules.Managers;
 using Flurl.Http;
+using Gw2Sharp.WebApi.Caching;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -107,6 +108,12 @@ namespace Blish_HUD {
         }
 
         public Microsoft.Xna.Framework.Content.ContentManager ContentManager => Blish_HUD.BlishHud.ActiveContentManager;
+
+        private ICacheMethod _sharedRenderServiceCache;
+
+        public ICacheMethod GetRenderServiceCacheMethod() {
+            return _sharedRenderServiceCache ?? (_sharedRenderServiceCache = new MemoryCacheMethod());
+        }
 
         protected override void Initialize() { /* NOOP */ }
 

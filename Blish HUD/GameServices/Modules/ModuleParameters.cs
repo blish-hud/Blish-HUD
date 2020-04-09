@@ -44,7 +44,7 @@ namespace Blish_HUD.Modules {
                 _settingsManager    = SettingsManager.GetModuleInstance(module),
                 _contentsManager    = ContentsManager.GetModuleInstance(module),
                 _directoriesManager = DirectoriesManager.GetModuleInstance(module),
-                _gw2ApiManager      = GameService.Gw2Api.RegisterGw2ApiConnection(manifest, module.State.UserEnabledPermissions ?? new TokenPermission[0])
+                _gw2ApiManager      = Gw2ApiManager.GetModuleInstance(module)
             };
 
             if (builtModuleParameters._gw2ApiManager == null) {

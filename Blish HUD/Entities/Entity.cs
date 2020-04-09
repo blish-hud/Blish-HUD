@@ -121,8 +121,8 @@ namespace Blish_HUD.Entities {
             }
         }
 
-        public virtual float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Player.Position);
-        public virtual float DistanceFromCamera => Vector3.Distance(this.Position, GameService.Camera.Position);
+        public virtual float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Gw2Mumble.PlayerCharacter.Position);
+        public virtual float DistanceFromCamera => Vector3.Distance(this.Position, GameService.Gw2Mumble.PlayerCamera.Position);
 
         private EntityText BuildTitleText() {
             var entityText = new EntityText(this) {

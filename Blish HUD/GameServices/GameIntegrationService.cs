@@ -265,7 +265,7 @@ namespace Blish_HUD {
 
             Logger.Info("Guild Wars 2 application has exited!");
 
-            if (!GameService.Overlay.StayInTray) {
+            if (!GameService.Overlay.StayInTray.Value) {
                 Application.Exit();
             }
         }
