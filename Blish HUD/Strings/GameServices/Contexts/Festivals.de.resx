@@ -117,16 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Action_Accept" xml:space="preserve">
-    <value>Annehmen</value>
+  <data name="Festival_DragonBash" xml:space="preserve">
+    <value>Drachen-Gepolter</value>
   </data>
-  <data name="Action_Cancel" xml:space="preserve">
-    <value>Abbrechen</value>
+  <data name="Festival_FestivalOfTheFourWinds" xml:space="preserve">
+    <value>Fest der Vier Winde</value>
   </data>
-  <data name="Action_Exit" xml:space="preserve">
-    <value>Verlassen</value>
+  <data name="Festival_Halloween" xml:space="preserve">
+    <value>Der Schatten des Verückten Königs</value>
   </data>
-  <data name="Options" xml:space="preserve">
-    <value>Optionen</value>
+  <data name="Festival_LunarNewYear" xml:space="preserve">
+    <value>Mondneujahr</value>
+  </data>
+  <data name="Festival_SuperAdventureFestival" xml:space="preserve">
+    <value>Super Adventure Festival</value>
+  </data>
+  <data name="Festival_Wintersday" xml:space="preserve">
+    <value>Ein festlich-froher Wintertag</value>
   </data>
 </root>

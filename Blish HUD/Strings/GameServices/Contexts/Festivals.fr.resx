@@ -117,16 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Action_Accept" xml:space="preserve">
-    <value>Annehmen</value>
+  <data name="Festival_DragonBash" xml:space="preserve">
+    <value>Foire du Dragon</value>
   </data>
-  <data name="Action_Cancel" xml:space="preserve">
-    <value>Abbrechen</value>
+  <data name="Festival_FestivalOfTheFourWinds" xml:space="preserve">
+    <value>Le Festival des Quatre Vents</value>
   </data>
-  <data name="Action_Exit" xml:space="preserve">
-    <value>Verlassen</value>
+  <data name="Festival_Halloween" xml:space="preserve">
+    <value>Halloween</value>
   </data>
-  <data name="Options" xml:space="preserve">
-    <value>Optionen</value>
+  <data name="Festival_LunarNewYear" xml:space="preserve">
+    <value>Nouvel an lunaire</value>
+  </data>
+  <data name="Festival_SuperAdventureFestival" xml:space="preserve">
+    <value>Festival de la Super Adventure</value>
+  </data>
+  <data name="Festival_Wintersday" xml:space="preserve">
+    <value>Hivernel</value>
   </data>
 </root>
