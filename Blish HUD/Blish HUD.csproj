@@ -192,6 +192,7 @@
     <Compile Include="GameServices\ContextsService.cs" />
     <Compile Include="GameServices\Contexts\CdnInfoContext.cs" />
     <Compile Include="GameServices\Contexts\ContextState.cs" />
+    <Compile Include="GameServices\Contexts\FestivalContext.cs" />
     <Compile Include="GameServices\Contexts\Gw2ClientContext.cs" />
     <Compile Include="GameServices\Contexts\Context.cs" />
     <Compile Include="GameServices\Contexts\ContextResult[T].cs" />
@@ -272,6 +273,11 @@
     <Compile Include="GameServices\Pathing\Entities\Effects\MarkerEffect.cs" />
     <Compile Include="GameServices\Pathing\PathableAttribute.cs" />
     <Compile Include="GameServices\Pathing\PathableAttributeCollection.cs" />
+    <Compile Include="Strings\GameServices\Contexts\Festivals.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Festivals.resx</DependentUpon>
+    </Compile>
     <Compile Include="_Events\ValueEventArgs[T].cs" />
     <Compile Include="_Extensions\ColorExtensions.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
@@ -725,6 +731,13 @@
     <EmbeddedResource Include="Strings\GameServices\ContextsService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ContextsService.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Strings\GameServices\Contexts\Festivals.de.resx" />
+    <EmbeddedResource Include="Strings\GameServices\Contexts\Festivals.es.resx" />
+    <EmbeddedResource Include="Strings\GameServices\Contexts\Festivals.fr.resx" />
+    <EmbeddedResource Include="Strings\GameServices\Contexts\Festivals.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Festivals.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings\GameServices\GameIntegrationService.de.resx" />
     <EmbeddedResource Include="Strings\GameServices\GameIntegrationService.resx">
