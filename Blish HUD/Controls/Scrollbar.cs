@@ -139,9 +139,8 @@ namespace Blish_HUD.Controls {
             this.TargetScrollDistance += normalScroll * -0.08f * System.Windows.Forms.SystemInformation.MouseWheelScrollLines;
 
             _targetScrollDistanceAnim = Animation.Tweener
-                                                .Tween(this, new {ScrollDistance = this.TargetScrollDistance}, 0.35f)
-                                                .Ease(Glide.Ease.QuadOut)
-                                                .OnComplete(() => _targetScrollDistanceAnim = null);
+                                                 .Tween(this, new {ScrollDistance = this.TargetScrollDistance}, 0.35f)
+                                                 .Ease(Ease.QuadOut);
         }
 
         protected override CaptureType CapturesInput() {
