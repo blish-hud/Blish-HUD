@@ -269,7 +269,7 @@ namespace Blish_HUD.Controls {
             if (string.IsNullOrEmpty(_text)) {
                 SetText(value, true);
             } else {
-                SetText(_text.Substring(0, index) + value + _text.Substring(index), true);
+                SetText(_text.Insert(index, value), true);
             }
 
             length = _text.Length - startLength;
@@ -280,7 +280,7 @@ namespace Blish_HUD.Controls {
             if (string.IsNullOrEmpty(_text)) {
                 SetText(value.ToString(), true);
             } else {
-                SetText(_text.Substring(0, index) + value + _text.Substring(index), true);
+                SetText(_text.Insert(index, value.ToString()), true);
             }
 
             return true;
