@@ -445,7 +445,9 @@ namespace Blish_HUD.Controls {
         }
 
         private string ProcessText(string value) {
-            value = value?.Replace("\r", string.Empty);
+            if (value == null) return string.Empty;
+
+            value = value.Replace("\r", string.Empty);
 
             if (!_multiline) {
                 value = value?.Replace("\n", string.Empty);
