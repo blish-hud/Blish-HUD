@@ -43,17 +43,9 @@ namespace Blish_HUD.Controls {
 
         private static readonly Logger Logger = Logger.GetLogger<TextInputBase>();
 
-        protected static readonly char[] WordSeperators = { ' ', '\n', '`', '~', '!', '@', '#', '%', '^', '&', '*', '(', ')', '-', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?' };
+        protected static readonly char[] WordSeperators  = { ' ', '\n', '`', '~', '!', '@', '#', '%', '^', '&', '*', '(', ')', '-', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?' };
 
-        #region Load Static
-
-        private static readonly Color _highlightColor;
-
-        static TextInputBase() {
-            _highlightColor = new Color(92, 80, 103, 150);
-        }
-
-        #endregion
+        private static readonly Color _highlightColor = new Color(92, 80, 103, 150);
 
         protected const char NEWLINE = '\n';
 
