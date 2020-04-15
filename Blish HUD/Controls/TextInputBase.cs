@@ -477,8 +477,6 @@ namespace Blish_HUD.Controls {
                 _redoStack.Reset();
             }
 
-            _cursorMoved = true;
-
             OnTextChanged(new ValueChangedEventArgs<string>(prevText, value));
 
             return true;
