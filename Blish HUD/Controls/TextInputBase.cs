@@ -453,7 +453,7 @@ namespace Blish_HUD.Controls {
                 value = value?.Replace("\n", string.Empty);
             }
 
-            if (value?.Length > _maxLength) {
+            if (value.Length > _maxLength) {
                 value = value.Substring(0, _maxLength);
             }
 
