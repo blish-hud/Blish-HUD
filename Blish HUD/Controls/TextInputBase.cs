@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -243,14 +244,16 @@ namespace Blish_HUD.Controls {
             SetText(_text.Substring(0, index) + _text.Substring(index + length), true);
         }
 
-        private string RemoveUnsupportedCharacters(string value) {
+        private string RemoveUnsupportedChars(string value) {
+            var result = new StringBuilder(value.Length);
+
             foreach (char c in value) {
-                if (_font.GetCharacterRegion(c) == null && !(_multiline && c == NEWLINE)) {
-                    return RemoveUnsupportedCharacters(value.Replace(c.ToString(), string.Empty));
+                if (_font.GetCharacterRegion(c) != null || (_multiline && c == NEWLINE)) {
+                    result.Append(c);
                 }
             }
 
-            return value;
+            return result.ToString();
         }
 
         private bool InsertChars(int index, string value, out int length) {
@@ -259,7 +262,7 @@ namespace Blish_HUD.Controls {
                 return false;
             }
 
-            value = RemoveUnsupportedCharacters(value);
+            value = RemoveUnsupportedChars(value);
 
             int startLength = _text.Length;
 
