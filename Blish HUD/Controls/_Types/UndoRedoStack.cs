@@ -31,10 +31,14 @@ namespace Blish_HUD.Controls {
 
         private readonly Stack<UndoRedoRecord> _stack = new Stack<UndoRedoRecord>();
 
-        public Stack<UndoRedoRecord> Stack => _stack;
-
         public void Reset() {
             _stack.Clear();
+        }
+
+        public UndoRedoRecord Pop() {
+            if (_stack.Count == 0) return null;
+
+            return _stack.Pop();
         }
 
         public void MakeInsert(int where, int length) {

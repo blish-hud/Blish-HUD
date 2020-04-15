@@ -368,9 +368,9 @@ namespace Blish_HUD.Controls {
         }
 
         private void UndoRedo(UndoRedoStack undoStack, UndoRedoStack redoStack) {
-            if (undoStack.Stack.Count == 0) return;
+            UndoRedoRecord record;
 
-            var record = undoStack.Stack.Pop();
+            if ((record = undoStack.Pop()) == null) return;
 
             try {
                 _suppressRedoStackReset = true;
