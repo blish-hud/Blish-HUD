@@ -68,7 +68,7 @@ namespace Blish_HUD.Controls {
             int charIndex = 0;
 
             foreach (var glyph in glyphs) {
-                if (glyph.Position.X + glyph.FontRegion.Width > x) {
+                if (glyph.Position.X + glyph.FontRegion.Width / 2f > x) {
                     break;
                 }
 

@@ -62,7 +62,7 @@ namespace Blish_HUD.Controls {
             var glyphs = _font.GetGlyphs(_text);
 
             foreach (var glyph in glyphs) {
-                if (glyph.Position.X + glyph.FontRegion.Width > _horizontalOffset + x) {
+                if (glyph.Position.X + glyph.FontRegion.Width / 2f > _horizontalOffset + x) {
                     break;
                 }
 
