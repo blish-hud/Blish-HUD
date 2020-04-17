@@ -444,6 +444,22 @@ namespace Blish_HUD.Controls {
             return lastGlyph.Position.X + (lastGlyph.FontRegion?.Width ?? 0);
         }
 
+        protected int GetClosestLeftWordBoundary(int index) {
+            while (index > 0 && (index - 1 >= _text.Length || !WordSeperators.Contains(_text[index - 1]))) {
+                --index;
+            }
+
+            return index;
+        }
+
+        protected int GetClosestRightWordBoundary(int index) {
+            while (index < _text.Length && !WordSeperators.Contains(_text[index])) {
+                ++index;
+            }
+
+            return index;
+        }
+
         private string ProcessText(string value) {
             if (value == null) return string.Empty;
 
@@ -596,9 +612,7 @@ namespace Blish_HUD.Controls {
             int newIndex = _cursorIndex - 1;
 
             if (ctrlDown) {
-                while (newIndex > 0 && (newIndex - 1 >= _text.Length || !WordSeperators.Contains(_text[newIndex - 1]))) {
-                    --newIndex;
-                }
+                newIndex = GetClosestLeftWordBoundary(newIndex);
             }
 
             UserSetCursorIndex(newIndex);
@@ -609,9 +623,7 @@ namespace Blish_HUD.Controls {
             int newIndex = _cursorIndex + 1;
 
             if (ctrlDown) {
-                while (newIndex < _text.Length && !WordSeperators.Contains(_text[newIndex])) {
-                    ++newIndex;
-                }
+                newIndex = GetClosestRightWordBoundary(newIndex);
             }
 
             UserSetCursorIndex(newIndex);
@@ -664,6 +676,16 @@ namespace Blish_HUD.Controls {
                 _keyRepeatStates.Clear();
                 _undoStack.Reset();
                 _redoStack.Reset();
+            }
+        }
+
+        protected void HandleMouseUpdatedCursorIndex(int newIndex, bool isDoubleClick) {
+            if (_cursorIndex == newIndex && isDoubleClick) {
+                this.SelectionStart = GetClosestLeftWordBoundary(newIndex);
+                this.SelectionEnd   = GetClosestRightWordBoundary(newIndex);
+            } else {
+                UserSetCursorIndex(newIndex);
+                UpdateSelectionIfShiftDown();
             }
         }
 

@@ -55,14 +55,7 @@ namespace Blish_HUD.Controls {
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 
-            int newIndex = GetCursorIndexFromPosition(this.RelativeMousePosition - new Point(TEXT_LEFTPADDING, TEXT_TOPPADDING));
-
-            if (_cursorIndex == newIndex && e.IsDoubleClick) {
-                SelectAll();
-            } else {
-                UserSetCursorIndex(newIndex);
-                UpdateSelectionIfShiftDown();
-            }
+            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition - new Point(TEXT_LEFTPADDING, TEXT_TOPPADDING)), e.IsDoubleClick);
         }
 
         private int GetCursorIndexFromPosition(Point clickPos) {
