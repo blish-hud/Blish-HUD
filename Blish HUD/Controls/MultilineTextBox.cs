@@ -55,17 +55,17 @@ namespace Blish_HUD.Controls {
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 
-            int newIndex = GetCursorIndexFromFromPosition(this.RelativeMousePosition - new Point(TEXT_LEFTPADDING, TEXT_TOPPADDING));
+            int newIndex = GetCursorIndexFromPosition(this.RelativeMousePosition - new Point(TEXT_LEFTPADDING, TEXT_TOPPADDING));
 
             if (_cursorIndex == newIndex && e.IsDoubleClick) {
                 SelectAll();
             } else {
                 UserSetCursorIndex(newIndex);
-                ResetSelection();
+                UpdateSelectionIfShiftDown();
             }
         }
 
-        private int GetCursorIndexFromFromPosition(Point clickPos) {
+        private int GetCursorIndexFromPosition(Point clickPos) {
             string[] lines = _text.Split(NEWLINE);
 
             int predictedLine = clickPos.Y / _font.LineHeight;

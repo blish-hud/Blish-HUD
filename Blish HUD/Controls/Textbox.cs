@@ -47,22 +47,28 @@ namespace Blish_HUD.Controls {
             OnEnterPressed(EventArgs.Empty);
         }
 
-        protected override void MoveLine(int delta) { /* NOOP */ }
+        protected override void MoveLine(int delta) {
+            if (delta < 0) {
+                HandleHome(false);
+            } else {
+                HandleEnd(false);
+            }
+        }
 
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 
-            int newIndex = GetCursorIndexFromFromPosition(this.RelativeMousePosition.X - TEXT_HORIZONTALPADDING);
+            int newIndex = GetCursorIndexFromPosition(this.RelativeMousePosition.X - TEXT_HORIZONTALPADDING);
 
             if (_cursorIndex == newIndex && e.IsDoubleClick) {
                 SelectAll();
             } else {
                 UserSetCursorIndex(newIndex);
-                ResetSelection();
+                UpdateSelectionIfShiftDown();
             }
         }
 
-        private int GetCursorIndexFromFromPosition(int x) {
+        private int GetCursorIndexFromPosition(int x) {
             int charIndex = 0;
 
             var glyphs = _font.GetGlyphs(_text);
