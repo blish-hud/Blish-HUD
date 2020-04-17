@@ -221,7 +221,7 @@ namespace Blish_HUD {
         public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
             AsyncTexture2D returnedTexture = new AsyncTexture2D(Textures.TransparentPixel.Duplicate());
 
-            string requestUrl = $"{RENDERSERVICE_REQUESTURL}{signature}/{fileId}";
+            string requestUrl = $"{RENDERSERVICE_REQUESTURL}{signature}/{fileId}.png";
 
             Gw2WebApi.AnonymousConnection.Client.Render.DownloadToByteArrayAsync(requestUrl)
                      .ContinueWith((textureDataResponse) => {
