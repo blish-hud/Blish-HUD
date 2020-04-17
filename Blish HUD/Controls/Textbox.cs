@@ -1,5 +1,4 @@
 ﻿using System;
-using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -55,13 +54,9 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected override void OnClick(MouseEventArgs e) {
-            base.OnClick(e);
+        public override int GetCursorIndexFromPosition(int x, int y) {
+            x -= TEXT_HORIZONTALPADDING;
 
-            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition.X - TEXT_HORIZONTALPADDING), e.IsDoubleClick);
-        }
-
-        private int GetCursorIndexFromPosition(int x) {
             int charIndex = 0;
 
             var glyphs = _font.GetGlyphs(_text);

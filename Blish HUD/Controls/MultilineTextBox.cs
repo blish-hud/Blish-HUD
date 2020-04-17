@@ -1,5 +1,4 @@
 ﻿using System;
-using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -52,16 +51,13 @@ namespace Blish_HUD.Controls {
             UpdateSelectionIfShiftDown();
         }
 
-        protected override void OnClick(MouseEventArgs e) {
-            base.OnClick(e);
+        public override int GetCursorIndexFromPosition(int x, int y) {
+            x -= TEXT_LEFTPADDING;
+            y -= TEXT_TOPPADDING;
 
-            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition - new Point(TEXT_LEFTPADDING, TEXT_TOPPADDING)), e.IsDoubleClick);
-        }
-
-        private int GetCursorIndexFromPosition(Point clickPos) {
             string[] lines = _text.Split(NEWLINE);
 
-            int predictedLine = clickPos.Y / _font.LineHeight;
+            int predictedLine = y / _font.LineHeight;
 
             if (predictedLine > lines.Length - 1) {
                 return _text.Length;
@@ -72,7 +68,7 @@ namespace Blish_HUD.Controls {
             int charIndex = 0;
 
             foreach (var glyph in glyphs) {
-                if (glyph.Position.X + glyph.FontRegion.Width > clickPos.X) {
+                if (glyph.Position.X + glyph.FontRegion.Width > x) {
                     break;
                 }
 

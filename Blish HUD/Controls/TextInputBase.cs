@@ -679,6 +679,10 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public abstract int GetCursorIndexFromPosition(int x, int y);
+
+        public int GetCursorIndexFromPosition(Point position) => GetCursorIndexFromPosition(position.X, position.Y);
+
         protected void HandleMouseUpdatedCursorIndex(int newIndex, bool isDoubleClick) {
             if (_cursorIndex == newIndex && isDoubleClick) {
                 this.SelectionStart = GetClosestLeftWordBoundary(newIndex);
@@ -687,6 +691,12 @@ namespace Blish_HUD.Controls {
                 UserSetCursorIndex(newIndex);
                 UpdateSelectionIfShiftDown();
             }
+        }
+
+        protected override void OnClick(MouseEventArgs e) {
+            base.OnClick(e);
+
+            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition), e.IsDoubleClick);
         }
 
         protected override CaptureType CapturesInput() { return CaptureType.Mouse; }
