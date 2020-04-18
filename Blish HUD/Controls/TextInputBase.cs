@@ -324,11 +324,13 @@ namespace Blish_HUD.Controls {
 
             if (_selectionStart < _selectionEnd) {
                 Delete(_selectionStart, _selectionEnd - _selectionStart);
-                this.SelectionEnd = _cursorIndex = _selectionStart;
+                _selectionEnd = _selectionStart;
             } else {
                 Delete(_selectionEnd, _selectionStart - _selectionEnd);
-                this.SelectionStart = _cursorIndex = _selectionEnd;
+                _selectionStart = _selectionEnd;
             }
+
+            UserSetCursorIndex(_selectionStart);
         }
 
         private bool Paste(string value) {

@@ -125,6 +125,7 @@ namespace Blish_HUD.Controls {
             }
 
             _prevCursorIndex = _cursorIndex;
+            Invalidate();
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
