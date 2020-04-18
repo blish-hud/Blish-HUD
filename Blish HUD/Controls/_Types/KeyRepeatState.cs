@@ -23,7 +23,7 @@ namespace Blish_HUD.Controls {
         public void HandleUpdate(GameTime gameTime, EventHandler<KeyboardEventArgs> handler) {
             int minDelay = _hasDelayed
                                // https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.systeminformation.keyboardspeed?view=netframework-4.8#remarks
-                               ? -KEYBOARDSPEED_MULTIPLIER * SystemInformation.KeyboardSpeed + KEYBOARDSPEED_MAXDELAY
+                               ? KEYBOARDSPEED_MULTIPLIER * SystemInformation.KeyboardSpeed + KEYBOARDSPEED_MAXDELAY
                                // https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.systeminformation.keyboarddelay?view=netframework-4.8#remarks
                                : (SystemInformation.KeyboardDelay + 1) * KEYBOARDELAY_MULTIPLIER;
 
