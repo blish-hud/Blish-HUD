@@ -719,7 +719,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected void PaintCursor(SpriteBatch spriteBatch, Rectangle cursorRegion) {
-            if (_caretVisible) {
+            if (_focused && _caretVisible) {
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, cursorRegion, _foreColor);
             }
         }
