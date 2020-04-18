@@ -26,7 +26,7 @@ namespace Blish_HUD.Gw2WebApi {
                                                  GameService.Overlay.UserLocale.Value,
                                                  webApiCache,
                                                  renderCache,
-                                                 renderCacheDuration,
+                                                 renderCacheDuration ?? TimeSpan.MaxValue,
                                                  ua);
 
             _internalClient = new Gw2Client(_internalConnection).WebApi;

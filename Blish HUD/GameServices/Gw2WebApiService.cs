@@ -18,10 +18,9 @@ namespace Blish_HUD {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2WebApiService>();
 
-        private const string GW2WEBAPI_SETTINGS = "Gw2ApiConfiguration";
+        private const string GW2WEBAPI_SETTINGS = "Gw2WebApiConfiguration";
 
-        private const string SETTINGS_ENTRY_APIKEYS     = "ApiKeyRepository";
-        private const string SETTINGS_ENTRY_PERMISSIONS = "Permissions";
+        private const string SETTINGS_ENTRY_APIKEYS = "ApiKeyRepository";
 
         #region Cache Handling
 
@@ -52,8 +51,6 @@ namespace Blish_HUD {
         #endregion
 
         private ConcurrentDictionary<string, string>            _characterRepository;
-        private ConcurrentDictionary<string, TokenPermission[]> _permissionDetails;
-
         private ConcurrentDictionary<string, ManagedConnection> _cachedConnections;
 
         private SettingCollection _apiSettings;
@@ -139,14 +136,6 @@ namespace Blish_HUD {
 
         private async Task<List<string>> GetCharacters(ManagedConnection connection) {
             return (await connection.Client.V2.Characters.IdsAsync()).ToList();
-        }
-
-        private async Task<TokenInfo> GetTokenInfo(ManagedConnection connection) {
-            return await connection.Client.V2.TokenInfo.GetAsync();
-        }
-
-        private async Task<Account> GetAccount(ManagedConnection connection) {
-            return await connection.Client.V2.Account.GetAsync();
         }
 
         internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) {
