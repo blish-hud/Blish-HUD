@@ -96,7 +96,12 @@
     <Compile Include="Controls\KeybindingAssignmentWindow.cs" />
     <Compile Include="Controls\KeybindingAssigner.cs" />
     <Compile Include="Controls\Intern\Mouse.cs" />
+    <Compile Include="Controls\MultilineTextBox.cs" />
+    <Compile Include="Controls\TextInputBase.cs" />
     <Compile Include="Controls\ViewContainer.cs" />
+    <Compile Include="Controls\_Types\KeyRepeatState.cs" />
+    <Compile Include="Controls\_Types\UndoRedoRecord.cs" />
+    <Compile Include="Controls\_Types\UndoRedoStack.cs" />
     <Compile Include="Controls\_Types\ViewState.cs" />
     <Compile Include="GameServices\Content\AsyncTexture2D.cs" />
     <Compile Include="Controls\BasicWindow.cs" />
@@ -223,6 +228,7 @@
     <Compile Include="GameServices\Input\MouseEventArgs.cs" />
     <Compile Include="GameServices\Input\MouseEventType.cs" />
     <Compile Include="GameServices\Input\MouseManager.cs" />
+    <Compile Include="GameServices\Input\TypedInputUtil.cs" />
     <Compile Include="GameServices\Input\WinApi\HookExtern.cs" />
     <Compile Include="GameServices\Input\WinApi\HookType.cs" />
     <Compile Include="GameServices\Input\WinApi\MouseLLHookStruct.cs" />
@@ -280,6 +286,7 @@
     </Compile>
     <Compile Include="_Events\ValueEventArgs[T].cs" />
     <Compile Include="_Extensions\ColorExtensions.cs" />
+    <Compile Include="_Utils\ClipboardUtil.cs" />
     <Compile Include="_Utils\DirectoryUtil.cs" />
     <Compile Include="_Utils\InvariantUtil.cs" />
     <Compile Include="_Utils\LoadingSpinnerUtil.cs" />
@@ -505,6 +512,9 @@
   <ItemGroup>
     <PackageReference Include="Adhesive">
       <Version>2.0.1-alpha</Version>
+    </PackageReference>
+    <PackageReference Include="AsyncClipboardService">
+      <Version>1.7.1</Version>
     </PackageReference>
     <PackageReference Include="Costura.Fody">
       <Version>4.0.0</Version>
