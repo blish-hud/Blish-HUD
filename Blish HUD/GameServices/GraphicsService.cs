@@ -105,8 +105,8 @@ namespace Blish_HUD {
             this.GraphicsDevice.Clear(Color.Transparent);
 
             GameService.Debug.StartTimeFunc("3D objects");
-            // Only draw 3D elements if we are in game
-            if (GameService.GameIntegration.IsInGame && (!GameService.ArcDps.RenderPresent || GameService.ArcDps.HudIsActive))
+            // Only draw 3D elements if we are in game and map is closed
+            if (GameService.GameIntegration.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
                 this.World.DoDraw(this.GraphicsDevice);
             GameService.Debug.StopTimeFunc("3D objects");
 
