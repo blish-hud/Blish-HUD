@@ -18,7 +18,7 @@ namespace Blish_HUD {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2WebApiService>();
 
-        private const string GW2WEBAPI_SETTINGS = "Gw2ApiConfiguration";
+        private const string GW2WEBAPI_SETTINGS = "Gw2WebApiConfiguration";
 
         private const string SETTINGS_ENTRY_APIKEYS = "ApiKeyRepository";
 
