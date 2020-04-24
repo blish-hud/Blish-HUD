@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Blish_HUD.Controls;
+using Blish_HUD.Gw2WebApi.UI.Views;
 using Blish_HUD.Settings;
 using Flurl.Http;
 using Microsoft.Xna.Framework;
@@ -206,7 +207,8 @@ namespace Blish_HUD {
                 CanSelect      = true,
             };
 
-            Panel cPanel = new ViewContainer() {
+            ViewContainer cPanel = new ViewContainer() {
+                FadeView = true,
                 Size     = new Point(748, baseSettingsPanel.Size.Y - 24 * 2),
                 Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 24),
                 Parent   = baseSettingsPanel
@@ -214,7 +216,12 @@ namespace Blish_HUD {
 
             var settingsMiAbout   = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.AboutSection,           Content.GetTexture("440023"));
             var settingsMiOverlay = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, Content.GetTexture("156736"));
+            var settingsMiApiKeys = settingsListMenu.AddMenuItem("Manage API Keys", Content.GetTexture("155048"));
             var settingsMiModules = settingsListMenu.AddMenuItem(Strings.GameServices.ModulesService.ManageModulesSection,   Content.GetTexture("156764-noarrow"));
+
+            settingsMiApiKeys.Click += delegate {
+                cPanel.Show(new RegisterApiKeyView());
+            };
 
             settingsMiAbout.Click += delegate {
                 cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.AboutUIBuilder.BuildAbout, null);
