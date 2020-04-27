@@ -49,7 +49,7 @@ namespace Blish_HUD.Gw2WebApi {
                 double elapsedTime = (DateTime.Now - _lastUpdate).TotalMilliseconds / REFILL_INTERVAL;
                 _lastUpdate = DateTime.Now;
 
-                return Math.Min(_tokens += elapsedTime * this.RefillAmount, this.MaxTokens);
+                return _tokens = Math.Min(_tokens + elapsedTime * this.RefillAmount, this.MaxTokens);
             }
         }
 
