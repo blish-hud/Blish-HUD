@@ -18,6 +18,12 @@ namespace Blish_HUD.Gw2WebApi {
 
         private double _tokens;
 
+        /// <summary>
+        /// How many tokens are currently available in the <see cref="TokenBucket"/>.
+        /// </summary>
+        /// <remarks>
+        /// Tokens can be negative if there are multiple calls attempting to be made after all tokens have been exhausted and represents a token debt.
+        /// </remarks>
         public double Tokens {
             get => GetLatestTokenBalance();
             set {
