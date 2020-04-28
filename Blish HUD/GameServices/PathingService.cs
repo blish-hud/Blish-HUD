@@ -30,22 +30,11 @@ namespace Blish_HUD {
 
         protected override void Initialize() { /* NOOP */ }
 
-        protected override void Load() {
-            // Subscribe to map changes so that we can hide or show markers for the new map
-            Gw2Mumble.CurrentMap.MapChanged += PlayerMapIdChanged;
-        }
-
-        private void ProcessPathableState(IPathable<Entity> pathable) {
-            if (pathable.MapId == Gw2Mumble.CurrentMap.Id || pathable.MapId == -1) {
-                //pathable.Active = true;
-                Graphics.World.Entities.Add(pathable.ManagedEntity);
-            } else if (Graphics.World.Entities.Contains(pathable.ManagedEntity)) {
-                //pathable.Active = false;
-                Graphics.World.Entities.Remove(pathable.ManagedEntity);
-            }
-        }
+        protected override void Load() { /* NOOP */ }
 
         private void ProcessAddedPathable(IPathable<Entity> pathable) {
+            if (Graphics.World.Entities.Contains(pathable.ManagedEntity)) return;
+
             Graphics.World.Entities.Add(pathable.ManagedEntity);
             this.Pathables.Add(pathable);
         }
@@ -53,13 +42,6 @@ namespace Blish_HUD {
         private void ProcessRemovedPathable(IPathable<Entity> pathable) {
             Graphics.World.Entities.Remove(pathable.ManagedEntity);
             this.Pathables.Remove(pathable);
-        }
-
-        private void PlayerMapIdChanged(object sender, EventArgs e) {
-            NewMapLoaded?.Invoke(this, EventArgs.Empty);
-
-            foreach (var packContext in this.PackManagers)
-                packContext.RunTextureDisposal();
         }
 
         public void RegisterPathable(IPathable<Entity> pathable) {

@@ -15,14 +15,23 @@ namespace Blish_HUD.Gw2Mumble {
         /// </summary>
         public event EventHandler<ValueEventArgs<string>> NameChanged;
 
+        public event EventHandler<ValueEventArgs<int>> SpecializationChanged;
+
         private void OnNameChanged(ValueEventArgs<string> e) => this.NameChanged?.Invoke(this, e);
+        private void OnSpecializationChanged(ValueEventArgs<int> e) => this.SpecializationChanged?.Invoke(this, e);
 
         private string _prevName;
+        private int    _prevSpecialization;
 
         private void HandleEvents() {
             if (_prevName != this.Name) {
                 _prevName = this.Name;
                 OnNameChanged(new ValueEventArgs<string>(_prevName));
+            }
+
+            if (_prevSpecialization != this.Specialization) {
+                _prevSpecialization = this.Specialization;
+                OnSpecializationChanged(new ValueEventArgs<int>(_prevSpecialization));
             }
         }
 
