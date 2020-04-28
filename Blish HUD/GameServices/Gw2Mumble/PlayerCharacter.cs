@@ -15,13 +15,23 @@ namespace Blish_HUD.Gw2Mumble {
         /// </summary>
         public event EventHandler<ValueEventArgs<string>> NameChanged;
 
+        /// <summary>
+        /// Fires when the current character's specialization changes.
+        /// </summary>
         public event EventHandler<ValueEventArgs<int>> SpecializationChanged;
+
+        /// <summary>
+        /// Fires when the current character starts or stops being a Commander.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<bool>> IsCommanderChanged;
 
         private void OnNameChanged(ValueEventArgs<string> e) => this.NameChanged?.Invoke(this, e);
         private void OnSpecializationChanged(ValueEventArgs<int> e) => this.SpecializationChanged?.Invoke(this, e);
+        private void OnIsCommanderChanged(ValueEventArgs<bool> e) => this.IsCommanderChanged?.Invoke(this, e);
 
         private string _prevName;
         private int    _prevSpecialization;
+        private bool   _prevIsCommander;
 
         private void HandleEvents() {
             if (_prevName != this.Name) {
@@ -32,6 +42,11 @@ namespace Blish_HUD.Gw2Mumble {
             if (_prevSpecialization != this.Specialization) {
                 _prevSpecialization = this.Specialization;
                 OnSpecializationChanged(new ValueEventArgs<int>(_prevSpecialization));
+            }
+
+            if (_prevIsCommander != this.IsCommander) {
+                _prevIsCommander = this.IsCommander;
+                OnIsCommanderChanged(new ValueEventArgs<bool>(_prevIsCommander));
             }
         }
 
@@ -65,7 +80,7 @@ namespace Blish_HUD.Gw2Mumble {
         public bool IsCommander => _service.RawClient.IsCommander;
 
         internal PlayerCharacter(Gw2MumbleService service) {
-            _service      = service;
+            _service = service;
         }
 
         internal void Update(GameTime gameTime) {
