@@ -14,7 +14,7 @@ You can download Blish HUD from:
 
 ### Need Help?
 
-Visit our [#💢HELP](https://discord.gg/qJdUhdG) channel in Discord.
+Visit our [#💢help](https://discord.gg/qJdUhdG) channel in Discord.
 
 ## Links of Interest
 
