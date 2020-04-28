@@ -129,4 +129,7 @@
   <data name="Options" xml:space="preserve">
     <value>Optionen</value>
   </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
 </root>

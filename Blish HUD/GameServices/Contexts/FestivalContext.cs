@@ -21,6 +21,10 @@ namespace Blish_HUD.Contexts {
 
             private static FestivalContext _context;
 
+            private static readonly Dictionary<string, Festival> _festivalLookup = new Dictionary<string, Festival>(StringComparer.InvariantCultureIgnoreCase);
+
+            public static IEnumerable<Festival> All = _festivalLookup.Values;
+
             private readonly string _name;
             private readonly string _displayName;
 
@@ -37,6 +41,8 @@ namespace Blish_HUD.Contexts {
             public Festival(string name, string displayName) {
                 _name        = name;
                 _displayName = displayName;
+
+                _festivalLookup.Add(name, this);
             }
 
             /// <summary>
@@ -51,6 +57,26 @@ namespace Blish_HUD.Contexts {
                 // _context can still be null if it has not registered with the ContextService yet
                 return _context?.FestivalIsActive(this) ?? false;
             }
+
+            /// <summary>
+            /// Gets a known festival by name.
+            /// </summary>
+            /// <param name="name">The internal name of the festival.</param>
+            /// <returns>The associated <see cref="Festival"/> if it is known or <see cref="UnknownFestival"/> if it is unknown.</returns>
+            public static Festival FromName(string name) {
+                if (_festivalLookup.TryGetValue(name, out var festival)) {
+                    return festival;
+                }
+
+                Logger.Warn("Request for unknown festival {festival}.", name);
+
+                return UnknownFestival;
+            }
+
+            /// <summary>
+            /// A festival that was not recognized.
+            /// </summary>
+            public static readonly Festival UnknownFestival = new Festival("unknown", Strings.Common.Unknown);
 
             // Known festivals
 
