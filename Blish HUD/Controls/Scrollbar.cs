@@ -58,7 +58,9 @@ namespace Blish_HUD.Controls {
         public float ScrollDistance {
             get => _scrollDistance;
             set {
-                if (!SetProperty(ref _scrollDistance, MathHelper.Clamp(value, 0f, 1f), true)) return;
+                if (SetProperty(ref _scrollDistance, MathHelper.Clamp(value, 0f, 1f), true)) {
+                    _targetScrollDistance = _scrollDistance;
+                }
 
                 UpdateAssocContainer();
             }
