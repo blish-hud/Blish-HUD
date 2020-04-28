@@ -15,14 +15,62 @@ namespace Blish_HUD.Gw2Mumble {
         /// </summary>
         public event EventHandler<ValueEventArgs<string>> NameChanged;
 
-        private void OnNameChanged(ValueEventArgs<string> e) => this.NameChanged?.Invoke(this, e);
+        /// <summary>
+        /// Fires when the current character's specialization changes.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<int>> SpecializationChanged;
 
-        private string _prevName;
+        /// <summary>
+        /// Fires when the current character starts or stops being a Commander.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<bool>> IsCommanderChanged;
+
+        /// <summary>
+        /// Fires when the current character enters or leaves combat.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<bool>> IsInCombatChanged;
+
+        /// <summary>
+        /// Fires when the current characters mounts or dismounts.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<MountType>> CurrentMountChanged;
+
+        private void OnNameChanged(ValueEventArgs<string>            e) => this.NameChanged?.Invoke(this, e);
+        private void OnSpecializationChanged(ValueEventArgs<int>     e) => this.SpecializationChanged?.Invoke(this, e);
+        private void OnIsCommanderChanged(ValueEventArgs<bool>       e) => this.IsCommanderChanged?.Invoke(this, e);
+        private void OnIsInCombatChanged(ValueEventArgs<bool>        e) => this.IsInCombatChanged?.Invoke(this, e);
+        private void OnCurrentMountChanged(ValueEventArgs<MountType> e) => this.CurrentMountChanged?.Invoke(this, e);
+
+        private string    _prevName;
+        private int       _prevSpecialization;
+        private bool      _prevIsCommander;
+        private bool      _prevIsInCombat;
+        private MountType _prevCurrentMount;
 
         private void HandleEvents() {
             if (_prevName != this.Name) {
                 _prevName = this.Name;
                 OnNameChanged(new ValueEventArgs<string>(_prevName));
+            }
+
+            if (_prevSpecialization != this.Specialization) {
+                _prevSpecialization = this.Specialization;
+                OnSpecializationChanged(new ValueEventArgs<int>(_prevSpecialization));
+            }
+
+            if (_prevIsCommander != this.IsCommander) {
+                _prevIsCommander = this.IsCommander;
+                OnIsCommanderChanged(new ValueEventArgs<bool>(_prevIsCommander));
+            }
+
+            if (_prevIsInCombat != this.IsInCombat) {
+                _prevIsInCombat = this.IsInCombat;
+                OnIsInCombatChanged(new ValueEventArgs<bool>(_prevIsInCombat));
+            }
+
+            if (_prevCurrentMount != this.CurrentMount) {
+                _prevCurrentMount = this.CurrentMount;
+                OnCurrentMountChanged(new ValueEventArgs<MountType>(_prevCurrentMount));
             }
         }
 
@@ -55,8 +103,14 @@ namespace Blish_HUD.Gw2Mumble {
         /// <inheritdoc cref="IGw2MumbleClient.IsCommander"/>
         public bool IsCommander => _service.RawClient.IsCommander;
 
+        /// <inheritdoc cref="IGw2MumbleClient.IsInCombat"/>
+        public bool IsInCombat => _service.RawClient.IsInCombat;
+
+        /// <inheritdoc cref="IGw2MumbleClient.Mount"/>
+        public MountType CurrentMount => _service.RawClient.Mount;
+
         internal PlayerCharacter(Gw2MumbleService service) {
-            _service      = service;
+            _service = service;
         }
 
         internal void Update(GameTime gameTime) {

@@ -68,8 +68,11 @@ namespace Blish_HUD.Gw2Mumble {
         /// <inheritdoc cref="IGw2MumbleClient.Version"/>
         public int Version => _service.RawClient.Version;
 
+        /// <inheritdoc cref="IGw2MumbleClient.ProcessId"/>
+        public uint ProcessId => _service.RawClient.ProcessId;
+
         internal Info(Gw2MumbleService service) {
-            _service      = service;
+            _service = service;
         }
 
         internal void Update(GameTime gameTime) {
