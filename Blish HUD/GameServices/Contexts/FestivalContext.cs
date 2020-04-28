@@ -21,6 +21,10 @@ namespace Blish_HUD.Contexts {
 
             private static FestivalContext _context;
 
+            private static readonly Dictionary<string, Festival> _festivalLookup = new Dictionary<string, Festival>(StringComparer.InvariantCultureIgnoreCase);
+
+            public static IEnumerable<Festival> All = _festivalLookup.Values;
+
             private readonly string _name;
             private readonly string _displayName;
 
@@ -37,6 +41,8 @@ namespace Blish_HUD.Contexts {
             public Festival(string name, string displayName) {
                 _name        = name;
                 _displayName = displayName;
+
+                _festivalLookup.Add(name, this);
             }
 
             /// <summary>
@@ -51,6 +57,26 @@ namespace Blish_HUD.Contexts {
                 // _context can still be null if it has not registered with the ContextService yet
                 return _context?.FestivalIsActive(this) ?? false;
             }
+
+            /// <summary>
+            /// Gets a known festival by name.
+            /// </summary>
+            /// <param name="name">The internal name of the festival.</param>
+            /// <returns>The associated <see cref="Festival"/> if it is known or <see cref="UnknownFestival"/> if it is unknown.</returns>
+            public static Festival FromName(string name) {
+                if (_festivalLookup.TryGetValue(name, out var festival)) {
+                    return festival;
+                }
+
+                Logger.Warn("Request for unknown festival {festival}.", name);
+
+                return UnknownFestival;
+            }
+
+            /// <summary>
+            /// A festival that was not recognized.
+            /// </summary>
+            public static readonly Festival UnknownFestival = new Festival("unknown", Strings.Common.Unknown);
 
             // Known festivals
 
@@ -105,19 +131,22 @@ namespace Blish_HUD.Contexts {
 
         public FestivalContext() {
             GameService.GameIntegration.Gw2Started += GameIntegrationOnGw2Started;
+            GameService.Gw2WebApi.FinishedLoading  += Gw2WebApiOnFinishedLoading;
         }
 
         /// <inheritdoc />
         protected override void Load() {
             _contextLoadCancellationTokenSource?.Dispose();
             _contextLoadCancellationTokenSource = new CancellationTokenSource();
-
-            GetFestivalsFromGw2Api(_contextLoadCancellationTokenSource.Token).ContinueWith((festivals) => SetFestivals(festivals.Result));
         }
 
         /// <inheritdoc />
         protected override void Unload() {
             _contextLoadCancellationTokenSource.Cancel();
+        }
+
+        private void Gw2WebApiOnFinishedLoading(object sender, EventArgs e) {
+            GetFestivalsFromGw2Api(_contextLoadCancellationTokenSource.Token).ContinueWith((festivals) => SetFestivals(festivals.Result));
         }
 
         private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
@@ -131,6 +160,8 @@ namespace Blish_HUD.Contexts {
             _activeFestivals.Clear();
 
             _activeFestivals = festivals.ToList();
+
+            Logger.Info("Active festival(s): {activeFestivals}", string.Join(", ", _activeFestivals.Select(festival => festival.DisplayName)));
 
             this.ConfirmReady();
         }

@@ -139,9 +139,6 @@
   <data name="ModuleState_FatalError" xml:space="preserve">
     <value>Fatal Error</value>
   </data>
-  <data name="ModuleAuthor_Unknown" xml:space="preserve">
-    <value>Unknown</value>
-  </data>
   <data name="ModuleManagement_AuthoredBy" xml:space="preserve">
     <value>Authored by</value>
   </data>

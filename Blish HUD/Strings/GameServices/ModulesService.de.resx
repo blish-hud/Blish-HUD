@@ -159,9 +159,6 @@
   <data name="ModuleState_FatalError" xml:space="preserve">
     <value>Schwerwiegender Fehler</value>
   </data>
-  <data name="ModuleAuthor_Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
-  </data>
   <data name="ModuleManagement_AuthoredBy" xml:space="preserve">
     <value>Verfasst von</value>
   </data>
