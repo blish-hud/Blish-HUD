@@ -60,6 +60,8 @@ namespace Blish_HUD.Input {
         /// </summary>
         public IReadOnlyList<Keys> KeysDown => _keysDown.AsReadOnly();
 
+        private Action<string> _textInputDelegate;
+
         internal KeyboardManager() : base(HookType.WH_KEYBOARD_LL) {
             _keysDown    = new List<Keys>();
             _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
@@ -105,6 +107,34 @@ namespace Blish_HUD.Input {
             }
         }
 
+        public void SetTextInputListner(Action<string> input) {
+            _textInputDelegate = input;
+        }
+
+        public void UnsetTextInputListner(Action<string> input) {
+            if (input == _textInputDelegate) {
+                _textInputDelegate = null;
+            }
+        }
+
+        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
+            _textInputDelegate.EndInvoke(asyncResult);
+        }
+
+        private bool ProcessInput(KeyboardEventType eventType, Keys key) {
+            _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
+
+            if (_textInputDelegate != null) {
+                string chars = TypedInputUtil.VkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
+                _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);
+                return true /* key != Keys.LeftShift && key != Keys.RightShift */; // "SHIFT" support temporarily disabled
+            }
+
+            // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
+
+            return false;
+        }
+
         protected override bool HandleNewInput(IntPtr wParam, IntPtr lParam) {
             if (_hookGeneralBlock)
                 return true;
@@ -112,11 +142,7 @@ namespace Blish_HUD.Input {
             var eventType = (KeyboardEventType)((uint)wParam % 2 + 256); // filter out SysKeyDown & SysKeyUp
             var key       = (Keys)Marshal.ReadInt32(lParam);
 
-            _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
-
-            // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
-
-            return false;
+            return ProcessInput(eventType, key);
         }
 
     }
