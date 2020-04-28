@@ -95,6 +95,8 @@ namespace Blish_HUD.Pathing.Format {
 
             // IMarker:Icon
             RegisterAttribute("iconFile", delegate (PathableAttribute attribute) {
+                if (this.IconReferencePath != null) return true;
+
                 if (!string.IsNullOrEmpty(attribute.Value)) {
                     this.IconReferencePath = attribute.Value.Trim();
 
