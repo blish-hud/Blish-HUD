@@ -105,19 +105,22 @@ namespace Blish_HUD.Contexts {
 
         public FestivalContext() {
             GameService.GameIntegration.Gw2Started += GameIntegrationOnGw2Started;
+            GameService.Gw2WebApi.FinishedLoading  += Gw2WebApiOnFinishedLoading;
         }
 
         /// <inheritdoc />
         protected override void Load() {
             _contextLoadCancellationTokenSource?.Dispose();
             _contextLoadCancellationTokenSource = new CancellationTokenSource();
-
-            GetFestivalsFromGw2Api(_contextLoadCancellationTokenSource.Token).ContinueWith((festivals) => SetFestivals(festivals.Result));
         }
 
         /// <inheritdoc />
         protected override void Unload() {
             _contextLoadCancellationTokenSource.Cancel();
+        }
+
+        private void Gw2WebApiOnFinishedLoading(object sender, EventArgs e) {
+            GetFestivalsFromGw2Api(_contextLoadCancellationTokenSource.Token).ContinueWith((festivals) => SetFestivals(festivals.Result));
         }
 
         private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
@@ -131,6 +134,8 @@ namespace Blish_HUD.Contexts {
             _activeFestivals.Clear();
 
             _activeFestivals = festivals.ToList();
+
+            Logger.Info("Active festival(s): {activeFestivals}", string.Join(", ", _activeFestivals.Select(festival => festival.DisplayName)));
 
             this.ConfirmReady();
         }
