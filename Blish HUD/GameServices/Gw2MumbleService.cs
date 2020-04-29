@@ -8,6 +8,8 @@ namespace Blish_HUD {
 
     public class Gw2MumbleService : GameService {
 
+        private const string DEFAULT_MUMBLEMAPNAME = "MumbleLink";
+
         private IGw2MumbleClient _rawClient;
 
         /// <inheritdoc cref="Gw2MumbleClient"/>
@@ -59,7 +61,7 @@ namespace Blish_HUD {
         public int Tick => _rawClient.Tick;
 
         protected override void Initialize() {
-            _rawClient = new Gw2Client().Mumble[ApplicationSettings.Instance.MumbleMapName];
+            _rawClient = new Gw2Client().Mumble[ApplicationSettings.Instance.MumbleMapName ?? DEFAULT_MUMBLEMAPNAME];
         }
 
         protected override void Load() {
