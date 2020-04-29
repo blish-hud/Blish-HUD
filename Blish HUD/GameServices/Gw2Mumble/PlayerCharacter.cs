@@ -48,30 +48,11 @@ namespace Blish_HUD.Gw2Mumble {
         private MountType _prevCurrentMount;
 
         private void HandleEvents() {
-            if (_prevName != this.Name) {
-                _prevName = this.Name;
-                OnNameChanged(new ValueEventArgs<string>(_prevName));
-            }
-
-            if (_prevSpecialization != this.Specialization) {
-                _prevSpecialization = this.Specialization;
-                OnSpecializationChanged(new ValueEventArgs<int>(_prevSpecialization));
-            }
-
-            if (_prevIsCommander != this.IsCommander) {
-                _prevIsCommander = this.IsCommander;
-                OnIsCommanderChanged(new ValueEventArgs<bool>(_prevIsCommander));
-            }
-
-            if (_prevIsInCombat != this.IsInCombat) {
-                _prevIsInCombat = this.IsInCombat;
-                OnIsInCombatChanged(new ValueEventArgs<bool>(_prevIsInCombat));
-            }
-
-            if (_prevCurrentMount != this.CurrentMount) {
-                _prevCurrentMount = this.CurrentMount;
-                OnCurrentMountChanged(new ValueEventArgs<MountType>(_prevCurrentMount));
-            }
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevName,           this.Name,           OnNameChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevSpecialization, this.Specialization, OnSpecializationChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsCommander,    this.IsCommander,    OnIsCommanderChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsInCombat,     this.IsInCombat,     OnIsInCombatChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevCurrentMount,   this.CurrentMount,   OnCurrentMountChanged);
         }
 
         #endregion

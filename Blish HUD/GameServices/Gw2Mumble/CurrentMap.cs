@@ -20,10 +20,7 @@ namespace Blish_HUD.Gw2Mumble {
         private int _prevId = -1;
 
         private void HandleEvents() {
-            if (_prevId != this.Id) {
-                _prevId = this.Id;
-                OnMapChanged(new ValueEventArgs<int>(_prevId));
-            }
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevId, this.Id, OnMapChanged);
         }
 
         #endregion
