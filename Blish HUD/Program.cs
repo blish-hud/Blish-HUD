@@ -13,6 +13,8 @@ namespace Blish_HUD {
 
         private static Logger Logger;
 
+        private const string APP_GUID = "{5802208e-71ca-4745-ab1b-d851bc17a460}";
+
         public static SemVer.Version OverlayVersion { get; } = new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
 
         private static void EnableLogging() {
@@ -28,18 +30,23 @@ namespace Blish_HUD {
             }
         }
 
-        private static readonly Mutex SingleInstanceMutex = new Mutex(true, "{5802208e-71ca-4745-ab1b-d851bc17a460}");
+        private static Mutex _singleInstanceMutex;
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args) {
+        private static void Main(string[] args) {
             Cli.Parse<ApplicationSettings>(args);
 
             EnableLogging();
 
-            if (IsMoreThanOneInstance()) {
+            // Single instance handling
+            _singleInstanceMutex = new Mutex(true, ApplicationSettings.Instance.MumbleMapName != null 
+                                                       ? $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}"
+                                                       : $"{APP_GUID}");
+
+            if (!_singleInstanceMutex.WaitOne(TimeSpan.Zero, true)) {
                 Logger.Warn("Blish HUD is already running!");
                 return;
             }
@@ -47,11 +54,12 @@ namespace Blish_HUD {
             // Needed by textboxes to enable CTRL + A selection
             Application.EnableVisualStyles();
 
-            using (var game = new BlishHud()) game.Run();
-            SingleInstanceMutex.ReleaseMutex();
-        }
+            using (var game = new BlishHud()) {
+                game.Run();
+            }
 
-        private static bool IsMoreThanOneInstance() => !SingleInstanceMutex.WaitOne(TimeSpan.Zero, true);
+            _singleInstanceMutex.ReleaseMutex();
+        }
 
     }
 

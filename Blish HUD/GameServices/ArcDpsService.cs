@@ -114,7 +114,7 @@ namespace Blish_HUD
 
         protected override void Load()
         {
-            _server.Start(new IPEndPoint(IPAddress.Loopback, 8214));
+            //_server.Start(new IPEndPoint(IPAddress.Loopback, 8214));
             _stopwatch.Start();
         }
 
