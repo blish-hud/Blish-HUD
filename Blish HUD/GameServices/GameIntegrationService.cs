@@ -177,11 +177,13 @@ namespace Blish_HUD {
 
             TryAttachToGw2();
 
-            Gw2Mumble.Info.GameAcquiredFocus += OnGameAcquiredFocus;
+            Gw2Mumble.Info.IsGameFocusedChanged += OnGameAcquiredFocus;
         }
 
-        private void OnGameAcquiredFocus(object sender, EventArgs e) {
-            this.Gw2Process = Process.GetProcessById((int)GameService.Gw2Mumble.Info.ProcessId);
+        private void OnGameAcquiredFocus(object sender, ValueEventArgs<bool> e) {
+            if (e.Value) {
+                this.Gw2Process = Process.GetProcessById((int) Gw2Mumble.Info.ProcessId);
+            }
         }
 
         #region TrayIcon Menu Items
