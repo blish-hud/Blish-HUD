@@ -28,8 +28,10 @@ namespace Blish_HUD {
         private ICacheMethod _sharedRenderCache;
 
         private void InitCache() {
-            _sharedWebCache    = new MemoryCacheMethod();
-            _sharedRenderCache = new MemoryCacheMethod();
+            var bucket = new TokenBucket(300, 5);
+
+            _sharedWebCache    = new TokenCompliantCacheWrapper(new MemoryCacheMethod(), bucket);
+            _sharedRenderCache = new TokenCompliantCacheWrapper(new MemoryCacheMethod(), bucket);
         }
 
         #endregion
