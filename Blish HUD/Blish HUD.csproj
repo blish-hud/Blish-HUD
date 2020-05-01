@@ -218,6 +218,8 @@
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="GameServices\Content\IDataReader.cs" />
     <Compile Include="GameServices\Gw2WebApi\ManagedConnection.cs" />
+    <Compile Include="GameServices\Gw2WebApi\TokenBucket.cs" />
+    <Compile Include="GameServices\Gw2WebApi\TokenCompliantCacheWrapper.cs" />
     <Compile Include="GameServices\Input\Hook.cs" />
     <Compile Include="GameServices\Input\InputManager.cs" />
     <Compile Include="GameServices\Input\KeyBinding.cs" />
