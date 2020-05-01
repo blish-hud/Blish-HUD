@@ -23,7 +23,10 @@ namespace Blish_HUD.Contexts {
 
             private static readonly Dictionary<string, Festival> _festivalLookup = new Dictionary<string, Festival>(StringComparer.InvariantCultureIgnoreCase);
 
-            public static IEnumerable<Festival> All = _festivalLookup.Values;
+            /// <summary>
+            /// A reference to all known and registered festivals.
+            /// </summary>
+            public static IEnumerable<Festival> All => _festivalLookup.Values;
 
             private readonly string _name;
             private readonly string _displayName;
