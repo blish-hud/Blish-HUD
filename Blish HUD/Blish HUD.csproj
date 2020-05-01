@@ -213,6 +213,7 @@
     <Compile Include="GameServices\Graphics\UI\Presenter[TView,TPresenter].cs" />
     <Compile Include="GameServices\Graphics\UI\View[TPresenter].cs" />
     <Compile Include="GameServices\Gw2Mumble\CurrentMap.cs" />
+    <Compile Include="GameServices\Gw2Mumble\MumbleEventImpl.cs" />
     <Compile Include="GameServices\Gw2WebApiService.cs" />
     <Compile Include="GameServices\ArcDpsService.cs" />
     <Compile Include="GameServices\Content\IDataReader.cs" />
@@ -536,7 +537,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Gw2Sharp">
-      <Version>0.9.5</Version>
+      <Version>0.9.6</Version>
     </PackageReference>
     <PackageReference Include="Humanizer.Core.de">
       <Version>2.6.2</Version>

@@ -123,4 +123,7 @@
   <data name="Action_Cancel" xml:space="preserve">
     <value>Annuler</value>
   </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Inconnue</value>
+  </data>
 </root>

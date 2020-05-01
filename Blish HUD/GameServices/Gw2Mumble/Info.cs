@@ -15,37 +15,27 @@ namespace Blish_HUD.Gw2Mumble {
         public event EventHandler<ValueEventArgs<int>> BuildIdChanged;
 
         /// <summary>
-        /// Fires when the Guild Wars 2 application receives focus.
+        /// Fires when the Guild Wars 2 application receives or loses focus.
         /// </summary>
-        public event EventHandler<EventArgs> GameAcquiredFocus;
+        public event EventHandler<ValueEventArgs<bool>> IsGameFocusedChanged;
 
         /// <summary>
-        /// Fires when the Guild Wars 2 application loses focus.
+        /// Fires when the process ID of the active Guild Wars 2 window changes.
         /// </summary>
-        public event EventHandler<EventArgs> GameLostFocus;
+        public event EventHandler<ValueEventArgs<uint>> ProcessIdChanged;
 
-        private void OnBuildIdChanged(ValueEventArgs<int> e) => BuildIdChanged?.Invoke(this, e);
-        private void OnGameAcquiredFocus(EventArgs        e) => GameAcquiredFocus?.Invoke(this, e);
-        private void OnGameLostFocus(EventArgs            e) => GameLostFocus?.Invoke(this, e);
+        private void OnBuildIdChanged(ValueEventArgs<int>        e) => BuildIdChanged?.Invoke(this, e);
+        private void OnIsGameFocusedChanged(ValueEventArgs<bool> e) => IsGameFocusedChanged?.Invoke(this, e);
+        private void OnProcessIdChanged(ValueEventArgs<uint>     e) => ProcessIdChanged?.Invoke(this, e);
 
         private int  _prevBuildId       = -1;
         private bool _prevIsGameFocused = false;
+        private uint _prevProcessId     = 0;
 
         private void HandleEvents() {
-            if (_prevBuildId != this.BuildId) {
-                _prevBuildId = this.BuildId;
-                OnBuildIdChanged(new ValueEventArgs<int>(_prevBuildId));
-            }
-
-            if (_prevIsGameFocused != this.IsGameFocused) {
-                _prevIsGameFocused = this.IsGameFocused;
-
-                if (_prevIsGameFocused) {
-                    OnGameAcquiredFocus(EventArgs.Empty);
-                } else {
-                    OnGameLostFocus(EventArgs.Empty);
-                }
-            }
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevBuildId,       this.BuildId,       OnBuildIdChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsGameFocused, this.IsGameFocused, OnIsGameFocusedChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevProcessId,     this.ProcessId,     OnProcessIdChanged);
         }
 
         #endregion
@@ -68,8 +58,11 @@ namespace Blish_HUD.Gw2Mumble {
         /// <inheritdoc cref="IGw2MumbleClient.Version"/>
         public int Version => _service.RawClient.Version;
 
+        /// <inheritdoc cref="IGw2MumbleClient.ProcessId"/>
+        public uint ProcessId => _service.RawClient.ProcessId;
+
         internal Info(Gw2MumbleService service) {
-            _service      = service;
+            _service = service;
         }
 
         internal void Update(GameTime gameTime) {

@@ -29,6 +29,12 @@ namespace Blish_HUD {
         ]
         public string WindowName { get; private set; }
 
+        [
+            OptionParameter("mumble", 'm'),
+            Help("The MumbleLink map name to be used.")
+        ]
+        public string MumbleMapName { get; private set; }
+
         #endregion
 
         #region Utility

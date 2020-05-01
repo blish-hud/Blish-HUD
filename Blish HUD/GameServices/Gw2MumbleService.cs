@@ -8,7 +8,7 @@ namespace Blish_HUD {
 
     public class Gw2MumbleService : GameService {
 
-        private static readonly Logger Logger = Logger.GetLogger<Gw2MumbleService>();
+        private const string DEFAULT_MUMBLEMAPNAME = "MumbleLink";
 
         private IGw2MumbleClient _rawClient;
 
@@ -61,7 +61,7 @@ namespace Blish_HUD {
         public int Tick => _rawClient.Tick;
 
         protected override void Initialize() {
-            _rawClient = new Gw2Client().Mumble;
+            _rawClient = new Gw2Client().Mumble[ApplicationSettings.Instance.MumbleMapName ?? DEFAULT_MUMBLEMAPNAME];
         }
 
         protected override void Load() {
