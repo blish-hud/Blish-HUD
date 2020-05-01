@@ -1,766 +1,195 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}</ProjectGuid>
+    <TargetFramework>net472</TargetFramework>
+    <Platforms>x64</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <LangVersion>7.3</LangVersion>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RootNamespace>Blish_HUD</RootNamespace>
-    <AssemblyName>Blish HUD</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <MonoGamePlatform>Windows</MonoGamePlatform>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>3</ApplicationRevision>
-    <ApplicationVersion>0.1.2.3</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup>
+
+    <Company>Blish HUD</Company>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+    <Product>Blish HUD</Product>
+    <Title>Blish HUD</Title>
+
     <ApplicationIcon>blishraster2_0dw_icon.ico</ApplicationIcon>
+    <MonoGamePlatform>Windows</MonoGamePlatform>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>00D8CD23727E9F1B01DE6660C7F8B7A26C959D75</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>Blish HUD_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>false</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetZone>Internet</TargetZone>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>false</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;NOMOUSEHOOK;NOKEYBOARDHOOK</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-    <WarningLevel>1</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG;NOMOUSEHOOK;NOKEYBOARDHOOK</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>WINDOWS;</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <DocumentationFile>
-    </DocumentationFile>
-    <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>Blish_HUD.Program</StartupObject>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="ApplicationSettings.cs" />
-    <Compile Include="Common\Gw2\KeyBindings.cs" />
-    <Compile Include="Controls\KeybindingAssignmentWindow.cs" />
-    <Compile Include="Controls\KeybindingAssigner.cs" />
-    <Compile Include="Controls\Intern\Mouse.cs" />
-    <Compile Include="Controls\MultilineTextBox.cs" />
-    <Compile Include="Controls\TextInputBase.cs" />
-    <Compile Include="Controls\ViewContainer.cs" />
-    <Compile Include="Controls\_Types\KeyRepeatState.cs" />
-    <Compile Include="Controls\_Types\UndoRedoRecord.cs" />
-    <Compile Include="Controls\_Types\UndoRedoStack.cs" />
-    <Compile Include="Controls\_Types\ViewState.cs" />
-    <Compile Include="GameServices\Content\AsyncTexture2D.cs" />
-    <Compile Include="Controls\BasicWindow.cs" />
-    <Compile Include="Controls\Book.cs" />
-    <Compile Include="Controls\Page.cs" />
-    <Compile Include="GameServices\Content\DirectoryReader.cs" />
-    <Compile Include="GameServices\Content\Serialization\SemVerConverter.cs" />
-    <Compile Include="GameServices\Content\ZipArchiveReader.cs" />
-    <Compile Include="Controls\IAccordion.cs" />
-    <Compile Include="Controls\_Types\CachedStringRender.cs" />
-    <Compile Include="Controls\ContextMenuStripItem.cs" />
-    <Compile Include="Controls\CounterBox.cs" />
-    <Compile Include="Controls\DetailsButton.cs" />
-    <Compile Include="Controls\Effects\ControlEffect.cs" />
-    <Compile Include="Controls\Effects\ScrollingHighlightEffect.cs" />
-    <Compile Include="Controls\Extern\HardwareInput.cs" />
-    <Compile Include="Controls\Extern\Input.cs" />
-    <Compile Include="Controls\Extern\InputType.cs" />
-    <Compile Include="Controls\Extern\InputUnion.cs" />
-    <Compile Include="Controls\Extern\KeybdInput.cs" />
-    <Compile Include="Controls\Extern\KeyEventF.cs" />
-    <Compile Include="Controls\Extern\MouseEventF.cs" />
-    <Compile Include="Controls\Extern\MouseInput.cs" />
-    <Compile Include="Controls\Extern\PInvoke.cs" />
-    <Compile Include="Controls\Extern\ScanCodeShort.cs" />
-    <Compile Include="Controls\Extern\VirtualKeyShort.cs" />
-    <Compile Include="Controls\HealthPoolButton.cs" />
-    <Compile Include="Controls\Intern\GuildWarsControls.cs" />
-    <Compile Include="Controls\Intern\Keyboard.cs" />
-    <Compile Include="Controls\Label.cs" />
-    <Compile Include="Controls\NullControl.cs" />
-    <Compile Include="Controls\Resources\Checkable.cs" />
-    <Compile Include="Controls\Resources\Control.cs" />
-    <Compile Include="Controls\_Events\ChildChangedEventArgs.cs" />
-    <Compile Include="Controls\_Events\ControlActivatedEventArgs.cs" />
-    <Compile Include="Controls\_Events\MovedEventArgs.cs" />
-    <Compile Include="Controls\_Events\RegionChangedEventArgs.cs" />
-    <Compile Include="Controls\_Events\ResizedEventArgs.cs" />
-    <Compile Include="Controls\FlowPanel.cs" />
-    <Compile Include="Controls\GlowButton.cs" />
-    <Compile Include="Controls\ICheckable.cs" />
-    <Compile Include="Controls\InteractionIndicator.cs" />
-    <Compile Include="Controls\InteractionInfo.cs" />
-    <Compile Include="Controls\IMenuItem.cs" />
-    <Compile Include="Controls\BackButton.cs" />
-    <Compile Include="Controls\Checkbox.cs" />
-    <Compile Include="Controls\ColorBox.cs" />
-    <Compile Include="Controls\ColorPicker.cs" />
-    <Compile Include="Controls\ContextMenuStrip.cs" />
-    <Compile Include="Controls\Control.cs" />
-    <Compile Include="Controls\Container.cs" />
-    <Compile Include="Controls\CornerIcon.cs" />
-    <Compile Include="Controls\Dropdown.cs" />
-    <Compile Include="Controls\Image.cs" />
-    <Compile Include="Controls\LabelBase.cs" />
-    <Compile Include="Controls\LoadingSpinner.cs" />
-    <Compile Include="Controls\Menu.cs" />
-    <Compile Include="Controls\MenuItem.cs" />
-    <Compile Include="Controls\ScreenNotification.cs" />
-    <Compile Include="Controls\Panel.cs" />
-    <Compile Include="Controls\Screen.cs" />
-    <Compile Include="Controls\Scrollbar.cs" />
-    <Compile Include="Controls\StandardButton.cs" />
-    <Compile Include="Controls\TabbedWindow.cs" />
-    <Compile Include="Controls\TextBox.cs" />
-    <Compile Include="Controls\Tooltip.cs" />
-    <Compile Include="Controls\TrackBar.cs" />
-    <Compile Include="Controls\WindowBase.cs" />
-    <Compile Include="Controls\WindowTab.cs" />
-    <Compile Include="Controls\_Events\ValueChangedEventArgs.cs" />
-    <Compile Include="Controls\_Types\AccordionState.cs" />
-    <Compile Include="Controls\_Types\DesignStandard.cs" />
-    <Compile Include="Controls\_Types\HorizontalAlignment.cs" />
-    <Compile Include="Controls\_Types\LayoutState.cs" />
-    <Compile Include="Controls\_Types\Thickness.cs" />
-    <Compile Include="Controls\_Types\VerticalAlignment.cs" />
-    <Compile Include="Entities\Cube.cs" />
-    <Compile Include="Entities\Effects\EntityEffect.cs" />
-    <Compile Include="Entities\Entity.cs" />
-    <Compile Include="Entities\EntityBillboard.cs" />
-    <Compile Include="Entities\EntityText.cs" />
-    <Compile Include="GameServices\ArcDps\AsyncUserToken.cs" />
-    <Compile Include="GameServices\ArcDps\CombatParser.cs" />
-    <Compile Include="GameServices\ArcDps\Common\CommonFields.cs" />
-    <Compile Include="GameServices\ArcDps\SocketListener\MessageData.cs" />
-    <Compile Include="GameServices\ArcDps\Models\Ag.cs" />
-    <Compile Include="GameServices\ArcDps\Models\CombatEvent.cs" />
-    <Compile Include="GameServices\ArcDps\Models\Ev.cs" />
-    <Compile Include="GameServices\ArcDps\SocketListener\RawCombatEventArgs.cs" />
-    <Compile Include="GameServices\ArcDps\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="GameServices\ArcDps\SocketListener\SocketListener.cs" />
-    <Compile Include="GameServices\Content\RenderServiceTextureSize.cs" />
-    <Compile Include="GameServices\ContextsService.cs" />
-    <Compile Include="GameServices\Contexts\CdnInfoContext.cs" />
-    <Compile Include="GameServices\Contexts\ContextState.cs" />
-    <Compile Include="GameServices\Contexts\FestivalContext.cs" />
-    <Compile Include="GameServices\Contexts\Gw2ClientContext.cs" />
-    <Compile Include="GameServices\Contexts\Context.cs" />
-    <Compile Include="GameServices\Contexts\ContextResult[T].cs" />
-    <Compile Include="GameServices\Contexts\ContextAvailability.cs" />
-    <Compile Include="GameServices\Debug\DebugCounter.cs" />
-    <Compile Include="GameServices\Debug\FrameCounter.cs" />
-    <Compile Include="GameServices\Debug\Logger.cs" />
-    <Compile Include="GameServices\Debug\RingBuffer[T].cs" />
-    <Compile Include="GameServices\Graphics\UI\IPresenter.cs" />
-    <Compile Include="GameServices\Graphics\UI\IPresenter[TView].cs" />
-    <Compile Include="GameServices\Graphics\UI\IView.cs" />
-    <Compile Include="GameServices\Graphics\UI\IView[TPresenter].cs" />
-    <Compile Include="GameServices\Graphics\UI\Presenter[TView,TPresenter].cs" />
-    <Compile Include="GameServices\Graphics\UI\View[TPresenter].cs" />
-    <Compile Include="GameServices\Gw2Mumble\CurrentMap.cs" />
-    <Compile Include="GameServices\Gw2Mumble\MumbleEventImpl.cs" />
-    <Compile Include="GameServices\Gw2WebApiService.cs" />
-    <Compile Include="GameServices\ArcDpsService.cs" />
-    <Compile Include="GameServices\Content\IDataReader.cs" />
-    <Compile Include="GameServices\Gw2WebApi\ManagedConnection.cs" />
-    <Compile Include="GameServices\Gw2WebApi\TokenBucket.cs" />
-    <Compile Include="GameServices\Gw2WebApi\TokenCompliantCacheWrapper.cs" />
-    <Compile Include="GameServices\Input\Hook.cs" />
-    <Compile Include="GameServices\Input\InputManager.cs" />
-    <Compile Include="GameServices\Input\KeyBinding.cs" />
-    <Compile Include="GameServices\Input\KeyboardEventArgs.cs" />
-    <Compile Include="GameServices\Input\KeyboardEventType.cs" />
-    <Compile Include="GameServices\Input\KeyboardManager.cs" />
-    <Compile Include="GameServices\Input\KeysUtil.cs" />
-    <Compile Include="GameServices\Input\ModifierKeys.cs" />
-    <Compile Include="GameServices\Input\MouseEventArgs.cs" />
-    <Compile Include="GameServices\Input\MouseEventType.cs" />
-    <Compile Include="GameServices\Input\MouseManager.cs" />
-    <Compile Include="GameServices\Input\TypedInputUtil.cs" />
-    <Compile Include="GameServices\Input\WinApi\HookExtern.cs" />
-    <Compile Include="GameServices\Input\WinApi\HookType.cs" />
-    <Compile Include="GameServices\Input\WinApi\MouseLLHookStruct.cs" />
-    <Compile Include="GameServices\Modules\Manifest.cs" />
-    <Compile Include="GameServices\Modules\ModuleApiPermissions.cs" />
-    <Compile Include="GameServices\Modules\ModuleContributor.cs" />
-    <Compile Include="GameServices\Modules\ModuleDependency.cs" />
-    <Compile Include="GameServices\Modules\ModuleDependencyCheckDetails.cs" />
-    <Compile Include="GameServices\Modules\ModuleDependencyCheckResult.cs" />
-    <Compile Include="GameServices\Modules\ModuleManager.cs" />
-    <Compile Include="GameServices\Modules\ModuleRunState.cs" />
-    <Compile Include="GameServices\Modules\ModuleRunStateChangedEventArgs.cs" />
-    <Compile Include="GameServices\Modules\ModuleState.cs" />
-    <Compile Include="GameServices\Modules\SupportedModuleManifestVersion.cs" />
-    <Compile Include="GameServices\Gw2Mumble\Info.cs" />
-    <Compile Include="GameServices\PersistentStore\Store.cs" />
-    <Compile Include="GameServices\PersistentStore\StoreValue.cs" />
-    <Compile Include="GameServices\PersistentStore\StoreValue[T].cs" />
-    <Compile Include="GameServices\Gw2Mumble\PlayerCharacter.cs" />
-    <Compile Include="GameServices\Gw2Mumble\PlayerCamera.cs" />
-    <Compile Include="GameServices\Gw2Mumble\UI.cs" />
-    <Compile Include="GameServices\Settings\UI\AboutUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\UI\OverlaySettingsUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\UI\SingleModuleSettingsUIBuilder.cs" />
-    <Compile Include="GameServices\Settings\SettingCollection.cs" />
-    <Compile Include="GameServices\Settings\SettingEntry.cs" />
-    <Compile Include="GameServices\Settings\SettingEntry[T].cs" />
-    <Compile Include="GameServices\Settings\UI\UpdateUIBuilder.cs" />
-    <Compile Include="GameServices\Modules\Module.cs" />
-    <Compile Include="GameServices\Modules\Managers\ContentsManager.cs" />
-    <Compile Include="GameServices\Modules\Managers\DirectoriesManager.cs" />
-    <Compile Include="GameServices\Modules\Managers\Gw2ApiManager.cs" />
-    <Compile Include="GameServices\Modules\Managers\SettingsManager.cs" />
-    <Compile Include="GameServices\Modules\ModuleParameters.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Activator\Activator.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Activator\Always.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Activator\BehaviorActivatorAttribute.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Activator\ZoneActivator.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Bounce.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Interactable[TPathable,TEntity].cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\_Types\BehaviorWhen.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Mesh.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Notification.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\PathingBehavior[TPathable,TEntity].cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Rotate.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Title.cs" />
-    <Compile Include="GameServices\Pathing\Content\PathableResourceManager.cs" />
-    <Compile Include="GameServices\Pathing\Entities\Effects\MarkerEffect.cs" />
-    <Compile Include="GameServices\Pathing\PathableAttribute.cs" />
-    <Compile Include="GameServices\Pathing\PathableAttributeCollection.cs" />
-    <Compile Include="Strings\GameServices\Contexts\Festivals.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Festivals.resx</DependentUpon>
-    </Compile>
-    <Compile Include="_Events\ValueEventArgs[T].cs" />
-    <Compile Include="_Extensions\ColorExtensions.cs" />
-    <Compile Include="_Utils\ClipboardUtil.cs" />
-    <Compile Include="_Utils\DirectoryUtil.cs" />
-    <Compile Include="_Utils\InvariantUtil.cs" />
-    <Compile Include="_Utils\LoadingSpinnerUtil.cs" />
-    <Compile Include="_Utils\MouseInterceptor.cs" />
-    <Compile Include="_Utils\StringUtil.cs" />
-    <Compile Include="_Utils\TextureUtil.cs" />
-    <Compile Include="_Utils\VectorUtil.cs" />
-    <Compile Include="_Enums\Gw2Locale.cs" />
-    <Compile Include="_Enums\Gw2Profession.cs" />
-    <Compile Include="_Enums\Gw2Race.cs" />
-    <Compile Include="_Events\ValueChangedEventArgs[T].cs" />
-    <Compile Include="Library\Glide\CustomLerpers\PointLerper.cs" />
-    <Compile Include="GameServices\Modules\ManifestV1.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\Copy.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\PathingBehaviorAttribute.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\ILoadableBehavior.cs" />
-    <Compile Include="GameServices\Pathing\Entities\Marker.cs" />
-    <Compile Include="GameServices\PersistentStoreService.cs" />
-    <Compile Include="_Interfaces\IRenderable2D.cs" />
-    <Compile Include="_Interfaces\IRenderable3D.cs" />
-    <Compile Include="_Interfaces\IUpdatable.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\DisplayInteractionInfo.cs" />
-    <Compile Include="GameServices\Pathing\Entities\ScrollingTrail.cs" />
-    <Compile Include="GameServices\Pathing\Entities\Trail.cs" />
-    <Compile Include="GameServices\Pathing\Entities\ScrollingTrailSection.cs" />
-    <Compile Include="GameServices\Pathing\Format\LoadedMarkerPathable.cs" />
-    <Compile Include="GameServices\Pathing\Format\LoadedPathable.cs" />
-    <Compile Include="GameServices\Pathing\Format\LoadedTrailPathable.cs" />
-    <Compile Include="GameServices\Pathing\IPathable.cs" />
-    <Compile Include="GameServices\Pathing\ManagedPathable.cs" />
-    <Compile Include="GameServices\Pathing\Behaviors\PathingBehavior.cs" />
-    <Compile Include="GameServices\Pathing\Markers\IMarker.cs" />
-    <Compile Include="GameServices\Pathing\Markers\BasicMarkerPathable.cs" />
-    <Compile Include="GameServices\Pathing\Trails\BasicTrailPathable.cs" />
-    <Compile Include="GameServices\Pathing\Trails\ITrail.cs" />
-    <Compile Include="GameServices\Pathing\Trails\Route.cs" />
-    <Compile Include="Entities\Primitives\Cuboid.cs" />
-    <Compile Include="Entities\Primitives\Face.cs" />
-    <Compile Include="Entities\Primitives\Mesh.cs" />
-    <Compile Include="Entities\World.cs" />
-    <Compile Include="GameServices\OverlayService.cs" />
-    <Compile Include="GameServices\PathingService.cs" />
-    <Compile Include="GameServices\ModuleService.cs" />
-    <Compile Include="GameServices\GameIntegrationService.cs" />
-    <Compile Include="Library\Glide\Ease.cs" />
-    <Compile Include="Library\Glide\MemberAccessor.cs" />
-    <Compile Include="Library\Glide\MemberLerper.cs" />
-    <Compile Include="Library\Glide\Tween.cs" />
-    <Compile Include="Library\Glide\Tweener.cs" />
-    <Compile Include="GameServices\AnimationService.cs" />
-    <Compile Include="GameServices\DebugService.cs" />
-    <Compile Include="GameServices\ContentService.cs" />
-    <Compile Include="GameServices\SettingsService.cs" />
-    <Compile Include="Entities\Primitives\Billboard.cs" />
-    <Compile Include="BlishHud.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GameServices\Gw2MumbleService.cs" />
-    <Compile Include="GameServices\InputService.cs" />
-    <Compile Include="GameServices\GameService.cs" />
-    <Compile Include="GameServices\GraphicsService.cs" />
-    <Compile Include="_Utils\RandomUtil.cs" />
-    <Compile Include="_Utils\DrawUtil.cs" />
-    <Compile Include="_Utils\WindowUtil.cs" />
-    <Compile Include="_Utils\WorldUtil.cs" />
-    <Compile Include="_Extensions\DictionaryExtension.cs" />
-    <Compile Include="_Extensions\PointExtensions.cs" />
-    <Compile Include="_Extensions\RectangleExtension.cs" />
-    <Compile Include="_Extensions\SpriteBatchExtensions.cs" />
-    <Compile Include="_Extensions\StreamExtensions.cs" />
-    <Compile Include="_Extensions\StringExtensions.cs" />
-    <Compile Include="_Extensions\Texture2DExtension.cs" />
-    <Compile Include="_Extensions\TimeSpanExtension.cs" />
-    <Compile Include="_Extensions\Vector2Extension.cs" />
-    <Compile Include="_Extensions\Vector3Extensions.cs" />
-    <Compile Include="_Extensions\XmlNodeExtensions.cs" />
-    <Compile Include="Strings\Common.Designer.cs">
+    <Compile Remove="Content\**" />
+    <EmbeddedResource Remove="Content\**" />
+    <None Remove="Content\**" />
+    <MonoGameContentReference Include="Content\Content.mgcb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Strings\Common.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Common.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\Controls.Designer.cs">
+    <Compile Update="Strings\Controls.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Controls.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\GameServices\ContentService.Designer.cs">
+    <Compile Update="Strings\GameServices\ContentService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ContentService.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\GameServices\ContextsService.Designer.cs">
+    <Compile Update="Strings\GameServices\Contexts\Festivals.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Festivals.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Strings\GameServices\ContextsService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ContextsService.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\GameServices\GameIntegrationService.Designer.cs">
+    <Compile Update="Strings\GameServices\GameIntegrationService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GameIntegrationService.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\GameServices\Gw2ApiService.Designer.cs">
+    <Compile Update="Strings\GameServices\Gw2ApiService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Gw2ApiService.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\GameServices\InputService.Designer.cs">
+    <Compile Update="Strings\GameServices\InputService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>InputService.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\GameServices\ModulesService.Designer.cs">
+    <Compile Update="Strings\GameServices\ModulesService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ModulesService.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\GameServices\OverlayService.Designer.cs">
+    <Compile Update="Strings\GameServices\OverlayService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>OverlayService.resx</DependentUpon>
     </Compile>
-    <Compile Include="Strings\GameServices\SettingsService.Designer.cs">
+    <Compile Update="Strings\GameServices\SettingsService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SettingsService.resx</DependentUpon>
     </Compile>
   </ItemGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="blishhud.ico" />
-    <Content Include="blishraster2_0dw_icon.ico" />
-    <Content Include="data\recategory.inf">
+    <None Update="data\licenses.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="app.config" />
-    <None Include="data\ignored.json" />
-    <None Include="data\licenses.json">
+    </None>
+    <None Update="data\recategory.inf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
   <ItemGroup>
-    <MonoGameContentReference Include="Content\Content.mgcb" />
-    <None Include="app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ref\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Adhesive">
-      <Version>2.0.1-alpha</Version>
-    </PackageReference>
-    <PackageReference Include="AsyncClipboardService">
-      <Version>1.7.1</Version>
-    </PackageReference>
-    <PackageReference Include="Costura.Fody">
-      <Version>4.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="DynamicLanguageRuntime">
-      <Version>1.2.2</Version>
-    </PackageReference>
-    <PackageReference Include="EntryPoint">
-      <Version>1.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="Flurl.Http">
-      <Version>2.4.2</Version>
-    </PackageReference>
-    <PackageReference Include="Fody">
-      <Version>5.1.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Gw2Sharp">
-      <Version>0.9.6</Version>
-    </PackageReference>
-    <PackageReference Include="Humanizer.Core.de">
-      <Version>2.6.2</Version>
-    </PackageReference>
-    <PackageReference Include="Humanizer.Core.es">
-      <Version>2.6.2</Version>
-    </PackageReference>
-    <PackageReference Include="Humanizer.Core.fr">
-      <Version>2.6.2</Version>
-    </PackageReference>
-    <PackageReference Include="JsonSubTypes">
-      <Version>1.6.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CSharp">
-      <Version>4.5.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NETCore.Platforms">
-      <Version>2.2.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Win32.Primitives">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="MonoGame.Content.Builder">
-      <Version>3.7.0.9</Version>
-    </PackageReference>
-    <PackageReference Include="MonoGame.Extended">
-      <Version>1.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="MonoGame.Extended.Content.Pipeline">
-      <Version>1.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="MonoGame.Framework.WindowsDX">
-      <Version>3.7.1.189</Version>
-    </PackageReference>
-    <PackageReference Include="NAudio">
-      <Version>1.9.0</Version>
-    </PackageReference>
-    <PackageReference Include="NAudio.Vorbis">
-      <Version>1.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="NETStandard.Library">
-      <Version>2.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.2</Version>
-    </PackageReference>
-    <PackageReference Include="NLog">
-      <Version>4.6.7</Version>
-    </PackageReference>
-    <PackageReference Include="Octokit">
-      <Version>0.32.0</Version>
-    </PackageReference>
-    <PackageReference Include="protobuf-net">
-      <Version>2.4.0</Version>
-    </PackageReference>
-    <PackageReference Include="SemanticVersioning">
-      <Version>1.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.AppContext">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Debug">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.DiagnosticSource">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Tools">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Tracing">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Globalization">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Globalization.Calendars">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.IO.Compression">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.IO.Compression.ZipFile">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.IO.FileSystem">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Memory">
-      <Version>4.5.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Net.Http">
-      <Version>4.3.4</Version>
-    </PackageReference>
-    <PackageReference Include="System.Net.Primitives">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Net.Sockets">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Numerics.Vectors">
-      <Version>4.5.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ObjectModel">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection.Primitives">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Resources.ResourceManager">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Handles">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.InteropServices">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Numerics">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Security.Cryptography.Algorithms">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Security.Cryptography.X509Certificates">
-      <Version>4.3.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.Text.Encoding">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Text.Encoding.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Text.RegularExpressions">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Timer">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Xml.ReaderWriter">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Xml.XDocument">
-      <Version>4.3.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Strings\Common.de.resx" />
-    <EmbeddedResource Include="Strings\Common.es.resx" />
-    <EmbeddedResource Include="Strings\Common.fr.resx" />
-    <EmbeddedResource Include="Strings\Common.resx">
+    <EmbeddedResource Update="Strings\Common.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Common.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\Controls.de.resx" />
-    <EmbeddedResource Include="Strings\Controls.resx">
+    <EmbeddedResource Update="Strings\Controls.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Controls.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\ContentService.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\ContentService.resx">
+    <EmbeddedResource Update="Strings\GameServices\ContentService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ContentService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\ContextsService.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\ContextsService.es.resx" />
-    <EmbeddedResource Include="Strings\GameServices\ContextsService.fr.resx" />
-    <EmbeddedResource Include="Strings\GameServices\ContextsService.resx">
+    <EmbeddedResource Update="Strings\GameServices\ContextsService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ContextsService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\Contexts\Festivals.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\Contexts\Festivals.es.resx" />
-    <EmbeddedResource Include="Strings\GameServices\Contexts\Festivals.fr.resx" />
-    <EmbeddedResource Include="Strings\GameServices\Contexts\Festivals.resx">
+    <EmbeddedResource Update="Strings\GameServices\Contexts\Festivals.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Festivals.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\GameIntegrationService.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\GameIntegrationService.resx">
+    <EmbeddedResource Update="Strings\GameServices\GameIntegrationService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>GameIntegrationService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\Gw2ApiService.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\Gw2ApiService.es.resx" />
-    <EmbeddedResource Include="Strings\GameServices\Gw2ApiService.fr.resx" />
-    <EmbeddedResource Include="Strings\GameServices\Gw2ApiService.resx">
+    <EmbeddedResource Update="Strings\GameServices\Gw2ApiService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Gw2ApiService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\InputService.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\InputService.resx">
+    <EmbeddedResource Update="Strings\GameServices\InputService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>InputService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\ModulesService.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\ModulesService.es.resx" />
-    <EmbeddedResource Include="Strings\GameServices\ModulesService.fr.resx" />
-    <EmbeddedResource Include="Strings\GameServices\ModulesService.resx">
+    <EmbeddedResource Update="Strings\GameServices\ModulesService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ModulesService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\OverlayService.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\OverlayService.es.resx" />
-    <EmbeddedResource Include="Strings\GameServices\OverlayService.fr.resx" />
-    <EmbeddedResource Include="Strings\GameServices\OverlayService.resx">
+    <EmbeddedResource Update="Strings\GameServices\OverlayService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>OverlayService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\GameServices\SettingsService.de.resx" />
-    <EmbeddedResource Include="Strings\GameServices\SettingsService.es.resx" />
-    <EmbeddedResource Include="Strings\GameServices\SettingsService.fr.resx" />
-    <EmbeddedResource Include="Strings\GameServices\SettingsService.resx">
+    <EmbeddedResource Update="Strings\GameServices\SettingsService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>SettingsService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>rd /s /q "lv", "ms-MY", "mt", "nb", "nb-NO", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sr", "sr-Latn", "sv", "tr", "uk", "uz-Cyrl-UZ", "uz-Latn-UZ", "vi", "zh-CN"</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "$(ProjectDir)BuildScripts\RefBuilder.ps1" -Project "$(ProjectDir)\" -Output "$(OutDir)\"</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+
+  <ItemGroup>
+    <PackageReference Include="Adhesive" Version="2.0.1-alpha" />
+    <PackageReference Include="AsyncClipboardService" Version="1.7.1" />
+    <PackageReference Include="Costura.Fody" Version="4.0.0" />
+    <PackageReference Include="DynamicLanguageRuntime" Version="1.2.2" />
+    <PackageReference Include="EntryPoint" Version="1.3.0" />
+    <PackageReference Include="Flurl.Http" Version="2.4.2" />
+    <PackageReference Include="Fody" Version="5.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Gw2Sharp" Version="0.9.6" />
+    <PackageReference Include="Humanizer.Core.de" Version="2.6.2" />
+    <PackageReference Include="Humanizer.Core.es" Version="2.6.2" />
+    <PackageReference Include="Humanizer.Core.fr" Version="2.6.2" />
+    <PackageReference Include="JsonSubTypes" Version="1.6.0" />
+    <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.9" />
+    <PackageReference Include="MonoGame.Extended" Version="3.7.0" />
+    <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="3.7.0" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.7.1.189" />
+    <PackageReference Include="NAudio" Version="1.9.0" />
+    <PackageReference Include="NAudio.Vorbis" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NLog" Version="4.6.7" />
+    <PackageReference Include="Octokit" Version="0.32.0" />
+    <PackageReference Include="protobuf-net" Version="2.4.0" />
+    <PackageReference Include="SemanticVersioning" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
+
+  <Target Name="BuildRef" AfterTargets="Build">
+    <ZipDirectory SourceDirectory="$(ProjectDir)ref" DestinationFile="$(OutDir)/ref.dat" Overwrite="true" />
   </Target>
-  <Target Name="AfterBuild">
+  
+  <Target Name="CleanRef" AfterTargets="Clean">
+    <Delete Files="$(OutDir)/ref.dat" />
   </Target>
-  -->
+
 </Project>

@@ -20,7 +20,7 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureButtonBorder;
         
         static StandardButton() {
-            _textureButtonIdle   = Content.GetTexture(@"common\button-states");
+            _textureButtonIdle   = Content.GetTexture(@"common/button-states");
             _textureButtonBorder = Content.GetTexture("button-border");
         }
 

@@ -149,8 +149,8 @@ namespace Blish_HUD.Settings.UI {
             var settingsButton = new GlowButton() {
                 Location = new Point(enableButton.Right + 12, enableButton.Top),
 
-                Icon       = GameService.Content.GetTexture(@"common\157109"),
-                ActiveIcon = GameService.Content.GetTexture(@"common\157110"),
+                Icon       = GameService.Content.GetTexture(@"common/157109"),
+                ActiveIcon = GameService.Content.GetTexture(@"common/157110"),
 
                 BasicTooltipText = "Options",
 

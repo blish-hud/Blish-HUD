@@ -30,10 +30,10 @@ namespace Blish_HUD.Controls {
 
             _fontMenomonia36Regular = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular);
 
-            _textureGrayBackground  = Content.GetTexture(@"controls\notification\notification-gray");
-            _textureBlueBackground  = Content.GetTexture(@"controls\notification\notification-blue");
-            _textureGreenBackground = Content.GetTexture(@"controls\notification\notification-green");
-            _textureRedBackground   = Content.GetTexture(@"controls\notification\notification-red");
+            _textureGrayBackground  = Content.GetTexture(@"controls/notification/notification-gray");
+            _textureBlueBackground  = Content.GetTexture(@"controls/notification/notification-blue");
+            _textureGreenBackground = Content.GetTexture(@"controls/notification/notification-green");
+            _textureRedBackground   = Content.GetTexture(@"controls/notification/notification-red");
         }
 
         #endregion
