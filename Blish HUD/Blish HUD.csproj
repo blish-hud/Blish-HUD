@@ -13,12 +13,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Company>Blish HUD</Company>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <InformationalVersion>1.0.0</InformationalVersion>
-    <Product>Blish HUD</Product>
     <Title>Blish HUD</Title>
+    <Product>Blish HUD</Product>
+    <Company>Blish HUD</Company>
+    <AssemblyVersion>0.5.0</AssemblyVersion>
+    <FileVersion>0.5.0</FileVersion>
+    <InformationalVersion>0.4.0-local-dev+0</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>
