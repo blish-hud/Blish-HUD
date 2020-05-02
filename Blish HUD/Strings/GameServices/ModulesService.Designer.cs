@@ -142,6 +142,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        internal static string ModuleAuthor_Unknown {
+            get {
+                return ResourceManager.GetString("ModuleAuthor_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to API Permissions.
         /// </summary>
         internal static string ModuleManagement_ApiPermissions {
