@@ -9,7 +9,6 @@
     <RootNamespace>Blish_HUD</RootNamespace>
     <ApplicationIcon>blishraster2_0dw_icon.ico</ApplicationIcon>
     <MonoGamePlatform>Windows</MonoGamePlatform>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -31,7 +30,6 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeContentInPack>false</IncludeContentInPack>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -45,10 +43,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Make sure that content files are only included through MonoGame and nothing else -->
     <Compile Remove="Content\**" />
     <EmbeddedResource Remove="Content\**" />
     <None Remove="Content\**" />
     <MonoGameContentReference Include="Content\Content.mgcb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include custom build targets for modules that reference the NuGet package -->
+    <None Include="build\**" Pack="True" PackagePath="build" />
   </ItemGroup>
 
   <ItemGroup>
@@ -203,11 +207,20 @@
   </ItemGroup>
 
   <Target Name="BuildRef" AfterTargets="Build">
+    <!-- Build ref.dat -->
     <ZipDirectory SourceDirectory="$(ProjectDir)ref" DestinationFile="$(OutDir)/ref.dat" Overwrite="true" />
   </Target>
   
   <Target Name="CleanRef" AfterTargets="Clean">
+    <!-- Clean custom output files -->
     <Delete Files="$(OutDir)/ref.dat" />
+  </Target>
+
+  <Target Name="AfterBuildContent" AfterTargets="BuildContent">
+    <!-- This will keep MonoGame compiled content files from being included in NuGet packages -->
+    <ItemGroup>
+      <Content Update="$(ProjectDir)Content\bin\**" Pack="False" />
+    </ItemGroup>
   </Target>
 
 </Project>
