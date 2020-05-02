@@ -26,7 +26,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         private const int MAX_KEYNAME_LENGTH = 20;
 
-        private static readonly Dictionary<ApiTokenStatusType, Texture2D> _tokenStatusTextures = new Dictionary<ApiTokenStatusType, Texture2D>() {
+        private readonly Dictionary<ApiTokenStatusType, Texture2D> _tokenStatusTextures = new Dictionary<ApiTokenStatusType, Texture2D>() {
             {ApiTokenStatusType.Neutral, GameService.Content.GetTexture(@"common\154983")},
             {ApiTokenStatusType.Failed, GameService.Content.GetTexture(@"common\154982")},
             {ApiTokenStatusType.Partial, GameService.Content.GetTexture(@"common\154981")},
@@ -54,13 +54,13 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         private CancellationTokenSource _tokenTestCanceller;
 
-        private Action<string> _debounceWrapper;
+        private readonly Action<string> _debounceWrapper;
 
         public RegisterApiKeyView() {
             this.Presenter = new RegisterApiKeyPresenter(this, GameService.Gw2WebApi);
 
             Action<string> a = CheckToken;
-            _debounceWrapper = a.Debounce<string>();
+            _debounceWrapper = a.Debounce();
         }
 
         protected override void Build(Panel buildPanel) {
