@@ -58,7 +58,7 @@ namespace Blish_HUD.Pathing.Content {
                 using (var textureStream = this.DataReader.GetFileStream(texturePath)) {
                     if (textureStream == null) return fallbackTexture;
 
-                    _textureCache.Add(texturePath, Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream));
+                    _textureCache.Add(texturePath, TextureUtil.FromStreamPremultiplied(GameService.Graphics.GraphicsDevice, textureStream));
 
                     Logger.Info("Texture {texturePath} was successfully loaded from {dataReaderPath}.", texturePath, this.DataReader.GetPathRepresentation(texturePath));
                 }
