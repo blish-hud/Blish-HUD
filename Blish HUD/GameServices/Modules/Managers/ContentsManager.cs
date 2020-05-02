@@ -41,7 +41,7 @@ namespace Blish_HUD.Modules.Managers {
             using (var textureStream = _reader.GetFileStream(texturePath)) {
                 if (textureStream != null) {
                     Logger.Info("Successfully loaded texture {texturePath} from {dataReaderFilePath}.", texturePath, _reader.GetPathRepresentation(texturePath));
-                    return Texture2D.FromStream(GameService.Graphics.GraphicsDevice, textureStream);
+                    return TextureUtil.FromStreamPremultiplied(GameService.Graphics.GraphicsDevice, textureStream);
                 }
             }
 

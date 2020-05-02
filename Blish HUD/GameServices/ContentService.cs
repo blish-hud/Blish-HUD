@@ -127,7 +127,7 @@ namespace Blish_HUD {
         private static Texture2D TextureFromFile(string filepath) {
             if (File.Exists(filepath)) {
                 using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    return Texture2D.FromStream(Blish_HUD.BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, fileStream);
+                    return TextureUtil.FromStreamPremultiplied(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, fileStream);
                 }
             } else return null;
         }
@@ -149,7 +149,7 @@ namespace Blish_HUD {
                             var textureCanSeek = new MemoryStream();
                             textureStream.CopyTo(textureCanSeek);
 
-                            return Texture2D.FromStream(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, textureCanSeek);
+                            return TextureUtil.FromStreamPremultiplied(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, textureCanSeek);
                         }
                     }
 
@@ -233,7 +233,7 @@ namespace Blish_HUD {
                         var textureData = textureDataResponse.Result;
 
                         using (var textureStream = new MemoryStream(textureData)) {
-                            var loadedTexture = Texture2D.FromStream(Graphics.GraphicsDevice, textureStream);
+                            var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
 
                             returnedTexture.SwapTexture(loadedTexture);
                         }
