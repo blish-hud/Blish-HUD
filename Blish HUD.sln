@@ -7,6 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blish HUD", "Blish HUD\Blis
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0C6D94B-7035-478B-BA1B-CEB7A5D079BD}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		Resources.Designer.t4 = Resources.Designer.t4
 	EndProjectSection
 EndProject
@@ -25,8 +26,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_ConfirmAddLanguageFile = True
-		RESX_AutoCreateNewLanguageFiles = True
 		SolutionGuid = {BCD3C4BD-915D-4622-A220-D39D18A327D9}
+		RESX_AutoCreateNewLanguageFiles = True
+		RESX_ConfirmAddLanguageFile = True
 	EndGlobalSection
 EndGlobal
