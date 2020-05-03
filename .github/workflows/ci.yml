@@ -33,15 +33,10 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: BlishHUD.${{ env.VERSION }}
+          name: BlishHUD ${{ env.VERSION }}
           path: Blish HUD/bin/Release/net472
-      - name: Upload NuGet package artifact
+      - name: Upload NuGet package artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: BlishHUD.${{ env.VERSION }}.nupkg
-          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.nupkg
-      - name: Upload NuGet symbol package artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: BlishHUD.${{ env.VERSION }}.snupkg
-          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.snupkg
+          name: BlishHUD ${{ env.VERSION }} NuGet packages
+          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.*nupkg
