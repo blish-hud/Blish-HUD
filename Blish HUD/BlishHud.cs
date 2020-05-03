@@ -1,11 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Blish_HUD.ArcDps;
 
 namespace Blish_HUD {
 
@@ -147,9 +142,9 @@ namespace Blish_HUD {
             _basicSpriteBatch.Begin();
 
             GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
-#endif
 
             _basicSpriteBatch.End();
+#endif
 
             base.Draw(gameTime);
         }
