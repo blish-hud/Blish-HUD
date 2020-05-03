@@ -15,9 +15,6 @@
     <Title>Blish HUD</Title>
     <Product>Blish HUD</Product>
     <Company>Blish HUD</Company>
-    <AssemblyVersion>0.5.0</AssemblyVersion>
-    <FileVersion>0.5.0</FileVersion>
-    <InformationalVersion>0.4.0-local-dev+0</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -30,6 +27,20 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(VERSIONED_BUILD)'==''">
+    <AssemblyVersion>0.0.0</AssemblyVersion>
+    <FileVersion>0.0.0</FileVersion>
+    <InformationalVersion>0.0.0-local-dev+0</InformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(VERSIONED_BUILD)'!=''">
+    <Version>$(VERSIONED_BUILD)</Version>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
