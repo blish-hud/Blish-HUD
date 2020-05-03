@@ -36,6 +36,7 @@
 
   <Target Name="CleanBlishHUDModule" AfterTargets="Clean">
     <RemoveDir Directories="$(OutDir)ref" />
+    <Delete Files="$(OutDir)manifest.json" />
     <Delete Files="$(OutDir)$(ProjectName).bhm" />
   </Target>
 
