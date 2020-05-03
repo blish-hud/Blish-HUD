@@ -27,23 +27,21 @@ jobs:
           Write-Output "Informational version: $($version.InformationalVersion)"
           Write-Output "NuGet version: $nuget"
           echo "::set-env name=VERSION::$nuget"
-      - name: Run dotnet build
-        run: dotnet build -c Release -p:VERSIONED_BUILD=$env:VERSION
       - name: Run dotnet pack
-        run: dotnet pack "Blish HUD" -c Release --no-build -p:VERSIONED_BUILD=$env:VERSION
+        run: dotnet pack "Blish HUD" -c Release -p:VERSIONED_BUILD=$env:VERSION
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
           name: BlishHUD.${{ env.VERSION }}
-          path: Blish HUD/bin/x64/Release/net472
+          path: Blish HUD/bin/Release/net472
       - name: Upload NuGet package artifact
         uses: actions/upload-artifact@v2
         with:
           name: BlishHUD.${{ env.VERSION }}.nupkg
-          path: Blish HUD/bin/x64/Release/BlishHUD.${{ env.VERSION }}.nupkg
+          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.nupkg
       - name: Upload NuGet symbol package artifact
         uses: actions/upload-artifact@v2
         with:
           name: BlishHUD.${{ env.VERSION }}.snupkg
-          path: Blish HUD/bin/x64/Release/BlishHUD.${{ env.VERSION }}.snupkg
+          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.snupkg
