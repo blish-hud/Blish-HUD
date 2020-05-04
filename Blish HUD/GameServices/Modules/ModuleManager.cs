@@ -100,13 +100,13 @@ namespace Blish_HUD.Modules {
                 try {
                     _moduleAssembly = Assembly.Load(assemblyData, symbolData);
                 } catch (ReflectionTypeLoadException ex) {
-                    Logger.Warn(ex, "Module {module} failed to load due to a type exception. Ensure that you are using the correct version of the Module", this);
+                    Logger.Warn(ex, "Module {module} failed to load due to a type exception. Ensure that you are using the correct version of the Module", _manifest.GetDetailedName());
                     return;
                 } catch (BadImageFormatException ex) {
-                    Logger.Warn(ex, "Module {module} failed to load.  Check that it is a compiled module.", this);
+                    Logger.Warn(ex, "Module {module} failed to load.  Check that it is a compiled module.", _manifest.GetDetailedName());
                     return;
                 } catch (Exception ex) {
-                    Logger.Warn(ex, "Module {module} failed to load due to an unexpected error.", this);
+                    Logger.Warn(ex, "Module {module} failed to load due to an unexpected error.", _manifest.GetDetailedName());
                     return;
                 }
             }
@@ -119,7 +119,9 @@ namespace Blish_HUD.Modules {
             try {
                 container.SatisfyImportsOnce(this);
             } catch (CompositionException ex) {
-                Logger.Warn(ex, "Module {module} failed to be composed", this);
+                Logger.Warn(ex, "Module {module} failed to be composed.", _manifest.GetDetailedName());
+            } catch (FileNotFoundException ex) {
+                Logger.Warn(ex, "Module {module} failed to load a dependency.", _manifest.GetDetailedName());
             }
         }
 
