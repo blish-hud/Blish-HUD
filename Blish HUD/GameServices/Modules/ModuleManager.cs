@@ -99,7 +99,7 @@ namespace Blish_HUD.Modules {
         private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args) {
             if (_enabled && _moduleAssembly == args.RequestingAssembly) {
                 try {
-                    string assemblyName = $"{args.Name.Split(',')[0]}.dll";
+                    string assemblyName = $"{new AssemblyName(args.Name).Name}.dll";
 
                     Logger.Debug("Module {module} requested to load dependency {dependency} ({assemblyName}).", _manifest.GetDetailedName(), args.Name, assemblyName);
 
