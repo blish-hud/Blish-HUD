@@ -62,6 +62,14 @@ namespace Blish_HUD.Modules {
             this.ApiPermissions = this.ApiPermissions ?? new Dictionary<TokenPermission, ModuleApiPermissions>(0);
         }
 
+        /// <summary>
+        /// Gets the detailed name of the module suitable for displaying in logs.
+        /// [ModuleName] ([ModuleNamespace] v[ModuleVersion])
+        /// </summary>
+        public virtual string GetDetailedName() {
+            return $"{this.Name} ({this.Namespace}) v{this.Version}";
+        }
+
     }
 
 }

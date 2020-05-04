@@ -121,6 +121,12 @@ namespace Blish_HUD.Settings.UI {
                 moduleState.Text      = "Loading";
                 moduleState.TextColor = Control.StandardColors.Yellow;
 
+                if (cModuleMan.ModuleInstance == null) {
+                    moduleState.Text      = "Failed to load";
+                    moduleState.TextColor = Control.StandardColors.Red;
+                    return;
+                }
+
                 cModuleMan.ModuleInstance.ModuleLoaded += delegate {
                     enableButton.Enabled  = !cModuleMan.Enabled;
                     disableButton.Enabled = cModuleMan.Enabled;

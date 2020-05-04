@@ -62,11 +62,13 @@ namespace Blish_HUD {
             this.Window.IsBorderless = true;
             this.Window.AllowAltF4   = false;
 
-#if DEBUG
-            ActiveGraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
-            this.IsFixedTimeStep = false;
-            //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
-#endif
+            if (ApplicationSettings.Instance.UnlockFps) {
+                ActiveGraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+                this.IsFixedTimeStep                                       = false;
+            } else {
+                // Defaults to 60fps
+                this.TargetElapsedTime = TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate);
+            }
 
             // Initialize all game services
             foreach (var service in GameService.All) {
@@ -138,13 +140,14 @@ namespace Blish_HUD {
 
             GameService.Graphics.Render(gameTime, _basicSpriteBatch);
 
-#if DEBUG
-            _basicSpriteBatch.Begin();
+            if (ApplicationSettings.Instance.DebugEnabled) {
+                _basicSpriteBatch.Begin();
 
-            GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
+                GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
 
-            _basicSpriteBatch.End();
-#endif
+                _basicSpriteBatch.End();
+            }
+
 
             base.Draw(gameTime);
         }
