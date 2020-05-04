@@ -59,6 +59,8 @@ namespace Blish_HUD.Modules {
             _manifest   = manifest;
             _state      = state;
             _dataReader = dataReader;
+
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
         }
 
         private void Enable() {
@@ -74,6 +76,7 @@ namespace Blish_HUD.Modules {
 
                     if (this.ModuleInstance != null) {
                         _enabled = true;
+
                         this.ModuleInstance.DoInitialize();
                         this.ModuleInstance.DoLoad();
                     }
@@ -81,6 +84,32 @@ namespace Blish_HUD.Modules {
                     throw new FileNotFoundException($"Assembly '{packagePath}' could not be loaded from {_dataReader.GetType().Name}.");
                 }
             }
+        }
+
+        private Assembly LoadPackagedAssembly(string assemblyName) {
+            // All assemblies must be at the root of the BHM.
+            string symbolsPath = assemblyName.Replace(".dll", ".pdb");
+
+            byte[] assemblyData = _dataReader.GetFileBytes(assemblyName);
+            byte[] symbolData   = _dataReader.GetFileBytes(symbolsPath) ?? new byte[0];
+
+            return Assembly.Load(assemblyData, symbolData);
+        }
+
+        private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args) {
+            if (_enabled && _moduleAssembly == args.RequestingAssembly) {
+                try {
+                    string assemblyName = $"{args.Name.Split(',')[0]}.dll";
+
+                    Logger.Debug("Module {module} requested to load dependency {dependency} ({assemblyName}).", _manifest.GetDetailedName(), args.Name, assemblyName);
+
+                    return LoadPackagedAssembly(assemblyName);
+                } catch (Exception ex) {
+                    Logger.Warn(ex, "Failed to load dependency {dependency} for {module}.", args.Name, _manifest.GetDetailedName());
+                }
+            }
+
+            return null;
         }
 
         private void Disable() {
@@ -91,14 +120,9 @@ namespace Blish_HUD.Modules {
         }
 
         private void ComposeModuleFromFileSystemReader(string dllName, ModuleParameters parameters) {
-            string symbolsPath = dllName.Replace(".dll", ".pdb");
-
-            byte[] assemblyData = _dataReader.GetFileBytes(dllName);
-            byte[] symbolData   = _dataReader.GetFileBytes(symbolsPath) ?? new byte[0];
-
             if (_moduleAssembly == null) {
                 try {
-                    _moduleAssembly = Assembly.Load(assemblyData, symbolData);
+                    _moduleAssembly = LoadPackagedAssembly(dllName);
                 } catch (ReflectionTypeLoadException ex) {
                     Logger.Warn(ex, "Module {module} failed to load due to a type exception. Ensure that you are using the correct version of the Module", _manifest.GetDetailedName());
                     return;
