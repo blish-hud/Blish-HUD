@@ -2,15 +2,12 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Reflection;
+using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
-using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
 
 namespace Blish_HUD {
 
@@ -19,6 +16,8 @@ namespace Blish_HUD {
         private static readonly Logger Logger = Logger.GetLogger<OverlayService>();
 
         private const string APPLICATION_SETTINGS = "OverlayConfiguration";
+
+        private const int FORCE_EXIT_TIMEOUT = 4000;
 
         public event EventHandler<EventArgs> UserLocaleChanged;
 
@@ -77,6 +76,19 @@ namespace Blish_HUD {
             CultureInfo.CurrentUICulture = GetCultureFromGw2Locale(e.NewValue);
         }
 
+        /// <summary>
+        /// Instructs Blish HUD to unload and exit.
+        /// </summary>
+        public void Exit() {
+            (new Thread(() => {
+                            Thread.Sleep(FORCE_EXIT_TIMEOUT);
+                            Logger.Warn("Unload took too long. Forcing exit.");
+                            Environment.Exit(0);
+                        }) {IsBackground = true}).Start();
+
+            ActiveBlishHud.Exit();
+        }
+
         private CultureInfo GetCultureFromGw2Locale(Locale locale) {
             switch (locale) {
                 case Locale.German:
@@ -124,7 +136,7 @@ namespace Blish_HUD {
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}").Click += delegate { ActiveBlishHud.Exit(); };
+            this.BlishContextMenu.AddMenuItem($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}").Click += delegate { Exit(); };
 
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
@@ -150,10 +162,10 @@ namespace Blish_HUD {
         }
 
         private void PrepareClientDetection() {
-            GameService.GameIntegration.Gw2Closed     += GameIntegrationOnGw2Closed;
-            GameService.Gw2Mumble.Info.BuildIdChanged += Gw2MumbleOnBuildIdChanged;
+            GameIntegration.Gw2Closed     += GameIntegrationOnGw2Closed;
+            Gw2Mumble.Info.BuildIdChanged += Gw2MumbleOnBuildIdChanged;
 
-            GameService.Contexts.GetContext<CdnInfoContext>().StateChanged += CdnInfoContextOnStateChanged;
+            Contexts.GetContext<CdnInfoContext>().StateChanged += CdnInfoContextOnStateChanged;
         }
 
         private void Gw2MumbleOnBuildIdChanged(object sender, EventArgs e) {
@@ -173,7 +185,7 @@ namespace Blish_HUD {
         }
 
         private void DetectClientType() {
-            if (GameService.Contexts.GetContext<Gw2ClientContext>().TryGetClientType(out var contextResult) == ContextAvailability.Available) {
+            if (Contexts.GetContext<Gw2ClientContext>().TryGetClientType(out var contextResult) == ContextAvailability.Available) {
                 _clientType = contextResult.Value;
 
                 if (_clientType == Gw2ClientContext.ClientType.Unknown) {
