@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Linq.Expressions;
 using Blish_HUD.Content;
 using Blish_HUD.Modules;
 using Blish_HUD.Settings;
-using Microsoft.VisualBasic.Logging;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using File = System.IO.File;
 
 namespace Blish_HUD {
 
