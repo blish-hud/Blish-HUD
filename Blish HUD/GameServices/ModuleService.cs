@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using Blish_HUD.Content;
 using Blish_HUD.Modules;
 using Blish_HUD.Settings;
+using Microsoft.VisualBasic.Logging;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using File = System.IO.File;
@@ -150,9 +151,19 @@ namespace Blish_HUD {
             }
 
             if (ApplicationSettings.Instance.DebugModulePath != null) {
-                var debugModule = LoadModuleFromPackedBhm(ApplicationSettings.Instance.DebugModulePath);
+                ModuleManager debugModule = null;
 
-                debugModule.Enabled = true;
+                if (File.Exists(ApplicationSettings.Instance.DebugModulePath)) {
+                    debugModule = LoadModuleFromPackedBhm(ApplicationSettings.Instance.DebugModulePath);
+                } else if (Directory.Exists(ApplicationSettings.Instance.DebugModulePath)) {
+                    debugModule = LoadModuleFromUnpackedBhm(ApplicationSettings.Instance.DebugModulePath);
+                } else {
+                    Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
+                }
+
+                if (debugModule != null) {
+                    debugModule.Enabled = true;
+                }
             }
 
             // Get the base version string and see if we've exported the modules for this version yet
