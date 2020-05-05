@@ -6,6 +6,8 @@ namespace Blish_HUD {
 
     public class BlishHud : Game {
 
+        private static readonly Logger Logger = Logger.GetLogger<BlishHud>();
+
         #region Internal Static Members
 
         private static GraphicsDeviceManager                          _activeGraphicsDeviceManager;
@@ -49,12 +51,6 @@ namespace Blish_HUD {
             this.IsMouseVisible = true;
         }
         
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize() {
             FormHandle = this.Window.Handle;
             Form       = System.Windows.Forms.Control.FromHandle(FormHandle).FindForm();
@@ -87,19 +83,10 @@ namespace Blish_HUD {
             _basicSpriteBatch = new SpriteBatch(this.GraphicsDevice);
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent() {
-            // Let all of the game services have a chance to unload
-            foreach (var service in GameService.All) {
-                service.DoUnload();
-            }
-        }
-
         protected override void BeginRun() {
             base.BeginRun();
+
+            Logger.Debug("Loading services.");
 
             // Let all of the game services have a chance to load
             foreach (var service in GameService.All) {
@@ -107,11 +94,17 @@ namespace Blish_HUD {
             }
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void UnloadContent() {
+            base.UnloadContent();
+
+            Logger.Debug("Unloading services.");
+            
+            // Let all of the game services have a chance to unload
+            foreach (var service in GameService.All) {
+                service.DoUnload();
+            }
+        }
+
         protected override void Update(GameTime gameTime) {
             // If gw2 isn't open - only update the most important things:
             if (!GameService.GameIntegration.Gw2IsRunning) {
@@ -131,10 +124,6 @@ namespace Blish_HUD {
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime) {
             if (!GameService.GameIntegration.Gw2IsRunning) return;
 

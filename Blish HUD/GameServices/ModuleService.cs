@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using Blish_HUD.Content;
 using Blish_HUD.Modules;
 using Blish_HUD.Settings;
+using Microsoft.VisualBasic.Logging;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using File = System.IO.File;
@@ -150,9 +151,19 @@ namespace Blish_HUD {
             }
 
             if (ApplicationSettings.Instance.DebugModulePath != null) {
-                var debugModule = LoadModuleFromPackedBhm(ApplicationSettings.Instance.DebugModulePath);
+                ModuleManager debugModule = null;
 
-                debugModule.Enabled = true;
+                if (File.Exists(ApplicationSettings.Instance.DebugModulePath)) {
+                    debugModule = LoadModuleFromPackedBhm(ApplicationSettings.Instance.DebugModulePath);
+                } else if (Directory.Exists(ApplicationSettings.Instance.DebugModulePath)) {
+                    debugModule = LoadModuleFromUnpackedBhm(ApplicationSettings.Instance.DebugModulePath);
+                } else {
+                    Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
+                }
+
+                if (debugModule != null) {
+                    debugModule.Enabled = true;
+                }
             }
 
             // Get the base version string and see if we've exported the modules for this version yet
@@ -173,7 +184,7 @@ namespace Blish_HUD {
                     try {
                         module.ModuleInstance.DoUpdate(gameTime);
                     } catch (Exception ex) {
-                        Logger.Error(ex, "Module '{$moduleName} ({$moduleNamespace}) threw an exception while updating.", module.Manifest.Name, module.Manifest.Namespace);
+                        Logger.Error(ex, "Module {module} threw an exception while updating.", module.Manifest.GetDetailedName());
 
                         if (ApplicationSettings.Instance.DebugEnabled) {
                             // To assist in debugging modules
@@ -188,9 +199,10 @@ namespace Blish_HUD {
             foreach (var module in _modules) {
                 if (module.Enabled) {
                     try {
+                        Logger.Info("Unloading module {module}.", module.Manifest.GetDetailedName());
                         module.ModuleInstance.Dispose();
                     } catch (Exception ex) {
-                        Logger.Error(ex, "Module '{$moduleName} ({$moduleNamespace}) threw an exception while unloading.", module.Manifest.Name, module.Manifest.Namespace);
+                        Logger.Error(ex, "Module '{module} threw an exception while unloading.", module.Manifest.GetDetailedName());
 
                         if (ApplicationSettings.Instance.DebugEnabled) {
                             // To assist in debugging modules

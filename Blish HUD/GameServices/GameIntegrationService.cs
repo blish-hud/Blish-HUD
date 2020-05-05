@@ -213,7 +213,7 @@ namespace Blish_HUD {
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
             ts_exit = this.TrayIconMenu.Items.Add($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}");
 
-            ts_exit.Click += delegate { ActiveBlishHud.Exit(); };
+            ts_exit.Click += delegate { Overlay.Exit(); };
 
             this.TrayIconMenu.Opening += delegate {
                 ts_launchGw2.Enabled     = !this.Gw2IsRunning && File.Exists(this.Gw2ExecutablePath);
@@ -265,8 +265,8 @@ namespace Blish_HUD {
 
             Logger.Info("Guild Wars 2 application has exited!");
 
-            if (!GameService.Overlay.StayInTray.Value) {
-                Application.Exit();
+            if (!Overlay.StayInTray.Value) {
+                Overlay.Exit();
             }
         }
 
