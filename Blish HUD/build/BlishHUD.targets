@@ -2,10 +2,10 @@
 
   <Target Name="CheckBlishHUDModuleRequiredFiles" BeforeTargets="Build">
     <!-- Check for manifest.json -->
-    <Error Condition="!Exists('$(ProjectDir)manifest.json')" Text="The file &quot;$(ProjectDir)manifest.json&quot; was not found. This file is required for creating a BlishHUD module." />
+    <Error Condition="!Exists('$(ProjectDir)manifest.json')" Text="The file &quot;$(ProjectDir)manifest.json&quot; was not found. This file is required for creating a Blish HUD module." />
 
     <!-- Check ref folder -->
-    <Warning Condition="!Exists('$(ProjectDir)ref')" Text="The folder &quot;$(ProjectDir)ref&quot; does not exist. This folder is used to store BlishHUD module specific content files. Make sure that all content files are stored in this folder if you have any, or ignore this warning if your module does not have content files." />
+    <Warning Condition="!Exists('$(ProjectDir)ref')" Text="The folder &quot;$(ProjectDir)ref&quot; does not exist. This folder is used to store Blish HUD module specific content files. Make sure that all content files are stored in this folder if you have any, or ignore this warning if your module does not have content files." />
   </Target>
 
   <Target Name="BuildBlishHUDModule" AfterTargets="Build">

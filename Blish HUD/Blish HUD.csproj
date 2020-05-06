@@ -22,7 +22,7 @@
 
   <PropertyGroup>
     <PackageId>BlishHUD</PackageId>
-    <Authors>BlishHUD</Authors>
+    <Authors>Blish HUD</Authors>
     <PackageProjectUrl>https://github.com/blish-hud/Blish-HUD</PackageProjectUrl>
     <RepositoryUrl>https://github.com/blish-hud/Blish-HUD</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -171,7 +171,7 @@
 
   <ItemGroup>
     <PackageReference Include="Adhesive" Version="2.0.1-alpha" PrivateAssets="all" />
-    <PackageReference Include="AsyncClipboardService" Version="1.7.1" PrivateAssets="all" />
+    <PackageReference Include="AsyncClipboardService" Version="[1.7.1]" />
     <PackageReference Include="Costura.Fody" Version="4.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -190,7 +190,7 @@
     <PackageReference Include="JsonSubTypes" Version="1.6.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
     <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.9" PrivateAssets="all" />
-    <PackageReference Include="MonoGame.Extended" Version="3.7.0" PrivateAssets="all" />
+    <PackageReference Include="MonoGame.Extended" Version="[3.7.0]" />
     <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="3.7.0" PrivateAssets="all" />
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="[3.7.1.189]" />
     <PackageReference Include="NAudio" Version="1.9.0" PrivateAssets="all" />
