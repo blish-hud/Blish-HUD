@@ -141,7 +141,7 @@ namespace Blish_HUD {
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
                 Title  = Strings.Common.BlishHUD,
-                Emblem = Content.GetTexture("test-window-icon9")
+                Emblem = Content.GetTexture("blishhud-emblem")
             };
 
             this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
