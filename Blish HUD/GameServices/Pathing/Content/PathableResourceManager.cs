@@ -24,7 +24,9 @@ namespace Blish_HUD.Pathing.Content {
         }
 
         public void RunTextureDisposal() {
-            Logger.Info("Running texture swap for pathables. {addCount} will be added and {removeCount} will be removed.", _pendingTextureUse.Count, _pendingTextureRemoval.Count);
+            if (_pendingTextureUse.Count == 0 && _pendingTextureRemoval.Count == 0) return; // Early exit if no changes (mostly to skip logging)
+
+            Logger.Debug("Running texture swap for pathables. {addCount} will be added and {removeCount} will be removed.", _pendingTextureUse.Count, _pendingTextureRemoval.Count);
 
             // Prevent us from removing textures that are still needed
             _pendingTextureRemoval.RemoveWhere(t => _pendingTextureUse.Contains(t));
@@ -56,11 +58,15 @@ namespace Blish_HUD.Pathing.Content {
 
             if (!_textureCache.ContainsKey(texturePath)) {
                 using (var textureStream = this.DataReader.GetFileStream(texturePath)) {
-                    if (textureStream == null) return fallbackTexture;
+                    if (textureStream == null) {
+                        Logger.Warn("Failed to load texture {dataReaderPath}.", this.DataReader.GetPathRepresentation(texturePath));
+
+                        return fallbackTexture;
+                    };
 
                     _textureCache.Add(texturePath, TextureUtil.FromStreamPremultiplied(GameService.Graphics.GraphicsDevice, textureStream));
 
-                    Logger.Info("Texture {texturePath} was successfully loaded from {dataReaderPath}.", texturePath, this.DataReader.GetPathRepresentation(texturePath));
+                    Logger.Debug("Successfully loaded texture {dataReaderPath}.", this.DataReader.GetPathRepresentation(texturePath));
                 }
             }
 
