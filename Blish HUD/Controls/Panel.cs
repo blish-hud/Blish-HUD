@@ -39,13 +39,13 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureAccordionArrow;
 
         static Panel() {
-            _texturePanelHeader       = Content.GetTexture(@"controls\panel\1032325");
-            _texturePanelHeaderActive = Content.GetTexture(@"controls\panel\1032324");
+            _texturePanelHeader       = Content.GetTexture(@"controls/panel/1032325");
+            _texturePanelHeaderActive = Content.GetTexture(@"controls/panel/1032324");
 
-            _textureCornerAccent     = Content.GetTexture(@"controls\panel\1002144");
+            _textureCornerAccent     = Content.GetTexture(@"controls/panel/1002144");
             _textureLeftSideAccent    = Content.GetTexture("605025");
 
-            _textureAccordionArrow = Content.GetTexture(@"controls\panel\155953");
+            _textureAccordionArrow = Content.GetTexture(@"controls/panel/155953");
         }
 
         #endregion

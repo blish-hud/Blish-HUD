@@ -73,9 +73,9 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureBottomSectionSeparator;
 
         static DetailsButton() {
-            _textureFillCrest              = Content.GetTexture(@"controls\detailsbutton\605004");
-            _textureVignette               = Content.GetTexture(@"controls\detailsbutton\605003");
-            _textureCornerButton           = Content.GetTexture(@"controls\detailsbutton\605011");
+            _textureFillCrest              = Content.GetTexture(@"controls/detailsbutton/605004");
+            _textureVignette               = Content.GetTexture(@"controls/detailsbutton/605003");
+            _textureCornerButton           = Content.GetTexture(@"controls/detailsbutton/605011");
             _textureBottomSectionSeparator = Content.GetTexture(@"157218");
         }
 

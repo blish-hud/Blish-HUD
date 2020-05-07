@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<package>
-  <metadata>
-    <id>$PackageId$</id>
-    <version>$Version$</version>
-    <authors>Dade Lamkins</authors>
-    <description>Blish HUD</description>
-  </metadata>
-</package>

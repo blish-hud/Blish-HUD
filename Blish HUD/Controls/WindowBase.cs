@@ -34,9 +34,9 @@ namespace Blish_HUD.Controls {
             _textureExitButton = Content.GetTexture("button-exit");
             _textureExitButtonActive = Content.GetTexture("button-exit-active");
 
-            _textureWindowCorner = Content.GetTexture(@"controls\window\156008");
-            _textureWindowResizableCorner = Content.GetTexture(@"controls\window\156009");
-            _textureWindowResizableCornerActive = Content.GetTexture(@"controls\window\156010");
+            _textureWindowCorner = Content.GetTexture(@"controls/window/156008");
+            _textureWindowResizableCorner = Content.GetTexture(@"controls/window/156009");
+            _textureWindowResizableCornerActive = Content.GetTexture(@"controls/window/156010");
         }
 
         #endregion

@@ -1,0 +1,43 @@
+<Project>
+
+  <Target Name="CheckBlishHUDModuleRequiredFiles" BeforeTargets="Build">
+    <!-- Check for manifest.json -->
+    <Error Condition="!Exists('$(ProjectDir)manifest.json')" Text="The file &quot;$(ProjectDir)manifest.json&quot; was not found. This file is required for creating a Blish HUD module." />
+
+    <!-- Check ref folder -->
+    <Warning Condition="!Exists('$(ProjectDir)ref')" Text="The folder &quot;$(ProjectDir)ref&quot; does not exist. This folder is used to store Blish HUD module specific content files. Make sure that all content files are stored in this folder if you have any, or ignore this warning if your module does not have content files." />
+  </Target>
+
+  <Target Name="BuildBlishHUDModule" AfterTargets="Build">
+    <!-- Remove existing bhm file -->
+    <Delete Files="$(OutDir)$(ProjectName).bhm" />
+
+    <!-- Copy manifest.json -->
+    <Copy SourceFiles="$(ProjectDir)manifest.json" DestinationFolder="$(OutDir)" />
+    
+    <!-- Copy ref files -->
+    <ItemGroup>
+      <RefFiles Include="$(ProjectDir)ref\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(RefFiles)" DestinationFolder="$(OutDir)ref\%(RecursiveDir)" />
+
+    <!-- Copy the whole output dir to a temporary subfolder so we can zip it without issues -->
+    <ItemGroup>
+      <OutFiles Include="$(OutDir)**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(OutFiles)" DestinationFolder="$(OutDir).bhm\%(RecursiveDir)" />
+
+    <!-- Zip subfolder -->
+    <ZipDirectory SourceDirectory="$(OutDir).bhm" DestinationFile="$(OutDir)$(ProjectName).bhm" Overwrite="true" />
+
+    <!-- Remove the temporary subfolder -->
+    <RemoveDir Directories="$(OutDir).bhm" />
+  </Target>
+
+  <Target Name="CleanBlishHUDModule" AfterTargets="Clean">
+    <RemoveDir Directories="$(OutDir)ref" />
+    <Delete Files="$(OutDir)manifest.json" />
+    <Delete Files="$(OutDir)$(ProjectName).bhm" />
+  </Target>
+
+</Project>
