@@ -39,6 +39,8 @@ namespace Blish_HUD {
 
             EnableLogging();
 
+            Logger.Debug("Launched with args {launchOptions}.", string.Join(" ", args));
+
             if (IsMoreThanOneInstance()) {
                 Logger.Warn("Blish HUD is already running!");
                 return;

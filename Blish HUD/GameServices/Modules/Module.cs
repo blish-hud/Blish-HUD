@@ -98,11 +98,12 @@ namespace Blish_HUD.Modules {
                     var loadError = new UnobservedTaskExceptionEventArgs(_loadTask.Exception);
                     OnModuleException(loadError);
 
-                    if (!loadError.Observed) {
-                        Logger.Error(_loadTask.Exception, "Module '{$moduleName} ({$moduleNamespace})' had an unhandled exception while loading:", this.Name, this.Namespace);
-                        #if DEBUG
-                        throw _loadTask.Exception;
-                        #endif
+                    if (!loadError.Observed && _loadTask.Exception != null) {
+                        Logger.Error(_loadTask.Exception, "Module {module} had an unhandled exception while loading.", ModuleParameters.Manifest.GetDetailedName());
+
+                        if (ApplicationSettings.Instance.DebugEnabled) {
+                            throw _loadTask.Exception;
+                        }
                     } else {
                         RunState = ModuleRunState.Loaded;
                     }
@@ -110,18 +111,18 @@ namespace Blish_HUD.Modules {
 
                 case TaskStatus.RanToCompletion:
                     RunState = ModuleRunState.Loaded;
-                    Logger.Info("Module '{$moduleName} ({$moduleNamespace})' finished loading.", this.Name, this.Namespace);
+                    Logger.Info("Module {module} finished loading.", ModuleParameters.Manifest.GetDetailedName());
                     break;
 
                 case TaskStatus.Canceled:
-                    Logger.Warn("Module '{$moduleName} ({$moduleNamespace})' was cancelled before it could finish loading.", this.Name, this.Namespace);
+                    Logger.Warn("Module {module} was cancelled before it could finish loading.", ModuleParameters.Manifest.GetDetailedName());
                     break;
 
                 case TaskStatus.WaitingForActivation:
                     break;
 
                 default:
-                    Logger.Warn("Module '{$moduleName} ({$moduleNamespace})' load state of {loadTaskStatus} was unexpected.", this.Name, this.Namespace, _loadTask.Status.ToString());
+                    Logger.Warn("Module {module} load state of {loadTaskStatus} was unexpected.", ModuleParameters.Manifest.GetDetailedName(), _loadTask.Status.ToString());
                     break;
             }
         }
