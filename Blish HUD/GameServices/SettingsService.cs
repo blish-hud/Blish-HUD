@@ -101,7 +101,7 @@ namespace Blish_HUD {
                 return;
             }
 
-            Logger.Info("Settings were saved successfully.");
+            Logger.Debug("Settings were saved successfully.");
         }
 
         internal void SettingSave() {
@@ -146,7 +146,7 @@ namespace Blish_HUD {
         public void RenderSettingsToPanel(Container panel, IEnumerable<SettingEntry> settings, int width = 325) {
             var listSettings = settings.ToList();
 
-            Logger.Info("Rendering {numberOfSettings} settings to panel.", listSettings.Count());
+            Logger.Debug("Rendering {numberOfSettings} settings to panel.", listSettings.Count());
 
             int lastBottom = 0;
 
