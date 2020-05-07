@@ -27,7 +27,7 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureTabActive;
 
         static TabbedWindow() {
-            _textureDefaultBackround = Content.GetTexture("502049");
+            _textureDefaultBackround = Content.GetTexture("controls/window/502049");
             _textureSplitLine        = Content.GetTexture("605024");
             _textureBlackFade        = Content.GetTexture("fade-down-46");
             _textureTabActive        = Content.GetTexture("window-tab-active");
