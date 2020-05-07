@@ -17,7 +17,7 @@ namespace Blish_HUD.Modules.Managers {
         private ContentsManager(IDataReader reader) {
             _reader = reader;
 
-            Logger.Info("New {contentsManagerName} instance utilizing a {dataReaderType} data reader.", nameof(ContentsManager), _reader.GetType().FullName);
+            Logger.Debug("New {contentsManagerName} instance utilizing a {dataReaderType} data reader.", nameof(ContentsManager), _reader.GetType().FullName);
         }
 
         public static ContentsManager GetModuleInstance(ModuleManager module) {
@@ -40,12 +40,12 @@ namespace Blish_HUD.Modules.Managers {
         public Texture2D GetTexture(string texturePath, Texture2D fallbackTexture) {
             using (var textureStream = _reader.GetFileStream(texturePath)) {
                 if (textureStream != null) {
-                    Logger.Info("Successfully loaded texture {texturePath} from {dataReaderFilePath}.", texturePath, _reader.GetPathRepresentation(texturePath));
+                    Logger.Debug("Successfully loaded texture {dataReaderFilePath}.", _reader.GetPathRepresentation(texturePath));
                     return TextureUtil.FromStreamPremultiplied(GameService.Graphics.GraphicsDevice, textureStream);
                 }
             }
 
-            Logger.Warn("Unable to find texture {texturePath} at {dataReaderFilePath}.", texturePath, _reader.GetPathRepresentation(texturePath));
+            Logger.Warn("Unable to load texture {dataReaderFilePath}.", _reader.GetPathRepresentation(texturePath));
             return fallbackTexture;
         }
 
