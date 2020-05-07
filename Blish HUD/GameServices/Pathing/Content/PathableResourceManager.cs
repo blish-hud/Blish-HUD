@@ -62,7 +62,7 @@ namespace Blish_HUD.Pathing.Content {
                         Logger.Warn("Failed to load texture {dataReaderPath}.", this.DataReader.GetPathRepresentation(texturePath));
 
                         return fallbackTexture;
-                    };
+                    }
 
                     _textureCache.Add(texturePath, TextureUtil.FromStreamPremultiplied(GameService.Graphics.GraphicsDevice, textureStream));
 
