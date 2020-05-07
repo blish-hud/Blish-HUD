@@ -55,8 +55,12 @@ namespace Blish_HUD {
 
             if (_stores == null) {
                 Logger.Warn("Persistent store could not be read, so a new one will be generated.");
-                _stores = new PersistentStore.Store();
+                InitStores();
             }
+        }
+
+        private void InitStores() {
+            _stores = new Store();
         }
 
         public PersistentStore.Store RegisterStore(string storeName) {
@@ -79,6 +83,10 @@ namespace Blish_HUD {
 
         public void Save() {
             try {
+                if (_stores == null) {
+                    InitStores();
+                }
+
                 string rawStore = JsonConvert.SerializeObject(_stores, Formatting.None, _jsonSettings);
 
                 using (var settingsWriter = new StreamWriter(_persistentStorePath, false)) {
