@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gw2Sharp.WebApi.Http;
 
 namespace Blish_HUD.Contexts {
 
@@ -176,13 +177,15 @@ namespace Blish_HUD.Contexts {
                 var dailyAchievementCategories = await GameService.Gw2WebApi.AnonymousConnection.Client.V2.Achievements.Groups.GetAsync(Guid.Parse(DAILY_GROUP_ID), cancellationToken);
 
                 return dailyAchievementCategories.Categories.Where(category => _knownFestivalCategories.ContainsKey(category)).Select(category => _knownFestivalCategories[category]);
-            } catch (Exception e) {
-                _fault = $"Failed to query Guild Wars 2 API: {e.Message}";
+            } catch (RequestCanceledException) {
+                Logger.Debug("Festival request was cancelled early.");
+            }  catch (Exception ex) {
+                _fault = $"Failed to query Guild Wars 2 API: {ex.Message}";
 
-                Logger.Warn(e, "Failed to query Guild Wars 2 API.");
-
-                return Enumerable.Empty<Festival>();
+                Logger.Warn(ex, "Failed to query Guild Wars 2 API.");
             }
+
+            return Enumerable.Empty<Festival>();
         }
 
         private bool FestivalIsActive(Festival festival) {
