@@ -11,11 +11,8 @@ namespace Blish_HUD.Controls {
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class ColorPicker : Panel {
 
-        private const int    COLOR_SIZE              = 32;
-        private const int    COLOR_PADDING           = 3;
-        private const string BACKGROUND_TEXTURE_NAME = @"common\solid";
-
-        private static readonly Texture2D _backgroundTexture;
+        private const int COLOR_SIZE    = 32;
+        private const int COLOR_PADDING = 3;
 
         public event EventHandler<EventArgs> SelectedColorChanged;
 
@@ -48,10 +45,6 @@ namespace Blish_HUD.Controls {
                     this.SelectedColor            = this.AssociatedColorBox.Color;
                 }
             }
-        }
-
-        static ColorPicker() {
-            _backgroundTexture = Content.GetTexture(BACKGROUND_TEXTURE_NAME);
         }
 
         public ColorPicker() : base() {
@@ -124,7 +117,7 @@ namespace Blish_HUD.Controls {
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw background
-            spriteBatch.DrawOnCtrl(this, _backgroundTexture, bounds, Color.Black * 0.5f);
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.5f);
         }
 
     }
