@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
@@ -37,9 +38,11 @@ namespace Blish_HUD {
         static void Main(string[] args) {
             Cli.Parse<ApplicationSettings>(args);
 
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
+
             EnableLogging();
 
-            Logger.Debug("Launched with args {launchOptions}.", string.Join(" ", args));
+            Logger.Debug("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
 
             if (IsMoreThanOneInstance()) {
                 Logger.Warn("Blish HUD is already running!");
