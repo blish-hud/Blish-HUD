@@ -13,6 +13,8 @@ namespace Blish_HUD {
         
         public ApplicationSettings() : base("Blish HUD") {
             _instance = this;
+
+            InitDebug();
         }
 
         [Conditional("DEBUG")]
