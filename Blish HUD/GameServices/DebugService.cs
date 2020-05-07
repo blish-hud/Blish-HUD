@@ -96,7 +96,7 @@ namespace Blish_HUD {
                     new MethodCallParameter(STRUCLOG_TIME),
                     new MethodCallParameter(STRUCLOG_LEVEL),
                     new MethodCallParameter(STRUCLOG_LOGGER),
-                    new MethodCallParameter(STRUCLOG_EXCEPTION)
+                    new MethodCallParameter(STRUCLOG_MESSAGE)
                 }
             };
 
