@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Blish_HUD.Controls;
-using Blish_HUD.Input.WinApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
-    public class MouseManager : InputManager {
+    public class MouseHandler : IInputHandler {
 
-        private static readonly Logger Logger = Logger.GetLogger<MouseManager>();
+        private static readonly Logger Logger = Logger.GetLogger<MouseHandler>();
 
         #region Events
 
@@ -51,7 +49,7 @@ namespace Blish_HUD.Input {
         public Control ActiveControl {
             get => _activeControl;
             private set {
-                _hudFocused   = value != null;
+                _hudFocused = value != null;
                 _hookOverride = value != null && value.Captures.HasFlag(CaptureType.ForceNone);
 
                 _activeControl = value;
@@ -60,34 +58,9 @@ namespace Blish_HUD.Input {
             }
         }
 
-        internal MouseManager() : base(HookType.WH_MOUSE_LL) { /* NOOP */ }
+        internal MouseHandler() { }
 
-        private bool HandleHookedMouseEvent(MouseEventArgs e) {
-            switch (e.EventType) {
-                case MouseEventType.LeftMouseButtonPressed:
-                    LeftMouseButtonPressed?.Invoke(this, e);
-                    break;
-                case MouseEventType.LeftMouseButtonReleased:
-                    LeftMouseButtonReleased?.Invoke(this, e);
-                    break;
-                case MouseEventType.RightMouseButtonPressed:
-                    RightMouseButtonPressed?.Invoke(this, e);
-                    break;
-                case MouseEventType.RightMouseButtonReleased:
-                    RightMouseButtonReleased?.Invoke(this, e);
-                    break;
-                case MouseEventType.MouseWheelScrolled:
-                    MouseWheelScrolled?.Invoke(this, e);
-                    break;
-                default:
-                    Logger.Debug("Got unsupported input {mouseDataMessage}.", e.EventType);
-                    return false;
-            }
-
-            return true;
-        }
-
-        internal override void Update() {
+        public void Update() {
             if (!GameService.GameIntegration.Gw2IsRunning || !GameService.GameIntegration.Gw2HasFocus) {
                 _hudFocused = false;
                 return;
@@ -99,9 +72,9 @@ namespace Blish_HUD.Input {
 
             var rawMouseState = Mouse.GetState();
 
-            this.State = new MouseState((int) (rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
-                                               (int) (rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
-                                               _mouseEvent?.Details.WheelDelta ?? 0,
+            this.State = new MouseState((int)(rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
+                                               (int)(rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
+                                               _mouseEvent?.WheelDelta ?? 0,
                                                rawMouseState.LeftButton,
                                                rawMouseState.MiddleButton,
                                                rawMouseState.RightButton,
@@ -151,25 +124,48 @@ namespace Blish_HUD.Input {
             }
         }
 
-        protected override bool HandleNewInput(IntPtr wParam, IntPtr lParam) {
-            var newEvent = new MouseEventArgs((MouseEventType)wParam, Marshal.PtrToStructure<MouseLLHookStruct>(lParam));
+        public void OnEnable() { /* NOOP */ }
 
-            if (newEvent.EventType == MouseEventType.MouseMoved) return false;
+        public void OnDisable() { /* NOOP */ }
 
-            if (_cameraDragging && newEvent.EventType == MouseEventType.RightMouseButtonReleased) {
+        public bool HandleInput(MouseEventArgs mouseEventArgs) {
+            if (mouseEventArgs.EventType == MouseEventType.MouseMoved) return false;
+
+            if (_cameraDragging && mouseEventArgs.EventType == MouseEventType.RightMouseButtonReleased) {
                 _cameraDragging = false;
             } else if (_hudFocused && !_hookOverride) {
-                _mouseEvent = newEvent;
-
-                #if !NOMOUSEHOOK
-                return newEvent.EventType != MouseEventType.LeftMouseButtonReleased;
-                #endif
-            } else if (newEvent.EventType == MouseEventType.RightMouseButtonPressed) {
+                _mouseEvent = mouseEventArgs;
+                return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased;
+            } else if (mouseEventArgs.EventType == MouseEventType.RightMouseButtonPressed) {
                 _cameraDragging = true;
             }
 
             return false;
         }
 
+        private bool HandleHookedMouseEvent(MouseEventArgs e) {
+            switch (e.EventType) {
+                case MouseEventType.LeftMouseButtonPressed:
+                    LeftMouseButtonPressed?.Invoke(this, e);
+                    break;
+                case MouseEventType.LeftMouseButtonReleased:
+                    LeftMouseButtonReleased?.Invoke(this, e);
+                    break;
+                case MouseEventType.RightMouseButtonPressed:
+                    RightMouseButtonPressed?.Invoke(this, e);
+                    break;
+                case MouseEventType.RightMouseButtonReleased:
+                    RightMouseButtonReleased?.Invoke(this, e);
+                    break;
+                case MouseEventType.MouseWheelScrolled:
+                    MouseWheelScrolled?.Invoke(this, e);
+                    break;
+                default:
+                    Logger.Debug("Got unsupported input {mouseDataMessage}.", e.EventType);
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

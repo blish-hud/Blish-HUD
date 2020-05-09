@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using Blish_HUD.Input.WinApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -24,7 +25,25 @@ namespace Blish_HUD.Input {
         /// </summary>
         public bool IsDoubleClick { get; }
 
-        internal MouseLLHookStruct Details { get; }
+        internal int PointX { get; }
+
+        internal int PointY { get; }
+
+        internal int MouseData { get; }
+
+        internal int Flags { get; }
+
+        internal int Time { get; }
+
+        internal int Extra { get; }
+
+        internal int WheelDelta {
+            get {
+                int v = Convert.ToInt32((MouseData & 0xFFFF0000) >> 16);
+                if (v > SystemInformation.MouseWheelScrollDelta) v -= (ushort.MaxValue + 1);
+                return v;
+            }
+        }
 
         public MouseEventArgs(MouseEventType eventType) {
             this.EventType = eventType;
@@ -34,9 +53,15 @@ namespace Blish_HUD.Input {
             this.IsDoubleClick = isDoubleClick;
         }
 
-        internal MouseEventArgs(MouseEventType eventType, MouseLLHookStruct details) : this(eventType) {
-            this.Details = details;
-        }
+        internal MouseEventArgs(MouseEventType eventType, MouseLLHookStruct details) : this(eventType, details.Point.X, details.Point.Y, details.MouseData, details.Flags, details.Time, (int)details.Extra) { }
 
+        internal MouseEventArgs(MouseEventType eventType, int pointX, int pointY, int mouseData, int flags, int time, int extraInfo) : this(eventType) {
+            this.PointX = pointX;
+            this.PointY = pointY;
+            this.MouseData = mouseData;
+            this.Flags = flags;
+            this.Time = time;
+            this.Extra = extraInfo;
+        }
     }
 }

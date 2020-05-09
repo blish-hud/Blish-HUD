@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Blish_HUD.Input.WinApi;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
-    public class KeyboardManager : InputManager {
+    public class KeyboardHandler : IInputHandler {
 
         #region Event Handling
 
@@ -51,9 +49,9 @@ namespace Blish_HUD.Input {
         /// </summary>
         public ModifierKeys ActiveModifiers { get; private set; }
 
-        private readonly ConcurrentQueue<KeyboardEventArgs> _inputBuffer;
+        private readonly ConcurrentQueue<KeyboardEventArgs> _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
 
-        private readonly List<Keys> _keysDown;
+        private readonly List<Keys> _keysDown = new List<Keys>();
 
         /// <summary>
         /// A list of keys currently being pressed down.
@@ -62,19 +60,9 @@ namespace Blish_HUD.Input {
 
         private Action<string> _textInputDelegate;
 
-        internal KeyboardManager() : base(HookType.WH_KEYBOARD_LL) {
-            _keysDown    = new List<Keys>();
-            _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
-        }
+        internal KeyboardHandler() { }
 
-        private void UpdateStates() {
-            Keys[] downArray = _keysDown.ToArray();
-
-            this.State           = new KeyboardState(downArray);
-            this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
-        }
-
-        internal override void Update() {
+        public void Update() {
             while (_inputBuffer.TryDequeue(out var keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
                     // Avoid firing on held keys
@@ -93,7 +81,9 @@ namespace Blish_HUD.Input {
             }
         }
 
-        protected override void OnDisable() {
+        public void OnEnable() { /* NOOP */ }
+
+        public void OnDisable() {
             // Ensure that key states don't get stuck if the
             // application focus is lost while keys were down.
 
@@ -107,6 +97,12 @@ namespace Blish_HUD.Input {
             }
         }
 
+        public bool HandleInput(KeyboardEventArgs e) {
+            if (_hookGeneralBlock)
+                return true;
+            return ProcessInput(e.EventType, e.Key);
+        }
+
         public void SetTextInputListner(Action<string> input) {
             _textInputDelegate = input;
         }
@@ -115,6 +111,13 @@ namespace Blish_HUD.Input {
             if (input == _textInputDelegate) {
                 _textInputDelegate = null;
             }
+        }
+
+        private void UpdateStates() {
+            Keys[] downArray = _keysDown.ToArray();
+
+            this.State = new KeyboardState(downArray);
+            this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
         }
 
         private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
@@ -134,16 +137,5 @@ namespace Blish_HUD.Input {
 
             return false;
         }
-
-        protected override bool HandleNewInput(IntPtr wParam, IntPtr lParam) {
-            if (_hookGeneralBlock)
-                return true;
-
-            var eventType = (KeyboardEventType)((uint)wParam % 2 + 256); // filter out SysKeyDown & SysKeyUp
-            var key       = (Keys)Marshal.ReadInt32(lParam);
-
-            return ProcessInput(eventType, key);
-        }
-
     }
 }

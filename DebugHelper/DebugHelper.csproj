@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>Blish_HUD.DebugHelper</RootNamespace>
+    <AssemblyName>Blish HUD.DebugHelper</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <Platforms>x64</Platforms>
+    <LangVersion>8</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="4.1.0" />
+    <PackageReference Include="Fody" Version="6.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DebugHelperLib\DebugHelperLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+</Project>
