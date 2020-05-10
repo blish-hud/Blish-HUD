@@ -12,7 +12,7 @@ namespace Blish_HUD.ArcDps
         private const int MESSAGE_HEADER_SIZE = 8;
 
         private static readonly Mutex Mutex = new Mutex();
-        private readonly Semaphore _acceptedClientsSemaphore;
+        private readonly SemaphoreSlim _acceptedClientsSemaphore;
         private readonly int _bufferSize;
         private readonly int _maxConnectionCount;
 
@@ -24,7 +24,7 @@ namespace Blish_HUD.ArcDps
             _maxConnectionCount = maxConnectionCount;
             _bufferSize = bufferSize;
             _socketAsyncReceiveEventArgsPool = new SocketAsyncEventArgsPool();
-            _acceptedClientsSemaphore = new Semaphore(maxConnectionCount, maxConnectionCount);
+            _acceptedClientsSemaphore = new SemaphoreSlim(maxConnectionCount, maxConnectionCount);
 
             for (var i = 0; i < maxConnectionCount; i++)
             {
@@ -87,7 +87,7 @@ namespace Blish_HUD.ArcDps
                 acceptEventArg.AcceptSocket = null;
             }
 
-            _acceptedClientsSemaphore.WaitOne();
+            _acceptedClientsSemaphore.Wait();
 
             try
             {
