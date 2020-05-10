@@ -59,7 +59,7 @@ namespace Blish_HUD.Input {
         /// A list of keys currently being pressed down.
         /// </summary>
         public IReadOnlyList<Keys> KeysDown => _keysDown.AsReadOnly();
-
+        
         private Action<string> _textInputDelegate;
 
         internal KeyboardManager() : base(HookType.WH_KEYBOARD_LL) {
@@ -118,7 +118,7 @@ namespace Blish_HUD.Input {
         }
 
         private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
-            _textInputDelegate.EndInvoke(asyncResult);
+            _textInputDelegate?.EndInvoke(asyncResult);
         }
 
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
