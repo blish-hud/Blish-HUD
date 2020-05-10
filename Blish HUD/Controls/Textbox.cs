@@ -30,7 +30,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<EventArgs> EnterPressed;
 
-        protected virtual void OnEnterPressed(EventArgs e) => EnterPressed?.Invoke(this, e);
+        protected virtual void OnEnterPressed(EventArgs e) {
+            this.Focused = false;
+
+            EnterPressed?.Invoke(this, e);
+        }
 
         private int _prevCursorIndex  = 0;
         private int _horizontalOffset = 0;

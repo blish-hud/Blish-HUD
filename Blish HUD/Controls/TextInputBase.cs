@@ -59,6 +59,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<ValueEventArgs<int>> CursorIndexChanged;
 
+        /// <summary>
+        /// Fires when this control loses text input focus and <see cref="TextInputBase.Focused"/> has been set to <c>false</c>.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<bool>> InputFocusChanged;
+
         protected void OnTextChanged(ValueChangedEventArgs<string> e) => TextChanged?.Invoke(this, e);
 
         protected void OnCursorIndexChanged(ValueEventArgs<int> e) {
@@ -67,6 +72,12 @@ namespace Blish_HUD.Controls {
             UpdateScrolling();
 
             CursorIndexChanged?.Invoke(this, e);
+        }
+
+        protected void OnInputFocusChanged(ValueEventArgs<bool> e) {
+            UpdateFocusState(e.Value);
+
+            InputFocusChanged?.Invoke(this, e);
         }
 
         protected string _text = string.Empty;
@@ -130,7 +141,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public bool Focused {
             get => _focused;
-            set => SetProperty(ref _focused, value);
+            set {
+                if (SetProperty(ref _focused, value)) {
+                    OnInputFocusChanged(new ValueEventArgs<bool>(value));
+                }
+            }
         }
 
         protected int _selectionStart;
@@ -191,9 +206,6 @@ namespace Blish_HUD.Controls {
         public TextInputBase() {
             _lastInvalidate  = DateTime.MinValue.TimeOfDay;
             _keyRepeatStates = new Dictionary<Keys, KeyRepeatState>();
-
-            Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
-            Input.Keyboard.KeyStateChanged      += OnGlobalKeyboardKeyStateChanged;
         }
 
         private void OnTextInput(string value) {
@@ -501,11 +513,13 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
-            if (!_focused && _enabled) return;
-
             if (e.EventType == KeyboardEventType.KeyUp) {
                 _keyRepeatStates.Remove(e.Key);
                 return;
+            }
+
+            if (!_keyRepeatStates.ContainsKey(e.Key)) {
+                _keyRepeatStates.Add(e.Key, new KeyRepeatState(GameService.Overlay.CurrentGameTime, e));
             }
 
             switch (e.Key) {
@@ -542,10 +556,6 @@ namespace Blish_HUD.Controls {
                 default:
                     // Skip key repeat state
                     return;
-            }
-
-            if (!_keyRepeatStates.ContainsKey(e.Key)) {
-                _keyRepeatStates.Add(e.Key, new KeyRepeatState(GameService.Overlay.CurrentGameTime, e));
             }
         }
 
@@ -668,17 +678,26 @@ namespace Blish_HUD.Controls {
 
         protected abstract void UpdateScrolling();
 
-        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            this.Focused = _mouseOver && _enabled;
+        private void UpdateFocusState(bool focused) {
+            if (focused) {
+                Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
+                Input.Keyboard.KeyStateChanged      += OnGlobalKeyboardKeyStateChanged;
 
-            if (_focused) {
                 GameService.Input.Keyboard.SetTextInputListner(OnTextInput);
-            } else  {
+            } else {
+                Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseLeftMouseButtonReleased;
+                Input.Keyboard.KeyStateChanged      -= OnGlobalKeyboardKeyStateChanged;
+
                 GameService.Input.Keyboard.UnsetTextInputListner(OnTextInput);
+
                 _keyRepeatStates.Clear();
                 _undoStack.Reset();
                 _redoStack.Reset();
             }
+        }
+
+        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
+            this.Focused = _mouseOver && _enabled;
         }
 
         public abstract int GetCursorIndexFromPosition(int x, int y);
@@ -697,6 +716,8 @@ namespace Blish_HUD.Controls {
 
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
+
+            this.Focused = true;
 
             HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition), e.IsDoubleClick);
         }
@@ -741,6 +762,10 @@ namespace Blish_HUD.Controls {
                     keyRepeatState.HandleUpdate(gameTime, OnGlobalKeyboardKeyStateChanged);
                 }
             }
+        }
+
+        protected override void DisposeControl() {
+            this.Focused = false;
         }
 
     }
