@@ -1,6 +1,6 @@
 ﻿namespace Blish_HUD.Input {
 
-    delegate bool HandleKeyboardInputDelegate(KeyboardEventArgs keyboardEventArgs);
+    internal delegate bool HandleKeyboardInputDelegate(KeyboardEventArgs keyboardEventArgs);
 
     internal interface IKeyboardHookManager {
 
@@ -11,5 +11,7 @@
         void RegisterHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
 
         void UnregisterHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
+
     }
+
 }

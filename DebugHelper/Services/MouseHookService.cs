@@ -12,42 +12,39 @@ namespace Blish_HUD.DebugHelper.Services {
 
         private readonly IMessageService messageService;
         private readonly User32.HOOKPROC hookProc; // Store the callback delegate, otherwise it might get garbage collected
-        private IntPtr hook;
+        private          IntPtr          hook;
 
         public MouseHookService(IMessageService messageService) {
             this.messageService = messageService;
-            hookProc = HookCallback;
+            hookProc            = HookCallback;
         }
 
         public void Start() {
-            if (hook == IntPtr.Zero) {
-                hook = User32.SetWindowsHookEx(HookType.WH_MOUSE_LL, hookProc, Marshal.GetHINSTANCE(typeof(MouseHookService).Module), 0);
-            }
+            if (hook == IntPtr.Zero) hook = User32.SetWindowsHookEx(HookType.WH_MOUSE_LL, hookProc, Marshal.GetHINSTANCE(typeof(MouseHookService).Module), 0);
         }
 
         public void Stop() {
-            if (hook != IntPtr.Zero) {
-                User32.UnhookWindowsHookEx(hook);
-            }
+            if (hook != IntPtr.Zero) User32.UnhookWindowsHookEx(hook);
             hook = IntPtr.Zero;
         }
 
         private int HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
-            if (nCode != 0)
-                return User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
+            if (nCode != 0) return User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
 
-            int eventType = (int)wParam;
-            var hookStruct = Marshal.PtrToStructure<MOUSELLHOOKSTRUCT>(lParam);
+            int               eventType  = (int)wParam;
+            MOUSELLHOOKSTRUCT hookStruct = Marshal.PtrToStructure<MOUSELLHOOKSTRUCT>(lParam);
 
-            var response = messageService.SendAndWait<MouseResponseMessage>(new MouseEventMessage {
+            var message = new MouseEventMessage {
                 EventType = eventType,
-                PointX = hookStruct.pt.x,
-                PointY = hookStruct.pt.y,
+                PointX    = hookStruct.pt.x,
+                PointY    = hookStruct.pt.y,
                 MouseData = hookStruct.mouseData,
-                Flags = hookStruct.flags,
-                Time = hookStruct.time,
+                Flags     = hookStruct.flags,
+                Time      = hookStruct.time,
                 ExtraInfo = hookStruct.extraInfo
-            }, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
+            };
+
+            MouseResponseMessage? response = messageService.SendAndWait<MouseResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
 
             if (response?.IsHandled == true)
                 return 1;
@@ -56,20 +53,20 @@ namespace Blish_HUD.DebugHelper.Services {
         }
 
         #region IDisposable Support
+
         private bool isDisposed = false; // To detect redundant calls
 
         protected virtual void Dispose(bool isDisposing) {
             if (!isDisposed) {
-                if (isDisposing) {
-                    Stop();
-                }
+                if (isDisposing) Stop();
                 isDisposed = true;
             }
         }
 
-        public void Dispose() {
-            Dispose(true);
-        }
+        public void Dispose() { Dispose(true); }
+
         #endregion
+
     }
+
 }

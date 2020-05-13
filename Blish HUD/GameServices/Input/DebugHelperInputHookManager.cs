@@ -24,40 +24,36 @@ namespace Blish_HUD.Input {
 
 
         public virtual bool EnableHook() {
-            if (isEnabled)
-                return false;
+            if (isEnabled) return false;
 
             Logger.Debug("Enabling");
 
-            DebugHelperMessageService.Unregister<TEventMessage>();
-            DebugHelperMessageService.Register<TEventMessage>(HookCallback);
+            this.DebugHelperMessageService.Unregister<TEventMessage>();
+            this.DebugHelperMessageService.Register<TEventMessage>(HookCallback);
 
             isEnabled = true;
             return true;
         }
 
         public virtual void DisableHook() {
-            if (!isEnabled)
-                return;
+            if (!isEnabled) return;
 
             Logger.Debug("Disabling");
 
-            DebugHelperMessageService.Unregister<TEventMessage>();
-            DebugHelperMessageService.Register<TEventMessage>(DummyHookCallback);
+            this.DebugHelperMessageService.Unregister<TEventMessage>();
+            this.DebugHelperMessageService.Register<TEventMessage>(DummyHookCallback);
 
             isEnabled = false;
         }
 
-        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) {
-            Handlers.Add(handleInputCallback);
-        }
+        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Add(handleInputCallback); }
 
-        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) {
-            Handlers.Remove(handleInputCallback);
-        }
+        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Remove(handleInputCallback); }
 
         protected abstract void HookCallback(TEventMessage message);
 
         protected abstract void DummyHookCallback(TEventMessage message);
+
     }
+
 }

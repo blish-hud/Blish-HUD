@@ -7,5 +7,7 @@ namespace Blish_HUD.DebugHelper.Native {
 
         public int x;
         public int y;
+
     }
+
 }

@@ -10,7 +10,8 @@ namespace Blish_HUD.DebugHelperLib.Models {
     [ProtoInclude(5, typeof(KeyboardResponseMessage))]
     public abstract class Message {
 
-        [ProtoMember(11)]
-        public ulong Id { get; set; }
+        [ProtoMember(11)] public ulong Id { get; set; }
+
     }
+
 }

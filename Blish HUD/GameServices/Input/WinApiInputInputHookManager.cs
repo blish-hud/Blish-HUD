@@ -9,12 +9,10 @@ namespace Blish_HUD.Input {
         private static readonly Logger Logger = Logger.GetLogger<WinApiMouseHookManager>();
 
         private readonly HookExtern.HookCallbackDelegate hookProc; // Store the callback delegate, otherwise it might get garbage collected
-        private IntPtr hook;
+        private          IntPtr                          hook;
 
 
-        public WinApiInputHookManager() {
-            hookProc = HookCallback;
-        }
+        public WinApiInputHookManager() { hookProc = HookCallback; }
 
 
         protected abstract HookType HookType { get; }
@@ -23,18 +21,16 @@ namespace Blish_HUD.Input {
 
 
         public virtual bool EnableHook() {
-            if (hook != IntPtr.Zero)
-                return true;
+            if (hook != IntPtr.Zero) return true;
 
             Logger.Debug("Enabling");
 
-            hook = HookExtern.SetWindowsHookEx(HookType, hookProc, IntPtr.Zero, 0);
+            hook = HookExtern.SetWindowsHookEx(this.HookType, hookProc, IntPtr.Zero, 0);
             return hook != IntPtr.Zero;
         }
 
         public virtual void DisableHook() {
-            if (hook == IntPtr.Zero)
-                return;
+            if (hook == IntPtr.Zero) return;
 
             Logger.Debug("Disabling");
 
@@ -42,14 +38,12 @@ namespace Blish_HUD.Input {
             hook = IntPtr.Zero;
         }
 
-        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) {
-            Handlers.Add(handleInputCallback);
-        }
+        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Add(handleInputCallback); }
 
-        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) {
-            Handlers.Remove(handleInputCallback);
-        }
+        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Remove(handleInputCallback); }
 
         protected abstract int HookCallback(int nCode, IntPtr wParam, IntPtr lParam);
+
     }
+
 }

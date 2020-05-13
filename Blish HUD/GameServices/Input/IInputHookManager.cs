@@ -19,5 +19,7 @@ namespace Blish_HUD.Input {
         void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
 
         void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
+
     }
+
 }

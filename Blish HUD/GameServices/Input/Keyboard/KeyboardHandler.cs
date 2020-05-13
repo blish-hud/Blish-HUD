@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
+
     public class KeyboardHandler : IInputHandler {
 
         #region Event Handling
@@ -24,11 +25,10 @@ namespace Blish_HUD.Input {
         public event EventHandler<KeyboardEventArgs> KeyStateChanged;
 
         private void OnKeyStateChanged(KeyboardEventArgs e) {
-            if (e.EventType == KeyboardEventType.KeyDown) {
+            if (e.EventType == KeyboardEventType.KeyDown)
                 this.KeyPressed?.Invoke(this, e);
-            } else {
+            else
                 this.KeyReleased?.Invoke(this, e);
-            }
 
             this.KeyStateChanged?.Invoke(this, e);
         }
@@ -63,17 +63,14 @@ namespace Blish_HUD.Input {
         internal KeyboardHandler() { }
 
         public void Update() {
-            while (_inputBuffer.TryDequeue(out var keyboardEvent)) {
+            while (_inputBuffer.TryDequeue(out KeyboardEventArgs keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
                     // Avoid firing on held keys
-                    if (_keysDown.Contains(keyboardEvent.Key)) {
-                        continue;
-                    }
+                    if (_keysDown.Contains(keyboardEvent.Key)) continue;
 
                     _keysDown.Add(keyboardEvent.Key);
-                } else {
+                } else
                     _keysDown.Remove(keyboardEvent.Key);
-                }
 
                 UpdateStates();
 
@@ -81,7 +78,9 @@ namespace Blish_HUD.Input {
             }
         }
 
-        public void OnEnable() { /* NOOP */ }
+        public void OnEnable() {
+            /* NOOP */
+        }
 
         public void OnDisable() {
             // Ensure that key states don't get stuck if the
@@ -92,37 +91,29 @@ namespace Blish_HUD.Input {
 
             UpdateStates();
 
-            foreach (var key in passingKeys) {
-                OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
-            }
+            foreach (Keys key in passingKeys) OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
         }
 
         public bool HandleInput(KeyboardEventArgs e) {
-            if (_hookGeneralBlock)
-                return true;
+            if (_hookGeneralBlock) return true;
+
             return ProcessInput(e.EventType, e.Key);
         }
 
-        public void SetTextInputListner(Action<string> input) {
-            _textInputDelegate = input;
-        }
+        public void SetTextInputListner(Action<string> input) { _textInputDelegate = input; }
 
         public void UnsetTextInputListner(Action<string> input) {
-            if (input == _textInputDelegate) {
-                _textInputDelegate = null;
-            }
+            if (input == _textInputDelegate) _textInputDelegate = null;
         }
 
         private void UpdateStates() {
             Keys[] downArray = _keysDown.ToArray();
 
-            this.State = new KeyboardState(downArray);
+            this.State           = new KeyboardState(downArray);
             this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
         }
 
-        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
-            _textInputDelegate.EndInvoke(asyncResult);
-        }
+        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) { _textInputDelegate.EndInvoke(asyncResult); }
 
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
@@ -137,5 +128,7 @@ namespace Blish_HUD.Input {
 
             return false;
         }
+
     }
+
 }

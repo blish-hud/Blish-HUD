@@ -8,25 +8,35 @@ namespace Blish_HUD.Input {
         public DebugHelperMouseHookManager(IMessageService debugHelperMessageService) : base(debugHelperMessageService) { }
 
         protected override void HookCallback(MouseEventMessage message) {
-            var mouseEventArgs = new MouseEventArgs((MouseEventType)message.EventType, message.PointX, message.PointY, message.MouseData, message.Flags, message.Time, message.ExtraInfo);
-            var isHandled = false;
-            foreach (var handler in Handlers) {
+            MouseEventArgs mouseEventArgs = new MouseEventArgs(
+                                                               (MouseEventType)message.EventType, message.PointX, message.PointY, message.MouseData, message.Flags,
+                                                               message.Time, message.ExtraInfo
+                                                              );
+
+            bool isHandled = false;
+
+            foreach (HandleMouseInputDelegate handler in this.Handlers) {
                 isHandled = handler(mouseEventArgs);
-                if (isHandled)
-                    break;
+                if (isHandled) break;
             }
 
-            DebugHelperMessageService.Send(new MouseResponseMessage {
-                Id = message.Id,
+            MouseResponseMessage response = new MouseResponseMessage {
+                Id        = message.Id,
                 IsHandled = isHandled
-            });
+            };
+
+            this.DebugHelperMessageService.Send(response);
         }
 
         protected override void DummyHookCallback(MouseEventMessage message) {
-            DebugHelperMessageService.Send(new MouseResponseMessage {
-                Id = message.Id,
+            MouseResponseMessage response = new MouseResponseMessage {
+                Id        = message.Id,
                 IsHandled = false
-            });
+            };
+
+            this.DebugHelperMessageService.Send(response);
         }
+
     }
+
 }

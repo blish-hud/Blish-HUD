@@ -10,34 +10,36 @@ namespace Blish_HUD.Input {
 
         private static readonly Logger Logger = Logger.GetLogger<DebugHelperHookManager>();
 
-        private IMouseHookManager mouseHookManager;
+        private IMouseHookManager    mouseHookManager;
         private IKeyboardHookManager keyboardHookManager;
-        private Process process;
-        private IMessageService debugHelperMessageService;
-        private Timer pingTimer;
-        private bool isHookEnabled = false;
+        private Process              process;
+        private IMessageService      debugHelperMessageService;
+        private Timer                pingTimer;
+        private bool                 isHookEnabled = false;
 
         public void Load() {
             Logger.Debug("Loading DebugHelper input hooks");
 
             process = new Process {
-                StartInfo = new ProcessStartInfo(Path.Combine(Path.GetDirectoryName(typeof(DebugHelperMouseHookManager).Assembly.Location), "Blish HUD.DebugHelper.exe")) {
-                    RedirectStandardInput = true,
+                StartInfo = new ProcessStartInfo(Path.Combine(Path.GetDirectoryName(typeof(DebugHelperMouseHookManager).Assembly.Location), "Blish HUD.DebugHelper.exe"), Process.GetCurrentProcess().Id.ToString()) {
+                    RedirectStandardInput  = true,
                     RedirectStandardOutput = true,
-                    UseShellExecute = false
+                    UseShellExecute        = false,
+                    CreateNoWindow         = true
                 }
             };
+
             Logger.Debug($"Starting external process: {process.StartInfo.FileName}");
             process.Start();
 
             debugHelperMessageService = new StreamMessageService(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
             debugHelperMessageService.Start();
 
-            pingTimer = new Timer(10) { AutoReset = true };
+            pingTimer         =  new Timer(10) { AutoReset = true };
             pingTimer.Elapsed += (s, e) => debugHelperMessageService.Send(new PingMessage());
             pingTimer.Start();
 
-            mouseHookManager = new DebugHelperMouseHookManager(debugHelperMessageService);
+            mouseHookManager    = new DebugHelperMouseHookManager(debugHelperMessageService);
             keyboardHookManager = new DebugHelperKeyboardHookManager(debugHelperMessageService);
         }
 
@@ -46,28 +48,22 @@ namespace Blish_HUD.Input {
             debugHelperMessageService.Stop();
             pingTimer.Stop();
             Logger.Debug($"Killing external process: {process.StartInfo.FileName}");
-            if (!process.HasExited)
-                process.Kill();
+            if (!process.HasExited) process.Kill();
             debugHelperMessageService = null;
-            process = null;
+            process                   = null;
         }
 
         public bool EnableHook() {
-            if (isHookEnabled)
-                return false;
+            if (isHookEnabled) return false;
 
             Logger.Debug("Enabling DebugHelper input hooks");
 
             isHookEnabled = mouseHookManager.EnableHook() && keyboardHookManager.EnableHook();
-            if (!isHookEnabled)
-                return false;
-
-            return true;
+            return isHookEnabled;
         }
 
         public void DisableHook() {
-            if (!isHookEnabled)
-                return;
+            if (!isHookEnabled) return;
 
             Logger.Debug("Disabling DebugHelper input hooks");
 
@@ -77,23 +73,16 @@ namespace Blish_HUD.Input {
             isHookEnabled = false;
         }
 
-        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) {
-            mouseHookManager.RegisterHandler(handleMouseInputCallback);
-        }
+        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.RegisterHandler(handleMouseInputCallback); }
 
-        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) {
-            mouseHookManager.UnregisterHandler(handleMouseInputCallback);
-        }
+        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.UnregisterHandler(handleMouseInputCallback); }
 
-        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) {
-            keyboardHookManager.RegisterHandler(handleKeyboardInputCallback);
-        }
+        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.RegisterHandler(handleKeyboardInputCallback); }
 
-        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) {
-            keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback);
-        }
+        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback); }
 
         #region IDisposable Support
+
         private bool isDisposed = false;
 
         protected virtual void Dispose(bool isDisposing) {
@@ -108,9 +97,10 @@ namespace Blish_HUD.Input {
             }
         }
 
-        public void Dispose() {
-            Dispose(true);
-        }
+        public void Dispose() { Dispose(true); }
+
         #endregion
+
     }
+
 }

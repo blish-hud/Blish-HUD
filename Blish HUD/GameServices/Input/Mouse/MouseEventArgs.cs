@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
+
     public class MouseEventArgs : EventArgs {
 
         /// <summary>
@@ -39,29 +40,30 @@ namespace Blish_HUD.Input {
 
         internal int WheelDelta {
             get {
-                int v = Convert.ToInt32((MouseData & 0xFFFF0000) >> 16);
-                if (v > SystemInformation.MouseWheelScrollDelta) v -= (ushort.MaxValue + 1);
+                int v                                              = Convert.ToInt32((this.MouseData & 0xFFFF0000) >> 16);
+                if (v > SystemInformation.MouseWheelScrollDelta) v -= ushort.MaxValue + 1;
                 return v;
             }
         }
 
-        public MouseEventArgs(MouseEventType eventType) {
-            this.EventType = eventType;
-        }
+        public MouseEventArgs(MouseEventType eventType) { this.EventType = eventType; }
 
-        public MouseEventArgs(MouseEventType eventType, bool isDoubleClick) : this(eventType) {
-            this.IsDoubleClick = isDoubleClick;
-        }
+        public MouseEventArgs(MouseEventType eventType, bool isDoubleClick) : this(eventType) { this.IsDoubleClick = isDoubleClick; }
 
-        internal MouseEventArgs(MouseEventType eventType, MouseLLHookStruct details) : this(eventType, details.Point.X, details.Point.Y, details.MouseData, details.Flags, details.Time, (int)details.Extra) { }
+        internal MouseEventArgs(MouseEventType eventType, MouseLLHookStruct details) : this(
+                                                                                            eventType, details.Point.X, details.Point.Y, details.MouseData, details.Flags,
+                                                                                            details.Time, (int)details.Extra
+                                                                                           ) { }
 
         internal MouseEventArgs(MouseEventType eventType, int pointX, int pointY, int mouseData, int flags, int time, int extraInfo) : this(eventType) {
-            this.PointX = pointX;
-            this.PointY = pointY;
+            this.PointX    = pointX;
+            this.PointY    = pointY;
             this.MouseData = mouseData;
-            this.Flags = flags;
-            this.Time = time;
-            this.Extra = extraInfo;
+            this.Flags     = flags;
+            this.Time      = time;
+            this.Extra     = extraInfo;
         }
+
     }
+
 }
