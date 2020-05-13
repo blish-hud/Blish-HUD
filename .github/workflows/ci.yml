@@ -13,30 +13,29 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - run: |
-          git fetch --prune --unshallow
+      - run: git fetch --prune --unshallow
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.2
+        with:
+          versionSpec: '5.2.x'
       - name: Patch nightly version
-        shell: powershell
-        run: |
-          $version = GitVersion /output json /updateassemblyinfo "Blish HUD/Properties/AssemblyVersionInfo.cs" /ensureassemblyinfo
-          Write-Output $version
-          $version = $version | ConvertFrom-Json
-          $nuget = $version.SemVer
-          Write-Output "Assembly version: $($version.AssemblySemVer)"
-          Write-Output "Assembly file version: $($version.AssemblySemFileVer)"
-          Write-Output "Informational version: $($version.InformationalVersion)"
-          Write-Output "NuGet version: $nuget"
-          echo "::set-env name=VERSION::$nuget"
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.2
+        with:
+          updateAssemblyInfo: 'true'
+          updateAssemblyInfoFilename: Blish HUD/Properties/AssemblyVersionInfo.cs
+          additionalArguments: /ensureassemblyinfo
+
       - name: Run dotnet pack
-        run: dotnet pack "Blish HUD" -c Release -p:VERSIONED_BUILD=$env:VERSION
+        run: dotnet pack "Blish HUD" -c Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: BlishHUD ${{ env.VERSION }}
+          name: BlishHUD ${{ steps.gitversion.outputs.semVer }}
           path: Blish HUD/bin/Release/net472
       - name: Upload NuGet package artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: BlishHUD ${{ env.VERSION }} NuGet packages
-          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.*nupkg
+          name: BlishHUD ${{ steps.gitversion.outputs.semVer }} NuGet packages
+          path: Blish HUD/bin/Release/BlishHUD.${{ steps.gitversion.outputs.semVer }}.*nupkg
