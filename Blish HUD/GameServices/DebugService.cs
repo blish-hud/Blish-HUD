@@ -25,7 +25,14 @@ namespace Blish_HUD {
 
         private static LoggingConfiguration _logConfiguration;
 
-        private const string STANDARD_LAYOUT = @"${time:invariant=true}|${level:uppercase=true}|${logger}|${message}${onexception:${newline}${exception:format=toString}${newline}}";
+        private const string STRUCLOG_TIME      = "${time:invariant=true}";
+        private const string STRUCLOG_LEVEL     = "${level:uppercase=true:padding=-5}";
+        private const string STRUCLOG_LOGGER    = "${logger}";
+        private const string STRUCLOG_MESSAGE   = "${message}";
+        private const string STRUCLOG_EXCEPTION = "${onexception:${newline}${exception:format=toString}${newline}}";
+
+        private const long MAX_LOG_SIZE     = 1048576; // 1 MB
+        private const int  MAX_LOG_SESSIONS = 6;
 
         internal static void InitDebug() {
             // Make sure crash dir is available for logs as early as possible
@@ -37,19 +44,20 @@ namespace Blish_HUD {
             string headerLayout   = $"Blish HUD v{Program.OverlayVersion}";
 
             var logFile = new FileTarget("logfile") {
+                Layout            = $"{STRUCLOG_TIME} | {STRUCLOG_LEVEL} | {STRUCLOG_LOGGER} | {STRUCLOG_MESSAGE}{STRUCLOG_EXCEPTION}",
                 Header            = headerLayout,
                 FileNameKind      = FilePathKind.Absolute,
                 ArchiveFileKind   = FilePathKind.Absolute,
                 FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.log"),
-                ArchiveFileName   = Path.Combine(logPath, "blishhud.{#}.log"),
+                ArchiveFileName   = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.{#}.log"),
                 ArchiveDateFormat = "yyyyMMdd-HHmmss",
-                ArchiveNumbering  = ArchiveNumberingMode.Date,
-                MaxArchiveFiles   = 9,
+                ArchiveAboveSize  = MAX_LOG_SIZE,
+                ArchiveNumbering  = ArchiveNumberingMode.Sequence,
+                MaxArchiveFiles   = MAX_LOG_SESSIONS,
                 EnableFileDelete  = true,
                 CreateDirs        = true,
                 Encoding          = Encoding.UTF8,
-                KeepFileOpen      = true,
-                Layout            = STANDARD_LAYOUT
+                KeepFileOpen      = true
             };
 
             var asyncLogFile = new AsyncTargetWrapper("asynclogfile", logFile) {
@@ -60,9 +68,14 @@ namespace Blish_HUD {
 
             _logConfiguration.AddTarget(asyncLogFile);
 
-            _logConfiguration.AddRule(NLog.LogLevel.Info,  NLog.LogLevel.Fatal,  asyncLogFile);
+            _logConfiguration.AddRule(ApplicationSettings.Instance.DebugEnabled 
+                                          ? NLog.LogLevel.Debug
+                                          : NLog.LogLevel.Info,
+                                      NLog.LogLevel.Fatal, asyncLogFile);
 
-            AddDebugTarget(_logConfiguration);
+            if (ApplicationSettings.Instance.DebugEnabled) {
+                AddDebugTarget(_logConfiguration);
+            }
 
             NLog.LogManager.Configuration = _logConfiguration;
 
@@ -70,21 +83,20 @@ namespace Blish_HUD {
         }
 
         public static void TargetDebug(string time, string level, string logger, string message) {
-            System.Diagnostics.Debug.WriteLine($"{time}|{level.ToUpper()}|{logger}|{message}");
+            System.Diagnostics.Debug.WriteLine($"{time} | {level} | {logger} | {message}");
         }
 
-        [Conditional("DEBUG")]
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
             NLog.LogManager.ThrowExceptions = true;
 
             var logDebug = new MethodCallTarget("logdebug") {
                 ClassName  = typeof(DebugService).AssemblyQualifiedName,
-                MethodName = nameof(DebugService.TargetDebug),
+                MethodName = nameof(TargetDebug),
                 Parameters = {
-                    new MethodCallParameter("${time:invariant=true}"),
-                    new MethodCallParameter("${level}"),
-                    new MethodCallParameter("${logger}"),
-                    new MethodCallParameter("${message}")
+                    new MethodCallParameter(STRUCLOG_TIME),
+                    new MethodCallParameter(STRUCLOG_LEVEL),
+                    new MethodCallParameter(STRUCLOG_LOGGER),
+                    new MethodCallParameter(STRUCLOG_MESSAGE)
                 }
             };
 
@@ -93,7 +105,7 @@ namespace Blish_HUD {
         }
 
         private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
-            GameService.Input.DisableHooks();
+            Input.DisableHooks();
 
             var e = (Exception)args.ExceptionObject;
 
@@ -150,39 +162,30 @@ namespace Blish_HUD {
         #region Debug Overlay
 
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
-            int debugLeft = Graphics.WindowWidth - 750;
+            int debugLeft = Graphics.WindowWidth - 600;
 
             spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.CurrentAverage, 0)}", new Vector2(debugLeft, 25), Color.Red);
 
             int i = 0;
             foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
-                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i * 25)), Color.Orange);
-                i++;
+                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i++ * 25)), Color.Orange);
             }
 
-            spriteBatch.DrawString(Content.DefaultFont14, $"3D Entities Displayed: {Graphics.World.Entities.Count}", new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
-            spriteBatch.DrawString(Content.DefaultFont14, "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
-            spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-            i++;
-            spriteBatch.DrawString(Content.DefaultFont14, "IsHudActive: " + (ArcDps.HudIsActive ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-#if DEBUG
-            i++;
-            spriteBatch.DrawString(Content.DefaultFont14, "Counter: " + Interlocked.Read(ref ArcDpsService.Counter), new Vector2(debugLeft, 50 + (i * 25)), Color.Yellow);
-#endif
+            spriteBatch.DrawString(Content.DefaultFont14, $"3D Entities Displayed: {Graphics.World.Entities.Count}",     new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
+            spriteBatch.DrawString(Content.DefaultFont14, "Render Late: "   + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
+            spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"),     new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
         }
 
 #endregion
 
-#region Service Implementation
+        #region Service Implementation
 
         protected override void Initialize() {
             this.FrameCounter = new FrameCounter(FRAME_DURATION_SAMPLES);
 
-#if !DEBUG
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-#endif
+            if (!ApplicationSettings.Instance.DebugEnabled) {
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+            }
         }
 
         protected override void Load() {
@@ -195,7 +198,7 @@ namespace Blish_HUD {
 
         protected override void Unload() { /* NOOP */ }
 
-#endregion
+        #endregion
 
     }
 }

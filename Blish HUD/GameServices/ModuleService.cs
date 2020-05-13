@@ -8,7 +8,6 @@ using Blish_HUD.Modules;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using File = System.IO.File;
 
 namespace Blish_HUD {
 
@@ -23,7 +22,8 @@ namespace Blish_HUD {
 
         private const string MODULES_DIRECTORY = "modules";
 
-        private const string MODULE_EXTENSION = ".bhm";
+        private const string MODULE_EXTENSION    = ".bhm";
+        private const string MODULE_MANIFESTNAME = "manifest.json";
 
         private SettingCollection _moduleSettings;
 
@@ -53,8 +53,13 @@ namespace Blish_HUD {
         }
 
         public ModuleManager RegisterModule(IDataReader moduleReader) {
+            if (!moduleReader.FileExists(MODULE_MANIFESTNAME)) {
+                Logger.Warn("Attempted to load an invalid module {modulePath}: {manifestName} is missing.", moduleReader.GetPathRepresentation(), MODULE_MANIFESTNAME);
+                return null;
+            }
+
             string manifestContents;
-            using (var manifestReader = new StreamReader(moduleReader.GetFileStream("manifest.json"))) {
+            using (var manifestReader = new StreamReader(moduleReader.GetFileStream(MODULE_MANIFESTNAME))) {
                 manifestContents = manifestReader.ReadToEnd();
             }
             var moduleManifest = JsonConvert.DeserializeObject<Manifest>(manifestContents);
@@ -78,10 +83,10 @@ namespace Blish_HUD {
         }
 
         private void ExtractPackagedModule(Stream fileData, IDataReader reader) {
-            string moduleName = string.Empty;
+            string moduleName;
 
             using (var moduleArchive = new ZipArchive(fileData, ZipArchiveMode.Read)) {
-                using (var manifestStream = moduleArchive.GetEntry("manifest.json")?.Open()) {
+                using (var manifestStream = moduleArchive.GetEntry(MODULE_MANIFESTNAME)?.Open()) {
                     if (manifestStream == null) return;
 
                     string manifestContents;
@@ -91,13 +96,13 @@ namespace Blish_HUD {
 
                     var moduleManifest = JsonConvert.DeserializeObject<Manifest>(manifestContents);
 
-                    Logger.Info("Exporting internally packaged module {moduleName} ({$moduleNamespace}) v{$moduleVersion}", moduleManifest.Name, moduleManifest.Namespace, moduleManifest.Version);
+                    Logger.Info("Exporting internally packaged module {module}", moduleManifest.GetDetailedName());
 
                     moduleName = moduleManifest.Name;
                 }
             }
 
-            if (!string.IsNullOrEmpty(moduleName)) {
+            if (moduleName != null) {
                 File.WriteAllBytes(Path.Combine(this.ModulesDirectory, $"{moduleName}.bhm"), ((MemoryStream)fileData).GetBuffer());
             }
         }
@@ -105,22 +110,58 @@ namespace Blish_HUD {
         private void UnpackInternalModules() {
             var internalModulesReader = new ZipArchiveReader("ref.dat");
 
-            internalModulesReader.LoadOnFileType(ExtractPackagedModule, ".bhm");
+            internalModulesReader.LoadOnFileType(ExtractPackagedModule, MODULE_EXTENSION);
+        }
+        
+        private ModuleManager LoadModuleFromPackedBhm(string modulePath) {
+            if (modulePath == null)
+                throw new ArgumentNullException(nameof(modulePath));
+
+            if (!File.Exists(modulePath)) {
+                Logger.Warn("Attempted to load a module {modulePath} which does not exist.", modulePath);
+                return null;
+            }
+
+            return RegisterModule(new ZipArchiveReader(modulePath));
+        }
+
+        private ModuleManager LoadModuleFromUnpackedBhm(string moduleDir) {
+            if (moduleDir == null)
+                throw new ArgumentNullException(nameof(moduleDir));
+
+            if (!Directory.Exists(moduleDir)) {
+                Logger.Warn("Attempted to load a module {moduleDir} which does not exist.", moduleDir);
+                return null;
+            }
+
+            return RegisterModule(new DirectoryReader(moduleDir));
         }
 
         protected override void Load() {
-#if DEBUG && !NODIRMODULES
-            // Allows devs to symlink the output directories of modules in development straight to the modules folder
-            foreach (string manifestPath in Directory.GetFiles(this.ModulesDirectory, "manifest.json", SearchOption.AllDirectories)) {
-                string moduleDir = Directory.GetParent(manifestPath).FullName;
+            if (ApplicationSettings.Instance.DebugEnabled) {
+                // Allows devs to symlink the output directories of modules in development straight to the modules folder
+                foreach (string manifestPath in Directory.GetFiles(this.ModulesDirectory, MODULE_MANIFESTNAME, SearchOption.AllDirectories)) {
+                    string moduleDir = Directory.GetParent(manifestPath).FullName;
 
-                var moduleReader = new DirectoryReader(moduleDir);
-
-                if (moduleReader.FileExists("manifest.json")) {
-                    RegisterModule(moduleReader);
+                    LoadModuleFromUnpackedBhm(moduleDir);
                 }
             }
-#endif
+
+            if (ApplicationSettings.Instance.DebugModulePath != null) {
+                ModuleManager debugModule = null;
+
+                if (File.Exists(ApplicationSettings.Instance.DebugModulePath)) {
+                    debugModule = LoadModuleFromPackedBhm(ApplicationSettings.Instance.DebugModulePath);
+                } else if (Directory.Exists(ApplicationSettings.Instance.DebugModulePath)) {
+                    debugModule = LoadModuleFromUnpackedBhm(ApplicationSettings.Instance.DebugModulePath);
+                } else {
+                    Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
+                }
+
+                if (debugModule != null) {
+                    debugModule.Enabled = true;
+                }
+            }
 
             // Get the base version string and see if we've exported the modules for this version yet
             string baseVersionString = Program.OverlayVersion.BaseVersion().ToString();
@@ -130,40 +171,43 @@ namespace Blish_HUD {
             }
 
             foreach (string moduleArchivePath in Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
-                var moduleReader = new ZipArchiveReader(moduleArchivePath);
+                LoadModuleFromPackedBhm(moduleArchivePath);
+            }
+        }
 
-                if (moduleReader.FileExists("manifest.json")) {
-                    RegisterModule(moduleReader);
+        protected override void Update(GameTime gameTime) {
+            foreach (var module in _modules) {
+                if (module.Enabled) {
+                    try {
+                        module.ModuleInstance.DoUpdate(gameTime);
+                    } catch (Exception ex) {
+                        Logger.Error(ex, "Module {module} threw an exception while updating.", module.Manifest.GetDetailedName());
+
+                        if (ApplicationSettings.Instance.DebugEnabled) {
+                            // To assist in debugging modules
+                            throw;
+                        }
+                    }
                 }
             }
         }
 
         protected override void Unload() {
-            _modules.ForEach(s => {
-                try {
-                    // TODO: Unload module
-                } catch (Exception ex) {
-                    #if DEBUG
-                    // To assist in debugging
-                    throw;
-                    #endif
-                    Logger.Error(ex, "Module '{$moduleName} ({$moduleNamespace}) threw an exception while being unloaded.", s.Manifest.Name, s.Manifest.Namespace);
-                }
-            });
-        }
+            foreach (var module in _modules) {
+                if (module.Enabled) {
+                    try {
+                        Logger.Info("Unloading module {module}.", module.Manifest.GetDetailedName());
+                        module.ModuleInstance.Dispose();
+                    } catch (Exception ex) {
+                        Logger.Error(ex, "Module '{module} threw an exception while unloading.", module.Manifest.GetDetailedName());
 
-        protected override void Update(GameTime gameTime) {
-            _modules.ForEach(s => {
-                                 try {
-                                     if (s.Enabled) s.ModuleInstance.DoUpdate(gameTime);
-                                 } catch (Exception ex) {
-                                     #if DEBUG
-                                     // To assist in debugging
-                                     throw;
-                                     #endif
-                                     Logger.Error(ex, "Module '{$moduleName} ({$moduleNamespace}) threw an exception.", s.Manifest.Name, s.Manifest.Namespace);
-                                 }
-            });
+                        if (ApplicationSettings.Instance.DebugEnabled) {
+                            // To assist in debugging modules
+                            throw;
+                        }
+                    }
+                }
+            }
         }
     }
 }

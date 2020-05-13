@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Blish_HUD.Content;
-using Blish_HUD.GameServices.Content;
-using Blish_HUD.Modules.Managers;
-using Flurl.Http;
-using Gw2Sharp.WebApi.Caching;
-using Microsoft.Scripting.Runtime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -194,8 +187,8 @@ namespace Blish_HUD {
             if (cachedTexture == null) {
                 try {
                     cachedTexture = BlishHud.ActiveContentManager.Load<Texture2D>(textureName);
-                } catch (ContentLoadException ex) {
-                    Logger.Warn(ex, "Could not find {textureName} precompiled or in the ref archive.", textureName);
+                } catch (ContentLoadException) {
+                    Logger.Warn("Could not find {textureName} precompiled or in the ref archive.", textureName);
                 }
             }
 
