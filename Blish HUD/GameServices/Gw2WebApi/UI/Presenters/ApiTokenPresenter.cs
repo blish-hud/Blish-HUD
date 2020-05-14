@@ -27,13 +27,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
             var tokenClient = GameService.Gw2WebApi.GetConnection(this.Model).Client.V2;
 
             try {
-                //progress.Report("Loading token info...");
-                var tokenInfoTask = tokenClient.TokenInfo.GetAsync(_loadCancel.Token);
-
-                //progress.Report("Loading account info...");
-                var accountInfoTask = tokenClient.Account.GetAsync(_loadCancel.Token);
-
-                //progress.Report("Loading characters...");
+                var tokenInfoTask     = tokenClient.TokenInfo.GetAsync(_loadCancel.Token);
+                var accountInfoTask   = tokenClient.Account.GetAsync(_loadCancel.Token);
                 var characterInfoTask = tokenClient.Characters.IdsAsync(_loadCancel.Token);
 
                 var loadTasks = new Dictionary<Task, string>() {
@@ -55,8 +50,9 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
                     && UpdateFromRequestTaskResult(characterInfoTask, ref _characters);
             } catch (Exception ex) {
                 HandleErrorLoading(ex);
-                return false;
             }
+
+            return true;
         }
 
         private bool UpdateFromRequestTaskResult<T>(Task<T> infoTask, ref T field) {
@@ -77,10 +73,11 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
         }
 
         protected override void UpdateView() {
-            this.View.AccountName = _accountInfo.Name;
-            this.View.TokenName   = _tokenInfo.Name;
-            this.View.Characters  = _characters.ToArray();
-            this.View.Active      = GameService.Gw2WebApi.PrivilegedConnection.Connection.AccessToken == this.Model;
+            this.View.TokenInfo     = _tokenInfo;
+            this.View.AccountInfo   = _accountInfo;
+            this.View.CharacterList = _characters;
+
+            this.View.Active = GameService.Gw2WebApi.PrivilegedConnection.Connection.AccessToken == this.Model;
 
             base.UpdateView();
         }

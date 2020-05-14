@@ -133,8 +133,7 @@
     <value>Dein Geld- und Schlüsselbeutel.</value>
   </data>
   <data name="TokenPermissionDescription_Unlocks" xml:space="preserve">
-    <value>Der freigeschaltete Teil deiner Garderobe — Farben, Minis und Todesstöße, etc.— Sowie derzeitig ausgesrüstete Skins.
-</value>
+    <value>Der freigeschaltete Teil deiner Garderobe — Farben, Minis und Todesstöße, etc.— Sowie derzeitig ausgesrüstete Skins.</value>
   </data>
   <data name="TokenPermissionDescription_Pvp" xml:space="preserve">
     <value>Deine Statistiken im PvP, Spielverlauf, Belohnungspfadfortschritt und Details benutzerdefinierter Arena.</value>

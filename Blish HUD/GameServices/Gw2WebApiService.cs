@@ -114,7 +114,7 @@ namespace Blish_HUD {
         #region API Management
 
         public void RegisterKey(string name, string apiKey) {
-            SettingEntry<string> registeredKey = _apiKeyRepository.DefineSetting(name, apiKey);
+            SettingEntry<string> registeredKey = _apiKeyRepository.DefineSetting(name, "");
 
             registeredKey.Value = apiKey;
 

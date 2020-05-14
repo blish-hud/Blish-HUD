@@ -79,6 +79,15 @@ namespace Blish_HUD.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        internal static string Action_Clear {
+            get {
+                return ResourceManager.GetString("Action_Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exit.
         /// </summary>
         internal static string Action_Exit {

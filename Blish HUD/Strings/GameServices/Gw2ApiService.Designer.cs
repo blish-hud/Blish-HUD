@@ -61,6 +61,60 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character.
+        /// </summary>
+        internal static string AccountInfo_Character {
+            get {
+                return ResourceManager.GetString("AccountInfo_Character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commander.
+        /// </summary>
+        internal static string AccountInfo_Commander {
+            get {
+                return ResourceManager.GetString("AccountInfo_Commander", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Token.
+        /// </summary>
+        internal static string ManageApiKeys_DeleteToken {
+            get {
+                return ResourceManager.GetString("ManageApiKeys_DeleteToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register.
+        /// </summary>
+        internal static string ManageApiKeys_Register {
+            get {
+                return ResourceManager.GetString("ManageApiKeys_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register API Keys.
+        /// </summary>
+        internal static string ManageApiKeys_Title {
+            get {
+                return ResourceManager.GetString("ManageApiKeys_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (no name).
+        /// </summary>
+        internal static string Token_NoName {
+            get {
+                return ResourceManager.GetString("Token_NoName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your account display name, ID, home world, and list of guilds..
         /// </summary>
         internal static string TokenPermissionDescription_Account {
@@ -147,6 +201,42 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string TokenPermissionDescription_Wallet {
             get {
                 return ResourceManager.GetString("TokenPermissionDescription_Wallet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting account details failed.
+        /// </summary>
+        internal static string TokenStatus_AccountFailed {
+            get {
+                return ResourceManager.GetString("TokenStatus_AccountFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid token.
+        /// </summary>
+        internal static string TokenStatus_InvalidToken {
+            get {
+                return ResourceManager.GetString("TokenStatus_InvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Token missing permissions.
+        /// </summary>
+        internal static string TokenStatus_PartialPermission {
+            get {
+                return ResourceManager.GetString("TokenStatus_PartialPermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} ({1}) - Valid token.
+        /// </summary>
+        internal static string TokenStatus_ValidToken {
+            get {
+                return ResourceManager.GetString("TokenStatus_ValidToken", resourceCulture);
             }
         }
     }

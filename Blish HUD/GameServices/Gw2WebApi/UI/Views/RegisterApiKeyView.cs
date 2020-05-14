@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Gw2WebApi.UI.Presenters;
-using Gw2Sharp.WebApi.V2.Clients;
+using Gw2Sharp.WebApi.Http;
 using Gw2Sharp.WebApi.V2.Models;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -24,13 +25,14 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         private static readonly Logger Logger = Logger.GetLogger<RegisterApiKeyView>();
 
-        private const int MAX_KEYNAME_LENGTH = 20;
+        private const int MAX_KEYNAME_LENGTH = 14;
+        private const int MIN_KEY_LENGTH     = 10;
 
         private readonly Dictionary<ApiTokenStatusType, Texture2D> _tokenStatusTextures = new Dictionary<ApiTokenStatusType, Texture2D>() {
-            {ApiTokenStatusType.Neutral, GameService.Content.GetTexture(@"common\154983")},
-            {ApiTokenStatusType.Failed, GameService.Content.GetTexture(@"common\154982")},
-            {ApiTokenStatusType.Partial, GameService.Content.GetTexture(@"common\154981")},
-            {ApiTokenStatusType.Perfect, GameService.Content.GetTexture(@"common\154979")}
+            {ApiTokenStatusType.Neutral, GameService.Content.GetTexture(@"common/154983")},
+            {ApiTokenStatusType.Failed,  GameService.Content.GetTexture(@"common/154982")},
+            {ApiTokenStatusType.Partial, GameService.Content.GetTexture(@"common/154981")},
+            {ApiTokenStatusType.Perfect, GameService.Content.GetTexture(@"common/154979")}
         };
 
         public string ApiKey {
@@ -38,12 +40,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             set => _apiKeyTextBox.Text = value;
         }
 
-        private TokenInfo _tokenInfo;
-
-        public TokenInfo TokenInfo {
-            get => _tokenInfo;
-            set => _tokenInfo = value;
-        }
+        private (TokenInfo TokenInfo, Account AccountInfo) _loadedDetails;
 
         private TextBox        _apiKeyTextBox;
         private Image          _tokenStatusImg;
@@ -59,13 +56,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         public RegisterApiKeyView() {
             this.Presenter = new RegisterApiKeyPresenter(this, GameService.Gw2WebApi);
 
-            Action<string> a = CheckToken;
-            _debounceWrapper = a.Debounce();
+            _debounceWrapper = ((Action<string>)CheckToken).Debounce();
         }
 
         protected override void Build(Panel buildPanel) {
             var registerLbl = new Label() {
-                Text           = "Register API Key",
+                Text           = Strings.GameServices.Gw2ApiService.ManageApiKeys_Title,
                 Font           = GameService.Content.DefaultFont32,
                 StrokeText     = true,
                 AutoSizeHeight = true,
@@ -85,7 +81,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _apiKeyTextBox.TextChanged += ApiKeyTextBoxOnTextChanged;
 
             _registerKeyBttn = new StandardButton() {
-                Text   = "Register",
+                Text   = Strings.GameServices.Gw2ApiService.ManageApiKeys_Register,
                 Width  = 96,
                 Right  = _apiKeyTextBox.Right,
                 Top    = _apiKeyTextBox.Bottom + 5,
@@ -93,7 +89,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             var clearKeyBttn = new StandardButton() {
-                Text   = "Clear",
+                Text   = Strings.Common.Action_Clear,
                 Width  = 96,
                 Right  = _registerKeyBttn.Left - 10,
                 Top    = _registerKeyBttn.Top,
@@ -101,7 +97,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             _tokenStatusImg = new Image() {
-                Size     = new Point(32,                    32),
+                Size     = new Point(32,                  32),
                 Location = new Point(_apiKeyTextBox.Left, _apiKeyTextBox.Bottom + 5),
                 Parent   = buildPanel
             };
@@ -122,40 +118,53 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             _tokensList = new FlowPanel() {
-                Location             = new Point(0, _tokenStatusImg.Bottom + 25),
-                Size                 = new Point(buildPanel.Width, buildPanel.Height - _tokenStatusImg.Bottom - 25),
-                ControlPadding       = new Vector2(10, 10),
+                Location             = new Point(_apiKeyTextBox.Left,  _tokenStatusImg.Bottom                     + 25),
+                Size                 = new Point(_apiKeyTextBox.Width, buildPanel.Height - _tokenStatusImg.Bottom - 25),
+                ControlPadding       = new Vector2(11, 11),
                 PadLeftBeforeControl = true,
                 PadTopBeforeControl  = true,
                 CanScroll            = true,
+                ShowBorder = true,
                 Parent               = buildPanel
             };
+
+            _tokensList.Width = 387 + 22 + 4;
 
             clearKeyBttn.Click += delegate { ClearApiKey(); };
 
             _registerKeyBttn.Click += delegate {
-                GameService.Gw2WebApi.RegisterKey("New key", this.ApiKey);
-                
-                AddApiKey(this.ApiKey);
+                GameService.Gw2WebApi.RegisterKey(_loadedDetails.AccountInfo.Name, this.ApiKey);
+
+                ReloadApiKeys();
 
                 ClearApiKey();
             };
 
-            foreach (var key in GameService.Gw2WebApi.GetKeys()) {
-                AddApiKey(key);
-            }
-
-            SetTokenStatus("", ApiTokenStatusType.Neutral);
-        }
-
-        private void AddApiKey(string apiKey) {
-            var nPanel = new ViewContainer() {
-                Size     = new Point(354, 100),
-                Parent   = _tokensList,
-                ShowTint = true
+            var openAnetApplicationsBttn = new StandardButton() {
+                Text     = "Manage Applications",
+                Icon     = GameService.Content.GetTexture("common/1441452"),
+                Width    = 128,
+                Location = new Point(_tokensList.Right + 10, _tokensList.Top),
+                Parent   = buildPanel
             };
 
-            nPanel.Show(new ApiTokenView(apiKey));
+            ReloadApiKeys();
+
+            SetTokenStatus(ApiTokenStatusType.Neutral);
+        }
+
+        private void ReloadApiKeys() {
+            _tokensList.ClearChildren();
+
+            foreach (var key in GameService.Gw2WebApi.GetKeys()) {
+                var nPanel = new ViewContainer() {
+                    Size     = new Point(387, 82),
+                    ShowTint = true,
+                    Parent   = _tokensList
+                };
+
+                nPanel.Show(new ApiTokenView(key));
+            }
         }
 
         private CancellationToken GetToken() {
@@ -165,69 +174,89 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             return new CancellationToken();
         }
 
-        private int _delayIndex = 0;
-
         private void ApiKeyTextBoxOnTextChanged(object sender, EventArgs e) {
-            SetTokenStatus("", ApiTokenStatusType.Loading);
+            SetTokenStatus(ApiTokenStatusType.Loading);
             _debounceWrapper(this.ApiKey);
         }
 
-        private void CheckToken(string apiKey) {
-            if (apiKey.Length > 10) {
+        private async void CheckToken(string apiKey) {
+            if (apiKey.Length > MIN_KEY_LENGTH) {
                 try {
-                    GameService.Gw2WebApi
-                               .GetConnection(apiKey)
-                               .Client.V2.TokenInfo
-                               .GetAsync(GetToken())
-                               .ContinueWith(UpdateTokenDetails);
-                } catch (FormatException formatException) {
-                    SetTokenStatus("Invalid token", ApiTokenStatusType.Failed);
+                    var sharedConnection = GameService.Gw2WebApi.GetConnection(apiKey);
+
+                    var tokenInfo = sharedConnection
+                                   .Client.V2.TokenInfo
+                                   .GetAsync(GetToken());
+
+                    var accountInfo = sharedConnection
+                                     .Client.V2.Account
+                                     .GetAsync();
+
+                    await UpdateTokenDetails(tokenInfo, accountInfo);
+                } catch (FormatException) {
+                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
+                } catch (InvalidAccessTokenException) {
+                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
+                } catch (AuthorizationRequiredException) {
+                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_AccountFailed);
                 }
             } else {
-                SetTokenStatus("", ApiTokenStatusType.Neutral);
+                SetTokenStatus(ApiTokenStatusType.Neutral);
             }
         }
 
-        private void UpdateTokenDetails(Task<TokenInfo> tokenTask) {
-            if (tokenTask.IsCanceled) return;
+        private async Task UpdateTokenDetails(Task<TokenInfo> tokenTask, Task<Account> accountTask) {
+            await Task.WhenAll(tokenTask, accountTask);
+
+            if (tokenTask.IsCanceled || accountTask.IsCanceled) return;
 
             if (tokenTask.Exception != null) {
-                SetTokenStatus("Invalid token", ApiTokenStatusType.Failed);
+                SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
                 Logger.Warn(tokenTask.Exception, "Checking token failed.");
                 return;
             }
+
+            if (accountTask.Exception != null) {
+                SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_AccountFailed);
+                Logger.Warn(accountTask.Exception, "Getting account information failed.");
+                return;
+            }
+
+            _loadedDetails = (tokenTask.Result, accountTask.Result);
 
             var allPermissions = Enum.GetValues(typeof(TokenPermission));
 
             for (int i = 1; i < allPermissions.Length; i++) {
                 if (!tokenTask.Result.Permissions.List.Contains(new ApiEnum<TokenPermission>((TokenPermission)allPermissions.GetValue(i)))) {
-                    SetTokenStatus($"{GetTokenName(tokenTask.Result.Name)} - Token missing permissions", ApiTokenStatusType.Partial);
+                    SetTokenStatus(ApiTokenStatusType.Partial, Strings.GameServices.Gw2ApiService.TokenStatus_PartialPermission);
                     return;
                 }
             }
 
-            SetTokenStatus($"{GetTokenName(tokenTask.Result.Name)} - Valid token", ApiTokenStatusType.Perfect);
+            SetTokenStatus(ApiTokenStatusType.Perfect,
+                           string.Format(Strings.GameServices.Gw2ApiService.TokenStatus_ValidToken,
+                                         accountTask.Result.Name,
+                                         GetTokenName(tokenTask.Result.Name)));
         }
 
         private string GetTokenName(string tokenName) {
             if (string.IsNullOrWhiteSpace(tokenName)) {
-                return "(no name)";
+                return Strings.GameServices.Gw2ApiService.Token_NoName;
             }
 
-            return tokenName.Length <= MAX_KEYNAME_LENGTH ? tokenName : tokenName.Substring(0, MAX_KEYNAME_LENGTH - 3) + "...";
+            return tokenName.Truncate(MAX_KEYNAME_LENGTH, "...");
         }
 
-        private void SetTokenStatus(string tokenStatusDescription, ApiTokenStatusType tokenStatusType) {
+        private void SetTokenStatus(ApiTokenStatusType tokenStatusType, string tokenStatusDescription = "") {
+            _tokenStatusLbl.Text = tokenStatusDescription;
+
             if (tokenStatusType == ApiTokenStatusType.Loading) {
-                _tokenStatusLbl.Text = "";
                 _tokenStatusImg.Hide();
                 _loadingSpinner.Show();
                 return;
             }
 
             _loadingSpinner.Hide();
-
-            _tokenStatusLbl.Text    = tokenStatusDescription;
             _tokenStatusImg.Texture = _tokenStatusTextures[tokenStatusType];
 
             _registerKeyBttn.Enabled = tokenStatusType == ApiTokenStatusType.Partial
