@@ -6,29 +6,32 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Controls {
 
     public enum ControlFlowDirection {
+
         LeftToRight,
         TopToBottom
+
     }
 
     public class FlowPanel : Panel {
 
-        protected Vector2 _controlPaddingInBetween = Vector2.Zero;
         public Vector2 ControlPaddingInBetween {
             get => _controlPaddingInBetween;
             set => SetProperty(ref _controlPaddingInBetween, value, true);
         }
-
-        protected Vector2 _controlPaddingOuterBounds = Vector2.Zero;
         public Vector2 ControlPaddingOuterBounds {
             get => _controlPaddingOuterBounds;
             set => SetProperty(ref _controlPaddingOuterBounds, value, true);
         }
-
-        protected ControlFlowDirection _flowDirection = ControlFlowDirection.LeftToRight;
         public ControlFlowDirection FlowDirection {
             get => _flowDirection;
             set => SetProperty(ref _flowDirection, value, true);
         }
+
+        protected Vector2 _controlPaddingInBetween = Vector2.Zero;
+
+        protected Vector2 _controlPaddingOuterBounds = Vector2.Zero;
+
+        protected ControlFlowDirection _flowDirection = ControlFlowDirection.LeftToRight;
 
         protected override void OnChildAdded(ChildChangedEventArgs e) {
             base.OnChildAdded(e);
@@ -64,7 +67,7 @@ namespace Blish_HUD.Controls {
         }
 
         public void SortChildren<TControl>(Comparison<TControl> comparison) where TControl : Control {
-            var tempChildren = _children.Cast<TControl>().ToList();
+            List<TControl> tempChildren = _children.Cast<TControl>().ToList();
             tempChildren.Sort(comparison);
 
             _children = tempChildren.Cast<Control>().ToList();
@@ -82,14 +85,13 @@ namespace Blish_HUD.Controls {
                 if (child.Width >= this.Width - lastRight) {
                     // TODO: Consider a more graceful alternative (like just stick it on its own line)
                     // Prevent stack overflow
-                    if (child.Width > this.ContentRegion.Width)
-                        throw new Exception("Control is too large to flow in FlowPanel");
+                    if (child.Width > this.ContentRegion.Width) throw new Exception("Control is too large to flow in FlowPanel");
 
                     currentBottom = nextBottom + _controlPaddingInBetween.Y;
                     lastRight     = _controlPaddingOuterBounds.X;
                 }
 
-                child.Location = new Point((int)lastRight, (int)currentBottom);
+                child.Location = new Point((int) lastRight, (int) currentBottom);
 
                 lastRight = child.Right + _controlPaddingInBetween.X;
 
@@ -103,12 +105,12 @@ namespace Blish_HUD.Controls {
         }
 
         private void ReflowChildLayout(List<Control> allChildren) {
-            if (this.FlowDirection == ControlFlowDirection.LeftToRight) {
+            if (this.FlowDirection == ControlFlowDirection.LeftToRight)
                 ReflowChildLayoutLeftToRight(allChildren.Where(c => c.GetType() != typeof(Scrollbar)).ToList());
-            } else {
+            else
                 ReflowChildLayoutTopToBottom(allChildren.Where(c => c.GetType() != typeof(Scrollbar)).ToList());
-            }
         }
 
     }
+
 }

@@ -1,17 +1,19 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Controls;
-using Blish_HUD;
 using Blish_HUD.Modules;
+using Gw2Sharp.WebApi.V2.Models;
 using Microsoft.Xna.Framework;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace Blish_HUD.Settings.UI {
+
     public static class SingleModuleSettingsUIBuilder {
 
         public static void BuildSingleModuleSettings(Panel buildPanel, object module) {
             if (!(module is ModuleManager cModuleMan)) return;
 
-            var moduleText = new Label() {
+            var moduleText = new Label {
                 Text           = "Manage Modules",
                 Location       = new Point(24, 0),
                 AutoSizeHeight = true,
@@ -20,14 +22,14 @@ namespace Blish_HUD.Settings.UI {
                 Parent         = buildPanel
             };
 
-            var moduleHeader = new Image() {
+            var moduleHeader = new Image {
                 Texture  = GameService.Content.GetTexture("358411"),
                 Location = new Point(0,   moduleText.Bottom - 6),
                 Size     = new Point(875, 110),
                 Parent   = buildPanel
             };
 
-            var moduleName = new Label() {
+            var moduleName = new Label {
                 Text           = cModuleMan.Manifest.Name,
                 Font           = GameService.Content.DefaultFont32,
                 AutoSizeHeight = true,
@@ -37,7 +39,7 @@ namespace Blish_HUD.Settings.UI {
                 Parent         = buildPanel
             };
 
-            var moduleVersion = new Label() {
+            var moduleVersion = new Label {
                 Text              = $"v{cModuleMan.Manifest.Version}",
                 Height            = moduleName.Height - 6,
                 VerticalAlignment = VerticalAlignment.Bottom,
@@ -48,7 +50,7 @@ namespace Blish_HUD.Settings.UI {
                 Parent            = buildPanel
             };
 
-            var moduleState = new Label() {
+            var moduleState = new Label {
                 Text              = cModuleMan.State.Enabled ? "Enabled" : "Disabled",
                 Height            = moduleName.Height - 6,
                 VerticalAlignment = VerticalAlignment.Bottom,
@@ -63,14 +65,14 @@ namespace Blish_HUD.Settings.UI {
             // Author & Contributors
             if (cModuleMan.Manifest.Author != null) {
                 // Author
-                var authorImage = new Image() {
+                var authorImage = new Image {
                     Texture  = GameService.Content.GetTexture("733268"),
                     Location = new Point(moduleName.Left, moduleName.Bottom),
                     Size     = new Point(32,              32),
                     Parent   = buildPanel
                 };
 
-                var authorName = new Label() {
+                var authorName = new Label {
                     Text           = cModuleMan.Manifest.Author.Name,
                     Font           = GameService.Content.DefaultFont16,
                     AutoSizeWidth  = true,
@@ -81,7 +83,7 @@ namespace Blish_HUD.Settings.UI {
 
                 authorName.Location = new Point(authorImage.Right + 2, authorImage.Bottom - authorName.Height);
 
-                var authoredBy = new Label() {
+                var authoredBy = new Label {
                     Text              = "Authored by",
                     Height            = authorImage.Height - authorName.Height,
                     AutoSizeWidth     = true,
@@ -98,14 +100,14 @@ namespace Blish_HUD.Settings.UI {
 
             // Enable & disable module
 
-            var enableButton = new StandardButton() {
+            var enableButton = new StandardButton {
                 Location = new Point(buildPanel.Right - 192, moduleHeader.Top + moduleHeader.Height / 4 - StandardButton.STANDARD_CONTROL_HEIGHT / 2),
                 Text     = "Enable Module",
                 Enabled  = !cModuleMan.State.Enabled,
                 Parent   = buildPanel
             };
 
-            var disableButton = new StandardButton() {
+            var disableButton = new StandardButton {
                 Location = new Point(buildPanel.Right - 192, enableButton.Bottom + 2),
                 Text     = "Disable Module",
                 Enabled  = cModuleMan.State.Enabled,
@@ -113,7 +115,7 @@ namespace Blish_HUD.Settings.UI {
             };
 
             enableButton.Click += delegate {
-                enableButton.Enabled = false;
+                enableButton.Enabled  = false;
                 disableButton.Enabled = false;
 
                 cModuleMan.Enabled = true;
@@ -137,7 +139,7 @@ namespace Blish_HUD.Settings.UI {
             };
 
             disableButton.Click += delegate {
-                enableButton.Enabled = false;
+                enableButton.Enabled  = false;
                 disableButton.Enabled = false;
 
                 cModuleMan.Enabled = false;
@@ -152,7 +154,7 @@ namespace Blish_HUD.Settings.UI {
             // Settings Menu
             var settingsMenu = new ContextMenuStrip();
 
-            var settingsButton = new GlowButton() {
+            var settingsButton = new GlowButton {
                 Location = new Point(enableButton.Right + 12, enableButton.Top),
 
                 Icon       = GameService.Content.GetTexture(@"common/157109"),
@@ -168,12 +170,10 @@ namespace Blish_HUD.Settings.UI {
             var viewModuleLogs = settingsMenu.AddMenuItem("View Module Logs");
 
             if (cModuleMan.Manifest.Directories.Any()) {
-                var directoriesMenu = settingsMenu.AddMenuItem("Directories");
+                var directoriesMenu    = settingsMenu.AddMenuItem("Directories");
                 var subDirectoriesMenu = new ContextMenuStrip();
 
-                foreach (var directory in cModuleMan.Manifest.Directories) {
-                    subDirectoriesMenu.AddMenuItem($"Explore '{directory}'");
-                }
+                foreach (string directory in cModuleMan.Manifest.Directories) subDirectoriesMenu.AddMenuItem($"Explore '{directory}'");
 
                 directoriesMenu.Submenu = subDirectoriesMenu;
             }
@@ -182,16 +182,16 @@ namespace Blish_HUD.Settings.UI {
 
             // Collapse Sections
 
-            var collapsePanel = new FlowPanel() {
-                Size          = new Point(buildPanel.Width, buildPanel.Height - moduleName.Bottom + 32 + 4),
-                Location      = new Point(0,                moduleName.Bottom + 32                     + 4),
-                CanScroll     = true,
-                Parent        = buildPanel
+            var collapsePanel = new FlowPanel {
+                Size      = new Point(buildPanel.Width, buildPanel.Height - moduleName.Bottom + 32 + 4),
+                Location  = new Point(0,                moduleName.Bottom + 32                     + 4),
+                CanScroll = true,
+                Parent    = buildPanel
             };
 
             // Description
 
-            var descriptionPanel = new Panel() {
+            var descriptionPanel = new Panel {
                 Size       = new Point(collapsePanel.ContentRegion.Width, 155),
                 Location   = new Point(0,                                 moduleName.Bottom + 32 + 4),
                 Title      = "Description",
@@ -200,7 +200,7 @@ namespace Blish_HUD.Settings.UI {
                 CanScroll  = true
             };
 
-            var descriptionLabel = new Label() {
+            var descriptionLabel = new Label {
                 Text           = cModuleMan.Manifest.Description,
                 Location       = new Point(8, 8),
                 Width          = descriptionPanel.Width - 16,
@@ -211,19 +211,19 @@ namespace Blish_HUD.Settings.UI {
 
             // Permissions
 
-            var permissionPanel = new FlowPanel() {
-                Size                 = descriptionPanel.Size,
-                CanScroll            = true,
-                Location             = new Point(0, descriptionPanel.Bottom + Panel.MenuStandard.ControlOffset.Y),
+            var permissionPanel = new FlowPanel {
+                Size                      = descriptionPanel.Size,
+                CanScroll                 = true,
+                Location                  = new Point(0, descriptionPanel.Bottom + Panel.MenuStandard.ControlOffset.Y),
                 ControlPaddingOuterBounds = new Vector2(10),
-                ControlPaddingInBetween       = new Vector2(10),
-                Title                = "Permissions",
-                ShowBorder           = true,
-                Parent               = collapsePanel
+                ControlPaddingInBetween   = new Vector2(10),
+                Title                     = "Permissions",
+                ShowBorder                = true,
+                Parent                    = collapsePanel
             };
 
-            foreach (var perm in cModuleMan.Manifest.ApiPermissions) {
-                var permCheckbox = new Checkbox() {
+            foreach (KeyValuePair<TokenPermission, ModuleApiPermissions> perm in cModuleMan.Manifest.ApiPermissions) {
+                var permCheckbox = new Checkbox {
                     Text   = perm.Key.ToString(),
                     Parent = permissionPanel,
                     Width  = permissionPanel.Width / 3
@@ -232,4 +232,5 @@ namespace Blish_HUD.Settings.UI {
         }
 
     }
+
 }
