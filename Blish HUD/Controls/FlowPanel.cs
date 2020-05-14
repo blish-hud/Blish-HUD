@@ -12,22 +12,16 @@ namespace Blish_HUD.Controls {
 
     public class FlowPanel : Panel {
 
-        protected Vector2 _controlPadding = Vector2.Zero;
-        public Vector2 ControlPadding {
-            get => _controlPadding;
-            set => SetProperty(ref _controlPadding, value, true);
+        protected Vector2 _controlPaddingInBetween = Vector2.Zero;
+        public Vector2 ControlPaddingInBetween {
+            get => _controlPaddingInBetween;
+            set => SetProperty(ref _controlPaddingInBetween, value, true);
         }
 
-        protected bool _padLeftBeforeControl = false;
-        public bool PadLeftBeforeControl {
-            get => _padLeftBeforeControl;
-            set => SetProperty(ref _padLeftBeforeControl, value, true);
-        }
-
-        protected bool _padTopBeforeControl = false;
-        public bool PadTopBeforeControl {
-            get => _padTopBeforeControl;
-            set => SetProperty(ref _padTopBeforeControl, value, true);
+        protected Vector2 _controlPaddingOuterBounds = Vector2.Zero;
+        public Vector2 ControlPaddingOuterBounds {
+            get => _controlPaddingOuterBounds;
+            set => SetProperty(ref _controlPaddingOuterBounds, value, true);
         }
 
         protected ControlFlowDirection _flowDirection = ControlFlowDirection.LeftToRight;
@@ -79,9 +73,9 @@ namespace Blish_HUD.Controls {
         }
 
         private void ReflowChildLayoutLeftToRight(List<Control> allChildren) {
-            float nextBottom    = _padTopBeforeControl ? _controlPadding.Y : 0;
-            float currentBottom = _padTopBeforeControl ? _controlPadding.Y : 0;
-            float lastRight     = _padLeftBeforeControl ? _controlPadding.X : 0;
+            float nextBottom    = _controlPaddingOuterBounds.Y;
+            float currentBottom = _controlPaddingOuterBounds.Y;
+            float lastRight     = _controlPaddingOuterBounds.X;
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next line
@@ -91,13 +85,13 @@ namespace Blish_HUD.Controls {
                     if (child.Width > this.ContentRegion.Width)
                         throw new Exception("Control is too large to flow in FlowPanel");
 
-                    currentBottom = nextBottom + _controlPadding.Y;
-                    lastRight     = _padLeftBeforeControl ? _controlPadding.X : 0;
+                    currentBottom = nextBottom + _controlPaddingInBetween.Y;
+                    lastRight     = _controlPaddingOuterBounds.X;
                 }
 
                 child.Location = new Point((int)lastRight, (int)currentBottom);
 
-                lastRight = child.Right + _controlPadding.X;
+                lastRight = child.Right + _controlPaddingInBetween.X;
 
                 // Ensure rows don't overlap
                 nextBottom = Math.Max(nextBottom, child.Bottom);

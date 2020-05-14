@@ -234,9 +234,8 @@ namespace Blish_HUD.Controls {
         public DetailsButton() {
             this.Size = new Point(DEFAULT_EVENTSUMMARY_WIDTH, DEFAULT_EVENTSUMMARY_HEIGHT);
             
-            this.ControlPadding = new Vector2(6, 1);
-            this.PadLeftBeforeControl = true;
-            this.PadTopBeforeControl = true;
+            this.ControlPaddingInBetween = new Vector2(6, 1);
+            this.ControlPaddingOuterBounds = new Vector2(6, 1);
 
             _scrollEffect = new ScrollingHighlightEffect(this) {
                 Enabled = (_highlightType == DetailsHighlightType.ScrollingHighlight)

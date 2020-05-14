@@ -215,9 +215,8 @@ namespace Blish_HUD.Settings.UI {
                 Size                 = descriptionPanel.Size,
                 CanScroll            = true,
                 Location             = new Point(0, descriptionPanel.Bottom + Panel.MenuStandard.ControlOffset.Y),
-                PadLeftBeforeControl = true,
-                PadTopBeforeControl  = true,
-                ControlPadding       = new Vector2(10),
+                ControlPaddingOuterBounds = new Vector2(10),
+                ControlPaddingInBetween       = new Vector2(10),
                 Title                = "Permissions",
                 ShowBorder           = true,
                 Parent               = collapsePanel
