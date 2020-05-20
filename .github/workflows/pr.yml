@@ -22,9 +22,9 @@ jobs:
           Write-Output "Informational version: $($version.InformationalVersion)"
           Write-Output "NuGet version: $nuget"
           echo "::set-env name=VERSION::$nuget"
-      - name: Run dotnet build
-        run: dotnet build -c Release -p:VERSIONED_BUILD=$env:VERSION
 
+      - name: Run msbuild
+        run: msbuild -p:Configuration=Release -p:VERSIONED_BUILD=$env:VERSION
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
