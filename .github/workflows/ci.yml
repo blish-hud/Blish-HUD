@@ -29,6 +29,8 @@ jobs:
           Write-Output "NuGet version: $nuget"
           echo "::set-env name=VERSION::$nuget"
 
+      - name: Run msbuild restore
+        run: msbuild -t:restore
       - name: Run msbuild
         run: msbuild -p:Configuration=Release
       - name: Upload build artifact
