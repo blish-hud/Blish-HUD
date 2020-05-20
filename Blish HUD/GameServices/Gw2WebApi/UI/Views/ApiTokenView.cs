@@ -2,6 +2,7 @@
 using Blish_HUD.Controls;
 using Blish_HUD.Gw2WebApi.UI.Presenters;
 using Blish_HUD.Graphics.UI;
+using Blish_HUD.Input;
 using Gw2Sharp.WebApi.V2;
 using Gw2Sharp.WebApi.V2.Models;
 using Humanizer;
@@ -147,6 +148,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 BasicTooltipText = Strings.GameServices.Gw2ApiService.ManageApiKeys_DeleteToken,
                 Parent           = buildPanel
             };
+
+            deleteBttn.Click += DeleteRegisteredToken;
+        }
+
+        private void DeleteRegisteredToken(object sender, MouseEventArgs e) {
+            GameService.Gw2WebApi.UnregisterKey(_tokenInfo.Id);
         }
 
     }

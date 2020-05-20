@@ -123,8 +123,9 @@ namespace Blish_HUD {
 
         public void UnregisterKey(string apiKey) {
             foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
-                if (string.Equals(apiKey, key.Value, StringComparison.InvariantCultureIgnoreCase)) {
-                    key.Value = null;
+                if (string.Equals(apiKey, key.Value, StringComparison.InvariantCultureIgnoreCase) || key.Value.StartsWith(apiKey, StringComparison.InvariantCultureIgnoreCase)) {
+                    _apiKeyRepository.UndefineSetting(key.EntryKey);
+                    break;
                 }
             }
         }

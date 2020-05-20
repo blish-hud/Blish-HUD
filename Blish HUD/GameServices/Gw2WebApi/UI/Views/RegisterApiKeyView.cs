@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Gw2WebApi.UI.Presenters;
+using Blish_HUD.Input;
 using Gw2Sharp.WebApi.Http;
 using Gw2Sharp.WebApi.V2.Models;
 using Humanizer;
@@ -118,17 +120,15 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             _tokensList = new FlowPanel() {
-                Location             = new Point(_apiKeyTextBox.Left,  _tokenStatusImg.Bottom                     + 25),
-                Size                 = new Point(_apiKeyTextBox.Width, buildPanel.Height - _tokenStatusImg.Bottom - 25),
-                ControlPadding       = new Vector2(11, 11),
-                PadLeftBeforeControl = true,
-                PadTopBeforeControl  = true,
-                CanScroll            = true,
-                ShowBorder = true,
-                Parent               = buildPanel
+                Location            = new Point(_apiKeyTextBox.Left,  _tokenStatusImg.Bottom                     + 25),
+                Size                = new Point(_apiKeyTextBox.Width, buildPanel.Height - _tokenStatusImg.Bottom - 25),
+                OuterControlPadding = new Vector2(11, 11),
+                CanScroll           = true,
+                ShowBorder          = true,
+                Parent              = buildPanel
             };
 
-            _tokensList.Width = 387 + 22 + 4;
+            _tokensList.Width = 350 + 22 + 8; //387 + 22 + 4;
 
             clearKeyBttn.Click += delegate { ClearApiKey(); };
 
@@ -140,13 +140,114 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 ClearApiKey();
             };
 
-            var openAnetApplicationsBttn = new StandardButton() {
-                Text     = "Manage Applications",
-                Icon     = GameService.Content.GetTexture("common/1441452"),
-                Width    = 128,
-                Location = new Point(_tokensList.Right + 10, _tokensList.Top),
+            var instructions = new Label() {
+                Text           = "Instructions",
+                Location       = new Point(_tokensList.Right + 10, _tokensList.Top + 24),
+                Font           = GameService.Content.DefaultFont32,
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                StrokeText     = true,
+                Parent         = buildPanel
+            };
+
+            var bullet = GameService.Content.GetTexture("155038");
+
+            int offset = 18;
+
+            var step1Bullet = new Image(bullet) {
+                Size     = new Point(16,                16),
+                Location = new Point(instructions.Left, instructions.Bottom + 10),
                 Parent   = buildPanel
             };
+
+            var step1 = new Label() {
+                Text     = "Navigate to the official applications page.",
+                Location = new Point(step1Bullet.Right + 2, step1Bullet.Top - 3),
+                Font = GameService.Content.DefaultFont16,
+                AutoSizeWidth = true,
+                AutoSizeHeight = true,
+                Parent   = buildPanel
+            };
+
+            var openAnetApplicationsBttn = new StandardButton() {
+                Text = "Manage Applications",
+                Icon = GameService.Content.GetTexture("common/1441452"),
+                Size = new Point(256, 32),
+                Location = new Point(step1.Left, step1.Bottom + 5),
+                Parent = buildPanel
+            };
+
+            var step2Bullet = new Image(bullet) {
+                Size     = new Point(16,                16),
+                Location = new Point(step1Bullet.Left, openAnetApplicationsBttn.Bottom + offset),
+                Parent   = buildPanel
+            };
+
+            var step2 = new Label() {
+                Text           = "Click \"New Key\".",
+                Location = new Point(step2Bullet.Right + 2, step2Bullet.Top - 3),
+                Font           = GameService.Content.DefaultFont16,
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                Parent         = buildPanel
+            };
+
+            var step3Bullet = new Image(bullet) {
+                Size     = new Point(16,               16),
+                Location = new Point(step1Bullet.Left, step2.Bottom + offset),
+                Parent   = buildPanel
+            };
+
+            var step3 = new Label() {
+                Text           = "Select all permissions and select\n\"CREATE API KEY\".",
+                Location       = new Point(step3Bullet.Right + 2, step3Bullet.Top - 3),
+                Font           = GameService.Content.DefaultFont16,
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                Parent         = buildPanel
+            };
+
+            var step3Warn = new Label() {
+                Text           = "You can register a key without all\npermissions, but some features and\nmodules may fail to function properly.",
+                TextColor      = Control.StandardColors.Yellow,
+                Location       = new Point(step3.Left, step3.Bottom + 3),
+                Font           = GameService.Content.DefaultFont16,
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                Parent         = buildPanel
+            };
+
+            var step4Bullet = new Image(bullet) {
+                Size     = new Point(16,               16),
+                Location = new Point(step1Bullet.Left, step3Warn.Bottom + offset),
+                Parent   = buildPanel
+            };
+
+            var step4 = new Label() {
+                Text           = "Copy the new key.",
+                Location = new Point(step4Bullet.Right + 2, step4Bullet.Top - 3),
+                Font           = GameService.Content.DefaultFont16,
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                Parent         = buildPanel
+            };
+
+            var step5Bullet = new Image(bullet) {
+                Size     = new Point(16,               16),
+                Location = new Point(step1Bullet.Left, step4.Bottom + offset),
+                Parent   = buildPanel
+            };
+
+            var step5 = new Label() {
+                Text           = "Paste the key here and press \"Register\".",
+                Location = new Point(step5Bullet.Right + 2, step5Bullet.Top - 3),
+                Font           = GameService.Content.DefaultFont16,
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                Parent         = buildPanel
+            };
+
+            openAnetApplicationsBttn.Click += delegate { Process.Start("https://account.arena.net/applications"); };
 
             ReloadApiKeys();
 
@@ -158,7 +259,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             foreach (var key in GameService.Gw2WebApi.GetKeys()) {
                 var nPanel = new ViewContainer() {
-                    Size     = new Point(387, 82),
+                    Size     = new Point(350, 82), // new Point(387, 82)
                     ShowTint = true,
                     Parent   = _tokensList
                 };
