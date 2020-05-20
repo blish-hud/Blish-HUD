@@ -13,8 +13,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - run: |
-          git fetch --prune --unshallow
+      - run: git fetch --prune --unshallow
+      - uses: microsoft/setup-msbuild@v1.0.0
+
       - name: Patch nightly version
         shell: powershell
         run: |
@@ -27,6 +28,7 @@ jobs:
           Write-Output "Informational version: $($version.InformationalVersion)"
           Write-Output "NuGet version: $nuget"
           echo "::set-env name=VERSION::$nuget"
+
       - name: Run msbuild
         run: msbuild -p:Configuration=Release
       - name: Upload build artifact
