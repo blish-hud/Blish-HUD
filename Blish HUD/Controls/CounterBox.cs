@@ -10,7 +10,7 @@ namespace Blish_HUD.Controls
 
         private readonly Texture2D MinusSprite;
         private readonly Texture2D PlusSprite;
-        private int _valueWidth;
+        private int _valueWidth = 100;
         public int ValueWidth
         {
             get => _valueWidth;
@@ -50,11 +50,12 @@ namespace Blish_HUD.Controls
             set
             {
                 if (_value == value) return;
+                if (value < _minValue || value > _maxValue) return;
                 _value = value;
                 Invalidate();
             }
         }
-        private int _numerator;
+        private int _numerator = 1;
         public int Numerator
         {
             get => _numerator;
@@ -64,7 +65,7 @@ namespace Blish_HUD.Controls
                 _numerator = value;
             }
         }
-        private int _maxValue;
+        private int _maxValue = 1;
         public int MaxValue
         {
             get => _maxValue;
@@ -76,7 +77,7 @@ namespace Blish_HUD.Controls
                 Invalidate();
             }
         }
-        private int _minValue;
+        private int _minValue = 0;
         public int MinValue
         {
             get => _minValue;
@@ -88,7 +89,7 @@ namespace Blish_HUD.Controls
                 Invalidate();
             }
         }
-        private bool _exponential = false;
+        private bool _exponential;
         public bool Exponential
         {
             get => _exponential;
@@ -108,7 +109,7 @@ namespace Blish_HUD.Controls
             this.Size = new Point(150, 20);
         }
         private bool _mouseOverPlus = false;
-        public bool MouseOverPlus
+        private bool MouseOverPlus
         {
             get => _mouseOverPlus;
             set
@@ -119,7 +120,7 @@ namespace Blish_HUD.Controls
             }
         }
         private bool _mouseOverMinus = false;
-        public bool MouseOverMinus
+        private bool MouseOverMinus
         {
             get => _mouseOverMinus;
             set
@@ -153,55 +154,52 @@ namespace Blish_HUD.Controls
         }
         private void CounterBoxOnLeftMouseButtonPressed(object sender, MouseEventArgs e)
         {
-            if (this.MouseOverMinus) {
-                if (this.Exponential)
-                {
-                    var halfed = this.Value / 2;
-                    if (halfed >= this.MinValue)
-                    {
-                        this.Value = halfed;
-                    }
+            if (_mouseOverMinus) {
+                if (_exponential) {
+                    var halfed = _value / 2;
+
+                    _value = halfed < _minValue ? _minValue : halfed;
+
                 } else {
-                    var difference = this.Value - this.Numerator;
-                    if (difference >= this.MinValue)
-                    {
-                        this.Value = difference;
+                    var difference = _value - _numerator;
+
+                    if (difference >= _minValue) {
+                        _value = difference;
                     }
+
                     this.Invalidate();
                 }
             }
-            if (this.MouseOverPlus) {
-                if (this.Exponential)
+            if (_mouseOverPlus) {
+                if (_exponential)
                 {
                     var doubled = this.Value + this.Value;
-                    if (doubled <= this.MaxValue)
-                    {
-                        this.Value = doubled;
-                    }
+                    _value = doubled > _maxValue ? _maxValue : doubled;
+
                 } else {
-                    var summation = this.Value + this.Numerator;
-                    if (summation <= this.MaxValue)
+                    var summation = _value + _numerator;
+                    if (summation <= _maxValue)
                     {
-                        this.Value = summation;
+                        _value = summation;
                     }
                 }
-                this.Invalidate();
+                Invalidate();
             }
         }
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
         {
-            if (this.MouseOverMinus && GameService.Input.Mouse.State.LeftButton == ButtonState.Pressed) {
+            if (_mouseOverMinus && GameService.Input.Mouse.State.LeftButton == ButtonState.Pressed) {
                 spriteBatch.DrawOnCtrl(this, MinusSprite, new Rectangle(2, 2, 15, 15), Color.White);
             } else {
                 spriteBatch.DrawOnCtrl(this, MinusSprite, new Rectangle(0, 0, 17, 17), Color.White);
             }
-            var combine = this.Prefix + this.Value.ToString() + this.Suffix;
-            spriteBatch.DrawStringOnCtrl(this, combine, Content.DefaultFont14, new Rectangle(18, 0, this.ValueWidth, 17), Color.White, false, true, 1, HorizontalAlignment.Center, VerticalAlignment.Middle);
+            var combine = _prefix + _value + _suffix;
+            spriteBatch.DrawStringOnCtrl(this, combine, Content.DefaultFont14, new Rectangle(18, 0, _valueWidth, 17), Color.White, false, true, 1, HorizontalAlignment.Center, VerticalAlignment.Middle);
 
-            if (this.MouseOverPlus && GameService.Input.Mouse.State.LeftButton == ButtonState.Pressed) {
-                spriteBatch.DrawOnCtrl(this, PlusSprite, new Rectangle(21 + this.ValueWidth, 2, 15, 15), Color.White);
+            if (_mouseOverPlus && GameService.Input.Mouse.State.LeftButton == ButtonState.Pressed) {
+                spriteBatch.DrawOnCtrl(this, PlusSprite, new Rectangle(21 + _valueWidth, 2, 15, 15), Color.White);
             } else {
-                spriteBatch.DrawOnCtrl(this, PlusSprite, new Rectangle(19 + this.ValueWidth, 0, 17, 17), Color.White);
+                spriteBatch.DrawOnCtrl(this, PlusSprite, new Rectangle(19 + _valueWidth, 0, 17, 17), Color.White);
             }
         }
     }
