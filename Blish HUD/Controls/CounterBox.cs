@@ -153,6 +153,7 @@ namespace Blish_HUD.Controls
             _pressed = false;
             this.MouseOverPlus = false;
             this.MouseOverMinus = false;
+            ResetHoldTimer();
         }
         private void OnMouseMoved(object sender, MouseEventArgs e)
         {
@@ -163,7 +164,7 @@ namespace Blish_HUD.Controls
                 this.MouseOverMinus = relPos.X < 17 && relPos.X > 0;
                 this.MouseOverPlus = relPos.X < 36 + this.ValueWidth && relPos.X > 19 + this.ValueWidth;
 
-                if (!_mouseOverMinus && !_mouseOverPlus) _holdTimer.Stop();
+                if (!_mouseOverMinus && !_mouseOverPlus) ResetHoldTimer();
 
             } else {
                 this.MouseOverMinus = false;
@@ -180,10 +181,6 @@ namespace Blish_HUD.Controls
             _pressed = true;
             ChangeValue();
             _holdTimer.Elapsed += delegate {
-                if (!_mouseOverMinus && !_mouseOverPlus) {
-                    _holdTimer.Stop();
-                    return;
-                }
                 ChangeValue();
                 _holdTimer.Interval = _holdTimerFast.ElapsedMilliseconds > 2000 ? (_holdTimerFast.ElapsedMilliseconds > 4000 ? 25 : 50) : 100;
             };
