@@ -57,7 +57,7 @@ namespace Blish_HUD.Controls
         }
         private int _numerator = 1;
         /// <summary>
-        /// The numerator by which to increment or decrement the value of the counterbox.
+        /// The numerator by which to increment or decrement the value of this CounterBox.
         /// </summary>
         public int Numerator
         {
@@ -103,7 +103,7 @@ namespace Blish_HUD.Controls
         }
         private int _value = 1;
         /// <summary>
-        /// The value of the counterbox. Cannot be greater than MaxValue and lesser than MinValue, thus should be assigned AFTER both;
+        /// The value of the counterbox. Cannot be greater than MaxValue and not lesser than MinValue, thus should be assigned AFTER both;
         /// </summary>
         public int Value {
             get => _value;
@@ -113,18 +113,23 @@ namespace Blish_HUD.Controls
             }
         }
         private bool _pressed;
-        private readonly Stopwatch _holdTimerFast = new Stopwatch();
+        private readonly Stopwatch _holdTimerFast;
         private Timer _holdTimer;
         private const int HOLD_MILISECONDS = 700;
         public CounterBox() {
-            _holdTimer = new Timer(HOLD_MILISECONDS);
-            MinusSprite = MinusSprite ?? Content.GetTexture("minus");
-            PlusSprite = PlusSprite ?? Content.GetTexture("plus");
+            _holdTimer     = new Timer(HOLD_MILISECONDS);
+            _holdTimerFast = new Stopwatch();
+            MinusSprite    = MinusSprite ?? Content.GetTexture("minus");
+            PlusSprite     = PlusSprite ?? Content.GetTexture("plus");
+
             this.MouseMoved += OnMouseMoved;
-            this.MouseLeft += OnMouseLeft;
-            this.LeftMouseButtonPressed += OnLeftMouseButtonPressed;
+            this.MouseLeft  += OnMouseLeft;
+
+            this.LeftMouseButtonPressed  += OnLeftMouseButtonPressed;
             this.LeftMouseButtonReleased += OnLeftMouseButtonReleased;
+
             this.Disposed += delegate { _holdTimer?.Close(); _holdTimerFast?.Stop(); };
+
             this.Size = new Point(150, 20);
         }
         private bool _mouseOverPlus = false;
