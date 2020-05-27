@@ -14,12 +14,18 @@ namespace Blish_HUD.Controls {
         private IView _currentView;
 
         private ViewState _viewState = ViewState.None;
-
-        private string _loadingMessage;
+        private bool      _fadeView  = false;
 
         public ViewState ViewState => _viewState;
 
+        public bool FadeView {
+            get => _fadeView;
+            set => SetProperty(ref _fadeView, value);
+        }
+
         private Tween _fadeInAnimation;
+
+        private string _loadingMessage;
 
         public void Show(IView newView) {
             this.Clear();
@@ -33,9 +39,9 @@ namespace Blish_HUD.Controls {
             newView.Loaded += BuildView;
             newView.DoLoad(progressIndicator).ContinueWith(BuildView);
 
-            _fadeInAnimation?.CancelAndComplete();
-            _opacity         = 0f;
-            _fadeInAnimation = GameService.Animation.Tweener.Tween(this, new { Opacity = 1f }, FADE_DURATION);
+            if (_fadeView) {
+                _fadeInAnimation = GameService.Animation.Tweener.Tween(this, new {Opacity = 1f}, FADE_DURATION);
+            }
 
             base.Show();
         }
@@ -51,6 +57,11 @@ namespace Blish_HUD.Controls {
             this.BackgroundTexture = null;
             this.ClipsBounds       = true;
 
+            // Potentially prepare for next fade-in
+            _fadeInAnimation?.Cancel();
+            _fadeInAnimation = null;
+            _opacity         = _fadeView ? 0f : 1f;
+
             this.ClearChildren();
         }
 
@@ -62,7 +73,7 @@ namespace Blish_HUD.Controls {
 
         private void BuildView(Task<bool> loadResult) {
             if (loadResult.Result) {
-                _currentView.DoBuild(_buildPanel);
+                _currentView.DoBuild(this);
             }
         }
 

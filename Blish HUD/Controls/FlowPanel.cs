@@ -18,13 +18,21 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _controlPadding, value, true);
         }
 
+        protected Vector2 _outerControlPadding = Vector2.Zero;
+        public Vector2 OuterControlPadding {
+            get => _outerControlPadding;
+            set => SetProperty(ref _outerControlPadding, value, true);
+        }
+
         protected bool _padLeftBeforeControl = false;
+        [Obsolete("Use OuterControlPadding instead.")]
         public bool PadLeftBeforeControl {
             get => _padLeftBeforeControl;
             set => SetProperty(ref _padLeftBeforeControl, value, true);
         }
 
         protected bool _padTopBeforeControl = false;
+        [Obsolete("Use OuterControlPadding instead.")]
         public bool PadTopBeforeControl {
             get => _padTopBeforeControl;
             set => SetProperty(ref _padTopBeforeControl, value, true);
@@ -79,9 +87,12 @@ namespace Blish_HUD.Controls {
         }
 
         private void ReflowChildLayoutLeftToRight(List<Control> allChildren) {
-            float nextBottom    = _padTopBeforeControl ? _controlPadding.Y : 0;
-            float currentBottom = _padTopBeforeControl ? _controlPadding.Y : 0;
-            float lastRight     = _padLeftBeforeControl ? _controlPadding.X : 0;
+            float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
+            float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
+
+            float nextBottom    = outerPadY;
+            float currentBottom = outerPadY;
+            float lastRight     = outerPadX;
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next line
@@ -92,7 +103,7 @@ namespace Blish_HUD.Controls {
                         throw new Exception("Control is too large to flow in FlowPanel");
 
                     currentBottom = nextBottom + _controlPadding.Y;
-                    lastRight     = _padLeftBeforeControl ? _controlPadding.X : 0;
+                    lastRight     = outerPadX;
                 }
 
                 child.Location = new Point((int)lastRight, (int)currentBottom);
