@@ -79,6 +79,75 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Navigate to the official applications page..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step1 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click &quot;New Key&quot;..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step2 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select all permissions and press the
+        ///&quot;CREATE API KEY&quot; button..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step3 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy the new key..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step4 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste the key into the field above and
+        ///press &quot;Register&quot;..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step5 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can register a key without all permissions, but some
+        ///features and modules may fail to function properly.
+        ///
+        ///At a minimum, &quot;Account&quot; and &quot;Character&quot; permissions
+        ///are required..
+        /// </summary>
+        internal static string CreateTokenInstructions_Warning {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Applications.
+        /// </summary>
+        internal static string Link_ManageApplications {
+            get {
+                return ResourceManager.GetString("Link_ManageApplications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete Token.
         /// </summary>
         internal static string ManageApiKeys_DeleteToken {
@@ -219,6 +288,15 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string TokenStatus_InvalidToken {
             get {
                 return ResourceManager.GetString("TokenStatus_InvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing required permissions.
+        /// </summary>
+        internal static string TokenStatus_MissingMinPermission {
+            get {
+                return ResourceManager.GetString("TokenStatus_MissingMinPermission", resourceCulture);
             }
         }
         

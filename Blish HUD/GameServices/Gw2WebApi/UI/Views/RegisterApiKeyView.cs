@@ -15,7 +15,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Gw2WebApi.UI.Views {
-    public class RegisterApiKeyView : View<RegisterApiKeyPresenter> {
+    public class RegisterApiKeyView : View {
 
         private enum ApiTokenStatusType {
             Loading,
@@ -37,6 +37,11 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             {ApiTokenStatusType.Perfect, GameService.Content.GetTexture(@"common/154979")}
         };
 
+        private readonly TokenPermission[] _minimumTokenPermissions = {
+            TokenPermission.Account,
+            TokenPermission.Characters
+        };
+
         public string ApiKey {
             get => _apiKeyTextBox.Text.Trim();
             set => _apiKeyTextBox.Text = value;
@@ -53,12 +58,10 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         private CancellationTokenSource _tokenTestCanceller;
 
-        private readonly Action<string> _debounceWrapper;
+        private readonly Action<string> _tokenCheckDebounceWrapper;
 
         public RegisterApiKeyView() {
-            this.Presenter = new RegisterApiKeyPresenter(this, GameService.Gw2WebApi);
-
-            _debounceWrapper = ((Action<string>)CheckToken).Debounce();
+            _tokenCheckDebounceWrapper = ((Action<string>)CheckToken).Debounce();
         }
 
         protected override void Build(Panel buildPanel) {
@@ -119,16 +122,15 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent        = buildPanel
             };
 
-            _tokensList = new FlowPanel() {
-                Location            = new Point(_apiKeyTextBox.Left,  _tokenStatusImg.Bottom                     + 25),
-                Size                = new Point(_apiKeyTextBox.Width, buildPanel.Height - _tokenStatusImg.Bottom - 25),
+            _tokensList = new FlowPanel {
+                Location            = new Point(_apiKeyTextBox.Left, _tokenStatusImg.Bottom                     + 25),
+                Size                = new Point(380,                 buildPanel.Height - _tokenStatusImg.Bottom - 25),
                 OuterControlPadding = new Vector2(11, 11),
                 CanScroll           = true,
                 ShowBorder          = true,
                 Parent              = buildPanel
             };
 
-            _tokensList.Width = 350 + 22 + 8; //387 + 22 + 4;
 
             clearKeyBttn.Click += delegate { ClearApiKey(); };
 
@@ -141,7 +143,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             var instructions = new Label() {
-                Text           = "Instructions",
+                Text           = Strings.Common.Instructions,
                 Location       = new Point(_tokensList.Right + 10, _tokensList.Top + 24),
                 Font           = GameService.Content.DefaultFont32,
                 AutoSizeWidth  = true,
@@ -161,20 +163,20 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             var step1 = new Label() {
-                Text     = "Navigate to the official applications page.",
-                Location = new Point(step1Bullet.Right + 2, step1Bullet.Top - 3),
-                Font = GameService.Content.DefaultFont16,
-                AutoSizeWidth = true,
+                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step1,
+                Location       = new Point(step1Bullet.Right + 2, step1Bullet.Top - 3),
+                Font           = GameService.Content.DefaultFont16,
+                AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent   = buildPanel
+                Parent         = buildPanel
             };
 
             var openAnetApplicationsBttn = new StandardButton() {
-                Text = "Manage Applications",
-                Icon = GameService.Content.GetTexture("common/1441452"),
-                Size = new Point(256, 32),
+                Text     = Strings.GameServices.Gw2ApiService.Link_ManageApplications,
+                Icon     = GameService.Content.GetTexture("common/1441452"),
+                Size     = new Point(256,        32),
                 Location = new Point(step1.Left, step1.Bottom + 5),
-                Parent = buildPanel
+                Parent   = buildPanel
             };
 
             var step2Bullet = new Image(bullet) {
@@ -184,8 +186,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             var step2 = new Label() {
-                Text           = "Click \"New Key\".",
-                Location = new Point(step2Bullet.Right + 2, step2Bullet.Top - 3),
+                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step2,
+                Location       = new Point(step2Bullet.Right + 2, step2Bullet.Top - 3),
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
@@ -199,7 +201,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             var step3 = new Label() {
-                Text           = "Select all permissions and select\n\"CREATE API KEY\".",
+                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step3,
                 Location       = new Point(step3Bullet.Right + 2, step3Bullet.Top - 3),
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
@@ -208,10 +210,10 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             var step3Warn = new Label() {
-                Text           = "You can register a key without all\npermissions, but some features and\nmodules may fail to function properly.",
+                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Warning,
                 TextColor      = Control.StandardColors.Yellow,
                 Location       = new Point(step3.Left, step3.Bottom + 3),
-                Font           = GameService.Content.DefaultFont16,
+                Font           = GameService.Content.DefaultFont12,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
                 Parent         = buildPanel
@@ -224,8 +226,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             var step4 = new Label() {
-                Text           = "Copy the new key.",
-                Location = new Point(step4Bullet.Right + 2, step4Bullet.Top - 3),
+                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step4,
+                Location       = new Point(step4Bullet.Right + 2, step4Bullet.Top - 3),
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
@@ -239,8 +241,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             var step5 = new Label() {
-                Text           = "Paste the key here and press \"Register\".",
-                Location = new Point(step5Bullet.Right + 2, step5Bullet.Top - 3),
+                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step5,
+                Location       = new Point(step5Bullet.Right + 2, step5Bullet.Top - 3),
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
@@ -259,12 +261,15 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             foreach (var key in GameService.Gw2WebApi.GetKeys()) {
                 var nPanel = new ViewContainer() {
-                    Size     = new Point(350, 82), // new Point(387, 82)
+                    Size     = new Point(350, 82),
                     ShowTint = true,
                     Parent   = _tokensList
                 };
 
-                nPanel.Show(new ApiTokenView(key));
+                var apiTokenView      = new ApiTokenView();
+                var apiTokenPresenter = new ApiTokenPresenter(apiTokenView, key);
+
+                nPanel.Show(apiTokenView.WithPresenter(apiTokenPresenter));
             }
         }
 
@@ -272,12 +277,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _tokenTestCanceller?.Cancel();
             _tokenTestCanceller = new CancellationTokenSource();
 
-            return new CancellationToken();
+            return _tokenTestCanceller.Token;
         }
 
         private void ApiKeyTextBoxOnTextChanged(object sender, EventArgs e) {
             SetTokenStatus(ApiTokenStatusType.Loading);
-            _debounceWrapper(this.ApiKey);
+            _tokenCheckDebounceWrapper(this.ApiKey);
         }
 
         private async void CheckToken(string apiKey) {
@@ -300,6 +305,10 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
                 } catch (AuthorizationRequiredException) {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_AccountFailed);
+                } catch (UnexpectedStatusException) {
+                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.Common.Unknown);
+                } catch (RequestCanceledException) {
+                    SetTokenStatus(ApiTokenStatusType.Neutral);
                 }
             } else {
                 SetTokenStatus(ApiTokenStatusType.Neutral);
@@ -325,15 +334,19 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             _loadedDetails = (tokenTask.Result, accountTask.Result);
 
-            var allPermissions = Enum.GetValues(typeof(TokenPermission));
-
-            for (int i = 1; i < allPermissions.Length; i++) {
-                if (!tokenTask.Result.Permissions.List.Contains(new ApiEnum<TokenPermission>((TokenPermission)allPermissions.GetValue(i)))) {
-                    SetTokenStatus(ApiTokenStatusType.Partial, Strings.GameServices.Gw2ApiService.TokenStatus_PartialPermission);
-                    return;
-                }
+            // Check minimum permissions
+            if (_minimumTokenPermissions.Any(minPermission => !tokenTask.Result.Permissions.List.Contains(new ApiEnum<TokenPermission>(minPermission)))) {
+                SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_MissingMinPermission);
+                return;
             }
 
+            // Check partial permissions (total minus TokenPermission.Unknown)
+            if (tokenTask.Result.Permissions.List.Count < Enum.GetValues(typeof(TokenPermission)).Length - 1) {
+                SetTokenStatus(ApiTokenStatusType.Partial, Strings.GameServices.Gw2ApiService.TokenStatus_PartialPermission);
+                return;
+            }
+
+            // Token is valid
             SetTokenStatus(ApiTokenStatusType.Perfect,
                            string.Format(Strings.GameServices.Gw2ApiService.TokenStatus_ValidToken,
                                          accountTask.Result.Name,

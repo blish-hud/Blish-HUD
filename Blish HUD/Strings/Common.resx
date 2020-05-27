@@ -122,4 +122,7 @@
     <value>Clear</value>
     <comment>Found on a button to clear the input.</comment>
   </data>
+  <data name="Instructions" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
 </root>

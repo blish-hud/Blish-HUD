@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
@@ -59,7 +58,6 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
             if (infoTask.IsCanceled) return false;
 
             if (infoTask.Exception != null) {
-                Logger.Warn(infoTask.Exception, "Request failed.");
                 HandleErrorLoading(infoTask.Exception);
                 return false;
             }
@@ -69,6 +67,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
         }
 
         private void HandleErrorLoading(Exception ex) {
+            Logger.Warn(ex, "Loading failed.");
             _loadCancel.Cancel();
         }
 

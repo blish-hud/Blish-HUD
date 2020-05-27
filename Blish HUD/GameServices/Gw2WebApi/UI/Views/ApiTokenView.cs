@@ -8,10 +8,9 @@ using Gw2Sharp.WebApi.V2.Models;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Color = Microsoft.Xna.Framework.Color;
 
 namespace Blish_HUD.Gw2WebApi.UI.Views {
-    public class ApiTokenView : View<ApiTokenPresenter> {
+    public class ApiTokenView : View {
 
         private readonly Dictionary<string, (string Region, Texture2D Flag)> _worldRegionFlags = new Dictionary<string, (string Region, Texture2D Flag)>() {
             {"10", ("US / North America", GameService.Content.GetTexture(@"common/784343"))},
@@ -27,6 +26,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         private Image _regionFlagImg;
         private Image _accountCommanderImg;
+
+        private GlowButton _deleteBttn;
 
         private bool _active;
 
@@ -47,6 +48,11 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         public IApiV2ObjectList<string> CharacterList {
             get => _characterList;
             set => SetCharacterList(value);
+        }
+
+        public bool CanDelete {
+            get => _deleteBttn.Visible;
+            set => _deleteBttn.Visible = value;
         }
 
         public void SetTokenInfo(TokenInfo tokenInfo) {
@@ -82,22 +88,16 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             get => _active;
             set => SetActive(value);
         }
-        
-        public ApiTokenView(string token) {
-            this.Presenter = new ApiTokenPresenter(this, token);
-        }
 
         private void SetActive(bool active) {
             _active                   = active;
-            //_accountNameLbl.TextColor = active ? Color.Green : Color.White;
-            ((Panel)_accountNameLbl.Parent).BackgroundTexture = _active 
-                                                                    ? GameService.Content.GetTexture("1060353-crop") 
-                                                                    : GameService.Content.GetTexture("1863945-crop");
+
+            this.ViewTarget.BackgroundTexture = _active
+                                                    ? GameService.Content.GetTexture("1060353-crop")
+                                                    : GameService.Content.GetTexture("1863945-crop");
         }
 
         protected override void Build(Panel buildPanel) {
-            //buildPanel.BackgroundTexture = GameService.Content.GetTexture("1863945-crop");
-
             _accountNameLbl = new Label() {
                 Text           = "[Account Name]",
                 Font           = GameService.Content.DefaultFont16,
@@ -140,7 +140,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent              = buildPanel
             };
 
-            var deleteBttn = new GlowButton() {
+            _deleteBttn = new GlowButton() {
                 Icon             = GameService.Content.GetTexture("common/733269"),
                 ActiveIcon       = GameService.Content.GetTexture("common/733270"),
                 Location         = new Point(buildPanel.Width - 26, 10),
@@ -149,11 +149,13 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent           = buildPanel
             };
 
-            deleteBttn.Click += DeleteRegisteredToken;
+            _deleteBttn.Click += DeleteRegisteredToken;
         }
 
         private void DeleteRegisteredToken(object sender, MouseEventArgs e) {
             GameService.Gw2WebApi.UnregisterKey(_tokenInfo.Id);
+
+            this.ViewTarget.Dispose();
         }
 
     }

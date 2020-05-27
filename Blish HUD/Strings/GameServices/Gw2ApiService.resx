@@ -157,4 +157,34 @@
   <data name="AccountInfo_Character" xml:space="preserve">
     <value>Character</value>
   </data>
+  <data name="TokenStatus_MissingMinPermission" xml:space="preserve">
+    <value>Missing required permissions</value>
+  </data>
+  <data name="CreateTokenInstructions_Warning" xml:space="preserve">
+    <value>You can register a key without all permissions, but some
+features and modules may fail to function properly.
+
+At a minimum, "Account" and "Character" permissions
+are required.</value>
+  </data>
+  <data name="CreateTokenInstructions_Step1" xml:space="preserve">
+    <value>Navigate to the official applications page.</value>
+  </data>
+  <data name="Link_ManageApplications" xml:space="preserve">
+    <value>Manage Applications</value>
+  </data>
+  <data name="CreateTokenInstructions_Step2" xml:space="preserve">
+    <value>Click "New Key".</value>
+  </data>
+  <data name="CreateTokenInstructions_Step3" xml:space="preserve">
+    <value>Select all permissions and press the
+"CREATE API KEY" button.</value>
+  </data>
+  <data name="CreateTokenInstructions_Step4" xml:space="preserve">
+    <value>Copy the new key.</value>
+  </data>
+  <data name="CreateTokenInstructions_Step5" xml:space="preserve">
+    <value>Paste the key into the field above and
+press "Register".</value>
+  </data>
 </root>
