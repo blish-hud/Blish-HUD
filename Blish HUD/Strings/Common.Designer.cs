@@ -97,6 +97,15 @@ namespace Blish_HUD.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restart.
+        /// </summary>
+        internal static string Action_Restart {
+            get {
+                return ResourceManager.GetString("Action_Restart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Blish HUD.
         /// </summary>
         internal static string BlishHUD {

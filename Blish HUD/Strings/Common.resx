@@ -125,4 +125,7 @@
   <data name="Instructions" xml:space="preserve">
     <value>Instructions</value>
   </data>
+  <data name="Action_Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
 </root>
