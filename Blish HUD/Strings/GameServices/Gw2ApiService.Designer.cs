@@ -175,6 +175,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Verwalte API-Schlüssel.
+        /// </summary>
+        internal static string ManageApiKeysSection {
+            get {
+                return ResourceManager.GetString("ManageApiKeysSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (no name).
         /// </summary>
         internal static string Token_NoName {

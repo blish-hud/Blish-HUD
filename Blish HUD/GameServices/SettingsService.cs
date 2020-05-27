@@ -216,7 +216,7 @@ namespace Blish_HUD {
 
             var settingsMiAbout   = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.AboutSection,           Content.GetTexture("440023"));
             var settingsMiOverlay = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, Content.GetTexture("156736"));
-            var settingsMiApiKeys = settingsListMenu.AddMenuItem("Manage API Keys", Content.GetTexture("155048"));
+            var settingsMiApiKeys = settingsListMenu.AddMenuItem(Strings.GameServices.Gw2ApiService.ManageApiKeysSection,    Content.GetTexture("155048"));
             var settingsMiModules = settingsListMenu.AddMenuItem(Strings.GameServices.ModulesService.ManageModulesSection,   Content.GetTexture("156764-noarrow"));
 
             settingsMiApiKeys.Click += delegate {

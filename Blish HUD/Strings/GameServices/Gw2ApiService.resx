@@ -187,4 +187,7 @@ are required.</value>
     <value>Paste the key into the field above and
 press "Register".</value>
   </data>
+  <data name="ManageApiKeysSection" xml:space="preserve">
+    <value>Verwalte API-Schlüssel</value>
+  </data>
 </root>
