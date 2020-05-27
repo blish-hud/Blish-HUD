@@ -95,8 +95,7 @@ namespace Blish_HUD.Common.Gw2 {
         }
 
         private static void Focus() {
-            GameService.GameIntegration.FocusGw2();
-            Mouse.Click(MouseButton.LEFT, GameService.Graphics.GraphicsDevice.Viewport.Width / 2, 0);
+            Unfocus();
             Keyboard.Stroke(VirtualKeyShort.RETURN);
         }
         private static void Unfocus() {
@@ -104,8 +103,8 @@ namespace Blish_HUD.Common.Gw2 {
             Mouse.Click(MouseButton.LEFT, GameService.Graphics.GraphicsDevice.Viewport.Width / 2, 0);
         }
         private static bool Valid(string text) {
-            return text != null; 
-            //More checks? Formatting, symbols..
+            return (text != null && text.Length < 200);
+            // More checks? (Symbols: https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset)
         }
     }
 }
