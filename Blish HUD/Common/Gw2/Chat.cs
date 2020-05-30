@@ -1,7 +1,12 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Controls.Intern;
+using System.Linq;
+
 namespace Blish_HUD.Common.Gw2 {
 
     /// <summary>
@@ -14,9 +19,9 @@ namespace Blish_HUD.Common.Gw2 {
         /// </summary>
         public static async void Send(string message) {
             if (!Valid(message) && !GameService.GameIntegration.Gw2IsRunning) return;
-            byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
+            var prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
             await ClipboardUtil.WindowsClipboardService.SetTextAsync(message)
-                               .ContinueWith((clipboardResult) => {
+                               .ContinueWith(clipboardResult => {
                                     if (clipboardResult.IsFaulted)
                                         Logger.Warn(clipboardResult.Exception, $"Failed to set clipboard text to \"{message}\"!",
                                                     message);
@@ -28,9 +33,9 @@ namespace Blish_HUD.Common.Gw2 {
                                             Thread.Sleep(50);
                                             Keyboard.Release(VirtualKeyShort.LCONTROL, true);
                                             Keyboard.Stroke(VirtualKeyShort.RETURN);
-                                        }).ContinueWith((result) => {
-                                            if (prevClipboardContent != null)
-                                                ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                        }).ContinueWith(result => {
+                                            ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                            return result.IsFaulted;
                                         });
                                 });
         }
@@ -40,9 +45,9 @@ namespace Blish_HUD.Common.Gw2 {
         public static async void Paste(string text) {
             string currentInput = await GetInputText();
             if (!Valid(currentInput + text) && !GameService.GameIntegration.Gw2IsRunning) return;
-            byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
+            var prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
             await ClipboardUtil.WindowsClipboardService.SetTextAsync(text)
-                               .ContinueWith((clipboardResult) => {
+                               .ContinueWith(clipboardResult => {
                                     if (clipboardResult.IsFaulted)
                                         Logger.Warn(clipboardResult.Exception, $"Failed to set clipboard text to \"{text}\"!",
                                                     text);
@@ -53,31 +58,33 @@ namespace Blish_HUD.Common.Gw2 {
                                             Keyboard.Stroke(VirtualKeyShort.KEY_V, true);
                                             Thread.Sleep(50);
                                             Keyboard.Release(VirtualKeyShort.LCONTROL, true);
-                                        }).ContinueWith((result) => {
-                                            if (prevClipboardContent != null)
-                                                ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                        }).ContinueWith(result => {
+                                            ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                            return result.IsFaulted;
                                         });
                                 });
         }
         /// <summary>
-        /// Returns the current string in the input field or null if empty.
+        /// Returns the current string in the input field.
         /// </summary>
         public static async Task<string> GetInputText() {
             if (!GameService.GameIntegration.Gw2IsRunning) return null;
-            byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
+            var prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
             await Task.Run(() => {
-                        Focus();
-                        Keyboard.Press(VirtualKeyShort.LCONTROL, true);
-                        Keyboard.Stroke(VirtualKeyShort.KEY_A, true);
-                        Keyboard.Stroke(VirtualKeyShort.KEY_C, true);
-                        Thread.Sleep(50);
-                        Keyboard.Release(VirtualKeyShort.LCONTROL, true);
-                        Unfocus();
+                Focus();
+                Keyboard.Press(VirtualKeyShort.LCONTROL, true);
+                Keyboard.Stroke(VirtualKeyShort.KEY_A, true);
+                Keyboard.Stroke(VirtualKeyShort.KEY_C, true);
+                Thread.Sleep(50);
+                Keyboard.Release(VirtualKeyShort.LCONTROL, true);
+                Unfocus();
             });
-            var currentInput = await ClipboardUtil.WindowsClipboardService.GetTextAsync();
-            if (prevClipboardContent != null)
-                await ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
-            return currentInput;
+            string inputText = await ClipboardUtil.WindowsClipboardService.GetTextAsync()
+                                                  .ContinueWith(result => {
+                                                       ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                                       return !result.IsFaulted ? result.Result : "";
+                                                   });
+            return inputText;
         }
         /// <summary>
         /// Clears the input field.
@@ -94,7 +101,6 @@ namespace Blish_HUD.Common.Gw2 {
                 Unfocus();
             });
         }
-
         private static void Focus() {
             Unfocus();
             Keyboard.Stroke(VirtualKeyShort.RETURN);
