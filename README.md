@@ -47,6 +47,10 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 - [Visual Studio 2019 Module Template](https://github.com/blish-hud/Module-Template)
 - [Example Module](https://github.com/blish-hud/Example-Blish-HUD-Module/blob/master/README.md)
 
+### Thanks
+
+Thank you [JetBrains](https://www.jetbrains.com/?from=Blish%20HUD) for providing free open source licenses to our primary contributers.
+
 ### License
 
 Licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
