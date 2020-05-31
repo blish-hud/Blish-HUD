@@ -140,4 +140,13 @@ dem Blish HUD-Team mit Hilfe von vielen anderen!</value>
   <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
     <value>In die Symbolleiste minimieren, wenn Guild Wars 2 geschlossen wird.</value>
   </data>
+  <data name="Setting_ShowInTaskbar_DisplayName" xml:space="preserve">
+    <value>In Taskleiste anzeigen</value>
+  </data>
+  <data name="OverlaySettingsSection" xml:space="preserve">
+    <value>Overlay-Einstellungen</value>
+  </data>
+  <data name="Setting_ShowInTaskbar_Description" xml:space="preserve">
+    <value>Aktiviert, wird Blish HUD in der Taskleiste angezeigt während es läuft.</value>
+  </data>
 </root>

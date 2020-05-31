@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -98,6 +99,12 @@ namespace Blish_HUD.Settings {
             definedEntry.Renderer    = renderer;
 
             return definedEntry;
+        }
+
+        public void UndefineSetting(string entryKey) {
+            if (this[entryKey] != null) {
+                _entries.Remove(this[entryKey]);
+            }
         }
 
         public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
