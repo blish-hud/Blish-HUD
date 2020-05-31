@@ -333,7 +333,7 @@ namespace Blish_HUD {
             void Paste(string text);
             Task<string> GetInputText();
             void Clear();
-        };
+        }
         private class GameChat : IGameChat {
             /// <summary>
             /// Sends a message to the chat.
