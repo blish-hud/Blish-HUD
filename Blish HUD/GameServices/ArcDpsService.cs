@@ -5,29 +5,16 @@ using System.Net;
 using System.Threading;
 using Blish_HUD.ArcDps;
 using Blish_HUD.ArcDps.Common;
-using Gw2Sharp;
 using Microsoft.Xna.Framework;
 
-namespace Blish_HUD
-{
-    public class ArcDpsService : GameService
-    {
+namespace Blish_HUD {
+
+    public class ArcDpsService : GameService {
+
         private static readonly object WatchLock = new object();
-#if DEBUG
+        #if DEBUG
         public static long Counter;
-#endif
-        private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
-
-        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions =
-            new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
-
-        private bool _hudIsActive;
-
-        private SocketListener _server;
-
-        private Stopwatch _stopwatch;
-
-        private bool _subscribed;
+        #endif
 
         /// <summary>
         ///     Provides common fields that multiple modules might want to track
@@ -42,51 +29,52 @@ namespace Blish_HUD
         /// <summary>
         ///     Indicates if arcdps currently draws its HUD (not in character select, cut scenes or loading screens)
         /// </summary>
-        public bool HudIsActive
-        {
-            get
-            {
-                lock (WatchLock)
-                {
+        public bool HudIsActive {
+            get {
+                lock (WatchLock) {
                     return _hudIsActive;
                 }
             }
-            private set
-            {
-                lock (WatchLock)
-                {
+            private set {
+                lock (WatchLock) {
                     _stopwatch.Restart();
                     _hudIsActive = value;
                 }
             }
         }
+        private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
 
-        public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds)
-        {
-            if (!_subscribed)
-            {
-                RawCombatEvent += DispatchSkillSubscriptions;
-                _subscribed = true;
+        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions =
+            new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
+
+        private bool _hudIsActive;
+
+        private SocketListener _server;
+
+        private Stopwatch _stopwatch;
+
+        private bool _subscribed;
+
+        public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds) {
+            if (!_subscribed) {
+                this.RawCombatEvent += DispatchSkillSubscriptions;
+                _subscribed         =  true;
             }
 
-            foreach (var skillId in skillIds)
-            {
-                if (!_subscriptions.ContainsKey(skillId))
-                    _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
+            foreach (uint skillId in skillIds) {
+                if (!_subscriptions.ContainsKey(skillId)) _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
 
                 _subscriptions[skillId].Add(func);
             }
         }
 
-        private void DispatchSkillSubscriptions(object sender, RawCombatEventArgs eventHandler)
-        {
-            if (eventHandler.CombatEvent.Ev == null)
-                return;
-            var skillId = eventHandler.CombatEvent.Ev.SkillId;
-            if (!_subscriptions.ContainsKey(skillId))
-                return;
+        private void DispatchSkillSubscriptions(object sender, RawCombatEventArgs eventHandler) {
+            if (eventHandler.CombatEvent.Ev == null) return;
 
-            foreach (var action in _subscriptions[skillId]) action(sender, eventHandler);
+            uint skillId = eventHandler.CombatEvent.Ev.SkillId;
+            if (!_subscriptions.ContainsKey(skillId)) return;
+
+            foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) action(sender, eventHandler);
         }
 
         /// <remarks>
@@ -102,15 +90,14 @@ namespace Blish_HUD
         /// </summary>
         public event EventHandler<RawCombatEventArgs> RawCombatEvent;
 
-        protected override void Initialize()
-        {
-            Common = new CommonFields();
-            _stopwatch = new Stopwatch();
-            _server = new SocketListener(200_000);
+        protected override void Initialize() {
+            this.Common             =  new CommonFields();
+            _stopwatch              =  new Stopwatch();
+            _server                 =  new SocketListener(200_000);
             _server.ReceivedMessage += MessageHandler;
-#if DEBUG
-            RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
-#endif
+            #if DEBUG
+            this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
+            #endif
         }
 
         protected override void Load() {
@@ -119,42 +106,40 @@ namespace Blish_HUD
         }
 
         private void Start(object sender, ValueEventArgs<uint> value) {
-            if (Loaded) _server.Start(new IPEndPoint(IPAddress.Loopback, GetPort(value.Value)));
+            if (this.Loaded) _server.Start(new IPEndPoint(IPAddress.Loopback, GetPort(value.Value)));
         }
 
         private static int GetPort(uint processId) {
             ushort pid;
+
             unchecked {
                 pid = (ushort) processId;
             }
 
-            return pid | 1 << 14 | 1 << 15;
+            return pid | (1 << 14) | (1 << 15);
         }
 
         protected override void Unload() {
             Gw2Mumble.Info.ProcessIdChanged -= Start;
             _stopwatch.Stop();
             _server.Stop();
-            RenderPresent = false;
+            this.RenderPresent = false;
         }
 
-        protected override void Update(GameTime gameTime)
-        {
+        protected override void Update(GameTime gameTime) {
             TimeSpan elapsed;
-            lock (WatchLock)
-            {
+
+            lock (WatchLock) {
                 elapsed = _stopwatch.Elapsed;
             }
 
-            RenderPresent = elapsed < _leeway;
+            this.RenderPresent = elapsed < _leeway;
         }
 
-        private void MessageHandler(MessageData data)
-        {
-            switch (data.Message[0])
-            {
+        private void MessageHandler(MessageData data) {
+            switch (data.Message[0]) {
                 case (byte) MessageType.ImGui:
-                    HudIsActive = data.Message[1] != 0;
+                    this.HudIsActive = data.Message[1] != 0;
                     break;
                 case (byte) MessageType.CombatArea:
                     ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
@@ -165,22 +150,23 @@ namespace Blish_HUD
             }
         }
 
-        private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType)
-        {
+        private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType) {
             var message = CombatParser.ProcessCombat(data);
             OnRawCombatEvent(new RawCombatEventArgs(message, eventType));
         }
 
-        private void OnRawCombatEvent(RawCombatEventArgs e)
-        {
-            RawCombatEvent?.Invoke(this, e);
+        private void OnRawCombatEvent(RawCombatEventArgs e) {
+            this.RawCombatEvent?.Invoke(this, e);
         }
 
-        private enum MessageType
-        {
-            ImGui = 1,
-            CombatArea = 2,
+        private enum MessageType {
+
+            ImGui       = 1,
+            CombatArea  = 2,
             CombatLocal = 3
+
         }
+
     }
+
 }
