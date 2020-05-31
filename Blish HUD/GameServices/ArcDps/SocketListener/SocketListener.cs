@@ -12,27 +12,19 @@ namespace Blish_HUD.ArcDps
         private const int MESSAGE_HEADER_SIZE = 8;
 
         private static readonly Mutex Mutex = new Mutex();
-        private readonly Semaphore _acceptedClientsSemaphore;
         private readonly int _bufferSize;
-        private readonly int _maxConnectionCount;
 
-        private readonly SocketAsyncEventArgsPool _socketAsyncReceiveEventArgsPool;
+        private readonly SocketAsyncEventArgs _socketAsyncReceiveEventArgs;
         private Socket _listenSocket;
 
-        public SocketListener(int maxConnectionCount, int bufferSize)
+        public SocketListener(int bufferSize)
         {
-            _maxConnectionCount = maxConnectionCount;
             _bufferSize = bufferSize;
-            _socketAsyncReceiveEventArgsPool = new SocketAsyncEventArgsPool();
-            _acceptedClientsSemaphore = new Semaphore(maxConnectionCount, maxConnectionCount);
 
-            for (var i = 0; i < maxConnectionCount; i++)
-            {
-                var socketAsyncEventArgs = new SocketAsyncEventArgs();
-                socketAsyncEventArgs.Completed += OnIoCompleted;
-                socketAsyncEventArgs.SetBuffer(new byte[bufferSize], 0, bufferSize);
-                _socketAsyncReceiveEventArgsPool.Push(socketAsyncEventArgs);
-            }
+            var socketAsyncEventArgs = new SocketAsyncEventArgs();
+            socketAsyncEventArgs.Completed += OnIoCompleted;
+            socketAsyncEventArgs.SetBuffer(new byte[bufferSize], 0, bufferSize);
+            _socketAsyncReceiveEventArgs = socketAsyncEventArgs;
         }
 
         public event Message ReceivedMessage;
@@ -43,9 +35,16 @@ namespace Blish_HUD.ArcDps
             {
                 ReceiveBufferSize = _bufferSize
             };
-            _listenSocket.Bind(localEndPoint);
-            _listenSocket.Listen(_maxConnectionCount);
-            StartAccept(null);
+
+            _socketAsyncReceiveEventArgs.AcceptSocket = _listenSocket;
+            _socketAsyncReceiveEventArgs.RemoteEndPoint = localEndPoint;
+
+            try {
+                if (!_listenSocket.ConnectAsync(_socketAsyncReceiveEventArgs)) ProcessConnect(_socketAsyncReceiveEventArgs);
+            } catch (Exception) {
+                // ignored
+            }
+
             Mutex.WaitOne();
         }
 
@@ -63,60 +62,28 @@ namespace Blish_HUD.ArcDps
             Mutex.ReleaseMutex();
         }
 
-        private void OnIoCompleted(object sender, SocketAsyncEventArgs e)
-        {
-            switch (e.LastOperation)
-            {
+        private void OnIoCompleted(object sender, SocketAsyncEventArgs e) {
+            switch (e.LastOperation) {
                 case SocketAsyncOperation.Receive:
                     ProcessReceive(e);
                     break;
-                default:
-                    throw new ArgumentException("The last operation completed on the socket was not a receive");
+                case SocketAsyncOperation.Connect:
+                    ProcessConnect(e);
+                    break;
             }
         }
 
-        private void StartAccept(SocketAsyncEventArgs acceptEventArg)
-        {
-            if (acceptEventArg == null)
-            {
-                acceptEventArg = new SocketAsyncEventArgs();
-                acceptEventArg.Completed += (sender, e) => ProcessAccept(e);
-            }
-            else
-            {
-                acceptEventArg.AcceptSocket = null;
-            }
-
-            _acceptedClientsSemaphore.WaitOne();
-
-            try
-            {
-                if (!_listenSocket.AcceptAsync(acceptEventArg)) ProcessAccept(acceptEventArg);
-            }
-            catch
-            {
-                // ignored
-                // will fail when closing bhud
-            }
-        }
-
-        private void ProcessAccept(SocketAsyncEventArgs e)
+        private void ProcessConnect(SocketAsyncEventArgs e)
         {
             try
             {
-                var readEventArgs = _socketAsyncReceiveEventArgsPool.Pop();
-                if (readEventArgs != null)
-                {
-                    readEventArgs.UserToken = new AsyncUserToken(e.AcceptSocket);
-                    if (!e.AcceptSocket.ReceiveAsync(readEventArgs)) ProcessReceive(readEventArgs);
-                }
+                _socketAsyncReceiveEventArgs.UserToken = new AsyncUserToken(e.AcceptSocket);
+                    if (!e.AcceptSocket.ReceiveAsync(_socketAsyncReceiveEventArgs)) ProcessReceive(_socketAsyncReceiveEventArgs);
             }
             catch
             {
                 // ignored
             }
-
-            StartAccept(e);
         }
 
         private void ProcessReceive(SocketAsyncEventArgs e)
@@ -150,9 +117,9 @@ namespace Blish_HUD.ArcDps
 
                     if (!token.Socket.ReceiveAsync(e)) continue;
                 }
-                else
-                {
-                    CloseClientSocket(e);
+                else {
+                    var token = e.UserToken as AsyncUserToken;
+                    token?.Dispose();
                 }
 
                 break;
@@ -207,14 +174,6 @@ namespace Blish_HUD.ArcDps
         private void ProcessMessage(byte[] messageData, AsyncUserToken token, SocketAsyncEventArgs e)
         {
             ReceivedMessage?.Invoke(new MessageData {Message = messageData, Token = token});
-        }
-
-        private void CloseClientSocket(SocketAsyncEventArgs e)
-        {
-            var token = e.UserToken as AsyncUserToken;
-            token?.Dispose();
-            _acceptedClientsSemaphore.Release();
-            _socketAsyncReceiveEventArgsPool.Push(e);
         }
     }
 }

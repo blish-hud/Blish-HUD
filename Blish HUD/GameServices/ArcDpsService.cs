@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using Blish_HUD.ArcDps;
 using Blish_HUD.ArcDps.Common;
+using Gw2Sharp;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD
@@ -105,21 +106,33 @@ namespace Blish_HUD
         {
             Common = new CommonFields();
             _stopwatch = new Stopwatch();
-            _server = new SocketListener(10, 200_000);
+            _server = new SocketListener(200_000);
             _server.ReceivedMessage += MessageHandler;
 #if DEBUG
             RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
 #endif
         }
 
-        protected override void Load()
-        {
-            _server.Start(new IPEndPoint(IPAddress.Loopback, 8214));
+        protected override void Load() {
+            Gw2Mumble.Info.ProcessIdChanged += Start;
             _stopwatch.Start();
         }
 
-        protected override void Unload()
-        {
+        private void Start(object sender, ValueEventArgs<uint> value) {
+            if (Loaded) _server.Start(new IPEndPoint(IPAddress.Loopback, GetPort(value.Value)));
+        }
+
+        private static int GetPort(uint processId) {
+            ushort pid;
+            unchecked {
+                pid = (ushort) processId;
+            }
+
+            return pid | 1 << 14 | 1 << 15;
+        }
+
+        protected override void Unload() {
+            Gw2Mumble.Info.ProcessIdChanged -= Start;
             _stopwatch.Stop();
             _server.Stop();
             RenderPresent = false;
