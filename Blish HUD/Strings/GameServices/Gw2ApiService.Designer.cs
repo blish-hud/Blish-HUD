@@ -166,7 +166,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Register API Keys.
+        ///   Looks up a localized string similar to Register API Key.
         /// </summary>
         internal static string ManageApiKeys_Title {
             get {
@@ -175,7 +175,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Verwalte API-Schlüssel.
+        ///   Looks up a localized string similar to Manage API Keys.
         /// </summary>
         internal static string ManageApiKeysSection {
             get {
