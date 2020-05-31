@@ -7,7 +7,9 @@ namespace Blish_HUD.Controls {
 
     public enum ControlFlowDirection {
         LeftToRight,
-        TopToBottom
+        TopToBottom,
+        SingleLeftToRight,
+        SingleTopToBottom
     }
 
     public class FlowPanel : Panel {
@@ -86,7 +88,7 @@ namespace Blish_HUD.Controls {
             ReflowChildLayout(_children);
         }
 
-        private void ReflowChildLayoutLeftToRight(List<Control> allChildren) {
+        private void ReflowChildLayoutLeftToRight(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
@@ -97,11 +99,6 @@ namespace Blish_HUD.Controls {
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next line
                 if (child.Width >= this.Width - lastRight) {
-                    // TODO: Consider a more graceful alternative (like just stick it on its own line)
-                    // Prevent stack overflow
-                    if (child.Width > this.ContentRegion.Width)
-                        throw new Exception("Control is too large to flow in FlowPanel");
-
                     currentBottom = nextBottom + _controlPadding.Y;
                     lastRight     = outerPadX;
                 }
@@ -115,15 +112,53 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void ReflowChildLayoutTopToBottom(List<Control> allChildren) {
-            // TODO: Implement FlowPanel FlowDirection.TopToBottom
+        private void ReflowChildLayoutTopToBottom(IEnumerable<Control> allChildren) {
+            // TODO: Implement FlowPanel Flow TopToBottom
+        }
+
+        private void ReflowChildLayoutSingleLeftToRight(IEnumerable<Control> allChildren) {
+            float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
+            float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
+
+            var lastLeft = outerPadX;
+
+            foreach (var child in allChildren) {
+                child.Location = new Point((int)lastLeft, (int)outerPadY);
+
+                lastLeft = child.Right + _controlPadding.X;
+            }
+        }
+
+        private void ReflowChildLayoutSingleTopToBottom(IEnumerable<Control> allChildren) {
+            float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
+            float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
+
+            var lastBottom = outerPadY;
+
+            foreach (var child in allChildren) {
+                child.Location = new Point((int)outerPadX, (int)lastBottom);
+
+                lastBottom = child.Bottom + _controlPadding.Y;
+            }
         }
 
         private void ReflowChildLayout(List<Control> allChildren) {
-            if (this.FlowDirection == ControlFlowDirection.LeftToRight) {
-                ReflowChildLayoutLeftToRight(allChildren.Where(c => c.GetType() != typeof(Scrollbar)).ToList());
-            } else {
-                ReflowChildLayoutTopToBottom(allChildren.Where(c => c.GetType() != typeof(Scrollbar)).ToList());
+            var filteredChildren = allChildren.ToList().Where(c => c.GetType() != typeof(Scrollbar)
+                                                                && c.Visible);
+
+            switch (_flowDirection) {
+                case ControlFlowDirection.LeftToRight:
+                    ReflowChildLayoutLeftToRight(filteredChildren);
+                    break;
+                case ControlFlowDirection.TopToBottom:
+                    ReflowChildLayoutTopToBottom(filteredChildren);
+                    break;
+                case ControlFlowDirection.SingleLeftToRight:
+                    ReflowChildLayoutSingleLeftToRight(filteredChildren);
+                    break;
+                case ControlFlowDirection.SingleTopToBottom:
+                    ReflowChildLayoutSingleTopToBottom(filteredChildren);
+                    break;
             }
         }
 

@@ -319,7 +319,7 @@ namespace Blish_HUD.Controls {
         /// The size of the control.  Both the X and Y component must be greater than 0.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when either the X or Y component are 0 or less.</exception>
-        public Point Size {
+        public virtual Point Size {
             get => _size;
             set {
                 if (_size == value) return;

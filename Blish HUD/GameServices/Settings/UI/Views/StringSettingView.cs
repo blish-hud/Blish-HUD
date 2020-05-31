@@ -1,0 +1,67 @@
+﻿using System;
+using Blish_HUD.Controls;
+using Microsoft.Xna.Framework;
+
+namespace Blish_HUD.Settings.UI.Views {
+    public class StringSettingView : SettingView<string> {
+
+        private const int CONTROL_PADDING = 5;
+
+        private const int TEXTBOX_WIDTH  = 250;
+        private const int TEXTBOX_HEIGHT = 27;
+
+        private Label   _displayNameLabel;
+        private TextBox _stringTextbox;
+
+        public StringSettingView(SettingEntry<string> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
+
+        protected override void BuildSetting(Panel buildPanel) {
+            _displayNameLabel = new Label() {
+                AutoSizeWidth = true,
+                Location      = new Point(CONTROL_PADDING, 0),
+                Parent        = buildPanel
+            };
+
+            _stringTextbox = new TextBox() {
+                Size   = new Point(TEXTBOX_WIDTH, TEXTBOX_HEIGHT),
+                Parent = buildPanel
+            };
+
+            _stringTextbox.TextChanged += StringTextboxOnTextChanged;
+        }
+
+        private void StringTextboxOnTextChanged(object sender, EventArgs e) {
+            this.OnValueChanged(new ValueEventArgs<string>(_stringTextbox.Text));
+        }
+
+        private void UpdateSizeAndLayout() {
+            _displayNameLabel.Height = _stringTextbox.Bottom;
+
+            if (this.DefinedWidth > 0) {
+                _stringTextbox.Left   = _displayNameLabel.Right + CONTROL_PADDING;
+                this.ViewTarget.Width = _stringTextbox.Right    + CONTROL_PADDING;
+            } else {
+                _stringTextbox.Location = new Point(this.ViewTarget.Width - CONTROL_PADDING - TEXTBOX_WIDTH, 0);
+            }
+        }
+
+        protected override void RefreshDisplayName(string displayName) {
+            _displayNameLabel.Text = displayName;
+
+            UpdateSizeAndLayout();
+        }
+
+        protected override void RefreshDescription(string description) {
+            _stringTextbox.BasicTooltipText = description;
+        }
+
+        protected override void RefreshValue(string value) {
+            _stringTextbox.Text = value;
+        }
+
+        protected override void Unload() {
+            _stringTextbox.TextChanged -= StringTextboxOnTextChanged;
+        }
+
+    }
+}

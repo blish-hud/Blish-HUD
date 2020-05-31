@@ -6,6 +6,7 @@ using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
 using Blish_HUD.Settings;
+using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 
@@ -201,9 +202,11 @@ namespace Blish_HUD {
         }
 
         private Panel BuildHomePanel(WindowBase wndw) {
-            var hPanel = new Panel() {
+            var hPanel = new ViewContainer() {
                 Size = wndw.ContentRegion.Size
             };
+
+            hPanel.Show(new SettingsView(GameService.Settings.Settings));
 
             return hPanel;
         }

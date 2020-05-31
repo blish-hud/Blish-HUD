@@ -51,6 +51,9 @@ namespace Blish_HUD.Controls {
                ContentRegion specified and then resizes */
             if (!_contentRegion.HasValue) {
                 OnPropertyChanged(nameof(this.ContentRegion));
+
+                OnContentResized(new RegionChangedEventArgs(new Rectangle(Point.Zero, e.PreviousSize),
+                                                            new Rectangle(Point.Zero, e.CurrentSize)));
             }
         }
 
