@@ -5,10 +5,12 @@ using System.Globalization;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD {
 
@@ -22,13 +24,13 @@ namespace Blish_HUD {
 
         public event EventHandler<EventArgs> UserLocaleChanged;
 
-        public TabbedWindow BlishHudWindow { get; protected set; }
-        public CornerIcon BlishMenuIcon { get; protected set; }
-        public ContextMenuStrip BlishContextMenu { get; protected set; }
+        public TabbedWindow     BlishHudWindow   { get; private set; }
+        public CornerIcon       BlishMenuIcon    { get; private set; }
+        public ContextMenuStrip BlishContextMenu { get; private set; }
 
         public GameTime CurrentGameTime { get; private set; }
 
-        internal SettingCollection    _applicationSettings;
+        internal SettingCollection OverlaySettings { get; private set; }
 
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
@@ -48,9 +50,9 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            _applicationSettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
+            this.OverlaySettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
 
-            DefineSettings(_applicationSettings);
+            DefineSettings(this.OverlaySettings);
         }
 
         private void DefineSettings(SettingCollection settings) {
@@ -202,11 +204,7 @@ namespace Blish_HUD {
         }
 
         private Panel BuildHomePanel(WindowBase wndw) {
-            var hPanel = new ViewContainer() {
-                Size = wndw.ContentRegion.Size
-            };
-
-            hPanel.Show(new SettingsView(GameService.Settings.Settings));
+            var hPanel = new ViewContainer();
 
             return hPanel;
         }

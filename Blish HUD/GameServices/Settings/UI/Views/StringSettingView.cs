@@ -27,14 +27,19 @@ namespace Blish_HUD.Settings.UI.Views {
                 Parent = buildPanel
             };
 
-            _stringTextbox.TextChanged += StringTextboxOnTextChanged;
+            // Update setting when the textbox loses focus
+            // instead of anytime the text changes
+            _stringTextbox.InputFocusChanged += StringTextboxOnInputFocusChanged;
         }
 
-        private void StringTextboxOnTextChanged(object sender, EventArgs e) {
-            this.OnValueChanged(new ValueEventArgs<string>(_stringTextbox.Text));
+        private void StringTextboxOnInputFocusChanged(object sender, ValueEventArgs<bool> e) {
+            if (e.Value == false) {
+                this.OnValueChanged(new ValueEventArgs<string>(_stringTextbox.Text));
+            }
         }
 
         private void UpdateSizeAndLayout() {
+            this.ViewTarget.Height   = _stringTextbox.Bottom;
             _displayNameLabel.Height = _stringTextbox.Bottom;
 
             if (this.DefinedWidth > 0) {
@@ -60,7 +65,7 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void Unload() {
-            _stringTextbox.TextChanged -= StringTextboxOnTextChanged;
+            _stringTextbox.InputFocusChanged -= StringTextboxOnInputFocusChanged;
         }
 
     }

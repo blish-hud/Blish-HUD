@@ -109,6 +109,18 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public override SizingMode HeightSizingMode {
+            get {
+                if (_collapsed
+                 || _collapseAnim != null && _collapseAnim.Completion < 1f) {
+                    return SizingMode.Standard;
+                }
+
+                return base.HeightSizingMode;
+            }
+            set => base.HeightSizingMode = value;
+        }
+
         // Must remain public for Glide to be able to access the property
         [JsonIgnore] public float ArrowRotation { get; set; } = 0f;
         [JsonIgnore] public float AccentOpacity { get; set; } = 1f;

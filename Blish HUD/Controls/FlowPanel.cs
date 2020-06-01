@@ -6,9 +6,34 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Controls {
 
     public enum ControlFlowDirection {
+        /// <summary>
+        /// Child controls are organized left to right.
+        /// When the width of the container is exceeded,
+        /// the remaining children are brought to the next
+        /// row to continue to be organized.
+        /// </summary>
         LeftToRight,
+
+        /// <summary>
+        /// Child controls are organized top to bottom.
+        /// When the height of the container is exceeded,
+        /// the remaining children are brought to the next
+        /// column to continue to be organized.
+        /// </summary>
         TopToBottom,
+
+        /// <summary>
+        /// Child controls are organized left to right.
+        /// They will be organized into a single row
+        /// regardless of the horizontal space available.
+        /// </summary>
         SingleLeftToRight,
+
+        /// <summary>
+        /// Child controls are organized top to bottom.
+        /// They will be organized into a single column
+        /// regardless of the horizontal space available.
+        /// </summary>
         SingleTopToBottom
     }
 
@@ -41,6 +66,10 @@ namespace Blish_HUD.Controls {
         }
 
         protected ControlFlowDirection _flowDirection = ControlFlowDirection.LeftToRight;
+
+        /// <summary>
+        /// The method / direction that should be used when flowing controls.
+        /// </summary>
         public ControlFlowDirection FlowDirection {
             get => _flowDirection;
             set => SetProperty(ref _flowDirection, value, true);
@@ -74,11 +103,22 @@ namespace Blish_HUD.Controls {
             base.RecalculateLayout();
         }
 
+        /// <summary>
+        /// Filters children of the flow panel by setting those
+        /// that don't match the provided filter function to be
+        /// not visible.
+        /// </summary>
         public void FilterChildren<TControl>(Func<TControl, bool> filter) where TControl : Control {
             _children.Cast<TControl>().ToList().ForEach(tc => tc.Visible = filter(tc));
             ReflowChildLayout(_children);
         }
 
+        /// <summary>
+        /// Sorts children of the flow panel using the provided
+        /// comparison function.
+        /// </summary>
+        /// <typeparam name="TControl"></typeparam>
+        /// <param name="comparison"></param>
         public void SortChildren<TControl>(Comparison<TControl> comparison) where TControl : Control {
             var tempChildren = _children.Cast<TControl>().ToList();
             tempChildren.Sort(comparison);
@@ -97,7 +137,7 @@ namespace Blish_HUD.Controls {
             float lastRight     = outerPadX;
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
-                // Need to flow over to the next line
+                // Need to flow over to the next row
                 if (child.Width >= this.Width - lastRight) {
                     currentBottom = nextBottom + _controlPadding.Y;
                     lastRight     = outerPadX;
@@ -113,7 +153,27 @@ namespace Blish_HUD.Controls {
         }
 
         private void ReflowChildLayoutTopToBottom(IEnumerable<Control> allChildren) {
-            // TODO: Implement FlowPanel Flow TopToBottom
+            float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
+            float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
+
+            float nextRight    = outerPadX;
+            float currentRight = outerPadX;
+            float lastBottom   = outerPadY;
+
+            foreach (var child in allChildren.Where(c => c.Visible)) {
+                // Need to flow over to the next column
+                if (child.Height >= this.Height - lastBottom) {
+                    currentRight = nextRight + _controlPadding.X;
+                    lastBottom   = outerPadY;
+                }
+
+                child.Location = new Point((int)currentRight, (int)lastBottom);
+
+                lastBottom = child.Bottom + _controlPadding.Y;
+
+                // Ensure columns don't overlap
+                nextRight = Math.Max(nextRight, child.Right);
+            }
         }
 
         private void ReflowChildLayoutSingleLeftToRight(IEnumerable<Control> allChildren) {

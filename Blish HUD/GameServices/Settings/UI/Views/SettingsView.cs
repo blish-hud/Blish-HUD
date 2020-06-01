@@ -1,9 +1,5 @@
-﻿using System;
-using System.ComponentModel;
-using System.Linq;
-using Blish_HUD.Controls;
+﻿using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
-using Blish_HUD.Settings.UI.Presenters;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Settings.UI.Views {
@@ -40,47 +36,30 @@ namespace Blish_HUD.Settings.UI.Views {
         private void UpdateBoundsLocking(bool locked) {
             if (_settingFlowPanel == null) return;
 
-            //_settingFlowPanel.CanScroll   = locked;
             _settingFlowPanel.ShowBorder  = !locked;
             _settingFlowPanel.CanCollapse = !locked;
 
-            UnclampView();
-
-            if (locked) {
-                this.ViewTarget.ContentResized += BuildPanelOnResized;
-            } else {
-                _settingFlowPanel.Resized += SettingFlowPanelOnResized;
-
-                if (_lastSettingContainer != null) {
-                    _settingFlowPanel.Height = _lastSettingContainer.Bottom + _settingFlowPanel.ContentRegion.Top + Panel.BOTTOM_PADDING;
-
-                    //this.ViewTarget.Height = this.ViewTarget.ContentRegion.Height + this.ViewTarget.ContentRegion.Top + Panel.BOTTOM_PADDING * 2;
-                }
-            }
-        }
-
-        private void UnclampView() {
-            this.ViewTarget.ContentResized -= BuildPanelOnResized;
-            _settingFlowPanel.Resized      -= SettingFlowPanelOnResized;
+            this.ViewTarget.HeightSizingMode = SizingMode.AutoSize;
         }
 
         protected override void BuildSetting(Panel buildPanel) {
             _settingFlowPanel = new FlowPanel() {
                 Size                = buildPanel.Size,
                 FlowDirection       = ControlFlowDirection.SingleTopToBottom,
-                ControlPadding      = new Vector2(5, 5),
+                ControlPadding      = new Vector2(5, 2),
                 OuterControlPadding = new Vector2(0, 5),
-                //BackgroundColor     = new Color(RandomUtil.GetRandom(0, 250), RandomUtil.GetRandom(0, 250), RandomUtil.GetRandom(0, 250)),
+                WidthSizingMode     = SizingMode.Fill,
+                HeightSizingMode    = SizingMode.AutoSize,
                 Parent              = buildPanel
             };
 
             foreach (var setting in _settings) {
-                IView settingView = null;
+                IView settingView;
 
                 if ((settingView = SettingView.FromType(setting, _settingFlowPanel.Width)) != null) {
                     _lastSettingContainer = new ViewContainer() {
-                        Size = new Point(_settingFlowPanel.Width - 1, 5),
-                        Parent = _settingFlowPanel
+                        WidthSizingMode = SizingMode.Fill,
+                        Parent          = _settingFlowPanel
                     };
 
                     _lastSettingContainer.Show(settingView);
@@ -94,14 +73,6 @@ namespace Blish_HUD.Settings.UI.Views {
             UpdateBoundsLocking(_lockBounds);
         }
 
-        private void BuildPanelOnResized(object sender, RegionChangedEventArgs e) {
-            _settingFlowPanel.Size = e.CurrentRegion.Size;
-        }
-
-        private void SettingFlowPanelOnResized(object sender, ResizedEventArgs e) {
-            this.ViewTarget.Size = _settingFlowPanel.Size;
-        }
-
         protected override void RefreshDisplayName(string displayName) {
             _settingFlowPanel.Title = displayName;
         }
@@ -111,10 +82,6 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void RefreshValue(SettingCollection value) { /* NOOP */ }
-
-        protected override void Unload() {
-            UnclampView();
-        }
 
     }
 }

@@ -21,6 +21,8 @@ namespace Blish_HUD.Settings.UI.Presenters {
 
         private void ViewOnValueChanged(object sender, ValueEventArgs<TSetting> e) {
             this.Model.Value = e.Value;
+
+            GameService.Settings.Save();
         }
 
         protected override void UpdateView() {
