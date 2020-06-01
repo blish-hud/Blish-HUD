@@ -55,13 +55,13 @@ namespace Blish_HUD.Settings {
         [JsonIgnore]
         public string DisplayName { get; set; }
 
-        [JsonIgnore]
+        [JsonIgnore, Obsolete]
         public SettingsService.SettingTypeRendererDelegate Renderer { get; set; }
 
-        [JsonProperty(SETTINGNAME_KEY)]
         /// <summary>
         /// The unique key used to identify the <see cref="SettingEntry"/> in the <see cref="SettingCollection"/>.
         /// </summary>
+        [JsonProperty(SETTINGNAME_KEY)]
         public string EntryKey { get; protected set; }
 
         protected abstract Type GetSettingType();
