@@ -24,14 +24,11 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private ViewContainer _lastSettingContainer;
 
-        public SettingsView(SettingCollection settings, int definedWidth = -1)
-            : base(new SettingEntry<SettingCollection>() { Value = settings }, definedWidth) {
-            _settings = settings;
-        }
-
         public SettingsView(SettingEntry<SettingCollection> setting, int definedWidth = -1) : base(setting, definedWidth) {
             _settings = setting.Value;
         }
+        public SettingsView(SettingCollection settings, int definedWidth = -1)
+            : this(new SettingEntry<SettingCollection>() { Value = settings }, definedWidth) { /* NOOP */ }
 
         private void UpdateBoundsLocking(bool locked) {
             if (_settingFlowPanel == null) return;
