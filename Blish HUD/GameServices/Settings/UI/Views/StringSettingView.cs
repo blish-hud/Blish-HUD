@@ -1,5 +1,4 @@
-﻿using System;
-using Blish_HUD.Controls;
+﻿using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Settings.UI.Views {
