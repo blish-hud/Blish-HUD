@@ -12,11 +12,11 @@ namespace Blish_HUD {
     /// </summary>
     public static class DirectoryUtil {
 
-        private const string ADDON_DIR = @"GUILD WARS 2\addons\blishhud";
+        private const string ADDON_DIR = @"Guild Wars 2\addons\blishhud";
 
-        private const string SCREENS_DIR = @"GUILD WARS 2\Screens";
+        private const string SCREENS_DIR = @"Guild Wars 2\Screens";
 
-        private const string MUSIC_DIR = @"GUILD WARS 2\music";
+        private const string MUSIC_DIR = @"Guild Wars 2\Music";
 
         /// <summary>
         /// The current root application save path used for saving settings, letting modules save data, etc.
@@ -41,17 +41,21 @@ namespace Blish_HUD {
                                                                Environment.SpecialFolderOption.DoNotVerify),
                                      ADDON_DIR);
 
+            Directory.CreateDirectory(BasePath);
+
             ScreensPath = ApplicationSettings.Instance.UserSettingsPath
                        ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                  Environment.SpecialFolderOption.DoNotVerify),
                                        SCREENS_DIR);
 
-            MusicPath = ApplicationSettings.Instance.UserSettingsPath
-                       ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
-                                                                 Environment.SpecialFolderOption.DoNotVerify),
-                                       MUSIC_DIR);
+            Directory.CreateDirectory(ScreensPath);
 
-            Directory.CreateDirectory(BasePath);
+            MusicPath = ApplicationSettings.Instance.UserSettingsPath
+                     ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
+                                                               Environment.SpecialFolderOption.DoNotVerify),
+                                     MUSIC_DIR);
+
+            Directory.CreateDirectory(MusicPath);
         }
         public static string RegisterDirectory(string directory) => Directory.CreateDirectory(Path.Combine(BasePath, directory)).FullName;
 
