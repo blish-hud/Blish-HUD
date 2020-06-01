@@ -112,7 +112,7 @@ namespace Blish_HUD.Controls {
         public override SizingMode HeightSizingMode {
             get {
                 if (_collapsed
-                 || _collapseAnim != null && _collapseAnim.Completion < 1f) {
+                 || (_collapseAnim != null && _collapseAnim.Completion < 1f)) {
                     return SizingMode.Standard;
                 }
 
