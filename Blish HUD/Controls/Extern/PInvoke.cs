@@ -25,10 +25,10 @@ namespace Blish_HUD.Controls.Extern
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SendMessage(IntPtr hWnd, uint Msg, uint wParam, int lParam);
+        internal static extern bool SendMessage(IntPtr hWnd, uint msg, uint wParam, int lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        internal static extern bool PostMessage(IntPtr hWnd, uint Msg, uint wParam, int lParam); // sends a message asynchronously.
+        internal static extern bool PostMessage(IntPtr hWnd, uint msg, uint wParam, int lParam); // sends a message asynchronously.
 
         [DllImport("user32.dll")]
         internal static extern uint MapVirtualKey(uint uCode, uint uMapType);
@@ -37,7 +37,7 @@ namespace Blish_HUD.Controls.Extern
         internal static extern short VkKeyScan(char ch);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        internal static extern bool SendMessageCallbackA(IntPtr hWnd, uint Msg, uint wParam, int lParam, SendAsyncProc lpResultCallBack, uint dwData);
+        internal static extern bool SendMessageCallbackA(IntPtr hWnd, uint msg, uint wParam, int lParam, SendAsyncProc lpResultCallBack, uint dwData);
         internal delegate void SendAsyncProc(IntPtr hWnd, uint uMsg, uint dwData, int lResult);
 
         [DllImport("user32.dll")]
