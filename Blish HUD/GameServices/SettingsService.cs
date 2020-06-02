@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Gw2WebApi.UI.Views;
+using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
 using Blish_HUD.Settings.UI.Views;
@@ -230,6 +231,8 @@ namespace Blish_HUD {
             settingsMiOverlay.Click += delegate {
                 cPanel.Show(new OverlaySettingsView());
             };
+
+            settingsMiModules.Click += delegate { cPanel.Show(new ManageModuleView()); };
 
             GameService.Module.FinishedLoading += delegate {
                 foreach (var module in GameService.Module.Modules) {

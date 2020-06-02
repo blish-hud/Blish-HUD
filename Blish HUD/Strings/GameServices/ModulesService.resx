@@ -169,4 +169,7 @@
   <data name="ModuleManagement_ViewModuleLogs" xml:space="preserve">
     <value>View Module Logs</value>
   </data>
+  <data name="ModuleManagement_ModuleSettings" xml:space="preserve">
+    <value>Module Settings</value>
+  </data>
 </root>
