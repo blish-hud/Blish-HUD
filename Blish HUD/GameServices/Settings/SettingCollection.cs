@@ -100,12 +100,14 @@ namespace Blish_HUD.Settings {
             return definedEntry;
         }
 
+        public void UndefineSetting(string entryKey) {
+            if (this[entryKey] != null) {
+                _entries.Remove(this[entryKey]);
+            }
+        }
+
         public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
-            var subCollection = new SettingCollection(lazyLoaded);
-
-            this.DefineSetting(collectionKey, subCollection);
-
-            return subCollection;
+            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded)).Value;
         }
 
         private void Load() {

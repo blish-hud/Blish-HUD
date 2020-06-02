@@ -1,5 +1,4 @@
 ﻿using System;
-using Blish_HUD.Controls;
 using Newtonsoft.Json;
 
 namespace Blish_HUD.Settings {
