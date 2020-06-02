@@ -19,6 +19,5 @@ namespace Blish_HUD {
         /// used to make async calls to the Windows clipboard.
         /// </summary>
         public static WindowsClipboardService WindowsClipboardService => _clipboardService;
-
     }
 }

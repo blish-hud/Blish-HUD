@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,4 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AboutAnetNotice" xml:space="preserve">
+    <value>©2010-{0} ArenaNet, LLC. Todos los derechos reservados. NCSOFT, el logotipo de las NC entrelazadas,
+ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North,
+Guild Wars 2, Heart of Thorns y todos los logotipos y diseños asociados son marcas comerciales
+o marcas comerciales registradas de NCSOFT Corporation. Todas las demás marcas comerciales son
+propiedad de sus respectivos dueños.</value>
+  </data>
 </root>
