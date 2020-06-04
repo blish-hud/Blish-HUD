@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace Blish_HUD.ArcDps {
 
@@ -10,8 +9,6 @@ namespace Blish_HUD.ArcDps {
         private const int MESSAGE_HEADER_SIZE = 8;
 
         private static readonly Logger Logger = Logger.GetLogger<SocketListener>();
-
-        private static readonly Mutex Mutex = new Mutex();
 
         public delegate void Message(MessageData data);
 
@@ -44,8 +41,6 @@ namespace Blish_HUD.ArcDps {
             } catch (Exception e) {
                 Logger.Warn(e, "Failed to connect to Arcdps-BHUD bridge.");
             }
-
-            Mutex.WaitOne();
         }
 
         public void Stop() {
@@ -54,8 +49,6 @@ namespace Blish_HUD.ArcDps {
             } catch {
                 // ignored
             }
-
-            Mutex.ReleaseMutex();
         }
 
         private void OnIoCompleted(object sender, SocketAsyncEventArgs e) {
