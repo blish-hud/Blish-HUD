@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Gw2WebApi.UI.Views;
+using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
+using Blish_HUD.Settings.UI.Views;
 using Flurl.Http;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
@@ -22,15 +24,12 @@ namespace Blish_HUD {
 
         public delegate void SettingTypeRendererDelegate(SettingEntry setting, Panel settingPanel);
 
-        [JsonIgnore]
+        [JsonIgnore, Obsolete("Use SettingViews instead.")]
         public Dictionary<Type, SettingTypeRendererDelegate> SettingTypeRenderers = new Dictionary<Type, SettingTypeRendererDelegate>();
 
         [JsonIgnore]
         internal JsonSerializerSettings JsonReaderSettings { get; private set; }
-
-        [JsonIgnore]
-        internal JsonSerializer SettingsReader;
-
+        
         [JsonIgnore]
         private string _settingsPath;
 
@@ -137,13 +136,14 @@ namespace Blish_HUD {
         }
 
         internal SettingCollection RegisterRootSettingCollection(string collectionKey) {
-            return this.Settings.DefineSetting(collectionKey, new SettingCollection(false)).Value;
+            return this.Settings.AddSubCollection(collectionKey, false);
         }
 
         protected override void Unload() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) { /* NOOP */ }
 
+        [Obsolete("Use SettingView views instead of this to generate from SettingCollections.")]
         public void RenderSettingsToPanel(Container panel, IEnumerable<SettingEntry> settings, int width = 325) {
             var listSettings = settings.ToList();
 
@@ -224,11 +224,11 @@ namespace Blish_HUD {
             };
 
             settingsMiAbout.Click += delegate {
-                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.AboutUIBuilder.BuildAbout, null);
+                cPanel.Show(new AboutView());
             };
 
             settingsMiOverlay.Click += delegate {
-                cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.OverlaySettingsUIBuilder.BuildOverlaySettings, null);
+                cPanel.Show(new OverlaySettingsView());
             };
 
             GameService.Module.FinishedLoading += delegate {

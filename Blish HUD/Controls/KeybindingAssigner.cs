@@ -46,11 +46,15 @@ namespace Blish_HUD.Controls {
 
         public KeyBinding KeyBinding {
             get => _keyBinding;
-            set => SetProperty(ref _keyBinding, value);
+            set {
+                if (SetProperty(ref _keyBinding, value)) {
+                    this.Enabled = _keyBinding != null;
+                }
+            }
         }
 
         public KeybindingAssigner(KeyBinding keyBinding) {
-            _keyBinding = keyBinding;
+            this.KeyBinding = keyBinding;
 
             // Configure LabelBase
             _font       = Content.DefaultFont14;
@@ -59,6 +63,8 @@ namespace Blish_HUD.Controls {
 
             this.Size = new Point(340, 16);
         }
+
+        public KeybindingAssigner() : this(null) { /* NOOP */ }
 
         protected override void OnClick(MouseEventArgs e) {
             if (_overHotkey && e.IsDoubleClick) {
@@ -116,24 +122,28 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this,
                                    ContentService.Textures.Pixel,
                                    _hotkeyRegion,
-                                   Color.White * (_overHotkey ? 0.20f : 0.15f));
+                                   Color.White * (_enabled && _overHotkey
+                                                      ? 0.20f
+                                                      : 0.15f));
 
             // Draw keybind string
-            spriteBatch.DrawStringOnCtrl(this,
-                                         _keyBinding.GetBindingDisplayText(),
-                                         Content.DefaultFont14,
-                                         _hotkeyRegion.OffsetBy(1, 1),
-                                         Color.Black,
-                                         false,
-                                         HorizontalAlignment.Center);
+            if (_enabled) {
+                spriteBatch.DrawStringOnCtrl(this,
+                                             _keyBinding.GetBindingDisplayText(),
+                                             Content.DefaultFont14,
+                                             _hotkeyRegion.OffsetBy(1, 1),
+                                             Color.Black,
+                                             false,
+                                             HorizontalAlignment.Center);
 
-            spriteBatch.DrawStringOnCtrl(this,
-                                         _keyBinding.GetBindingDisplayText(),
-                                         Content.DefaultFont14,
-                                         _hotkeyRegion,
-                                         Color.White,
-                                         false,
-                                         HorizontalAlignment.Center);
+                spriteBatch.DrawStringOnCtrl(this,
+                                             _keyBinding.GetBindingDisplayText(),
+                                             Content.DefaultFont14,
+                                             _hotkeyRegion,
+                                             Color.White,
+                                             false,
+                                             HorizontalAlignment.Center);
+            }
         }
 
     }
