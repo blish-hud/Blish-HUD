@@ -93,9 +93,10 @@ namespace Blish_HUD.Settings {
                 _entries.Add(definedEntry);
             }
 
-            definedEntry.DisplayName = displayName;
-            definedEntry.Description = description;
-            definedEntry.Renderer    = renderer;
+            definedEntry.DisplayName    = displayName;
+            definedEntry.Description    = description;
+            definedEntry.Renderer       = renderer;
+            definedEntry.SessionDefined = true;
 
             return definedEntry;
         }

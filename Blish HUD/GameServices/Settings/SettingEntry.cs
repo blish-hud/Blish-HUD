@@ -64,6 +64,9 @@ namespace Blish_HUD.Settings {
         [JsonProperty(SETTINGNAME_KEY)]
         public string EntryKey { get; protected set; }
 
+        [JsonIgnore]
+        public bool SessionDefined { get; internal set; }
+
         protected abstract Type GetSettingType();
 
         protected abstract object GetSettingValue();
