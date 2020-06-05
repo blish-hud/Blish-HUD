@@ -18,6 +18,7 @@ namespace Blish_HUD.Modules {
         public event EventHandler<UnobservedTaskExceptionEventArgs> ModuleException;
 
         internal void OnModuleRunStateChanged(ModuleRunStateChangedEventArgs e) {
+            Logger.Debug("Module {moduleName} run state changed to {runState}", ModuleParameters.Manifest.GetDetailedName(), e.RunState);
             this.ModuleRunStateChanged?.Invoke(this, e);
 
             if (e.RunState == ModuleRunState.Loaded) {
@@ -28,7 +29,7 @@ namespace Blish_HUD.Modules {
         /// <summary>
         /// Allows you to perform an action once your module has finished loading (once
         /// <see cref="LoadAsync"/> has completed).  You must call "base.OnModuleLoaded(e)" at the
-        /// end for the <see cref="ExternalModule.ModuleLoaded"/> event to fire.
+        /// end for the <see cref="Module.ModuleLoaded"/> event to fire.
         /// </summary>
         protected virtual void OnModuleLoaded(EventArgs e) {
             ModuleLoaded?.Invoke(this, e);
@@ -137,6 +138,11 @@ namespace Blish_HUD.Modules {
         private void DoUnload() {
             this.RunState = ModuleRunState.Unloading;
             Unload();
+            this.RunState = ModuleRunState.Unloaded;
+
+            this.ModuleLoaded          = null;
+            this.ModuleRunStateChanged = null;
+            this.ModuleException       = null;
         }
 
 #endregion

@@ -1,25 +1,30 @@
 ﻿using System;
+using System.Collections.Generic;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Version = SemVer.Version;
 
 namespace Blish_HUD.Modules.UI.Views {
     public class ManageModuleView : View {
 
-        public event EventHandler<EventArgs> ClearPmerissionsClicked;
+        public event EventHandler<EventArgs> ClearPermissionsClicked;
         public event EventHandler<EventArgs> ModifyPermissionsClicked;
 
-        private Label _moduleText;
-        private Image _moduleHeader;
-        private Label _moduleName;
-        private Label _moduleVersion;
-        private Label _moduleState;
+        public event EventHandler<EventArgs> EnableModuleClicked;
+        public event EventHandler<EventArgs> DisableModuleClicked;
+
+        private Label _moduleTextLabel;
+        private Image _moduleHeaderLabel;
+        private Label _moduleNameLabel;
+        private Label _moduleVersionLabel;
+        private Label _moduleStateLabel;
 
         private Image _authorImage;
-        private Label _authoredBy;
-        private Label _authorName;
+        private Label _authoredByLabel;
+        private Label _authorNameLabel;
 
         private StandardButton _enableButton;
         private StandardButton _disableButton;
@@ -30,36 +35,49 @@ namespace Blish_HUD.Modules.UI.Views {
         private Label _descriptionLabel;
 
         private ViewContainer _permissionView;
-        private Image         _permissionWarning;
-
-        private ContextMenuStripItem _clearPermissions;
-        private ContextMenuStripItem _modifyPermissions;
-
         private ViewContainer _dependencyView;
-        private Image         _dependencyWarning;
 
         private ViewContainer _settingView;
 
-        private ContextMenuStrip     _settingsMenu;
-        private GlowButton           _settingsButton;
-        private ContextMenuStripItem _ignoreDependencyRequirementsMenuStripItem;
-        private ContextMenuStripItem _viewModuleLogsMenuStripItem;
+        private ContextMenuStrip _settingsMenu;
+        private GlowButton       _settingsButton;
+
+        private readonly Dictionary<ModuleRunState, (string Status, Color color)> _moduleStatusLookup = new Dictionary<ModuleRunState, (string Status, Color color)> {
+            {ModuleRunState.Unloaded, (Strings.GameServices.ModulesService.ModuleState_Disabled, Control.StandardColors.DisabledText)},
+            {ModuleRunState.Loading, (Strings.GameServices.ModulesService.ModuleState_Loading, Control.StandardColors.Yellow)},
+            {ModuleRunState.Loaded, (Strings.GameServices.ModulesService.ModuleState_Enabled, Color.FromNonPremultiplied(0, 255, 25, 255))},
+            {ModuleRunState.Unloading, (Strings.GameServices.ModulesService.ModuleState_Disabling, Control.StandardColors.Yellow)},
+            {ModuleRunState.FatalError, (Strings.GameServices.ModulesService.ModuleState_FatalError, Control.StandardColors.Red)}
+        };
 
         public string ModuleName {
-            get => _moduleName.Text;
-            set => _moduleName.Text = value;
+            get => _moduleNameLabel.Text;
+            set => _moduleNameLabel.Text = value;
         }
 
-        public string ModuleVersion {
-            get => _moduleState.Text;
-            set => _moduleState.Text = value;
-        }
-
-        public (string StateText, Color StateColor) ModuleStateText {
-            get => (_moduleState.Text, _moduleState.TextColor);
+        private Version _moduleVersion;
+        public Version ModuleVersion {
+            get => _moduleVersion;
             set {
-                _moduleState.Text      = value.StateText;
-                _moduleState.TextColor = value.StateColor;
+                _moduleVersion = value;
+
+                _moduleVersionLabel.Text = $"v{_moduleVersion}";
+
+                UpdateHeaderLayout();
+            }
+        }
+
+        private ModuleRunState _moduleRunState = ModuleRunState.Unloaded;
+        public ModuleRunState ModuleState {
+            get => _moduleRunState;
+            set {
+                _moduleRunState = value;
+
+                var (status, color) = _moduleStatusLookup[_moduleRunState];
+
+                UpdateModuleRunState(status, color);
+
+                UpdateHeaderLayout();
             }
         }
 
@@ -69,8 +87,8 @@ namespace Blish_HUD.Modules.UI.Views {
         }
 
         public string AuthorName {
-            get => _authorName.Text;
-            set => _authorName.Text = value;
+            get => _authorNameLabel.Text;
+            set => _authorNameLabel.Text = value;
         }
 
         public string ModuleDescription {
@@ -80,30 +98,36 @@ namespace Blish_HUD.Modules.UI.Views {
 
         public bool CanEnable {
             get => _enableButton.Enabled;
-            set {
-                _enableButton.Enabled = value;
-
-                bool cmiEnabled = (_enableButton.Enabled || _permissionWarning.Visible) && !_disableButton.Enabled;
-
-                _modifyPermissions.Enabled = cmiEnabled;
-                _clearPermissions.Enabled  = cmiEnabled;
-            }
+            set => _enableButton.Enabled = value;
         }
 
         public bool CanDisable {
             get => _disableButton.Enabled;
+            set => _disableButton.Enabled = value;
+        }
+
+        private ModuleDependencyCheckDetails[] _moduleDependencyDetails;
+        public ModuleDependencyCheckDetails[] ModuleDependencyDetails {
+            get => _moduleDependencyDetails;
             set {
-                _disableButton.Enabled = value;
+                _moduleDependencyDetails = value;
 
-                bool cmiEnabled = (_enableButton.Enabled || _permissionWarning.Visible) && !_disableButton.Enabled;
-
-                _modifyPermissions.Enabled = cmiEnabled;
-                _clearPermissions.Enabled  = cmiEnabled;
+                _dependencyView.Show(new ModuleDependencyView(_moduleDependencyDetails));
             }
         }
 
+        public void SetPermissionsView(ModulePermissionView view) {
+            _permissionView.Show(view);
+        }
+
+        public void SetDependenciesView(ModuleDependencyView view) {
+            _dependencyView.Show(view);
+        }
+
         protected override void Build(Panel buildPanel) {
-            _moduleText = new Label() {
+            // Header
+
+            _moduleTextLabel = new Label() {
                 Text           = Strings.GameServices.ModulesService.ManageModulesSection,
                 Location       = new Point(24, 0),
                 AutoSizeWidth  = true,
@@ -112,52 +136,54 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent         = buildPanel
             };
 
-            _moduleHeader = new Image() {
+            _moduleHeaderLabel = new Image() {
                 Texture  = GameService.Content.GetTexture("358411"),
-                Location = new Point(0,   _moduleText.Bottom - 6),
+                Location = new Point(0,   _moduleTextLabel.Bottom - 6),
                 Size     = new Point(875, 110),
                 Parent   = buildPanel
             };
 
-            _moduleName = new Label() {
+            _moduleNameLabel = new Label() {
                 Text           = "[Module Name]",
                 Font           = GameService.Content.DefaultFont32,
                 AutoSizeHeight = true,
                 AutoSizeWidth  = true,
                 StrokeText     = true,
-                Location       = new Point(_moduleText.Left, _moduleText.Bottom),
+                Location       = new Point(_moduleTextLabel.Left, _moduleTextLabel.Bottom),
                 Parent         = buildPanel
             };
 
-            _moduleVersion = new Label() {
+            _moduleVersionLabel = new Label() {
                 Text              = "[Module Version]",
-                Height            = _moduleName.Height - 6,
+                Height            = _moduleNameLabel.Height - 6,
                 VerticalAlignment = VerticalAlignment.Bottom,
                 AutoSizeWidth     = true,
                 StrokeText        = true,
                 Font              = GameService.Content.DefaultFont12,
-                Location          = new Point(_moduleName.Right + 8, _moduleName.Top),
+                Location          = new Point(_moduleNameLabel.Right + 8, _moduleNameLabel.Top),
                 Parent            = buildPanel
             };
 
-            _moduleState = new Label() {
-                Height            = _moduleName.Height - 6,
+            _moduleStateLabel = new Label() {
+                Text              = "[Module State]",
+                Height            = _moduleNameLabel.Height - 6,
                 VerticalAlignment = VerticalAlignment.Bottom,
                 AutoSizeWidth     = true,
                 StrokeText        = true,
                 Font              = GameService.Content.DefaultFont12,
-                Location          = new Point(_moduleVersion.Right + 8, _moduleName.Top),
+                Location          = new Point(_moduleVersionLabel.Right + 8, _moduleNameLabel.Top),
                 Parent            = buildPanel
             };
 
             // Author
+
             _authorImage = new Image() {
-                Location = new Point(_moduleName.Left, _moduleName.Bottom),
+                Location = new Point(_moduleNameLabel.Left, _moduleNameLabel.Bottom),
                 Size     = new Point(32,               32),
                 Parent   = buildPanel
             };
 
-            _authoredBy = new Label() {
+            _authoredByLabel = new Label() {
                 Text              = Strings.GameServices.ModulesService.ModuleManagement_AuthoredBy,
                 AutoSizeWidth     = true,
                 AutoSizeHeight    = true,
@@ -168,19 +194,19 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent            = buildPanel
             };
 
-            _authorName = new Label() {
+            _authorNameLabel = new Label() {
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
                 StrokeText     = true,
-                Location       = new Point(_authorImage.Right + 2, _authoredBy.Bottom),
+                Location       = new Point(_authorImage.Right + 2, _authoredByLabel.Bottom),
                 Parent         = buildPanel
             };
 
             // Enable & disable module
 
             _enableButton = new StandardButton() {
-                Location = new Point(buildPanel.Width - 192, _moduleHeader.Top + _moduleHeader.Height / 4 - StandardButton.STANDARD_CONTROL_HEIGHT / 2),
+                Location = new Point(buildPanel.Width - 192, _moduleHeaderLabel.Top + _moduleHeaderLabel.Height / 4 - StandardButton.STANDARD_CONTROL_HEIGHT / 2),
                 Text     = Strings.GameServices.ModulesService.ModuleManagement_EnableModule,
                 Enabled  = false,
                 Parent   = buildPanel
@@ -193,11 +219,14 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent   = buildPanel
             };
 
+            _enableButton.Click  += delegate { EnableModuleClicked?.Invoke(this, EventArgs.Empty); };
+            _disableButton.Click += delegate { DisableModuleClicked?.Invoke(this, EventArgs.Empty); };
+
             // Collapse Sections
 
             _collapsePanel = new Panel() {
-                Size      = new Point(buildPanel.Width, buildPanel.Height - _moduleName.Bottom + 32 + 4),
-                Location  = new Point(0,                _moduleName.Bottom + 32                     + 4),
+                Size      = new Point(buildPanel.Width, buildPanel.Height - _moduleNameLabel.Bottom + 32 + 4),
+                Location  = new Point(0,                _moduleNameLabel.Bottom + 32                     + 4),
                 CanScroll = true,
                 Parent    = buildPanel
             };
@@ -205,7 +234,7 @@ namespace Blish_HUD.Modules.UI.Views {
             // Description
 
             _descriptionPanel = new Panel() {
-                Size       = new Point(_collapsePanel.ContentRegion.Width, 155),
+                Size       = new Point(_collapsePanel.ContentRegion.Width, 180),
                 Title      = Strings.GameServices.ModulesService.ModuleManagement_Description,
                 ShowBorder = true,
                 CanScroll  = true,
@@ -223,50 +252,17 @@ namespace Blish_HUD.Modules.UI.Views {
             // Permissions
 
             _permissionView = new ViewContainer() {
-                Size       = _descriptionPanel.Size - new Point(350, 0),
-                Location   = new Point(0, _descriptionPanel.Bottom + Panel.MenuStandard.ControlOffset.Y),
-                Title      = Strings.GameServices.ModulesService.ModuleManagement_ApiPermissions,
-                ShowBorder = true,
-                CanScroll  = true,
-                Parent     = _collapsePanel
+                Size     = _descriptionPanel.Size - new Point(350, 0),
+                Location = new Point(0, _descriptionPanel.Bottom + Panel.MenuStandard.ControlOffset.Y),
+                Parent   = _collapsePanel
             };
-
-            _permissionWarning = new Image(GameService.Content.GetTexture("common/1444522")) {
-                Size        = new Point(32, 32),
-                Location    = _permissionView.Location - new Point(10, 15),
-                ClipsBounds = false,
-                Parent      = _collapsePanel
-            };
-
-            var permissionOptionsMenu = new ContextMenuStrip();
-
-            var permissionSettingsButton = new GlowButton() {
-                Location         = new Point(_permissionView.Right - 42, _permissionView.Top + 3),
-                Icon             = GameService.Content.GetTexture("common/157109"),
-                ActiveIcon       = GameService.Content.GetTexture("common/157110"),
-                BasicTooltipText = Strings.Common.Options,
-                Parent           = _collapsePanel
-            };
-
-            _modifyPermissions = permissionOptionsMenu.AddMenuItem(Strings.GameServices.ModulesService.ModuleManagement_ModifyPermissions);
-            _clearPermissions  = permissionOptionsMenu.AddMenuItem(Strings.GameServices.ModulesService.ModuleManagement_ClearPermissions);
 
             // Dependencies
 
             _dependencyView = new ViewContainer() {
-                CanScroll  = true,
-                Size       = new Point(_descriptionPanel.Width - _permissionView.Right - Panel.MenuStandard.ControlOffset.X / 2, _descriptionPanel.Height),
-                Location   = new Point(_permissionView.Right                           + Panel.MenuStandard.ControlOffset.X / 2, _permissionView.Top),
-                Title      = Strings.GameServices.ModulesService.ModuleManagement_Dependencies,
-                ShowBorder = true,
-                Parent     = _collapsePanel
-            };
-
-            _dependencyWarning = new Image(GameService.Content.GetTexture("common/1444522")) {
-                Size        = new Point(32, 32),
-                Location    = _dependencyView.Location - new Point(10, 15),
-                ClipsBounds = false,
-                Parent      = _collapsePanel
+                Size     = new Point(_descriptionPanel.Width - _permissionView.Right - Panel.MenuStandard.ControlOffset.X / 2, _descriptionPanel.Height),
+                Location = new Point(_permissionView.Right                           + Panel.MenuStandard.ControlOffset.X / 2, _permissionView.Top),
+                Parent   = _collapsePanel
             };
 
             // Module Settings
@@ -292,11 +288,16 @@ namespace Blish_HUD.Modules.UI.Views {
             };
 
             _settingsButton.Click += delegate { _settingsMenu.Show(_settingsButton); };
+        }
 
-            _ignoreDependencyRequirementsMenuStripItem          = _settingsMenu.AddMenuItem(Strings.GameServices.ModulesService.ModuleManagement_IgnoreDependencyRequirements);
-            _ignoreDependencyRequirementsMenuStripItem.CanCheck = true;
+        private void UpdateHeaderLayout() {
+            _moduleVersionLabel.Location = new Point(_moduleNameLabel.Right    + 8, _moduleNameLabel.Top);
+            _moduleStateLabel.Location   = new Point(_moduleVersionLabel.Right + 8, _moduleNameLabel.Top);
+        }
 
-            _viewModuleLogsMenuStripItem = _settingsMenu.AddMenuItem(Strings.GameServices.ModulesService.ModuleManagement_ViewModuleLogs);
+        private void UpdateModuleRunState(string status, Color color) {
+            _moduleStateLabel.Text      = status;
+            _moduleStateLabel.TextColor = color;
         }
 
     }

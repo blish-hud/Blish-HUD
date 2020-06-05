@@ -43,9 +43,7 @@ namespace Blish_HUD {
         }
 
         /// <remarks> Source: https://stackoverflow.com/a/15987581/595437 </remarks>
-        public static string WrapText(BitmapFont spriteFont, string text, float maxLineWidth) {
-            if (string.IsNullOrEmpty(text)) return "";
-
+        private static string WrapTextSegment(BitmapFont spriteFont, string text, float maxLineWidth) {
             string[] words      = text.Split(' ');
             var      sb         = new StringBuilder();
             float    lineWidth  = 0f;
@@ -64,6 +62,12 @@ namespace Blish_HUD {
             }
 
             return sb.ToString();
+        }
+
+        public static string WrapText(BitmapFont spriteFont, string text, float maxLineWidth) {
+            if (string.IsNullOrEmpty(text)) return "";
+
+            return string.Join("\n", text.Split('\n').Select(s => WrapTextSegment(spriteFont, s, maxLineWidth)));
         }
 
     }

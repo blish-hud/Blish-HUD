@@ -70,6 +70,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No permissions requested.
+        /// </summary>
+        internal static string ApiPermission_NoPermissionsRequested {
+            get {
+                return ResourceManager.GetString("ApiPermission_NoPermissionsRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Optional.
         /// </summary>
         internal static string ApiPermission_Optional {
@@ -102,6 +111,15 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string Dependency_MissingDependencies {
             get {
                 return ResourceManager.GetString("Dependency_MissingDependencies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No dependencies.
+        /// </summary>
+        internal static string Dependency_NoDependencies {
+            get {
+                return ResourceManager.GetString("Dependency_NoDependencies", resourceCulture);
             }
         }
         

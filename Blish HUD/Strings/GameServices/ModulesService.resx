@@ -172,4 +172,10 @@
   <data name="ModuleManagement_ModuleSettings" xml:space="preserve">
     <value>Module Settings</value>
   </data>
+  <data name="Dependency_NoDependencies" xml:space="preserve">
+    <value>No dependencies</value>
+  </data>
+  <data name="ApiPermission_NoPermissionsRequested" xml:space="preserve">
+    <value>No permissions requested</value>
+  </data>
 </root>

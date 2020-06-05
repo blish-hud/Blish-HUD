@@ -225,10 +225,6 @@
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="GameServices\Modules\UI\Presenters\" />
-  </ItemGroup>
-
   <Target Name="BuildRef" AfterTargets="Build">
     <!-- Build ref.dat -->
     <ZipDirectory SourceDirectory="$(ProjectDir)ref" DestinationFile="$(OutDir)/ref.dat" Overwrite="true" />
