@@ -22,7 +22,7 @@ namespace Blish_HUD {
 
         private const int FORCE_EXIT_TIMEOUT = 4000;
 
-        public event EventHandler<EventArgs> UserLocaleChanged;
+        public event EventHandler<ValueEventArgs<CultureInfo>> UserLocaleChanged;
 
         public TabbedWindow     BlishHudWindow   { get; private set; }
         public CornerIcon       BlishMenuIcon    { get; private set; }
@@ -76,7 +76,12 @@ namespace Blish_HUD {
         }
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
-            CultureInfo.CurrentUICulture = GetCultureFromGw2Locale(e.NewValue);
+            var culture = GetCultureFromGw2Locale(e.NewValue);
+
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            CultureInfo.CurrentUICulture              = culture;
+
+            this.UserLocaleChanged?.Invoke(this, new ValueEventArgs<CultureInfo>(culture));
         }
 
         /// <summary>

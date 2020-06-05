@@ -295,7 +295,7 @@ namespace Blish_HUD.Controls {
                 _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex, () => this.ZIndex, (z) => z + 2, applyLeft: true));
             } else {
                 // TODO: Switch to breaking these bindings once it is supported in Adhesive
-                _scrollbarBindings.ForEach((bind) => bind.Disable());
+                _scrollbarBindings.ToList().ForEach((bind) => bind.Disable());
                 _scrollbarBindings.Clear();
 
                 _panelScrollbar?.Dispose();

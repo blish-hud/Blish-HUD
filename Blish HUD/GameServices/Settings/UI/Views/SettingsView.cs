@@ -1,4 +1,5 @@
-﻿using Blish_HUD.Controls;
+﻿using System.Linq;
+using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Microsoft.Xna.Framework;
 
@@ -50,7 +51,7 @@ namespace Blish_HUD.Settings.UI.Views {
                 Parent              = buildPanel
             };
 
-            foreach (var setting in _settings) {
+            foreach (var setting in _settings.Where(s => s.SessionDefined)) {
                 IView settingView;
 
                 if ((settingView = SettingView.FromType(setting, _settingFlowPanel.Width)) != null) {
