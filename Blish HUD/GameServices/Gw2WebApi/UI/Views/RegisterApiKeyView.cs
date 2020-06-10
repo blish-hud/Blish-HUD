@@ -301,14 +301,18 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                     await UpdateTokenDetails(tokenInfo, accountInfo);
                 } catch (FormatException) {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
+                } catch (BadRequestException) {
+                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
                 } catch (InvalidAccessTokenException) {
+                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
+                } catch (MissingScopesException) {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
                 } catch (AuthorizationRequiredException) {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_AccountFailed);
                 } catch (UnexpectedStatusException) {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.Common.Unknown);
                 } catch (RequestCanceledException) {
-                    SetTokenStatus(ApiTokenStatusType.Neutral);
+                    // NOOP keep existing status to avoid walking over the call that cancelled us
                 }
             } else {
                 SetTokenStatus(ApiTokenStatusType.Neutral);

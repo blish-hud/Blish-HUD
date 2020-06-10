@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Adhesive;
 using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
@@ -268,7 +269,7 @@ namespace Blish_HUD.Controls {
                                                         ARROW_SIZE).OffsetBy(_layoutAccordionArrowOrigin.ToPoint());
         }
 
-        private readonly List<Adhesive.Binding> _scrollbarBindings = new List<Adhesive.Binding>();
+        private List<Binding> _scrollbarBindings = new List<Adhesive.Binding>();
 
         private void UpdateScrollbar() {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
@@ -278,21 +279,16 @@ namespace Blish_HUD.Controls {
                     _panelScrollbar = new Scrollbar(this);
 
                 // TODO: Switch to breaking these bindings once it is supported in Adhesive
-                _scrollbarBindings.ForEach((bind) => bind.Disable());
-                _scrollbarBindings.Clear();
+                _scrollbarBindings.ToList().ForEach((bind) => bind.Disable());
 
-                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Parent, () => this.Parent, applyLeft: true));
-
-                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Height, () => this.Height, (h) => this.ContentRegion.Height - 20, applyLeft: true));
-
-                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Right, () => this.Right, (r) => r - _panelScrollbar.Width / 2, applyLeft: true));
-
-                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Top, () => this.Top, (t) => t + this.ContentRegion.Top + 10, applyLeft: true));
-
-                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.Visible, () => this.Visible, applyLeft: true));
-
-                // Ensure scrollbar is visible
-                _scrollbarBindings.Add(Adhesive.Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex, () => this.ZIndex, (z) => z + 2, applyLeft: true));
+                _scrollbarBindings = new List<Binding> {
+                    Binding.CreateOneWayBinding(() => _panelScrollbar.Parent,  () => this.Parent,  applyLeft: true),
+                    Binding.CreateOneWayBinding(() => _panelScrollbar.Height,  () => this.Height,  (h) => this.ContentRegion.Height  - 20,                        applyLeft: true),
+                    Binding.CreateOneWayBinding(() => _panelScrollbar.Right,   () => this.Right,   (r) => r                          - _panelScrollbar.Width / 2, applyLeft: true),
+                    Binding.CreateOneWayBinding(() => _panelScrollbar.Top,     () => this.Top,     (t) => t + this.ContentRegion.Top + 10,                        applyLeft: true),
+                    Binding.CreateOneWayBinding(() => _panelScrollbar.Visible, () => this.Visible, applyLeft: true),
+                    Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex,  () => this.ZIndex,  (z) => z + 2, applyLeft: true)
+                };
             } else {
                 // TODO: Switch to breaking these bindings once it is supported in Adhesive
                 _scrollbarBindings.ToList().ForEach((bind) => bind.Disable());
