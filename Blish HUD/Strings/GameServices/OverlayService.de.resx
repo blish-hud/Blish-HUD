@@ -140,4 +140,20 @@ dem Blish HUD-Team mit Hilfe von vielen anderen!</value>
   <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
     <value>In die Symbolleiste minimieren, wenn Guild Wars 2 geschlossen wird.</value>
   </data>
+  <data name="Setting_ShowInTaskbar_DisplayName" xml:space="preserve">
+    <value>In Taskleiste anzeigen</value>
+  </data>
+  <data name="OverlaySettingsSection" xml:space="preserve">
+    <value>Overlay-Einstellungen</value>
+  </data>
+  <data name="Setting_ShowInTaskbar_Description" xml:space="preserve">
+    <value>Aktiviert, wird Blish HUD in der Taskleiste angezeigt während es läuft.</value>
+  </data>
+  <data name="AboutAnetNotice" xml:space="preserve">
+    <value>©2010-{0} ArenaNet, LLC. Alle Rechte vorbehalten. NCSOFT, das ineinandergreifende NC-Logo,
+ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North,
+Guild Wars 2, Heart of Thorns und alle zugehörigen Logos und Designs sind Warenzeichen oder
+eingetragene Warenzeichen der NCSOFT Corporation. Alle anderen Warenzeichen sind das Eigentum
+ihrer jeweiligen Besitzer.</value>
+  </data>
 </root>

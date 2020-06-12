@@ -61,6 +61,18 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ©2010-{0} ArenaNet, LLC. All rights reserved. Guild Wars, Guild Wars 2, Heart of Thorns,
+        ///Guild Wars 2: Path of Fire, ArenaNet, NCSOFT, the Interlocking NC Logo, and all associated
+        ///logos and designs are trademarks or registered trademarks of NCSOFT Corporation. All other
+        ///trademarks are the property of their respective owners..
+        /// </summary>
+        internal static string AboutAnetNotice {
+            get {
+                return ResourceManager.GetString("AboutAnetNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Designed and built with all the love in Tyria by
         ///the Blish HUD team with help from many more!.
         /// </summary>
@@ -144,7 +156,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Minimize to tray when Guild Wars 2 Closes.
+        ///   Looks up a localized string similar to Minimize to tray when Guild Wars 2 Closes..
         /// </summary>
         internal static string Setting_StayInTray_DisplayName {
             get {

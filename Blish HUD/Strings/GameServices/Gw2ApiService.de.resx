@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="TokenPermissionDescription_Account" xml:space="preserve">
-    <value>Dein Anzeigename, ID, Heimatwelt und die Liste der Gilden in dennen du Mitglied bist.</value>
+    <value>Dein Anzeigename, ID, Heimatwelt und die Liste der Gilden in denen du Mitglied bist.</value>
   </data>
   <data name="TokenPermissionDescription_Inventories" xml:space="preserve">
     <value>Deine Bank, Materiallager, freigeschaltete Rezepte und Charakterinventare.</value>
@@ -133,19 +133,24 @@
     <value>Dein Geld- und Schlüsselbeutel.</value>
   </data>
   <data name="TokenPermissionDescription_Unlocks" xml:space="preserve">
-    <value>Der freigeschaltete Teil deiner Garderobe — Farben, Minis und Todesstöße, etc.— Sowie derzeitig ausgesrüstete Skins.
-</value>
+    <value>Der freigeschaltete Teil deiner Garderobe — Farben, Minis und Todesstöße, etc.— Sowie derzeitig ausgesrüstete Skins.</value>
   </data>
   <data name="TokenPermissionDescription_Pvp" xml:space="preserve">
-    <value>Deine Statistiken im PvP, Spielverlauf, Belohnungspfadfortschritt und Details benutzerdefinierter Arena.</value>
+    <value>Deine Statistiken im PvP, Spielverlauf, Belohnungspfadfortschritt und Details benutzerdefinierter Arenen.</value>
   </data>
   <data name="TokenPermissionDescription_Builds" xml:space="preserve">
-    <value>Deine dezeit ausgewählte(n) Spezialisierung, Eigenschaften, Fähigkeiten und Ausrüstung in jedem Spielmodus.</value>
+    <value>Deine dezeit ausgewählten Spezialisierungen, Eigenschaften, Fähigkeiten und Ausrüstung in jedem Spielmodus.</value>
   </data>
   <data name="TokenPermissionDescription_Progression" xml:space="preserve">
     <value>Deine Errungenschaften, der Freischaltsstatus von Verliesen, die Verteilung deiner Beherrschungspunkte und dein allgemeiner Fortschritt in der offenen Welt.</value>
   </data>
   <data name="TokenPermissionDescription_Guilds" xml:space="preserve">
-    <value>Gildenroster, Verlauf, und die Nachricht des Tages von allen Gilden in dennen du Mitglied bist.</value>
+    <value>Gildenroster, Verlauf, und die Nachricht des Tages von allen Gilden in denen du Mitglied bist.</value>
+  </data>
+  <data name="ManageApiKeysSection" xml:space="preserve">
+    <value>API-Schlüssel verwalten</value>
+  </data>
+  <data name="ManageApiKeys_Title" xml:space="preserve">
+    <value>API-Schlüssel registrieren</value>
   </data>
 </root>

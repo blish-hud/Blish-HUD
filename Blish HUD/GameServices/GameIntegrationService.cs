@@ -5,7 +5,11 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Security.AccessControl;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Blish_HUD.Controls.Extern;
+using Blish_HUD.Controls.Intern;
 using Blish_HUD.Settings;
 using Microsoft.Win32;
 using Microsoft.Xna.Framework;
@@ -41,7 +45,7 @@ namespace Blish_HUD {
 
         public NotifyIcon TrayIcon { get; private set; }
         public ContextMenuStrip TrayIconMenu { get; private set; }
-
+        public IGameChat Chat { get; private set; }
         public bool IsInGame { get; private set; } = false;
 
         private bool _gw2HasFocus = false;
@@ -113,8 +117,9 @@ namespace Blish_HUD {
         private SettingEntry<string> _gw2ExecutablePath;
 
         public string Gw2ExecutablePath => _gw2ExecutablePath.Value;
-
         protected override void Initialize() {
+            Chat = new GameChat();
+
             _formWrapper = new Form();
             BlishHud.Form.Hide();
             BlishHud.Form.Show(_formWrapper);
@@ -319,6 +324,122 @@ namespace Blish_HUD {
             }
         }
 
-    }
+        #region Chat Interactions
+        /// <summary>
+        /// Methods related to interaction with the in-game chat.
+        /// </summary>
+        public interface IGameChat {
+            void Send(string message);
+            void Paste(string text);
+            Task<string> GetInputText();
+            void Clear();
+        }
+        private class GameChat : IGameChat {
+            /// <summary>
+            /// Sends a message to the chat.
+            /// </summary>
+            public async void Send(string message) {
+                if (IsBusy() && !IsTextValid(message)) return;
+                byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
+                await ClipboardUtil.WindowsClipboardService.SetTextAsync(message)
+                                   .ContinueWith(clipboardResult => {
+                                       if (clipboardResult.IsFaulted)
+                                           Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {message}!", message);
+                                       else
+                                           Task.Run(() => {
+                                               Focus();
+                                               Keyboard.Press(VirtualKeyShort.LCONTROL, true);
+                                               Keyboard.Stroke(VirtualKeyShort.KEY_V, true);
+                                               Thread.Sleep(50);
+                                               Keyboard.Release(VirtualKeyShort.LCONTROL, true);
+                                               Keyboard.Stroke(VirtualKeyShort.RETURN);
+                                           }).ContinueWith(result => {
+                                               if (result.IsFaulted) {
+                                                   Logger.Warn(result.Exception, "Failed to send message {message}", message);
+                                               } else if (prevClipboardContent != null)
+                                                   ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                           }); });
+            }
+            /// <summary>
+            /// Adds a string to the input field.
+            /// </summary>
+            public async void Paste(string text) {
+                if (IsBusy()) return;
+                string currentInput = await GetInputText();
+                if (!IsTextValid(currentInput + text)) return;
+                byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
+                await ClipboardUtil.WindowsClipboardService.SetTextAsync(text)
+                                   .ContinueWith(clipboardResult => {
+                                       if (clipboardResult.IsFaulted)
+                                           Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {text}!", text);
+                                       else
+                                           Task.Run(() => {
+                                               Focus();
+                                               Keyboard.Press(VirtualKeyShort.LCONTROL, true);
+                                               Keyboard.Stroke(VirtualKeyShort.KEY_V, true);
+                                               Thread.Sleep(50);
+                                               Keyboard.Release(VirtualKeyShort.LCONTROL, true);
+                                           }).ContinueWith(result => {
+                                               if (result.IsFaulted) {
+                                                   Logger.Warn(result.Exception, "Failed to paste {text}", text);
+                                               } else if (prevClipboardContent != null)
+                                                   ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                           }); });
+            }
+            /// <summary>
+            /// Returns the current string in the input field.
+            /// </summary>
+            public async Task<string> GetInputText() {
+                if (IsBusy()) return "";
+                byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
+                await Task.Run(() => {
+                    Focus();
+                    Keyboard.Press(VirtualKeyShort.LCONTROL, true);
+                    Keyboard.Stroke(VirtualKeyShort.KEY_A, true);
+                    Keyboard.Stroke(VirtualKeyShort.KEY_C, true);
+                    Thread.Sleep(50);
+                    Keyboard.Release(VirtualKeyShort.LCONTROL, true);
+                    Unfocus();
+                });
+                string inputText = await ClipboardUtil.WindowsClipboardService.GetTextAsync()
+                                                      .ContinueWith(result => {
+                                                          if (prevClipboardContent != null)
+                                                              ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                                          return !result.IsFaulted ? result.Result : "";
+                                                      });
+                return inputText;
+            }
+            /// <summary>
+            /// Clears the input field.
+            /// </summary>
+            public void Clear() {
+                if (IsBusy()) return;
+                Task.Run(() => {
+                    Focus();
+                    Keyboard.Press(VirtualKeyShort.LCONTROL, true);
+                    Keyboard.Stroke(VirtualKeyShort.KEY_A, true);
+                    Thread.Sleep(50);
+                    Keyboard.Release(VirtualKeyShort.LCONTROL, true);
+                    Keyboard.Stroke(VirtualKeyShort.BACK);
+                    Unfocus();
+                });
+            }
+            private void Focus() {
+                Unfocus();
+                Keyboard.Stroke(VirtualKeyShort.RETURN);
+            }
+            private void Unfocus() {
+                Mouse.Click(MouseButton.LEFT, Graphics.GraphicsDevice.Viewport.Width / 2, 0);
+            }
+            private bool IsTextValid(string text) {
+                return (text != null && text.Length < 200);
+                // More checks? (Symbols: https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset)
+            }
+            private bool IsBusy() {
+                return !GameIntegration.Gw2IsRunning || !GameIntegration.Gw2HasFocus || !GameIntegration.IsInGame;
+            }
+        }
+        #endregion
 
+    }
 }

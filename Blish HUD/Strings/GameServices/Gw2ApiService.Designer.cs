@@ -61,6 +61,138 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character.
+        /// </summary>
+        internal static string AccountInfo_Character {
+            get {
+                return ResourceManager.GetString("AccountInfo_Character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commander.
+        /// </summary>
+        internal static string AccountInfo_Commander {
+            get {
+                return ResourceManager.GetString("AccountInfo_Commander", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Navigate to the official applications page..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step1 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click &quot;New Key&quot;..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step2 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select all permissions and press the
+        ///&quot;CREATE API KEY&quot; button..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step3 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy the new key..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step4 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste the key into the field above and
+        ///press &quot;Register&quot;..
+        /// </summary>
+        internal static string CreateTokenInstructions_Step5 {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Step5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can register a key without all permissions, but some
+        ///features and modules may fail to function properly.
+        ///
+        ///At a minimum, &quot;Account&quot; and &quot;Character&quot; permissions
+        ///are required..
+        /// </summary>
+        internal static string CreateTokenInstructions_Warning {
+            get {
+                return ResourceManager.GetString("CreateTokenInstructions_Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Applications.
+        /// </summary>
+        internal static string Link_ManageApplications {
+            get {
+                return ResourceManager.GetString("Link_ManageApplications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Token.
+        /// </summary>
+        internal static string ManageApiKeys_DeleteToken {
+            get {
+                return ResourceManager.GetString("ManageApiKeys_DeleteToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register.
+        /// </summary>
+        internal static string ManageApiKeys_Register {
+            get {
+                return ResourceManager.GetString("ManageApiKeys_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register API Key.
+        /// </summary>
+        internal static string ManageApiKeys_Title {
+            get {
+                return ResourceManager.GetString("ManageApiKeys_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage API Keys.
+        /// </summary>
+        internal static string ManageApiKeysSection {
+            get {
+                return ResourceManager.GetString("ManageApiKeysSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (no name).
+        /// </summary>
+        internal static string Token_NoName {
+            get {
+                return ResourceManager.GetString("Token_NoName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your account display name, ID, home world, and list of guilds..
         /// </summary>
         internal static string TokenPermissionDescription_Account {
@@ -147,6 +279,60 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string TokenPermissionDescription_Wallet {
             get {
                 return ResourceManager.GetString("TokenPermissionDescription_Wallet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting account details failed.
+        /// </summary>
+        internal static string TokenStatus_AccountFailed {
+            get {
+                return ResourceManager.GetString("TokenStatus_AccountFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load token..
+        /// </summary>
+        internal static string TokenStatus_FailedToLoad {
+            get {
+                return ResourceManager.GetString("TokenStatus_FailedToLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid token.
+        /// </summary>
+        internal static string TokenStatus_InvalidToken {
+            get {
+                return ResourceManager.GetString("TokenStatus_InvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing required permissions.
+        /// </summary>
+        internal static string TokenStatus_MissingMinPermission {
+            get {
+                return ResourceManager.GetString("TokenStatus_MissingMinPermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Token missing permissions.
+        /// </summary>
+        internal static string TokenStatus_PartialPermission {
+            get {
+                return ResourceManager.GetString("TokenStatus_PartialPermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} ({1}) - Valid token.
+        /// </summary>
+        internal static string TokenStatus_ValidToken {
+            get {
+                return ResourceManager.GetString("TokenStatus_ValidToken", resourceCulture);
             }
         }
     }

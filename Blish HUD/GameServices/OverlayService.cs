@@ -5,9 +5,12 @@ using System.Globalization;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD {
 
@@ -19,15 +22,15 @@ namespace Blish_HUD {
 
         private const int FORCE_EXIT_TIMEOUT = 4000;
 
-        public event EventHandler<EventArgs> UserLocaleChanged;
+        public event EventHandler<ValueEventArgs<CultureInfo>> UserLocaleChanged;
 
-        public TabbedWindow BlishHudWindow { get; protected set; }
-        public CornerIcon BlishMenuIcon { get; protected set; }
-        public ContextMenuStrip BlishContextMenu { get; protected set; }
+        public TabbedWindow     BlishHudWindow   { get; private set; }
+        public CornerIcon       BlishMenuIcon    { get; private set; }
+        public ContextMenuStrip BlishContextMenu { get; private set; }
 
         public GameTime CurrentGameTime { get; private set; }
 
-        internal SettingCollection    _applicationSettings;
+        internal SettingCollection OverlaySettings { get; private set; }
 
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
@@ -47,9 +50,9 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            _applicationSettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
+            this.OverlaySettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
 
-            DefineSettings(_applicationSettings);
+            DefineSettings(this.OverlaySettings);
         }
 
         private void DefineSettings(SettingCollection settings) {
@@ -73,7 +76,12 @@ namespace Blish_HUD {
         }
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
-            CultureInfo.CurrentUICulture = GetCultureFromGw2Locale(e.NewValue);
+            var culture = GetCultureFromGw2Locale(e.NewValue);
+
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            CultureInfo.CurrentUICulture              = culture;
+
+            this.UserLocaleChanged?.Invoke(this, new ValueEventArgs<CultureInfo>(culture));
         }
 
         /// <summary>
@@ -201,9 +209,7 @@ namespace Blish_HUD {
         }
 
         private Panel BuildHomePanel(WindowBase wndw) {
-            var hPanel = new Panel() {
-                Size = wndw.ContentRegion.Size
-            };
+            var hPanel = new ViewContainer();
 
             return hPanel;
         }

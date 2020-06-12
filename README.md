@@ -1,5 +1,5 @@
 ﻿# Blish HUD
-[![Build status](https://ci.appveyor.com/api/projects/status/43fg2d3hy4jt5ip1?svg=true)](https://ci.appveyor.com/project/dlamkins/blish-hud)
+[![Build status](https://ci.appveyor.com/api/projects/status/43fg2d3hy4jt5ip1?svg=true)](https://ci.appveyor.com/project/dlamkins/blish-hud/branch/dev/artifacts)
 [![Discord](https://img.shields.io/discord/531175899588984842.svg?logo=discord&logoColor=%237289DA)](https://discord.gg/FYKN3qh)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?branch=dev&project=blish-hud_Blish-HUD&metric=alert_status)](https://sonarcloud.io/dashboard?id=blish-hud_Blish-HUD&branch=dev)
 
@@ -46,6 +46,10 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 
 - [Visual Studio 2019 Module Template](https://github.com/blish-hud/Module-Template)
 - [Example Module](https://github.com/blish-hud/Example-Blish-HUD-Module/blob/master/README.md)
+
+### Thanks
+
+Thank you [JetBrains](https://www.jetbrains.com/?from=Blish%20HUD) for providing free open source licenses to our primary contributers.
 
 ### License
 

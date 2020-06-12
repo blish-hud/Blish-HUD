@@ -6,36 +6,56 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
+    /// <summary>
+    /// Acts as a container to build and house the lifecycle of any provided <see cref="IView"/>.
+    /// </summary>
     public class ViewContainer : Panel {
 
         private const float FADE_DURATION = 0.35f;
 
-        private Panel _buildPanel;
-        private IView _currentView;
+        /// <summary>
+        /// The current state of the view.
+        /// </summary>
+        public ViewState ViewState { get; private set; } = ViewState.None;
 
-        private ViewState _viewState = ViewState.None;
+        private bool _fadeView = false;
 
-        private string _loadingMessage;
+        /// <summary>
+        /// If views should be faded in as they do in Guild Wars 2.
+        /// Default is <c>false</c> which will show the built view immediately.
+        /// </summary>
+        public bool FadeView {
+            get => _fadeView;
+            set => SetProperty(ref _fadeView, value);
+        }
 
-        public ViewState ViewState => _viewState;
+        /// <summary>
+        /// The <see cref="IView"/> this container is currently displaying.
+        /// </summary>
+        public IView CurrentView { get; private set; }
 
         private Tween _fadeInAnimation;
 
+        private string _loadingMessage;
+
+        /// <summary>
+        /// Shows the provided view.
+        /// </summary>
         public void Show(IView newView) {
-            this.Clear();
+            Clear();
 
-            _viewState = ViewState.Loading;
+            ViewState = ViewState.Loading;
 
-            _currentView = newView;
+            this.CurrentView = newView;
 
             var progressIndicator = new Progress<string>((progressReport) => { _loadingMessage = progressReport; });
 
             newView.Loaded += BuildView;
             newView.DoLoad(progressIndicator).ContinueWith(BuildView);
 
-            _fadeInAnimation?.CancelAndComplete();
-            _opacity         = 0f;
-            _fadeInAnimation = GameService.Animation.Tweener.Tween(this, new { Opacity = 1f }, FADE_DURATION);
+            if (_fadeView) {
+                _fadeInAnimation = GameService.Animation.Tweener.Tween(this, new {Opacity = 1f}, FADE_DURATION);
+            }
 
             base.Show();
         }
@@ -44,38 +64,41 @@ namespace Blish_HUD.Controls {
         /// Clear the view from this container.
         /// </summary>
         public void Clear() {
-            _currentView?.DoUnload();
+            this.CurrentView?.DoUnload();
 
             // Reset panel defaults
             this.BackgroundColor   = Color.Transparent;
             this.BackgroundTexture = null;
             this.ClipsBounds       = true;
 
+            // Potentially prepare for next fade-in
+            _fadeInAnimation?.Cancel();
+            _fadeInAnimation = null;
+            _opacity         = _fadeView ? 0f : 1f;
+
             this.ClearChildren();
         }
 
         private void BuildView(object sender, EventArgs e) {
-            _currentView.Loaded -= BuildView;
+            this.CurrentView.Loaded -= BuildView;
 
-            _viewState = ViewState.Loaded;
+            ViewState = ViewState.Loaded;
         }
 
         private void BuildView(Task<bool> loadResult) {
             if (loadResult.Result) {
-                _currentView.DoBuild(_buildPanel);
+                this.CurrentView.DoBuild(this);
             }
         }
 
-        /// <inheritdoc />
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             base.PaintBeforeChildren(spriteBatch, bounds);
 
-            if (_viewState == ViewState.Loading) {
+            if (ViewState == ViewState.Loading) {
                 spriteBatch.DrawStringOnCtrl(this, _loadingMessage ?? "", Content.DefaultFont14, this.ContentRegion, Color.White, false, true, 1, HorizontalAlignment.Center);
             }
         }
 
-        /// <inheritdoc />
         protected override void DisposeControl() {
             this.Clear();
 
