@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Blish_HUD.Input.WinApi;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
-    public class KeyboardManager : InputManager {
+
+    public class KeyboardHandler : IInputHandler {
 
         #region Event Handling
 
@@ -26,11 +25,10 @@ namespace Blish_HUD.Input {
         public event EventHandler<KeyboardEventArgs> KeyStateChanged;
 
         private void OnKeyStateChanged(KeyboardEventArgs e) {
-            if (e.EventType == KeyboardEventType.KeyDown) {
+            if (e.EventType == KeyboardEventType.KeyDown)
                 this.KeyPressed?.Invoke(this, e);
-            } else {
+            else
                 this.KeyReleased?.Invoke(this, e);
-            }
 
             this.KeyStateChanged?.Invoke(this, e);
         }
@@ -51,9 +49,9 @@ namespace Blish_HUD.Input {
         /// </summary>
         public ModifierKeys ActiveModifiers { get; private set; }
 
-        private readonly ConcurrentQueue<KeyboardEventArgs> _inputBuffer;
+        private readonly ConcurrentQueue<KeyboardEventArgs> _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
 
-        private readonly List<Keys> _keysDown;
+        private readonly List<Keys> _keysDown = new List<Keys>();
 
         /// <summary>
         /// A list of keys currently being pressed down.
@@ -62,9 +60,50 @@ namespace Blish_HUD.Input {
         
         private Action<string> _textInputDelegate;
 
-        internal KeyboardManager() : base(HookType.WH_KEYBOARD_LL) {
-            _keysDown    = new List<Keys>();
-            _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
+        internal KeyboardHandler() { }
+
+        public void Update() {
+            while (_inputBuffer.TryDequeue(out KeyboardEventArgs keyboardEvent)) {
+                if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
+                    // Avoid firing on held keys
+                    if (_keysDown.Contains(keyboardEvent.Key)) continue;
+
+                    _keysDown.Add(keyboardEvent.Key);
+                } else
+                    _keysDown.Remove(keyboardEvent.Key);
+
+                UpdateStates();
+
+                OnKeyStateChanged(keyboardEvent);
+            }
+        }
+
+        public void OnEnable() {
+            /* NOOP */
+        }
+
+        public void OnDisable() {
+            // Ensure that key states don't get stuck if the
+            // application focus is lost while keys were down.
+
+            Keys[] passingKeys = _keysDown.ToArray();
+            _keysDown.Clear();
+
+            UpdateStates();
+
+            foreach (Keys key in passingKeys) OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
+        }
+
+        public bool HandleInput(KeyboardEventArgs e) {
+            if (_hookGeneralBlock) return true;
+
+            return ProcessInput(e.EventType, e.Key);
+        }
+
+        public void SetTextInputListner(Action<string> input) { _textInputDelegate = input; }
+
+        public void UnsetTextInputListner(Action<string> input) {
+            if (input == _textInputDelegate) _textInputDelegate = null;
         }
 
         private void UpdateStates() {
@@ -74,52 +113,7 @@ namespace Blish_HUD.Input {
             this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
         }
 
-        internal override void Update() {
-            while (_inputBuffer.TryDequeue(out var keyboardEvent)) {
-                if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
-                    // Avoid firing on held keys
-                    if (_keysDown.Contains(keyboardEvent.Key)) {
-                        continue;
-                    }
-
-                    _keysDown.Add(keyboardEvent.Key);
-                } else {
-                    _keysDown.Remove(keyboardEvent.Key);
-                }
-
-                UpdateStates();
-
-                OnKeyStateChanged(keyboardEvent);
-            }
-        }
-
-        protected override void OnDisable() {
-            // Ensure that key states don't get stuck if the
-            // application focus is lost while keys were down.
-
-            Keys[] passingKeys = _keysDown.ToArray();
-            _keysDown.Clear();
-
-            UpdateStates();
-
-            foreach (var key in passingKeys) {
-                OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
-            }
-        }
-
-        public void SetTextInputListner(Action<string> input) {
-            _textInputDelegate = input;
-        }
-
-        public void UnsetTextInputListner(Action<string> input) {
-            if (input == _textInputDelegate) {
-                _textInputDelegate = null;
-            }
-        }
-
-        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) {
-            _textInputDelegate?.EndInvoke(asyncResult);
-        }
+        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) { _textInputDelegate?.EndInvoke(asyncResult); }
 
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
@@ -135,15 +129,6 @@ namespace Blish_HUD.Input {
             return false;
         }
 
-        protected override bool HandleNewInput(IntPtr wParam, IntPtr lParam) {
-            if (_hookGeneralBlock)
-                return true;
-
-            var eventType = (KeyboardEventType)((uint)wParam % 2 + 256); // filter out SysKeyDown & SysKeyUp
-            var key       = (Keys)Marshal.ReadInt32(lParam);
-
-            return ProcessInput(eventType, key);
-        }
-
     }
+
 }

@@ -190,4 +190,7 @@ press "Register".</value>
   <data name="ManageApiKeysSection" xml:space="preserve">
     <value>Manage API Keys</value>
   </data>
+  <data name="TokenStatus_FailedToLoad" xml:space="preserve">
+    <value>Failed to load token.</value>
+  </data>
 </root>

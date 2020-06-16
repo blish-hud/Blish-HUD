@@ -292,6 +292,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to load token..
+        /// </summary>
+        internal static string TokenStatus_FailedToLoad {
+            get {
+                return ResourceManager.GetString("TokenStatus_FailedToLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid token.
         /// </summary>
         internal static string TokenStatus_InvalidToken {

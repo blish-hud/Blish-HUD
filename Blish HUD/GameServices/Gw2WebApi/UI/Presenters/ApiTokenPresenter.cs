@@ -59,19 +59,23 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
 
             if (infoTask.Exception != null) {
                 HandleErrorLoading(infoTask.Exception);
-                return false;
+            } else {
+                field = infoTask.Result;
             }
 
-            field = infoTask.Result;
             return true;
         }
 
         private void HandleErrorLoading(Exception ex) {
             Logger.Warn(ex, "Loading failed.");
             _loadCancel.Cancel();
+
+            this.View.Errored = true;
         }
 
         protected override void UpdateView() {
+            if (_tokenInfo == null) return;
+
             this.View.TokenInfo     = _tokenInfo;
             this.View.AccountInfo   = _accountInfo;
             this.View.CharacterList = _characters;

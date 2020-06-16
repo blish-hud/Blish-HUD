@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Blish_HUD.Controls;
-using Blish_HUD.Gw2WebApi.UI.Presenters;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
 using Gw2Sharp.WebApi.V2;
@@ -23,12 +22,14 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private Label _accountNameLbl;
         private Label _tokenKeyLbl;
         private Label _tokenNameLbl;
+        private Label _failedTokenLbl;
 
         private Image _regionFlagImg;
         private Image _accountCommanderImg;
 
         private GlowButton _deleteBttn;
 
+        private bool _errored;
         private bool _active;
 
         private TokenInfo                _tokenInfo;
@@ -53,6 +54,26 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         public bool CanDelete {
             get => _deleteBttn.Visible;
             set => _deleteBttn.Visible = value;
+        }
+
+        public bool Errored {
+            get => _errored;
+            set {
+                _errored = value;
+
+                if (_accountNameLbl != null) {
+                    _accountNameLbl.Visible = !_errored;
+                    _tokenKeyLbl.Visible    = !_errored;
+                    _tokenNameLbl.Visible   = !_errored;
+
+                    _failedTokenLbl.Visible = _errored;
+                }
+            }
+        }
+
+        public bool Active {
+            get => _active;
+            set => SetActive(value);
         }
 
         public void SetTokenInfo(TokenInfo tokenInfo) {
@@ -84,13 +105,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _tokenKeyLbl.BasicTooltipText = string.Join("\n", _characterList);
         }
 
-        public bool Active {
-            get => _active;
-            set => SetActive(value);
-        }
-
         private void SetActive(bool active) {
-            _active                   = active;
+            _active = active;
 
             this.ViewTarget.BackgroundTexture = _active
                                                     ? GameService.Content.GetTexture("1060353-crop")
@@ -98,6 +114,18 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         }
 
         protected override void Build(Panel buildPanel) {
+            _failedTokenLbl = new Label() {
+                Size                = buildPanel.Size,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment   = VerticalAlignment.Middle,
+                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia,
+                                                   ContentService.FontSize.Size14,
+                                                   ContentService.FontStyle.Italic),
+                Text    = Strings.GameServices.Gw2ApiService.TokenStatus_FailedToLoad,
+                Visible = _errored,
+                Parent  = buildPanel
+            };
+
             _accountNameLbl = new Label() {
                 Text           = "[Account Name]",
                 Font           = GameService.Content.DefaultFont16,
@@ -105,12 +133,14 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Location       = new Point(10, 10),
                 AutoSizeHeight = true,
                 Width          = buildPanel.Width - 20,
+                Visible        = !_errored,
                 Parent         = buildPanel
             };
 
             _regionFlagImg = new Image() {
                 Size     = new Point(16,                   16),
                 Location = new Point(_accountNameLbl.Left, _accountNameLbl.Bottom + 2),
+                Visible  = false,
                 Parent   = buildPanel
             };
 
@@ -118,6 +148,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Size             = new Point(16,                       16),
                 Location         = new Point(_regionFlagImg.Right + 4, _regionFlagImg.Top),
                 BasicTooltipText = Strings.GameServices.Gw2ApiService.AccountInfo_Commander,
+                Visible          = false,
                 Parent           = buildPanel
             };
 
@@ -127,6 +158,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Width          = buildPanel.Width / 4,
                 Left           = _accountNameLbl.Left,
                 Bottom         = buildPanel.Height - 10,
+                Visible        = !_errored,
                 Parent         = buildPanel
             };
 
@@ -137,6 +169,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Width               = (buildPanel.Width / 4) * 3 - 30,
                 Left                = _tokenKeyLbl.Right         + 10,
                 Bottom              = _tokenKeyLbl.Bottom,
+                Visible             = !_errored,
                 Parent              = buildPanel
             };
 
