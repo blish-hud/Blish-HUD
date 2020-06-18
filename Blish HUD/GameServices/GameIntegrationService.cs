@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -161,11 +162,23 @@ namespace Blish_HUD {
         }
 
         private void LaunchGw2(bool autologin = false) {
+            var args = new List<string>();
+
+            // Auto login
+            if (autologin) {
+                args.Add("-autologin");
+            }
+
+            // Mumble target name
+            if (ApplicationSettings.Instance.MumbleMapName != null) {
+                args.Add($"-mumble \"{ApplicationSettings.Instance.MumbleMapName}\"");
+            }
+
             if (File.Exists(this.Gw2ExecutablePath)) {
                 var gw2Proc = new Process {
                     StartInfo = {
-                        FileName = this.Gw2ExecutablePath,
-                        Arguments = autologin ? "-autologin" : ""
+                        FileName  = this.Gw2ExecutablePath,
+                        Arguments = string.Join(" ", args)
                     }
                 };
 
@@ -181,6 +194,14 @@ namespace Blish_HUD {
             CreateTrayIcon();
 
             TryAttachToGw2();
+
+            Gw2Mumble.Info.IsGameFocusedChanged += OnGameFocusChanged;
+        }
+
+        private void OnGameFocusChanged(object sender, ValueEventArgs<bool> e) {
+            if (e.Value) {
+                TryAttachToGw2();
+            }
         }
 
         #region TrayIcon Menu Items
@@ -192,13 +213,19 @@ namespace Blish_HUD {
         #endregion
 
         private void CreateTrayIcon() {
+            string trayIconText = Strings.Common.BlishHUD;
+
+            if (ApplicationSettings.Instance.MumbleMapName != null) {
+                trayIconText += $" ({ApplicationSettings.Instance.MumbleMapName})";
+            }
+
             this.TrayIconMenu = new ContextMenuStrip();
 
             // Found this here: https://stackoverflow.com/a/25409865/595437
             // Extract the tray icon from our assembly
             this.TrayIcon = new NotifyIcon() {
                 Icon             = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
-                Text             = Strings.Common.BlishHUD,
+                Text             = trayIconText,
                 Visible          = true,
                 ContextMenuStrip = this.TrayIconMenu
             };
@@ -211,8 +238,9 @@ namespace Blish_HUD {
             ts_launchGw2.Click     += delegate { LaunchGw2(false); };
 
             this.TrayIcon.DoubleClick += delegate {
-                if (!this.Gw2IsRunning)
+                if (!this.Gw2IsRunning) {
                     LaunchGw2(true);
+                }
             };
 
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
@@ -227,7 +255,10 @@ namespace Blish_HUD {
         }
 
         private void TryAttachToGw2() {
-            this.Gw2Process = GetGw2Process();
+            // Get process from Mumble if it is defined
+            // otherwise just get the first instance running
+            this.Gw2Process = GetMumbleSpecifiedGw2Process()
+                           ?? GetDefaultGw2Process();
 
             if (this.Gw2IsRunning) {
                 try {
@@ -236,7 +267,7 @@ namespace Blish_HUD {
                 } catch (Win32Exception ex) /* [BLISHHUD-W] */ {
                     // Observed as "Access is denied"
                     Logger.Warn(ex, "A Win32Exception was encountered while trying to monitor the Gw2 process. It might be running with different permissions.");
-                } catch (InvalidOperationException e) /* [BLISHHUD-1H] */ {
+                } catch (InvalidOperationException) /* [BLISHHUD-1H] */ {
                     // Can get thrown if the game is closed just as we launched it
                     OnGw2Exit(null, EventArgs.Empty);
                 }
@@ -247,7 +278,21 @@ namespace Blish_HUD {
             }
         }
 
-        private Process GetGw2Process() {
+        private Process GetMumbleSpecifiedGw2Process() {
+            if (Gw2Mumble.IsAvailable) {
+                try {
+                    return Process.GetProcessById((int) Gw2Mumble.Info.ProcessId);
+                } catch (ArgumentException) {
+                    Logger.Debug("Mumble reported PID {pid} which did not correlate to an active process.", Gw2Mumble.Info.ProcessId);
+                } catch (InvalidOperationException) {
+                    Logger.Debug("Mumble reported PID {pid} failed to return a process.", Gw2Mumble.Info.ProcessId);
+                }
+            }
+
+            return null;
+        }
+
+        private Process GetDefaultGw2Process() {
             // Check to see if 64-bit Gw2 process is running (since it's likely the most common at this point)
             Process[] gw2Processes = Process.GetProcessesByName(ApplicationSettings.Instance.ProcessName ?? GW2_64_BIT_PROCESSNAME);
 
@@ -256,13 +301,9 @@ namespace Blish_HUD {
                 gw2Processes = Process.GetProcessesByName(GW2_32_BIT_PROCESSNAME);
             }
 
-            if (gw2Processes.Length > 0) {
-                // TODO: We don't currently have multibox support, but future updates should at least handle
-                // multiboxing in a better way
-                return gw2Processes[0];
-            }
-
-            return null;
+            return gw2Processes.Length > 0
+                       ? gw2Processes[0]
+                       : null;
         }
 
         private void OnGw2Exit(object sender, EventArgs e) {
