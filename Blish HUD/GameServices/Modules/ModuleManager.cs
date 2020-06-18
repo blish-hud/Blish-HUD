@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Blish_HUD.Content;
@@ -86,11 +87,10 @@ namespace Blish_HUD.Modules {
             }
         }
 
-        private Assembly LoadPackagedAssembly(string assemblyName) {
-            // All assemblies must be at the root of the BHM.
-            string symbolsPath = assemblyName.Replace(".dll", ".pdb");
+        private Assembly LoadPackagedAssembly(string assemblyPath) {
+            string symbolsPath = assemblyPath.Replace(".dll", ".pdb");
 
-            byte[] assemblyData = _dataReader.GetFileBytes(assemblyName);
+            byte[] assemblyData = _dataReader.GetFileBytes(assemblyPath);
             byte[] symbolData   = _dataReader.GetFileBytes(symbolsPath) ?? new byte[0];
 
             return Assembly.Load(assemblyData, symbolData);
@@ -99,7 +99,13 @@ namespace Blish_HUD.Modules {
         private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args) {
             if (_enabled && _moduleAssembly == args.RequestingAssembly) {
                 try {
-                    string assemblyName = $"{new AssemblyName(args.Name).Name}.dll";
+                    var assemblyDetails = new AssemblyName(args.Name);
+
+                    string assemblyName = $"{assemblyDetails.Name}.dll";
+
+                    if (!Equals(assemblyDetails.CultureInfo, CultureInfo.InvariantCulture) && !string.Equals(assemblyDetails.CultureInfo.TwoLetterISOLanguageName, "en")) {
+                        assemblyName = $"{assemblyDetails.CultureName}/{assemblyName}";
+                    }
 
                     Logger.Debug("Module {module} requested to load dependency {dependency} ({assemblyName}).", _manifest.GetDetailedName(), args.Name, assemblyName);
 
