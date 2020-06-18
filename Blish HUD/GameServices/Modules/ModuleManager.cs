@@ -103,7 +103,7 @@ namespace Blish_HUD.Modules {
 
                     string assemblyName = $"{assemblyDetails.Name}.dll";
 
-                    if (!Equals(assemblyDetails.CultureInfo, CultureInfo.InvariantCulture)) {
+                    if (!Equals(assemblyDetails.CultureInfo, CultureInfo.InvariantCulture) && !string.Equals(assemblyDetails.CultureInfo.TwoLetterISOLanguageName, "en")) {
                         assemblyName = $"{assemblyDetails.CultureName}/{assemblyName}";
                     }
 
