@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Blish_HUD.ArcDps.Common {
 
@@ -16,7 +17,7 @@ namespace Blish_HUD.ArcDps.Common {
         /// </summary>
         public IReadOnlyDictionary<string, Player> PlayersInSquad => _playersInSquad;
 
-        private readonly Dictionary<string, Player> _playersInSquad = new Dictionary<string, Player>();
+        private readonly ConcurrentDictionary<string, Player> _playersInSquad = new ConcurrentDictionary<string, Player>();
 
         private bool _enabled;
 
@@ -48,30 +49,22 @@ namespace Blish_HUD.ArcDps.Common {
 
             /* add */
             if (args.CombatEvent.Src.Profession != 0) {
-                if (!_playersInSquad.ContainsKey(args.CombatEvent.Src.Name)) {
-                    string accountName = args.CombatEvent.Dst.Name.StartsWith(":")
-                                             ? args.CombatEvent.Dst.Name.Substring(1)
-                                             : args.CombatEvent.Dst.Name;
+                if (_playersInSquad.ContainsKey(args.CombatEvent.Src.Name)) return;
 
-                    var player = new Player(
-                                            args.CombatEvent.Src.Name, accountName,
-                                            args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite, args.CombatEvent.Dst.Self != 0
-                                           );
+                string accountName = args.CombatEvent.Dst.Name.StartsWith(":")
+                                         ? args.CombatEvent.Dst.Name.Substring(1)
+                                         : args.CombatEvent.Dst.Name;
 
-                    _playersInSquad.Add(args.CombatEvent.Src.Name, player);
+                var player = new Player(
+                                        args.CombatEvent.Src.Name, accountName,
+                                        args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite, args.CombatEvent.Dst.Self != 0
+                                       );
 
-                    this.PlayerAdded?.Invoke(player);
-                }
+                if (_playersInSquad.TryAdd(args.CombatEvent.Src.Name, player)) this.PlayerAdded?.Invoke(player);
             }
             /* remove */
             else {
-                if (_playersInSquad.ContainsKey(args.CombatEvent.Src.Name)) {
-                    var player = _playersInSquad[args.CombatEvent.Src.Name];
-
-                    _playersInSquad.Remove(args.CombatEvent.Src.Name);
-
-                    this.PlayerRemoved?.Invoke(player);
-                }
+                if (_playersInSquad.TryRemove(args.CombatEvent.Src.Name, out var player)) this.PlayerRemoved?.Invoke(player);
             }
         }
 
