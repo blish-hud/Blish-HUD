@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Windows.Forms;
 using EntryPoint;
+using EntryPoint.Exceptions;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
@@ -10,11 +12,21 @@ namespace Blish_HUD {
         private static ApplicationSettings _instance;
 
         internal static ApplicationSettings Instance => _instance;
-        
+
+        public bool CliExitEarly => this.UserFacingExceptionThrown || this.HelpInvoked;
+
         public ApplicationSettings() : base("Blish HUD") {
-            _instance = this;
+            _instance ??= this;
 
             InitDebug();
+        }
+
+        public override void OnUserFacingException(UserFacingException e, string message) {
+            MessageBox.Show("Invalid launch option(s) specified.  See --help for available options.", "Failed to launch Blish HUD", MessageBoxButtons.OK);
+        }
+
+        public override void OnHelpInvoked(string helpText) {
+            MessageBox.Show(helpText, "Launch Options", MessageBoxButtons.OK);
         }
 
         [Conditional("DEBUG")]
