@@ -31,8 +31,8 @@ namespace Blish_HUD.Controls {
 
         public ContextMenuStrip() {
             this.Visible = false;
-            this.Width = CONTROL_WIDTH;
-            this.ZIndex = Screen.CONTEXTMENU_BASEINDEX;
+            this.Width   = CONTROL_WIDTH;
+            this.ZIndex  = Screen.CONTEXTMENU_BASEINDEX;
 
             Input.Mouse.LeftMouseButtonPressed  += MouseButtonPressed;
             Input.Mouse.RightMouseButtonPressed += MouseButtonPressed;
@@ -57,18 +57,31 @@ namespace Blish_HUD.Controls {
             base.OnHidden(e);
         }
 
+        private int GetVerticalOffset(int yStart, int downOffset = 0, int upOffset = 0) {
+            int yUnderDef = Graphics.SpriteScreen.Bottom - (yStart + _size.Y);
+            int yAboveDef = Graphics.SpriteScreen.Top    + (yStart - _size.Y);
+
+            return yUnderDef > 0 || yUnderDef > yAboveDef
+                       // flip down
+                       ? yStart + upOffset
+                       // flip up
+                       : yStart - _size.Y + downOffset;
+        }
+
         public void Show(Point position) {
-            this.Location = position;
+            this.Location = new Point(position.X, GetVerticalOffset(position.Y));
             
             base.Show();
         }
 
         public void Show(Control activeControl) {
             if (activeControl is ContextMenuStripItem parentMenu) {
-                this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top);
-                this.ZIndex = parentMenu.ZIndex + 1;
+                this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, GetVerticalOffset(parentMenu.AbsoluteBounds.Top, 19));
+                this.ZIndex = parentMenu.Parent.ZIndex + 1;
             } else {
-                this.Location = activeControl.AbsoluteBounds.Location + new Point(0, activeControl.Height);
+                (int x, int y) = activeControl.AbsoluteBounds.Location;
+
+                this.Location = new Point(x, GetVerticalOffset(y, 0, activeControl.Height));
             }
 
             base.Show();
