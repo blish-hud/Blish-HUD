@@ -38,7 +38,7 @@ namespace Blish_HUD {
         /// </summary>
         [STAThread]
         static void Main(string[] args) {
-            Cli.Parse<ApplicationSettings>(args);
+            if (Cli.Parse<ApplicationSettings>(args).CliExitEarly) return;
 
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
 
