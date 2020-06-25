@@ -7,10 +7,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
    public class Tooltip : Container {
+        
+        internal const int MOUSE_VERTICAL_MARGIN = 18;
 
         private const int PADDING = 2;
-
-        private const int MOUSE_VERTICAL_MARGIN = 18;
 
         #region Load Static
 
@@ -27,17 +27,19 @@ namespace Blish_HUD.Controls {
 
             _allTooltips = new List<Tooltip>();
 
-            Control.ActiveControlChanged += ControlOnActiveControlChanged;
+            ActiveControlChanged   += ControlOnActiveControlChanged;
+            Input.Mouse.MouseMoved += HandleMouseMoved;
+        }
 
-            Input.Mouse.MouseMoved += delegate(object sender, MouseEventArgs args) {
-                if (ActiveControl?.Tooltip != null) {
-                    ActiveControl.Tooltip.CurrentControl = ActiveControl;
-                    UpdateTooltipPosition(ActiveControl.Tooltip);
+        private static void HandleMouseMoved(object sender, MouseEventArgs e) {
+            if (ActiveControl?.Tooltip != null) {
+                ActiveControl.Tooltip.CurrentControl = ActiveControl;
+                UpdateTooltipPosition(ActiveControl.Tooltip);
 
-                    if (!ActiveControl.Tooltip.Visible)
-                        ActiveControl.Tooltip.Show();
+                if (!ActiveControl.Tooltip.Visible) {
+                    ActiveControl.Tooltip.Show();
                 }
-            };
+            }
         }
 
         private static Control _prevControl;
@@ -121,7 +123,7 @@ namespace Blish_HUD.Controls {
 
         public override void UpdateContainer(GameTime gameTime) {
             if (this.CurrentControl != null && !this.CurrentControl.Visible) {
-                this.Visible = false;
+                this.Visible        = false;
                 this.CurrentControl = null;
             }
         }
