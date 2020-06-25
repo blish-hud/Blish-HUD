@@ -31,7 +31,7 @@ namespace Blish_HUD {
             var bucket = new TokenBucket(300, 5);
 
             _sharedWebCache    = new TokenCompliantCacheWrapper(new MemoryCacheMethod(), bucket);
-            _sharedRenderCache = new TokenCompliantCacheWrapper(new MemoryCacheMethod(), bucket);
+            _sharedRenderCache = new MemoryCacheMethod();
         }
 
         #endregion
