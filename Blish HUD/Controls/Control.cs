@@ -450,9 +450,15 @@ namespace Blish_HUD.Controls {
             set {
                 if (!SetProperty(ref _basicTooltipText, value)) return;
 
-                // In the event that the tooltip text is changed while it's being shown, this will update it
+                // In the event that the tooltip text is changed while it's
+                // being shown (or the mouse is over the control), this
+                // portion will update it and display it (if it isn't already).
                 if (Control.ActiveControl == this) {
                     _sharedTooltipLabel.Text = value;
+
+                    if (!string.IsNullOrEmpty(value)) {
+                        _sharedTooltip.Show(Input.Mouse.Position + new Point(Tooltip.MOUSE_VERTICAL_MARGIN, -Tooltip.MOUSE_VERTICAL_MARGIN * 2));
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(value)) {
@@ -462,7 +468,7 @@ namespace Blish_HUD.Controls {
                         _sharedTooltipLabel.Text = this.BasicTooltipText;
                     };
                 } else {
-                    this.Tooltip.Hide();
+                    this.Tooltip?.Hide();
                     this.Tooltip = null;
                 }
             }

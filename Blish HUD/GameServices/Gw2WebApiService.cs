@@ -31,7 +31,7 @@ namespace Blish_HUD {
             var bucket = new TokenBucket(300, 5);
 
             _sharedWebCache    = new TokenCompliantCacheWrapper(new MemoryCacheMethod(), bucket);
-            _sharedRenderCache = new TokenCompliantCacheWrapper(new MemoryCacheMethod(), bucket);
+            _sharedRenderCache = new MemoryCacheMethod();
         }
 
         #endregion
@@ -48,7 +48,8 @@ namespace Blish_HUD {
             _privilegedConnection = new ManagedConnection(string.Empty, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
         }
 
-        public ManagedConnection AnonymousConnection => _anonymousConnection;
+        public   ManagedConnection AnonymousConnection  => _anonymousConnection;
+        internal ManagedConnection PrivilegedConnection => _privilegedConnection;
 
         #endregion
 
@@ -105,19 +106,32 @@ namespace Blish_HUD {
         }
 
         private void RefreshRegisteredKeys() {
-            foreach (var key in _apiKeyRepository) {
-                UpdateCharacterList((SettingEntry<string>)key);
+            foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
+                UpdateCharacterList(key);
             }
         }
 
         #region API Management
 
-        public void RegisterKey(string name, string key) {
-            SettingEntry<string> registeredKey = _apiKeyRepository.DefineSetting(name, key);
+        public void RegisterKey(string name, string apiKey) {
+            SettingEntry<string> registeredKey = _apiKeyRepository.DefineSetting(name, "");
 
-            registeredKey.Value = key;
+            registeredKey.Value = apiKey;
 
             UpdateCharacterList(registeredKey);
+        }
+
+        public void UnregisterKey(string apiKey) {
+            foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
+                if (string.Equals(apiKey, key.Value, StringComparison.InvariantCultureIgnoreCase) || key.Value.StartsWith(apiKey, StringComparison.InvariantCultureIgnoreCase)) {
+                    _apiKeyRepository.UndefineSetting(key.EntryKey);
+                    break;
+                }
+            }
+        }
+
+        internal string[] GetKeys() {
+            return _apiKeyRepository.Cast<SettingEntry<string>>().Select((setting) => setting.Value).ToArray();
         }
 
         private void UpdateCharacterList(SettingEntry<string> definedKey) {

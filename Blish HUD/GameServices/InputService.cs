@@ -1,51 +1,62 @@
-﻿using Microsoft.Xna.Framework;
-using Blish_HUD.Input;
+﻿using Blish_HUD.Input;
+using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
     public class InputService : GameService {
-        
+
+        private readonly IInputHookManager inputHookManager;
+
         /// <summary>
         /// Provides details about the current mouse state.
         /// </summary>
-        public MouseManager Mouse { get; }
+        public MouseHandler Mouse { get; }
 
         /// <summary>
         /// Provides details about the current keyboard state.
         /// </summary>
-        public KeyboardManager Keyboard { get; }
+        public KeyboardHandler Keyboard { get; }
 
         public InputService() {
-            Mouse    = new MouseManager();
-            Keyboard = new KeyboardManager();
+            Mouse = new MouseHandler();
+            Keyboard = new KeyboardHandler();
+
+            if (ApplicationSettings.Instance.DebugEnabled) {
+                inputHookManager = new DebugHelperHookManager();
+            } else {
+                inputHookManager = new WinApiInputHookManager();
+            }
         }
 
         internal void EnableHooks() {
-            Mouse.Enable();
-            Keyboard.Enable();
+            if (inputHookManager.EnableHook()) {
+                inputHookManager.RegisterMouseHandler(Mouse.HandleInput);
+                inputHookManager.RegisterKeyboardHandler(Keyboard.HandleInput);
+            }
         }
 
         internal void DisableHooks() {
-            Mouse.Disable();
-            Keyboard.Disable();
+            inputHookManager.DisableHook();
+            inputHookManager.UnregisterMouseHandler(Mouse.HandleInput);
+            inputHookManager.UnregisterKeyboardHandler(Keyboard.HandleInput);
         }
 
-        protected override void Initialize() {
-            EnableHooks();
-        }
+        protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
-            GameIntegration.Gw2AcquiredFocus += delegate { EnableHooks(); };
-            GameIntegration.Gw2LostFocus     += delegate { DisableHooks(); };
+            inputHookManager.Load();
+            GameIntegration.Gw2AcquiredFocus += (s, e) => EnableHooks();
+            GameIntegration.Gw2LostFocus += (s, e) => DisableHooks();
+            GameIntegration.Gw2Closed += (s, e) => DisableHooks();
         }
 
         protected override void Unload() {
             DisableHooks();
+            inputHookManager.Unload();
         }
 
         protected override void Update(GameTime gameTime) {
             Mouse.Update();
             Keyboard.Update();
         }
-
     }
 }

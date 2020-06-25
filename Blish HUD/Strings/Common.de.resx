@@ -132,4 +132,7 @@
   <data name="Unknown" xml:space="preserve">
     <value>Unbekannt</value>
   </data>
+  <data name="Action_Restart" xml:space="preserve">
+    <value>Neustart</value>
+  </data>
 </root>

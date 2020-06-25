@@ -14,20 +14,29 @@ namespace Blish_HUD.Controls {
 
         private class DropdownPanel : Control {
 
+            private const int TOOLTIP_HOVER_DELAY = 800;
+
             private Dropdown _assocDropdown;
 
-            private int _highlightedItem = -1;
-            private int HighlightedItem {
-                get => _highlightedItem;
-                set => SetProperty(ref _highlightedItem, value);
+            private int _highlightedItemIndex = -1;
+
+            private int HighlightedItemIndex {
+                get => _highlightedItemIndex;
+                set {
+                    if (SetProperty(ref _highlightedItemIndex, value)) {
+                        _hoverTime = 0;
+                    }
+                }
             }
+
+            private double _hoverTime;
 
             private DropdownPanel(Dropdown assocDropdown) {
                 _assocDropdown = assocDropdown;
 
                 _size     = new Point(_assocDropdown.Width, _assocDropdown.Height * _assocDropdown.Items.Count);
                 _location = GetPanelLocation();
-                _zIndex   = int.MaxValue;
+                _zIndex   = Screen.TOOLTIP_BASEZINDEX;
 
                 this.Parent = Graphics.SpriteScreen;
 
@@ -38,11 +47,14 @@ namespace Blish_HUD.Controls {
             private Point GetPanelLocation() {
                 var dropdownLocation = _assocDropdown.AbsoluteBounds.Location;
 
-                if (dropdownLocation.Y + _assocDropdown.Height + _size.Y < Graphics.SpriteScreen.Bottom) {
-                    return dropdownLocation + new Point(0, _assocDropdown.Height - 1);
-                }
+                int yUnderDef = Graphics.SpriteScreen.Bottom - (dropdownLocation.Y + _assocDropdown.Height + _size.Y);
+                int yAboveDef = Graphics.SpriteScreen.Top    + (dropdownLocation.Y                         - _size.Y);
 
-                return dropdownLocation - new Point(0, _size.Y + 1);
+                return yUnderDef > 0 || yUnderDef > yAboveDef
+                           // flip down
+                           ? dropdownLocation + new Point(0, _assocDropdown.Height - 1)
+                           // flip up
+                           : dropdownLocation - new Point(0, _size.Y + 1);
             }
 
             public static DropdownPanel ShowPanel(Dropdown assocDropdown) {
@@ -56,13 +68,35 @@ namespace Blish_HUD.Controls {
             }
 
             protected override void OnMouseMoved(MouseEventArgs e) {
-                this.HighlightedItem = this.RelativeMousePosition.Y / _assocDropdown.Height;
+                this.HighlightedItemIndex = this.RelativeMousePosition.Y / _assocDropdown.Height;
 
                 base.OnMouseMoved(e);
             }
 
+            private string GetActiveItem() {
+                return _highlightedItemIndex > 0 && _highlightedItemIndex < _assocDropdown.Items.Count
+                           ? _assocDropdown.Items[_highlightedItemIndex]
+                           : string.Empty;
+            }
+
+            private void UpdateHoverTimer(double elapsedMilliseconds) {
+                if (_mouseOver) {
+                    _hoverTime += elapsedMilliseconds;
+                } else {
+                    _hoverTime = 0;
+                }
+
+                this.BasicTooltipText = _hoverTime > TOOLTIP_HOVER_DELAY
+                                            ? GetActiveItem()
+                                            : string.Empty;
+            }
+
+            public override void DoUpdate(GameTime gameTime) {
+                UpdateHoverTimer(gameTime.ElapsedGameTime.TotalMilliseconds);
+            }
+
             protected override void OnClick(MouseEventArgs e) {
-                _assocDropdown.SelectedItem = _assocDropdown.Items[this.HighlightedItem];
+                _assocDropdown.SelectedItem = _assocDropdown.Items[this.HighlightedItemIndex];
 
                 base.OnClick(e);
 
@@ -74,8 +108,7 @@ namespace Blish_HUD.Controls {
 
                 int index = 0;
                 foreach (string item in _assocDropdown.Items) {
-
-                    if (index == this.HighlightedItem) {
+                    if (index == this.HighlightedItemIndex) {
                         spriteBatch.DrawOnCtrl(this,
                                                ContentService.Textures.Pixel,
                                                new Rectangle(2,
@@ -174,6 +207,12 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Returns <c>true</c> if this <see cref="Dropdown"/> is actively
+        /// showing the dropdown panel of options.
+        /// </summary>
+        public bool PanelOpen => _lastPanel != null;
+
         private DropdownPanel _lastPanel = null;
         private bool          _hadPanel  = false;
 
@@ -246,7 +285,7 @@ namespace Blish_HUD.Controls {
 
             // Draw text
             spriteBatch.DrawStringOnCtrl(this,
-                                         _selectedItem,
+                                         this.PanelOpen.ToString(),
                                          Content.DefaultFont14,
                                          new Rectangle(5, 0,
                                                        _size.X - 10 - _textureArrow.Width,

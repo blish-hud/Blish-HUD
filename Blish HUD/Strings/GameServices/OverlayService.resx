@@ -120,7 +120,7 @@ the Blish HUD team with help from many more!</value>
     <value>Show in Taskbar</value>
   </data>
   <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
-    <value>Minimize to tray when Guild Wars 2 Closes</value>
+    <value>Minimize to tray when Guild Wars 2 Closes.</value>
   </data>
   <data name="Setting_AppCulture_Description" xml:space="preserve">
     <value>Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API.</value>
@@ -131,5 +131,11 @@ the Blish HUD team with help from many more!</value>
   <data name="Setting_StayInTray_Description" xml:space="preserve">
     <value>If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.
 You can also use the Blish HUD icon in the tray to launch Guild Wars 2.</value>
+  </data>
+  <data name="AboutAnetNotice" xml:space="preserve">
+    <value>©2010-{0} ArenaNet, LLC. All rights reserved. Guild Wars, Guild Wars 2, Heart of Thorns,
+Guild Wars 2: Path of Fire, ArenaNet, NCSOFT, the Interlocking NC Logo, and all associated
+logos and designs are trademarks or registered trademarks of NCSOFT Corporation. All other
+trademarks are the property of their respective owners.</value>
   </data>
 </root>

@@ -5,7 +5,7 @@
     <Platforms>x64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>WinExe</OutputType>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8</LangVersion>
     <RootNamespace>Blish_HUD</RootNamespace>
     <ApplicationIcon>blishraster2_0dw_icon.ico</ApplicationIcon>
     <MonoGamePlatform>Windows</MonoGamePlatform>
@@ -194,7 +194,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Gw2Sharp" Version="[0.9.6]" />
+    <PackageReference Include="Gw2Sharp" Version="[0.10.0]" />
     <PackageReference Include="Humanizer.Core.de" Version="2.6.2" PrivateAssets="all" />
     <PackageReference Include="Humanizer.Core.es" Version="2.6.2" PrivateAssets="all" />
     <PackageReference Include="Humanizer.Core.fr" Version="2.6.2" PrivateAssets="all" />
@@ -209,8 +209,16 @@
     <PackageReference Include="Newtonsoft.Json" Version="[12.0.2]" />
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="all" />
     <PackageReference Include="Octokit" Version="0.32.0" PrivateAssets="all" />
-    <PackageReference Include="protobuf-net" Version="2.4.0" PrivateAssets="all" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DebugHelperLib\DebugHelperLib.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\DebugHelper\DebugHelper.csproj" PrivateAssets="all">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Content</OutputItemType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
