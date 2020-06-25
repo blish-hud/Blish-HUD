@@ -31,26 +31,24 @@
 
         #region Specific Checks
 
-        private bool IsStandardClientType(int currentBuildId, out ContextAvailability contextAvailability) {
+        private (bool IsMatch, ContextAvailability CdnAvailability) IsStandardClientType(int currentBuildId, out ContextAvailability contextAvailability) {
             contextAvailability = GameService.Contexts.GetContext<CdnInfoContext>().TryGetStandardCdnInfo(out var standardCdnContextResult);
 
             Logger.Debug("{contextName} ({contextAvailability}) reported the Standard client build ID to be {standardBuildId}.", nameof(CdnInfoContext), contextAvailability, standardCdnContextResult.Value.BuildId);
 
-            if (contextAvailability != ContextAvailability.Available)
-                return false;
-
-            return currentBuildId == standardCdnContextResult.Value.BuildId;
+            return contextAvailability != ContextAvailability.Available
+                       ? (false, contextAvailability)
+                       : (currentBuildId == standardCdnContextResult.Value.BuildId, contextAvailability);
         }
 
-        private bool IsChineseClientType(int currentBuildId, out ContextAvailability contextAvailability) {
+        private (bool IsMatch, ContextAvailability CdnAvailability) IsChineseClientType(int currentBuildId, out ContextAvailability contextAvailability) {
             contextAvailability = GameService.Contexts.GetContext<CdnInfoContext>().TryGetChineseCdnInfo(out var chineseCdnContextResult);
 
             Logger.Debug("{contextName} ({contextAvailability}) reported the Chinese client build ID to be {chineseBuildId}.", nameof(CdnInfoContext), contextAvailability, chineseCdnContextResult.Value.BuildId);
 
-            if (contextAvailability != ContextAvailability.Available)
-                return false;
-
-            return currentBuildId == chineseCdnContextResult.Value.BuildId;
+            return contextAvailability != ContextAvailability.Available
+                       ? (false, contextAvailability)
+                       : (currentBuildId == chineseCdnContextResult.Value.BuildId, contextAvailability);
         }
 
         #endregion
@@ -67,21 +65,28 @@
                 currentBuildId = GameService.Gw2Mumble.Info.BuildId;
             } else {
                 contextResult = new ContextResult<ClientType>(ClientType.Unknown, "The Guild Wars 2 Mumble Link API was not available.");
-                return ContextAvailability.Unavailable;
+                return ContextAvailability.NotReady;
             }
 
-            if (IsStandardClientType(currentBuildId, out var standardCdnStatus)) {
+            var standardClient = IsStandardClientType(currentBuildId, out var standardCdnStatus);
+            if (standardClient.IsMatch) {
                 contextResult = new ContextResult<ClientType>(ClientType.Standard);
                 return ContextAvailability.Available;
             }
 
-            if (IsChineseClientType(currentBuildId, out var chineseCdnStatus)) {
+            var chineseClient = IsChineseClientType(currentBuildId, out var chineseCdnStatus);
+            if (chineseClient.IsMatch) {
                 contextResult = new ContextResult<ClientType>(ClientType.Chinese);
                 return ContextAvailability.Available;
             }
 
-            contextResult = new ContextResult<ClientType>(ClientType.Unknown, $"The build ID reported by the Mumble Link API ({currentBuildId}) could not be matched against a CDN provided build ID.");
-            return ContextAvailability.Failed;
+            if (standardClient.CdnAvailability == ContextAvailability.Available && chineseClient.CdnAvailability == ContextAvailability.Available) {
+                contextResult = new ContextResult<ClientType>(ClientType.Unknown, $"The build ID reported by the Mumble Link API ({currentBuildId}) could not be matched against a CDN provided build ID.");
+                return ContextAvailability.Failed;
+            }
+
+            contextResult = new ContextResult<ClientType>(ClientType.Unknown, $"The CDN context is either not ready or failed to load.");
+            return ContextAvailability.Unavailable;
         }
 
     }
