@@ -164,8 +164,6 @@ namespace Blish_HUD {
                 }
             };
 
-            this.BlishHudWindow.AddTab(Strings.GameServices.OverlayService.HomeTab, Content.GetTexture("255369"), BuildHomePanel(this.BlishHudWindow), int.MinValue);
-
             PrepareClientDetection();
         }
 
@@ -193,25 +191,23 @@ namespace Blish_HUD {
         }
 
         private void DetectClientType() {
-            if (Contexts.GetContext<Gw2ClientContext>().TryGetClientType(out var contextResult) == ContextAvailability.Available) {
-                _clientType = contextResult.Value;
+            var checkClientTypeResult = Contexts.GetContext<Gw2ClientContext>().TryGetClientType(out var contextResult);
 
-                if (_clientType == Gw2ClientContext.ClientType.Unknown) {
-                    Logger.Warn("Failed to detect current Guild Wars 2 client version: {statusForUnknown}.", contextResult.Status);
-                } else {
+            switch (checkClientTypeResult) {
+                case ContextAvailability.Available:
+                    _clientType    = contextResult.Value;
+                    _checkedClient = true;
+
                     Logger.Info("Detected Guild Wars 2 client to be the {clientVersionType} version.", _clientType);
-                }
-
-                _checkedClient = true;
-            } else {
-                Logger.Warn("Failed to detect current Guild Wars 2 client version: {statusForUnknown}", contextResult.Status);
+                    break;
+                case ContextAvailability.Unavailable:
+                case ContextAvailability.NotReady:
+                    Logger.Debug("Unable to detect current Guild Wars 2 client version: {statusForUnknown}.", contextResult.Status);
+                    break;
+                case ContextAvailability.Failed:
+                    Logger.Warn("Failed to detect current Guild Wars 2 client version: {statusForUnknown}", contextResult.Status);
+                    break;
             }
-        }
-
-        private Panel BuildHomePanel(WindowBase wndw) {
-            var hPanel = new ViewContainer();
-
-            return hPanel;
         }
 
         protected override void Unload() {
