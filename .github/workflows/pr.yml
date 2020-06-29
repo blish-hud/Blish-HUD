@@ -31,5 +31,5 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: BlishHUD.${{ env.VERSION }}
+          name: Blish HUD.${{ env.VERSION }}
           path: Blish HUD/bin/x64/Release/net472
