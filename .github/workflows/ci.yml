@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - v*
+
+jobs:
+  nightly:
+    name: Nightly
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: git fetch --prune --unshallow
+      - uses: microsoft/setup-msbuild@v1.0.0
+
+      - name: Patch nightly version
+        shell: powershell
+        run: |
+          $version = GitVersion /output json /updateassemblyinfo "Blish HUD/Properties/AssemblyVersionInfo.cs" /ensureassemblyinfo
+          Write-Output $version
+          $version = $version | ConvertFrom-Json
+          $nuget = $version.SemVer
+          Write-Output "Assembly version: $($version.AssemblySemVer)"
+          Write-Output "Assembly file version: $($version.AssemblySemFileVer)"
+          Write-Output "Informational version: $($version.InformationalVersion)"
+          Write-Output "NuGet version: $nuget"
+          echo "::set-env name=VERSION::$nuget"
+
+      - name: Run msbuild restore
+        run: msbuild -t:restore
+      - name: Run msbuild
+        run: msbuild -p:Configuration=Release -p:VERSIONED_BUILD=$env:VERSION
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: BlishHUD ${{ env.VERSION }}
+          path: Blish HUD/bin/x64/Release/net472
+
+      - name: Run dotnet pack
+        run: dotnet pack "Blish HUD" -c Release -p:VERSIONED_BUILD=$env:VERSION
+      - name: Upload NuGet package artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: BlishHUD ${{ env.VERSION }} NuGet packages
+          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.*nupkg
