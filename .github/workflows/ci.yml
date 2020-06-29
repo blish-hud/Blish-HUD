@@ -44,5 +44,5 @@ jobs:
       - name: Upload NuGet package artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: BlishHUD ${{ env.VERSION }} NuGet packages
+          name: Blish HUD ${{ env.VERSION }} NuGet packages
           path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.*nupkg
