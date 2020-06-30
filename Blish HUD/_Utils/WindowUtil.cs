@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
 
-    public static class WindowUtil {
+    internal static class WindowUtil {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(WindowUtil));
 
@@ -149,14 +149,16 @@ namespace Blish_HUD {
 
         private static Rectangle pos;
 
-        internal static OverlayUpdateResponse UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle, bool wasOnTop) {
+        internal static (OverlayUpdateResponse Response, int ErrorCode) UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle, bool wasOnTop) {
             var clientRect = new RECT();
             bool errGetClientRectResult = GetClientRect(gw2WindowHandle, ref clientRect);
 
             // Probably errors caused by gw2 closing at the time of the call or the call is super early and has the wrong handle somehow
             if (!errGetClientRectResult) {
-                Logger.Warn($"{nameof(GetClientRect)} failed with error code {Marshal.GetLastWin32Error()}.");
-                return OverlayUpdateResponse.Errored;
+                int errorCode = Marshal.GetLastWin32Error();
+
+                Logger.Warn($"{nameof(GetClientRect)} failed with error code {errorCode}.");
+                return (OverlayUpdateResponse.Errored, errorCode);
             }
 
             var screenPoint = System.Drawing.Point.Empty;
@@ -164,8 +166,10 @@ namespace Blish_HUD {
 
             // Probably errors caused by gw2 closing at the time of the call
             if (!errClientToScreen) {
-                Logger.Warn($"{nameof(ClientToScreen)} failed with error code {Marshal.GetLastWin32Error()}.");
-                return OverlayUpdateResponse.Errored;
+                int errorCode = Marshal.GetLastWin32Error();
+
+                Logger.Warn($"{nameof(ClientToScreen)} failed with error code {errorCode}.");
+                return (OverlayUpdateResponse.Errored, errorCode);
             }
 
             GameService.Debug.StartTimeFunc("GetForegroundWindow");
@@ -183,7 +187,7 @@ namespace Blish_HUD {
                         SetWindowPos(winHandle, nextHandle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
                     }
                 }
-                return OverlayUpdateResponse.WithoutFocus;
+                return (OverlayUpdateResponse.WithoutFocus, 0);
             }
 
             if (!wasOnTop) {
@@ -215,7 +219,7 @@ namespace Blish_HUD {
                 DwmExtendFrameIntoClientArea(winHandle, ref marg);
             }
 
-            return OverlayUpdateResponse.WithFocus;
+            return (OverlayUpdateResponse.WithFocus, 0);
         }
 
         internal static string GetClassNameOfWindow(IntPtr hwnd) {

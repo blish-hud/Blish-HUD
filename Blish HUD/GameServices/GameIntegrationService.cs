@@ -331,7 +331,9 @@ namespace Blish_HUD {
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
-                switch (WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus)) {
+                var updateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
+
+                switch (updateResult.Response) {
                     case WindowUtil.OverlayUpdateResponse.WithFocus:
                         this.Gw2HasFocus = true;
                         break;
@@ -341,7 +343,21 @@ namespace Blish_HUD {
                         break;
 
                     case WindowUtil.OverlayUpdateResponse.Errored:
-                        this.Gw2Process = null;
+                        switch (updateResult.ErrorCode) {
+                            case 1400:
+                                this.Gw2Process.Refresh();
+
+                                if (this.Gw2Process.MainWindowHandle == IntPtr.Zero) {
+                                    // Guild Wars 2 most likely closed
+                                    goto case -1;
+                                }
+
+                                break;
+                            case -1:
+                            default:
+                                this.Gw2Process = null;
+                                break;
+                        }
                         break;
                 }
             } else {
