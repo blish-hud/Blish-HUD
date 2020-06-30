@@ -6,7 +6,7 @@ using Blish_HUD.DebugHelperLib.Services;
 
 namespace Blish_HUD.Input {
 
-    internal class DebugHelperHookManager : IInputHookManager {
+    internal class DebugHelperHookManager : IHookManager {
 
         private static readonly Logger Logger = Logger.GetLogger<DebugHelperHookManager>();
 

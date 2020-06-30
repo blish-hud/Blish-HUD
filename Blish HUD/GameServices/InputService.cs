@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD {
     public class InputService : GameService {
 
-        private readonly IInputHookManager inputHookManager;
+        private readonly IHookManager hookManager;
 
         /// <summary>
         /// Provides details about the current mouse state.
@@ -21,29 +21,29 @@ namespace Blish_HUD {
             Keyboard = new KeyboardHandler();
 
             if (ApplicationSettings.Instance.DebugEnabled) {
-                inputHookManager = new DebugHelperHookManager();
+                hookManager = new DebugHelperHookManager();
             } else {
-                inputHookManager = new WinApiInputHookManager();
+                hookManager = new WinApiHookManager();
             }
         }
 
         internal void EnableHooks() {
-            if (inputHookManager.EnableHook()) {
-                inputHookManager.RegisterMouseHandler(Mouse.HandleInput);
-                inputHookManager.RegisterKeyboardHandler(Keyboard.HandleInput);
+            if (hookManager.EnableHook()) {
+                hookManager.RegisterMouseHandler(Mouse.HandleInput);
+                hookManager.RegisterKeyboardHandler(Keyboard.HandleInput);
             }
         }
 
         internal void DisableHooks() {
-            inputHookManager.DisableHook();
-            inputHookManager.UnregisterMouseHandler(Mouse.HandleInput);
-            inputHookManager.UnregisterKeyboardHandler(Keyboard.HandleInput);
+            hookManager.DisableHook();
+            hookManager.UnregisterMouseHandler(Mouse.HandleInput);
+            hookManager.UnregisterKeyboardHandler(Keyboard.HandleInput);
         }
 
         protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
-            inputHookManager.Load();
+            hookManager.Load();
             GameIntegration.Gw2AcquiredFocus += (s, e) => EnableHooks();
             GameIntegration.Gw2LostFocus += (s, e) => DisableHooks();
             GameIntegration.Gw2Closed += (s, e) => DisableHooks();
@@ -51,7 +51,7 @@ namespace Blish_HUD {
 
         protected override void Unload() {
             DisableHooks();
-            inputHookManager.Unload();
+            hookManager.Unload();
         }
 
         protected override void Update(GameTime gameTime) {

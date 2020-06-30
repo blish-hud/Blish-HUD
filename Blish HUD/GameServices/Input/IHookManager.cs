@@ -2,7 +2,7 @@
 
 namespace Blish_HUD.Input {
 
-    internal interface IInputHookManager : IDisposable {
+    internal interface IHookManager : IDisposable {
 
         void Load();
 
