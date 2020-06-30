@@ -1,4 +1,5 @@
-﻿using Blish_HUD.DebugHelperLib.Models;
+﻿using System.Collections;
+using Blish_HUD.DebugHelperLib.Models;
 using Blish_HUD.DebugHelperLib.Services;
 
 namespace Blish_HUD.Input {
@@ -15,9 +16,11 @@ namespace Blish_HUD.Input {
 
             bool isHandled = false;
 
-            foreach (HandleMouseInputDelegate handler in this.Handlers) {
-                isHandled = handler(mouseEventArgs);
-                if (isHandled) break;
+            lock (((IList) this.Handlers).SyncRoot) {
+                foreach (HandleMouseInputDelegate handler in this.Handlers) {
+                    isHandled = handler(mouseEventArgs);
+                    if (isHandled) break;
+                }
             }
 
             MouseResponseMessage response = new MouseResponseMessage {
