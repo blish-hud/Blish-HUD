@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Runtime.InteropServices;
 using Blish_HUD.Input.WinApi;
 using Microsoft.Xna.Framework.Input;
@@ -18,9 +19,11 @@ namespace Blish_HUD.Input {
             KeyboardEventArgs KeyboardEventArgs = new KeyboardEventArgs(eventType, key);
             bool              isHandled         = false;
 
-            foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
-                isHandled = handler(KeyboardEventArgs);
-                if (isHandled) break;
+            lock (((IList) this.Handlers).SyncRoot) {
+                foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
+                    isHandled = handler(KeyboardEventArgs);
+                    if (isHandled) break;
+                }
             }
 
             if (isHandled)

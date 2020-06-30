@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Runtime.InteropServices;
 using Blish_HUD.Input.WinApi;
 
@@ -14,9 +15,11 @@ namespace Blish_HUD.Input {
             MouseEventArgs mouseEventArgs = new MouseEventArgs((MouseEventType)wParam, Marshal.PtrToStructure<MouseLLHookStruct>(lParam));
             bool           isHandled      = false;
 
-            foreach (HandleMouseInputDelegate handler in this.Handlers) {
-                isHandled = handler(mouseEventArgs);
-                if (isHandled) break;
+            lock (((IList) this.Handlers).SyncRoot) {
+                foreach (HandleMouseInputDelegate handler in this.Handlers) {
+                    isHandled = handler(mouseEventArgs);
+                    if (isHandled) break;
+                }
             }
 
             if (isHandled)

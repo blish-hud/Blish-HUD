@@ -1,4 +1,5 @@
-﻿using Blish_HUD.DebugHelperLib.Models;
+﻿using System.Collections;
+using Blish_HUD.DebugHelperLib.Models;
 using Blish_HUD.DebugHelperLib.Services;
 using Microsoft.Xna.Framework.Input;
 
@@ -14,9 +15,11 @@ namespace Blish_HUD.Input {
             KeyboardEventArgs keyboardEventArgs = new KeyboardEventArgs((KeyboardEventType)message.EventType, (Keys)message.Key);
             bool              isHandled         = false;
 
-            foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
-                isHandled = handler(keyboardEventArgs);
-                if (isHandled) break;
+            lock (((IList) this.Handlers).SyncRoot) {
+                foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
+                    isHandled = handler(keyboardEventArgs);
+                    if (isHandled) break;
+                }
             }
 
             KeyboardResponseMessage response = new KeyboardResponseMessage {

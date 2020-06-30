@@ -17,7 +17,7 @@ namespace Blish_HUD.Input {
 
         protected abstract HookType HookType { get; }
 
-        protected IList<THandlerDelegate> Handlers { get; } = new List<THandlerDelegate>();
+        protected IList<THandlerDelegate> Handlers { get; } = new SynchronizedCollection<THandlerDelegate>();
 
 
         public virtual bool EnableHook() {

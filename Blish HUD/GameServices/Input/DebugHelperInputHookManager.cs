@@ -11,17 +11,14 @@ namespace Blish_HUD.Input {
 
         private bool isEnabled = false;
 
-
         public DebugHelperInputHookManager(IMessageService debugHelperMessageService) {
             this.DebugHelperMessageService = debugHelperMessageService;
             debugHelperMessageService.Register<TEventMessage>(DummyHookCallback);
         }
 
-
-        protected IList<THandlerDelegate> Handlers { get; } = new List<THandlerDelegate>();
+        protected IList<THandlerDelegate> Handlers { get; } = new SynchronizedCollection<THandlerDelegate>();
 
         protected IMessageService DebugHelperMessageService { get; }
-
 
         public virtual bool EnableHook() {
             if (isEnabled) return false;
