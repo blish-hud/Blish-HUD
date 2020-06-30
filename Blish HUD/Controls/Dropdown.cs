@@ -285,7 +285,7 @@ namespace Blish_HUD.Controls {
 
             // Draw text
             spriteBatch.DrawStringOnCtrl(this,
-                                         this.PanelOpen.ToString(),
+                                         _selectedItem,
                                          Content.DefaultFont14,
                                          new Rectangle(5, 0,
                                                        _size.X - 10 - _textureArrow.Width,
