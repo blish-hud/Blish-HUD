@@ -81,7 +81,7 @@ namespace Blish_HUD {
             }
         }
 
-        public IntPtr Gw2WindowHandle { get; private set; }
+        public IntPtr Gw2WindowHandle => _gw2Process?.MainWindowHandle ?? IntPtr.Zero;
 
         private Process _gw2Process;
         public Process Gw2Process {
@@ -96,8 +96,6 @@ namespace Blish_HUD {
 
                     _gw2Process = null;
                 } else {
-                    this.Gw2WindowHandle = _gw2Process.MainWindowHandle;
-
                     if (_gw2Process.MainModule != null) {
                         _gw2ExecutablePath.Value = _gw2Process.MainModule.FileName;
                     }
@@ -331,7 +329,9 @@ namespace Blish_HUD {
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
-                switch (WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus)) {
+                var updateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
+
+                switch (updateResult.Response) {
                     case WindowUtil.OverlayUpdateResponse.WithFocus:
                         this.Gw2HasFocus = true;
                         break;
@@ -341,7 +341,21 @@ namespace Blish_HUD {
                         break;
 
                     case WindowUtil.OverlayUpdateResponse.Errored:
-                        this.Gw2Process = null;
+                        switch (updateResult.ErrorCode) {
+                            case 1400:
+                                this.Gw2Process.Refresh();
+
+                                if (this.Gw2Process.MainWindowHandle == IntPtr.Zero) {
+                                    // Guild Wars 2 most likely closed
+                                    goto case -1;
+                                }
+
+                                break;
+                            case -1:
+                            default:
+                                this.Gw2Process = null;
+                                break;
+                        }
                         break;
                 }
             } else {
