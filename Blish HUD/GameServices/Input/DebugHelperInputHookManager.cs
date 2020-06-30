@@ -18,7 +18,7 @@ namespace Blish_HUD.Input {
         }
 
 
-        protected IList<THandlerDelegate> Handlers { get; } = new List<THandlerDelegate>();
+        protected IList<THandlerDelegate> Handlers { get; } = new SynchronizedCollection<THandlerDelegate>();
 
         protected IMessageService DebugHelperMessageService { get; }
 
@@ -46,9 +46,13 @@ namespace Blish_HUD.Input {
             isEnabled = false;
         }
 
-        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Add(handleInputCallback); }
+        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) {
+            this.Handlers.Add(handleInputCallback);
+        }
 
-        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Remove(handleInputCallback); }
+        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) {
+            this.Handlers.Remove(handleInputCallback);
+        }
 
         protected abstract void HookCallback(TEventMessage message);
 
