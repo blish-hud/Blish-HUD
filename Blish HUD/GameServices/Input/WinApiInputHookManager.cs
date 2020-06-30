@@ -1,107 +1,48 @@
-﻿using System.Threading;
-using System.Windows.Forms;
-using Timer = System.Windows.Forms.Timer;
+﻿using System;
+using System.Collections.Generic;
+using Blish_HUD.Input.WinApi;
 
 namespace Blish_HUD.Input {
 
-    internal class WinApiInputHookManager : IInputHookManager {
+    internal abstract class WinApiInputHookManager<THandlerDelegate> {
 
-        private static readonly Logger Logger = Logger.GetLogger<WinApiInputHookManager>();
+        private static readonly Logger Logger = Logger.GetLogger<WinApiMouseHookManager>();
 
-        private readonly IMouseHookManager    mouseHookManager;
-        private readonly IKeyboardHookManager keyboardHookManager;
-        private          bool                 stopRequested = false;
-        private          Thread               thread;
-        private          AutoResetEvent       inputHookEvent  = new AutoResetEvent(false);
-        private          bool                 inputSuccessful = false;
+        private readonly HookExtern.HookCallbackDelegate hookProc; // Store the callback delegate, otherwise it might get garbage collected
+        private          IntPtr                          hook;
 
-        public WinApiInputHookManager() {
-            mouseHookManager    = new WinApiMouseHookManager();
-            keyboardHookManager = new WinApiKeyboardHookManager();
+
+        public WinApiInputHookManager() { hookProc = HookCallback; }
+
+
+        protected abstract HookType HookType { get; }
+
+        protected IList<THandlerDelegate> Handlers { get; } = new List<THandlerDelegate>();
+
+
+        public virtual bool EnableHook() {
+            if (hook != IntPtr.Zero) return true;
+
+            Logger.Debug("Enabling");
+
+            hook = HookExtern.SetWindowsHookEx(this.HookType, hookProc, IntPtr.Zero, 0);
+            return hook != IntPtr.Zero;
         }
 
-        public void Load() { }
+        public virtual void DisableHook() {
+            if (hook == IntPtr.Zero) return;
 
-        public void Unload() { DisableHook(); }
+            Logger.Debug("Disabling");
 
-        public bool EnableHook() {
-            if (thread != null) return false;
-
-            Logger.Debug("Enabling WinAPI input hooks");
-
-            thread = new Thread(Loop);
-            thread.Start();
-
-            // Wait for the hook to be completed and return the status
-            inputHookEvent.WaitOne();
-            return inputSuccessful;
+            HookExtern.UnhookWindowsHookEx(hook);
+            hook = IntPtr.Zero;
         }
 
-        public void DisableHook() {
-            if ((thread == null) || stopRequested) return;
+        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Add(handleInputCallback); }
 
-            Logger.Debug("Disabling WinAPI input hooks");
+        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Remove(handleInputCallback); }
 
-            mouseHookManager.DisableHook();
-            keyboardHookManager.DisableHook();
-
-            stopRequested = true;
-            thread.Join();
-
-            stopRequested = false;
-            thread        = null;
-        }
-
-        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.RegisterHandler(handleMouseInputCallback); }
-
-        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.UnregisterHandler(handleMouseInputCallback); }
-
-        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.RegisterHandler(handleKeyboardInputCallback); }
-
-        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback); }
-
-        private void Loop() {
-            using Timer timer = new Timer {
-                Interval = 10
-            };
-
-            timer.Tick += (sender, e) => {
-                if (stopRequested) {
-                    Logger.Debug("Stopping message loop");
-                    Application.ExitThread();
-                }
-            };
-
-            if (mouseHookManager.EnableHook() && keyboardHookManager.EnableHook()) inputSuccessful = true;
-            inputHookEvent.Set();
-
-            timer.Start();
-
-            Logger.Debug("Starting message loop");
-
-            // Start the message loop
-            Application.Run();
-            Logger.Debug("Message loop stopped");
-        }
-
-        #region IDisposable Support
-
-        private bool isDisposed = false;
-
-        protected virtual void Dispose(bool isDisposing) {
-            if (!isDisposed) {
-                if (isDisposing) {
-                    inputHookEvent.Dispose();
-                    Unload();
-                }
-
-                isDisposed = true;
-            }
-        }
-
-        public void Dispose() { Dispose(true); }
-
-        #endregion
+        protected abstract int HookCallback(int nCode, IntPtr wParam, IntPtr lParam);
 
     }
 

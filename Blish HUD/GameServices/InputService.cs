@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD {
     public class InputService : GameService {
 
-        private readonly IInputHookManager inputHookManager;
+        private readonly IHookManager inputHookManager;
 
         /// <summary>
         /// Provides details about the current mouse state.
@@ -23,7 +23,7 @@ namespace Blish_HUD {
             if (ApplicationSettings.Instance.DebugEnabled) {
                 inputHookManager = new DebugHelperHookManager();
             } else {
-                inputHookManager = new WinApiInputHookManager();
+                inputHookManager = new WinApiHookManager();
             }
         }
 
