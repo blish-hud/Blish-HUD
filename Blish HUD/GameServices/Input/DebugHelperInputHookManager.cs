@@ -46,13 +46,9 @@ namespace Blish_HUD.Input {
             isEnabled = false;
         }
 
-        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) {
-            this.Handlers.Add(handleInputCallback);
-        }
+        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Add(handleInputCallback); }
 
-        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) {
-            this.Handlers.Remove(handleInputCallback);
-        }
+        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Remove(handleInputCallback); }
 
         protected abstract void HookCallback(TEventMessage message);
 
