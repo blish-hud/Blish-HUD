@@ -15,8 +15,9 @@ namespace Blish_HUD.Modules.UI.Views {
             { ModuleDependencyCheckResult.FoundInRepo, Color.Blue },
         };
 
-        private Menu  _dependencyMenuList;
-        private Label _messageLabel;
+        private Menu                 _dependencyMenuList;
+        private Label                _messageLabel;
+        private ContextMenuStripItem _ignoreModuleDependenciesToggle;
 
         public ModuleDependencyView() { /* NOOP */ }
 
@@ -26,6 +27,10 @@ namespace Blish_HUD.Modules.UI.Views {
 
         protected override void BuildDetailView(Panel buildPanel) {
             this.Title = Strings.GameServices.ModulesService.ModuleManagement_Dependencies;
+
+            this.Menu = new ContextMenuStrip();
+            _ignoreModuleDependenciesToggle = this.Menu.AddMenuItem(Strings.GameServices.ModulesService.ModuleManagement_IgnoreDependencyRequirements);
+            _ignoreModuleDependenciesToggle.CanCheck = true;
 
             _dependencyMenuList = new Menu() {
                 Size           = buildPanel.ContentRegion.Size,

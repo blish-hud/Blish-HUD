@@ -55,6 +55,11 @@ namespace Blish_HUD.Modules.UI.Views {
             set => _moduleNameLabel.Text = value;
         }
 
+        public string ModuleNamespace {
+            get => _moduleNameLabel.BasicTooltipText;
+            set => _moduleNameLabel.BasicTooltipText = value;
+        }
+
         private Version _moduleVersion;
         public Version ModuleVersion {
             get => _moduleVersion;

@@ -49,6 +49,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             // Load static details based on the manifest
 
             this.View.ModuleName        = this.Model.Manifest.Name;
+            this.View.ModuleNamespace   = this.Model.Manifest.Namespace;
             this.View.ModuleDescription = this.Model.Manifest.Description;
             this.View.ModuleVersion     = this.Model.Manifest.Version;
 

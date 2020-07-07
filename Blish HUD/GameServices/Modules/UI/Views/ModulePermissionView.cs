@@ -12,6 +12,8 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules.UI.Views {
     public class ModulePermissionView : TitledDetailView {
 
+        public event EventHandler<KeyedValueChangedEventArgs<TokenPermission, bool>> PermissionStateChanged;
+
         private FlowPanel _permissionFlowPanel;
         private Label     _messageLabel;
 
@@ -50,12 +52,16 @@ namespace Blish_HUD.Modules.UI.Views {
             _permissionFlowPanel.Hide();
 
             foreach ((var permission, bool optional, string description, bool set) in permissions) {
-                _ = new Checkbox() {
+                var permissionCheckbox = new Checkbox() {
                     Text             = permission.ToString(),
                     Checked          = set || !optional,
                     Enabled          = optional,
                     BasicTooltipText = description,
                     Parent           = _permissionFlowPanel
+                };
+
+                permissionCheckbox.CheckedChanged += delegate (object sender, CheckChangedEvent e) {
+                    this.PermissionStateChanged?.Invoke(this, new KeyedValueChangedEventArgs<TokenPermission, bool>(permission, e.Checked));
                 };
             }
 

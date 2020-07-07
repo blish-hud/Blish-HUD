@@ -1,5 +1,6 @@
 ﻿using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Modules.UI.Views {
@@ -8,6 +9,17 @@ namespace Blish_HUD.Modules.UI.Views {
         private Panel      _rootPanel;
         private Image      _warningIcon;
         private GlowButton _menuButton;
+
+        private ContextMenuStrip _menu;
+
+        public ContextMenuStrip Menu {
+            get => _menu;
+            set {
+                _menu = value;
+
+                _menuButton.Visible = _menu != null;
+            }
+        }
 
         protected string Title {
             get => _rootPanel.Title;
@@ -35,10 +47,17 @@ namespace Blish_HUD.Modules.UI.Views {
                 Icon             = GameService.Content.GetTexture("common/157109"),
                 ActiveIcon       = GameService.Content.GetTexture("common/157110"),
                 BasicTooltipText = Strings.Common.Options,
+                Visible          = false,
                 Parent           = buildPanel
             };
 
+            _menuButton.Click += MenuButtonOnClick;
+
             BuildDetailView(_rootPanel);
+        }
+
+        private void MenuButtonOnClick(object sender, MouseEventArgs e) {
+            this.Menu?.Show(_menuButton);
         }
 
         public void SetWarning(string status) {
