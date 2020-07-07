@@ -7,6 +7,14 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules.UI.Views {
     public class ModuleDependencyView : TitledDetailView {
 
+        private readonly Dictionary<ModuleDependencyCheckResult, Color> _dependencyDisplayColor = new Dictionary<ModuleDependencyCheckResult, Color>() {
+            { ModuleDependencyCheckResult.NotFound, Color.Red },
+            { ModuleDependencyCheckResult.Available, Color.White },
+            { ModuleDependencyCheckResult.AvailableNotEnabled, Color.Yellow },
+            { ModuleDependencyCheckResult.AvailableWrongVersion, Color.Yellow },
+            { ModuleDependencyCheckResult.FoundInRepo, Color.Blue },
+        };
+
         private Menu  _dependencyMenuList;
         private Label _messageLabel;
 
@@ -36,15 +44,15 @@ namespace Blish_HUD.Modules.UI.Views {
             };
         }
 
-        public void SetDependencies(IEnumerable<(string Name, string Status, Color StatusColor)> dependencies) {
+        public void SetDependencies(IEnumerable<(string Name, string Status, ModuleDependencyCheckResult Result)> dependencies) {
             _dependencyMenuList.ClearChildren();
             _dependencyMenuList.Hide();
 
-            foreach ((string name, string status, var statusColor) in dependencies) {
+            foreach ((string name, string status, var result) in dependencies) {
                 _ = new StatusMenuItem() {
                     Text            = name,
                     StatusText      = status,
-                    StatusTextColor = statusColor,
+                    StatusTextColor = _dependencyDisplayColor[result],
                     Enabled         = false,
                     Parent          = _dependencyMenuList
                 };

@@ -142,6 +142,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requires {0}.
+        /// </summary>
+        internal static string Dependency_RequiresVersion {
+            get {
+                return ResourceManager.GetString("Dependency_RequiresVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Wrong Version].
         /// </summary>
         internal static string Dependency_WrongVersion {

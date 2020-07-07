@@ -15,40 +15,25 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void UpdateDependencyList() {
-            var checkResults = new List<(string Name, string Status, Color StatusColor)>();
+            var checkResults = new List<(string Name, string Status, ModuleDependencyCheckResult Result)>();
 
             foreach (var dependencyCheck in this.Model) {
-                string dependencyVersion = dependencyCheck.Module == null
-                                               ? Program.OverlayVersion.BaseVersion().ToString()
-                                               : dependencyCheck.Module.Manifest.Version.BaseVersion().ToString();
+                string requiredRange = string.Format(Strings.GameServices.ModulesService.Dependency_RequiresVersion, dependencyCheck.Dependency.VersionRange.ToString());
 
-                switch (dependencyCheck.CheckResult) {
-                    case ModuleDependencyCheckResult.NotFound:
-                        checkResults.Add((dependencyCheck.Name,
-                                          $"{Strings.GameServices.ModulesService.Dependency_NotFound} v{dependencyVersion}",
-                                          Color.Red));
-                        break;
-                    case ModuleDependencyCheckResult.Available:
-                        checkResults.Add((dependencyCheck.Name,
-                                          $"v{dependencyVersion}",
-                                          Color.Green));
-                        break;
-                    case ModuleDependencyCheckResult.AvailableNotEnabled:
-                        checkResults.Add((dependencyCheck.Name,
-                                          $"{Strings.GameServices.ModulesService.Dependency_NotEnabled} v{dependencyVersion}",
-                                          Color.Yellow));
-                        break;
-                    case ModuleDependencyCheckResult.AvailableWrongVersion:
-                        checkResults.Add((dependencyCheck.Name,
-                                          $"{Strings.GameServices.ModulesService.Dependency_WrongVersion} v{dependencyVersion}",
-                                          Color.Yellow));
-                        break;
-                    case ModuleDependencyCheckResult.FoundInRepo:
-                        checkResults.Add((dependencyCheck.Name,
-                                          $"[Found In Repo (Not Implemented)] v{dependencyVersion}",
-                                          Color.Blue));
-                        break;
-                }
+                string actualVersion = dependencyCheck.Module == null
+                                           ? Program.OverlayVersion.BaseVersion().ToString()
+                                           : dependencyCheck.Module.Manifest.Version.BaseVersion().ToString();
+
+                string status = dependencyCheck.CheckResult switch {
+                    ModuleDependencyCheckResult.NotFound => $"{Strings.GameServices.ModulesService.Dependency_NotFound} {requiredRange}",
+                    ModuleDependencyCheckResult.Available => $"v{actualVersion}",
+                    ModuleDependencyCheckResult.AvailableNotEnabled => $"{Strings.GameServices.ModulesService.Dependency_NotEnabled} {requiredRange}",
+                    ModuleDependencyCheckResult.AvailableWrongVersion => $"{Strings.GameServices.ModulesService.Dependency_WrongVersion} {requiredRange}",
+                    ModuleDependencyCheckResult.FoundInRepo => $"[Found In Repo (Not Implemented)] v{requiredRange}",
+                    _ => ""
+                };
+
+                checkResults.Add((dependencyCheck.GetDisplayName(), status, dependencyCheck.CheckResult));
             }
 
             this.View.SetDependencies(checkResults);
@@ -57,7 +42,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private void UpdateStatus() {
             string[] unmet = this.Model
                                  .Where(d => d.CheckResult != ModuleDependencyCheckResult.Available)
-                                 .Select(d => d.Name).ToArray();
+                                 .Select(d => d.GetDisplayName()).ToArray();
 
             if (unmet.Any()) {
                 this.View.SetWarning(Strings.GameServices.ModulesService.Dependency_MissingDependencies

@@ -178,4 +178,7 @@
   <data name="ApiPermission_NoPermissionsRequested" xml:space="preserve">
     <value>No permissions requested</value>
   </data>
+  <data name="Dependency_RequiresVersion" xml:space="preserve">
+    <value>Requires {0}</value>
+  </data>
 </root>

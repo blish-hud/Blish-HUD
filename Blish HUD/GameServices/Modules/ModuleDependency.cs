@@ -39,17 +39,18 @@ namespace Blish_HUD.Modules {
 
         public Range VersionRange { get; private set; }
 
+        public bool IsBlishHud => string.Equals(this.Namespace, BLISHHUD_DEPENDENCY_NAME, StringComparison.OrdinalIgnoreCase);
+
         /// <summary>
         /// Calculates the current details of the dependency.
         /// </summary>
         public ModuleDependencyCheckDetails GetDependencyDetails() {
             // Check against Blish HUD version
-            if (string.Equals(this.Namespace, BLISHHUD_DEPENDENCY_NAME, StringComparison.OrdinalIgnoreCase)) {
-                if (VersionRange.IsSatisfied(Program.OverlayVersion.BaseVersion())) {
-                    return new ModuleDependencyCheckDetails("Blish HUD", ModuleDependencyCheckResult.Available);
-                }
-
-                return new ModuleDependencyCheckDetails("Blish HUD", ModuleDependencyCheckResult.AvailableWrongVersion);
+            if (this.IsBlishHud) {
+                return new ModuleDependencyCheckDetails(this,
+                                                        this.VersionRange.IsSatisfied(Program.OverlayVersion.BaseVersion())
+                                                            ? ModuleDependencyCheckResult.Available
+                                                            : ModuleDependencyCheckResult.AvailableWrongVersion);
             }
 
             // Check for module dependency
@@ -57,7 +58,7 @@ namespace Blish_HUD.Modules {
                 if (string.Equals(this.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase)) {
                     if (this.VersionRange.IsSatisfied(module.Manifest.Version.BaseVersion())) {
                         // Module exists and is a valid version
-                        return new ModuleDependencyCheckDetails(module.Manifest.Name,
+                        return new ModuleDependencyCheckDetails(this,
                                                                 module.Enabled
                                                                     ? ModuleDependencyCheckResult.Available
                                                                     : ModuleDependencyCheckResult.AvailableNotEnabled,
@@ -65,12 +66,12 @@ namespace Blish_HUD.Modules {
                     }
 
                     // Module exists but is the wrong version
-                    return new ModuleDependencyCheckDetails(module.Manifest.Name, ModuleDependencyCheckResult.AvailableWrongVersion, module);
+                    return new ModuleDependencyCheckDetails(this, ModuleDependencyCheckResult.AvailableWrongVersion, module);
                 }
             }
 
             // No module could be found that matches
-            return new ModuleDependencyCheckDetails(this.Namespace, ModuleDependencyCheckResult.NotFound);
+            return new ModuleDependencyCheckDetails(this, ModuleDependencyCheckResult.NotFound);
         }
 
     }
