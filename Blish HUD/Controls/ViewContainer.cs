@@ -44,6 +44,8 @@ namespace Blish_HUD.Controls {
         public void Show(IView newView) {
             Clear();
 
+            if (newView == null) return;
+
             ViewState = ViewState.Loading;
 
             this.CurrentView = newView;
@@ -77,6 +79,8 @@ namespace Blish_HUD.Controls {
             _opacity         = _fadeView ? 0f : 1f;
 
             this.ClearChildren();
+
+            this.ViewState = ViewState.None;
         }
 
         private void BuildView(object sender, EventArgs e) {

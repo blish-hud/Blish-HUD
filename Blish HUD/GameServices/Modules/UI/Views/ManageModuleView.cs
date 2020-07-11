@@ -4,6 +4,7 @@ using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
+using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 using Version = SemVer.Version;
 
@@ -111,22 +112,16 @@ namespace Blish_HUD.Modules.UI.Views {
             set => _disableButton.Enabled = value;
         }
 
-        private ModuleDependencyCheckDetails[] _moduleDependencyDetails;
-        public ModuleDependencyCheckDetails[] ModuleDependencyDetails {
-            get => _moduleDependencyDetails;
-            set {
-                _moduleDependencyDetails = value;
-
-                _dependencyView.Show(new ModuleDependencyView(_moduleDependencyDetails));
-            }
-        }
-
         public void SetPermissionsView(ModulePermissionView view) {
             _permissionView.Show(view);
         }
 
         public void SetDependenciesView(ModuleDependencyView view) {
             _dependencyView.Show(view);
+        }
+
+        public void SetSettingsView(SettingsView view) {
+            _settingView.Show(view);
         }
 
         protected override void Build(Panel buildPanel) {

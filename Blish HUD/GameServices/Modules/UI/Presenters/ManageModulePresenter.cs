@@ -3,6 +3,7 @@ using System.Linq;
 using Blish_HUD.Content;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules.UI.Views;
+using Blish_HUD.Settings.UI.Views;
 
 namespace Blish_HUD.Modules.UI.Presenters {
     public class ManageModulePresenter : Presenter<ManageModuleView, ModuleManager> {
@@ -26,9 +27,8 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void DisplayBaseViews() {
-            this.View.ModuleDependencyDetails = this.Model.Manifest.Dependencies.Select(d => d.GetDependencyDetails()).ToArray();
-
             this.View.SetPermissionsView(new ModulePermissionView(this.Model));
+            this.View.SetDependenciesView(new ModuleDependencyView(this.Model));
         }
 
         private void InvalidateViewState(bool staticDetails = false, bool stateDetails = false, bool stateOptions = false) {
@@ -59,6 +59,20 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private void DisplayStateDetails() {
             this.View.ModuleState = Model.ModuleInstance?.RunState ?? ModuleRunState.Unloaded;
+
+            GameService.Settings.Save();
+
+            DisplaySettingsView(this.View.ModuleState == ModuleRunState.Loaded);
+        }
+
+        private void DisplaySettingsView(bool enable) {
+            SettingsView toDisplay = null;
+
+            if (enable) {
+                toDisplay = new SettingsView(this.Model.State.Settings);
+            }
+
+            this.View.SetSettingsView(toDisplay);
         }
 
         private void DisplayStatedOptions() {
@@ -122,16 +136,28 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private bool GetModuleCanEnable() {
+            // Can't enable if already enabled
             if (this.Model.Enabled) return false;
+
+            // Can't enable if there is an instance of the
+            // module already while the module is unloading
             if (this.Model.ModuleInstance != null) return false;
-            // if (!this.Model.DependenciesMet) return false;
+
+            // Can't enable if the dependencies aren't met (unless
+            // ignore module dependencies has been selected)
+            if (!this.Model.DependenciesMet) return false;
 
             return true;
         }
 
         private bool GetModuleCanDisable() {
+            // Can't disable if already disabled
             if (!this.Model.Enabled) return false;
+
+            // Can't disable if the module is currently unloading
             if (this.Model.ModuleInstance == null) return false;
+
+            // Can't disable if the module isn't currently marked as loaded
             if (this.Model.ModuleInstance.RunState != ModuleRunState.Loaded) return false;
 
             return true;

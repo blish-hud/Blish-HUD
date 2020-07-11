@@ -6,8 +6,13 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules.UI.Views {
     public abstract class TitledDetailView : View {
 
+        public enum DetailLevel {
+            Info,
+            Warning
+        }
+
         private Panel      _rootPanel;
-        private Image      _warningIcon;
+        private GlowButton _warningIcon;
         private GlowButton _menuButton;
 
         private ContextMenuStrip _menu;
@@ -34,9 +39,11 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent     = buildPanel
             };
 
-            _warningIcon = new Image(GameService.Content.GetTexture("common/1444522")) {
+            _warningIcon = new GlowButton() {
                 Size        = new Point(32,  32),
                 Location    = new Point(-10, -15),
+                Icon       = GameService.Content.GetTexture("common/440023"),
+                ActiveIcon = GameService.Content.GetTexture("common/440024"),
                 Visible     = false,
                 ClipsBounds = false,
                 Parent      = buildPanel
@@ -60,12 +67,23 @@ namespace Blish_HUD.Modules.UI.Views {
             this.Menu?.Show(_menuButton);
         }
 
-        public void SetWarning(string status) {
+        public void SetDetails(string status, DetailLevel level) {
+            switch (level) {
+                case DetailLevel.Info:
+                    _warningIcon.Icon       = GameService.Content.GetTexture("common/440023");
+                    _warningIcon.ActiveIcon = GameService.Content.GetTexture("common/440024");
+                    break;
+                case DetailLevel.Warning:
+                    _warningIcon.Icon       = GameService.Content.GetTexture("common/482924");
+                    _warningIcon.ActiveIcon = GameService.Content.GetTexture("common/482925");
+                    break;
+            }
+
             _warningIcon.BasicTooltipText = status;
             _warningIcon.Show();
         }
 
-        public void ClearWarning() {
+        public void ClearDetails() {
             _warningIcon.Hide();
         }
 
