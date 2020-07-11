@@ -10,6 +10,8 @@ namespace Blish_HUD {
             int farthestDown  = 0;
 
             foreach (var child in controls) {
+                if (child == null) continue;
+
                 farthestRight = Math.Max(farthestRight, child.Right);
                 farthestDown  = Math.Max(farthestDown,  child.Bottom);
             }
