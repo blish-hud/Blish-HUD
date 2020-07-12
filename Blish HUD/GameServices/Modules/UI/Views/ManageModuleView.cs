@@ -11,9 +11,6 @@ using Version = SemVer.Version;
 namespace Blish_HUD.Modules.UI.Views {
     public class ManageModuleView : View {
 
-        public event EventHandler<EventArgs> ClearPermissionsClicked;
-        public event EventHandler<EventArgs> ModifyPermissionsClicked;
-
         public event EventHandler<EventArgs> EnableModuleClicked;
         public event EventHandler<EventArgs> DisableModuleClicked;
 
