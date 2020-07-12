@@ -23,8 +23,9 @@ namespace Blish_HUD.Settings.UI.Views {
             };
 
             _floatTrackBar = new TrackBar() {
-                Size   = new Point(TRACKBAR_WIDTH, TRACKBAR_HEIGHT),
-                Parent = buildPanel
+                Size      = new Point(TRACKBAR_WIDTH, TRACKBAR_HEIGHT),
+                SmallStep = true,
+                Parent    = buildPanel
             };
 
             _floatTrackBar.ValueChanged += FloatTrackBarOnValueChanged;
@@ -62,8 +63,8 @@ namespace Blish_HUD.Settings.UI.Views {
 
         public override void SetComplianceRequisite(IComplianceRequisite complianceRequisite) {
             if (complianceRequisite is FloatComplianceRequisite floatRequisite) {
-                _floatTrackBar.MinValue = (int)floatRequisite.MinValue;
-                _floatTrackBar.MaxValue = (int)floatRequisite.MaxValue;
+                _floatTrackBar.MinValue = floatRequisite.MinValue;
+                _floatTrackBar.MaxValue = floatRequisite.MaxValue;
             }
         }
 
