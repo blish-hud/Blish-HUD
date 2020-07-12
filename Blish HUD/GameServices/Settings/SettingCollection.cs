@@ -69,6 +69,8 @@ namespace Blish_HUD.Settings {
 
         public bool Loaded => _entries != null;
 
+        public bool RenderInUi { get; set; }
+
         public SettingCollection(bool lazy = false) {
             _lazyLoaded  = lazy;
             _entryTokens = null;
@@ -108,7 +110,11 @@ namespace Blish_HUD.Settings {
         }
 
         public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
-            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded)).Value;
+            return AddSubCollection(collectionKey, false, lazyLoaded);
+        }
+
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) {
+            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }).Value;
         }
 
         private void Load() {
