@@ -11,6 +11,7 @@ namespace Blish_HUD.Settings.UI.Views {
         private static readonly Dictionary<Type, Func<SettingEntry, int, IView>> _typeLookup = new Dictionary<Type, Func<SettingEntry, int, IView>> {
             {typeof(bool), (settingEntry,              definedWidth) => new BoolSettingView(settingEntry as SettingEntry<bool>, definedWidth)},
             {typeof(string), (settingEntry,            definedWidth) => new StringSettingView(settingEntry as SettingEntry<string>, definedWidth)},
+            {typeof(float), (settingEntry,             definedWidth) => new FloatSettingView(settingEntry as SettingEntry<float>, definedWidth)},
             {typeof(KeyBinding), (settingEntry,        definedWidth) => new KeybindingSettingView(settingEntry as SettingEntry<KeyBinding>, definedWidth)},
             {typeof(SettingCollection), (settingEntry, definedWidth) => new SettingsView(settingEntry as SettingEntry<SettingCollection>, definedWidth)}
         };

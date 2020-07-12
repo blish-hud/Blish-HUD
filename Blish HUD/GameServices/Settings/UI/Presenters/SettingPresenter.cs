@@ -26,6 +26,19 @@ namespace Blish_HUD.Settings.UI.Presenters {
         }
 
         protected override void UpdateView() {
+            UpdateViewComplianceRequisite();
+            UpdateViewDetails();
+        }
+
+        private void UpdateViewComplianceRequisite() {
+            var complianceRequisite = this.Model.GetComplianceRequisite();
+
+            if (complianceRequisite != null) {
+                this.View.SetComplianceRequisite(complianceRequisite);
+            }
+        }
+
+        private void UpdateViewDetails() {
             this.View.DisplayName = !string.IsNullOrEmpty(this.Model.DisplayName)
                                         ? this.Model.DisplayName
                                         : this.Model.EntryKey;
