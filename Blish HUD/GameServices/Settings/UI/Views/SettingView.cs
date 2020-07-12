@@ -12,6 +12,7 @@ namespace Blish_HUD.Settings.UI.Views {
             {typeof(bool), (settingEntry,              definedWidth) => new BoolSettingView(settingEntry as SettingEntry<bool>, definedWidth)},
             {typeof(string), (settingEntry,            definedWidth) => new StringSettingView(settingEntry as SettingEntry<string>, definedWidth)},
             {typeof(float), (settingEntry,             definedWidth) => new FloatSettingView(settingEntry as SettingEntry<float>, definedWidth)},
+            {typeof(int), (settingEntry,               definedWidth) => new IntSettingView(settingEntry as SettingEntry<int>, definedWidth)},
             {typeof(KeyBinding), (settingEntry,        definedWidth) => new KeybindingSettingView(settingEntry as SettingEntry<KeyBinding>, definedWidth)},
             {typeof(SettingCollection), (settingEntry, definedWidth) => new SettingsView(settingEntry as SettingEntry<SettingCollection>, definedWidth)}
         };
