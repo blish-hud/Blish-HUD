@@ -12,9 +12,9 @@ namespace Blish_HUD.Settings.UI.Views {
         
         private const int CONTROL_PADDING = 5;
 
-        private const int TRACKBAR_WIDTH  = 256;
+        private const int TRACKBAR_WIDTH  = 277;
         private const int TRACKBAR_HEIGHT = 16;
-
+        
         protected Label    _displayNameLabel;
         protected TrackBar _valueTrackBar;
 
@@ -38,12 +38,12 @@ namespace Blish_HUD.Settings.UI.Views {
         protected abstract void HandleTrackBarChanged(object sender, ValueEventArgs<float> e);
 
         private void UpdateSizeAndLayout() {
-            this.ViewTarget.Height   = _valueTrackBar.Bottom;
+            this.ViewTarget.Height   = _valueTrackBar.Bottom + CONTROL_PADDING;
             _displayNameLabel.Height = this.ViewTarget.Height;
 
             if (this.DefinedWidth > 0) {
-                _valueTrackBar.Left   = _displayNameLabel.Right + CONTROL_PADDING;
-                this.ViewTarget.Width = _valueTrackBar.Right    + CONTROL_PADDING;
+                _valueTrackBar.Right  = this.DefinedWidth - CONTROL_PADDING - _valueTrackBar.Width;
+                this.ViewTarget.Width = _valueTrackBar.Right                + CONTROL_PADDING;
             } else {
                 _valueTrackBar.Location = new Point(this.ViewTarget.Width - CONTROL_PADDING - TRACKBAR_WIDTH, 0);
             }
