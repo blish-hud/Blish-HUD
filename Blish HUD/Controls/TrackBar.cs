@@ -17,7 +17,7 @@ namespace Blish_HUD.Controls {
         private static readonly TextureRegion2D _textureNub;
 
         static TrackBar() {
-            _textureTrack = Content.GetTexture("controls/trackbar/154968"); //Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-track");
+            _textureTrack = Content.GetTexture("controls/trackbar/154968");
             _textureNub   = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-nub");
         }
 
