@@ -45,7 +45,7 @@ namespace Blish_HUD.Settings.UI.Views {
                 Size                = buildPanel.Size,
                 FlowDirection       = ControlFlowDirection.SingleTopToBottom,
                 ControlPadding      = new Vector2(5, 2),
-                OuterControlPadding = new Vector2(0, 5),
+                OuterControlPadding = new Vector2(10, 15),
                 WidthSizingMode     = SizingMode.Fill,
                 HeightSizingMode    = SizingMode.AutoSize,
                 Parent              = buildPanel

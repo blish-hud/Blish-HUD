@@ -25,6 +25,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _valueTrackBar = new TrackBar() {
                 Size   = new Point(TRACKBAR_WIDTH, TRACKBAR_HEIGHT),
+                Left   = 185,
                 Parent = buildPanel
             };
 
@@ -36,13 +37,6 @@ namespace Blish_HUD.Settings.UI.Views {
         private void UpdateSizeAndLayout() {
             this.ViewTarget.Height   = _valueTrackBar.Bottom + CONTROL_PADDING;
             _displayNameLabel.Height = this.ViewTarget.Height;
-
-            if (this.DefinedWidth > 0) {
-                _valueTrackBar.Right  = this.DefinedWidth - CONTROL_PADDING - _valueTrackBar.Width;
-                this.ViewTarget.Width = _valueTrackBar.Right                + CONTROL_PADDING;
-            } else {
-                _valueTrackBar.Location = new Point(this.ViewTarget.Width - CONTROL_PADDING - TRACKBAR_WIDTH, 0);
-            }
         }
 
         protected override void RefreshDisplayName(string displayName) {

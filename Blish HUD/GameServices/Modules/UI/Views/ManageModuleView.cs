@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
-using Blish_HUD.Input;
 using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 using Version = SemVer.Version;
@@ -35,6 +34,7 @@ namespace Blish_HUD.Modules.UI.Views {
         private ViewContainer _permissionView;
         private ViewContainer _dependencyView;
 
+        private Label         _settingMessageLabel;
         private ViewContainer _settingView;
 
         private ContextMenuStrip _settingsMenu;
@@ -118,7 +118,12 @@ namespace Blish_HUD.Modules.UI.Views {
         }
 
         public void SetSettingsView(SettingsView view) {
+            _settingMessageLabel.Hide();
             _settingView.Show(view);
+
+            if (view == null) {
+                _settingMessageLabel.Show();
+            }
         }
 
         protected override void Build(Panel buildPanel) {
@@ -249,7 +254,7 @@ namespace Blish_HUD.Modules.UI.Views {
             // Permissions
 
             _permissionView = new ViewContainer() {
-                Size     = _descriptionPanel.Size - new Point(350, 0),
+                Size     = _descriptionPanel.Size - new Point(350, 40),
                 Location = new Point(0, _descriptionPanel.Bottom + Panel.MenuStandard.ControlOffset.Y),
                 Parent   = _collapsePanel
             };
@@ -257,20 +262,36 @@ namespace Blish_HUD.Modules.UI.Views {
             // Dependencies
 
             _dependencyView = new ViewContainer() {
-                Size     = new Point(_descriptionPanel.Width - _permissionView.Right - Panel.MenuStandard.ControlOffset.X / 2, _descriptionPanel.Height),
+                Size     = new Point(_descriptionPanel.Width - _permissionView.Right - Panel.MenuStandard.ControlOffset.X / 2, _permissionView.Height),
                 Location = new Point(_permissionView.Right                           + Panel.MenuStandard.ControlOffset.X / 2, _permissionView.Top),
                 Parent   = _collapsePanel
             };
 
             // Module Settings
 
-            _settingView = new ViewContainer() {
+            var settingPanelRoot = new Panel() {
                 CanScroll  = true,
-                Size       = new Point(_dependencyView.Right - _permissionView.Left, _descriptionPanel.Height),
-                Location   = new Point(_permissionView.Left,                         _permissionView.Bottom + Panel.MenuStandard.ControlOffset.Y),
-                Title      = Strings.GameServices.ModulesService.ModuleManagement_ModuleSettings,
                 ShowBorder = true,
+                Title      = Strings.GameServices.ModulesService.ModuleManagement_ModuleSettings,
+                Size       = new Point(_dependencyView.Right - _permissionView.Left, 222),
+                Location   = new Point(_permissionView.Left,                         _permissionView.Bottom + Panel.MenuStandard.ControlOffset.Y),
                 Parent     = _collapsePanel
+            };
+
+            _settingMessageLabel = new Label() {
+                Size                = settingPanelRoot.ContentRegion.Size,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Text                = "Settings will show when Module is enabled.",
+                StrokeText          = true,
+                Font                = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic),
+                Parent              = settingPanelRoot
+            };
+
+            _settingView = new ViewContainer() {
+                CanScroll        = true,
+                HeightSizingMode = SizingMode.Fill,
+                WidthSizingMode  = SizingMode.Fill,
+                Parent           = settingPanelRoot
             };
 
             // Settings Menu

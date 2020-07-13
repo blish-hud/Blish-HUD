@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Blish_HUD.Modules.UI.Presenters;
-using Blish_HUD.Modules.UI.Views;
 using Gw2Sharp.WebApi.V2.Models;
 using Microsoft.Xna.Framework;
 
@@ -32,7 +28,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 Size                = buildPanel.ContentRegion.Size,
                 Visible             = false,
                 FlowDirection       = ControlFlowDirection.TopToBottom,
-                ControlPadding      = new Vector2(24, 15),
+                ControlPadding      = new Vector2(14, 15),
                 OuterControlPadding = new Vector2(15, 13),
                 Parent              = buildPanel
             };
