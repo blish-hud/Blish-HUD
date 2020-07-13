@@ -47,10 +47,9 @@ namespace Blish_HUD.Controls {
             }
             set {
                 float aVal = MathHelper.Clamp(value, 0f, 1f);
-                if (_associatedContainer != null && _targetScrollDistance != aVal)
+                if (_associatedContainer != null && _targetScrollDistance != aVal) {
                     _targetScrollDistance = aVal;
-
-                Invalidate();
+                }
             }
         }
 
@@ -182,12 +181,12 @@ namespace Blish_HUD.Controls {
             Invalidate();
         }
 
-        public override void Invalidate() {
+        public override void RecalculateLayout() {
             var lastVal = _scrollbarPercent;
             RecalculateScrollbarSize();
 
             if (lastVal != _scrollbarPercent && _associatedContainer != null) {
-                this.ScrollDistance = 0;
+                this.ScrollDistance       = 0;
                 this.TargetScrollDistance = 0;
             }
 
@@ -195,8 +194,6 @@ namespace Blish_HUD.Controls {
             _downArrowBounds = new Rectangle(this.Width / 2 - _textureDownArrow.Width / 2, this.Height                                                            - _textureDownArrow.Height, _textureDownArrow.Width, _textureDownArrow.Height);
             _barBounds       = new Rectangle(this.Width / 2 - _textureBar.Width       / 2, (int)(this.ScrollDistance * (this.TrackLength - this.ScrollbarHeight)) + _textureUpArrow.Height,   _textureBar.Width,       this.ScrollbarHeight);
             _trackBounds     = new Rectangle(this.Width / 2 - _textureTrack.Width     / 2, _upArrowBounds.Bottom,                                                                             _textureTrack.Width,     this.TrackLength);
-
-            base.Invalidate();
         }
 
         private int _containerLowestContent;
