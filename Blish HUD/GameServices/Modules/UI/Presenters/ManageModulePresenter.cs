@@ -6,15 +6,12 @@ using System.Linq;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
-using Blish_HUD.Input;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings.UI.Views;
 using Humanizer;
 
 namespace Blish_HUD.Modules.UI.Presenters {
     public class ManageModulePresenter : Presenter<ManageModuleView, ModuleManager> {
-
-        private static readonly Logger Logger = Logger.GetLogger<ManageModulePresenter>();
 
         public ManageModulePresenter(ManageModuleView view, ModuleManager model) : base(view, model) { /* NOOP */ }
 
@@ -88,7 +85,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             var settingMenu = new ContextMenuStrip();
 
             settingMenu.AddMenuItem(BuildClearSettingsMenuItem());
-            settingMenu.AddMenuItem(BuildOpenDirsMenuItem());
+            settingMenu.AddMenuItems(BuildOpenDirsMenuItem());
 
             this.View.SettingMenu = settingMenu;
         }
@@ -105,27 +102,22 @@ namespace Blish_HUD.Modules.UI.Presenters {
             return clearSettings;
         }
 
-        private ContextMenuStripItem BuildOpenDirsMenuItem() {
-            var openDirectory = new ContextMenuStripItem() { Text = "Open Directory" };
-
-            var dirMenu = new ContextMenuStrip();
-            var dirs    = this.Model.Manifest.Directories ?? new List<string>(0);
+        private IEnumerable<ContextMenuStripItem> BuildOpenDirsMenuItem() {
+            var dirs = this.Model.Manifest.Directories ?? new List<string>(0);
 
             foreach (string dir in dirs) {
-                var    dirItem = dirMenu.AddMenuItem(dir.Titleize());
+                var    dirItem = new ContextMenuStripItem() { Text = $"Open '{dir.Titleize()}'" };
                 string dirPath = DirectoryUtil.RegisterDirectory(dir);
-                dirItem.BasicTooltipText = dirPath;
 
-                dirItem.Enabled = Directory.Exists(dirPath);
+                dirItem.BasicTooltipText = dirPath;
+                dirItem.Enabled          = Directory.Exists(dirPath);
 
                 dirItem.Click += delegate {
                     Process.Start("explorer.exe", $"/open, \"{dirPath}\\\"");
                 };
-            }
-            openDirectory.Enabled = dirs.Count > 0;
-            openDirectory.Submenu = dirMenu;
 
-            return openDirectory;
+                yield return dirItem;
+            }
         }
 
         private void DisplayStateDetails() {

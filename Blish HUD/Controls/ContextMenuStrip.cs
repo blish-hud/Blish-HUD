@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
@@ -124,7 +125,13 @@ namespace Blish_HUD.Controls {
             item.Parent = this;
 
             return item;
-        } 
+        }
+
+        public void AddMenuItems(IEnumerable<ContextMenuStripItem> items) {
+            foreach (var item in items) {
+                item.Parent = this;
+            }
+        }
 
         private void OnChildMembershipChanged(ChildChangedEventArgs e) {
             if (e.Added) {
