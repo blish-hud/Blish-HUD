@@ -6,6 +6,8 @@ using Blish_HUD.Settings.UI.Views;
 namespace Blish_HUD.Settings.UI.Presenters {
     public class SettingPresenter<TSetting> : Presenter<SettingView<TSetting>, SettingEntry<TSetting>> {
 
+        private bool _changeReady = false;
+
         public SettingPresenter(SettingView<TSetting> view, SettingEntry<TSetting> model) : base(view, model) { /* NOOP */ }
 
         protected override Task<bool> Load(IProgress<string> progress) {
@@ -20,14 +22,18 @@ namespace Blish_HUD.Settings.UI.Presenters {
         }
 
         private void ViewOnValueChanged(object sender, ValueEventArgs<TSetting> e) {
+            if (!_changeReady) return;
+
             this.Model.Value = e.Value;
 
             GameService.Settings.Save();
         }
 
         protected override void UpdateView() {
-            UpdateViewComplianceRequisite();
             UpdateViewDetails();
+            UpdateViewComplianceRequisite();
+
+            _changeReady = true;
         }
 
         private void UpdateViewComplianceRequisite() {
