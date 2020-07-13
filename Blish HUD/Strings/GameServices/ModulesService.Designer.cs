@@ -268,6 +268,42 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear Settings.
+        /// </summary>
+        internal static string ModuleOption_ClearSettings {
+            get {
+                return ResourceManager.GetString("ModuleOption_ClearSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t clear settings while the module is enabled..
+        /// </summary>
+        internal static string ModuleOption_ClearSettings_DescriptionDisabled {
+            get {
+                return ResourceManager.GetString("ModuleOption_ClearSettings_DescriptionDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset the module settings back to their default..
+        /// </summary>
+        internal static string ModuleOption_ClearSettings_DescriptionEnabled {
+            get {
+                return ResourceManager.GetString("ModuleOption_ClearSettings_DescriptionEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open &apos;{0}&apos; Directory.
+        /// </summary>
+        internal static string ModuleOption_OpenDir {
+            get {
+                return ResourceManager.GetString("ModuleOption_OpenDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings will show when Module is enabled.
         /// </summary>
         internal static string ModuleSettings_ShownWhenEnabled {

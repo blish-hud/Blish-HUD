@@ -91,11 +91,11 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private ContextMenuStripItem BuildClearSettingsMenuItem() {
-            var clearSettings = new ContextMenuStripItem() {Text = "Clear Settings"};
+            var clearSettings = new ContextMenuStripItem() {Text = Strings.GameServices.ModulesService.ModuleOption_ClearSettings };
 
             clearSettings.BasicTooltipText = (clearSettings.Enabled = GetModuleCanEnable()) == true
-                                                 ? "Reset the module settings back to their default."
-                                                 : "Can't clear settings while module is enabled.";
+                                                 ? Strings.GameServices.ModulesService.ModuleOption_ClearSettings_DescriptionEnabled
+                                                 : Strings.GameServices.ModulesService.ModuleOption_ClearSettings_DescriptionDisabled;
 
             clearSettings.Click += delegate { this.Model.State.Settings = null; };
 
@@ -106,7 +106,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             var dirs = this.Model.Manifest.Directories ?? new List<string>(0);
 
             foreach (string dir in dirs) {
-                var    dirItem = new ContextMenuStripItem() { Text = $"Open '{dir.Titleize()}'" };
+                var    dirItem = new ContextMenuStripItem() { Text = string.Format(Strings.GameServices.ModulesService.ModuleOption_OpenDir, dir.Titleize()) };
                 string dirPath = DirectoryUtil.RegisterDirectory(dir);
 
                 dirItem.BasicTooltipText = dirPath;

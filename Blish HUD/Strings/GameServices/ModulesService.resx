@@ -184,4 +184,16 @@
   <data name="ModuleSettings_ShownWhenEnabled" xml:space="preserve">
     <value>Settings will show when Module is enabled</value>
   </data>
+  <data name="ModuleOption_ClearSettings" xml:space="preserve">
+    <value>Clear Settings</value>
+  </data>
+  <data name="ModuleOption_ClearSettings_DescriptionEnabled" xml:space="preserve">
+    <value>Reset the module settings back to their default.</value>
+  </data>
+  <data name="ModuleOption_ClearSettings_DescriptionDisabled" xml:space="preserve">
+    <value>Can't clear settings while the module is enabled.</value>
+  </data>
+  <data name="ModuleOption_OpenDir" xml:space="preserve">
+    <value>Open '{0}' Directory</value>
+  </data>
 </root>
