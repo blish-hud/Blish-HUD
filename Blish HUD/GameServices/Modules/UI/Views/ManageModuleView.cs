@@ -37,8 +37,7 @@ namespace Blish_HUD.Modules.UI.Views {
         private Label         _settingMessageLabel;
         private ViewContainer _settingView;
 
-        private ContextMenuStrip _settingsMenu;
-        private GlowButton       _settingsButton;
+        private GlowButton _settingsButton;
 
         private readonly Dictionary<ModuleRunState, (string Status, Color color)> _moduleStatusLookup = new Dictionary<ModuleRunState, (string Status, Color color)> {
             {ModuleRunState.Unloaded, (Strings.GameServices.ModulesService.ModuleState_Disabled, Control.StandardColors.DisabledText)},
@@ -107,6 +106,17 @@ namespace Blish_HUD.Modules.UI.Views {
         public bool CanDisable {
             get => _disableButton.Enabled;
             set => _disableButton.Enabled = value;
+        }
+
+        private ContextMenuStrip _settingMenu;
+
+        public ContextMenuStrip SettingMenu {
+            get => _settingMenu;
+            set {
+                _settingMenu = value;
+
+                _settingsButton.Visible = _settingMenu != null;
+            }
         }
 
         public void SetPermissionsView(ModulePermissionView view) {
@@ -295,17 +305,17 @@ namespace Blish_HUD.Modules.UI.Views {
             };
 
             // Settings Menu
-            _settingsMenu = new ContextMenuStrip();
 
             _settingsButton = new GlowButton() {
                 Location         = new Point(_enableButton.Right + 12, _enableButton.Top),
                 Icon             = GameService.Content.GetTexture("common/157109"),
                 ActiveIcon       = GameService.Content.GetTexture("common/157110"),
+                Visible          = false,
                 BasicTooltipText = Strings.Common.Options,
                 Parent           = buildPanel
             };
 
-            _settingsButton.Click += delegate { _settingsMenu.Show(_settingsButton); };
+            _settingsButton.Click += delegate { _settingMenu?.Show(_settingsButton); };
         }
 
         private void UpdateHeaderLayout() {

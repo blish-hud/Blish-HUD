@@ -75,10 +75,12 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            if (this.CanCheck)
+            if (this.CanCheck) {
                 this.Checked = !this.Checked;
-            else
+            }
+            else {
                 this.Parent.Hide();
+            }
 
             base.OnClick(e);
         }
@@ -101,6 +103,12 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            var modifierTint = this.Enabled 
+                                   ? this.MouseOver
+                                        ? StandardColors.Tinted
+                                        : StandardColors.Default
+                                   : StandardColors.DisabledText;
+
             if (_canCheck) {
                 string state = _checked ? "-checked" : "-unchecked";
 
@@ -110,24 +118,20 @@ namespace Blish_HUD.Controls {
 
                 spriteBatch.DrawOnCtrl(this,
                                  Resources.Checkable.TextureRegionsCheckbox.First(cb => cb.Name == $"checkbox/cb{state}{extension}"),
-                                 new Rectangle(
-                                               HORIZONTAL_PADDING + BULLET_SIZE / 2 - 16,
+                                 new Rectangle(HORIZONTAL_PADDING + BULLET_SIZE / 2 - 16,
                                                _size.Y / 2 - 16,
                                                32,
-                                               32
-                                              ),
+                                               32),
                                  StandardColors.Default);
 
             } else {
                 spriteBatch.DrawOnCtrl(this,
                                  _textureBullet,
-                                 new Rectangle(
-                                               HORIZONTAL_PADDING,
+                                 new Rectangle(HORIZONTAL_PADDING,
                                                _size.Y / 2 - BULLET_SIZE / 2,
                                                BULLET_SIZE,
-                                               BULLET_SIZE
-                                              ),
-                                 this.MouseOver ? StandardColors.Tinted : StandardColors.Default);
+                                               BULLET_SIZE),
+                                 modifierTint);
             }
 
             // Draw shadow
@@ -157,7 +161,7 @@ namespace Blish_HUD.Controls {
                                                _size.Y / 2 - _textureArrow.Height / 2,
                                                _textureArrow.Width,
                                                _textureArrow.Height),
-                                 this.MouseOver ? StandardColors.Tinted : StandardColors.Default);
+                                 modifierTint);
             }
         }
 

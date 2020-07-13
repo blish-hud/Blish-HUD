@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Blish_HUD.Content;
+using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
+using Blish_HUD.Input;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings.UI.Views;
+using Humanizer;
 
 namespace Blish_HUD.Modules.UI.Presenters {
     public class ManageModulePresenter : Presenter<ManageModuleView, ModuleManager> {
@@ -62,6 +68,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             if (stateOptions) {
                 DisplayStatedOptions();
+                DisplaySettingMenu();
             }
         }
 
@@ -75,6 +82,50 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             this.View.AuthorImage = GetModuleAuthorImage();
             this.View.AuthorName  = GetModuleAuthor();
+        }
+
+        private void DisplaySettingMenu() {
+            var settingMenu = new ContextMenuStrip();
+
+            settingMenu.AddMenuItem(BuildClearSettingsMenuItem());
+            settingMenu.AddMenuItem(BuildOpenDirsMenuItem());
+
+            this.View.SettingMenu = settingMenu;
+        }
+
+        private ContextMenuStripItem BuildClearSettingsMenuItem() {
+            var clearSettings = new ContextMenuStripItem() {Text = "Clear Settings"};
+
+            clearSettings.BasicTooltipText = (clearSettings.Enabled = GetModuleCanEnable()) == true
+                                                 ? "Reset the module settings back to their default."
+                                                 : "Can't clear settings while module is enabled.";
+
+            clearSettings.Click += delegate { this.Model.State.Settings = null; };
+
+            return clearSettings;
+        }
+
+        private ContextMenuStripItem BuildOpenDirsMenuItem() {
+            var openDirectory = new ContextMenuStripItem() { Text = "Open Directory" };
+
+            var dirMenu = new ContextMenuStrip();
+            var dirs    = this.Model.Manifest.Directories ?? new List<string>(0);
+
+            foreach (string dir in dirs) {
+                var    dirItem = dirMenu.AddMenuItem(dir.Titleize());
+                string dirPath = DirectoryUtil.RegisterDirectory(dir);
+                dirItem.BasicTooltipText = dirPath;
+
+                dirItem.Enabled = Directory.Exists(dirPath);
+
+                dirItem.Click += delegate {
+                    Process.Start("explorer.exe", $"/open, \"{dirPath}\\\"");
+                };
+            }
+            openDirectory.Enabled = dirs.Count > 0;
+            openDirectory.Submenu = dirMenu;
+
+            return openDirectory;
         }
 
         private void DisplayStateDetails() {

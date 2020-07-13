@@ -57,6 +57,7 @@ namespace Blish_HUD {
 
             Directory.CreateDirectory(MusicPath);
         }
+
         public static string RegisterDirectory(string directory) => Directory.CreateDirectory(Path.Combine(BasePath, directory)).FullName;
 
     }

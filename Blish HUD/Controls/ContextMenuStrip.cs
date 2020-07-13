@@ -115,10 +115,16 @@ namespace Blish_HUD.Controls {
 
         public ContextMenuStripItem AddMenuItem(string text) {
             return new ContextMenuStripItem() {
-                Text = text,
+                Text   = text,
                 Parent = this
             };
         }
+
+        public ContextMenuStripItem AddMenuItem(ContextMenuStripItem item) {
+            item.Parent = this;
+
+            return item;
+        } 
 
         private void OnChildMembershipChanged(ChildChangedEventArgs e) {
             if (e.Added) {
