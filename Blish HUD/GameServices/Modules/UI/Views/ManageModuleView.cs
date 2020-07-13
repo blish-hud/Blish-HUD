@@ -281,7 +281,7 @@ namespace Blish_HUD.Modules.UI.Views {
             _settingMessageLabel = new Label() {
                 Size                = settingPanelRoot.ContentRegion.Size,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Text                = "Settings will show when Module is enabled.",
+                Text                = Strings.GameServices.ModulesService.ModuleSettings_ShownWhenEnabled,
                 StrokeText          = true,
                 Font                = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic),
                 Parent              = settingPanelRoot

@@ -181,4 +181,7 @@
   <data name="Dependency_RequiresVersion" xml:space="preserve">
     <value>Requires {0}</value>
   </data>
+  <data name="ModuleSettings_ShownWhenEnabled" xml:space="preserve">
+    <value>Settings will show when Module is enabled</value>
+  </data>
 </root>

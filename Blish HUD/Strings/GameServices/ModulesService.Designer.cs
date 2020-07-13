@@ -268,6 +268,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings will show when Module is enabled.
+        /// </summary>
+        internal static string ModuleSettings_ShownWhenEnabled {
+            get {
+                return ResourceManager.GetString("ModuleSettings_ShownWhenEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disabled.
         /// </summary>
         internal static string ModuleState_Disabled {
