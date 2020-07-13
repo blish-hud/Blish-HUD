@@ -8,8 +8,6 @@ using Blish_HUD.Modules.UI.Presenters;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
-using Blish_HUD.Settings.UI.Views;
-using Flurl.Http;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Container = Blish_HUD.Controls.Container;
@@ -21,6 +19,8 @@ namespace Blish_HUD {
     public class SettingsService : GameService {
 
         private static readonly Logger Logger = Logger.GetLogger<SettingsService>();
+
+        private const int SAVE_INTERVAL = 4;
 
         private const string SETTINGS_FILENAME = "settings.json";
 
@@ -36,6 +36,9 @@ namespace Blish_HUD {
         private string _settingsPath;
 
         internal SettingCollection Settings { get; private set; }
+
+        private bool   _dirtySave;
+        private double _saveBuffer;
 
         protected override void Initialize() {
             JsonReaderSettings = new JsonSerializerSettings() {
@@ -92,6 +95,14 @@ namespace Blish_HUD {
         public void Save(bool forceSave = false) {
             if (!Loaded && !forceSave) return;
 
+            if (forceSave) {
+                PerformSave();
+            } else {
+                _dirtySave = true;
+            }
+        }
+
+        private void PerformSave() {
             string rawSettings = JsonConvert.SerializeObject(this.Settings, Formatting.Indented, JsonReaderSettings);
 
             try {
@@ -103,11 +114,10 @@ namespace Blish_HUD {
                 return;
             }
 
-            Logger.Debug("Settings were saved successfully.");
-        }
+            _saveBuffer = 0;
+            _dirtySave  = false;
 
-        internal void SettingSave() {
-            this.Save();
+            Logger.Debug("Settings were saved successfully.");
         }
 
         private void LoadRenderers() {
@@ -143,7 +153,15 @@ namespace Blish_HUD {
 
         protected override void Unload() { /* NOOP */ }
 
-        protected override void Update(GameTime gameTime) { /* NOOP */ }
+        protected override void Update(GameTime gameTime) {
+            if (_dirtySave) {
+                _saveBuffer += gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (_saveBuffer > SAVE_INTERVAL) {
+                    PerformSave();
+                }
+            }
+        }
 
         [Obsolete("Use SettingView views instead of this to generate from SettingCollections.")]
         public void RenderSettingsToPanel(Container panel, IEnumerable<SettingEntry> settings, int width = 325) {
@@ -241,7 +259,6 @@ namespace Blish_HUD {
                     };
 
                     moduleMi.Click += delegate {
-                        //cPanel.NavigateToBuiltPanel(Blish_HUD.Settings.UI.SingleModuleSettingsUIBuilder.BuildSingleModuleSettings, module);
                         var manageModuleView = new ManageModuleView();
 
                         cPanel.Show(manageModuleView.WithPresenter(new ManageModulePresenter(manageModuleView, module)));
