@@ -77,8 +77,7 @@ namespace Blish_HUD.Controls {
         protected override void OnClick(MouseEventArgs e) {
             if (this.CanCheck) {
                 this.Checked = !this.Checked;
-            }
-            else {
+            } else {
                 this.Parent.Hide();
             }
 
