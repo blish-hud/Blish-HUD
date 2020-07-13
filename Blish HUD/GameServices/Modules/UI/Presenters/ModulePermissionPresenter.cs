@@ -42,7 +42,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.View.SetPermissions(this.Model.Manifest.ApiPermissions.Select(p => (p.Key,
                                                                                      p.Value.Optional,
                                                                                      p.Value.Details ?? "",
-                                                                                     this.Model.State.UserEnabledPermissions?.Contains(p.Key) ?? false))
+                                                                                     this.Model.State.UserEnabledPermissions?.Contains(p.Key) ?? true))
                                          .OrderBy(p => p.Optional));
         }
 
