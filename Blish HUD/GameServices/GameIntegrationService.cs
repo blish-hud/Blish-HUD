@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Controls.Intern;
+using Blish_HUD.GameIntegration;
 using Blish_HUD.Settings;
 using Microsoft.Win32;
 using Microsoft.Xna.Framework;
@@ -43,6 +44,8 @@ namespace Blish_HUD {
         private const string GW2_GAMEWINDOW_NAME  = "ArenaNet_Dx_Window_Class";
 
         private const string GAMEINTEGRATION_SETTINGS = "GameIntegrationConfiguration";
+
+        public AudioIntegration Audio { get; private set; }
 
         public NotifyIcon TrayIcon { get; private set; }
         public ContextMenuStrip TrayIconMenu { get; private set; }
@@ -185,6 +188,8 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
+            this.Audio = new AudioIntegration(this);
+
             BlishHud.Form.Shown += delegate {
                 WindowUtil.SetupOverlay(BlishHud.FormHandle);
             };
@@ -329,6 +334,8 @@ namespace Blish_HUD {
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
+                this.Audio.Update(gameTime);
+
                 var updateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
 
                 switch (updateResult.Response) {

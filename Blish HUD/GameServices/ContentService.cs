@@ -109,11 +109,11 @@ namespace Blish_HUD {
         }
 
         public void PlaySoundEffectByName(string soundName) {
-            if (!_loadedSoundEffects.ContainsKey(soundName))
+            if (!_loadedSoundEffects.ContainsKey(soundName)) {
                 _loadedSoundEffects.TryAdd(soundName, Blish_HUD.BlishHud.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
+            }
 
-            // TODO: Volume was 0.25f - changing to 0.125 until a setting can be exposed in the UI
-            _loadedSoundEffects[soundName].Play(0.125f, 0, 0);
+            _loadedSoundEffects[soundName].Play(GameService.GameIntegration.Audio.AverageGameVolume, 0, 0);
         }
 
         // Used while debugging since it's easier

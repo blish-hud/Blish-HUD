@@ -173,7 +173,8 @@ namespace Blish_HUD {
 
             spriteBatch.DrawString(Content.DefaultFont14, $"3D Entities Displayed: {Graphics.World.Entities.Count}",     new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
             spriteBatch.DrawString(Content.DefaultFont14, "Render Late: "   + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
-            spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"),     new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
+            spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
+            spriteBatch.DrawString(Content.DefaultFont14, "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume, new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
         }
 
 #endregion
