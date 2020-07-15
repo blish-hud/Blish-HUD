@@ -170,6 +170,8 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private void SubscribeToModuleRunState() {
             if (this.Model.ModuleInstance != null) {
+                // Avoid subscribing more than once
+                this.Model.ModuleInstance.ModuleRunStateChanged -= ModuleInstanceOnModuleRunStateChanged;
                 this.Model.ModuleInstance.ModuleRunStateChanged += ModuleInstanceOnModuleRunStateChanged;
             }
 
