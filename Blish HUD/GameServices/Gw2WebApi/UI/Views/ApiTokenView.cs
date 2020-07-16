@@ -140,7 +140,6 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _regionFlagImg = new Image() {
                 Size     = new Point(16,                   16),
                 Location = new Point(_accountNameLbl.Left, _accountNameLbl.Bottom + 2),
-                Visible  = false,
                 Parent   = buildPanel
             };
 

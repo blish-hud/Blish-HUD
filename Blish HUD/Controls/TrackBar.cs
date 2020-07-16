@@ -1,38 +1,56 @@
 ﻿using System;
+using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
     public class TrackBar : Control {
         
-        private const int BUFFER_WIDTH = 4;
+        private const int BUMPER_WIDTH = 4;
 
         #region Load Static
 
-        private static readonly TextureRegion2D _textureTrack;
+        private static readonly Texture2D       _textureTrack;
         private static readonly TextureRegion2D _textureNub;
 
         static TrackBar() {
-            _textureTrack = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-track");
+            _textureTrack = Content.GetTexture("controls/trackbar/154968");
             _textureNub   = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-nub");
         }
 
         #endregion
 
-        public event EventHandler<EventArgs> ValueChanged;
+        public event EventHandler<ValueEventArgs<float>> ValueChanged;
 
-        protected int _maxValue = 100;
-        public int MaxValue {
+        protected float _maxValue = 100f;
+
+        /// <summary>
+        /// The largest value the <see cref="TrackBar"/> will show.
+        /// </summary>
+        public float MaxValue {
             get => _maxValue;
-            set => SetProperty(ref _maxValue, value, true);
+            set {
+                if (SetProperty(ref _maxValue, value, true)) {
+                    this.Value = _value;
+                }
+            }
         }
 
-        protected int _minValue = 0;
-        public int MinValue {
+        protected float _minValue = 0f;
+
+        /// <summary>
+        /// The smallest value the <see cref="TrackBar"/> will show.
+        /// </summary>
+        public float MinValue {
             get => _minValue;
-            set => SetProperty(ref _minValue, value, true);
+            set {
+                if (SetProperty(ref _minValue, value, true)) {
+                    this.Value = _value;
+                }
+            }
         }
 
         protected float _value = 50;
@@ -40,12 +58,21 @@ namespace Blish_HUD.Controls {
             get => _value;
             set {
                 if (SetProperty(ref _value, MathHelper.Clamp(value, _minValue, _maxValue), true)) {
-                    this.ValueChanged?.Invoke(this, EventArgs.Empty);
+                    this.ValueChanged?.Invoke(this, new ValueEventArgs<float>(_value));
                 }
             }
         }
 
-        public int RoundedValue => (int)Math.Round(_value, 0);
+        protected bool _smallStep = false;
+
+        /// <summary>
+        /// If <c>true</c>, values can change in increments less than 1.
+        /// If <c>false</c>, values will snap to full integers.
+        /// </summary>
+        public bool SmallStep {
+            get => _smallStep;
+            set => SetProperty(ref _smallStep, value);
+        }
 
         private bool _dragging   = false;
         private int  _dragOffset = 0;
@@ -64,7 +91,7 @@ namespace Blish_HUD.Controls {
             base.OnLeftMouseButtonPressed(e);
 
             if (_layoutNubBounds.Contains(this.RelativeMousePosition)) {
-                _dragging       = true;
+                _dragging   = true;
                 _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X;
             }
         }
@@ -72,7 +99,11 @@ namespace Blish_HUD.Controls {
         public override void DoUpdate(GameTime gameTime) {
             if (_dragging) {
                 var relMousePos = this.RelativeMousePosition - new Point(_dragOffset, 0);
-                this.Value = (relMousePos.X / (float)(this.Width - BUFFER_WIDTH * 2 - _textureNub.Width)) * (this.MaxValue - this.MinValue);
+                float rawValue = (relMousePos.X / (float)(this.Width - BUMPER_WIDTH * 2 - _textureNub.Width)) * (this.MaxValue - this.MinValue);
+
+                this.Value = this.SmallStep && GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
+                                 ? rawValue
+                                 : (float) Math.Round(rawValue, 0);
             }
         }
 
@@ -80,20 +111,24 @@ namespace Blish_HUD.Controls {
             return CaptureType.Mouse;
         }
 
-        #region Calculated Layout
-
         private Rectangle _layoutNubBounds;
-
-        #endregion
+        private Rectangle _layoutLeftBumper;
+        private Rectangle _layoutRightBumper;
 
         public override void RecalculateLayout() {
-            float valueOffset = (((this.Value - this.MinValue) / (this.MaxValue - this.MinValue)) * (_textureTrack.Width - BUFFER_WIDTH * 2 - _textureNub.Width));
-            _layoutNubBounds = new Rectangle((int)valueOffset + BUFFER_WIDTH, 0, _textureNub.Width, _textureNub.Height);
+            _layoutLeftBumper  = new Rectangle(0,                         0, BUMPER_WIDTH, this.Height);
+            _layoutRightBumper = new Rectangle(this.Width - BUMPER_WIDTH, 0, BUMPER_WIDTH, this.Height);
+
+            float valueOffset = (this.Value - this.MinValue) / (this.MaxValue - this.MinValue) * (_size.X - BUMPER_WIDTH - _textureNub.Width);
+            _layoutNubBounds = new Rectangle((int)valueOffset + BUMPER_WIDTH / 2, 0, _textureNub.Width, _textureNub.Height);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this, _textureTrack, bounds);
-            
+
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, _layoutLeftBumper);
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, _layoutRightBumper);
+
             spriteBatch.DrawOnCtrl(this, _textureNub, _layoutNubBounds);
         }
 

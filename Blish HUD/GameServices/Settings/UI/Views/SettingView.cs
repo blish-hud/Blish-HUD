@@ -11,12 +11,21 @@ namespace Blish_HUD.Settings.UI.Views {
         private static readonly Dictionary<Type, Func<SettingEntry, int, IView>> _typeLookup = new Dictionary<Type, Func<SettingEntry, int, IView>> {
             {typeof(bool), (settingEntry,              definedWidth) => new BoolSettingView(settingEntry as SettingEntry<bool>, definedWidth)},
             {typeof(string), (settingEntry,            definedWidth) => new StringSettingView(settingEntry as SettingEntry<string>, definedWidth)},
+            {typeof(float), (settingEntry,             definedWidth) => new FloatSettingView(settingEntry as SettingEntry<float>, definedWidth)},
+            {typeof(int), (settingEntry,               definedWidth) => new IntSettingView(settingEntry as SettingEntry<int>, definedWidth)},
             {typeof(KeyBinding), (settingEntry,        definedWidth) => new KeybindingSettingView(settingEntry as SettingEntry<KeyBinding>, definedWidth)},
             {typeof(SettingCollection), (settingEntry, definedWidth) => new SettingsView(settingEntry as SettingEntry<SettingCollection>, definedWidth)}
         };
 
         public static IView FromType(SettingEntry setting, int definedWidth) {
             if (_typeLookup.TryGetValue(setting.SettingType, out Func<SettingEntry, int, IView> typeView)) {
+                if (setting is SettingEntry<SettingCollection> settingCollection) {
+                    if (!settingCollection.Value.RenderInUi) {
+                        Logger.Debug($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because {nameof(SettingCollection.RenderInUi)} was false.");
+                        return null;
+                    }
+                }
+
                 return typeView(setting, definedWidth);
             }
 

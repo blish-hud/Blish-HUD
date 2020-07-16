@@ -8,7 +8,7 @@ namespace Blish_HUD.Settings {
         public event EventHandler<ValueChangedEventArgs<T>> SettingChanged;
 
         private void OnSettingChanged(ValueChangedEventArgs<T> e) {
-            GameService.Settings.SettingSave();
+            GameService.Settings.Save();
 
             OnPropertyChanged(nameof(this.Value));
 

@@ -70,6 +70,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No permissions requested.
+        /// </summary>
+        internal static string ApiPermission_NoPermissionsRequested {
+            get {
+                return ResourceManager.GetString("ApiPermission_NoPermissionsRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Optional.
         /// </summary>
         internal static string ApiPermission_Optional {
@@ -106,6 +115,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No dependencies.
+        /// </summary>
+        internal static string Dependency_NoDependencies {
+            get {
+                return ResourceManager.GetString("Dependency_NoDependencies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Not Enabled].
         /// </summary>
         internal static string Dependency_NotEnabled {
@@ -124,6 +142,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requires {0}.
+        /// </summary>
+        internal static string Dependency_RequiresVersion {
+            get {
+                return ResourceManager.GetString("Dependency_RequiresVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Wrong Version].
         /// </summary>
         internal static string Dependency_WrongVersion {
@@ -138,15 +165,6 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string ManageModulesSection {
             get {
                 return ResourceManager.GetString("ManageModulesSection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unknown.
-        /// </summary>
-        internal static string ModuleAuthor_Unknown {
-            get {
-                return ResourceManager.GetString("ModuleAuthor_Unknown", resourceCulture);
             }
         }
         
@@ -232,11 +250,65 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Module Settings.
+        /// </summary>
+        internal static string ModuleManagement_ModuleSettings {
+            get {
+                return ResourceManager.GetString("ModuleManagement_ModuleSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View Module Logs.
         /// </summary>
         internal static string ModuleManagement_ViewModuleLogs {
             get {
                 return ResourceManager.GetString("ModuleManagement_ViewModuleLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear Settings.
+        /// </summary>
+        internal static string ModuleOption_ClearSettings {
+            get {
+                return ResourceManager.GetString("ModuleOption_ClearSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t clear settings while the module is enabled..
+        /// </summary>
+        internal static string ModuleOption_ClearSettings_DescriptionDisabled {
+            get {
+                return ResourceManager.GetString("ModuleOption_ClearSettings_DescriptionDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset the module settings back to their default..
+        /// </summary>
+        internal static string ModuleOption_ClearSettings_DescriptionEnabled {
+            get {
+                return ResourceManager.GetString("ModuleOption_ClearSettings_DescriptionEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open &apos;{0}&apos; Directory.
+        /// </summary>
+        internal static string ModuleOption_OpenDir {
+            get {
+                return ResourceManager.GetString("ModuleOption_OpenDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings will show when Module is enabled.
+        /// </summary>
+        internal static string ModuleSettings_ShownWhenEnabled {
+            get {
+                return ResourceManager.GetString("ModuleSettings_ShownWhenEnabled", resourceCulture);
             }
         }
         
