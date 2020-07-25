@@ -77,9 +77,9 @@ namespace Blish_HUD.GameIntegration {
             if (_timeSinceCheck > CHECK_INTERVAL) {
                 _timeSinceCheck -= CHECK_INTERVAL;
 
-                _averageGameVolume = null;
-
                 _audioPeakBuffer.PushValue(_processMeterInformation.GetPeakValue());
+
+                _averageGameVolume = null;
             }
         }
 
