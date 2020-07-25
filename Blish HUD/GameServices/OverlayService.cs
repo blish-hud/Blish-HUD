@@ -229,18 +229,10 @@ namespace Blish_HUD {
             HandleEnqueuedUpdates(gameTime);
 
             if (GameService.GameIntegration.IsInGame) {
-                _lastTacoCheckTime += gameTime.ElapsedGameTime.TotalSeconds;
-
-                if (_lastTacoCheckTime > 3) {
-                    Process[] tacoApp = Process.GetProcessesByName("GW2TacO");
-
-                    if (tacoApp.Length > 0) {
-                        CornerIcon.LeftOffset = 36 * (_clientType == Gw2ClientContext.ClientType.Chinese ? 2 : 1);
-                    } else {
-                        CornerIcon.LeftOffset = _clientType == Gw2ClientContext.ClientType.Chinese ? 36 : 0;
-                    }
-
-                    _lastTacoCheckTime = 0;
+                if (GameIntegration.TacO.TacOIsRunning) {
+                    CornerIcon.LeftOffset = 36 * (_clientType == Gw2ClientContext.ClientType.Chinese ? 2 : 1);
+                } else {
+                    CornerIcon.LeftOffset = _clientType == Gw2ClientContext.ClientType.Chinese ? 36 : 0;
                 }
             }
         }

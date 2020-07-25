@@ -41,6 +41,7 @@ namespace Blish_HUD {
         private const string GAMEINTEGRATION_SETTINGS = "GameIntegrationConfiguration";
 
         public AudioIntegration Audio { get; private set; }
+        public TacOIntegration  TacO  { get; private set; }
 
         private readonly string[] _processNames = { "Gw2-64", "Gw2", "KZW" };
 
@@ -109,7 +110,7 @@ namespace Blish_HUD {
             }
         }
 
-        private System.Windows.Forms.Form _formWrapper;
+        private Form _formWrapper;
 
         private SettingCollection _gameIntegrationSettings;
 
@@ -186,6 +187,7 @@ namespace Blish_HUD {
 
         protected override void Load() {
             this.Audio = new AudioIntegration(this);
+            this.TacO  = new TacOIntegration(this);
 
             BlishHud.Form.Shown += delegate {
                 WindowUtil.SetupOverlay(BlishHud.FormHandle);
@@ -323,6 +325,8 @@ namespace Blish_HUD {
                 this.TrayIcon.Visible = false;
                 this.TrayIcon.Dispose();
             }
+
+            this.Audio.Unload();
         }
         
         // Keeps track of how long it's been since we last checked for the gw2 process
@@ -334,6 +338,7 @@ namespace Blish_HUD {
 
             if (this.Gw2IsRunning) {
                 this.Audio.Update(gameTime);
+                this.TacO.Update(gameTime);
 
                 var updateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
 
