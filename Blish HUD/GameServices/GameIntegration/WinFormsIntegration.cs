@@ -10,10 +10,7 @@ using Blish_HUD.GameServices;
 namespace Blish_HUD.GameIntegration {
     public class WinFormsIntegration : ServiceModule<GameIntegrationService> {
 
-        /// <summary>
-        /// The menu displayed when the tray icon is right-clicked.
-        /// </summary>
-        public ContextMenuStrip TrayIconMenu { get; private set; }
+        private Form _formWrapper;
 
         private NotifyIcon _trayIcon;
 
@@ -21,8 +18,25 @@ namespace Blish_HUD.GameIntegration {
         private ToolStripItem _launchGw2AutoTsi;
         private ToolStripItem _exitTsi;
 
+        /// <summary>
+        /// The menu displayed when the tray icon is right-clicked.
+        /// </summary>
+        public ContextMenuStrip TrayIconMenu { get; private set; }
+
         public WinFormsIntegration(GameIntegrationService service) : base(service) {
+            WrapMainForm();
             BuildTrayIcon();
+        }
+
+        private void WrapMainForm() {
+            _formWrapper = new Form();
+            BlishHud.Form.Hide();
+            BlishHud.Form.Show(_formWrapper);
+            BlishHud.Form.Visible = false;
+        }
+
+        public void SetShowInTaskbar(bool showInTaskbar) {
+            WindowUtil.SetShowInTaskbar(BlishHud.FormHandle, showInTaskbar);
         }
 
         private void BuildTrayIcon() {

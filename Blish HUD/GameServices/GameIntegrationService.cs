@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,8 +43,6 @@ namespace Blish_HUD {
 
         private readonly string[] _processNames = { "Gw2-64", "Gw2", "KZW" };
 
-        public NotifyIcon TrayIcon { get; private set; }
-        public ContextMenuStrip TrayIconMenu { get; private set; }
         public IGameChat Chat { get; private set; }
         public bool IsInGame { get; private set; } = false;
 
@@ -111,8 +106,6 @@ namespace Blish_HUD {
             }
         }
 
-        private Form _formWrapper;
-
         private SettingCollection _gameIntegrationSettings;
 
         private SettingEntry<string> _gw2ExecutablePath;
@@ -120,11 +113,6 @@ namespace Blish_HUD {
         public string Gw2ExecutablePath => _gw2ExecutablePath.Value;
         protected override void Initialize() {
             Chat = new GameChat();
-
-            _formWrapper = new Form();
-            BlishHud.Form.Hide();
-            BlishHud.Form.Show(_formWrapper);
-            BlishHud.Form.Visible = false;
 
             _gameIntegrationSettings = Settings.RegisterRootSettingCollection(GAMEINTEGRATION_SETTINGS);
 

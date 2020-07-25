@@ -72,7 +72,7 @@ namespace Blish_HUD {
         }
 
         private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
-            WindowUtil.SetShowInTaskbar(BlishHud.FormHandle, e.NewValue);
+            GameIntegration.WinForms.SetShowInTaskbar(e.NewValue);
         }
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
