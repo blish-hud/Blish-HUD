@@ -34,15 +34,12 @@ namespace Blish_HUD {
         private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
-        private const string GW2_64_BIT_PROCESSNAME = "Gw2-64";
-
-        // TODO: Confirm this is actually what the 32-bit process is called
-        private const string GW2_32_BIT_PROCESSNAME = "Gw2";
-
         private const string GW2_PATCHWINDOW_NAME = "ArenaNet";
         private const string GW2_GAMEWINDOW_NAME  = "ArenaNet_Dx_Window_Class";
 
         private const string GAMEINTEGRATION_SETTINGS = "GameIntegrationConfiguration";
+
+        private readonly string[] _processNames = { "Gw2-64", "Gw2", "KZW" };
 
         public NotifyIcon TrayIcon { get; private set; }
         public ContextMenuStrip TrayIconMenu { get; private set; }
@@ -291,12 +288,14 @@ namespace Blish_HUD {
         }
 
         private Process GetDefaultGw2Process() {
-            // Check to see if 64-bit Gw2 process is running (since it's likely the most common at this point)
-            Process[] gw2Processes = Process.GetProcessesByName(ApplicationSettings.Instance.ProcessName ?? GW2_64_BIT_PROCESSNAME);
+            var gw2Processes = new Process[0];
 
-            if (gw2Processes.Length == 0) {
-                // 64-bit process not found so see if they're using a 32-bit client instead
-                gw2Processes = Process.GetProcessesByName(GW2_32_BIT_PROCESSNAME);
+            if (ApplicationSettings.Instance.ProcessName != null) {
+                gw2Processes = Process.GetProcessesByName(ApplicationSettings.Instance.ProcessName);
+            } else {
+                for (int i = 0; i < _processNames.Length && gw2Processes.Length < 1; i++) {
+                    gw2Processes = Process.GetProcessesByName(_processNames[i]);
+                }
             }
 
             return gw2Processes.Length > 0
