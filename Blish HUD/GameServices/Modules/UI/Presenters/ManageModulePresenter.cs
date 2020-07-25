@@ -156,11 +156,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
                 return string.Join(", ", this.Model.Manifest.Contributors.Select(c => c.Name));
             }
 
-            if (this.Model.Manifest.Author != null) {
-                return this.Model.Manifest.Author.Name;
-            }
-
-            return Strings.Common.Unknown;
+            return this.Model.Manifest.Author?.Name ?? Strings.Common.Unknown;
         }
 
         private void ViewOnEnableModuleClicked(object sender, EventArgs e) {
@@ -174,6 +170,8 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private void SubscribeToModuleRunState() {
             if (this.Model.ModuleInstance != null) {
+                // Avoid subscribing more than once
+                this.Model.ModuleInstance.ModuleRunStateChanged -= ModuleInstanceOnModuleRunStateChanged;
                 this.Model.ModuleInstance.ModuleRunStateChanged += ModuleInstanceOnModuleRunStateChanged;
             }
 
