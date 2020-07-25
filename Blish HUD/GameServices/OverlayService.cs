@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
-using Blish_HUD.Input;
 using Blish_HUD.Settings;
-using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD {
 
@@ -214,8 +210,6 @@ namespace Blish_HUD {
             this.BlishMenuIcon.Dispose();
             this.BlishHudWindow.Dispose();
         }
-
-        private double _lastTacoCheckTime = 5;
 
         private void HandleEnqueuedUpdates(GameTime gameTime) {
             while (_queuedUpdates.TryDequeue(out Action<GameTime> updateCall)) {
