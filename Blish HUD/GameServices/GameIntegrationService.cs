@@ -40,8 +40,9 @@ namespace Blish_HUD {
 
         private const string GAMEINTEGRATION_SETTINGS = "GameIntegrationConfiguration";
 
-        public AudioIntegration Audio { get; private set; }
-        public TacOIntegration  TacO  { get; private set; }
+        public AudioIntegration    Audio    { get; private set; }
+        public TacOIntegration     TacO     { get; private set; }
+        public WinFormsIntegration WinForms { get; private set; }
 
         private readonly string[] _processNames = { "Gw2-64", "Gw2", "KZW" };
 
@@ -160,40 +161,14 @@ namespace Blish_HUD {
             return string.Empty;
         }
 
-        private void LaunchGw2(bool autologin = false) {
-            var args = new List<string>();
-
-            // Auto login
-            if (autologin) {
-                args.Add("-autologin");
-            }
-
-            // Mumble target name
-            if (ApplicationSettings.Instance.MumbleMapName != null) {
-                args.Add($"-mumble \"{ApplicationSettings.Instance.MumbleMapName}\"");
-            }
-
-            if (File.Exists(this.Gw2ExecutablePath)) {
-                var gw2Proc = new Process {
-                    StartInfo = {
-                        FileName  = this.Gw2ExecutablePath,
-                        Arguments = string.Join(" ", args)
-                    }
-                };
-
-                gw2Proc.Start();
-            }
-        }
-
         protected override void Load() {
-            this.Audio = new AudioIntegration(this);
-            this.TacO  = new TacOIntegration(this);
+            this.Audio    = new AudioIntegration(this);
+            this.TacO     = new TacOIntegration(this);
+            this.WinForms = new WinFormsIntegration(this);
 
             BlishHud.Form.Shown += delegate {
                 WindowUtil.SetupOverlay(BlishHud.FormHandle);
             };
-
-            CreateTrayIcon();
 
             TryAttachToGw2();
 
@@ -204,56 +179,6 @@ namespace Blish_HUD {
             if (e.Value) {
                 TryAttachToGw2();
             }
-        }
-
-        #region TrayIcon Menu Items
-
-        private ToolStripItem ts_launchGw2;
-        private ToolStripItem ts_launchGw2Auto;
-        private ToolStripItem ts_exit;
-
-        #endregion
-
-        private void CreateTrayIcon() {
-            string trayIconText = Strings.Common.BlishHUD;
-
-            if (ApplicationSettings.Instance.MumbleMapName != null) {
-                trayIconText += $" ({ApplicationSettings.Instance.MumbleMapName})";
-            }
-
-            this.TrayIconMenu = new ContextMenuStrip();
-
-            // Found this here: https://stackoverflow.com/a/25409865/595437
-            // Extract the tray icon from our assembly
-            this.TrayIcon = new NotifyIcon() {
-                Icon             = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
-                Text             = trayIconText,
-                Visible          = true,
-                ContextMenuStrip = this.TrayIconMenu
-            };
-
-            // Populate TrayIconMenu items
-            ts_launchGw2Auto = this.TrayIconMenu.Items.Add($"{Strings.GameServices.GameIntegrationService.TrayIcon_LaunchGuildWars2} - {Strings.GameServices.GameIntegrationService.TrayIcon_Autologin}");
-            ts_launchGw2     = this.TrayIconMenu.Items.Add(Strings.GameServices.GameIntegrationService.TrayIcon_LaunchGuildWars2);
-
-            ts_launchGw2Auto.Click += delegate { LaunchGw2(true); };
-            ts_launchGw2.Click     += delegate { LaunchGw2(false); };
-
-            this.TrayIcon.DoubleClick += delegate {
-                if (!this.Gw2IsRunning) {
-                    LaunchGw2(true);
-                }
-            };
-
-            this.TrayIconMenu.Items.Add(new ToolStripSeparator());
-            ts_exit = this.TrayIconMenu.Items.Add($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}");
-
-            ts_exit.Click += delegate { Overlay.Exit(); };
-
-            this.TrayIconMenu.Opening += delegate {
-                ts_launchGw2.Enabled     = !this.Gw2IsRunning && File.Exists(this.Gw2ExecutablePath);
-                ts_launchGw2Auto.Enabled = !this.Gw2IsRunning && File.Exists(this.Gw2ExecutablePath);
-            };
         }
 
         private void TryAttachToGw2() {
@@ -321,12 +246,9 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
-            if (this.TrayIcon != null) {
-                this.TrayIcon.Visible = false;
-                this.TrayIcon.Dispose();
-            }
-
             this.Audio.Unload();
+            this.TacO.Unload();
+            this.WinForms.Unload();
         }
         
         // Keeps track of how long it's been since we last checked for the gw2 process
@@ -339,6 +261,7 @@ namespace Blish_HUD {
             if (this.Gw2IsRunning) {
                 this.Audio.Update(gameTime);
                 this.TacO.Update(gameTime);
+                this.WinForms.Update(gameTime);
 
                 var updateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
 
