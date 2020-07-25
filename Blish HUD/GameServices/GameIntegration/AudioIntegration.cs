@@ -84,15 +84,19 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
+        /// <summary>
+        /// Enumerates the available meters per process.
+        /// The <see cref="Process"/> returned in the tuple is diposed after the enumeration completes.
+        /// </summary>
         private IEnumerable<(Process Process, AudioMeterInformation MeterInformation)> GetProcessMeters() {
             using var sessionEnumerator = _activeAudioDeviceManager.GetSessionEnumerator();
 
             foreach (var session in sessionEnumerator) {
-                using var processAudioSession   = session.QueryInterface<AudioSessionControl2>();
-
-                var audioMeterInformation = session.QueryInterface<AudioMeterInformation>();
+                using var processAudioSession = session.QueryInterface<AudioSessionControl2>();
 
                 if (processAudioSession.Process == null) continue;
+
+                var audioMeterInformation = session.QueryInterface<AudioMeterInformation>();
 
                 yield return (processAudioSession.Process, audioMeterInformation);
             }
