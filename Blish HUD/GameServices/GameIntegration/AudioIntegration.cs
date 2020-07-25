@@ -24,16 +24,13 @@ namespace Blish_HUD.GameIntegration {
 
         private double _timeSinceCheck = 0;
 
-        public float AverageGameVolume {
-            get {
-                float total = 0;
-                for (int i = 0; i < _audioPeakBuffer.InternalBuffer.Length; i++) {
-                    total += _audioPeakBuffer.InternalBuffer[i];
-                }
+        private float? _averageGameVolume;
 
-                return MathHelper.Clamp(total / _audioPeakBuffer.InternalBuffer.Length, 0, MAX_VOLUME);
-            }
-        }
+        /// <summary>
+        /// Provides an estimated volume level for the application
+        /// based on the volumes levels exhibited by the game.
+        /// </summary>
+        public float AverageGameVolume => _averageGameVolume ??= CalculateAverageVolume();
 
         public AudioIntegration(GameIntegrationService gameIntegration) {
             _gameIntegration  = gameIntegration;
@@ -80,8 +77,19 @@ namespace Blish_HUD.GameIntegration {
             if (_timeSinceCheck > CHECK_INTERVAL) {
                 _timeSinceCheck -= CHECK_INTERVAL;
 
+                _averageGameVolume = null;
+
                 _audioPeakBuffer.PushValue(_processMeterInformation.GetPeakValue());
             }
+        }
+
+        private float CalculateAverageVolume() {
+            float total = 0;
+            for (int i = 0; i < _audioPeakBuffer.InternalBuffer.Length; i++) {
+                total += _audioPeakBuffer.InternalBuffer[i];
+            }
+
+            return MathHelper.Clamp(total / _audioPeakBuffer.InternalBuffer.Length, 0, MAX_VOLUME);
         }
 
         /// <summary>
