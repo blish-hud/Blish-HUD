@@ -222,12 +222,11 @@ namespace Blish_HUD {
 
             HandleEnqueuedUpdates(gameTime);
 
-            if (GameService.GameIntegration.IsInGame) {
-                if (GameIntegration.TacO.TacOIsRunning) {
-                    CornerIcon.LeftOffset = 36 * (_clientType == Gw2ClientContext.ClientType.Chinese ? 2 : 1);
-                } else {
-                    CornerIcon.LeftOffset = _clientType == Gw2ClientContext.ClientType.Chinese ? 36 : 0;
-                }
+            if (GameIntegration.IsInGame) {
+                int offset = (_clientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
+                           + (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
+
+                CornerIcon.LeftOffset = offset * 36;
             }
         }
 
