@@ -63,7 +63,6 @@ namespace Blish_HUD {
         }
 
         private void ApplyInitialSettings() {
-            ShowInTaskbarOnSettingChanged(this.ShowInTaskbar, new ValueChangedEventArgs<bool>(true, this.ShowInTaskbar.Value));
             UserLocaleOnSettingChanged(this.UserLocale, new ValueChangedEventArgs<Locale>(GetGw2LocaleFromCurrentUICulture(), this.UserLocale.Value));
         }
 
