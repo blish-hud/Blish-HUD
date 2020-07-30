@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
-using Blish_HUD.Input;
 using Blish_HUD.Settings;
-using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD {
 
@@ -67,12 +63,11 @@ namespace Blish_HUD {
         }
 
         private void ApplyInitialSettings() {
-            ShowInTaskbarOnSettingChanged(this.ShowInTaskbar, new ValueChangedEventArgs<bool>(true, this.ShowInTaskbar.Value));
             UserLocaleOnSettingChanged(this.UserLocale, new ValueChangedEventArgs<Locale>(GetGw2LocaleFromCurrentUICulture(), this.UserLocale.Value));
         }
 
         private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
-            WindowUtil.SetShowInTaskbar(BlishHud.FormHandle, e.NewValue);
+            GameIntegration.WinForms.SetShowInTaskbar(e.NewValue);
         }
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
@@ -215,8 +210,6 @@ namespace Blish_HUD {
             this.BlishHudWindow.Dispose();
         }
 
-        private double _lastTacoCheckTime = 5;
-
         private void HandleEnqueuedUpdates(GameTime gameTime) {
             while (_queuedUpdates.TryDequeue(out Action<GameTime> updateCall)) {
                 updateCall.Invoke(gameTime);
@@ -228,20 +221,11 @@ namespace Blish_HUD {
 
             HandleEnqueuedUpdates(gameTime);
 
-            if (GameService.GameIntegration.IsInGame) {
-                _lastTacoCheckTime += gameTime.ElapsedGameTime.TotalSeconds;
+            if (GameIntegration.IsInGame) {
+                int offset = (_clientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
+                           + (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
 
-                if (_lastTacoCheckTime > 3) {
-                    Process[] tacoApp = Process.GetProcessesByName("GW2TacO");
-
-                    if (tacoApp.Length > 0) {
-                        CornerIcon.LeftOffset = 36 * (_clientType == Gw2ClientContext.ClientType.Chinese ? 2 : 1);
-                    } else {
-                        CornerIcon.LeftOffset = _clientType == Gw2ClientContext.ClientType.Chinese ? 36 : 0;
-                    }
-
-                    _lastTacoCheckTime = 0;
-                }
+                CornerIcon.LeftOffset = offset * 36;
             }
         }
 

@@ -1,11 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace Blish_HUD {
-    public abstract class GameService : INotifyPropertyChanged {
+    public abstract class GameService {
 
         private static readonly GameService[] _allServices;
         public static IReadOnlyList<GameService> All => _allServices;
@@ -103,16 +101,6 @@ namespace Blish_HUD {
             };
 
         }
-
-        #region Property Binding
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #endregion
 
     }
 }
