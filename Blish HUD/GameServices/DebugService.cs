@@ -160,6 +160,9 @@ namespace Blish_HUD {
         #endregion
 
         #region Debug Overlay
+        
+        private ConcurrentDictionary<string, Func<GameTime, string>> _overlayTexts;
+        public ConcurrentDictionary<string, Func<GameTime, string>> OverlayTexts => _overlayTexts;
 
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
@@ -171,10 +174,9 @@ namespace Blish_HUD {
                 spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i++ * 25)), Color.Orange);
             }
 
-            spriteBatch.DrawString(Content.DefaultFont14, $"3D Entities Displayed: {Graphics.World.Entities.Count}",              new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
-            spriteBatch.DrawString(Content.DefaultFont14, "Render Late: "            + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
-            spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"),     new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
-            spriteBatch.DrawString(Content.DefaultFont14, "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume,   new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
+            foreach (Func<GameTime, string> func in _overlayTexts.Values) {
+                spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
+            }
         }
 
 #endregion
@@ -191,6 +193,12 @@ namespace Blish_HUD {
 
         protected override void Load() {
             _funcTimes = new ConcurrentDictionary<string, DebugCounter>();
+
+            _overlayTexts = new ConcurrentDictionary<string, Func<GameTime, string>>();
+            _overlayTexts.TryAdd("entityCount", (_) => $"3D Entities Displayed: {Graphics.World.Entities.Count}");
+            _overlayTexts.TryAdd("renderLate", (gameTime) => "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"));
+            _overlayTexts.TryAdd("arcDps", (_) => "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"));
+            _overlayTexts.TryAdd("volume", (_) => "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume);
         }
 
         protected override void Update(GameTime gameTime) {
