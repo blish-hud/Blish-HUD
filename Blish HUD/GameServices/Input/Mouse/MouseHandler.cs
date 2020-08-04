@@ -25,6 +25,8 @@ namespace Blish_HUD.Input {
         /// </summary>
         public Point Position => this.State.Position;
 
+        public Point PositionRaw { get; private set; }
+
         /// <summary>
         /// The current state of the mouse.
         /// </summary>
@@ -74,8 +76,8 @@ namespace Blish_HUD.Input {
             MouseState rawMouseState = Mouse.GetState();
 
             this.State = new MouseState(
-                                        (int)(rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
-                                        (int)(rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
+                                        (int) (rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
+                                        (int) (rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
                                         _mouseEvent?.WheelDelta ?? 0,
                                         rawMouseState.LeftButton,
                                         rawMouseState.MiddleButton,
@@ -126,9 +128,12 @@ namespace Blish_HUD.Input {
         }
 
         public bool HandleInput(MouseEventArgs mouseEventArgs) {
-            if (mouseEventArgs.EventType == MouseEventType.MouseMoved) return false;
+            if (mouseEventArgs.EventType == MouseEventType.MouseMoved) {
+                PositionRaw = new Point(mouseEventArgs.PointX, mouseEventArgs.PointY);
+                return false;
+            }
 
-            if (_cameraDragging && (mouseEventArgs.EventType == MouseEventType.RightMouseButtonReleased))
+            if (_cameraDragging && mouseEventArgs.EventType == MouseEventType.RightMouseButtonReleased)
                 _cameraDragging = false;
             else if (_hudFocused && !_hookOverride) {
                 _mouseEvent = mouseEventArgs;

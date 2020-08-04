@@ -17,7 +17,8 @@ using NLog.Targets;
 using NLog.Targets.Wrappers;
 
 namespace Blish_HUD {
-    public class DebugService:GameService {
+
+    public class DebugService : GameService {
 
         #region Logging
 
@@ -41,7 +42,7 @@ namespace Blish_HUD {
             // Init the Logger
             _logConfiguration = new LoggingConfiguration();
 
-            string headerLayout   = $"Blish HUD v{Program.OverlayVersion}";
+            string headerLayout = $"Blish HUD v{Program.OverlayVersion}";
 
             var logFile = new FileTarget("logfile") {
                 Layout            = $"{STRUCLOG_TIME} | {STRUCLOG_LEVEL} | {STRUCLOG_LOGGER} | {STRUCLOG_MESSAGE}{STRUCLOG_EXCEPTION}",
@@ -68,10 +69,12 @@ namespace Blish_HUD {
 
             _logConfiguration.AddTarget(asyncLogFile);
 
-            _logConfiguration.AddRule(ApplicationSettings.Instance.DebugEnabled 
+            _logConfiguration.AddRule(
+                                      ApplicationSettings.Instance.DebugEnabled
                                           ? NLog.LogLevel.Debug
                                           : NLog.LogLevel.Info,
-                                      NLog.LogLevel.Fatal, asyncLogFile);
+                                      NLog.LogLevel.Fatal, asyncLogFile
+                                     );
 
             if (ApplicationSettings.Instance.DebugEnabled) {
                 AddDebugTarget(_logConfiguration);
@@ -107,7 +110,7 @@ namespace Blish_HUD {
         private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
             Input.DisableHooks();
 
-            var e = (Exception)args.ExceptionObject;
+            var e = (Exception) args.ExceptionObject;
 
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
         }
@@ -160,9 +163,9 @@ namespace Blish_HUD {
         #endregion
 
         #region Debug Overlay
-        
+
         private ConcurrentDictionary<string, Func<GameTime, string>> _overlayTexts;
-        public ConcurrentDictionary<string, Func<GameTime, string>> OverlayTexts => _overlayTexts;
+        public  ConcurrentDictionary<string, Func<GameTime, string>> OverlayTexts => _overlayTexts;
 
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
@@ -170,6 +173,7 @@ namespace Blish_HUD {
             spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.CurrentAverage, 0)}", new Vector2(debugLeft, 25), Color.Red);
 
             int i = 0;
+
             foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
                 spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i++ * 25)), Color.Orange);
             }
@@ -179,7 +183,7 @@ namespace Blish_HUD {
             }
         }
 
-#endregion
+        #endregion
 
         #region Service Implementation
 
@@ -196,18 +200,21 @@ namespace Blish_HUD {
 
             _overlayTexts = new ConcurrentDictionary<string, Func<GameTime, string>>();
             _overlayTexts.TryAdd("entityCount", (_) => $"3D Entities Displayed: {Graphics.World.Entities.Count}");
-            _overlayTexts.TryAdd("renderLate", (gameTime) => "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"));
-            _overlayTexts.TryAdd("arcDps", (_) => "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"));
-            _overlayTexts.TryAdd("volume", (_) => "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume);
+            _overlayTexts.TryAdd("renderLate",  (gameTime) => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
+            _overlayTexts.TryAdd("arcDps",      (_) => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
+            _overlayTexts.TryAdd("volume",      (_) => "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume);
         }
 
         protected override void Update(GameTime gameTime) {
             this.FrameCounter.Update(gameTime.GetElapsedSeconds());
         }
 
-        protected override void Unload() { /* NOOP */ }
+        protected override void Unload() {
+            /* NOOP */
+        }
 
         #endregion
 
     }
+
 }
