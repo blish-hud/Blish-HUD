@@ -5,13 +5,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using Blish_HUD.Debug;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
+using NLog;
 using NLog.Config;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
@@ -71,16 +71,16 @@ namespace Blish_HUD {
 
             _logConfiguration.AddRule(
                                       ApplicationSettings.Instance.DebugEnabled
-                                          ? NLog.LogLevel.Debug
-                                          : NLog.LogLevel.Info,
-                                      NLog.LogLevel.Fatal, asyncLogFile
+                                          ? LogLevel.Debug
+                                          : LogLevel.Info,
+                                      LogLevel.Fatal, asyncLogFile
                                      );
 
             if (ApplicationSettings.Instance.DebugEnabled) {
                 AddDebugTarget(_logConfiguration);
             }
 
-            NLog.LogManager.Configuration = _logConfiguration;
+            LogManager.Configuration = _logConfiguration;
 
             Logger = Logger.GetLogger<DebugService>();
         }
@@ -90,7 +90,7 @@ namespace Blish_HUD {
         }
 
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
-            NLog.LogManager.ThrowExceptions = true;
+            LogManager.ThrowExceptions = true;
 
             var logDebug = new MethodCallTarget("logdebug") {
                 ClassName  = typeof(DebugService).AssemblyQualifiedName,
@@ -104,7 +104,7 @@ namespace Blish_HUD {
             };
 
             _logConfiguration.AddTarget(logDebug);
-            _logConfiguration.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logDebug);
+            _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, logDebug);
         }
 
         private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
@@ -132,7 +132,6 @@ namespace Blish_HUD {
         private ConcurrentDictionary<string, DebugCounter> _funcTimes;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="func"></param>
         [Conditional("DEBUG")]
@@ -164,8 +163,7 @@ namespace Blish_HUD {
 
         #region Debug Overlay
 
-        private ConcurrentDictionary<string, Func<GameTime, string>> _overlayTexts;
-        public  ConcurrentDictionary<string, Func<GameTime, string>> OverlayTexts => _overlayTexts;
+        public ConcurrentDictionary<string, Func<GameTime, string>> OverlayTexts { get; private set; }
 
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
@@ -175,11 +173,11 @@ namespace Blish_HUD {
             int i = 0;
 
             foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
-                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i++ * 25)), Color.Orange);
+                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + i++ * 25), Color.Orange);
             }
 
-            foreach (Func<GameTime, string> func in _overlayTexts.Values) {
-                spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
+            foreach (Func<GameTime, string> func in this.OverlayTexts.Values) {
+                spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + i++ * 25), Color.Yellow);
             }
         }
 
@@ -198,11 +196,11 @@ namespace Blish_HUD {
         protected override void Load() {
             _funcTimes = new ConcurrentDictionary<string, DebugCounter>();
 
-            _overlayTexts = new ConcurrentDictionary<string, Func<GameTime, string>>();
-            _overlayTexts.TryAdd("entityCount", (_) => $"3D Entities Displayed: {Graphics.World.Entities.Count}");
-            _overlayTexts.TryAdd("renderLate",  (gameTime) => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
-            _overlayTexts.TryAdd("arcDps",      (_) => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
-            _overlayTexts.TryAdd("volume",      (_) => "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume);
+            this.OverlayTexts = new ConcurrentDictionary<string, Func<GameTime, string>>();
+            this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.Entities.Count}");
+            this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
+            this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
+            this.OverlayTexts.TryAdd("volume",      _ => "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume);
         }
 
         protected override void Update(GameTime gameTime) {
