@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Gw2WebApi.UI.Views;
+using Blish_HUD.Input;
 using Blish_HUD.Modules.UI.Presenters;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay.UI.Views;
@@ -262,6 +263,12 @@ namespace Blish_HUD {
                         var manageModuleView = new ManageModuleView();
 
                         cPanel.Show(manageModuleView.WithPresenter(new ManageModulePresenter(manageModuleView, module)));
+                    };
+                }
+
+                if (!Module.Modules.Any()) {
+                    settingsMiModules.Click += delegate {
+                        cPanel.Show(new NoModulesView());
                     };
                 }
             };
