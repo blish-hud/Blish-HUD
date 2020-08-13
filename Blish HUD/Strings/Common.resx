@@ -106,7 +106,7 @@
     <comment>Found on a button to cancel the operation.</comment>
   </data>
   <data name="Action_Exit" xml:space="preserve">
-    <value>Exit</value>
+    <value>Exit {0}</value>
   </data>
   <data name="BlishHUD" xml:space="preserve">
     <value>Blish HUD</value>
@@ -126,6 +126,6 @@
     <value>Instructions</value>
   </data>
   <data name="Action_Restart" xml:space="preserve">
-    <value>Restart</value>
+    <value>Restart {0}</value>
   </data>
 </root>

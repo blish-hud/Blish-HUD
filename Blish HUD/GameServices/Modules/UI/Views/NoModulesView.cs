@@ -1,4 +1,5 @@
-﻿using Blish_HUD.Controls;
+﻿using System.Diagnostics;
+using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Microsoft.Xna.Framework;
 
@@ -20,6 +21,10 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent   = buildPanel,
                 Width    = 200,
                 Location = new Point(buildPanel.Size.X / 2 - 100, info.Bottom - 100),
+            };
+
+            openDir.Click += delegate {
+                Process.Start("explorer.exe", $"/open, \"{DirectoryUtil.BasePath + "\\modules"}\\\"");
             };
         }
 
