@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Gw2Sharp.WebApi.Http;
+using Gw2Sharp.WebApi.Exceptions;
 
 namespace Blish_HUD.Contexts {
 

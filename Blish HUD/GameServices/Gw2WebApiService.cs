@@ -3,14 +3,12 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Gw2Sharp.WebApi;
 using Gw2Sharp.WebApi.Caching;
 using Gw2Sharp.WebApi.V2.Models;
 using System.Threading.Tasks;
 using Blish_HUD.Gw2WebApi;
 using Blish_HUD.Settings;
-using Gw2Sharp;
-using Gw2Sharp.WebApi.Http;
+using Gw2Sharp.WebApi.Exceptions;
 
 namespace Blish_HUD {
 
