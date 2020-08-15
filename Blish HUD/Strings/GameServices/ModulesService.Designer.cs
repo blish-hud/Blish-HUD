@@ -356,5 +356,24 @@ namespace Blish_HUD.Strings.GameServices {
                 return ResourceManager.GetString("ModuleState_Loading", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t currently have any modules.
+        ///Download some modules and place them in the modules folder..
+        /// </summary>
+        internal static string NoModules_Info {
+            get {
+                return ResourceManager.GetString("NoModules_Info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Modules Folder.
+        /// </summary>
+        internal static string NoModules_OpenFolder {
+            get {
+                return ResourceManager.GetString("NoModules_OpenFolder", resourceCulture);
+            }
+        }
     }
 }

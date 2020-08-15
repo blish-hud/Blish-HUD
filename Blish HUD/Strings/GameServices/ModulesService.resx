@@ -196,4 +196,11 @@
   <data name="ModuleOption_OpenDir" xml:space="preserve">
     <value>Open '{0}' Directory</value>
   </data>
+  <data name="NoModules_Info" xml:space="preserve">
+    <value>You don't currently have any modules.
+Download some modules and place them in the modules folder.</value>
+  </data>
+  <data name="NoModules_OpenFolder" xml:space="preserve">
+    <value>Open Modules Folder</value>
+  </data>
 </root>

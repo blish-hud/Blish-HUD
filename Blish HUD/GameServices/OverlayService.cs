@@ -2,11 +2,13 @@
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Threading;
+using System.Windows.Forms;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
 using Blish_HUD.Settings;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
+using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
 
 namespace Blish_HUD {
 
@@ -139,7 +141,8 @@ namespace Blish_HUD {
             };
 
             this.BlishContextMenu = this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}").Click += delegate { Exit(); };
+            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD)).Click += delegate { Application.Restart(); Exit(); };
+            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit, Strings.Common.BlishHUD)).Click += delegate { Exit(); };
 
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
