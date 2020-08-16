@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing.Entities.Effects;
@@ -91,11 +92,53 @@ namespace Blish_HUD.Pathing.Entities {
             return tempTrail;
         }
 
+        private List<Vector3> CreateHermiteTrail() {
+            List<Vector3> hermitePoints = new List<Vector3>();
+            uint numPoints = 10;
+            float alpha = 0.5f;
+
+            //Hermite basis functions
+            Func<float, float> h00 = t => (1 + 2 * t) * (float) Math.Pow(1 - t, 2.0f);
+            Func<float, float> h10 = t => t * (float) Math.Pow(1 - t, 2.0f);
+            Func<float, float> h01 = t => (float) Math.Pow(t, 2.0f) * (3 - 2 * t);
+            Func<float, float> h11 = t => (float) Math.Pow(t, 2.0f) * (t - 1);
+
+            Vector3 p0, p1, m0, m1;
+
+            for (int k = 0; k < this.TrailPoints.Count - 1; k++) {
+
+                p0 = this.TrailPoints[k];
+                p1 = this.TrailPoints[k + 1];
+
+                if (k > 0)
+                    m0 = alpha * (this.TrailPoints[k + 1] - this.TrailPoints[k - 1]);
+                else
+                    m0 = this.TrailPoints[k + 1] - this.TrailPoints[k];
+
+                if (k < this.TrailPoints.Count - 2)
+                    m1 = alpha * (this.TrailPoints[k + 2] - this.TrailPoints[k]);
+                else
+                    m1 = this.TrailPoints[k + 1] - this.TrailPoints[k];
+
+
+                for(int i = 0; i < numPoints; i++) {
+                    var t = i * (1.0f / numPoints);
+                    hermitePoints.Add(h00(t) * p0 + h10(t) * m0 + h01(t) * p1 + h11(t) * m1);
+                }
+            }
+
+            hermitePoints.Add(this.TrailPoints.Last());
+            return hermitePoints;
+        }
+
         protected override void InitTrailPoints() {
             if (!_trailPoints.Any()) return;
 
             // TacO has a minimum of 30, so we'll use 30
-            _trailPoints = SetTrailResolution(_trailPoints, 30f);
+
+            var hermitePoints = this.CreateHermiteTrail();
+
+            _trailPoints = SetTrailResolution(hermitePoints, 30f);
 
             this.VertexData = new VertexPositionColorTexture[this.TrailPoints.Count * 2];
 
