@@ -188,6 +188,16 @@ namespace Blish_HUD.Entities.Effects {
             return assignmentResult;
         }
 
+        protected bool SetParameter(string parameterName, ref Color property, Color newValue) {
+            bool assignmentResult = SetProperty(ref property, newValue);
+
+            if (assignmentResult) {
+                this.Parameters[parameterName].SetValue(newValue.ToVector4());
+            }
+
+            return assignmentResult;
+        }
+
         #endregion
 
         protected abstract void Update(GameTime gameTime);
