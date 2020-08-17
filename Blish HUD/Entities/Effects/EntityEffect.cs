@@ -21,9 +21,6 @@ namespace Blish_HUD.Entities.Effects {
                     continue;
                 }
 
-                loadedEffect.View       = GameService.Gw2Mumble.PlayerCamera.View;
-                loadedEffect.Projection = GameService.Gw2Mumble.PlayerCamera.Projection;
-
                 loadedEffect.Update(gameTime);
             }
         }
@@ -31,45 +28,6 @@ namespace Blish_HUD.Entities.Effects {
         private static void RegisterEntityEffect(EntityEffect effectInstance) {
             Logger.Debug("EntityEffect {effectName} was registered.", effectInstance.GetType().FullName);
             _loadedEffects.Add(effectInstance);
-        }
-
-        private const string PARAMETER_WORLD      = "World";
-        private const string PARAMETER_VIEW       = "View";
-        private const string PARAMETER_PROJECTION = "Projection";
-
-        private Matrix _world, _view, _projection;
-
-        /// <summary>
-        /// The per-entity matrix.
-        /// </summary>
-        public Matrix World {
-            set {
-                if (SetProperty(ref _world, value)) {
-                    this.Parameters[PARAMETER_WORLD].SetValue(_world);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Representation of the active camera's look-at matrix.
-        /// </summary>
-        public Matrix View {
-            set {
-                if (SetProperty(ref _view, value)) {
-                    this.Parameters[PARAMETER_VIEW].SetValue(_view);
-                }
-            }
-        }
-
-        /// <summary>
-        /// The projection matrix created from the camera based on field of view and aspect ratio.
-        /// </summary>
-        public Matrix Projection {
-            set {
-                if (SetProperty(ref _projection, value)) {
-                    this.Parameters[PARAMETER_PROJECTION].SetValue(_projection);
-                }
-            }
         }
 
         #region ctors
