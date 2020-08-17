@@ -124,7 +124,7 @@
     <value>Abbrechen</value>
   </data>
   <data name="Action_Exit" xml:space="preserve">
-    <value>Verlassen</value>
+    <value>Verlassen {0}</value>
   </data>
   <data name="Options" xml:space="preserve">
     <value>Optionen</value>
@@ -133,6 +133,6 @@
     <value>Unbekannt</value>
   </data>
   <data name="Action_Restart" xml:space="preserve">
-    <value>Neustart</value>
+    <value>Neustart {0}</value>
   </data>
 </root>
