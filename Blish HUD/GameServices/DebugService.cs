@@ -5,19 +5,20 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using Blish_HUD.Debug;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
+using NLog;
 using NLog.Config;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
 
 namespace Blish_HUD {
-    public class DebugService:GameService {
+
+    public class DebugService : GameService {
 
         #region Logging
 
@@ -41,7 +42,7 @@ namespace Blish_HUD {
             // Init the Logger
             _logConfiguration = new LoggingConfiguration();
 
-            string headerLayout   = $"Blish HUD v{Program.OverlayVersion}";
+            string headerLayout = $"Blish HUD v{Program.OverlayVersion}";
 
             var logFile = new FileTarget("logfile") {
                 Layout            = $"{STRUCLOG_TIME} | {STRUCLOG_LEVEL} | {STRUCLOG_LOGGER} | {STRUCLOG_MESSAGE}{STRUCLOG_EXCEPTION}",
@@ -68,16 +69,18 @@ namespace Blish_HUD {
 
             _logConfiguration.AddTarget(asyncLogFile);
 
-            _logConfiguration.AddRule(ApplicationSettings.Instance.DebugEnabled 
-                                          ? NLog.LogLevel.Debug
-                                          : NLog.LogLevel.Info,
-                                      NLog.LogLevel.Fatal, asyncLogFile);
+            _logConfiguration.AddRule(
+                                      ApplicationSettings.Instance.DebugEnabled
+                                          ? LogLevel.Debug
+                                          : LogLevel.Info,
+                                      LogLevel.Fatal, asyncLogFile
+                                     );
 
             if (ApplicationSettings.Instance.DebugEnabled) {
                 AddDebugTarget(_logConfiguration);
             }
 
-            NLog.LogManager.Configuration = _logConfiguration;
+            LogManager.Configuration = _logConfiguration;
 
             Logger = Logger.GetLogger<DebugService>();
         }
@@ -87,7 +90,7 @@ namespace Blish_HUD {
         }
 
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
-            NLog.LogManager.ThrowExceptions = true;
+            LogManager.ThrowExceptions = true;
 
             var logDebug = new MethodCallTarget("logdebug") {
                 ClassName  = typeof(DebugService).AssemblyQualifiedName,
@@ -101,13 +104,13 @@ namespace Blish_HUD {
             };
 
             _logConfiguration.AddTarget(logDebug);
-            _logConfiguration.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logDebug);
+            _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, logDebug);
         }
 
         private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
             Input.DisableHooks();
 
-            var e = (Exception)args.ExceptionObject;
+            var e = (Exception) args.ExceptionObject;
 
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
         }
@@ -129,7 +132,6 @@ namespace Blish_HUD {
         private ConcurrentDictionary<string, DebugCounter> _funcTimes;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="func"></param>
         [Conditional("DEBUG")]
@@ -161,23 +163,25 @@ namespace Blish_HUD {
 
         #region Debug Overlay
 
+        public OverlayStrings OverlayTexts { get; private set; }
+
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
 
             spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.CurrentAverage, 0)}", new Vector2(debugLeft, 25), Color.Red);
 
             int i = 0;
+
             foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
-                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i++ * 25)), Color.Orange);
+                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + i++ * 25), Color.Orange);
             }
 
-            spriteBatch.DrawString(Content.DefaultFont14, $"3D Entities Displayed: {Graphics.World.Entities.Count}",              new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
-            spriteBatch.DrawString(Content.DefaultFont14, "Render Late: "            + (gameTime.IsRunningSlowly ? "Yes" : "No"), new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
-            spriteBatch.DrawString(Content.DefaultFont14, "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"),     new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
-            spriteBatch.DrawString(Content.DefaultFont14, "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume,   new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
+            foreach (Func<GameTime, string> func in this.OverlayTexts.Values) {
+                spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + i++ * 25), Color.Yellow);
+            }
         }
 
-#endregion
+        #endregion
 
         #region Service Implementation
 
@@ -191,15 +195,24 @@ namespace Blish_HUD {
 
         protected override void Load() {
             _funcTimes = new ConcurrentDictionary<string, DebugCounter>();
+
+            this.OverlayTexts = new OverlayStrings();
+            this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.Entities.Count}");
+            this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
+            this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
+            this.OverlayTexts.TryAdd("volume",      _ => "Average In-Game Volume: " + GameIntegration.Audio.AverageGameVolume);
         }
 
         protected override void Update(GameTime gameTime) {
             this.FrameCounter.Update(gameTime.GetElapsedSeconds());
         }
 
-        protected override void Unload() { /* NOOP */ }
+        protected override void Unload() {
+            /* NOOP */
+        }
 
         #endregion
 
     }
+
 }

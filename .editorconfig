@@ -8,6 +8,7 @@ tab_width=4
 indent_style=space
 indent_size=4
 tab_width=4
+csharp_prefer_braces=true:hint
 
 [*.{appxmanifest,build,config,csproj,dbml,discomap,dtd,json,jsproj,lsproj,njsproj,nuspec,proj,props,resjson,resw,resx,StyleCop,targets,tasks,vbproj,xml,xsd}]
 indent_style=space
