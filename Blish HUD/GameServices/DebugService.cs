@@ -163,7 +163,7 @@ namespace Blish_HUD {
 
         #region Debug Overlay
 
-        public ConcurrentDictionary<string, Func<GameTime, string>> OverlayTexts { get; private set; }
+        public OverlayStrings OverlayTexts { get; private set; }
 
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
@@ -196,7 +196,7 @@ namespace Blish_HUD {
         protected override void Load() {
             _funcTimes = new ConcurrentDictionary<string, DebugCounter>();
 
-            this.OverlayTexts = new ConcurrentDictionary<string, Func<GameTime, string>>();
+            this.OverlayTexts = new OverlayStrings();
             this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.Entities.Count}");
             this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
