@@ -48,8 +48,10 @@ namespace Blish_HUD.Pathing.Behaviors {
                                 this.TitleColor = Control.StandardColors.Red;
                                 break;
                             case "green":
-                            default:
                                 this.TitleColor = Color.FromNonPremultiplied(85, 221, 85, 255);
+                                break;
+                            default:
+                                if (ColorUtil.TryParseHex(attr.Value, out var cOut)) this.TitleColor = cOut;
                                 break;
                         }
                         colorSet = true;
