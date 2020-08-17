@@ -157,12 +157,6 @@ namespace Blish_HUD.Pathing.Entities {
             _vertexBuffer.SetData(this.VertexData);
         }
 
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
-
-            _sharedTrailEffect.Parameters["TotalMilliseconds"].SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
-        }
-
         public override void Draw(GraphicsDevice graphicsDevice) {
             if (this.TrailTexture == null || this.VertexData == null || this.VertexData.Length < 3) return;
 

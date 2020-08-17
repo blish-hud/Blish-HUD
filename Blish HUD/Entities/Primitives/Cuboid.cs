@@ -37,7 +37,7 @@ namespace Blish_HUD.Entities.Primitives {
         public Cuboid(Vector3 size) : base() {
             _verts = new VertexPositionTexture[24];
 
-            _renderEffect = (BasicEffect)StandardEffect.Clone();
+            _renderEffect = StandardEffect;
             _renderEffect.TextureEnabled = true;
             _renderEffect.VertexColorEnabled = false;
 
