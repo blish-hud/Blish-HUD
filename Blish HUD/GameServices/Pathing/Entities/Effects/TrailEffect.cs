@@ -42,12 +42,14 @@ namespace Blish_HUD.Pathing.Entities.Effects {
         private const string PARAMETER_FADEFAR     = "FadeFar";
         private const string PARAMETER_OPACITY     = "Opacity";
         private const string PARAMETER_TOTALLENGTH = "TotalLength";
+        private const string PARAMETER_TINTCOLOR   = "TintColor";
 
         private Texture2D _texture;
         private float     _flowSpeed;
         private float     _fadeNear, _fadeFar;
         private float     _opacity;
         private float     _totalLength;
+        private Color     _tintColor;
 
         public Texture2D Texture {
             get => _texture;
@@ -79,6 +81,11 @@ namespace Blish_HUD.Pathing.Entities.Effects {
             set => SetParameter(PARAMETER_TOTALLENGTH, ref _totalLength, value);
         }
 
+        public Color TintColor {
+            get => _tintColor;
+            set => SetParameter(PARAMETER_TINTCOLOR, ref _tintColor, value);
+        }
+
         #region ctors
 
         public TrailEffect(Effect cloneSource) : base(cloneSource) { /* NOOP */ }
@@ -89,13 +96,14 @@ namespace Blish_HUD.Pathing.Entities.Effects {
 
         #endregion
 
-        public void SetEntityState(Texture2D texture, float flowSpeed, float fadeNear, float fadeFar, float opacity, float totalLength) {
-            this.Texture = texture;
-            this.FlowSpeed = flowSpeed;
-            this.FadeNear = fadeNear;
-            this.FadeFar = fadeFar;
-            this.Opacity = opacity;
+        public void SetEntityState(Texture2D texture, float flowSpeed, float fadeNear, float fadeFar, float opacity, float totalLength, Color tintColor) {
+            this.Texture     = texture;
+            this.FlowSpeed   = flowSpeed;
+            this.FadeNear    = fadeNear;
+            this.FadeFar     = fadeFar;
+            this.Opacity     = opacity;
             this.TotalLength = totalLength;
+            this.TintColor   = tintColor;
         }
 
         protected override void Update(GameTime gameTime) {

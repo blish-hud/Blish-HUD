@@ -10,57 +10,71 @@ namespace Blish_HUD.Pathing.Entities {
         public const float TRAIL_WIDTH = 20 * 0.0254f;
 
         private float _animationSpeed = 1;
-
-        private float _fadeNear = 700;
-        private float _fadeFar = 900;
-        private float _scale = 1;
-        private float _opacity = 1;
+        private float _fadeNear       = 700;
+        private float _fadeFar        = 900;
+        private float _scale          = 1;
+        private Color _tintColor      = Color.White;
 
         public float AnimationSpeed {
             get => _animationSpeed;
             set {
-                if (SetProperty(ref _animationSpeed, value))
+                if (SetProperty(ref _animationSpeed, value)) {
                     _sections.ForEach(s => s.AnimationSpeed = value);
+                }
             }
         }
 
         public override Texture2D TrailTexture {
             get => _trailTexture;
             set {
-                if (SetProperty(ref _trailTexture, value))
+                if (SetProperty(ref _trailTexture, value)) {
                     _sections.ForEach(s => s.TrailTexture = value);
+                }
             }
         }
 
         public float FadeNear {
             get => _fadeNear;
             set {
-                if (SetProperty(ref _fadeNear, value))
+                if (SetProperty(ref _fadeNear, value)) {
                     _sections.ForEach(s => s.FadeNear = value);
+                }
             }
         }
 
         public float FadeFar {
             get => _fadeFar;
             set {
-                if (SetProperty(ref _fadeFar, value))
+                if (SetProperty(ref _fadeFar, value)) {
                     _sections.ForEach(s => s.FadeFar = value);
+                }
             }
         }
 
         public float Scale {
             get => _scale;
             set {
-                if (SetProperty(ref _scale, value))
+                if (SetProperty(ref _scale, value)) {
                     _sections.ForEach(s => s.Scale = value);
+                }
             }
         }
 
         public override float Opacity {
             get => _opacity;
             set {
-                if (SetProperty(ref _opacity, value))
+                if (SetProperty(ref _opacity, value)) {
                     _sections.ForEach(s => s.Opacity = value);
+                }
+            }
+        }
+
+        public Color TintColor {
+            get => _tintColor;
+            set {
+                if (SetProperty(ref _tintColor, value)) {
+                    _sections.ForEach(s => s.TintColor = value);
+                }
             }
         }
 

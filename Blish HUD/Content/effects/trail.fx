@@ -19,6 +19,8 @@ float FadeFar;
 float TotalLength;
 float FadeDistance;
 
+float4 TintColor;
+
 float4x4 PlayerViewProjection;
 float4x4 WorldViewProjection;
 Texture2D Texture : register(t0);
@@ -77,7 +79,7 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 	// Handle fade near
 	float nearDistFade = 1.0 - clamp(nearDist / (FadeFar - FadeNear), 0.0, 1.0);
     
-    output.Color = tex2D(TextureSampler, input.TextureCoordinate) * nearDistFade * input.Color * Opacity;
+    output.Color = tex2D(TextureSampler, input.TextureCoordinate) * TintColor * nearDistFade * input.Color * Opacity;
 	
     //clip(output.Color.a - 0.02);
 	

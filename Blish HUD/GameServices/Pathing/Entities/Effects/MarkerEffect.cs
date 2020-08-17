@@ -35,10 +35,13 @@ namespace Blish_HUD.Pathing.Entities.Effects {
         private const string PARAMETER_FADENEAR = "FadeNear";
         private const string PARAMETER_FADEFAR  = "FadeFar";
 
+        private const string PARAMETER_TINTCOLOR = "TintColor";
+
         private Matrix    _world;
         private Texture2D _texture;
         private float     _opacity;
         private float     _fadeNear, _fadeFar;
+        private Color     _tintColor;
 
         public Matrix World {
             get => _world;
@@ -65,6 +68,11 @@ namespace Blish_HUD.Pathing.Entities.Effects {
             set => SetParameter(PARAMETER_FADEFAR, ref _fadeFar, value);
         }
 
+        public Color TintColor {
+            get => _tintColor;
+            set => SetParameter(PARAMETER_TINTCOLOR, ref _tintColor, value);
+        }
+
         #region ctors
 
         public MarkerEffect(Effect baseEffect) : base(baseEffect) { }
@@ -75,12 +83,13 @@ namespace Blish_HUD.Pathing.Entities.Effects {
 
         #endregion
 
-        public void SetEntityState(Matrix world, Texture2D texture, float opacity, float fadeNear, float fadeFar) {
-            this.World    = world;
-            this.Texture  = texture;
-            this.Opacity  = opacity;
-            this.FadeNear = fadeNear;
-            this.FadeFar  = fadeFar;
+        public void SetEntityState(Matrix world, Texture2D texture, float opacity, float fadeNear, float fadeFar, Color tintColor) {
+            this.World     = world;
+            this.Texture   = texture;
+            this.Opacity   = opacity;
+            this.FadeNear  = fadeNear;
+            this.FadeFar   = fadeFar;
+            this.TintColor = tintColor;
         }
 
         /// <inheritdoc />

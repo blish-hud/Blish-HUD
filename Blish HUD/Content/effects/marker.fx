@@ -14,6 +14,8 @@ float Opacity;
 float FadeNear;
 float FadeFar;
 
+float4 TintColor;
+
 matrix World;
 matrix View;
 matrix Projection;
@@ -97,7 +99,7 @@ PixelShaderOutput PixelShaderFunction(VSOutput input) {
 	
 	float distanceFade = GetFadeNearFar(input);
     
-    output.Color = tex2D(TextureSampler, input.TextureCoordinate) * distanceFade * Opacity;
+    output.Color = tex2D(TextureSampler, input.TextureCoordinate) * TintColor * distanceFade * Opacity;
 	
     return output;
 }
