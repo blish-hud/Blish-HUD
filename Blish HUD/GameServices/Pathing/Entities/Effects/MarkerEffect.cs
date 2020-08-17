@@ -1,70 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing.Entities.Effects {
     public class MarkerEffect : Blish_HUD.Entities.Effects.EntityEffect {
 
         // Per-effect parameters
+        private const string PARAMETER_VIEW           = "View";
+        private const string PARAMETER_PROJECTION     = "Projection";
         private const string PARAMETER_PLAYERPOSITION = "PlayerPosition";
 
+        private Matrix  _view, _projection;
+        private Vector3 _playerPosition;
+
+        public Matrix View {
+            get => _view;
+            set => SetParameter(PARAMETER_VIEW, ref _view, value);
+        }
+
+        public Matrix Projection {
+            get => _projection;
+            set => SetParameter(PARAMETER_PROJECTION, ref _projection, value);
+        }
+
+        public Vector3 PlayerPosition {
+            get => _playerPosition;
+            set => SetParameter(PARAMETER_PLAYERPOSITION, ref _playerPosition, value);
+        }
+
         // Entity-unique parameters
+        private const string PARAMETER_WORLD   = "World";
         private const string PARAMETER_TEXTURE = "Texture";
         private const string PARAMETER_OPACITY = "Opacity";
 
         private const string PARAMETER_FADENEAR = "FadeNear";
         private const string PARAMETER_FADEFAR  = "FadeFar";
 
-        // Per-entity parameter
+        private Matrix    _world;
         private Texture2D _texture;
         private float     _opacity;
         private float     _fadeNear, _fadeFar;
 
+        public Matrix World {
+            get => _world;
+            set => SetParameter(PARAMETER_WORLD, ref _world, value);
+        }
+
         public Texture2D Texture {
-            set {
-                if (SetProperty(ref _texture, value)) {
-                    this.Parameters[PARAMETER_TEXTURE].SetValue(_texture);
-                }
-            }
+            get => _texture;
+            set => SetParameter(PARAMETER_TEXTURE, ref _texture, value);
         }
 
         public float Opacity {
-            set {
-                if (SetProperty(ref _opacity, value)) {
-                    this.Parameters[PARAMETER_OPACITY].SetValue(_opacity);
-                }
-            }
+            get => _opacity;
+            set => SetParameter(PARAMETER_OPACITY, ref _opacity, value);
         }
 
         public float FadeNear {
-            set {
-                if (SetProperty(ref _fadeNear, value)) {
-                    this.Parameters[PARAMETER_FADENEAR].SetValue(_fadeNear);
-                }
-            }
+            get => _fadeNear;
+            set => SetParameter(PARAMETER_FADENEAR, ref _fadeNear, value);
         }
 
         public float FadeFar {
-            set {
-                if (SetProperty(ref _fadeFar, value)) {
-                    this.Parameters[PARAMETER_FADEFAR].SetValue(_fadeFar);
-                }
-            }
+            get => _fadeFar;
+            set => SetParameter(PARAMETER_FADEFAR, ref _fadeFar, value);
         }
 
         #region ctors
 
-        /// <inheritdoc />
         public MarkerEffect(Effect baseEffect) : base(baseEffect) { }
 
-        /// <inheritdoc />
         private MarkerEffect(GraphicsDevice graphicsDevice, byte[] effectCode) : base(graphicsDevice, effectCode) { }
 
-        /// <inheritdoc />
         private MarkerEffect(GraphicsDevice graphicsDevice, byte[] effectCode, int index, int count) : base(graphicsDevice, effectCode, index, count) { }
 
         #endregion
@@ -79,7 +85,11 @@ namespace Blish_HUD.Pathing.Entities.Effects {
 
         /// <inheritdoc />
         protected override void Update(GameTime gameTime) {
-            this.Parameters[PARAMETER_PLAYERPOSITION].SetValue(GameService.Gw2Mumble.PlayerCharacter.Position);
+            this.PlayerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
+
+            // TODO: Move to Graphics pipeline
+            this.View       = GameService.Gw2Mumble.PlayerCamera.View;
+            this.Projection = GameService.Gw2Mumble.PlayerCamera.Projection;
         }
 
     }
