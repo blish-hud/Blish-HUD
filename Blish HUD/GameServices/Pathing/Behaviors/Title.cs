@@ -51,7 +51,9 @@ namespace Blish_HUD.Pathing.Behaviors {
                                 this.TitleColor = Color.FromNonPremultiplied(85, 221, 85, 255);
                                 break;
                             default:
-                                if (ColorUtil.TryParseHex(attr.Value, out var cOut)) this.TitleColor = cOut;
+                                if (ColorUtil.TryParseHex(attr.Value, out var cOut)) {
+                                    this.TitleColor = cOut;
+                                }
                                 break;
                         }
                         colorSet = true;
