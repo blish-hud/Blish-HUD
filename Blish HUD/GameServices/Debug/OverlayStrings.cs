@@ -23,7 +23,7 @@ namespace Blish_HUD.Debug {
         public void Add(string key, Func<GameTime, string> value) {
             _texts.TryAdd(key, value);
         }
-        
+
         public bool TryAdd(string key, Func<GameTime, string> value) {
             return _texts.TryAdd(key, value);
         }
