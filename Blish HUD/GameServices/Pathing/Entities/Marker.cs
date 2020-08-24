@@ -30,13 +30,14 @@ namespace Blish_HUD.Pathing.Entities {
 
         private VertexPositionTexture[] _verts;
 
-        private bool                        _autoResize = true;
-        private Vector2                     _size       = Vector2.One;
-        private float                       _scale      = 1f;
         private AsyncTexture2D              _texture;
+        private bool                        _autoResize         = true;
+        private Vector2                     _size               = Vector2.One;
+        private float                       _scale              = 1f;
         private BillboardVerticalConstraint _verticalConstraint = BillboardVerticalConstraint.CameraPosition;
         private float                       _fadeNear           = -1;
         private float                       _fadeFar            = -1;
+        private Color                       _tintColor          = Color.White;
 
         /// <summary>
         /// If set to true, the <see cref="Size"/> will automatically
@@ -81,6 +82,11 @@ namespace Blish_HUD.Pathing.Entities {
             set => SetProperty(ref _fadeFar, value);
         }
 
+        public Color TintColor {
+            get => _tintColor;
+            set => SetProperty(ref _tintColor, value);
+        }
+
         public AsyncTexture2D Texture {
             get => _texture;
             set {
@@ -96,8 +102,6 @@ namespace Blish_HUD.Pathing.Entities {
                 }
             }
         }
-
-        private Effect _markerEffect;
 
         private DynamicVertexBuffer _vertexBuffer;
 
@@ -163,7 +167,8 @@ namespace Blish_HUD.Pathing.Entities {
                                                _texture,
                                                _opacity,
                                                _fadeNear,
-                                               _fadeFar);
+                                               _fadeFar,
+                                               _tintColor);
 
             graphicsDevice.SetVertexBuffer(_vertexBuffer);
 

@@ -108,7 +108,7 @@ namespace Blish_HUD.Entities {
         public string BasicTitleText {
             get => _basicTitleTextBillboard?.Text ?? string.Empty;
             set {
-                _basicTitleTextBillboard      = _basicTitleTextBillboard ?? BuildTitleText();
+                _basicTitleTextBillboard ??= BuildTitleText();
                 _basicTitleTextBillboard.Text = value;
             }
         }
@@ -116,7 +116,7 @@ namespace Blish_HUD.Entities {
         public Color BasicTitleTextColor {
             get => _basicTitleTextBillboard?.TextColor ?? Color.White;
             set {
-                _basicTitleTextBillboard           = _basicTitleTextBillboard ?? BuildTitleText();
+                _basicTitleTextBillboard ??= BuildTitleText();
                 _basicTitleTextBillboard.TextColor = value;
             }
         }

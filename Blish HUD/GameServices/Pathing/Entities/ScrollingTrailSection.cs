@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Entities;
+using Blish_HUD.Pathing.Entities.Effects;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,19 +11,19 @@ namespace Blish_HUD.Pathing.Entities {
 
         #region Load Static
 
-        private static readonly Effect _basicTrailEffect;
+        private static readonly TrailEffect _sharedTrailEffect;
 
         static ScrollingTrailSection() {
-            _basicTrailEffect = BlishHud.ActiveContentManager.Load<Effect>("effects\\trail");
+            _sharedTrailEffect = new TrailEffect(GameService.Content.ContentManager.Load<Effect>("effects\\trail"));
         }
 
         #endregion
 
         private float _animationSpeed = 1;
-
-        private float _fadeNear = 10000;
-        private float _fadeFar  = 10000;
-        private float _scale    = 1;
+        private float _fadeNear       = 10000;
+        private float _fadeFar        = 10000;
+        private float _scale          = 1;
+        private Color _tintColor      = Color.White;
 
         private VertexPositionColorTexture[] VertexData { get; set; }
 
@@ -54,6 +55,11 @@ namespace Blish_HUD.Pathing.Entities {
         public float Scale {
             get => _scale;
             set => SetProperty(ref _scale, value);
+        }
+
+        public Color TintColor {
+            get => _tintColor;
+            set => SetProperty(ref _tintColor, value);
         }
         
         public ScrollingTrailSection() : base(null) { /* NOOP */ }
@@ -151,36 +157,23 @@ namespace Blish_HUD.Pathing.Entities {
             _vertexBuffer.SetData(this.VertexData);
         }
 
-        public override void Update(GameTime gameTime) {
-            base.Update(gameTime);
-
-            _basicTrailEffect.Parameters["TotalMilliseconds"].SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
-        }
-
         public override void Draw(GraphicsDevice graphicsDevice) {
             if (this.TrailTexture == null || this.VertexData == null || this.VertexData.Length < 3) return;
 
-            _basicTrailEffect.Parameters["WorldViewProjection"].SetValue(GameService.Gw2Mumble.PlayerCamera.WorldViewProjection);
-            _basicTrailEffect.Parameters["PlayerViewProjection"].SetValue(GameService.Gw2Mumble.PlayerCamera.PlayerView * GameService.Gw2Mumble.PlayerCamera.Projection);
-            _basicTrailEffect.Parameters["Texture"].SetValue(this.TrailTexture);
-            _basicTrailEffect.Parameters["FlowSpeed"].SetValue(this.AnimationSpeed);
-            _basicTrailEffect.Parameters["PlayerPosition"].SetValue(GameService.Gw2Mumble.PlayerCharacter.Position);
-            _basicTrailEffect.Parameters["FadeNear"].SetValue(this.FadeNear);
-            _basicTrailEffect.Parameters["FadeFar"].SetValue(this.FadeFar);
-            _basicTrailEffect.Parameters["Opacity"].SetValue(this.Opacity);
-            _basicTrailEffect.Parameters["TotalLength"].SetValue(20f);
+            _sharedTrailEffect.SetEntityState(_trailTexture,
+                                              _animationSpeed,
+                                              _fadeNear,
+                                              _fadeFar,
+                                              _opacity,
+                                              20f,
+                                              _tintColor);
 
             graphicsDevice.SetVertexBuffer(_vertexBuffer, 0);
 
-            foreach (EffectPass trailPass in _basicTrailEffect.CurrentTechnique.Passes) {
+            foreach (EffectPass trailPass in _sharedTrailEffect.CurrentTechnique.Passes) {
                 trailPass.Apply();
 
-                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, this._vertexBuffer.VertexCount - 2);
-
-                //graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip,
-                //                                  this.VertexData,
-                //                                  0,
-                //                                  this.VertexData.Length - 2);
+                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _vertexBuffer.VertexCount - 2);
             }
         }
 
