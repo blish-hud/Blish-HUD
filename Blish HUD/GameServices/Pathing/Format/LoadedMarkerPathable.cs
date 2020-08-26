@@ -50,6 +50,14 @@ namespace Blish_HUD.Pathing.Format {
             }
         }
 
+        public bool FadeCenter {
+            get => this.ManagedEntity.FadeCenter;
+            set {
+                this.ManagedEntity.FadeCenter = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string Text {
             get => _text;
             set => SetProperty(ref _text, value);
@@ -104,6 +112,17 @@ namespace Blish_HUD.Pathing.Format {
                 }
 
                 return false;
+            });
+
+            // Marker:FadeCenter
+            RegisterAttribute("fadeCenter", attribute => {
+                if (bool.TryParse(attribute.Value, out bool bOut)) {
+                    this.FadeCenter = bOut;
+                    return true;
+                } else {
+                    this.FadeCenter = false;
+                    return false;
+                }
             });
 
             // IMarker:Text
