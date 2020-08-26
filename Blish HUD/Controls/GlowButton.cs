@@ -72,6 +72,7 @@ namespace Blish_HUD.Controls {
             _glowEffect = _glowEffect ?? BlishHud.ActiveContentManager.Load<Effect>(@"effects\glow");
             _glowEffect.Parameters["TextureWidth"].SetValue((float)this.Width);
             _glowEffect.Parameters["GlowColor"].SetValue(_glowColor.ToVector4());
+            _glowEffect.Parameters["Opacity"].SetValue(this.Opacity);
 
             return _glowEffect;
         }

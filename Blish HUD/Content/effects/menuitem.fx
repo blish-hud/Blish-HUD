@@ -8,6 +8,7 @@
 #endif
 
 float Roller;
+float Opacity = 1.0f;
 
 sampler s0 = sampler_state
 {
@@ -44,7 +45,7 @@ float4 PixelShaderFunction(float4 Position : SV_POSITION, float4 Color : COLOR0,
         return control_clr;
     }
 
-    return overlay_clr;
+    return overlay_clr * Opacity;
 }
 
 technique
