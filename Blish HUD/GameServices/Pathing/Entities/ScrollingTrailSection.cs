@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing.Entities.Effects;
@@ -36,10 +37,7 @@ namespace Blish_HUD.Pathing.Entities {
 
         public override Texture2D TrailTexture {
             get => _trailTexture;
-            set {
-                if (SetProperty(ref _trailTexture, value))
-                    InitTrailPoints();
-            }
+            set => SetProperty(ref _trailTexture, value);
         }
 
         public float FadeNear {
@@ -96,6 +94,7 @@ namespace Blish_HUD.Pathing.Entities {
 
             // TacO has a minimum of 30, so we'll use 30
             _trailPoints = SetTrailResolution(_trailPoints, 30f);
+
 
             this.VertexData = new VertexPositionColorTexture[this.TrailPoints.Count * 2];
 
