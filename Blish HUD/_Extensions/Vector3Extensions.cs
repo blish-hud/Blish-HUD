@@ -29,7 +29,7 @@ namespace Blish_HUD {
         /// <param name="curvatureUpperBound">If <paramref name="smartSampling"/>  is true, sample <paramref name="upsampleCount"/> points between points with a curvature higher than this parameter.</param>
         /// <param name="upsampleCount">If <paramref name="smartSampling"/>  is true, the amount of points to upsample, between points with a curvature higher than <paramref name="curvatureUpperBound"/>.</param>
         public static List<Vector3> CreateHermiteCurve(this List<Vector3> points, float resolution = 0.15f, float tension = 0.5f,
-                                                       bool smartSampling = true, float curvatureLowerBound = 0.015f,
+                                                       bool smartSampling = true, float curvatureLowerBound = 0.05f,
                                                        float curvatureUpperBound = 2f, uint upsampleCount = 10) {
             List<Vector3> hermitePoints = new List<Vector3>();
 
@@ -90,6 +90,8 @@ namespace Blish_HUD {
 
             hermitePoints.Add(points.First());
 
+            var prevPoint = points.First();
+
             for (int k = 0; k < points.Count - 1; k++) {
 
                 p0 = points[k];
@@ -105,7 +107,7 @@ namespace Blish_HUD {
                 else
                     m1 = p1 - p0;
 
-                var numPoints = (uint)(SplineLength() / resolution);
+                var numPoints = (uint) (SplineLength() / resolution);
                 var kappa = 0.0f;
 
                 for (int i = 0; i < numPoints; i++) {
@@ -114,9 +116,12 @@ namespace Blish_HUD {
                     if (smartSampling)
                         kappa = GetCurvature(t);
 
-                    if (smartSampling && kappa < curvatureLowerBound) continue;
+                    var sampledPoint = h00(t) * p0 + h10(t) * m0 + h01(t) * p1 + h11(t) * m1;
 
-                    hermitePoints.Add(h00(t) * p0 + h10(t) * m0 + h01(t) * p1 + h11(t) * m1);
+                    if (smartSampling && kappa < curvatureLowerBound && (prevPoint - sampledPoint).Length() < 10) continue;
+
+                    prevPoint = sampledPoint;
+                    hermitePoints.Add(sampledPoint);
 
                     if (smartSampling && kappa > curvatureUpperBound) {
                         var t1 = (i + 1) * (1.0f / numPoints);
