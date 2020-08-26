@@ -19,8 +19,8 @@ Texture2D Mask;
 sampler MaskSample
 {
     Texture = (Mask);
-    AddressU = Clamp;
-    AddressV = Clamp;
+    /*AddressU = Clamp;
+    AddressV = Clamp;*/
 };
 
 Texture2D Overlay;
