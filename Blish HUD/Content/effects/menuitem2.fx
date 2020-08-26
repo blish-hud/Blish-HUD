@@ -10,6 +10,8 @@
 float Roller;
 float VerticalDraw;
 
+float Opacity = 1.0f;
+
 sampler s0 = sampler_state
 {
     AddressU = Clamp;
@@ -51,12 +53,12 @@ float4 PSScroll(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 Tex
         return float4(0, 0, 0, 0);
     }
 
-    return overlay_clr;
+    return overlay_clr * Opacity;
 }
 
 float4 PSControl(float4 Position : SV_POSITION, float4 Color : COLOR0, float2 TexCoords : TEXCOORD0) : COLOR0
 {
-    return tex2D(s0, TexCoords) * Color;
+    return tex2D(s0, TexCoords) * Color * Opacity;
 }
 
 

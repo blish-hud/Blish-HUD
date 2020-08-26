@@ -13,6 +13,7 @@ namespace Blish_HUD.Controls.Effects {
         private const string SPARAM_MASK                = "Mask";
         private const string SPARAM_OVERLAY             = "Overlay";
         private const string SPARAM_ROLLER              = "Roller";
+        private const string SPARAM_OPACITY             = "Opacity";
         private const float  DEFAULT_ANIMATION_DURATION = 0.5f;
 
         #region Static Persistant Effect
@@ -76,6 +77,7 @@ namespace Blish_HUD.Controls.Effects {
 
             _scrollEffect.Parameters[SPARAM_MASK].SetValue(GameService.Content.GetTexture("156072"));
             _scrollEffect.Parameters[SPARAM_OVERLAY].SetValue(GameService.Content.GetTexture("156071"));
+            _scrollEffect.Parameters[SPARAM_OPACITY].SetValue(assignedControl.Opacity);
 
             assignedControl.MouseEntered += AssignedControlOnMouseEntered;
             assignedControl.MouseLeft    += AssignedControlOnMouseLeft;
@@ -93,6 +95,8 @@ namespace Blish_HUD.Controls.Effects {
 
         private void AssignedControlOnMouseEntered(object sender, MouseEventArgs e) {
             if (!_enabled || _forceActive) return;
+
+            _scrollEffect.Parameters[SPARAM_OPACITY].SetValue(this.AssignedControl.Opacity);
 
             this.ScrollRoller = 0f;
 
