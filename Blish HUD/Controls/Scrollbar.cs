@@ -107,7 +107,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _associatedContainer, value);
         }
 
-        private int TrackLength => (_size.Y - _textureUpArrow.Height - _textureDownArrow.Height);
+        private int _containerContentDiff => _containerLowestContent - _associatedContainer.ContentRegion.Height;
+        private int TrackLength           => _size.Y - _textureUpArrow.Height - _textureDownArrow.Height;
 
         private int  _scrollingOffset = 0;
 
@@ -131,6 +132,15 @@ namespace Blish_HUD.Controls {
             _associatedContainer.MouseWheelScrolled += HandleWheelScroll;
         }
 
+        private double _lastClickTime;
+
+        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
+            base.OnLeftMouseButtonPressed(e);
+
+            this.ScrollFocus = GetScrollFocus(Input.Mouse.Position - this.AbsoluteBounds.Location);
+            _lastClickTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
+        }
+
         private void MouseOnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
             this.ScrollFocus = ClickFocus.None;
         }
@@ -141,13 +151,30 @@ namespace Blish_HUD.Controls {
             base.OnMouseWheelScrolled(e);
         }
 
+        private void HandleWheelScroll(object sender, MouseEventArgs e) {
+            // Don't scroll if the scrollbar isn't visible
+            if (!this.Visible || _scrollbarPercent > 0.99) return;
+
+            // Avoid scrolling nested panels
+            var ctrl = (Control)sender;
+            while (ctrl != _associatedContainer && ctrl != null) {
+                if (ctrl is Panel) return;
+                ctrl = ctrl.Parent;
+            }
+
+            if (e.MouseState.ScrollWheelValue == 0) return;
+
+            float normalScroll = Math.Sign(GameService.Input.Mouse.State.ScrollWheelValue);
+            ScrollAnimated((int)normalScroll * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
+        }
+
         private ClickFocus GetScrollFocus(Point mousePos) => mousePos switch {
             var point when _trackBounds.Contains(point) && !_barBounds.Contains(point) && _barBounds.Y < point.Y => ClickFocus.AboveBar,
             var point when _trackBounds.Contains(point) && !_barBounds.Contains(point) && _barBounds.Y > point.Y => ClickFocus.BelowBar,
-            var point when _barBounds.Contains(point)                             => ClickFocus.Bar,
-            var point when _upArrowBounds.Contains(point)                         => ClickFocus.UpArrow,
-            var point when _downArrowBounds.Contains(point)                       => ClickFocus.DownArrow,
-            _ => ClickFocus.None
+            var point when _barBounds.Contains(point)                                                            => ClickFocus.Bar,
+            var point when _upArrowBounds.Contains(point)                                                        => ClickFocus.UpArrow,
+            var point when _downArrowBounds.Contains(point)                                                      => ClickFocus.DownArrow,
+            _                                                                                                    => ClickFocus.None
         };
 
         private void HandleClickScroll(bool clicked) {
@@ -183,22 +210,10 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void HandleWheelScroll(object sender, MouseEventArgs e) {
-            // Don't scroll if the scrollbar isn't visible
-            if (!this.Visible || _scrollbarPercent > 0.99) return;
-
-            // Avoid scrolling nested panels
-            var ctrl = (Control) sender;
-            while (ctrl != _associatedContainer && ctrl != null) {
-                if (ctrl is Panel) return;
-                ctrl = ctrl.Parent;
-            }
-
-            if (e.MouseState.ScrollWheelValue == 0) return;
-
-            float normalScroll = Math.Sign(GameService.Input.Mouse.State.ScrollWheelValue);
-            ScrollAnimated((int) normalScroll * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
-
+        private void ScrollAnimated(int pixels) {
+            this.TargetScrollDistance = (_containerContentDiff * this.ScrollDistance + pixels) / _containerContentDiff;
+            _targetScrollDistanceAnim = Animation.Tweener
+                     .Tween(this, new { ScrollDistance = this.TargetScrollDistance }, 0.35f, overwrite: true).Ease(Ease.QuadOut);
         }
 
         protected override CaptureType CapturesInput() {
@@ -207,20 +222,6 @@ namespace Blish_HUD.Controls {
         
         private void UpdateAssocContainer() {
             AssociatedContainer.VerticalScrollOffset = (int)Math.Floor((_containerLowestContent - AssociatedContainer.ContentRegion.Height) * this.ScrollDistance);
-        }
-
-        private void ScrollAnimated(int pixels) {
-            this.TargetScrollDistance = (_containerContentDiff * this.ScrollDistance + pixels) / _containerContentDiff;
-            _targetScrollDistanceAnim = Animation.Tweener
-                     .Tween(this, new { ScrollDistance = this.TargetScrollDistance }, 0.35f, overwrite: true).Ease(Ease.QuadOut);
-        }
-
-        private double _lastClickTime;
-        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
-            base.OnLeftMouseButtonPressed(e);
-
-            this.ScrollFocus = GetScrollFocus(Input.Mouse.Position - this.AbsoluteBounds.Location);
-            _lastClickTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
         }
 
         public override void DoUpdate(GameTime gameTime) {
@@ -251,7 +252,6 @@ namespace Blish_HUD.Controls {
             _trackBounds     = new Rectangle(this.Width / 2 - _textureTrack.Width     / 2, _upArrowBounds.Bottom,                                                                             _textureTrack.Width,     this.TrackLength);
         }
 
-        private int _containerContentDiff { get => _containerLowestContent - _associatedContainer.ContentRegion.Height; }
         private int _containerLowestContent;
 
         private void RecalculateScrollbarSize() {
