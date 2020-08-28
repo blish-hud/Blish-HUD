@@ -9,11 +9,13 @@ namespace Blish_HUD.Pathing.Entities {
 
         public const float TRAIL_WIDTH = 20 * 0.0254f;
 
-        private float _animationSpeed = 1;
-        private float _fadeNear       = 700;
-        private float _fadeFar        = 900;
-        private float _scale          = 1;
-        private Color _tintColor      = Color.White;
+        private float _animationSpeed   = 1;
+        private float _fadeNear         = 700;
+        private float _fadeFar          = 900;
+        private float _playerFadeRadius = 0.25f;
+        private float _scale            = 1;
+        private bool _fadeCenter        = true;
+        private Color _tintColor        = Color.White;
 
         public float AnimationSpeed {
             get => _animationSpeed;
@@ -47,6 +49,23 @@ namespace Blish_HUD.Pathing.Entities {
             set {
                 if (SetProperty(ref _fadeFar, value)) {
                     _sections.ForEach(s => s.FadeFar = value);
+                }
+            }
+        }
+
+        public float PlayerFadeRadius {
+            get => _playerFadeRadius;
+            set {
+                if (SetProperty(ref _playerFadeRadius, value)) {
+                    _sections.ForEach(s => s.PlayerFadeRadius = value);
+                }
+            }
+        }
+        public bool FadeCenter {
+            get => _fadeCenter;
+            set {
+                if (SetProperty(ref _fadeCenter, value)) {
+                    _sections.ForEach(s => s.FadeCenter = value);
                 }
             }
         }
@@ -99,12 +118,14 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         public void AddSection(ScrollingTrailSection newSection) {
-            newSection.AnimationSpeed = _animationSpeed;
-            newSection.FadeFar = _fadeFar;
-            newSection.FadeNear = _fadeNear;
-            newSection.Scale = _scale;
-            newSection.TrailTexture = _trailTexture;
-            newSection.Opacity = _opacity;
+            newSection.AnimationSpeed   = _animationSpeed;
+            newSection.FadeFar          = _fadeFar;
+            newSection.FadeNear         = _fadeNear;
+            newSection.FadeCenter       = _fadeCenter;
+            newSection.PlayerFadeRadius = _playerFadeRadius;
+            newSection.Scale            = _scale;
+            newSection.TrailTexture     = _trailTexture;
+            newSection.Opacity          = _opacity;
 
             _sections.Add(newSection);
         }
@@ -115,7 +136,7 @@ namespace Blish_HUD.Pathing.Entities {
 
         public override void Update(GameTime gameTime) {
             base.Update(gameTime);
-
+            
             _sections.ForEach(s => s.Update(gameTime));
         }
 

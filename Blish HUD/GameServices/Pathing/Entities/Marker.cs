@@ -21,22 +21,26 @@ namespace Blish_HUD.Pathing.Entities {
         #region Load Static
 
         private static readonly MarkerEffect _sharedMarkerEffect;
+        private static readonly Texture2D _fadeTexture;
 
         static Marker() {
             _sharedMarkerEffect = new MarkerEffect(BlishHud.ActiveContentManager.Load<Effect>(@"effects\marker"));
+            _fadeTexture = GameService.Content.GetTexture("uniformclouds_blur30");
         }
 
         #endregion
 
         private VertexPositionTexture[] _verts;
+        private AsyncTexture2D _texture;
 
-        private AsyncTexture2D              _texture;
-        private bool                        _autoResize         = true;
+        private BillboardVerticalConstraint _verticalConstraint = BillboardVerticalConstraint.CameraPosition;
         private Vector2                     _size               = Vector2.One;
         private float                       _scale              = 1f;
-        private BillboardVerticalConstraint _verticalConstraint = BillboardVerticalConstraint.CameraPosition;
         private float                       _fadeNear           = -1;
         private float                       _fadeFar            = -1;
+        private float                       _playerFadeRadius   = 0.25f;
+        private bool                        _fadeCenter         = true;
+        private bool                        _autoResize         = true;
         private Color                       _tintColor          = Color.White;
 
         /// <summary>
@@ -80,6 +84,16 @@ namespace Blish_HUD.Pathing.Entities {
         public float FadeFar {
             get => Math.Max(_fadeNear, _fadeFar);
             set => SetProperty(ref _fadeFar, value);
+        }
+
+        public bool FadeCenter {
+            get => _fadeCenter;
+            set => SetProperty(ref _fadeCenter, value);
+        }
+
+        public float PlayerFadeRadius {
+            get => _playerFadeRadius;
+            set => SetProperty(ref _playerFadeRadius, value);
         }
 
         public Color TintColor {
@@ -128,10 +142,10 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         private void RecalculateSize(Vector2 newSize, float scale) {
-            _verts[0] = new VertexPositionTexture(new Vector3(0,                 0,                 0),                    new Vector2(1, 1));
-            _verts[1] = new VertexPositionTexture(new Vector3(newSize.X * scale, 0,                 0),                    new Vector2(0, 1));
-            _verts[2] = new VertexPositionTexture(new Vector3(0,                 newSize.Y * scale, 0),                    new Vector2(1, 0));
-            _verts[3] = new VertexPositionTexture(new Vector3(newSize.X                    * scale, newSize.Y * scale, 0), new Vector2(0, 0));
+            _verts[0] = new VertexPositionTexture(new Vector3(0,                 0,                 0), new Vector2(1, 1));
+            _verts[1] = new VertexPositionTexture(new Vector3(newSize.X * scale, 0,                 0), new Vector2(0, 1));
+            _verts[2] = new VertexPositionTexture(new Vector3(0,                 newSize.Y * scale, 0), new Vector2(1, 0));
+            _verts[3] = new VertexPositionTexture(new Vector3(newSize.X * scale, newSize.Y * scale, 0), new Vector2(0, 0));
 
             _vertexBuffer.SetData(_verts);
         }
@@ -168,6 +182,9 @@ namespace Blish_HUD.Pathing.Entities {
                                                _opacity,
                                                _fadeNear,
                                                _fadeFar,
+                                               _playerFadeRadius,
+                                               _fadeCenter,
+                                               _fadeTexture,
                                                _tintColor);
 
             graphicsDevice.SetVertexBuffer(_vertexBuffer);
@@ -186,7 +203,7 @@ namespace Blish_HUD.Pathing.Entities {
 
             float xdist = screenPosition.X - e.MouseState.Position.X;
             float ydist = screenPosition.Y - e.MouseState.Position.Y;
-            
+
             // Z < 1 means that the point is in front of the camera, not behind it
             _mouseOver = screenPosition.Z < 1 && xdist < 2 && ydist < 2;
         }

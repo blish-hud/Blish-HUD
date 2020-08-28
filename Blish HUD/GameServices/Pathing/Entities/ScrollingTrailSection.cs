@@ -13,31 +13,35 @@ namespace Blish_HUD.Pathing.Entities {
         #region Load Static
 
         private static readonly TrailEffect _sharedTrailEffect;
+        private static readonly Texture2D _fadeTexture;
 
         static ScrollingTrailSection() {
             _sharedTrailEffect = new TrailEffect(GameService.Content.ContentManager.Load<Effect>("effects\\trail"));
+            _fadeTexture = GameService.Content.GetTexture("uniformclouds_blur30");
         }
 
         #endregion
 
-        private float _animationSpeed = 1;
-        private float _fadeNear       = 10000;
-        private float _fadeFar        = 10000;
-        private float _scale          = 1;
-        private Color _tintColor      = Color.White;
+        private float _animationSpeed   = 1;
+        private float _fadeNear         = 10000;
+        private float _fadeFar          = 10000;
+        private float _scale            = 1;
+        private float _playerFadeRadius = 0.25f;
+        private bool _fadeCenter        = true;
+        private Color _tintColor        = Color.White;
 
         private VertexPositionColorTexture[] VertexData { get; set; }
 
         private VertexBuffer _vertexBuffer;
 
-        public float AnimationSpeed {
-            get => _animationSpeed;
-            set => SetProperty(ref _animationSpeed, value);
-        }
-
         public override Texture2D TrailTexture {
             get => _trailTexture;
             set => SetProperty(ref _trailTexture, value);
+        }
+
+        public float AnimationSpeed {
+            get => _animationSpeed;
+            set => SetProperty(ref _animationSpeed, value);
         }
 
         public float FadeNear {
@@ -53,6 +57,16 @@ namespace Blish_HUD.Pathing.Entities {
         public float Scale {
             get => _scale;
             set => SetProperty(ref _scale, value);
+        }
+
+        public float PlayerFadeRadius {
+            get => _playerFadeRadius;
+            set => SetProperty(ref _playerFadeRadius, value);
+        }
+
+        public bool FadeCenter {
+            get => _fadeCenter;
+            set => SetProperty(ref _fadeCenter, value);
         }
 
         public Color TintColor {
@@ -164,7 +178,9 @@ namespace Blish_HUD.Pathing.Entities {
                                               _fadeNear,
                                               _fadeFar,
                                               _opacity,
-                                              20f,
+                                              _playerFadeRadius,
+                                              _fadeCenter,
+                                              _fadeTexture,
                                               _tintColor);
 
             graphicsDevice.SetVertexBuffer(_vertexBuffer, 0);
