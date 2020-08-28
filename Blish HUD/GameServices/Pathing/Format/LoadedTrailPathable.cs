@@ -35,6 +35,14 @@ namespace Blish_HUD.Pathing.Format {
             }
         }
 
+        public bool FadeCenter {
+            get => this.ManagedEntity.FadeCenter;
+            set {
+                this.ManagedEntity.FadeCenter = value;
+                OnPropertyChanged();
+            }
+        }
+
         public LoadedTrailPathable(PathableResourceManager pathableContext) : base(new ScrollingTrail(), pathableContext) { }
 
         protected override void PrepareAttributes() {
@@ -53,6 +61,16 @@ namespace Blish_HUD.Pathing.Format {
                                   return false;
                               });
 
+            // ScrollingTrail:FadeCenter
+            RegisterAttribute("fadeCenter", attribute => {
+                if (bool.TryParse(attribute.Value, out bool bOut)) {
+                    this.FadeCenter = bOut;
+                    return true;
+                } else {
+                    this.FadeCenter = false;
+                    return false;
+                }
+            });
         }
 
         public override void OnLoading(EventArgs e) {
