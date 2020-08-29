@@ -143,7 +143,7 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         public void AddSection(List<Vector3> newSectionPoints) {
-            AddSection(new ScrollingTrailSection(newSectionPoints));
+            AddSection(new ScrollingTrailSection(newSectionPoints) { PostProcessFunctions = _postProcessFunctions });
         }
 
         public override void Update(GameTime gameTime) {

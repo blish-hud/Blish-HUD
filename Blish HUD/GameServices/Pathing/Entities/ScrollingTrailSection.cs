@@ -75,7 +75,7 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         public List<Func<List<Vector3>, List<Vector3>>> PostProcessFunctions {
-            get => _postProcessFunctions;
+            get => _postProcessFunctions ??= new List<Func<List<Vector3>, List<Vector3>>>();
             set {
                 if (SetProperty(ref _postProcessFunctions, value))
                     InitTrailPoints();
@@ -87,18 +87,20 @@ namespace Blish_HUD.Pathing.Entities {
         public ScrollingTrailSection(List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
 
 
-        protected override void PostProcess() {
-            foreach(var k in PostProcessFunctions ??= new List<Func<List<Vector3>, List<Vector3>>>()) {
-                _trailPoints = k.Invoke(_trailPoints);
+        protected override List<Vector3> PostProcess() {
+            var tempPoints = _trailPoints;
+            foreach(var k in PostProcessFunctions) {
+                tempPoints = k.Invoke(tempPoints);
             }
+            return tempPoints;
         }
 
         protected override void InitTrailPoints() {
             if (!_trailPoints.Any()) return;
             
-            PostProcess();
+            var trailPoints = PostProcess();
 
-            this.VertexData = new VertexPositionColorTexture[this.TrailPoints.Count * 2];
+            this.VertexData = new VertexPositionColorTexture[trailPoints.Count * 2];
 
             float imgScale = ScrollingTrail.TRAIL_WIDTH;
 
@@ -106,11 +108,11 @@ namespace Blish_HUD.Pathing.Entities {
 
             var offsetDirection = new Vector3(0, 0, -1);
 
-            var currPoint = this.TrailPoints[0];
+            var currPoint = trailPoints[0];
             Vector3 offset = Vector3.Zero;
 
-            for (int i = 0; i < this.TrailPoints.Count - 1; i++) {
-                var nextPoint = this.TrailPoints[i + 1];
+            for (int i = 0; i < trailPoints.Count - 1; i++) {
+                var nextPoint = trailPoints[i + 1];
 
                 var pathDirection = nextPoint - currPoint;
 
@@ -151,8 +153,8 @@ namespace Blish_HUD.Pathing.Entities {
             var fleftPoint  = currPoint + (offset * imgScale);
             var frightPoint = currPoint + (offset * -imgScale);
 
-            this.VertexData[this.TrailPoints.Count * 2 - 1] = new VertexPositionColorTexture(fleftPoint,  Color.White, new Vector2(0f, pastDistance / (imgScale * 2) - 1));
-            this.VertexData[this.TrailPoints.Count * 2 - 2] = new VertexPositionColorTexture(frightPoint, Color.White, new Vector2(1f, pastDistance / (imgScale * 2) - 1));
+            this.VertexData[trailPoints.Count * 2 - 1] = new VertexPositionColorTexture(fleftPoint,  Color.White, new Vector2(0f, pastDistance / (imgScale * 2) - 1));
+            this.VertexData[trailPoints.Count * 2 - 2] = new VertexPositionColorTexture(frightPoint, Color.White, new Vector2(1f, pastDistance / (imgScale * 2) - 1));
 
             _vertexBuffer = new VertexBuffer(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, this.VertexData.Length, BufferUsage.WriteOnly);
             _vertexBuffer.SetData(this.VertexData);
