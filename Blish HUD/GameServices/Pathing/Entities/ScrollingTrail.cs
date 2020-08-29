@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -97,6 +98,16 @@ namespace Blish_HUD.Pathing.Entities {
             }
         }
 
+        private List<Func<List<Vector3>, List<Vector3>>> _postProcessFunctions;
+        public List<Func<List<Vector3>, List<Vector3>>> PostProcessFunctions {
+            get => _postProcessFunctions;
+            set {
+                if (SetProperty(ref _postProcessFunctions, value)) {
+                    _sections.ForEach(s => s.PostProcessFunctions = value);
+                }
+            }
+        }
+
         private readonly List<ScrollingTrailSection> _sections;
 
         public ScrollingTrail(List<List<Vector3>> trailSections) {
@@ -118,14 +129,15 @@ namespace Blish_HUD.Pathing.Entities {
         }
 
         public void AddSection(ScrollingTrailSection newSection) {
-            newSection.AnimationSpeed   = _animationSpeed;
-            newSection.FadeFar          = _fadeFar;
-            newSection.FadeNear         = _fadeNear;
-            newSection.FadeCenter       = _fadeCenter;
-            newSection.PlayerFadeRadius = _playerFadeRadius;
-            newSection.Scale            = _scale;
-            newSection.TrailTexture     = _trailTexture;
-            newSection.Opacity          = _opacity;
+            newSection.AnimationSpeed       = _animationSpeed;
+            newSection.FadeFar              = _fadeFar;
+            newSection.FadeNear             = _fadeNear;
+            newSection.FadeCenter           = _fadeCenter;
+            newSection.PlayerFadeRadius     = _playerFadeRadius;
+            newSection.Scale                = _scale;
+            newSection.TrailTexture         = _trailTexture;
+            newSection.Opacity              = _opacity;
+            newSection.PostProcessFunctions = _postProcessFunctions;
 
             _sections.Add(newSection);
         }

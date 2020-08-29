@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Blish_HUD.Entities;
 using Blish_HUD.Pathing.Entities.Effects;
 using Blish_HUD.Pathing.Trails;
 using Microsoft.Xna.Framework;
@@ -33,6 +32,7 @@ namespace Blish_HUD.Pathing.Entities {
         private VertexPositionColorTexture[] VertexData { get; set; }
 
         private VertexBuffer _vertexBuffer;
+        private List<Func<List<Vector3>, List<Vector3>>> _postProcessFunctions;
 
         public override Texture2D TrailTexture {
             get => _trailTexture;
@@ -73,42 +73,30 @@ namespace Blish_HUD.Pathing.Entities {
             get => _tintColor;
             set => SetProperty(ref _tintColor, value);
         }
-        
+
+        public List<Func<List<Vector3>, List<Vector3>>> PostProcessFunctions {
+            get => _postProcessFunctions;
+            set {
+                if (SetProperty(ref _postProcessFunctions, value))
+                    InitTrailPoints();
+            }
+        }
+
         public ScrollingTrailSection() : base(null) { /* NOOP */ }
 
         public ScrollingTrailSection(List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
 
-        private List<Vector3> SetTrailResolution(List<Vector3> trailPoints, float pointResolution) {
-            List<Vector3> tempTrail = new List<Vector3>();
 
-            var lstPoint = trailPoints[0];
-
-            for (int i = 0; i < trailPoints.Count; i++) {
-                var dist = Vector3.Distance(lstPoint, trailPoints[i]);
-
-                var s   = dist / pointResolution;
-                var inc = 1    / s;
-
-                for (float v = inc; v < s - inc; v += inc) {
-                    var nPoint = Vector3.Lerp(lstPoint, _trailPoints[i], v / s);
-
-                    tempTrail.Add(nPoint);
-                }
-
-                tempTrail.Add(trailPoints[i]);
-
-                lstPoint = trailPoints[i];
+        protected override void PostProcess() {
+            foreach(var k in PostProcessFunctions ??= new List<Func<List<Vector3>, List<Vector3>>>()) {
+                _trailPoints = k.Invoke(_trailPoints);
             }
-
-            return tempTrail;
         }
 
         protected override void InitTrailPoints() {
             if (!_trailPoints.Any()) return;
-
-            // TacO has a minimum of 30, so we'll use 30
-            _trailPoints = SetTrailResolution(_trailPoints, 30f);
-
+            
+            PostProcess();
 
             this.VertexData = new VertexPositionColorTexture[this.TrailPoints.Count * 2];
 

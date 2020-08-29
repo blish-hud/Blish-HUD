@@ -47,6 +47,8 @@ namespace Blish_HUD.Pathing.Entities {
             InitTrailPoints();
         }
 
+        protected virtual void PostProcess() { }
+
         protected virtual void InitTrailPoints() {
             _renderEffect ??= StandardEffect;
             _renderEffect.VertexColorEnabled = true;
