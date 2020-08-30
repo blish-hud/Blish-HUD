@@ -175,45 +175,48 @@ namespace Blish_HUD {
                 0,
                 vectors.Count - 1
             };
-            Recursive(vectors, error, 0, vectors.Count - 1, keep);
+
+            void Recursive(int first, int last) {
+                if (last - first + 1 < 3) {
+                    return;
+                }
+
+                var vFirst = vectors[first];
+                var vLast  = vectors[last];
+
+                var   lastToFirst = vLast - vFirst;
+                float length      = lastToFirst.Length();
+                float maxDist     = error;
+                int   split       = 0;
+
+                for (int i = first + 1; i < last; i++) {
+                    var v = vectors[i];
+
+                    // distance to line vFirst -> vLast
+                    float dist = Vector3.Cross(vFirst - v, lastToFirst).Length() / length;
+
+                    if (dist < maxDist) continue;
+
+                    maxDist = dist;
+                    split   = i;
+                }
+
+                if (split == 0) return;
+
+                keep.Add(split);
+                var tasks = new Task[2];
+                tasks[0] = Task.Run(() => Recursive(first, split));
+                tasks[1] = Task.Run(() => Recursive(split, last));
+
+                foreach (var task in tasks) {
+                    task.Wait();
+                }
+            }
+
+            Recursive(0, vectors.Count - 1);
             List<int> keepList = keep.ToList();
             keepList.Sort();
             return keepList.Select(i => vectors[i]).ToList();
-        }
-
-        private static void Recursive(IReadOnlyList<Vector3> vectors, float error, int first, int last, ConcurrentBag<int> keep) {
-            if (last - first + 1 < 3) {
-                return;
-            }
-
-            var vFirst = vectors[first];
-            var vLast  = vectors[last];
-
-            var lastToFirst = vLast - vFirst;
-            float length           = lastToFirst.Length();
-            float maxDist = error;
-            int split   = 0;
-
-            for (int i = first + 1; i < last; i++) {
-                var v = vectors[i];
-                // distance to line vFirst -> vLast
-                float dist = Vector3.Cross(vFirst - v, lastToFirst).Length() / length;
-
-                if (dist < maxDist) continue;
-
-                maxDist = dist;
-                split   = i;
-            }
-
-            if (split == 0) return;
-
-            keep.Add(split);
-            var tasks = new Task[2];
-            tasks[0] = Task.Run(() => Recursive(vectors, error, first, split, keep));
-            tasks[1] = Task.Run(() => Recursive(vectors, error, split, last,  keep));
-            foreach (var task in tasks) {
-                task.Wait();
-            }
         }
     }
 }
