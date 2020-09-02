@@ -18,6 +18,31 @@ namespace Blish_HUD {
             return $"X: {vector.X:0,0} Y: {vector.Y:0,0} Z: {vector.Z:0,0}";
         }
 
+        public static List<Vector3> SetResolution(this List<Vector3> points, float pointResolution) {
+            List<Vector3> tempPoints = new List<Vector3>();
+     
+            var lstPoint = points[0];
+
+            for (int i = 0; i < points.Count; i++) {
+                var dist = Vector3.Distance(lstPoint, points[i]);
+
+                var s = dist / pointResolution;
+                var inc = 1 / s;
+
+                for (float v = inc; v < s - inc; v += inc) {
+                    var nPoint = Vector3.Lerp(lstPoint, points[i], v / s);
+
+                    tempPoints.Add(nPoint);
+                }
+
+                tempPoints.Add(points[i]);
+
+                lstPoint = points[i];
+            }
+
+            return tempPoints;
+        }
+
         /// <summary>
         /// Creates a list of points sampled semi-equidistant along the Cubic-Hermite interpolated curve from a list of points.
         /// </summary>
