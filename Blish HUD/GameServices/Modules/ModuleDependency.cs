@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SemVer;
+using Range = SemVer.Range;
 
 namespace Blish_HUD.Modules {
 
