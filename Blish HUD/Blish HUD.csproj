@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Platforms>x64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>WinExe</OutputType>
@@ -9,6 +9,7 @@
     <RootNamespace>Blish_HUD</RootNamespace>
     <ApplicationIcon>blishraster2_0dw_icon.ico</ApplicationIcon>
     <MonoGamePlatform>Windows</MonoGamePlatform>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -201,18 +202,22 @@
     <PackageReference Include="Humanizer.Core.fr" Version="2.6.2" PrivateAssets="all" />
     <PackageReference Include="JsonSubTypes" Version="1.6.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
-    <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.9" PrivateAssets="all" />
-    <PackageReference Include="MonoGame.Extended" Version="[3.7.0]" />
-    <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="3.7.0" PrivateAssets="all" />
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="[3.7.1.189]" />
-    <PackageReference Include="Newtonsoft.Json" Version="[12.0.2]" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" PrivateAssets="all" />
+    <PackageReference Include="MonoGame.Extended" Version="3.8.*" />
+    <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="3.8.*" PrivateAssets="all" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="all" />
     <PackageReference Include="Octokit" Version="0.32.0" PrivateAssets="all" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" PrivateAssets="all" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DebugHelperLib\DebugHelperLib.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\DebugHelperLib\DebugHelperLib.csproj" PrivateAssets="all">
+      <OutputItemType>Content</OutputItemType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </ProjectReference>
     <ProjectReference Include="..\DebugHelper\DebugHelper.csproj" PrivateAssets="all">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Content</OutputItemType>

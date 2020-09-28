@@ -1,13 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Blish_HUD.DebugHelperLib</RootNamespace>
     <AssemblyName>Blish HUD.DebugHelperLib</AssemblyName>
     <OutputType>Library</OutputType>
     <Platforms>x64</Platforms>
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
