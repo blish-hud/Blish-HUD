@@ -173,7 +173,8 @@ namespace Blish_HUD {
             // Get process from Mumble if it is defined
             // otherwise just get the first instance running
             this.Gw2Process = GetMumbleSpecifiedGw2Process()
-                           ?? GetDefaultGw2Process();
+                           ?? GetDefaultGw2ProcessById()
+                           ?? GetDefaultGw2ProcessByName();
 
             if (this.Gw2IsRunning) {
                 try {
@@ -193,21 +194,35 @@ namespace Blish_HUD {
             }
         }
 
-        private Process GetMumbleSpecifiedGw2Process() {
-            if (Gw2Mumble.IsAvailable) {
-                try {
-                    return Process.GetProcessById((int) Gw2Mumble.Info.ProcessId);
-                } catch (ArgumentException) {
-                    Logger.Debug("Mumble reported PID {pid} which did not correlate to an active process.", Gw2Mumble.Info.ProcessId);
-                } catch (InvalidOperationException) {
-                    Logger.Debug("Mumble reported PID {pid} failed to return a process.", Gw2Mumble.Info.ProcessId);
-                }
+        private Process GetGw2ProcessByPID(int pid, string src) {
+            try {
+                return Process.GetProcessById(pid);
+            } catch (ArgumentException) {
+                Logger.Debug("{src} {pid} which did not correlate to an active process.", src, pid);
+            } catch (InvalidOperationException) {
+                Logger.Debug("{src} {pid} failed to return a process.", src, pid);
             }
 
             return null;
         }
 
-        private Process GetDefaultGw2Process() {
+        private Process GetMumbleSpecifiedGw2Process() {
+            if (Gw2Mumble.IsAvailable) {
+                return GetGw2ProcessByPID((int) Gw2Mumble.Info.ProcessId, "Mumble reported PID");
+            }
+
+            return null;
+        }
+
+        private Process GetDefaultGw2ProcessById() {
+            if (ApplicationSettings.Instance.ProcessId != 0) {
+                return GetGw2ProcessByPID(ApplicationSettings.Instance.ProcessId, "PID specified by --pid");
+            }
+
+            return null;
+        }
+
+        private Process GetDefaultGw2ProcessByName() {
             var gw2Processes = new Process[0];
 
             if (ApplicationSettings.Instance.ProcessName != null) {

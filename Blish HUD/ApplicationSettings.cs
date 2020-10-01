@@ -37,6 +37,12 @@ namespace Blish_HUD {
         #region Game Integration
 
         [
+            OptionParameter("pid", 'P'),
+            Help("The PID of the process to overlay.")
+        ]
+        public int ProcessId { get; private set; } = 0;
+
+        [
             OptionParameter("process", 'p'),
             Help("The name of the process to overlay (without '.exe').")
         ]
