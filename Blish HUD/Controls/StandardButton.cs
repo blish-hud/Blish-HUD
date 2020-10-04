@@ -1,6 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Content;
 using Blish_HUD.Input;
+using Glide;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -65,24 +66,23 @@ namespace Blish_HUD.Controls {
 
             this.Size = new Point(DEFAULT_CONTROL_WIDTH, STANDARD_CONTROL_HEIGHT);
 
-            InitAnim();
-        }
-
-        private void InitAnim() {
-            // TODO: Convert button animation from old animation service to glide library
-            _animHover = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9, AnimationService.EasingMethod.Linear);
+            (_animIn = GameService.Animation.Tweener.Tween(this, new { AnimationState = 8 }, /*ANIM_FRAME_TIME * 9*/ .7f).Repeat()).Pause();
+            
+            _animIn.OnComplete(() => _animIn.Pause());
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            _animHover?.Start();
+            //_animHover?.Start();
+            _animIn.Reverse().Resume();
 
             base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            if (_animHover != null) {
-                _animHover.Reverse();
-                _animHover.AnimationCompleted += delegate { InitAnim(); };
+            if (_animIn != null) {
+                _animIn.Resume();
+                //_animHover.AnimationCompleted += delegate { InitAnim(); };
+                //_animHover.OnComplete(() => _animHover = null);
             }
 
             base.OnMouseLeft(e);
@@ -98,7 +98,10 @@ namespace Blish_HUD.Controls {
         private const int ATLAS_SPRITE_HEIGHT = 20;
         private const int ANIM_FRAME_TIME = 300 / 9;
 
-        private EaseAnimation _animHover;
+        public int AnimationState { get; set; } = 0;
+
+        private Tween _animIn;
+        private Tween _animOut;
 
         private Rectangle _layoutIconBounds = Rectangle.Empty;
         private Rectangle _layoutTextBounds = Rectangle.Empty;
@@ -125,27 +128,13 @@ namespace Blish_HUD.Controls {
             _layoutTextBounds = new Rectangle(textLeft, 0, _size.X - textLeft, _size.Y);
         }
 
-        public override void DoUpdate(GameTime gameTime) {
-            if (_enabled && this.MouseOver && _animHover == null) {
-                _animHover = GameService.Animation.Tween(0, 8, ANIM_FRAME_TIME * 9 * (this.Width / ATLAS_SPRITE_WIDTH), AnimationService.EasingMethod.Linear);
-            }
-
-            if (_animHover != null) {
-                _activeAtlasRegion = new Rectangle(_animHover.CurrentValueInt * ATLAS_SPRITE_WIDTH, 0, ATLAS_SPRITE_WIDTH, ATLAS_SPRITE_HEIGHT);
-                
-                if (_animHover.Active) Invalidate();
-            }
-        }
-
-        private Rectangle _activeAtlasRegion = new Rectangle(0, 0, 350, 20);
-
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Button Texture
             if (_enabled) {
                 spriteBatch.DrawOnCtrl(this,
                                        _textureButtonIdle,
                                        new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
-                                       _activeAtlasRegion);
+                                       new Rectangle(this.AnimationState * ATLAS_SPRITE_WIDTH, 0, ATLAS_SPRITE_WIDTH, ATLAS_SPRITE_HEIGHT));
             } else { 
                 // TODO: Use the actual button texture instead
                 spriteBatch.DrawOnCtrl(this,
