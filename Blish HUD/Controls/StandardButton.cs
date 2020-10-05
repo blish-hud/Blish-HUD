@@ -1,4 +1,4 @@
-﻿using Blish_HUD;
+﻿using System.ComponentModel;
 using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Glide;
@@ -65,6 +65,10 @@ namespace Blish_HUD.Controls {
             return CaptureType.Mouse;
         }
 
+        /// <summary>
+        /// Do not directly manipulate this property.  It is only public because the animation library requires it to be public.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public int AnimationState { get; set; } = 0;
 
         private Tween _animIn;
