@@ -10,10 +10,16 @@ namespace Blish_HUD.Controls {
     public class StandardButton : LabelBase {
 
         public const int STANDARD_CONTROL_HEIGHT = 26;
-        public const int DEFAULT_CONTROL_WIDTH = 128;
+        public const int DEFAULT_CONTROL_WIDTH   = 128;
 
         private const int ICON_SIZE        = 16;
         private const int ICON_TEXT_OFFSET = 4;
+
+        private const int ATLAS_SPRITE_WIDTH  = 350;
+        private const int ATLAS_SPRITE_HEIGHT = 20;
+
+        private const int   ANIM_FRAME_COUNT = 8;
+        private const float ANIM_FRAME_TIME  = 0.25f;
 
         #region Load Static
 
@@ -59,31 +65,42 @@ namespace Blish_HUD.Controls {
             return CaptureType.Mouse;
         }
 
+        public int AnimationState { get; set; } = 0;
+
+        private Tween _animIn;
+        private Tween _animOut;
+
         public StandardButton() {
             _textColor           = Color.Black;
             _horizontalAlignment = HorizontalAlignment.Left;
             _verticalAlignment   = VerticalAlignment.Middle;
 
             this.Size = new Point(DEFAULT_CONTROL_WIDTH, STANDARD_CONTROL_HEIGHT);
+        }
 
-            (_animIn = GameService.Animation.Tweener.Tween(this, new { AnimationState = 8 }, /*ANIM_FRAME_TIME * 9*/ .7f).Repeat()).Pause();
-            
-            _animIn.OnComplete(() => _animIn.Pause());
+        private void TriggerAnimation(bool directionIn) {
+            _animIn?.Pause();
+            _animOut?.Pause();
+
+            if (directionIn) {
+                _animIn = GameService.Animation.Tweener.Tween(this,
+                                                              new { AnimationState = ANIM_FRAME_COUNT },
+                                                              ANIM_FRAME_TIME - (_animOut?.TimeRemaining ?? 0));
+            } else {
+                _animOut = GameService.Animation.Tweener.Tween(this,
+                                                               new { AnimationState = 0 },
+                                                               ANIM_FRAME_TIME - (_animIn?.TimeRemaining ?? 0));
+            }
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            //_animHover?.Start();
-            _animIn.Reverse().Resume();
+            TriggerAnimation(true);
 
             base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            if (_animIn != null) {
-                _animIn.Resume();
-                //_animHover.AnimationCompleted += delegate { InitAnim(); };
-                //_animHover.OnComplete(() => _animHover = null);
-            }
+            TriggerAnimation(false);
 
             base.OnMouseLeft(e);
         }
@@ -94,19 +111,9 @@ namespace Blish_HUD.Controls {
             base.OnClick(e);
         }
 
-        private const int ATLAS_SPRITE_WIDTH = 350;
-        private const int ATLAS_SPRITE_HEIGHT = 20;
-        private const int ANIM_FRAME_TIME = 300 / 9;
-
-        public int AnimationState { get; set; } = 0;
-
-        private Tween _animIn;
-        private Tween _animOut;
-
         private Rectangle _layoutIconBounds = Rectangle.Empty;
         private Rectangle _layoutTextBounds = Rectangle.Empty;
 
-        /// <inheritdoc />
         public override void RecalculateLayout() {
             // TODO: Ensure that these calculations are correctly placing the image in the middle and clean things up
             var textSize = GetTextDimensions();
