@@ -357,7 +357,7 @@ namespace Blish_HUD.Controls {
                 }
 
                 if (_showFillFraction)
-                    spriteBatch.DrawStringOnCtrl(this, $"{_currentFill}/{_maxFill}", Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, true, true, 1, HorizontalAlignment.Center, VerticalAlignment.Bottom);
+                    spriteBatch.DrawStringOnCtrl(this, $"{_currentFill}/{_maxFill}", Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, false, true, 1, HorizontalAlignment.Center, VerticalAlignment.Bottom);
             } else if (_icon != null) {
                 // Draw icon without any fill effects
                 spriteBatch.DrawOnCtrl(
@@ -371,7 +371,7 @@ namespace Blish_HUD.Controls {
             }
 
             if (!_showFillFraction || !(_maxFill > 0 && _showVignette)) {
-                spriteBatch.DrawStringOnCtrl(this, _iconDetails, Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, true, true, 1, HorizontalAlignment.Center, VerticalAlignment.Bottom);
+                spriteBatch.DrawStringOnCtrl(this, _iconDetails, Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, false, true, 1, HorizontalAlignment.Center, VerticalAlignment.Bottom);
             }
 
             // Draw icon vignette (draw with or without the icon to keep a consistent look)
