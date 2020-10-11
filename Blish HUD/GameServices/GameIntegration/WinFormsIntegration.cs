@@ -71,7 +71,7 @@ namespace Blish_HUD.GameIntegration {
             };
 
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
-            _exitTsi = this.TrayIconMenu.Items.Add($"{Strings.Common.Action_Exit} {Strings.Common.BlishHUD}");
+            _exitTsi = this.TrayIconMenu.Items.Add(string.Format(Strings.Common.Action_Exit,  Strings.Common.BlishHUD));
 
             _exitTsi.Click += delegate { GameService.Overlay.Exit(); };
 
