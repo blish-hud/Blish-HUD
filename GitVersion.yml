@@ -13,3 +13,5 @@ branches:
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
+  develop:
+    regex: noop
