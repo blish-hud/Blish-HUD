@@ -3,14 +3,13 @@
 [![Discord](https://img.shields.io/discord/531175899588984842.svg?logo=discord&logoColor=%237289DA)](https://discord.gg/FYKN3qh)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?branch=dev&project=blish-hud_Blish-HUD&metric=alert_status)](https://sonarcloud.io/dashboard?id=blish-hud_Blish-HUD&branch=dev)
 
+Visit our site: https://blishhud.com
 
 ## Download Blish HUD
 
 You can download Blish HUD from:
 - Our [#💾blish_releases](https://discord.gg/2HKg78n) channel in Discord (which includes the latest modules).
-- From our [CI build feed](https://ci.appveyor.com/project/dlamkins/blish-hud/branch/dev/artifacts) (⚠modules may not be compatible with these builds).
-
-*We'll get them releasing straight to GitHub in the near future.*
+- From our [Releases](https://github.com/blish-hud/Blish-HUD/releases) page here on GitHub.
 
 ### Need Help?
 
