@@ -117,4 +117,110 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ApiPermission_RequestedApiPermissionsInfo" xml:space="preserve">
+    <value>a demandé à lire les API suivantes</value>
+  </data>
+  <data name="ApiPermission_Required" xml:space="preserve">
+    <value>Requis</value>
+  </data>
+  <data name="ApiPermission_Optional" xml:space="preserve">
+    <value>Optionel</value>
+  </data>
+  <data name="ManageModulesSection" xml:space="preserve">
+    <value>Gérer les modules</value>
+  </data>
+  <data name="Dependency_NotFound" xml:space="preserve">
+    <value>[Non trouvé]</value>
+  </data>
+  <data name="Dependency_NotEnabled" xml:space="preserve">
+    <value>[Non activé]</value>
+  </data>
+  <data name="Dependency_WrongVersion" xml:space="preserve">
+    <value>[Mauvaise version]</value>
+  </data>
+  <data name="ApiPermission_MissingRequiredPermissions" xml:space="preserve">
+    <value>Permissions requises manquantes :</value>
+  </data>
+  <data name="Dependency_MissingDependencies" xml:space="preserve">
+    <value>Ce module a des dépendances non disponibles actuellement :</value>
+  </data>
+  <data name="ModuleState_Disabled" xml:space="preserve">
+    <value>Désactiver</value>
+  </data>
+  <data name="ModuleState_Loading" xml:space="preserve">
+    <value>Chargement</value>
+  </data>
+  <data name="ModuleState_Enabled" xml:space="preserve">
+    <value>Activé</value>
+  </data>
+  <data name="ModuleState_Disabling" xml:space="preserve">
+    <value>Désactivation</value>
+  </data>
+  <data name="ModuleState_FatalError" xml:space="preserve">
+    <value>Erreur fatale</value>
+  </data>
+  <data name="ModuleManagement_AuthoredBy" xml:space="preserve">
+    <value>Écrit par</value>
+  </data>
+  <data name="ModuleManagement_EnableModule" xml:space="preserve">
+    <value>Activer le module</value>
+  </data>
+  <data name="ModuleManagement_DisableModule" xml:space="preserve">
+    <value>Désactiver le module</value>
+  </data>
+  <data name="ModuleManagement_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ModuleManagement_ApiPermissions" xml:space="preserve">
+    <value>Permissions API</value>
+  </data>
+  <data name="ModuleManagement_ModifyPermissions" xml:space="preserve">
+    <value>Modifier les permissions</value>
+  </data>
+  <data name="ModuleManagement_ClearPermissions" xml:space="preserve">
+    <value>Effacer les permissions</value>
+  </data>
+  <data name="ModuleManagement_Dependencies" xml:space="preserve">
+    <value>Dépendances</value>
+  </data>
+  <data name="ModuleManagement_IgnoreDependencyRequirements" xml:space="preserve">
+    <value>Ignorer les exigences de dépendance</value>
+  </data>
+  <data name="ModuleManagement_ViewModuleLogs" xml:space="preserve">
+    <value>Voir les logs du module</value>
+  </data>
+  <data name="ModuleManagement_ModuleSettings" xml:space="preserve">
+    <value>Paramètres du module</value>
+  </data>
+  <data name="Dependency_NoDependencies" xml:space="preserve">
+    <value>Pas de dépendances</value>
+  </data>
+  <data name="ApiPermission_NoPermissionsRequested" xml:space="preserve">
+    <value>Pas de permissions demandées</value>
+  </data>
+  <data name="Dependency_RequiresVersion" xml:space="preserve">
+    <value>Nécessite {0}</value>
+  </data>
+  <data name="ModuleSettings_ShownWhenEnabled" xml:space="preserve">
+    <value>Les paramètres appareîtront quand le module sera activé</value>
+  </data>
+  <data name="ModuleOption_ClearSettings" xml:space="preserve">
+    <value>Effacer les paramètres</value>
+  </data>
+  <data name="ModuleOption_ClearSettings_DescriptionEnabled" xml:space="preserve">
+    <value>Rétablir les paramètres du module à leur valeur par défaut.</value>
+  </data>
+  <data name="ModuleOption_ClearSettings_DescriptionDisabled" xml:space="preserve">
+    <value>Impossible d'effacer les paramètres lorsque le module est activé.</value>
+  </data>
+  <data name="ModuleOption_OpenDir" xml:space="preserve">
+    <value>Ouvrir le dossier '{0}'</value>
+  </data>
+  <data name="NoModules_Info" xml:space="preserve">
+    <value>Vous n'avez actuellement aucun module.
+Téléchargez des modules et placez-les dans le dossier modules.</value>
+  </data>
+  <data name="NoModules_OpenFolder" xml:space="preserve">
+    <value>Ouvrir le dossier des modules</value>
+  </data>
 </root>

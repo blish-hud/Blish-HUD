@@ -126,4 +126,22 @@
   <data name="Unknown" xml:space="preserve">
     <value>Inconnue</value>
   </data>
+  <data name="Action_Exit" xml:space="preserve">
+    <value>Quitter {0}</value>
+  </data>
+  <data name="BlishHUD" xml:space="preserve">
+    <value>Blish HUD</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Action_Clear" xml:space="preserve">
+    <value>Effacer</value>
+  </data>
+  <data name="Instructions" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
+  <data name="Action_Restart" xml:space="preserve">
+    <value>Redémarrer {0}</value>
+  </data>
 </root>

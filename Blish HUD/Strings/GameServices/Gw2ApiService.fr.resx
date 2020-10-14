@@ -117,4 +117,102 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="TokenPermissionDescription_Account" xml:space="preserve">
+    <value>Votre nom de compte, votre identifiant, votre monde de résidence et la liste de vos guildes. Permission requise.</value>
+  </data>
+  <data name="TokenPermissionDescription_Inventories" xml:space="preserve">
+    <value>Votre banque, les matériaux stockés, les déverrouillages de recettes et les inventaires de vos personnages.</value>
+  </data>
+  <data name="TokenPermissionDescription_Characters" xml:space="preserve">
+    <value>Les informations de base sur vos personnages.</value>
+  </data>
+  <data name="TokenPermissionDescription_Tradingpost" xml:space="preserve">
+    <value>Vos transactions au comptoir.</value>
+  </data>
+  <data name="TokenPermissionDescription_Wallet" xml:space="preserve">
+    <value>Votre portefeuille de compte.</value>
+  </data>
+  <data name="TokenPermissionDescription_Unlocks" xml:space="preserve">
+    <value>Vos déverrouillages de garde-robe (apparences, teintures, miniatures, coups de grâce etc.) et les apparences équipées.</value>
+  </data>
+  <data name="TokenPermissionDescription_Pvp" xml:space="preserve">
+    <value>Vos statistiques en JcJ, l'historique des matchs, la progression en parcours de récompenses et les informations liées aux arènes personnalisées.</value>
+  </data>
+  <data name="TokenPermissionDescription_Builds" xml:space="preserve">
+    <value>Vos spécialisations, aptitudes, compétences et l'équipement équipés pour tous les modes de jeu.</value>
+  </data>
+  <data name="TokenPermissionDescription_Progression" xml:space="preserve">
+    <value>Vos succès, statuts de déverrouillage de donjons, assignement de vos points de maîtrise et progression générale en JcE.</value>
+  </data>
+  <data name="TokenPermissionDescription_Guilds" xml:space="preserve">
+    <value>La liste des membres, l'historique et le message du jour de toutes les guildes dont vous êtes membre.</value>
+  </data>
+  <data name="TokenStatus_InvalidToken" xml:space="preserve">
+    <value>Clé invalide</value>
+  </data>
+  <data name="TokenStatus_AccountFailed" xml:space="preserve">
+    <value>La récupération des informations du compte a échoué</value>
+  </data>
+  <data name="TokenStatus_PartialPermission" xml:space="preserve">
+    <value>Permissions manquantes dans la clé</value>
+  </data>
+  <data name="TokenStatus_ValidToken" xml:space="preserve">
+    <value>{0} ({1}) - Clé valide</value>
+  </data>
+  <data name="Token_NoName" xml:space="preserve">
+    <value>(sans nom)</value>
+  </data>
+  <data name="ManageApiKeys_Title" xml:space="preserve">
+    <value>Enregistrer un clé d'API</value>
+  </data>
+  <data name="ManageApiKeys_Register" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="ManageApiKeys_DeleteToken" xml:space="preserve">
+    <value>Supprimer la clé</value>
+  </data>
+  <data name="AccountInfo_Commander" xml:space="preserve">
+    <value>Commandant</value>
+  </data>
+  <data name="AccountInfo_Character" xml:space="preserve">
+    <value>Personnage</value>
+  </data>
+  <data name="TokenStatus_MissingMinPermission" xml:space="preserve">
+    <value>Permissions requises manquantes</value>
+  </data>
+  <data name="CreateTokenInstructions_Warning" xml:space="preserve">
+    <value>Vous pouvez enregistrer une clé sans toutes les permissions,
+mais certaines fonctions et modules risquent de ne
+pas fonctionner correctement.
+
+Au minimum, les permissions "account" et "characters"
+sont requises.</value>
+  </data>
+  <data name="CreateTokenInstructions_Step1" xml:space="preserve">
+    <value>Accédez à la page officielle des applications.</value>
+  </data>
+  <data name="Link_ManageApplications" xml:space="preserve">
+    <value>Gérer les applications</value>
+  </data>
+  <data name="CreateTokenInstructions_Step2" xml:space="preserve">
+    <value>Cliquez sur "Nouvelle clé".</value>
+  </data>
+  <data name="CreateTokenInstructions_Step3" xml:space="preserve">
+    <value>Sélectionnez toutes les permissions
+et appuyez sur le bouton
+"CRÉER UNE CLÉ D'APPLICATION".</value>
+  </data>
+  <data name="CreateTokenInstructions_Step4" xml:space="preserve">
+    <value>Copiez la nouvelle clé.</value>
+  </data>
+  <data name="CreateTokenInstructions_Step5" xml:space="preserve">
+    <value>Collez la clé dane le champ ci-dessus
+et appuyez sur "Enregistrer".</value>
+  </data>
+  <data name="ManageApiKeysSection" xml:space="preserve">
+    <value>Gérer les clés d'API</value>
+  </data>
+  <data name="TokenStatus_FailedToLoad" xml:space="preserve">
+    <value>Echec du chargement de la clé.</value>
+  </data>
 </root>
