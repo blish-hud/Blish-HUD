@@ -1,3 +1,17 @@
 next-version: 0.5.2
 assembly-versioning-scheme: MajorMinor
 mode: ContinuousDeployment
+major-version-bump-message: '\+\+major'
+minor-version-bump-message: '\+\+minor'
+patch-version-bump-message: '\+\+patch'
+branches:
+  master:
+    regex: dev
+    mode: ContinuousDeployment
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
+  develop:
+    regex: noop

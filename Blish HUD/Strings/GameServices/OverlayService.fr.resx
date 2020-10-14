@@ -117,6 +117,38 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="HomeTab" xml:space="preserve">
+    <value>Accueil</value>
+  </data>
+  <data name="AboutSection" xml:space="preserve">
+    <value>À propos</value>
+  </data>
+  <data name="OverlaySettingsSection" xml:space="preserve">
+    <value>Paramètres de l'overlay</value>
+  </data>
+  <data name="AboutLoveMessage" xml:space="preserve">
+    <value>Conçu et construit avec tout l'amour de la Tyrie par
+l'équipe du Blish HUD avec l'aide de beaucoup d'autres !</value>
+  </data>
+  <data name="Setting_ShowInTaskbar_Description" xml:space="preserve">
+    <value>Lorsque activé, Blish HUD s'affichera dans la barre des tâches pendant l'exécution.</value>
+  </data>
+  <data name="Setting_ShowInTaskbar_DisplayName" xml:space="preserve">
+    <value>Afficher dans la barre des tâches</value>
+  </data>
+  <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
+    <value>Réduire à la fermeture de Guild Wars 2.</value>
+  </data>
+  <data name="Setting_AppCulture_Description" xml:space="preserve">
+    <value>Détermine la langue utilisée lors de l'affichage du texte de Blish HUD et lorsque des requêtes sont faites à l'API web GW2.</value>
+  </data>
+  <data name="Setting_AppCulture_DisplayName" xml:space="preserve">
+    <value>Langue de l'application et de l'API</value>
+  </data>
+  <data name="Setting_StayInTray_Description" xml:space="preserve">
+    <value>Si coché, Blish HUD se réduira automatiquement à la fermeture de GW2 et continuera à fonctionner jusqu'à ce que GW2 soit relancé.
+Vous pouvez également utiliser l'icône de Blish HUD dans la barre d'outils pour lancer Guild Wars 2.</value>
+  </data>
   <data name="AboutAnetNotice" xml:space="preserve">
     <value>©2010-{0} ArenaNet, LLC. Tous droits réservés. NCSOFT, le logo NC imbriqué, ArenaNet, Guild Wars,
 Guild Wars: Factions, Guild Wars: Nightfall, Guild Wars: Eye of the North, Guild Wars 2, Heart of
