@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Blish HUD ${{ env.VERSION }}
-          path: Blish HUD/bin/x64/Release/**
+          path: Blish HUD/bin/Release/**/publish
 
       - name: Run dotnet pack
         run: dotnet pack -c Release -p:VERSIONED_BUILD=$env:VERSION -o pack
@@ -42,4 +42,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Blish HUD ${{ env.VERSION }} NuGet packages
-          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.*nupkg
+          path: Blish HUD/bin/x64/Release/BlishHUD.${{ env.VERSION }}.*nupkg

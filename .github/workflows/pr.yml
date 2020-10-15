@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Blish HUD ${{ env.VERSION }}
-          path: Blish HUD/bin/x64/Release/**
+          path: Blish HUD/bin/Release/**/publish
