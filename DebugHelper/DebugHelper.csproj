@@ -4,9 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Blish_HUD.DebugHelper</RootNamespace>
     <AssemblyName>Blish HUD.DebugHelper</AssemblyName>
+    <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
     <Platforms>x64</Platforms>
-    <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
