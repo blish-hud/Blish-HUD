@@ -31,17 +31,17 @@ jobs:
       - name: Run dotnet restore
         run: dotnet restore
       - name: Run dotnet publish
-        run: dotnet publish -c Release -p:VERSIONED_BUILD=$env:VERSION -o publish
+        run: dotnet publish "Blish HUD" -c Release -p:VERSIONED_BUILD=$env:VERSION
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: Blish HUD ${{ env.VERSION }}
-          path: publish
+          path: Blish HUD/bin/x64/Release/**
 
       - name: Run dotnet pack
-        run: dotnet pack "Blish HUD" -c Release -p:VERSIONED_BUILD=$env:VERSION -o pack
+        run: dotnet pack -c Release -p:VERSIONED_BUILD=$env:VERSION
       - name: Upload NuGet package artifacts
         uses: actions/upload-artifact@v2
         with:
           name: Blish HUD ${{ env.VERSION }} NuGet packages
-          path: pack/BlishHUD.${{ env.VERSION }}.*nupkg
+          path: Blish HUD/bin/Release/BlishHUD.${{ env.VERSION }}.*nupkg
