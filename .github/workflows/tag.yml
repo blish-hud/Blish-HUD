@@ -12,7 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: git fetch --prune --unshallow
-      - uses: microsoft/setup-msbuild@v1.0.0
 
       - name: Patch nightly version
         shell: powershell
