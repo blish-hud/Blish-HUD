@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Blish HUD.${{ steps.gitversion.outputs.semVer }}
-          path: publish
+          path: publish/**

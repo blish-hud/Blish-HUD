@@ -7,12 +7,12 @@
 <!-- TODO Somehow this still copies the root .exe file that's useless, have to find a way to remove it after the published files are copied... -->
 
 <Project>
-  <Target Name="IncludePublishOutputInCopyToOutputDirectoryItems" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(CopyPublishedOutput)' == 'true' and '$(OutputType)' != 'Library'">
+  <Target Name="IncludePublishOutputInCopyToOutputDirectoryItems" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(CopyPublishedOutput)' == 'true' and '$(OutputType)' != 'Library' and '$(MSBuildProjectFile)' != '$(ParentProjectFile)'">
     <PropertyGroup>
       <OutputBasePath Condition="'$(OutputBasePath)' == ''">$(MSBuildProjectName)\</OutputBasePath>
       <OutputBasePath Condition="!HasTrailingSlash('$(OutputBasePath)')">$(OutputBasePath)\</OutputBasePath>
     </PropertyGroup>
-    <MSBuild Projects="$(MSBuildProjectFile)" BuildInParallel="$(BuildInParallel)" Targets="PublishAndReturnPublishedFilesWithTFM" Properties="NoBuild=true">
+    <MSBuild Projects="$(MSBuildProjectFile)" BuildInParallel="$(BuildInParallel)" Targets="PublishAndReturnPublishedFilesWithTFM" Properties="ParentProjectFile=$(MSBuildProjectFile)">
       <Output TaskParameter="TargetOutputs" ItemName="PublishOutputs"/>
     </MSBuild>
     <Message Importance="High" Text="Copying published project file $(OutputBasePath)\%(PublishOutputs.PublishPath)" />
