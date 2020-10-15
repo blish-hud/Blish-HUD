@@ -31,20 +31,20 @@ jobs:
           updateAssemblyInfo: true
           updateAssemblyInfoFilename: Blish HUD/Properties/AssemblyVersionInfo.cs
 
-      - name: Run msbuild restore
-        run: msbuild -t:restore
-      - name: Run msbuild
-        run: msbuild -p:Configuration=Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }}
+      - name: Run dotnet restore
+        run: dotnet restore
+      - name: Run dotnet publish
+        run: dotnet publish -c Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }} -o publish
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
           name: Blish HUD ${{ steps.gitversion.outputs.semVer }}
-          path: Blish HUD/bin/x64/Release/net472
+          path: publish
 
       - name: Run dotnet pack
-        run: dotnet pack "Blish HUD" -c Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }}
+        run: dotnet pack "Blish HUD" -c Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }} -o pack
       - name: Upload NuGet package artifacts
         uses: actions/upload-artifact@v2
         with:
           name: Blish HUD ${{ steps.gitversion.outputs.semVer }} NuGet packages
-          path: Blish HUD/bin/Release/BlishHUD.${{ steps.gitversion.outputs.semVer }}.*nupkg
+          path: pack/BlishHUD.${{ steps.gitversion.outputs.semVer }}.*nupkg
