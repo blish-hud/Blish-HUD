@@ -21,7 +21,7 @@ namespace Blish_HUD.Input {
             Logger.Debug("Loading DebugHelper input hooks");
 
             process = new Process {
-                StartInfo = new ProcessStartInfo(Path.Combine(Path.GetDirectoryName(typeof(DebugHelperMouseHookManager).Assembly.Location), "Blish HUD.DebugHelper.exe"), Process.GetCurrentProcess().Id.ToString()) {
+                StartInfo = new ProcessStartInfo(Path.Combine(Path.GetDirectoryName(typeof(DebugHelperMouseHookManager).Assembly.Location), "DebugHelper/Blish HUD.DebugHelper.exe"), Process.GetCurrentProcess().Id.ToString()) {
                     RedirectStandardInput  = true,
                     RedirectStandardOutput = true,
                     UseShellExecute        = false,
