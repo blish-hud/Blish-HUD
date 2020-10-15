@@ -111,7 +111,7 @@ namespace Blish_HUD.Input {
 
             this.State = new MouseState((int) (rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
                                         (int) (rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
-                                        _mouseEvent?.WheelDelta ?? 0,
+                                        _mouseEvent?.WheelDelta ?? 0, 
                                         rawMouseState.LeftButton,
                                         rawMouseState.MiddleButton,
                                         rawMouseState.RightButton,
