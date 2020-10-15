@@ -76,7 +76,14 @@ namespace Blish_HUD.GameIntegration {
             if (_timeSinceCheck > CHECK_INTERVAL) {
                 _timeSinceCheck -= CHECK_INTERVAL;
 
-                _audioPeakBuffer.PushValue(_processMeterInformation.GetPeakValue());
+                try {
+                    _audioPeakBuffer.PushValue(_processMeterInformation.GetPeakValue());
+                } catch (Exception e) {
+                    // Punish audio clock for 10 seconds
+                    _timeSinceCheck = -10000;
+
+                    Logger.Debug(e, "Getting meter volume failed.");
+                }
 
                 _averageGameVolume = null;
             }
