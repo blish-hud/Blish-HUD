@@ -109,16 +109,14 @@ namespace Blish_HUD.Input {
 
             var rawMouseState = Mouse.GetState();
 
-            this.State = new MouseState(
-                                        (int) (this.PositionRaw.X / GameService.Graphics.UIScaleMultiplier),
-                                        (int) (this.PositionRaw.Y / GameService.Graphics.UIScaleMultiplier),
-                                        _mouseEvent?.WheelDelta ?? 0,
+            this.State = new MouseState((int) (rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
+                                        (int) (rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
+                                        _mouseEvent?.WheelDelta ?? 0, 
                                         rawMouseState.LeftButton,
                                         rawMouseState.MiddleButton,
                                         rawMouseState.RightButton,
                                         rawMouseState.XButton1,
-                                        rawMouseState.XButton2
-                                       );
+                                        rawMouseState.XButton2);
 
             // Handle mouse moved
             if (prevMouseState.Position != this.State.Position) {
