@@ -1,0 +1,32 @@
+<!--
+  See:
+  - https://github.com/dotnet/sdk/issues/9953
+  - https://github.com/dasMulli/AdvancedMSBuildDemos/tree/master/PublishedAppP2PReference
+-->
+
+<!-- TODO Somehow this still copies the root .exe file that's useless, have to find a way to remove it after the published files are copied... -->
+
+<Project>
+  <Target Name="IncludePublishOutputInCopyToOutputDirectoryItems" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(CopyPublishedOutput)' == 'true' and '$(OutputType)' != 'Library'">
+    <PropertyGroup>
+      <OutputBasePath Condition="'$(OutputBasePath)' == ''">$(MSBuildProjectName)\</OutputBasePath>
+      <OutputBasePath Condition="!HasTrailingSlash('$(OutputBasePath)')">$(OutputBasePath)\</OutputBasePath>
+    </PropertyGroup>
+    <MSBuild Projects="$(MSBuildProjectFile)" BuildInParallel="$(BuildInParallel)" Targets="PublishAndReturnPublishedFilesWithTFM" Properties="NoBuild=true">
+      <Output TaskParameter="TargetOutputs" ItemName="PublishOutputs"/>
+    </MSBuild>
+    <Message Importance="High" Text="Copying published project file $(OutputBasePath)\%(PublishOutputs.PublishPath)" />
+    <ItemGroup>
+      <_PublishedItemsFullPathWithTargetPath Include="@(PublishOutputs->'%(FullPath)')" TargetPath="$(OutputBasePath)\%(PublishOutputs.PublishPath)" />
+      <AllItemsFullPathWithTargetPath Include="@(_PublishedItemsFullPathWithTargetPath)" CopyToOutputDirectory="PreserveNewest" />
+      <AllPublishItemsFullPathWithTargetPath Include="@(_PublishedItemsFullPathWithTargetPath)" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="PublishAndReturnPublishedFilesWithTFM" DependsOnTargets="Publish" Returns="@(PublishedFiles)">
+    <ItemGroup>
+      <PublishedFiles Include="$(PublishDir)**\*" />
+      <PublishedFiles PublishPath="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+  </Target>
+</Project>
