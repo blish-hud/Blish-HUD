@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
@@ -23,7 +24,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected override Task<bool> Load(IProgress<string> progress) {
             progress.Report("Loading setting values...");
-            _enumValues = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray();
+            _enumValues = EnumUtil.GetCachedValues<TEnum>();
             progress.Report(string.Empty);
 
             return base.Load(progress);
@@ -44,6 +45,16 @@ namespace Blish_HUD.Settings.UI.Views {
             _enumDropdown.Items.AddRange(_enumValues.Select(e => e.ToString()));
 
             _enumDropdown.ValueChanged += EnumDropdownOnValueChanged;
+        }
+
+        public override void SetComplianceRequisite(IComplianceRequisite complianceRequisite) {
+            if (complianceRequisite is EnumComplianceRequisite<TEnum> enumRequisite) {
+                IEnumerable<TEnum> toRemove = _enumValues.Except(enumRequisite.IncludedValues);
+
+                foreach (var value in toRemove) {
+                    _enumDropdown.Items.Remove(value.ToString());
+                }
+            }
         }
 
         private void EnumDropdownOnValueChanged(object sender, ValueChangedEventArgs e) {
