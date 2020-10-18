@@ -344,7 +344,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             }
 
             // Check partial permissions (total minus TokenPermission.Unknown)
-            if (tokenTask.Result.Permissions.List.Count < Enum.GetValues(typeof(TokenPermission)).Length - 1) {
+            if (tokenTask.Result.Permissions.List.Count < EnumUtil.GetCachedValues<TokenPermission>().Length - 1) {
                 SetTokenStatus(ApiTokenStatusType.Partial, Strings.GameServices.Gw2ApiService.TokenStatus_PartialPermission);
                 return;
             }
