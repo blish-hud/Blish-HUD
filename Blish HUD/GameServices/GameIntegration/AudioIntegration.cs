@@ -47,13 +47,14 @@ namespace Blish_HUD.GameIntegration {
 
         private void UpdateActiveAudioDeviceManager() {
             Task.Run(() => {
-                // Must be called from an MTA thread.
-                _activeAudioDeviceManager = GetActiveAudioDeviceManager();
-            });
-
-            if (_service.Gw2IsRunning) {
-                UpdateProcessMeterInformation();
-            }
+                         // Must be called from an MTA thread.
+                         _activeAudioDeviceManager = GetActiveAudioDeviceManager();
+                     })
+                .ContinueWith(task => {
+                      if (_service.Gw2IsRunning) {
+                          UpdateProcessMeterInformation();
+                      }
+                 });
         }
 
         private void UpdateProcessMeterInformation() {
@@ -103,6 +104,8 @@ namespace Blish_HUD.GameIntegration {
         /// The <see cref="Process"/> returned in the tuple is diposed after the enumeration completes.
         /// </summary>
         private IEnumerable<(Process Process, AudioMeterInformation MeterInformation)> GetProcessMeters() {
+            if (_activeAudioDeviceManager == null) yield break;
+
             using var sessionEnumerator = _activeAudioDeviceManager.GetSessionEnumerator();
 
             foreach (var session in sessionEnumerator) {
