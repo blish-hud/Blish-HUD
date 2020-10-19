@@ -88,6 +88,8 @@ namespace Blish_HUD {
         /// Instructs Blish HUD to unload and exit.
         /// </summary>
         public void Exit() {
+            GameService.Settings.Save(true);
+
             (new Thread(() => {
                             Thread.Sleep(FORCE_EXIT_TIMEOUT);
                             Logger.Warn("Unload took too long. Forcing exit.");
