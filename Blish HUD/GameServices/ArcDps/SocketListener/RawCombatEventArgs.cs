@@ -7,7 +7,13 @@ namespace Blish_HUD.ArcDps {
 
         public enum CombatEventType {
 
+            /// <summary>
+            /// ArcDps calculations and display values.
+            /// </summary>
             Area,
+            /// <summary>
+            /// Local recording of just the own character similar to the in-game combat log in the chat window.
+            /// </summary>
             Local
 
         }
