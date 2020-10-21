@@ -99,7 +99,7 @@ namespace Blish_HUD.ArcDps.Common {
             public uint Elite { get; }
 
             /// <summary>
-            ///     Whether this player agent belongs to the account currently logged in on this Guild Wars 2 instance
+            ///     TRUE if this player agent belongs to the account currently logged in on this Guild Wars 2 instance. Otherwise FALSE.
             /// </summary>
             public bool Self { get; }
 

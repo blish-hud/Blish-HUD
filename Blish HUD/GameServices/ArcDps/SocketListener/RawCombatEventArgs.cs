@@ -12,7 +12,7 @@ namespace Blish_HUD.ArcDps {
             /// </summary>
             Area,
             /// <summary>
-            /// Local recording of just the own character similar to the in-game combat log in the chat window.
+            /// Local recording of the player character bound to the signed-in account of this GW2 instance similar to the in-game combat log in the chat window.
             /// </summary>
             Local
 

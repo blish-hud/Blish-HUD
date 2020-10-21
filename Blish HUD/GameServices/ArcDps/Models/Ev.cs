@@ -54,7 +54,7 @@
         /// </summary>
         public byte   Iff             { get; }
         /// <summary>
-        /// Buff application, removal, or damage event.
+        /// TRUE if buff was applied, removed or damaging. Otherwise FALSE.
         /// </summary>
         public bool   Buff            { get; }
         /// <summary>
@@ -62,39 +62,39 @@
         /// </summary>
         public byte   Result          { get; }
         /// <summary>
-        /// If the event is bound to the usage or cancellation of a skill (cast start to cast finish or cast cancel).
+        /// TRUE if the event is bound to the usage or cancellation of a skill (cast start to cast finish or cast cancel). Otherwise FALSE.
         /// </summary>
         public bool   IsActivation    { get; }
         /// <summary>
-        /// Buff removed. SrcAgent = relevant, DstAgent = caused it (for strips/cleanses).
+        /// TRUE if buff was removed (for strips/cleanses: SrcAgent = relevant, DstAgent = caused it). Otherwise FALSE.
         /// </summary>
         public bool   IsBuffRemove    { get; }
         /// <summary>
-        /// If SrcAgent is above 90% health.
+        /// TRUE if SrcAgent is above 90% health. Otherwise FALSE.
         /// </summary>
         public bool   IsNinety        { get; }
         /// <summary>
-        /// If DstAgent is below 50% health.
+        /// TRUE if DstAgent is below 50% health. Otherwise FALSE.
         /// </summary>
         public bool   IsFifty         { get; }
         /// <summary>
-        /// If SrcAgent is moving at time of event.
+        /// TRUE if SrcAgent is moving at time of event. Otherwise FALSE.
         /// </summary>
         public bool   IsMoving        { get; }
         /// <summary>
-        /// If a state change occured (SrcAgent is now alive, dead, downed and other ambigious stuff ex. when SrcAgent is self, DstAgent is a reward id and Value is a reward type such as a wiggly box.)
+        /// TRUE if a state change occured (SrcAgent is now alive, dead, downed and other ambigious stuff ex. when SrcAgent is self, DstAgent is a reward id and Value is a reward type such as a wiggly box.). Otherwise FALSE.
         /// </summary>
         public bool   IsStateChange   { get; }
         /// <summary>
-        /// If SrcAgent is flanking DstAgent at time of event.
+        /// TRUE if SrcAgent is flanking DstAgent at time of event. Otherwise FALSE.
         /// </summary>
         public bool   IsFlanking      { get; }
         /// <summary>
-        /// True if all or part of damage was VS. barrier/shield, otherwise False.
+        /// TRUE if all or part of damage was VS. barrier/shield. Otherwise FALSE.
         /// </summary>
         public bool   IsShields       { get; }
         /// <summary>
-        /// False if buff dmg happened during tick, otherwise True.
+        /// FALSE if buff damage happened during tick. Otherwise TRUE.
         /// </summary>
         public bool   IsOffCycle      { get; }
         /// <summary>
