@@ -1,12 +1,12 @@
 ﻿namespace Blish_HUD.ArcDps.Models {
 
     /// <summary>
-    ///     A combat event, like arcdps exposes it to its plugins
+    /// A combat event, like arcdps exposes it to its plugins
     /// </summary>
     public class CombatEvent {
 
         /// <summary>
-        /// The current combat event.
+        /// The event data.
         /// </summary>
         public Ev     Ev        { get; }
         /// <summary>

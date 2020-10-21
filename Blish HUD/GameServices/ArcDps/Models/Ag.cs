@@ -1,25 +1,34 @@
 ﻿namespace Blish_HUD.ArcDps.Models {
 
     /// <summary>
-    ///     An Agent. Could be anything that has behaviour in-game, for example a player or an NPC
+    /// An Agent. Could be anything that has behaviour in-game, for example a player or an NPC
     /// </summary>
     public class Ag {
 
         /// <summary>
-        /// Agent name. May be null. Valid only at time of event.
+        /// The name of the agent.
         /// </summary>
+        /// <remarks>
+        /// Can be null.
+        /// </remarks>
         public string Name       { get; }
         /// <summary>
         /// Agent unique identifier.
         /// </summary>
         public ulong  Id         { get; }
         /// <summary>
-        /// Profession at time of event. Could be anything (see evtc notes for details).
+        /// Profession at time of event.
         /// </summary>
+        /// <remarks>
+        /// Could be anything. See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
+        /// </remarks>
         public uint   Profession { get; }
         /// <summary>
-        /// Elite specialization map instance agent id at time of event. Could be anything (see evtc notes for details).
+        /// Elite specialization map instance agent id at time of event. 
         /// </summary>
+        /// <remarks>
+        /// Could be anything. See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
+        /// </remarks>
         public uint   Elite      { get; }
         /// <summary>
         /// One if this agent belongs to the account currently logged in on this Guild Wars 2 instance. Zero otherwise.
