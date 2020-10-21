@@ -102,20 +102,32 @@ namespace Blish_HUD.Modules {
 
         private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args) {
             if (_enabled && _moduleAssembly == args.RequestingAssembly) {
-                try {
-                    var assemblyDetails = new AssemblyName(args.Name);
+                var assemblyDetails = new AssemblyName(args.Name);
 
-                    string assemblyName = $"{assemblyDetails.Name}.dll";
+                string assemblyName = $"{assemblyDetails.Name}.dll";
+                bool   isResource   = false;
 
-                    if (!Equals(assemblyDetails.CultureInfo, CultureInfo.InvariantCulture) && !string.Equals(assemblyDetails.CultureInfo.TwoLetterISOLanguageName, "en")) {
+                if (!Equals(assemblyDetails.CultureInfo, CultureInfo.InvariantCulture)) {
+                    if (!string.Equals(assemblyDetails.CultureInfo.TwoLetterISOLanguageName, "en")) {
+                        // Non-English resource to be loaded
                         assemblyName = $"{assemblyDetails.CultureName}/{assemblyName}";
+                        isResource   = true;
+                    } else {
+                        // English is default — ignore it
+                        return null;
                     }
+                }
 
-                    Logger.Debug("Module {module} requested to load dependency {dependency} ({assemblyName}).", _manifest.GetDetailedName(), args.Name, assemblyName);
+                Logger.Debug("Module {module} requested to load dependency {dependency} ({assemblyName}).", _manifest.GetDetailedName(), args.Name, assemblyName);
 
+                try {
                     return LoadPackagedAssembly(assemblyName);
                 } catch (Exception ex) {
-                    Logger.Warn(ex, "Failed to load dependency {dependency} for {module}.", args.Name, _manifest.GetDetailedName());
+                    if (isResource) {
+                        Logger.Debug(ex, "Failed to load resource {dependency} for {module}.", args.Name, _manifest.GetDetailedName());
+                    } else {
+                        Logger.Warn(ex, "Failed to load dependency {dependency} for {module}.", args.Name, _manifest.GetDetailedName());
+                    }
                 }
             }
 
