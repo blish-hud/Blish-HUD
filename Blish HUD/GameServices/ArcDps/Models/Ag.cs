@@ -24,7 +24,7 @@
         /// </remarks>
         public uint   Profession { get; }
         /// <summary>
-        /// Elite specialization map instance agent id at time of event. 
+        /// Elite specialization at time of event. 
         /// </summary>
         /// <remarks>
         /// Could be anything. See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
