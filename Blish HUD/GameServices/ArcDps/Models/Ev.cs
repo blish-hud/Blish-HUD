@@ -58,7 +58,7 @@
         /// </summary>
         public bool   Buff            { get; }
         /// <summary>
-        /// If the physical hit was of special kind (critial, glance, interupted target, downing blow, killing blow, was absorbed, blocked or evaded, etc.). A good normal hit will be false.
+        /// Physical Hit Result (normal hit = 0, was critical = 1, was glance =  2, was blocked = 3, was evaded = 4, interrupted the target = 5, was absorbed = 6, missed = 7, killed the target = 8, downned the target = 9).
         /// </summary>
         public byte   Result          { get; }
         /// <summary>
