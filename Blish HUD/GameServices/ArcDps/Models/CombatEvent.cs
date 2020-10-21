@@ -26,8 +26,11 @@
         /// </summary>
         public ulong  Id        { get; }
         /// <summary>
-        /// Combat event logging.
+        /// Format of the data structure. Static unless ArcDps changes the format.
         /// </summary>
+        /// <remarks>
+        /// Used to distinguish different versions of the format.
+        /// </remarks>
         public ulong  Revision  { get; }
 
         public CombatEvent(Ev ev, Ag src, Ag dst, string skillName, ulong id, ulong revision) {

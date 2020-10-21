@@ -31,11 +31,11 @@
         /// </remarks>
         public uint   Elite      { get; }
         /// <summary>
-        /// One if this agent belongs to the account currently logged in on this Guild Wars 2 instance. Zero otherwise.
+        /// One if this agent belongs to the account currently logged in on the local Guild Wars 2 instance. Zero otherwise.
         /// </summary>
         public uint   Self       { get; }
         /// <summary>
-        /// Team unique identifier (Sep21+).
+        /// Team unique identifier.
         /// </summary>
         public ushort Team       { get; }
 
