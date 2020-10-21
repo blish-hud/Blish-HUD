@@ -57,11 +57,11 @@
         /// </summary>
         public ushort DstInstId       { get; }
         /// <summary>
-        /// If <seealso cref="SrcAgent">SrcAgent</seealso> has a master (eg. minion, pet), this field will be equal to the map instance agent id of the master. Otherwise zero.
+        /// If <seealso cref="SrcAgent">SrcAgent</seealso> has a master (eg. minion, pet), this field will be equal to the <seealso cref="Ag.Id">agent id</seealso> of the master. Otherwise zero.
         /// </summary>
         public ushort SrcMasterInstId { get; }
         /// <summary>
-        /// If <seealso cref="DstAgent">DstAgent</seealso> has a master (eg. minion, pet), this field will be equal to the map instance agent id of the master. Otherwise zero.
+        /// If <seealso cref="DstAgent">DstAgent</seealso> has a master (eg. minion, pet), this field will be equal to the <seealso cref="Ag.Id">agent id</seealso> of the master. Otherwise zero.
         /// </summary>
         public ushort DstMasterInstId { get; }
         /// <summary>
@@ -72,7 +72,7 @@
         /// </remarks>
         public byte   Iff             { get; }
         /// <summary>
-        /// TRUE if buff was applied, removed or damaging. Otherwise FALSE.
+        /// <see langword="True"/> if buff was applied, removed or damaging. Otherwise <see langword="false"/>.
         /// </summary>
         public bool   Buff            { get; }
         /// <summary>
@@ -83,48 +83,48 @@
         /// </remarks>
         public byte   Result          { get; }
         /// <summary>
-        /// TRUE if the event is bound to the usage or cancellation of a skill. Otherwise FALSE.
+        /// <see langword="True"/> if the event is bound to the usage or cancellation of a skill. Otherwise <see langword="false"/>.
         /// </summary>
         /// <remarks>
-        /// TRUE from cast start to cast finish or cast cancel.
+        /// <see langword="True"/> from cast start to cast finish or cast cancel.
         /// </remarks>
         public bool   IsActivation    { get; }
         /// <summary>
-        /// TRUE if buff was removed. Otherwise FALSE.
+        /// <see langword="True"/> if buff was removed. Otherwise <see langword="false"/>.
         /// </summary>
         /// <remarks>
         /// For strips and cleanses: <seealso cref="SrcAgent">SrcAgent</seealso> = relevant, <seealso cref="DstAgent">DstAgent</seealso> = caused it.
         /// </remarks>
         public bool   IsBuffRemove    { get; }
         /// <summary>
-        /// TRUE if <seealso cref="SrcAgent">SrcAgent</seealso> is above 90% health. Otherwise FALSE.
+        /// <see langword="True"/> if <seealso cref="SrcAgent">SrcAgent</seealso> is above 90% health. Otherwise <see langword="false"/>.
         /// </summary>
         public bool   IsNinety        { get; }
         /// <summary>
-        /// TRUE if <seealso cref="DstAgent">DstAgent</seealso> is below 50% health. Otherwise FALSE.
+        /// <see langword="True"/> if <seealso cref="DstAgent">DstAgent</seealso> is below 50% health. Otherwise <see langword="false"/>.
         /// </summary>
         public bool   IsFifty         { get; }
         /// <summary>
-        /// TRUE if <seealso cref="SrcAgent">SrcAgent</seealso> is moving at time of event. Otherwise FALSE.
+        /// <see langword="True"/> if <seealso cref="SrcAgent">SrcAgent</seealso> is moving at time of event. Otherwise <see langword="false"/>.
         /// </summary>
         public bool   IsMoving        { get; }
         /// <summary>
-        /// TRUE if a state change occured. Otherwise FALSE.
+        /// <see langword="True"/> if a state change occured. Otherwise <see langword="false"/>.
         /// </summary>
         /// <remarks>
         /// <seealso cref="SrcAgent">SrcAgent</seealso> is now alive, dead, downed and other ambiguous stuff eg. when <seealso cref="SrcAgent">SrcAgent</seealso> is <seealso cref="Ag.Self">Self</seealso>, <seealso cref="DstAgent">DstAgent</seealso> is a reward id and <seealso cref="Value">Value</seealso> is a reward type such as a wiggly box.
         /// </remarks>
         public bool   IsStateChange   { get; }
         /// <summary>
-        /// TRUE if <seealso cref="SrcAgent">SrcAgent</seealso> is flanking <seealso cref="DstAgent">DstAgent</seealso> at time of event. Otherwise FALSE.
+        /// <see langword="True"/> if <seealso cref="SrcAgent">SrcAgent</seealso> is flanking <seealso cref="DstAgent">DstAgent</seealso> at time of event. Otherwise <see langword="false"/>.
         /// </summary>
         public bool   IsFlanking      { get; }
         /// <summary>
-        /// TRUE if all or part of damage was VS. barrier or shield. Otherwise FALSE.
+        /// <see langword="True"/> if all or part of damage was VS. barrier or shield. Otherwise <see langword="false"/>.
         /// </summary>
         public bool   IsShields       { get; }
         /// <summary>
-        /// TRUE if no buff damage happened during tick. Otherwise FALSE.
+        /// <see langword="True"/> if no buff damage happened during tick. Otherwise <see langword="false"/>.
         /// </summary>
         public bool   IsOffCycle      { get; }
         /// <summary>
