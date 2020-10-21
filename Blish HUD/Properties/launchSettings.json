@@ -2,6 +2,10 @@
   "profiles": {
     "Blish HUD": {
       "commandName": "Project"
+    },
+    "PowerShell HUD": {
+      "commandName": "Project",
+      "commandLineArgs": "-p powershell -w ConsoleWindowClass"
     }
   }
 }
