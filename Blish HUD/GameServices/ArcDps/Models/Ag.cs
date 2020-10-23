@@ -15,19 +15,22 @@
         /// <summary>
         /// Agent unique identifier.
         /// </summary>
+        /// <remarks>
+        /// Not unique between sessions.
+        /// </remarks>
         public ulong  Id         { get; }
         /// <summary>
-        /// Profession at time of event.
+        /// Profession id at time of event.
         /// </summary>
         /// <remarks>
-        /// Could be anything. See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
+        /// Meaning differs per event type: Eg. "Species ID" for non-gadgets. See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
         /// </remarks>
         public uint   Profession { get; }
         /// <summary>
-        /// Elite specialization at time of event. 
+        /// Elite specialization id at time of event. 
         /// </summary>
         /// <remarks>
-        /// Could be anything. See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
+        /// Meaning differs per event type. See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
         /// </remarks>
         public uint   Elite      { get; }
         /// <summary>
