@@ -30,8 +30,11 @@
         /// </remarks>
         public ulong  DstAgent        { get; }
         /// <summary>
-        /// Event-specific.
+        /// An event-specific value.
         /// </summary>
+        /// <remarks>
+        /// Meaning differs per event-type. Eg. estimated physical hit damage. See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
+        /// </remarks>
         public int    Value           { get; }
         /// <summary>
         /// Estimated buff damage. Zero on application event.
