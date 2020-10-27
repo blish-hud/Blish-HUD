@@ -51,6 +51,7 @@ namespace Blish_HUD {
         #endregion
         
         #region Events
+
         /// <summary>
         /// Fires when the mumble availability changes.
         /// </summary>
@@ -58,11 +59,12 @@ namespace Blish_HUD {
 
         private void OnIsAvailableChanged(ValueEventArgs<bool> e) => IsAvailableChanged?.Invoke(this, e);
 
-        private bool   _prevIsAvailable               = false;
+        private bool   _prevIsAvailable = false;
 
         private void HandleEvents() {
             MumbleEventImpl.CheckAndHandleEvent(ref _prevIsAvailable, this.IsAvailable, OnIsAvailableChanged);
         }
+
         #endregion
 
         /// <inheritdoc cref="IGw2MumbleClient.IsAvailable"/>
@@ -88,8 +90,6 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            HandleEvents();
-
             this.TimeSinceTick += gameTime.ElapsedGameTime;
 
             _rawClient.Update();
@@ -105,6 +105,8 @@ namespace Blish_HUD {
             } else {
                 _delayedTicks++;
             }
+
+            HandleEvents();
         }
 
         private void UpdateDetails(GameTime gameTime) {
