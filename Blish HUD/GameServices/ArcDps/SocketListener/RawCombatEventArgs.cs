@@ -7,7 +7,16 @@ namespace Blish_HUD.ArcDps {
 
         public enum CombatEventType {
 
+            /// <summary>
+            /// ArcDps calculations and displayed estimates.
+            /// </summary>
             Area,
+            /// <summary>
+            /// Exact and sole recording of the player character bound to the signed-in account of this Guild Wars 2 instance.
+            /// </summary>
+            /// <remarks>
+            /// Similar to the in-game combat log in the chat window.
+            /// </remarks>
             Local
 
         }

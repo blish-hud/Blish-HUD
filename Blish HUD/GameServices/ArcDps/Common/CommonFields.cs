@@ -79,27 +79,27 @@ namespace Blish_HUD.ArcDps.Common {
             }
 
             /// <summary>
-            ///     The current character name
+            /// The current character name.
             /// </summary>
             public string CharacterName { get; }
 
             /// <summary>
-            ///     The account name
+            /// The account name.
             /// </summary>
             public string AccountName { get; }
 
             /// <summary>
-            ///     The core profession
+            /// The core profession.
             /// </summary>
             public uint Profession { get; }
 
             /// <summary>
-            ///     The elite if any is used
+            /// The elite if any is used.
             /// </summary>
             public uint Elite { get; }
 
             /// <summary>
-            ///     Whether it's the account currently logged in on this gw2 instance
+            /// <see langword="True"/> if this player agent belongs to the account currently logged in on the local Guild Wars 2 instance. Otherwise <see langword="false"/>.
             /// </summary>
             public bool Self { get; }
 
