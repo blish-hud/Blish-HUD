@@ -49,23 +49,6 @@ namespace Blish_HUD {
         public CurrentMap CurrentMap => _currentMap;
 
         #endregion
-        
-        #region Events
-
-        /// <summary>
-        /// Fires when the mumble availability changes.
-        /// </summary>
-        public event EventHandler<ValueEventArgs<bool>> IsAvailableChanged;
-
-        private void OnIsAvailableChanged(ValueEventArgs<bool> e) => IsAvailableChanged?.Invoke(this, e);
-
-        private bool   _prevIsAvailable = false;
-
-        private void HandleEvents() {
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsAvailable, this.IsAvailable, OnIsAvailableChanged);
-        }
-
-        #endregion
 
         /// <inheritdoc cref="IGw2MumbleClient.IsAvailable"/>
         public bool IsAvailable => _rawClient.IsAvailable;
@@ -105,8 +88,6 @@ namespace Blish_HUD {
             } else {
                 _delayedTicks++;
             }
-
-            HandleEvents();
         }
 
         private void UpdateDetails(GameTime gameTime) {
