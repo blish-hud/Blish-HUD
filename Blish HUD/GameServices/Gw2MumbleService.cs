@@ -49,7 +49,7 @@ namespace Blish_HUD {
         public CurrentMap CurrentMap => _currentMap;
 
         #endregion
-        
+
         /// <inheritdoc cref="IGw2MumbleClient.IsAvailable"/>
         public bool IsAvailable => _rawClient.IsAvailable;
 

@@ -25,6 +25,8 @@ namespace Blish_HUD {
         public event EventHandler<EventArgs> Gw2AcquiredFocus;
         public event EventHandler<EventArgs> Gw2LostFocus;
 
+        public event EventHandler<ValueEventArgs<bool>> IsInGameChanged; 
+
         // How long, in seconds, between each
         // check to see if GW2 is running
         private const int GW2_EXE_CHECKRATE = 15;
@@ -44,7 +46,18 @@ namespace Blish_HUD {
         private readonly string[] _processNames = { "Gw2-64", "Gw2", "KZW" };
 
         public IGameChat Chat { get; private set; }
-        public bool IsInGame { get; private set; } = false;
+
+        private bool _isInGame;
+        public bool IsInGame { 
+            get => _isInGame; 
+            private set { 
+                if (_isInGame == value) return;
+
+                _isInGame = value;
+
+                IsInGameChanged?.Invoke(this, new ValueEventArgs<bool>(_isInGame));
+            }
+        }
 
         private bool _gw2HasFocus = false;
         public bool Gw2HasFocus {
