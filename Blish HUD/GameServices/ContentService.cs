@@ -113,7 +113,7 @@ namespace Blish_HUD {
                 _loadedSoundEffects.TryAdd(soundName, Blish_HUD.BlishHud.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
             }
 
-            _loadedSoundEffects[soundName].Play(GameService.GameIntegration.Audio.AverageGameVolume, 0, 0);
+            _loadedSoundEffects[soundName].Play(GameService.GameIntegration.Audio.Volume, 0, 0);
         }
 
         // Used while debugging since it's easier

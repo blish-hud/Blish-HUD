@@ -1,38 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Debug;
 using Blish_HUD.GameServices;
+using Blish_HUD.Settings;
 using CSCore.CoreAudioAPI;
+using Humanizer.DateTimeHumanizeStrategy;
 using Microsoft.Xna.Framework;
+using SharpDX.MediaFoundation;
 
 namespace Blish_HUD.GameIntegration {
     public sealed class AudioIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<AudioIntegration>();
 
-        private const int   CHECK_INTERVAL     = 250;
-        private const int   AUDIOBUFFER_LENGTH = 20;
-        private const float MAX_VOLUME         = 0.4f;
-
+        private const int CHECK_INTERVAL = 250;
+        private const int AUDIO_DEVICE_UPDATE_INTERVAL = 5000;
+        private const int AUDIOBUFFER_LENGTH = 20;
+        private const float MAX_VOLUME = 0.4f;
+        private readonly SettingEntry<bool> _useGameAudio;
         private readonly MMDeviceEnumerator _deviceEnumerator;
-        private readonly RingBuffer<float>  _audioPeakBuffer = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
-
-        private AudioSessionManager2  _activeAudioDeviceManager;
-        private AudioMeterInformation _processMeterInformation;
+        private readonly RingBuffer<float> _audioPeakBuffer = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
+        private readonly SettingEntry<float> _volumeSetting;
+        private List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)> _gw2AudioDevices = new List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)>();
 
         private double _timeSinceCheck = 0;
+        private double _timeSinceAudioDeviceUpdate = 0;
 
-        private float? _averageGameVolume;
+        private float? _volume;
 
         /// <summary>
         /// Provides an estimated volume level for the application
         /// based on the volumes levels exhibited by the game.
         /// </summary>
-        public float AverageGameVolume => _averageGameVolume ??= CalculateAverageVolume();
+        public float Volume => _volume ??= GetVolume();
+
+        /// <summary>
+        /// Current used AudioDevice. This either the same as GW2 is using
+        /// or the selected one in the settings
+        /// </summary>
+        public MMDevice AudioDevice { get; private set; }
 
         public AudioIntegration(GameIntegrationService service) : base(service) {
+            var audioSettings = GameService.Settings.RegisterRootSettingCollection("OverlayConfiguration");
+            _useGameAudio = audioSettings.DefineSetting("GameAudio", true, "Use Game Audio", "Let Blish HUD adjust depending on the ingame volume");
+            _volumeSetting = audioSettings.DefineSetting("Volume", this.Volume, "Volume", "Volume");
+            _volumeSetting.SetRange(0.0f, MAX_VOLUME);
             _deviceEnumerator = new MMDeviceEnumerator();
 
             PrepareListeners();
@@ -42,43 +57,34 @@ namespace Blish_HUD.GameIntegration {
             UpdateActiveAudioDeviceManager();
 
             _deviceEnumerator.DefaultDeviceChanged += delegate { UpdateActiveAudioDeviceManager(); };
-            _service.Gw2Started                    += delegate { UpdateProcessMeterInformation(); };
+            _service.Gw2Started += delegate { UpdateActiveAudioDeviceManager(); };
         }
 
         private void UpdateActiveAudioDeviceManager() {
             Task.Run(() => {
-                         // Must be called from an MTA thread.
-                         _activeAudioDeviceManager = GetActiveAudioDeviceManager();
-                     })
-                .ContinueWith(task => {
-                      if (_service.Gw2IsRunning) {
-                          UpdateProcessMeterInformation();
-                      }
-                 });
-        }
-
-        private void UpdateProcessMeterInformation() {
-            foreach (var (process, meterInformation) in GetProcessMeters()) {
-                if (process.Id == _service.Gw2Process.Id) {
-                    Logger.Debug("Found process associated audio session.");
-                    _processMeterInformation = meterInformation;
-                    break;
-                }
-            }
-
-            _timeSinceCheck = 0;
+                // Must be called from an MTA thread.
+                InitializeProcessMeterInformations();
+            });
         }
 
         public override void Update(GameTime gameTime) {
-            if (_processMeterInformation == null) return;
+            if (_gw2AudioDevices.Count == 0) return;
 
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
-            
+            _timeSinceAudioDeviceUpdate += gameTime.ElapsedGameTime.TotalMilliseconds;
+
             if (_timeSinceCheck > CHECK_INTERVAL) {
                 _timeSinceCheck -= CHECK_INTERVAL;
 
                 try {
-                    _audioPeakBuffer.PushValue(_processMeterInformation.GetPeakValue());
+                    var peakValues = new List<((MMDevice AudioDevice, AudioMeterInformation MeterInformation) Device, float Peak)>();
+                    foreach (var device in _gw2AudioDevices) {
+                        peakValues.Add((device, device.MeterInformation.GetPeakValue()));
+                    }
+
+                    var (Device, Peak) = peakValues.OrderByDescending(x => x.Peak).First();
+                    AudioDevice = Device.AudioDevice;
+                    _audioPeakBuffer.PushValue(Peak);
                 } catch (Exception e) {
                     // Punish audio clock for 10 seconds
                     _timeSinceCheck = -10000;
@@ -86,8 +92,22 @@ namespace Blish_HUD.GameIntegration {
                     Logger.Debug(e, "Getting meter volume failed.");
                 }
 
-                _averageGameVolume = null;
+                _volume = null;
             }
+            
+            if (_timeSinceAudioDeviceUpdate > AUDIO_DEVICE_UPDATE_INTERVAL){
+                _timeSinceAudioDeviceUpdate -= AUDIO_DEVICE_UPDATE_INTERVAL;
+                // This is needed to react to sound device changes in gw2
+                UpdateActiveAudioDeviceManager();
+            }
+        }
+
+        private float GetVolume() {
+            if (_useGameAudio.Value) {
+                return CalculateAverageVolume();
+            }
+
+            return _volumeSetting.Value;
         }
 
         private float CalculateAverageVolume() {
@@ -99,39 +119,37 @@ namespace Blish_HUD.GameIntegration {
             return MathHelper.Clamp(total / _audioPeakBuffer.InternalBuffer.Length, 0, MAX_VOLUME);
         }
 
-        /// <summary>
-        /// Enumerates the available meters per process.
-        /// The <see cref="Process"/> returned in the tuple is diposed after the enumeration completes.
-        /// </summary>
-        private IEnumerable<(Process Process, AudioMeterInformation MeterInformation)> GetProcessMeters() {
-            if (_activeAudioDeviceManager == null) yield break;
+        private void InitializeProcessMeterInformations() {
+            if (!_service.Gw2IsRunning) return;
 
-            using var sessionEnumerator = _activeAudioDeviceManager.GetSessionEnumerator();
+            _gw2AudioDevices.Clear();
+            foreach (var device in _deviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active)) {
+                using var sessionEnumerator = AudioSessionManager2.FromMMDevice(device).GetSessionEnumerator();
 
-            foreach (var session in sessionEnumerator) {
-                using var processAudioSession = session.QueryInterface<AudioSessionControl2>();
+                bool shouldDispose = true;
+                foreach (var session in sessionEnumerator) {
+                    using var processAudioSession = session.QueryInterface<AudioSessionControl2>();
 
-                if (processAudioSession.Process == null) continue;
+                    if (processAudioSession.Process.Id == _service.Gw2Process.Id) {
+                        var audioMeterInformation = session.QueryInterface<AudioMeterInformation>();
+                        _gw2AudioDevices.Add((device, session.QueryInterface<AudioMeterInformation>()));
+                        shouldDispose = false;
+                    }
+                }
 
-                var audioMeterInformation = session.QueryInterface<AudioMeterInformation>();
-
-                yield return (processAudioSession.Process, audioMeterInformation);
+                if (shouldDispose) {
+                    device.Dispose();
+                }
             }
-
-        }
-
-        private AudioSessionManager2 GetActiveAudioDeviceManager() {
-            using var device = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-
-            Logger.Debug($"Found default audio device: {device.FriendlyName}");
-
-            return AudioSessionManager2.FromMMDevice(device);
         }
 
         internal override void Unload() {
             _deviceEnumerator?.Dispose();
-            _activeAudioDeviceManager?.Dispose();
-            _processMeterInformation?.Dispose();
+
+            foreach (var device in _gw2AudioDevices) {
+                device.AudioDevice.Dispose();
+                device.MeterInformation.Dispose();
+            }
         }
 
     }
