@@ -32,21 +32,23 @@ namespace Blish_HUD.GameIntegration {
         private float? _volume;
 
         /// <summary>
-        /// Provides an estimated volume level for the application
-        /// based on the volumes levels exhibited by the game.
+        /// This either provides  an estimated volume level for the application
+        /// based on the volumes levels exhibited by the game
+        /// or
+        /// the set volume in settings.
         /// </summary>
         public float Volume => _volume ??= GetVolume();
 
         /// <summary>
         /// Current used AudioDevice. This either the same as GW2 is using
-        /// or the selected one in the settings
+        /// or the selected one in the settings.
         /// </summary>
         public MMDevice AudioDevice { get; private set; }
 
         public AudioIntegration(GameIntegrationService service) : base(service) {
             var audioSettings = GameService.Settings.RegisterRootSettingCollection("OverlayConfiguration");
             _useGameAudio = audioSettings.DefineSetting("GameAudio", true, "Use Game Audio", "Let Blish HUD adjust depending on the ingame volume");
-            _volumeSetting = audioSettings.DefineSetting("Volume", this.Volume, "Volume", "Volume");
+            _volumeSetting = audioSettings.DefineSetting("Volume", MAX_VOLUME/2, "Volume", "Volume");
             _volumeSetting.SetRange(0.0f, MAX_VOLUME);
             _deviceEnumerator = new MMDeviceEnumerator();
 
