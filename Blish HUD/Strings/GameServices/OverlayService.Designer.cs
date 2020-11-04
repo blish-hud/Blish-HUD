@@ -128,6 +128,24 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This determines the Audio output device used by Blish HUD. The Gw2OutputDevice adjusts itself to whatever GW2 is using..
+        /// </summary>
+        internal static string Setting_AudioDevice_Description {
+            get {
+                return ResourceManager.GetString("Setting_AudioDevice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audio Output Device.
+        /// </summary>
+        internal static string Setting_AudioDevice_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_AudioDevice_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When enabled, Blish HUD will be shown in the taskbar while running..
         /// </summary>
         internal static string Setting_ShowInTaskbar_Description {
@@ -161,6 +179,42 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string Setting_StayInTray_DisplayName {
             get {
                 return ResourceManager.GetString("Setting_StayInTray_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When enabled, Blish HUD will adjust it&apos;s volume to the game audio..
+        /// </summary>
+        internal static string Setting_UseGameVolume_Description {
+            get {
+                return ResourceManager.GetString("Setting_UseGameVolume_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Game Volume.
+        /// </summary>
+        internal static string Setting_UseGameVolume_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_UseGameVolume_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines the volume of Blish HUD. Only has an effect when &apos;Use Game Volume&apos; is deactivated..
+        /// </summary>
+        internal static string Setting_Volume_Description {
+            get {
+                return ResourceManager.GetString("Setting_Volume_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Volume.
+        /// </summary>
+        internal static string Setting_Volume_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_Volume_DisplayName", resourceCulture);
             }
         }
     }
