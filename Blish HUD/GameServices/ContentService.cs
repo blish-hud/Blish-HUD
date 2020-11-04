@@ -274,7 +274,7 @@ namespace Blish_HUD {
             }
 
             string signature = splitUri.Groups[1].Value;
-            string fileId = splitUri.Groups[2].Value;
+            string fileId    = splitUri.Groups[2].Value;
 
             return GetRenderServiceTexture(signature, fileId);
         }
