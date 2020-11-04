@@ -52,7 +52,7 @@ namespace Blish_HUD.Content {
         /// <inheritdoc />
         public bool FileExists(string filePath) {
             return _archive.Entries.Any(entry =>
-                string.Equals(Path.Combine(_subPath, entry.FullName.Replace(@"\", "/")), filePath, StringComparison.OrdinalIgnoreCase)
+                string.Equals(GetUniformFileName(entry.FullName), GetUniformFileName(Path.Combine(_subPath, filePath)), StringComparison.OrdinalIgnoreCase)
             );
         }
 
@@ -78,7 +78,7 @@ namespace Blish_HUD.Content {
         public Stream GetFileStream(string filePath) {
             ZipArchiveEntry fileEntry;
 
-            if ((fileEntry = this.GetArchiveEntry(filePath)) != null) { 
+            if ((fileEntry = this.GetArchiveEntry(filePath)) != null) {
                 _exclusiveStreamAccessMutex.WaitOne();
 
                 var memStream = new MemoryStream();
