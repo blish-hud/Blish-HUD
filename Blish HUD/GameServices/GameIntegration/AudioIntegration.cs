@@ -13,18 +13,24 @@ using SharpDX.MediaFoundation;
 
 namespace Blish_HUD.GameIntegration {
     public sealed class AudioIntegration : ServiceModule<GameIntegrationService> {
-
         private static readonly Logger Logger = Logger.GetLogger<AudioIntegration>();
 
-        private const int CHECK_INTERVAL = 250;
-        private const int AUDIO_DEVICE_UPDATE_INTERVAL = 5000;
-        private const int AUDIOBUFFER_LENGTH = 20;
+        public enum Devices {
+            Gw2OutputDevice,
+            DefaultDevice
+        }
+
+        private const int   CHECK_INTERVAL = 250;
+        private const int   AUDIO_DEVICE_UPDATE_INTERVAL = 5000;
+        private const int   AUDIOBUFFER_LENGTH = 20;
         private const float MAX_VOLUME = 0.4f;
-        private readonly SettingEntry<bool> _useGameAudio;
-        private readonly MMDeviceEnumerator _deviceEnumerator;
-        private readonly RingBuffer<float> _audioPeakBuffer = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
-        private readonly SettingEntry<float> _volumeSetting;
-        private List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)> _gw2AudioDevices = new List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)>();
+        private readonly    SettingEntry<bool> _useGameAudio;
+        private readonly    SettingEntry<Devices> _deviceSetting;
+        private readonly    MMDeviceEnumerator _deviceEnumerator;
+        private readonly    RingBuffer<float> _audioPeakBuffer = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
+        private readonly    SettingEntry<float> _volumeSetting;
+        
+        private readonly List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)> _gw2AudioDevices = new List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)>();
 
         private double _timeSinceCheck = 0;
         private double _timeSinceAudioDeviceUpdate = 0;
@@ -48,8 +54,9 @@ namespace Blish_HUD.GameIntegration {
         public AudioIntegration(GameIntegrationService service) : base(service) {
             var audioSettings = GameService.Settings.RegisterRootSettingCollection("OverlayConfiguration");
             _useGameAudio = audioSettings.DefineSetting("GameAudio", true, "Use Game Audio", "Let Blish HUD adjust depending on the ingame volume");
-            _volumeSetting = audioSettings.DefineSetting("Volume", MAX_VOLUME/2, "Volume", "Volume");
+            _volumeSetting = audioSettings.DefineSetting("Volume", MAX_VOLUME / 2, "Volume", "Volume");
             _volumeSetting.SetRange(0.0f, MAX_VOLUME);
+            _deviceSetting = audioSettings.DefineSetting("OutputDevice", Devices.Gw2OutputDevice, "Audio Output Device", "Change the device where Blish HUD will output audio");
             _deviceEnumerator = new MMDeviceEnumerator();
 
             PrepareListeners();
@@ -60,6 +67,9 @@ namespace Blish_HUD.GameIntegration {
 
             _deviceEnumerator.DefaultDeviceChanged += delegate { UpdateActiveAudioDeviceManager(); };
             _service.Gw2Started += delegate { UpdateActiveAudioDeviceManager(); };
+            _deviceSetting.SettingChanged += delegate {
+                if (_deviceSetting.Value == Devices.DefaultDevice) AudioDevice = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            };
         }
 
         private void UpdateActiveAudioDeviceManager() {
@@ -85,7 +95,11 @@ namespace Blish_HUD.GameIntegration {
                     }
 
                     var (Device, Peak) = peakValues.OrderByDescending(x => x.Peak).First();
-                    AudioDevice = Device.AudioDevice;
+
+                    if (_deviceSetting.Value == Devices.Gw2OutputDevice) {
+                        AudioDevice = Device.AudioDevice;
+                    }
+
                     _audioPeakBuffer.PushValue(Peak);
                 } catch (Exception e) {
                     // Punish audio clock for 10 seconds
@@ -96,8 +110,8 @@ namespace Blish_HUD.GameIntegration {
 
                 _volume = null;
             }
-            
-            if (_timeSinceAudioDeviceUpdate > AUDIO_DEVICE_UPDATE_INTERVAL){
+
+            if (_timeSinceAudioDeviceUpdate > AUDIO_DEVICE_UPDATE_INTERVAL) {
                 _timeSinceAudioDeviceUpdate -= AUDIO_DEVICE_UPDATE_INTERVAL;
                 // This is needed to react to sound device changes in gw2
                 UpdateActiveAudioDeviceManager();
