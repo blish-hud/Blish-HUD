@@ -100,34 +100,47 @@ namespace Blish_HUD.Modules {
             return Assembly.Load(assemblyData, symbolData);
         }
 
+        private Assembly GetResourceAssembly(Assembly requestingAssembly, AssemblyName resourceDetails, string assemblyPath) {
+            // Avoid loading resource assembly from wrong module
+            if (_moduleAssembly != requestingAssembly) return null;
+
+            // English is default — ignore it
+            if (!string.Equals(resourceDetails.CultureInfo.TwoLetterISOLanguageName, "en")) {
+                // Non-English resource to be loaded
+                assemblyPath = $"{resourceDetails.CultureName}/{assemblyPath}";
+
+                if (_dataReader.FileExists(assemblyPath)) {
+                    try {
+                        return LoadPackagedAssembly(assemblyPath);
+                    } catch (Exception ex) {
+                        Logger.Debug(ex, "Failed to load resource {dependency} for {module}.", resourceDetails.FullName, _manifest.GetDetailedName());
+                    }
+                } else {
+                    Logger.Debug("Resource assembly {dependency} for {module} could not be found.", resourceDetails.FullName, _manifest.GetDetailedName());
+                }
+            }
+
+            return null;
+        }
+
         private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args) {
-            if (_enabled && _moduleAssembly == args.RequestingAssembly) {
+            if (_enabled) {
                 var assemblyDetails = new AssemblyName(args.Name);
 
-                string assemblyName = $"{assemblyDetails.Name}.dll";
-                bool   isResource   = false;
+                string assemblyPath = $"{assemblyDetails.Name}.dll";
 
                 if (!Equals(assemblyDetails.CultureInfo, CultureInfo.InvariantCulture)) {
-                    if (!string.Equals(assemblyDetails.CultureInfo.TwoLetterISOLanguageName, "en")) {
-                        // Non-English resource to be loaded
-                        assemblyName = $"{assemblyDetails.CultureName}/{assemblyName}";
-                        isResource   = true;
-                    } else {
-                        // English is default — ignore it
-                        return null;
-                    }
+                    return GetResourceAssembly(args.RequestingAssembly, assemblyDetails, assemblyPath);
                 }
 
-                Logger.Debug("Module {module} requested to load dependency {dependency} ({assemblyName}).", _manifest.GetDetailedName(), args.Name, assemblyName);
+                if (!_dataReader.FileExists(assemblyPath)) return null;
+
+                Logger.Debug("Requested dependency {dependency} ({assemblyName}) was found by module {module}.", args.Name, assemblyPath, _manifest.GetDetailedName());
 
                 try {
-                    return LoadPackagedAssembly(assemblyName);
+                    return LoadPackagedAssembly(assemblyPath);
                 } catch (Exception ex) {
-                    if (isResource) {
-                        Logger.Debug(ex, "Failed to load resource {dependency} for {module}.", args.Name, _manifest.GetDetailedName());
-                    } else {
-                        Logger.Warn(ex, "Failed to load dependency {dependency} for {module}.", args.Name, _manifest.GetDetailedName());
-                    }
+                    Logger.Warn(ex, "Failed to load dependency {dependency} for {module}.", args.Name, _manifest.GetDetailedName());
                 }
             }
 
@@ -144,7 +157,17 @@ namespace Blish_HUD.Modules {
         private void ComposeModuleFromFileSystemReader(string dllName, ModuleParameters parameters) {
             if (_moduleAssembly == null) {
                 try {
+                    if (!_dataReader.FileExists(dllName)) {
+                        Logger.Warn("Module {module} does not contain assembly DLL {dll}", _manifest.GetDetailedName(), dllName);
+                        return;
+                    }
+
                     _moduleAssembly = LoadPackagedAssembly(dllName);
+
+                    if (_moduleAssembly == null) {
+                        Logger.Warn("Module {module} failed to load assembly DLL {dll}.", _manifest.GetDetailedName(), dllName);
+                        return;
+                    }
                 } catch (ReflectionTypeLoadException ex) {
                     Logger.Warn(ex, "Module {module} failed to load due to a type exception. Ensure that you are using the correct version of the Module", _manifest.GetDetailedName());
                     return;
