@@ -25,7 +25,7 @@ namespace Blish_HUD {
         /// </summary>
         [EnumMember(Value = "night")] Night
     }
-    internal static class TyrianTimeUtil
+    public static class TyrianTimeUtil
     {
         private static IReadOnlyDictionary<TyrianTime, (TimeSpan,TimeSpan)> _timeInterval = new Dictionary<TyrianTime, (TimeSpan, TimeSpan)>() {
             { TyrianTime.Dawn, (new TimeSpan(05,0,0), new TimeSpan(06,0,0)) },
