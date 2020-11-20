@@ -27,6 +27,11 @@ namespace Blish_HUD {
 
         public event EventHandler<ValueEventArgs<bool>> IsInGameChanged; 
 
+        /// <summary>
+        /// Fires when the Tyrian day cycle changes.
+        /// </summary>
+        public static event EventHandler<ValueEventArgs<TyrianTime>> TyrianTimeChanged;
+
         // How long, in seconds, between each
         // check to see if GW2 is running
         private const int GW2_EXE_CHECKRATE = 15;
@@ -56,6 +61,18 @@ namespace Blish_HUD {
                 _isInGame = value;
 
                 IsInGameChanged?.Invoke(this, new ValueEventArgs<bool>(_isInGame));
+            }
+        }
+
+        private TyrianTime _tyrianTime = TyrianTime.None;
+        public TyrianTime TyrianTime { 
+            get => _tyrianTime; 
+            set { 
+                if (_tyrianTime == value) return; 
+                
+                _tyrianTime = value;
+
+                TyrianTimeChanged?.Invoke(this, new ValueEventArgs<TyrianTime>(value));
             }
         }
 
@@ -273,6 +290,7 @@ namespace Blish_HUD {
         protected override void Update(GameTime gameTime) {
             // Determine if we are in game or not
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
+            this.TyrianTime = TyrianTimeUtil.GetDayCycle();
 
             if (this.Gw2IsRunning) {
                 this.Audio.Update(gameTime);
