@@ -290,7 +290,7 @@ namespace Blish_HUD {
         protected override void Update(GameTime gameTime) {
             // Determine if we are in game or not
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
-            this.TyrianTime = TyrianTimeUtil.GetDayCycle();
+            this.TyrianTime = TyrianTimeUtil.GetCurrentDayCycle();
 
             if (this.Gw2IsRunning) {
                 this.Audio.Update(gameTime);

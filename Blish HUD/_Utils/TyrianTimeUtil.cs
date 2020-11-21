@@ -25,9 +25,9 @@ namespace Blish_HUD {
         /// </summary>
         [EnumMember(Value = "night")] Night
     }
-    public static class TyrianTimeUtil
+    internal static class TyrianTimeUtil
     {
-        private static IReadOnlyDictionary<TyrianTime, (TimeSpan,TimeSpan)> _timeInterval = new Dictionary<TyrianTime, (TimeSpan, TimeSpan)>() {
+        private static IReadOnlyDictionary<TyrianTime, (TimeSpan,TimeSpan)> _dayCycleIntervals = new Dictionary<TyrianTime, (TimeSpan, TimeSpan)>() {
             { TyrianTime.Dawn, (new TimeSpan(05,0,0), new TimeSpan(06,0,0)) },
             { TyrianTime.Day, (new TimeSpan(06,0,0), new TimeSpan(20,0,0)) },
             { TyrianTime.Dusk, (new TimeSpan(20,0,0), new TimeSpan(21,0,0)) },
@@ -35,21 +35,32 @@ namespace Blish_HUD {
         };
 
         /// <summary>
-        /// Checks which day cycle currently prevails.
+        /// Checks which Tyrian day cycle currently prevails.
         /// </summary>
-        /// <returns>The current day cycle.</returns>
-        public static TyrianTime GetDayCycle() {
-            var currentTime = DateTime.Now.ToUniversalTime();
+        /// <returns>The current Tyrian day cycle.</returns>
+        internal static TyrianTime GetCurrentDayCycle() {
+            return GetDayCycle(GetCurrentTyrianTime());
+        }
 
-            var tyrianTime = FromRealDateTime(currentTime);
+        /// <summary>
+        /// Converts the current real time to Tyrian time.
+        /// </summary>
+        /// <returns>A TimeSpan representing the current Tyrian time.</returns>
+        public static TimeSpan GetCurrentTyrianTime() {
+            return FromRealDateTime(DateTime.Now.ToUniversalTime());
+        }
 
-            foreach (var timePair in _timeInterval) {
+        /// <summary>
+        /// Checks which Tyrian day cycle prevails in the given Tyrian time.
+        /// </summary>
+        /// <returns>The day cycle.</returns>
+        public static TyrianTime GetDayCycle(TimeSpan tyrianTime) {
+            foreach (var timePair in _dayCycleIntervals) {
                 var key = timePair.Key;
                 var value = timePair.Value;
 
-                if (!TimeBetween(tyrianTime, value.Item1, value.Item2))
-                    continue;
-                return key;
+                if (TimeBetween(tyrianTime, value.Item1, value.Item2))
+                    return key;
             }
             return TyrianTime.None;
         }
@@ -82,7 +93,14 @@ namespace Blish_HUD {
             return TimeSpan.FromSeconds(currentCycleSeconds * 12);
         }
 
-        private static bool TimeBetween(TimeSpan time, TimeSpan start, TimeSpan end)
+        /// <summary>
+        /// Checks if the given time is between the given start and end time.
+        /// </summary>
+        /// <param name="time">The time to check.</param>
+        /// <param name="start">The start time.</param>
+        /// <param name="end">The end time.</param>
+        /// <returns><see langword="True"/> if time is inbetween the given interval otherwise <see langword="false"/>.</returns>
+        public static bool TimeBetween(TimeSpan time, TimeSpan start, TimeSpan end)
         {
             if (start < end)
                 return start <= time && time <= end;
