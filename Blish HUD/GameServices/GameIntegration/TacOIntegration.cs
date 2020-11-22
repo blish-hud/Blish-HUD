@@ -1,9 +1,12 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using Blish_HUD.GameServices;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameIntegration {
     public class TacOIntegration : ServiceModule<GameIntegrationService> {
+
+        private static readonly Logger Logger = Logger.GetLogger<TacOIntegration>();
 
         private const string TACO_PROCESS   = "GW2TacO";
         private const int    CHECK_INTERVAL = 3000;
@@ -18,13 +21,18 @@ namespace Blish_HUD.GameIntegration {
         public TacOIntegration(GameIntegrationService service) : base(service) { }
 
         private void ListenToTacO(Process tacOProcess) {
-            if (tacOProcess.HasExited) return;
+            try {
+                if (tacOProcess.HasExited) return;
+
+                tacOProcess.EnableRaisingEvents = true;
+
+                tacOProcess.Exited += delegate { TacOIsRunning = false; };
+            } catch (Win32Exception ex) {
+                // Typically means that TacO was ran as an admin and we weren't
+                Logger.Warn(ex, "Encountered an error interacting with the TacO process - it may have been run as admin.");
+            }
 
             this.TacOIsRunning = true;
-
-            tacOProcess.EnableRaisingEvents = true;
-
-            tacOProcess.Exited += delegate { TacOIsRunning = false; };
         }
 
         public override void Update(GameTime gameTime) {
