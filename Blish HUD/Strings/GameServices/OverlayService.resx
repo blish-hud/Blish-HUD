@@ -138,4 +138,22 @@ Guild Wars 2: Path of Fire, ArenaNet, NCSOFT, the Interlocking NC Logo, and all 
 logos and designs are trademarks or registered trademarks of NCSOFT Corporation. All other
 trademarks are the property of their respective owners.</value>
   </data>
+  <data name="Setting_UseGameVolume_Description" xml:space="preserve">
+    <value>When enabled, Blish HUD will adjust it's volume to the game audio.</value>
+  </data>
+  <data name="Setting_UseGameVolume_DisplayName" xml:space="preserve">
+    <value>Use Game Volume</value>
+  </data>
+  <data name="Setting_Volume_DisplayName" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="Setting_Volume_Description" xml:space="preserve">
+    <value>Determines the volume of Blish HUD. Only has an effect when 'Use Game Volume' is deactivated.</value>
+  </data>
+  <data name="Setting_AudioDevice_DisplayName" xml:space="preserve">
+    <value>Audio Output Device</value>
+  </data>
+  <data name="Setting_AudioDevice_Description" xml:space="preserve">
+    <value>This determines the Audio output device used by Blish HUD. The Gw2OutputDevice adjusts itself to whatever GW2 is using.</value>
+  </data>
 </root>

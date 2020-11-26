@@ -58,7 +58,7 @@ namespace Blish_HUD.Controls {
 
         protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
             if (this.Enabled)
-                Content.PlaySoundEffectByName(@"audio\button-click");
+                Content.PlaySoundEffectByName(@"button-click");
 
             base.OnLeftMouseButtonReleased(e);
         }

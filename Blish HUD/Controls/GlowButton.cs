@@ -105,10 +105,10 @@ namespace Blish_HUD.Controls {
         protected override void OnClick(MouseEventArgs e) {
             if (_toggleGlow) {
                 // TODO: A different sound should be played for toggle
-                Content.PlaySoundEffectByName(@"audio\button-click");
+                Content.PlaySoundEffectByName(@"button-click");
                 this.Checked = !_checked;
             } else {
-                Content.PlaySoundEffectByName(@"audio\button-click");
+                Content.PlaySoundEffectByName(@"button-click");
             }
 
             base.OnClick(e);

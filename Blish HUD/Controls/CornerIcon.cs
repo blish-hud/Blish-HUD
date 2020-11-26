@@ -154,7 +154,7 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc />
         protected override void OnClick(MouseEventArgs e) {
-            Content.PlaySoundEffectByName(@"audio\button-click");
+            Content.PlaySoundEffectByName(@"button-click");
 
             base.OnClick(e);
         }

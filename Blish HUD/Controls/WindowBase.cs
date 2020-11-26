@@ -318,7 +318,7 @@ namespace Blish_HUD.Controls {
             if (!this.Visible) return;
 
             _animFade.Resume();
-            Content.PlaySoundEffectByName(@"audio\window-close");
+            Content.PlaySoundEffectByName(@"window-close");
         }
 
         public override void UpdateContainer(GameTime gameTime) {

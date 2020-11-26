@@ -3,7 +3,12 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Blish_HUD.Content;
+using CSCore;
+using CSCore.Codecs;
+using CSCore.Codecs.WAV;
+using CSCore.SoundOut;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -64,6 +69,7 @@ namespace Blish_HUD {
             }
         }
 
+        private IDataReader _audioDataReader;
         private BitmapFont _defaultFont12;
         public BitmapFont DefaultFont12 => _defaultFont12 ?? (_defaultFont12 = GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular));
 
@@ -101,20 +107,38 @@ namespace Blish_HUD {
         }
 
         public Microsoft.Xna.Framework.Content.ContentManager ContentManager => Blish_HUD.BlishHud.ActiveContentManager;
-        
+
         protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
             Textures.Load();
+            var zipArchiveReader = new ZipArchiveReader(RefPath);
+            _audioDataReader = zipArchiveReader.GetSubPath("audio");
         }
 
         public void PlaySoundEffectByName(string soundName) {
-            if (!_loadedSoundEffects.ContainsKey(soundName)) {
-                _loadedSoundEffects.TryAdd(soundName, Blish_HUD.BlishHud.ActiveContentManager.Load<SoundEffect>($"{soundName}"));
-            }
+            const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
+            var filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
+            if (_audioDataReader.FileExists(filePath)) {
+                var soundEffect = _audioDataReader.GetFileStream(filePath);
+                var waveSource = new WaveFileReader(soundEffect);
+                
+                var soundOutput = new WasapiOut() { Device = GameService.GameIntegration.Audio.AudioDevice, };
+                soundOutput.Initialize(waveSource);
+                soundOutput.Volume = GameService.GameIntegration.Audio.Volume;
 
-            _loadedSoundEffects[soundName].Play(GameService.GameIntegration.Audio.AverageGameVolume, 0, 0);
+                Task.Run(() => {
+                    soundOutput.Play();
+                    soundOutput.WaitForStopped();
+
+                    // This will dispose the sound effect stream and the wave source too
+                    soundOutput.Dispose();
+                });
+
+            }
         }
+
+        private static string RefPath => ApplicationSettings.Instance.RefPath ?? REF_FILE;
 
         // Used while debugging since it's easier
         private static Texture2D TextureFromFile(string filepath) {
@@ -126,13 +150,12 @@ namespace Blish_HUD {
         }
 
         private static Texture2D TextureFromFileSystem(string filepath) {
-            string refPath = ApplicationSettings.Instance.RefPath ?? REF_FILE;
-
+            var refPath = RefPath;
             if (!File.Exists(refPath)) {
                 Logger.Warn("{refFileName} is missing!  Lots of assets will be missing!", refPath);
                 return null;
             }
-            
+
             using (var refFs = new FileStream(refPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read)) {
                     var refEntry = refArchive.GetEntry(filepath);
@@ -256,7 +279,7 @@ namespace Blish_HUD {
             return GetRenderServiceTexture(signature, fileId);
         }
 
-#endregion
+        #endregion
 
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
             string fullFontName = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{style.ToString().ToLowerInvariant()}";
