@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Common.UI.Views;
 using Blish_HUD.Content;
+using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
 
 namespace Blish_HUD.Controls {
@@ -57,9 +59,14 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _hoveredTabIndex, value);
         }
 
-        private readonly Dictionary<WindowTab, Rectangle> _tabRegions = new Dictionary<WindowTab, Rectangle>();
-        private readonly Dictionary<WindowTab, Panel>     _panels     = new Dictionary<WindowTab, Panel>();
-        private          List<WindowTab>                  _tabs       = new List<WindowTab>();
+        private readonly LinkedList<IView> _currentNav = new LinkedList<IView>();
+
+        private readonly Dictionary<WindowTab, Rectangle>   _tabRegions = new Dictionary<WindowTab, Rectangle>();
+        private readonly Dictionary<WindowTab, Panel>       _panels     = new Dictionary<WindowTab, Panel>();
+        private readonly Dictionary<WindowTab, Func<IView>> _views      = new Dictionary<WindowTab, Func<IView>>();
+        private          List<WindowTab>                    _tabs       = new List<WindowTab>();
+
+        private readonly ViewContainer _activeViewContainer;
 
         // TODO: Remove public access to _panels - only kept currently as it is used by KillProof.me module (need more robust "Navigate()" call for panel history)
         public Dictionary<WindowTab, Panel> Panels => _panels;
@@ -71,6 +78,12 @@ namespace Blish_HUD.Controls {
             this.ConstructWindow(tabWindowTexture, new Vector2(25, 33), new Rectangle(0, 0, 1100, 745), new Thickness(60, 75, 45, 25), 40);
 
             _contentRegion = new Rectangle(TAB_WIDTH / 2, 48, WINDOWCONTENT_WIDTH, WINDOWCONTENT_HEIGHT);
+
+            _activeViewContainer = new ViewContainer() {
+                HeightSizingMode = SizingMode.Fill,
+                WidthSizingMode  = SizingMode.Fill,
+                Parent           = this
+            };
         }
 
         protected virtual void OnTabChanged(EventArgs e) {
@@ -80,7 +93,7 @@ namespace Blish_HUD.Controls {
 
             this.Subtitle = SelectedTab.Name;
 
-            Navigate(_panels[this.SelectedTab], false);
+            Navigate(_views[this.SelectedTab](), false);
 
             this.TabChanged?.Invoke(this, e);
         }
@@ -138,30 +151,56 @@ namespace Blish_HUD.Controls {
             base.OnLeftMouseButtonPressed(e);
         }
 
+        #region Navigation
+
+        [Obsolete("Using a panel for navigation is deprecated.  Please pass an IView, instead.")]
+        public override void Navigate(Panel newPanel, bool keepHistory = true) {
+            Navigate(new StaticPanelView(newPanel), keepHistory);
+        }
+
+        public void Navigate(IView newView, bool keepHistory = true) {
+            if (!keepHistory) {
+                _currentNav.Clear();
+            }
+
+            _currentNav.AddLast(newView);
+
+            _activeViewContainer.Show(newView);
+        }
+
+        public override void NavigateBack() {
+            if (_currentNav.Count > 1) {
+                _currentNav.RemoveLast();
+            }
+
+            _activeViewContainer.Show(_currentNav.Last.Value);
+        }
+
+        public override void NavigateHome() {
+            _activeViewContainer.Show(_currentNav.First.Value);
+
+            _currentNav.Clear();
+
+            _currentNav.AddFirst(_activeViewContainer.CurrentView);
+        }
+
+        #endregion
+
         #region Tab Handling
 
-        public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel, int priority) {
+        public WindowTab AddTab(string name, AsyncTexture2D icon, Func<IView> viewFunc, int priority = 0) {
             var tab = new WindowTab(name, icon, priority);
-            AddTab(tab, panel);
+            AddTab(tab, viewFunc);
             return tab;
         }
 
-        public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel) {
-            var tab = new WindowTab(name, icon);
-            AddTab(tab, panel);
-            return tab;
-        }
-
-        public void AddTab(WindowTab tab, Panel panel) {
+        public void AddTab(WindowTab tab, Func<IView> viewFunc) {
             if (!_tabs.Contains(tab)) {
                 var prevTab = _tabs.Count > 0 ? _tabs[this.SelectedTabIndex] : tab;
 
-                panel.Visible = false;
-                panel.Parent  = this;
-
                 _tabs.Add(tab);
                 _tabRegions.Add(tab, TabBoundsFromIndex(_tabRegions.Count));
-                _panels.Add(tab, panel);
+                _views.Add(tab, viewFunc);
 
                 _tabs = _tabs.OrderBy(t => t.Priority).ToList();
 
@@ -173,13 +212,31 @@ namespace Blish_HUD.Controls {
                 if (_selectedTabIndex == -1) {
                     _subtitle         = prevTab.Name;
                     _selectedTabIndex = _tabs.IndexOf(prevTab);
-                    this.ActivePanel  = panel;
                 } else {
                     _selectedTabIndex = _tabs.IndexOf(prevTab);
                 }
 
                 Invalidate();
             }
+        }
+
+        [Obsolete("Using a panel for tabs is deprecated.  Please pass a function which returns an IView, instead.")]
+        public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel, int priority) {
+            var tab = new WindowTab(name, icon, priority);
+            AddTab(tab, panel);
+            return tab;
+        }
+
+        [Obsolete("Using a panel for tabs is deprecated.  Please pass a function which returns an IView, instead.")]
+        public WindowTab AddTab(string name, AsyncTexture2D icon, Panel panel) {
+            var tab = new WindowTab(name, icon);
+            AddTab(tab, panel);
+            return tab;
+        }
+
+        [Obsolete("Using a panel for tabs is deprecated.  Please pass a function which returns an IView, instead.")]
+        public void AddTab(WindowTab tab, Panel panel) {
+            AddTab(tab, () => new StaticPanelView(panel));
         }
 
         public void RemoveTab(WindowTab tab) {
@@ -190,6 +247,7 @@ namespace Blish_HUD.Controls {
                 _tabs.Remove(tab);
                 _tabRegions.Remove(tab);
                 _panels.Remove(tab);
+                _views.Remove(tab);
             }
 
             _tabs = _tabs.OrderBy(t => t.Priority).ToList();
@@ -205,6 +263,7 @@ namespace Blish_HUD.Controls {
 
             Invalidate();
         }
+
         private Rectangle TabBoundsFromIndex(int index) {
             return StandardTabBounds.OffsetBy(-TAB_WIDTH, ContentRegion.Y + index * TAB_HEIGHT);
         }
