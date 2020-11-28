@@ -39,9 +39,10 @@ namespace Blish_HUD {
 
         private const string GAMEINTEGRATION_SETTINGS = "GameIntegrationConfiguration";
 
-        public AudioIntegration    Audio    { get; private set; }
-        public TacOIntegration     TacO     { get; private set; }
-        public WinFormsIntegration WinForms { get; private set; }
+        public AudioIntegration      Audio      { get; private set; }
+        public TacOIntegration       TacO       { get; private set; }
+        public WinFormsIntegration   WinForms   { get; private set; }
+        public ClientTypeIntegration ClientType { get; private set; }
 
         private readonly string[] _processNames = { "Gw2-64", "Gw2", "KZW" };
 
@@ -163,9 +164,10 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            this.Audio    = new AudioIntegration(this);
-            this.TacO     = new TacOIntegration(this);
-            this.WinForms = new WinFormsIntegration(this);
+            this.ClientType = new ClientTypeIntegration(this);
+            this.Audio      = new AudioIntegration(this);
+            this.TacO       = new TacOIntegration(this);
+            this.WinForms   = new WinFormsIntegration(this);
 
             BlishHud.Form.Shown += delegate {
                 WindowUtil.SetupOverlay(BlishHud.FormHandle);
@@ -262,6 +264,7 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
+            this.ClientType.Unload();
             this.Audio.Unload();
             this.TacO.Unload();
             this.WinForms.Unload();
@@ -275,6 +278,7 @@ namespace Blish_HUD {
             this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
 
             if (this.Gw2IsRunning) {
+                this.ClientType.Update(gameTime);
                 this.Audio.Update(gameTime);
                 this.TacO.Update(gameTime);
                 this.WinForms.Update(gameTime);

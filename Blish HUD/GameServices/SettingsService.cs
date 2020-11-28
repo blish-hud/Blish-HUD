@@ -215,40 +215,7 @@ namespace Blish_HUD {
                 Size = wndw.ContentRegion.Size
             };
 
-            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection) { Icon           = GameService.Content.GetTexture("440023") }, (m) => new AboutView(),           int.MinValue);
-            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection) { Icon = GameService.Content.GetTexture("156736") }, (m) => new OverlaySettingsView(), int.MaxValue - 2);
-            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.Gw2ApiService.ManageApiKeysSection) { Icon    = GameService.Content.GetTexture("155048") }, (m) => new RegisterApiKeyView(),  int.MaxValue - 1);
-
             baseSettingsPanel.Show(new SettingsMenuView(Overlay.SettingsTab));
-
-            var newMi = new MenuItem(Strings.GameServices.ModulesService.ManageModulesSection) { Icon = Content.GetTexture("156764-noarrow") };
-
-            Dictionary<MenuItem, ModuleManager> _modules = new Dictionary<MenuItem, ModuleManager>();
-
-            GameService.Module.FinishedLoading += delegate {
-                foreach (var module in GameService.Module.Modules) {
-                    var moduleMi = new MenuItem(module.Manifest.Name) {
-                        BasicTooltipText = module.Manifest.Description,
-                        Parent           = newMi
-                    };
-
-                    _modules.Add(moduleMi, module);
-                }
-            };
-
-            Overlay.SettingsTab.RegisterSettingMenu(newMi, (m) => {
-                if (!Module.Modules.Any()) {
-                    return new NoModulesView();
-                }
-
-                if (_modules.ContainsKey(m)) {
-                    var manageModuleView = new ManageModuleView();
-
-                    return manageModuleView.WithPresenter(new ManageModulePresenter(manageModuleView, _modules[m]));
-                }
-
-                return null;
-            });
 
             return baseSettingsPanel;
 

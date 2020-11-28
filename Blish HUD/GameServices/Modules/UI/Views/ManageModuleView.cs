@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
+using Blish_HUD.Modules.UI.Presenters;
 using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 using Version = SemVer.Version;
@@ -117,6 +118,12 @@ namespace Blish_HUD.Modules.UI.Views {
 
                 _settingsButton.Visible = _settingMenu != null;
             }
+        }
+
+        public ManageModuleView() { /* NOOP */ }
+
+        public ManageModuleView(ModuleManager moduleManager) {
+            this.WithPresenter(new ManageModulePresenter(this, moduleManager));
         }
 
         public void SetPermissionsView(ModulePermissionView view) {
