@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Overlay;
 using Blish_HUD.Settings;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
@@ -39,6 +40,8 @@ namespace Blish_HUD {
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
+        public OverlaySettingsTab SettingsTab { get; private set; }
+
         /// <summary>
         /// Allows you to enqueue a call that will occur during the next time the update loop executes.
         /// </summary>
@@ -49,6 +52,8 @@ namespace Blish_HUD {
 
         protected override void Initialize() {
             this.OverlaySettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
+
+            this.SettingsTab = new OverlaySettingsTab(this);
 
             DefineSettings(this.OverlaySettings);
         }

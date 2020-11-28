@@ -5,10 +5,13 @@ using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Gw2WebApi.UI.Views;
 using Blish_HUD.Input;
+using Blish_HUD.Modules;
 using Blish_HUD.Modules.UI.Presenters;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
+using Blish_HUD.Settings.UI.Presenters;
+using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Container = Blish_HUD.Controls.Container;
@@ -208,9 +211,46 @@ namespace Blish_HUD {
         }
 
         private Panel BuildSettingPanel(Controls.WindowBase wndw) {
-            var baseSettingsPanel = new Panel() {
+            var baseSettingsPanel = new ViewContainer() {
                 Size = wndw.ContentRegion.Size
             };
+
+            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection) { Icon           = GameService.Content.GetTexture("440023") }, (m) => new AboutView(),           int.MinValue);
+            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection) { Icon = GameService.Content.GetTexture("156736") }, (m) => new OverlaySettingsView(), int.MaxValue - 2);
+            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.Gw2ApiService.ManageApiKeysSection) { Icon    = GameService.Content.GetTexture("155048") }, (m) => new RegisterApiKeyView(),  int.MaxValue - 1);
+
+            baseSettingsPanel.Show(new SettingsMenuView(Overlay.SettingsTab));
+
+            var newMi = new MenuItem(Strings.GameServices.ModulesService.ManageModulesSection) { Icon = Content.GetTexture("156764-noarrow") };
+
+            Dictionary<MenuItem, ModuleManager> _modules = new Dictionary<MenuItem, ModuleManager>();
+
+            GameService.Module.FinishedLoading += delegate {
+                foreach (var module in GameService.Module.Modules) {
+                    var moduleMi = new MenuItem(module.Manifest.Name) {
+                        BasicTooltipText = module.Manifest.Description,
+                        Parent           = newMi
+                    };
+
+                    _modules.Add(moduleMi, module);
+                }
+            };
+
+            Overlay.SettingsTab.RegisterSettingMenu(newMi, (m) => {
+                if (!Module.Modules.Any()) {
+                    return new NoModulesView();
+                }
+
+                if (_modules.ContainsKey(m)) {
+                    var manageModuleView = new ManageModuleView();
+
+                    return manageModuleView.WithPresenter(new ManageModulePresenter(manageModuleView, _modules[m]));
+                }
+
+                return null;
+            });
+
+            return baseSettingsPanel;
 
             var settingsMenuSection = new Panel() {
                 ShowBorder = true,
@@ -252,26 +292,7 @@ namespace Blish_HUD {
                 cPanel.Show(new OverlaySettingsView());
             };
 
-            GameService.Module.FinishedLoading += delegate {
-                foreach (var module in GameService.Module.Modules) {
-                    var moduleMi = new MenuItem(module.Manifest.Name) {
-                        BasicTooltipText = module.Manifest.Description,
-                        Parent           = settingsMiModules
-                    };
-
-                    moduleMi.Click += delegate {
-                        var manageModuleView = new ManageModuleView();
-
-                        cPanel.Show(manageModuleView.WithPresenter(new ManageModulePresenter(manageModuleView, module)));
-                    };
-                }
-
-                if (!Module.Modules.Any()) {
-                    settingsMiModules.Click += delegate {
-                        cPanel.Show(new NoModulesView());
-                    };
-                }
-            };
+            
 
             return baseSettingsPanel;
         }
