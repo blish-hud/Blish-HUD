@@ -8,6 +8,7 @@ using Blish_HUD.Controls;
 using Blish_HUD.Overlay;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
+using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
@@ -197,11 +198,10 @@ namespace Blish_HUD {
         }
 
         private void BuildSettingTab() {
-            /*
             this.BlishHudWindow.AddTab(Strings.GameServices.SettingsService.SettingsTab,
                                        Content.GetTexture("155052"),
-                                       null);
-            */
+                                       () => new SettingsMenuView(this.SettingsTab),
+                                       int.MaxValue - 10);
         }
 
         protected override void Unload() {
