@@ -82,6 +82,7 @@ namespace Blish_HUD.Controls {
             _activeViewContainer = new ViewContainer() {
                 HeightSizingMode = SizingMode.Fill,
                 WidthSizingMode  = SizingMode.Fill,
+                Size             = _contentRegion.Value.Size,
                 Parent           = this
             };
         }
@@ -212,6 +213,8 @@ namespace Blish_HUD.Controls {
                 if (_selectedTabIndex == -1) {
                     _subtitle         = prevTab.Name;
                     _selectedTabIndex = _tabs.IndexOf(prevTab);
+
+                    Navigate(viewFunc(), false);
                 } else {
                     _selectedTabIndex = _tabs.IndexOf(prevTab);
                 }
