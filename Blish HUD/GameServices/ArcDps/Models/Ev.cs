@@ -1,4 +1,5 @@
-﻿namespace Blish_HUD.ArcDps.Models {
+﻿using static Blish_HUD.ArcDps.ArcDPSEnums;
+namespace Blish_HUD.ArcDps.Models {
 
     /// <summary>
     /// Infos and data about the combat event.
@@ -73,32 +74,32 @@
         /// <remarks>
         /// Friend = 0, foe = 1, unknown = 2.
         /// </remarks>
-        public byte   Iff             { get; }
+        public IFF   Iff             { get; }
         /// <summary>
         /// <see langword="True"/> if buff was applied, removed or damaging. Otherwise <see langword="false"/>.
         /// </summary>
         public bool   Buff            { get; }
         /// <summary>
-        /// Physical Hit Result.
+        /// <seealso cref="PhysicalResult"/> or <see cref="ConditionResult"/>.
         /// </summary>
         /// <remarks>
-        /// Normal hit = 0, was critical = 1, was glance =  2, was blocked = 3, was evaded = 4, interrupted the target = 5, was absorbed = 6, missed = 7, killed the target = 8, downed the target = 9.
+        /// See <see cref="https://www.deltaconnected.com/arcdps/evtc/">evtc notes</see> for details.
         /// </remarks>
-        public byte   Result          { get; }
+        public byte  Result { get; }
         /// <summary>
         /// <see langword="True"/> if the event is bound to the usage or cancellation of a skill. Otherwise <see langword="false"/>.
         /// </summary>
         /// <remarks>
         /// <see langword="True"/> from cast start to cast finish or cast cancel.
         /// </remarks>
-        public bool   IsActivation    { get; }
+        public Activation   IsActivation    { get; }
         /// <summary>
         /// <see langword="True"/> if buff was removed. Otherwise <see langword="false"/>.
         /// </summary>
         /// <remarks>
         /// For strips and cleanses: <seealso cref="SrcAgent">SrcAgent</seealso> = relevant, <seealso cref="DstAgent">DstAgent</seealso> = caused it.
         /// </remarks>
-        public bool   IsBuffRemove    { get; }
+        public BuffRemove   IsBuffRemove    { get; }
         /// <summary>
         /// <see langword="True"/> if <seealso cref="SrcAgent">SrcAgent</seealso> is above 90% health. Otherwise <see langword="false"/>.
         /// </summary>
@@ -152,9 +153,9 @@
 
         public Ev(
             ulong  time,          ulong  srcAgent,     ulong  dstAgent,        int    value,           int  buffDmg, uint overStackValue, uint skillId,
-            ushort srcInstId,     ushort dstInstId,    ushort srcMasterInstId, ushort dstMasterInstId, byte iff,     bool buff,
-            byte   result,        bool   isActivation, bool   isBuffRemove,    bool   isNinety,        bool isFifty, bool isMoving,
-            StateChange   isStateChange, bool   isFlanking,   bool   isShields,       bool   isOffCycle,      byte pad61,   byte pad62, byte pad63,
+            ushort srcInstId,     ushort dstInstId,    ushort srcMasterInstId, ushort dstMasterInstId, IFF iff,     bool buff,
+            byte   result,        Activation isActivation, BuffRemove isBuffRemove,    bool   isNinety,        bool isFifty, bool isMoving,
+            StateChange isStateChange, bool   isFlanking,   bool   isShields,       bool   isOffCycle,      byte pad61,   byte pad62, byte pad63,
             byte   pad64
         ) {
             this.Time            = time;

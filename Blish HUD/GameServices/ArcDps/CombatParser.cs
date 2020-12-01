@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using Blish_HUD.ArcDps.Models;
-
+using static Blish_HUD.ArcDps.ArcDPSEnums;
 namespace Blish_HUD.ArcDps {
 
     internal static class CombatParser {
@@ -45,8 +45,8 @@ namespace Blish_HUD.ArcDps {
             byte   iff;
             bool   buff;
             byte   result;
-            bool   isActivation;
-            bool   isBuffRemove;
+            byte   isActivation;
+            byte   isBuffRemove;
             bool   isNinety;
             bool   isFifty;
             bool   isMoving;
@@ -72,8 +72,8 @@ namespace Blish_HUD.ArcDps {
             (iff, offset)             = U8(data, offset);
             (buff, offset)            = B(data, offset);
             (result, offset)          = U8(data, offset);
-            (isActivation, offset)    = B(data, offset);
-            (isBuffRemove, offset)    = B(data, offset);
+            (isActivation, offset)    = U8(data, offset);
+            (isBuffRemove, offset)    = U8(data, offset);
             (isNinety, offset)        = B(data, offset);
             (isFifty, offset)         = B(data, offset);
             (isMoving, offset)        = B(data, offset);
@@ -89,8 +89,8 @@ namespace Blish_HUD.ArcDps {
             var ev = new Ev(
                             time, srcAgent, dstAgent, value, buffDmg,
                             overStackValue, skillId, srcInstId, dstInstId,
-                            srcMasterInstId, dstMasterInstId, iff, buff, result,
-                            isActivation, isBuffRemove, isNinety, isFifty,
+                            srcMasterInstId, dstMasterInstId, (IFF)iff, buff, result,
+                            (Activation)isActivation, (BuffRemove)isBuffRemove, isNinety, isFifty,
                             isMoving, (StateChange)isStateChange,
                             isFlanking, isShields, isOffCycle, pad61, pad62,
                             pad63, pad64
@@ -163,169 +163,4 @@ namespace Blish_HUD.ArcDps {
 
     }
 
-    #region _Enums
-
-    /// <summary>
-    /// combat state change
-    /// </summary>
-    public enum StateChange {
-        /// <summary>
-        /// not used - not this kind of event
-        /// </summary>
-	    None,
-        /// <summary>
-        /// src_agent entered combat, dst_agent is subgroup
-        /// </summary>
-	    EnterCombat,
-        /// <summary>
-        /// src_agent left combat
-        /// </summary>
-	    ExitCombat,
-        /// <summary>
-        /// src_agent is now alive
-        /// </summary>
-	    ChangeUp,
-        /// <summary>
-        /// src_agent is now dead
-        /// </summary>
-	    ChangeDead,
-        /// <summary>
-        /// src_agent is now downed
-        /// </summary>
-	    ChangeDown,
-        /// <summary>
-        /// src_agent is now in game tracking range (not in realtime api)
-        /// </summary>
-	    Spawn,
-        /// <summary>
-        /// src_agent is no longer being tracked (not in realtime api)
-        /// </summary>
-	    Despawn,
-        /// <summary>
-        /// src_agent has reached a health marker. dst_agent = percent * 10000 (eg. 99.5% will be 9950) (not in realtime api)
-        /// </summary>
-	    HealthUpdate,
-        /// <summary>
-        /// log start. value = server unix timestamp **uint32**. buff_dmg = local unix timestamp. src_agent = 0x637261 (arcdps id) if evtc, npc id if realtime
-        /// </summary>
-	    LogStart,
-        /// <summary>
-        /// log end. value = server unix timestamp **uint32**. buff_dmg = local unix timestamp. src_agent = 0x637261 (arcdps id)
-        /// </summary>
-	    LogEnd,
-        /// <summary>
-        /// src_agent swapped weapon set. dst_agent = current set id (0/1 water, 4/5 land)
-        /// </summary>
-	    WeaponSwap,
-        /// <summary>
-        /// src_agent has had it's maximum health changed. dst_agent = new max health (not in realtime api)
-        /// </summary>
-	    MaxHealthUpdate,
-        /// <summary>
-        /// src_agent is agent of "recording" player
-        /// </summary>
-	    PointOfView,
-        /// <summary>
-        /// src_agent is text language
-        /// </summary>
-	    TextLanguage,
-        /// <summary>
-        /// src_agent is game build
-        /// </summary>
-	    GameBuild,
-        /// <summary>
-        /// src_agent is sever shard id
-        /// </summary>
-	    ShardId,
-        /// <summary>
-        /// src_agent is self, dst_agent is reward id, value is reward type. these are the wiggly boxes that you get
-        /// </summary>
-	    Reward,
-        /// <summary>
-        /// combat event that will appear once per buff per agent on logging start (statechange==18, buff==18, normal cbtevent otherwise)
-        /// </summary>
-	    BuffInitial,
-        /// <summary>
-        /// src_agent changed, cast float* p = (float*)&dst_agent, access as x/y/z (float[3]) (not in realtime api)
-        /// </summary>
-	    Position,
-        /// <summary>
-        /// src_agent changed, cast float* v = (float*)&dst_agent, access as x/y/z (float[3]) (not in realtime api)
-        /// </summary>
-	    Velocity,
-        /// <summary>
-        /// src_agent changed, cast float* f = (float*)&dst_agent, access as x/y (float[2]) (not in realtime api)
-        /// </summary>
-	    Facing,
-        /// <summary>
-        /// src_agent change, dst_agent new team id
-        /// </summary>
-	    TeamChange,
-        /// <summary>
-        /// src_agent is an attacktarget, dst_agent is the parent agent (gadget type), value is the current targetable state (not in realtime api)
-        /// </summary>
-	    AttackTarget,
-        /// <summary>
-        /// dst_agent is new target-able state (0 = no, 1 = yes. default yes) (not in realtime api)
-        /// </summary>
-	    Targetable,
-        /// <summary>
-        /// src_agent is map id
-        /// </summary>
-	    MapId,
-        /// <summary>
-        /// internal use, won't see anywhere
-        /// </summary>
-	    ReplInfo,
-        /// <summary>
-        /// src_agent is agent with buff, dst_agent is the stackid marked active
-        /// </summary>
-	    StackActive,
-        /// <summary>
-        /// src_agent is agent with buff, value is the duration to reset to (also marks inactive), pad61- is the stackid
-        /// </summary>
-	    StackReset,
-        /// <summary>
-        /// src_agent is agent, dst_agent through buff_dmg is 16 byte guid (client form, needs minor rearrange for api form),
-        /// </summary>
-	    Guild,
-        /// <summary>
-        /// is_flanking = probably invuln, is_shields = probably invert, is_offcycle = category, pad61 = stacking type, pad62 = probably resistance, src_master_instid = max stacks (not in realtime)
-        /// </summary>
-	    BuffInfo,
-        /// <summary>
-        /// (float*)&time[8]: type attr1 attr2 param1 param2 param3 trait_src trait_self, is_flanking = !npc, is_shields = !player, is_offcycle = break, overstack = value of type determined by pad61 (none/number/skill) (not in realtime, one per formula)
-        /// </summary>
-	    BuffFormula,
-        /// <summary>
-        /// (float*)&time[4]: recharge range0 range1 tooltiptime (not in realtime)
-        /// </summary>
-	    SkillInfo,
-        /// <summary>
-        /// // src_agent = action, dst_agent = at millisecond (not in realtime, one per timing)
-        /// </summary>
-	    SkillTiming,
-        /// <summary>
-        /// src_agent is agent, value is u16 game enum (active, recover, immune, none) (not in realtime api)
-        /// </summary>
-	    BreakbarState,
-        /// <summary>
-        /// src_agent is agent, value is float with percent (not in realtime api)
-        /// </summary>
-	    BreakbarPercent,
-        /// <summary>
-        /// (char*)&time[32]: error string (not in realtime api)
-        /// </summary>
-	    Error,
-        /// <summary>
-        /// src_agent is agent, value is the id (volatile, game build dependent) of the tag
-        /// </summary>
-	    Tag,
-        /// <summary>
-        /// unknown or invalid, ignore
-        /// </summary>
-	    Unknown
-    };
-
-    #endregion
 }
