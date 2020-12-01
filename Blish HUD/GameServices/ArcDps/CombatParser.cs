@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using Blish_HUD.ArcDps.Models;
-using static Blish_HUD.ArcDps.ArcDPSEnums;
+using static Blish_HUD.ArcDps.ArcDpsEnums;
 namespace Blish_HUD.ArcDps {
 
     internal static class CombatParser {

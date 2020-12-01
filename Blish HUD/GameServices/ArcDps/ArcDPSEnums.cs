@@ -1,19 +1,16 @@
 ﻿using System;
 
-namespace Blish_HUD.ArcDps
-{
+namespace Blish_HUD.ArcDps {
     /// <summary>
-    /// ArcDPS Enums and helpful extension methods.
+    /// ArcDps Enums and helpful extension methods.
     /// </summary>
     /// <remarks>
     /// Source: <see cref="https://github.com/baaron4/GW2-Elite-Insights-Parser/blob/master/GW2EIEvtcParser/ParserHelpers/ArcDPSEnums.cs"/>
     /// (MIT License)
     /// </remarks>
-    public static class ArcDPSEnums
-    {
+    public static class ArcDpsEnums {
         // Activation
-        public enum Activation : byte
-        {
+        public enum Activation : byte {
             None = 0,
             Normal = 1,
             Quickness = 2,
@@ -22,33 +19,29 @@ namespace Blish_HUD.ArcDps
             Reset = 5,
 
             Unknown
-        };
+        }
 
-        internal static Activation GetActivation(byte bt)
-        {
+        internal static Activation GetActivation(byte bt) {
             return Enum.IsDefined(typeof(Activation), bt) ? (Activation)bt : Activation.Unknown;
         }
 
         // Buff remove
-        public enum BuffRemove : byte
-        {
+        public enum BuffRemove : byte {
             None = 0,
             All = 1,
             Single = 2,
             Manual = 3,
 
             Unknown
-        };
+        }
 
-        internal static BuffRemove GetBuffRemove(byte bt)
-        {
+        internal static BuffRemove GetBuffRemove(byte bt) {
             return Enum.IsDefined(typeof(BuffRemove), bt) ? (BuffRemove)bt : BuffRemove.Unknown;
         }
 
         // Result
 
-        public enum PhysicalResult : byte
-        {
+        public enum PhysicalResult : byte {
             Normal = 0,
             Crit = 1,
             Glance = 2,
@@ -62,15 +55,13 @@ namespace Blish_HUD.ArcDps
             BreakbarDamage = 10,
 
             Unknown
-        };
+        }
 
-        internal static PhysicalResult GetPhysicalResult(byte bt)
-        {
+        internal static PhysicalResult GetPhysicalResult(byte bt) {
             return Enum.IsDefined(typeof(PhysicalResult), bt) ? (PhysicalResult)bt : PhysicalResult.Unknown;
         }
 
-        public enum ConditionResult : byte
-        {
+        public enum ConditionResult : byte {
             ExpectedToHit = 0,
             InvulByBuff = 1,
             InvulByPlayerSkill1 = 2,
@@ -79,15 +70,13 @@ namespace Blish_HUD.ArcDps
             //BreakbarDamage = 5,
 
             Unknown
-        };
-        internal static ConditionResult GetConditionResult(byte bt)
-        {
+        }
+        internal static ConditionResult GetConditionResult(byte bt) {
             return Enum.IsDefined(typeof(ConditionResult), bt) ? (ConditionResult)bt : ConditionResult.Unknown;
         }
 
         // State Change    
-        public enum StateChange : byte
-        {
+        public enum StateChange : byte {
             None = 0,
             EnterCombat = 1,
             ExitCombat = 2,
@@ -127,44 +116,39 @@ namespace Blish_HUD.ArcDps
             Error = 36,
             Tag = 37,
             Unknown
-        };
+        }
 
-        internal static StateChange GetStateChange(byte bt)
-        {
+        internal static StateChange GetStateChange(byte bt) {
             return Enum.IsDefined(typeof(StateChange), bt) ? (StateChange)bt : StateChange.Unknown;
         }
         // Breakbar State
 
-        public enum BreakbarState { 
-            Active, 
-            Recover, 
-            Immune, 
-            None, 
-            Unknown 
-        };
-        internal static BreakbarState GetBreakbarState(int value)
-        {
+        public enum BreakbarState {
+            Active,
+            Recover,
+            Immune,
+            None,
+            Unknown
+        }
+        internal static BreakbarState GetBreakbarState(int value) {
             return Enum.IsDefined(typeof(BreakbarState), value) ? (BreakbarState)value : BreakbarState.Unknown;
         }
 
         // Buff Formula
 
-        public enum BuffStackType : short
-        {
+        public enum BuffStackType : short {
             StackingConditionalLoss = 0, // the same thing as Stacking
             Queue = 1,
             Regeneration = 2,
             Stacking = 3,
             Force = 4,
             Unknown = -1,
-        };
-        internal static BuffStackType GetBuffStackType(short bt)
-        {
+        }
+        internal static BuffStackType GetBuffStackType(short bt) {
             return Enum.IsDefined(typeof(BuffStackType), bt) ? (BuffStackType)bt : BuffStackType.Unknown;
         }
 
-        public enum BuffAttribute : short
-        {
+        public enum BuffAttribute : short {
             None = 0,
             Power = 1,
             Precision = 2,
@@ -232,13 +216,11 @@ namespace Blish_HUD.ArcDps
             ExperienceFromAll = -21,
             WXP = -22,
         }
-        internal static BuffAttribute GetBuffAttribute(short bt)
-        {
+        internal static BuffAttribute GetBuffAttribute(short bt) {
             return Enum.IsDefined(typeof(BuffAttribute), bt) ? (BuffAttribute)bt : BuffAttribute.Unknown;
         }
 
-        public enum BuffCategory : byte
-        {
+        public enum BuffCategory : byte {
             Boon = 0,
             Any = 1,
             Condition = 2,
@@ -250,23 +232,20 @@ namespace Blish_HUD.ArcDps
             Stance = 16,
             Unknown
         }
-        internal static BuffCategory GetBuffCategory(byte bt)
-        {
+        internal static BuffCategory GetBuffCategory(byte bt) {
             return Enum.IsDefined(typeof(BuffCategory), bt) ? (BuffCategory)bt : BuffCategory.Unknown;
         }
 
         // Friend of for
 
-        public enum IFF : byte
-        {
+        public enum IFF : byte {
             Friend = 0,
             Foe = 1,
 
             Unknown
-        };
+        }
 
-        internal static IFF GetIFF(byte bt)
-        {
+        internal static IFF GetIFF(byte bt) {
             return Enum.IsDefined(typeof(IFF), bt) ? (IFF)bt : IFF.Unknown;
         }
 
@@ -284,8 +263,7 @@ namespace Blish_HUD.ArcDps
 
         //
 
-        public enum TrashID : int
-        {
+        public enum TrashID : int {
             // VG
             Seekers = 15426,
             RedGuardian = 15433,
@@ -417,9 +395,9 @@ namespace Blish_HUD.ArcDps
             FireElemental = 21221,
             FireImp = 21100,
             PyreGuardian = 21050,
-            PyreGuardianRetal = ArcDPSEnums.PyreGuardianRetal,
-            PyreGuardianProtect = ArcDPSEnums.PyreGuardianProtect,
-            PyreGuardianStab = ArcDPSEnums.PyreGuardianStab,
+            PyreGuardianRetal = ArcDpsEnums.PyreGuardianRetal,
+            PyreGuardianProtect = ArcDpsEnums.PyreGuardianProtect,
+            PyreGuardianStab = ArcDpsEnums.PyreGuardianStab,
             ReaperofFlesh = 21218,
             DestroyerTroll = 20944,
             IceElemental = 21049,
@@ -427,11 +405,11 @@ namespace Blish_HUD.ArcDps
             ApocalypseBringer = 21073,
             WyvernMatriarch = 20997,
             WyvernPatriarch = 21183,
-            QadimLamp = ArcDPSEnums.QadimLamp,
+            QadimLamp = ArcDpsEnums.QadimLamp,
             Zommoros = 20961, //21118 is probably the start and end NPC, not the one during the battle
             // Adina
-            HandOfErosion = ArcDPSEnums.HandOfErosion,
-            HandOfEruption = ArcDPSEnums.HandOfEruption,
+            HandOfErosion = ArcDpsEnums.HandOfErosion,
+            HandOfEruption = ArcDpsEnums.HandOfEruption,
             // Sabir
             ParalyzingWisp = 21955,
             VoltaicWisp = 21975,
@@ -468,8 +446,8 @@ namespace Blish_HUD.ArcDps
             SonsOfSvanirHighShaman = 22283,
             // to complete
             DoppelgangerNecro = 22713,
-            DoppelgangerWarrior= 22640,
-            DoppelgangerGuardian1= 22635,
+            DoppelgangerWarrior = 22640,
+            DoppelgangerGuardian1 = 22635,
             DoppelgangerGuardian2 = 22608,
             DoppelgangerThief1 = 22656,
             DoppelgangerThief2 = 22612,
@@ -524,14 +502,12 @@ namespace Blish_HUD.ArcDps
             GuiltDemon = 23252,
             //
             Unknown
-        };
-        public static TrashID GetTrashID(int id)
-        {
+        }
+        public static TrashID GetTrashID(int id) {
             return Enum.IsDefined(typeof(TrashID), id) ? (TrashID)id : TrashID.Unknown;
         }
 
-        public enum TargetID : int
-        {
+        public enum TargetID : int {
             WorldVersusWorld = 1,
             TwistedCastle = TwilightCastle,
             // Raid
@@ -585,7 +561,7 @@ namespace Blish_HUD.ArcDps
             Artsariiv = 17949,
             Arkk = 17759,
             AiKeeperOfThePeak = 23254,
-            AiKeeperOfThePeak2 = ArcDPSEnums.AiKeeperOfThePeak2,
+            AiKeeperOfThePeak2 = ArcDpsEnums.AiKeeperOfThePeak2,
             // Golems
             MassiveGolem = 16202,
             AvgGolem = 16177,
@@ -594,88 +570,74 @@ namespace Blish_HUD.ArcDps
             StdGolem = 16199,
             //
             Unknown
-        };
-        public static TargetID GetTargetID(int id)
-        {
+        }
+        public static TargetID GetTargetID(int id) {
             return Enum.IsDefined(typeof(TargetID), id) ? (TargetID)id : TargetID.Unknown;
         }
 
     }
 
-    public static class PhysicalResultExtensions
-    {
-        public static bool IsHit(this ArcDPSEnums.PhysicalResult result)
-        {
-            return result == ArcDPSEnums.PhysicalResult.Normal || result == ArcDPSEnums.PhysicalResult.Crit || result == ArcDPSEnums.PhysicalResult.Glance || result == ArcDPSEnums.PhysicalResult.KillingBlow; //Downed and Interrupt omitted for now due to double procing mechanics || result == ParseEnum.Result.Downed || result == ParseEnum.Result.Interrupt; 
+    public static class PhysicalResultExtensions {
+        public static bool IsHit(this ArcDpsEnums.PhysicalResult result) {
+            return result == ArcDpsEnums.PhysicalResult.Normal || result == ArcDpsEnums.PhysicalResult.Crit || result == ArcDpsEnums.PhysicalResult.Glance || result == ArcDpsEnums.PhysicalResult.KillingBlow; //Downed and Interrupt omitted for now due to double procing mechanics || result == ParseEnum.Result.Downed || result == ParseEnum.Result.Interrupt; 
         }
     }
 
-    public static class ConditionResultExtensions
-    {
-        public static bool IsHit(this ArcDPSEnums.ConditionResult result)
-        {
-            return result == ArcDPSEnums.ConditionResult.ExpectedToHit;
+    public static class ConditionResultExtensions {
+        public static bool IsHit(this ArcDpsEnums.ConditionResult result) {
+            return result == ArcDpsEnums.ConditionResult.ExpectedToHit;
         }
     }
 
-    public static class SpawnExtensions
-    {
-        public static bool IsSpawn(this ArcDPSEnums.StateChange state)
-        {
-            return state == ArcDPSEnums.StateChange.None || state == ArcDPSEnums.StateChange.Position || state == ArcDPSEnums.StateChange.Velocity || state == ArcDPSEnums.StateChange.Rotation || state == ArcDPSEnums.StateChange.MaxHealthUpdate || state == ArcDPSEnums.StateChange.Spawn || state == ArcDPSEnums.StateChange.TeamChange;
+    public static class SpawnExtensions {
+        public static bool IsSpawn(this ArcDpsEnums.StateChange state) {
+            return state == ArcDpsEnums.StateChange.None || state == ArcDpsEnums.StateChange.Position || state == ArcDpsEnums.StateChange.Velocity || state == ArcDpsEnums.StateChange.Rotation || state == ArcDpsEnums.StateChange.MaxHealthUpdate || state == ArcDpsEnums.StateChange.Spawn || state == ArcDpsEnums.StateChange.TeamChange;
         }
     }
 
-    public static class StateChangeAgentExtensions
-    {
-        public static bool SrcIsAgent(this ArcDPSEnums.StateChange state)
-        {
-            return state == ArcDPSEnums.StateChange.None || state == ArcDPSEnums.StateChange.EnterCombat
-                || state == ArcDPSEnums.StateChange.ExitCombat || state == ArcDPSEnums.StateChange.ChangeUp
-                || state == ArcDPSEnums.StateChange.ChangeDead || state == ArcDPSEnums.StateChange.ChangeDown
-                || state == ArcDPSEnums.StateChange.Spawn || state == ArcDPSEnums.StateChange.Despawn
-                || state == ArcDPSEnums.StateChange.HealthUpdate || state == ArcDPSEnums.StateChange.WeaponSwap
-                || state == ArcDPSEnums.StateChange.MaxHealthUpdate || state == ArcDPSEnums.StateChange.PointOfView
-                || state == ArcDPSEnums.StateChange.BuffInitial || state == ArcDPSEnums.StateChange.Position
-                || state == ArcDPSEnums.StateChange.Velocity || state == ArcDPSEnums.StateChange.Rotation
-                || state == ArcDPSEnums.StateChange.TeamChange || state == ArcDPSEnums.StateChange.AttackTarget
-                || state == ArcDPSEnums.StateChange.Targetable || state == ArcDPSEnums.StateChange.StackActive
-                || state == ArcDPSEnums.StateChange.StackReset || state == ArcDPSEnums.StateChange.BreakbarState 
-                || state == ArcDPSEnums.StateChange.BreakbarPercent;
+    public static class StateChangeAgentExtensions {
+        public static bool SrcIsAgent(this ArcDpsEnums.StateChange state) {
+            return state == ArcDpsEnums.StateChange.None || state == ArcDpsEnums.StateChange.EnterCombat
+                || state == ArcDpsEnums.StateChange.ExitCombat || state == ArcDpsEnums.StateChange.ChangeUp
+                || state == ArcDpsEnums.StateChange.ChangeDead || state == ArcDpsEnums.StateChange.ChangeDown
+                || state == ArcDpsEnums.StateChange.Spawn || state == ArcDpsEnums.StateChange.Despawn
+                || state == ArcDpsEnums.StateChange.HealthUpdate || state == ArcDpsEnums.StateChange.WeaponSwap
+                || state == ArcDpsEnums.StateChange.MaxHealthUpdate || state == ArcDpsEnums.StateChange.PointOfView
+                || state == ArcDpsEnums.StateChange.BuffInitial || state == ArcDpsEnums.StateChange.Position
+                || state == ArcDpsEnums.StateChange.Velocity || state == ArcDpsEnums.StateChange.Rotation
+                || state == ArcDpsEnums.StateChange.TeamChange || state == ArcDpsEnums.StateChange.AttackTarget
+                || state == ArcDpsEnums.StateChange.Targetable || state == ArcDpsEnums.StateChange.StackActive
+                || state == ArcDpsEnums.StateChange.StackReset || state == ArcDpsEnums.StateChange.BreakbarState
+                || state == ArcDpsEnums.StateChange.BreakbarPercent;
         }
 
-        public static bool DstIsAgent(this ArcDPSEnums.StateChange state)
-        {
-            return state == ArcDPSEnums.StateChange.None || state == ArcDPSEnums.StateChange.AttackTarget;
+        public static bool DstIsAgent(this ArcDpsEnums.StateChange state) {
+            return state == ArcDpsEnums.StateChange.None || state == ArcDpsEnums.StateChange.AttackTarget;
         }
 
-        public static bool HasTime(this ArcDPSEnums.StateChange state)
-        {
-            return state == ArcDPSEnums.StateChange.None || state == ArcDPSEnums.StateChange.EnterCombat
-                || state == ArcDPSEnums.StateChange.ExitCombat || state == ArcDPSEnums.StateChange.ChangeUp
-                || state == ArcDPSEnums.StateChange.ChangeDead || state == ArcDPSEnums.StateChange.ChangeDown
-                || state == ArcDPSEnums.StateChange.Spawn || state == ArcDPSEnums.StateChange.Despawn
-                || state == ArcDPSEnums.StateChange.HealthUpdate || state == ArcDPSEnums.StateChange.WeaponSwap
-                || state == ArcDPSEnums.StateChange.MaxHealthUpdate || state == ArcDPSEnums.StateChange.BuffInitial
-                || state == ArcDPSEnums.StateChange.Position || state == ArcDPSEnums.StateChange.Velocity
-                || state == ArcDPSEnums.StateChange.Rotation || state == ArcDPSEnums.StateChange.TeamChange
-                || state == ArcDPSEnums.StateChange.AttackTarget || state == ArcDPSEnums.StateChange.Targetable
-                || state == ArcDPSEnums.StateChange.StackActive || state == ArcDPSEnums.StateChange.StackReset
-                || state == ArcDPSEnums.StateChange.Reward || state == ArcDPSEnums.StateChange.BreakbarState 
-                || state == ArcDPSEnums.StateChange.BreakbarPercent;
+        public static bool HasTime(this ArcDpsEnums.StateChange state) {
+            return state == ArcDpsEnums.StateChange.None || state == ArcDpsEnums.StateChange.EnterCombat
+                || state == ArcDpsEnums.StateChange.ExitCombat || state == ArcDpsEnums.StateChange.ChangeUp
+                || state == ArcDpsEnums.StateChange.ChangeDead || state == ArcDpsEnums.StateChange.ChangeDown
+                || state == ArcDpsEnums.StateChange.Spawn || state == ArcDpsEnums.StateChange.Despawn
+                || state == ArcDpsEnums.StateChange.HealthUpdate || state == ArcDpsEnums.StateChange.WeaponSwap
+                || state == ArcDpsEnums.StateChange.MaxHealthUpdate || state == ArcDpsEnums.StateChange.BuffInitial
+                || state == ArcDpsEnums.StateChange.Position || state == ArcDpsEnums.StateChange.Velocity
+                || state == ArcDpsEnums.StateChange.Rotation || state == ArcDpsEnums.StateChange.TeamChange
+                || state == ArcDpsEnums.StateChange.AttackTarget || state == ArcDpsEnums.StateChange.Targetable
+                || state == ArcDpsEnums.StateChange.StackActive || state == ArcDpsEnums.StateChange.StackReset
+                || state == ArcDpsEnums.StateChange.Reward || state == ArcDpsEnums.StateChange.BreakbarState
+                || state == ArcDpsEnums.StateChange.BreakbarPercent;
         }
     }
 
-    public static class ActivationExtensions
-    {
-        public static bool StartCasting(this ArcDPSEnums.Activation activation)
-        {
-            return activation == ArcDPSEnums.Activation.Normal || activation == ArcDPSEnums.Activation.Quickness;
+    public static class ActivationExtensions {
+        public static bool StartCasting(this ArcDpsEnums.Activation activation) {
+            return activation == ArcDpsEnums.Activation.Normal || activation == ArcDpsEnums.Activation.Quickness;
         }
 
-        public static bool EndCasting(this ArcDPSEnums.Activation activation)
-        {
-            return activation == ArcDPSEnums.Activation.CancelFire || activation == ArcDPSEnums.Activation.Reset || activation == ArcDPSEnums.Activation.CancelCancel;
+        public static bool EndCasting(this ArcDpsEnums.Activation activation) {
+            return activation == ArcDpsEnums.Activation.CancelFire || activation == ArcDpsEnums.Activation.Reset || activation == ArcDpsEnums.Activation.CancelCancel;
         }
     }
 }

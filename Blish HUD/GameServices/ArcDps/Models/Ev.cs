@@ -1,4 +1,4 @@
-﻿using static Blish_HUD.ArcDps.ArcDPSEnums;
+﻿using static Blish_HUD.ArcDps.ArcDpsEnums;
 namespace Blish_HUD.ArcDps.Models {
 
     /// <summary>
