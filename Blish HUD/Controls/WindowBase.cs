@@ -268,7 +268,7 @@ namespace Blish_HUD.Controls {
 
         private readonly LinkedList<Panel> _currentNav = new LinkedList<Panel>();
 
-        public void Navigate(Panel newPanel, bool keepHistory = true) {
+        public virtual void Navigate(Panel newPanel, bool keepHistory = true) {
             if (!keepHistory)
                 _currentNav.Clear();
 
@@ -277,14 +277,14 @@ namespace Blish_HUD.Controls {
             this.ActivePanel = newPanel;
         }
 
-        public void NavigateBack() {
+        public virtual void NavigateBack() {
             if (_currentNav.Count > 1)
                 _currentNav.RemoveLast();
 
             this.ActivePanel = _currentNav.Last.Value;
         }
 
-        public void NavigateHome() {
+        public virtual void NavigateHome() {
             this.ActivePanel = _currentNav.First.Value;
 
             _currentNav.Clear();

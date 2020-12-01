@@ -4,7 +4,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Blish_HUD.Content;
+using Blish_HUD.Controls;
+using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
+using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
@@ -173,6 +176,35 @@ namespace Blish_HUD {
             foreach (string moduleArchivePath in Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
                 LoadModuleFromPackedBhm(moduleArchivePath);
             }
+
+            RegisterModulesInSettings();
+        }
+
+        private readonly Dictionary<MenuItem, ModuleManager> _moduleMenus = new Dictionary<MenuItem, ModuleManager>();
+
+        private void RegisterModulesInSettings() {
+            var moduleSettingMenuItem = new MenuItem(Strings.GameServices.ModulesService.ManageModulesSection, Content.GetTexture("156764-noarrow"));
+
+            foreach (var module in _modules) {
+                var moduleMi = new MenuItem(module.Manifest.Name) {
+                    BasicTooltipText = module.Manifest.Description,
+                    Parent           = moduleSettingMenuItem
+                };
+
+                _moduleMenus.Add(moduleMi, module);
+            }
+
+            Overlay.SettingsTab.RegisterSettingMenu(moduleSettingMenuItem, HandleModuleSettingMenu, int.MaxValue - 10);
+        }
+
+        private View HandleModuleSettingMenu(MenuItem menuItem) {
+            if (!this.Modules.Any()) {
+                return new NoModulesView();
+            }
+
+            return _moduleMenus.ContainsKey(menuItem)
+                       ? new ManageModuleView(_moduleMenus[menuItem])
+                       : null;
         }
 
         protected override void Update(GameTime gameTime) {

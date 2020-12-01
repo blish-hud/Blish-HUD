@@ -165,10 +165,13 @@ namespace Blish_HUD.Controls {
         private Glide.Tween                      _slideAnim;
         private Effects.ScrollingHighlightEffect _scrollEffect;
 
-        public MenuItem() { Initialize(); }
+        public MenuItem() : this("", null) { /* NOOP */ }
 
-        public MenuItem(string text) {
+        public MenuItem(string text) : this(text, null) { /* NOOP */ }
+
+        public MenuItem(string text, AsyncTexture2D icon) {
             _text = text;
+            _icon = icon;
 
             Initialize();
         }

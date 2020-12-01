@@ -2,11 +2,14 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.WebApi.Caching;
 using Gw2Sharp.WebApi.V2.Models;
 using System.Threading.Tasks;
+using Blish_HUD.Controls;
 using Blish_HUD.Gw2WebApi;
+using Blish_HUD.Gw2WebApi.UI.Views;
 using Blish_HUD.Settings;
 using Gw2Sharp.WebApi.Exceptions;
 
@@ -51,8 +54,8 @@ namespace Blish_HUD {
 
         #endregion
 
-        private ConcurrentDictionary<string, string>            _characterRepository;
-        private ConcurrentDictionary<string, ManagedConnection> _cachedConnections;
+        private readonly ConcurrentDictionary<string, string>            _characterRepository = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, ManagedConnection> _cachedConnections   = new ConcurrentDictionary<string, ManagedConnection>();
 
         private SettingCollection _apiSettings;
         private SettingCollection _apiKeyRepository;
@@ -71,11 +74,16 @@ namespace Blish_HUD {
         protected override void Load() {
             CreateInternalConnection();
 
-            _characterRepository = new ConcurrentDictionary<string, string>();
-
-            _cachedConnections = new ConcurrentDictionary<string, ManagedConnection>();
-
             Gw2Mumble.PlayerCharacter.NameChanged += PlayerCharacterOnNameChanged;
+
+            RegisterApiInSettings();
+        }
+
+        private void RegisterApiInSettings() {
+            // Manage API Keys
+            GameService.Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.Gw2ApiService.ManageApiKeysSection, GameService.Content.GetTexture("155048")),
+                                                                (m) => new RegisterApiKeyView(),
+                                                                int.MaxValue - 11);
         }
 
         private void UpdateBaseConnection(string apiKey) {

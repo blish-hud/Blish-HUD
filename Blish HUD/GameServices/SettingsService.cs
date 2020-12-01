@@ -5,10 +5,13 @@ using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Gw2WebApi.UI.Views;
 using Blish_HUD.Input;
+using Blish_HUD.Modules;
 using Blish_HUD.Modules.UI.Presenters;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
+using Blish_HUD.Settings.UI.Presenters;
+using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Container = Blish_HUD.Controls.Container;
@@ -142,10 +145,6 @@ namespace Blish_HUD {
 
         protected override void Load() {
             LoadRenderers();
-
-            Overlay.FinishedLoading += delegate {
-                Overlay.BlishHudWindow.AddTab(Strings.GameServices.SettingsService.SettingsTab, Content.GetTexture("155052"), BuildSettingPanel(GameService.Overlay.BlishHudWindow), int.MaxValue - 1);
-            };
         }
 
         internal SettingCollection RegisterRootSettingCollection(string collectionKey) {
@@ -206,75 +205,6 @@ namespace Blish_HUD {
                 Logger.Warn("Could not identify a setting renderer for setting {settingName} of type {settingType}, so it will not be displayed.", settingEntry.EntryKey, settingEntry.SettingType.FullName);
             }
         }
-
-        private Panel BuildSettingPanel(Controls.WindowBase wndw) {
-            var baseSettingsPanel = new Panel() {
-                Size = wndw.ContentRegion.Size
-            };
-
-            var settingsMenuSection = new Panel() {
-                ShowBorder = true,
-                Size       = new Point(baseSettingsPanel.Width - 720 - 10 - 10 - 5 - 20, baseSettingsPanel.Height - 50 - 24),
-                Location   = new Point(5,                                                50),
-                Title      = Strings.GameServices.SettingsService.SettingsTab,
-                Parent     = baseSettingsPanel,
-                CanScroll  = true,
-            };
-
-            var settingsListMenu = new Menu() {
-                Size           = settingsMenuSection.ContentRegion.Size,
-                MenuItemHeight = 40,
-                Parent         = settingsMenuSection,
-                CanSelect      = true,
-            };
-
-            ViewContainer cPanel = new ViewContainer() {
-                FadeView = true,
-                Size     = new Point(748, baseSettingsPanel.Size.Y - 24 * 2),
-                Location = new Point(baseSettingsPanel.Width - 720 - 10 - 20, 24),
-                Parent   = baseSettingsPanel
-            };
-
-            var settingsMiAbout   = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.AboutSection,           Content.GetTexture("440023"));
-            var settingsMiOverlay = settingsListMenu.AddMenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, Content.GetTexture("156736"));
-            var settingsMiApiKeys = settingsListMenu.AddMenuItem(Strings.GameServices.Gw2ApiService.ManageApiKeysSection,    Content.GetTexture("155048"));
-            var settingsMiModules = settingsListMenu.AddMenuItem(Strings.GameServices.ModulesService.ManageModulesSection,   Content.GetTexture("156764-noarrow"));
-
-            settingsMiApiKeys.Click += delegate {
-                cPanel.Show(new RegisterApiKeyView());
-            };
-
-            settingsMiAbout.Click += delegate {
-                cPanel.Show(new AboutView());
-            };
-
-            settingsMiOverlay.Click += delegate {
-                cPanel.Show(new OverlaySettingsView());
-            };
-
-            GameService.Module.FinishedLoading += delegate {
-                foreach (var module in GameService.Module.Modules) {
-                    var moduleMi = new MenuItem(module.Manifest.Name) {
-                        BasicTooltipText = module.Manifest.Description,
-                        Parent           = settingsMiModules
-                    };
-
-                    moduleMi.Click += delegate {
-                        var manageModuleView = new ManageModuleView();
-
-                        cPanel.Show(manageModuleView.WithPresenter(new ManageModulePresenter(manageModuleView, module)));
-                    };
-                }
-
-                if (!Module.Modules.Any()) {
-                    settingsMiModules.Click += delegate {
-                        cPanel.Show(new NoModulesView());
-                    };
-                }
-            };
-
-            return baseSettingsPanel;
-        }
-
+        
     }
 }

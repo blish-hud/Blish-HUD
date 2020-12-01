@@ -5,10 +5,14 @@ using System.Threading;
 using System.Windows.Forms;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Overlay;
+using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
+using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
+using MenuItem = Blish_HUD.Controls.MenuItem;
 
 namespace Blish_HUD {
 
@@ -34,10 +38,9 @@ namespace Blish_HUD {
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
 
-        private bool                        _checkedClient;
-        private Gw2ClientContext.ClientType _clientType;
-
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
+
+        public OverlaySettingsTab SettingsTab { get; private set; }
 
         /// <summary>
         /// Allows you to enqueue a call that will occur during the next time the update loop executes.
@@ -51,6 +54,22 @@ namespace Blish_HUD {
             this.OverlaySettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
 
             DefineSettings(this.OverlaySettings);
+
+            PrepareSettingsTab();
+        }
+
+        private void PrepareSettingsTab() {
+            this.SettingsTab = new OverlaySettingsTab(this);
+
+            // About
+            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection, GameService.Content.GetTexture("440023")),
+                                                 (m) => new AboutView(),
+                                                 int.MinValue);
+
+            // Overlay Settings
+            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, GameService.Content.GetTexture("156736")),
+                                                 (m) => new OverlaySettingsView(),
+                                                 int.MaxValue - 12);
         }
 
         private void DefineSettings(SettingCollection settings) {
@@ -139,78 +158,50 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Strings.Common.BlishHUD) {
-                Menu     = new ContextMenuStrip(),
-                Priority = int.MaxValue,
-                Parent   = Graphics.SpriteScreen,
-            };
+            BuildMainWindow();
+            BuildCornerIcon();
+        }
 
-            this.BlishContextMenu = this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD)).Click += delegate { Application.Restart(); Exit(); };
-            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit, Strings.Common.BlishHUD)).Click += delegate { Exit(); };
-
+        private void BuildMainWindow() {
             this.BlishHudWindow = new TabbedWindow() {
                 Parent = Graphics.SpriteScreen,
                 Title  = Strings.Common.BlishHUD,
                 Emblem = Content.GetTexture("blishhud-emblem")
             };
 
-            this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
-                this.BlishHudWindow.ToggleWindow();
-            };
-
             // Center the window so that you don't have to drag it over every single time (which is really annoying)
             // TODO: Save window positions to settings so that they remember where they were last
             Graphics.SpriteScreen.Resized += delegate {
                 if (!this.BlishHudWindow.Visible) {
-                    this.BlishHudWindow.Location = new Point(Graphics.WindowWidth / 2 - this.BlishHudWindow.Width / 2, Graphics.WindowHeight / 2 - this.BlishHudWindow.Height / 2);
+                    this.BlishHudWindow.Location = new Point(Graphics.WindowWidth / 2 - this.BlishHudWindow.Width / 2,
+                                                             Graphics.WindowHeight / 2 - this.BlishHudWindow.Height / 2);
                 }
             };
 
-            PrepareClientDetection();
+            BuildSettingTab();
         }
 
-        private void PrepareClientDetection() {
-            GameIntegration.Gw2Closed     += GameIntegrationOnGw2Closed;
-            Gw2Mumble.Info.BuildIdChanged += Gw2MumbleOnBuildIdChanged;
+        private void BuildCornerIcon() {
+            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Strings.Common.BlishHUD) {
+                Menu     = new ContextMenuStrip(),
+                Priority = int.MaxValue,
+                Parent   = Graphics.SpriteScreen,
+            };
 
-            Contexts.GetContext<CdnInfoContext>().StateChanged += CdnInfoContextOnStateChanged;
+            this.BlishContextMenu                                                                                          =  this.BlishMenuIcon.Menu;
+            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD)).Click += delegate { Application.Restart(); Exit(); };
+            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit,    Strings.Common.BlishHUD)).Click += delegate { Exit(); };
+
+            this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
+                this.BlishHudWindow.ToggleWindow();
+            };
         }
 
-        private void Gw2MumbleOnBuildIdChanged(object sender, EventArgs e) {
-            if (!_checkedClient) {
-                DetectClientType();
-            }
-        }
-
-        private void CdnInfoContextOnStateChanged(object sender, EventArgs e) {
-            if (!_checkedClient && ((Context) sender).State == ContextState.Ready) {
-                DetectClientType();
-            }
-        }
-
-        private void GameIntegrationOnGw2Closed(object sender, EventArgs e) {
-            _checkedClient = false;
-        }
-
-        private void DetectClientType() {
-            var checkClientTypeResult = Contexts.GetContext<Gw2ClientContext>().TryGetClientType(out var contextResult);
-
-            switch (checkClientTypeResult) {
-                case ContextAvailability.Available:
-                    _clientType    = contextResult.Value;
-                    _checkedClient = true;
-
-                    Logger.Info("Detected Guild Wars 2 client to be the {clientVersionType} version.", _clientType);
-                    break;
-                case ContextAvailability.Unavailable:
-                case ContextAvailability.NotReady:
-                    Logger.Debug("Unable to detect current Guild Wars 2 client version: {statusForUnknown}.", contextResult.Status);
-                    break;
-                case ContextAvailability.Failed:
-                    Logger.Warn("Failed to detect current Guild Wars 2 client version: {statusForUnknown}", contextResult.Status);
-                    break;
-            }
+        private void BuildSettingTab() {
+            this.BlishHudWindow.AddTab(Strings.GameServices.SettingsService.SettingsTab,
+                                       Content.GetTexture("155052"),
+                                       () => new SettingsMenuView(this.SettingsTab),
+                                       int.MaxValue - 10);
         }
 
         protected override void Unload() {
@@ -230,8 +221,8 @@ namespace Blish_HUD {
             HandleEnqueuedUpdates(gameTime);
 
             if (GameIntegration.IsInGame) {
-                int offset = (_clientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
-                           + (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
+                int offset = /* Offset +1 if Chinese client */ (GameService.GameIntegration.ClientType.ClientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
+                           + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
 
                 CornerIcon.LeftOffset = offset * 36;
             }

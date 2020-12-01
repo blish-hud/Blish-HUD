@@ -68,13 +68,13 @@
                 return ContextAvailability.NotReady;
             }
 
-            var standardClient = IsStandardClientType(currentBuildId, out var standardCdnStatus);
+            var standardClient = IsStandardClientType(currentBuildId, out var _);
             if (standardClient.IsMatch) {
                 contextResult = new ContextResult<ClientType>(ClientType.Standard);
                 return ContextAvailability.Available;
             }
 
-            var chineseClient = IsChineseClientType(currentBuildId, out var chineseCdnStatus);
+            var chineseClient = IsChineseClientType(currentBuildId, out var _);
             if (chineseClient.IsMatch) {
                 contextResult = new ContextResult<ClientType>(ClientType.Chinese);
                 return ContextAvailability.Available;
