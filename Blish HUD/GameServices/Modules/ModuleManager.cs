@@ -24,6 +24,8 @@ namespace Blish_HUD.Modules {
         private bool _enabled              = false;
         private bool _forceAllowDependency = false;
 
+        public bool AssemblyLoaded => _moduleAssembly != null;
+
         public bool Enabled {
             get => _enabled;
             set {

@@ -7,6 +7,8 @@ namespace Blish_HUD.Content {
 
         private readonly string _directoryPath;
 
+        public string PhysicalPath => _directoryPath;
+
         public DirectoryReader(string directoryPath) {
             if (!Directory.Exists(directoryPath))
                 throw new DirectoryNotFoundException($"Directory path {directoryPath} not found.");

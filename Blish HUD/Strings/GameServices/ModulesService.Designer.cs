@@ -375,5 +375,95 @@ namespace Blish_HUD.Strings.GameServices {
                 return ResourceManager.GetString("NoModules_OpenFolder", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing....
+        /// </summary>
+        internal static string PkgInstall_Progress_Installing {
+            get {
+                return ResourceManager.GetString("PkgInstall_Progress_Installing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrading....
+        /// </summary>
+        internal static string PkgInstall_Progress_Upgrading {
+            get {
+                return ResourceManager.GetString("PkgInstall_Progress_Upgrading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downgrade.
+        /// </summary>
+        internal static string PkgManagement_Downgrade {
+            get {
+                return ResourceManager.GetString("PkgManagement_Downgrade", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        internal static string PkgManagement_Install {
+            get {
+                return ResourceManager.GetString("PkgManagement_Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking repository....
+        /// </summary>
+        internal static string PkgManagement_Progress_CheckingRepository {
+            get {
+                return ResourceManager.GetString("PkgManagement_Progress_CheckingRepository", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to pull root from package repo..
+        /// </summary>
+        internal static string PkgManagement_Progress_FailedToGetReleases {
+            get {
+                return ResourceManager.GetString("PkgManagement_Progress_FailedToGetReleases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to get or parse latest repo manifest..
+        /// </summary>
+        internal static string PkgManagement_Progress_FailedToReadOrParseRepoManifest {
+            get {
+                return ResourceManager.GetString("PkgManagement_Progress_FailedToReadOrParseRepoManifest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting module list....
+        /// </summary>
+        internal static string PkgManagement_Progress_GettingModuleList {
+            get {
+                return ResourceManager.GetString("PkgManagement_Progress_GettingModuleList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        internal static string PkgManagement_Update {
+            get {
+                return ResourceManager.GetString("PkgManagement_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Up to Date.
+        /// </summary>
+        internal static string PkgManagement_UpToDate {
+            get {
+                return ResourceManager.GetString("PkgManagement_UpToDate", resourceCulture);
+            }
+        }
     }
 }

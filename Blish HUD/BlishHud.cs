@@ -71,6 +71,8 @@ namespace Blish_HUD {
                 service.DoInitialize(this);
             }
 
+            TempUtil.HandleInternal();
+
             base.Initialize();
         }
 
