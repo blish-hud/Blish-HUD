@@ -117,7 +117,7 @@
         /// <remarks>
         /// <seealso cref="SrcAgent">SrcAgent</seealso> is now alive, dead, downed and other ambiguous stuff eg. when <seealso cref="SrcAgent">SrcAgent</seealso> is <seealso cref="Ag.Self">Self</seealso>, <seealso cref="DstAgent">DstAgent</seealso> is a reward id and <seealso cref="Value">Value</seealso> is a reward type such as a wiggly box.
         /// </remarks>
-        public bool   IsStateChange   { get; }
+        public StateChange IsStateChange   { get; }
         /// <summary>
         /// <see langword="True"/> if <seealso cref="SrcAgent">SrcAgent</seealso> is flanking <seealso cref="DstAgent">DstAgent</seealso> at time of event. Otherwise <see langword="false"/>.
         /// </summary>
@@ -154,7 +154,7 @@
             ulong  time,          ulong  srcAgent,     ulong  dstAgent,        int    value,           int  buffDmg, uint overStackValue, uint skillId,
             ushort srcInstId,     ushort dstInstId,    ushort srcMasterInstId, ushort dstMasterInstId, byte iff,     bool buff,
             byte   result,        bool   isActivation, bool   isBuffRemove,    bool   isNinety,        bool isFifty, bool isMoving,
-            bool   isStateChange, bool   isFlanking,   bool   isShields,       bool   isOffCycle,      byte pad61,   byte pad62, byte pad63,
+            StateChange   isStateChange, bool   isFlanking,   bool   isShields,       bool   isOffCycle,      byte pad61,   byte pad62, byte pad63,
             byte   pad64
         ) {
             this.Time            = time;
