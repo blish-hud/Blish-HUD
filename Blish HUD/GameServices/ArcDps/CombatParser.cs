@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using Blish_HUD.ArcDps.Models;
-
+using static Blish_HUD.ArcDps.ArcDpsEnums;
 namespace Blish_HUD.ArcDps {
 
     internal static class CombatParser {
@@ -45,12 +45,12 @@ namespace Blish_HUD.ArcDps {
             byte   iff;
             bool   buff;
             byte   result;
-            bool   isActivation;
-            bool   isBuffRemove;
+            byte   isActivation;
+            byte   isBuffRemove;
             bool   isNinety;
             bool   isFifty;
             bool   isMoving;
-            bool   isStateChange;
+            byte   isStateChange;
             bool   isFlanking;
             bool   isShields;
             bool   isOffCycle;
@@ -72,12 +72,12 @@ namespace Blish_HUD.ArcDps {
             (iff, offset)             = U8(data, offset);
             (buff, offset)            = B(data, offset);
             (result, offset)          = U8(data, offset);
-            (isActivation, offset)    = B(data, offset);
-            (isBuffRemove, offset)    = B(data, offset);
+            (isActivation, offset)    = U8(data, offset);
+            (isBuffRemove, offset)    = U8(data, offset);
             (isNinety, offset)        = B(data, offset);
             (isFifty, offset)         = B(data, offset);
             (isMoving, offset)        = B(data, offset);
-            (isStateChange, offset)   = B(data, offset);
+            (isStateChange, offset)   = U8(data, offset);
             (isFlanking, offset)      = B(data, offset);
             (isShields, offset)       = B(data, offset);
             (isOffCycle, offset)      = B(data, offset);
@@ -89,9 +89,9 @@ namespace Blish_HUD.ArcDps {
             var ev = new Ev(
                             time, srcAgent, dstAgent, value, buffDmg,
                             overStackValue, skillId, srcInstId, dstInstId,
-                            srcMasterInstId, dstMasterInstId, iff, buff, result,
-                            isActivation, isBuffRemove, isNinety, isFifty,
-                            isMoving, isStateChange,
+                            srcMasterInstId, dstMasterInstId, (IFF)iff, buff, result,
+                            (Activation)isActivation, (BuffRemove)isBuffRemove, isNinety, isFifty,
+                            isMoving, (StateChange)isStateChange,
                             isFlanking, isShields, isOffCycle, pad61, pad62,
                             pad63, pad64
                            );
