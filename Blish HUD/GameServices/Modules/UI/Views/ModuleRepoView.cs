@@ -1,6 +1,7 @@
 ﻿using System;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
+using Blish_HUD.Input;
 using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Presenters;
 using Microsoft.Xna.Framework;
@@ -9,6 +10,8 @@ namespace Blish_HUD.Modules.UI.Views {
     public class ModuleRepoView : View {
 
         public FlowPanel RepoFlowPanel { get; private set; }
+
+        public ContextMenuStrip SettingsMenu { get; private set; }
 
         private TextBox _searchbox;
 
@@ -34,6 +37,8 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent           = buildPanel
             };
 
+            this.SettingsMenu = new ContextMenuStrip();
+
             this.RepoFlowPanel = new FlowPanel() {
                 Width               = buildPanel.Width,
                 Height              = buildPanel.Height - _searchbox.Bottom - 12,
@@ -45,6 +50,10 @@ namespace Blish_HUD.Modules.UI.Views {
             };
 
             _searchbox.TextChanged += SearchboxOnTextChanged;
+
+            settingsButton.Click += delegate(object sender, MouseEventArgs args) {
+                SettingsMenu.Show((Control) sender);
+            };
         }
 
         private void SearchboxOnTextChanged(object sender, EventArgs e) {

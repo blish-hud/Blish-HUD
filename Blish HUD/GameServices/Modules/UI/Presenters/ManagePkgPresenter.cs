@@ -149,7 +149,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void SetUi() {
-            this.View.ModuleVersions = this.Model.Select(m => m.Version);
+            this.View.ModuleVersions = this.Model.Select(m => m.Version).OrderByDescending(v => v);
 
             if (_existingModule != null) {
                 if (this.Model.Max(m => m.Version) > _existingModule.Manifest.Version) {

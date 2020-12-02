@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
+using Blish_HUD.Input;
 using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Views;
 using Microsoft.Xna.Framework;
@@ -30,6 +31,12 @@ namespace Blish_HUD.Modules.UI.Presenters {
                 nPanel.Parent = this.View.RepoFlowPanel;
 
                 nPanel.Show(pkgView.WithPresenter(new ManagePkgPresenter(pkgView, pkgManifest)));
+            }
+
+            foreach (var option in this.Model.GetExtraOptions()) {
+                this.View.SettingsMenu.AddMenuItem(option.OptionName).Click += delegate {
+                    option.OptionAction();
+                };
             }
         }
 
