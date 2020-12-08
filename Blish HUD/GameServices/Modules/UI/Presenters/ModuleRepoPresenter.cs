@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
-using Blish_HUD.Input;
 using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Views;
 using Microsoft.Xna.Framework;
