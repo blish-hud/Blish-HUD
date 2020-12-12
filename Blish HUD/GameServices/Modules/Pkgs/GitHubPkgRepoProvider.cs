@@ -89,18 +89,13 @@ namespace Blish_HUD.Modules.Pkgs {
 
                 try {
                     using var compressedRelease = await compressedReleaseUrl.GetStreamAsync();
-                    compressedRelease.Seek(-4, SeekOrigin.End);
-                    var lengthBytes = new byte[4];
-                    await compressedRelease.ReadAsync(lengthBytes, 0, 4);
 
-                    int length = BitConverter.ToInt32(lengthBytes, 0);
-                    compressedRelease.Position = 0;
                     using var gzipStream = new GZipStream(compressedRelease, CompressionMode.Decompress);
-                    var       result     = new byte[length];
-                    gzipStream.Read(result, 0, length);
+                    using var streamReader = new StreamReader(gzipStream);
+                    using var jsonTextReader = new JsonTextReader(streamReader);
+                    var serializer = new JsonSerializer();
 
-                    string rawJson = Encoding.UTF8.GetString(result);
-                    return (JsonConvert.DeserializeObject<PkgManifest[]>(rawJson), null);
+                    return (serializer.Deserialize<PkgManifest[]>(jsonTextReader), null);
                 } catch (Exception ex) {
                     Logger.Warn(ex, $"Failed to load release list from '{compressedReleaseUrl}'.");
                     lastException = ex;
