@@ -8,28 +8,32 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - run: git fetch --prune --unshallow
-      - uses: microsoft/setup-msbuild@v1.0.0
+        with:
+          fetch-depth: 0
+      - uses: microsoft/setup-msbuild@v1.0.2
 
-      - name: Patch PR build version
+      # GitVersion action doesn't support /ensureassemblyinfo, see https://github.com/GitTools/actions/issues/220
+      # So we need to create a new file to let GitVersion populate it
+      - name: Create assembly info file for GitVersion
         shell: powershell
         run: |
-          $version = GitVersion /output json /updateassemblyinfo "Blish HUD/Properties/AssemblyVersionInfo.cs" /ensureassemblyinfo
-          Write-Output $version
-          $version = $version | ConvertFrom-Json
-          $nuget = $version.SemVer
-          Write-Output "Assembly version: $($version.AssemblySemVer)"
-          Write-Output "Assembly file version: $($version.AssemblySemFileVer)"
-          Write-Output "Informational version: $($version.InformationalVersion)"
-          Write-Output "NuGet version: $nuget"
-          echo "::set-env name=VERSION::$nuget"
+          set-Content -Path 'Blish HUD/Properties/AssemblyVersionInfo.cs' -Value 'using System.Reflection;'
+      - uses: gittools/actions/gitversion/setup@v0.9.6
+        with:
+          versionSpec: '5.x'
+
+      - uses: gittools/actions/gitversion/execute@v0.9.6
+        id: gitversion
+        with:
+          updateAssemblyInfo: true
+          updateAssemblyInfoFilename: Blish HUD/Properties/AssemblyVersionInfo.cs
 
       - name: Run msbuild restore
         run: msbuild -t:restore
       - name: Run msbuild
-        run: msbuild -p:Configuration=Release -p:VERSIONED_BUILD=$env:VERSION
+        run: msbuild -p:Configuration=Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }}
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: Blish HUD.${{ env.VERSION }}
+          name: Blish HUD.${{ steps.gitversion.outputs.semVer }}
           path: Blish HUD/bin/x64/Release/net472
