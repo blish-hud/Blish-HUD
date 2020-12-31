@@ -21,7 +21,8 @@ namespace Blish_HUD.Modules {
 
         private Assembly _moduleAssembly;
 
-        private bool _enabled = false;
+        private bool _enabled              = false;
+        private bool _forceAllowDependency = false;
 
         public bool Enabled {
             get => _enabled;
@@ -124,7 +125,7 @@ namespace Blish_HUD.Modules {
         }
 
         private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args) {
-            if (_enabled) {
+            if (_enabled || _forceAllowDependency) {
                 var assemblyDetails = new AssemblyName(args.Name);
 
                 string assemblyPath = $"{assemblyDetails.Name}.dll";
@@ -185,6 +186,8 @@ namespace Blish_HUD.Modules {
 
             container.ComposeExportedValue("ModuleParameters", parameters);
 
+            _forceAllowDependency = true;
+
             try {
                 container.SatisfyImportsOnce(this);
             } catch (CompositionException ex) {
@@ -192,6 +195,8 @@ namespace Blish_HUD.Modules {
             } catch (FileNotFoundException ex) {
                 Logger.Warn(ex, "Module {module} failed to load a dependency.", _manifest.GetDetailedName());
             }
+
+            _forceAllowDependency = false;
         }
 
     }
