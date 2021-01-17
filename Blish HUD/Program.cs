@@ -52,7 +52,7 @@ namespace Blish_HUD {
                                                            ? $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}"
                                                            : $"{APP_GUID}");
 
-                if (!_singleInstanceMutex?.WaitOne(TimeSpan.Zero, true) ?? false) {
+                if (!_singleInstanceMutex.WaitOne(TimeSpan.Zero, true)) {
                     Logger.Warn("Blish HUD is already running!");
                     return;
                 }
@@ -65,7 +65,7 @@ namespace Blish_HUD {
             }
 
             if (!ApplicationSettings.Instance.RestartSkipMutex) {
-                _singleInstanceMutex?.ReleaseMutex();
+                _singleInstanceMutex.ReleaseMutex();
             }
         }
 
