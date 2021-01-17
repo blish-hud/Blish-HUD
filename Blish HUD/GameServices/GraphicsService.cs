@@ -95,7 +95,7 @@ namespace Blish_HUD {
         protected override void Initialize() {
             // If for some reason we lose the rendering device, just restart the application
             // Might do better error handling later on
-            ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { System.Windows.Forms.Application.Restart(); };
+            ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { GameService.Overlay.Restart(); };
 
             _uiScaleMultiplier = GetScaleRatio(UiSize.Normal);
             _uiScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);

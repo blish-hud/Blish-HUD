@@ -45,22 +45,28 @@ namespace Blish_HUD {
             EnableLogging();
 
             Logger.Debug("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
+            
+            if (!ApplicationSettings.Instance.RestartSkipMutex) {
+                // Single instance handling
+                _singleInstanceMutex = new Mutex(true, ApplicationSettings.Instance.MumbleMapName != null
+                                                           ? $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}"
+                                                           : $"{APP_GUID}");
 
-            // Single instance handling
-            _singleInstanceMutex = new Mutex(true, ApplicationSettings.Instance.MumbleMapName != null
-                                                       ? $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}"
-                                                       : $"{APP_GUID}");
-
-            if (!_singleInstanceMutex.WaitOne(TimeSpan.Zero, true)) {
-                Logger.Warn("Blish HUD is already running!");
-                return;
+                if (!_singleInstanceMutex?.WaitOne(TimeSpan.Zero, true) ?? false) {
+                    Logger.Warn("Blish HUD is already running!");
+                    return;
+                }
+            } else {
+                Logger.Info("Skipping mutex for requested restart.");
             }
 
             using (var game = new BlishHud()) {
                 game.Run();
             }
 
-            _singleInstanceMutex.ReleaseMutex();
+            if (!ApplicationSettings.Instance.RestartSkipMutex) {
+                _singleInstanceMutex?.ReleaseMutex();
+            }
         }
 
     }
