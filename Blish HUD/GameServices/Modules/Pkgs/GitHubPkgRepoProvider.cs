@@ -50,27 +50,27 @@ namespace Blish_HUD.Modules.Pkgs {
                 _pkgCache[this.RepoUrl] = await LoadRepo(progress);
             }
 
-            return _pkgCache != null;
+            return true;
         }
 
         private async Task<PkgManifest[]> LoadRepo(IProgress<string> progress = null) {
             progress?.Report(Strings.GameServices.ModulesService.PkgManagement_Progress_CheckingRepository);
             var releaseResult = await UpdateGitHubReleases();
-
-            if (releaseResult.Exception == null) {
-                progress?.Report(Strings.GameServices.ModulesService.PkgManagement_Progress_GettingModuleList);
-                var manifests = await LoadPkgManifests(releaseResult.Releases);
-
-                if (manifests.Exception == null) {
-                    return manifests.PkgManifests;
-                } else {
-                    progress?.Report($"{Strings.GameServices.ModulesService.PkgManagement_Progress_FailedToReadOrParseRepoManifest}\r\n{manifests.Exception.Message}");
-                }
-            } else {
+            
+            if (releaseResult.Exception != null) {
                 progress?.Report($"{Strings.GameServices.ModulesService.PkgManagement_Progress_FailedToGetReleases}\r\n{releaseResult.Exception.Message}");
+                return null;
             }
 
-            return null;
+            progress?.Report(Strings.GameServices.ModulesService.PkgManagement_Progress_GettingModuleList);
+            var manifests = await LoadPkgManifests(releaseResult.Releases);
+
+            if (manifests.Exception != null) {
+                progress?.Report($"{Strings.GameServices.ModulesService.PkgManagement_Progress_FailedToReadOrParseRepoManifest}\r\n{manifests.Exception.Message}");
+                return null;    
+            }
+
+            return manifests.PkgManifests;
         }
 
         private async Task<(GitHubRelease[] Releases, Exception Exception)> UpdateGitHubReleases() {
@@ -106,12 +106,7 @@ namespace Blish_HUD.Modules.Pkgs {
         }
 
         public IEnumerable<PkgManifest> GetPkgManifests(params Func<PkgManifest, bool>[] filters) {
-            foreach (var pkg in from pkg in _pkgCache[this.RepoUrl]
-                                let include = filters.All(filter => filter(pkg))
-                                where include
-                                select pkg) {
-                yield return pkg;
-            }
+            return _pkgCache[this.RepoUrl].Where(pkg => filters.All(filter => filter(pkg)));
         }
 
         public IEnumerable<(string OptionName, Action OptionAction)> GetExtraOptions() {
