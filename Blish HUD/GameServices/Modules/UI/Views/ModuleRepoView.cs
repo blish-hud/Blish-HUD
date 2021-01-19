@@ -15,6 +15,10 @@ namespace Blish_HUD.Modules.UI.Views {
 
         private TextBox _searchbox;
 
+        private StandardButton _restartBlishHud;
+
+        private Label _restartBlishHudWarning;
+
         public ModuleRepoView() { /* NOOP */ }
 
         public ModuleRepoView(IPkgRepoProvider pkgRepoProvider) {
@@ -24,7 +28,7 @@ namespace Blish_HUD.Modules.UI.Views {
         protected override void Build(Panel buildPanel) {
             _searchbox = new TextBox() {
                 PlaceholderText = "Search...",
-                Width           = buildPanel.Width - (32 + 24),
+                Width           = buildPanel.Width        - (32 + 24),
                 Parent          = buildPanel
             };
 
@@ -41,7 +45,7 @@ namespace Blish_HUD.Modules.UI.Views {
 
             this.RepoFlowPanel = new FlowPanel() {
                 Width               = buildPanel.Width,
-                Height              = buildPanel.Height - _searchbox.Bottom - 12,
+                Height              = buildPanel.Height - _searchbox.Bottom - 12 - 27 - 5,
                 Top                 = _searchbox.Bottom                     + 12,
                 CanScroll           = true,
                 ControlPadding      = new Vector2(0, 5),
@@ -49,7 +53,30 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent              = buildPanel
             };
 
+            _restartBlishHud = new StandardButton() {
+                Text    = "Restart Blish HUD",
+                Width   = 128,
+                Enabled = false,
+                Top     = this.RepoFlowPanel.Bottom + 5,
+                Parent  = buildPanel,
+            };
+
+            _restartBlishHudWarning = new Label() {
+                Text              = "Some module changes that have been made will require Blish HUD to restart.",
+                AutoSizeWidth     = true,
+                AutoSizeHeight    = false,
+                VerticalAlignment = VerticalAlignment.Middle,
+                TextColor         = Color.Yellow, // TODO: Warning color
+                Height            = _restartBlishHud.Height,
+                Location          = new Point(_restartBlishHud.Right + 5, _restartBlishHud.Top),
+                Parent            = buildPanel
+            };
+
             _searchbox.TextChanged += SearchboxOnTextChanged;
+
+            _restartBlishHud.Click += (object sender, MouseEventArgs args) => {
+                GameService.Overlay.Restart();
+            };
 
             settingsButton.Click += delegate(object sender, MouseEventArgs args) {
                 SettingsMenu.Show((Control) sender);
