@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Blish_HUD.Contexts;
@@ -107,13 +109,42 @@ namespace Blish_HUD {
         /// Instructs Blish HUD to unload and exit.
         /// </summary>
         public void Exit() {
+            this.BeginExit(FORCE_EXIT_TIMEOUT);
+
+            ActiveBlishHud.Exit();
+        }
+
+        private void BeginExit(int timeout) {
             GameService.Settings.Save(true);
 
-            (new Thread(() => {
-                            Thread.Sleep(FORCE_EXIT_TIMEOUT);
-                            Logger.Warn("Unload took too long. Forcing exit.");
-                            Environment.Exit(0);
-                        }) {IsBackground = true}).Start();
+            if (timeout > 0) {
+                (new Thread(() => {
+                                Thread.Sleep(timeout);
+                                Logger.Warn($"Unload took too long (longer than {timeout} ms). Forcing exit.");
+                                Environment.Exit(0);
+                            }) {IsBackground = true}).Start();
+            }
+        } 
+        
+        /// <summary>
+        /// Instructs Blish HUD to unload and then restart.
+        /// </summary>
+        public void Restart() {
+            this.BeginExit(0);
+
+            // REF: https://referencesource.microsoft.com/#System.Windows.Forms/winforms/Managed/System/WinForms/Application.cs,1447
+
+            var arguments = Environment.GetCommandLineArgs()
+                                                      .Skip(1)
+                                                      .Where(arg => !string.Equals(arg, $"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}", StringComparison.OrdinalIgnoreCase))
+                                                      .Append($"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}")
+                                                      .Select(arg => $"\"{arg}\"");
+
+            var currentStartInfo = Process.GetCurrentProcess().StartInfo;
+            currentStartInfo.FileName  = Application.ExecutablePath;
+            currentStartInfo.Arguments = string.Join(" ", arguments);
+
+            Process.Start(currentStartInfo);
 
             ActiveBlishHud.Exit();
         }
@@ -189,7 +220,7 @@ namespace Blish_HUD {
             };
 
             this.BlishContextMenu                                                                                          =  this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD)).Click += delegate { Application.Restart(); Exit(); };
+            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD)).Click += delegate { Restart(); };
             this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit,    Strings.Common.BlishHUD)).Click += delegate { Exit(); };
 
             this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
