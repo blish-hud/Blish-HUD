@@ -7,9 +7,9 @@ namespace Blish_HUD.Modules.Pkgs {
 
         Task<bool> Load(IProgress<string> progress);
 
-        IEnumerable<PkgManifest> GetPkgManifests(params Func<PkgManifest, bool>[] filters);
+        IEnumerable<PkgManifest> GetPkgManifests();
 
-        IEnumerable<(string OptionName, Action OptionAction)> GetExtraOptions();
+        IEnumerable<(string OptionName, Action<bool> OptionAction, bool IsToggle)> GetExtraOptions();
 
     }
 }

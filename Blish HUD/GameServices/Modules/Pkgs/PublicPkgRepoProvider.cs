@@ -11,6 +11,7 @@
         protected override string RepoUrl => _repoUrl;
 
         public PublicPkgRepoProvider() {
+            // Allow manual override of built-in package repo
             _repoUrl = GameService.Settings
                                   .RegisterRootSettingCollection(REPO_SETTINGS)
                                   .DefineSetting(REPO_URL_SETTING, BHUDPKGS_REPOURL).Value;

@@ -91,6 +91,11 @@ namespace Blish_HUD.Content {
         /// </returns>
         Task<byte[]> GetFileBytesAsync(string filePath);
 
+        /// <summary>
+        /// Deletes the root of what this <see cref="IDataReader"/> is representing.
+        /// </summary>
+        void DeleteRoot();
+
     }
 
 }

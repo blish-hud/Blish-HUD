@@ -23,7 +23,7 @@ namespace Blish_HUD.Modules.Pkgs {
         [JsonProperty("contributors", Required = Required.Always)]
         public List<ModuleContributor> Contributors { get; private set; }
 
-        [JsonProperty("dependencies"), JsonConverter(typeof(ModuleDependency.VersionDependenciesConverter))]
+        [JsonProperty("dependencies", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(ModuleDependency.VersionDependenciesConverter))]
         public List<ModuleDependency> Dependencies { get; private set; } = new List<ModuleDependency>(0);
 
         [JsonProperty("location", Required = Required.Always)]

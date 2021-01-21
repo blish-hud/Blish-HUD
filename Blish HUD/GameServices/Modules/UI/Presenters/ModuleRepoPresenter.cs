@@ -17,25 +17,35 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         protected override void UpdateView() {
+            UpdateExtraOptionsView();
+            UpdatePackagesView();
+        }
+
+        private void UpdateExtraOptionsView() {
+            foreach (var option in this.Model.GetExtraOptions()) {
+                var menuItem = this.View.SettingsMenu.AddMenuItem(option.OptionName);
+                menuItem.CanCheck = option.IsToggle;
+                menuItem.Click += delegate {
+                    option.OptionAction(menuItem.Checked);
+
+                    UpdatePackagesView();
+                };
+            }
+        }
+
+        private void UpdatePackagesView() {
+            this.View.RepoFlowPanel.ClearChildren();
+
             bool s = true;
 
             foreach (var pkgManifest in this.Model.GetPkgManifests().GroupBy(m => m.Namespace)) {
-                var nPanel = new ViewContainer() {
+                var nPanel = new ViewContainer {
                     Size     = new Point(this.View.RepoFlowPanel.Width - 25, 64),
-                    ShowTint = (s = !s)
+                    ShowTint = (s = !s),
+                    Parent   = this.View.RepoFlowPanel
                 };
 
-                var pkgView = new ManagePkgView();
-
-                nPanel.Parent = this.View.RepoFlowPanel;
-
-                nPanel.Show(pkgView.WithPresenter(new ManagePkgPresenter(pkgView, pkgManifest)));
-            }
-
-            foreach (var option in this.Model.GetExtraOptions()) {
-                this.View.SettingsMenu.AddMenuItem(option.OptionName).Click += delegate {
-                    option.OptionAction();
-                };
+                nPanel.Show(new ManagePkgView(pkgManifest));
             }
         }
 

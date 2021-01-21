@@ -39,6 +39,8 @@ namespace Blish_HUD.Modules.Pkgs {
 
         private static readonly Dictionary<string, PkgManifest[]> _pkgCache = new Dictionary<string, PkgManifest[]>();
 
+        private readonly List<Func<PkgManifest, bool>> _activeFilters = new List<Func<PkgManifest, bool>>();
+
         protected GitHubPkgRepoProvider() { /* NOOP */ }
 
         public GitHubPkgRepoProvider(string repoUrl) {
@@ -105,12 +107,46 @@ namespace Blish_HUD.Modules.Pkgs {
             return (null, lastException);
         }
 
-        public IEnumerable<PkgManifest> GetPkgManifests(params Func<PkgManifest, bool>[] filters) {
-            return _pkgCache[this.RepoUrl].Where(pkg => filters.All(filter => filter(pkg)));
+        public IEnumerable<PkgManifest> GetPkgManifests() {
+            return _pkgCache[this.RepoUrl].Where(pkg => _activeFilters.All(filter => filter(pkg)));
         }
 
-        public IEnumerable<(string OptionName, Action OptionAction)> GetExtraOptions() {
-            yield return ("Force Reload Repository", async () => { await LoadRepo(); });
+        public IEnumerable<(string OptionName, Action<bool> OptionAction, bool IsToggle)> GetExtraOptions() {
+            yield return ("Force Reload Repository", async (toggleState) => { await LoadRepo(); }, false);
+
+            yield return ("Only Show Supported Versions", (toggleState) => ToggleFilter(FilterShowOnlySupportedVersion, toggleState), true);
+            yield return ("Only Show Modules With Updates", (toggleState) => ToggleFilter(FilterShowOnlyUpdates,        toggleState), true);
+            yield return ("Only Show Installed Modules", (toggleState) => ToggleFilter(FilterShowOnlyInstalled,         toggleState), true);
+            yield return ("Only Show Modules Not Installed", (toggleState) => ToggleFilter(FilterShowOnlyNotInstalled,  toggleState), true);
+        }
+
+        private void ToggleFilter(Func<PkgManifest, bool> filterFunc, bool state) {
+            if (state) {
+                _activeFilters.Add(filterFunc);
+            } else {
+                _activeFilters.Remove(filterFunc);
+            }
+        }
+
+        private static bool FilterShowOnlySupportedVersion(PkgManifest pkgManifest) {
+            var blishHudDependency = pkgManifest.Dependencies.Find(d => d.IsBlishHud);
+
+            return blishHudDependency != null
+                && blishHudDependency.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available;
+        }
+
+        private static bool FilterShowOnlyUpdates(PkgManifest pkgManifest) {
+            return GameService.Module.Modules.Any(m =>
+                                                      string.Equals(m.Manifest.Namespace, pkgManifest.Namespace, StringComparison.OrdinalIgnoreCase)
+                                                   && m.Manifest.Version < pkgManifest.Version);
+        }
+
+        private static bool FilterShowOnlyInstalled(PkgManifest pkgManifest) {
+            return GameService.Module.Modules.Any(m => string.Equals(m.Manifest.Namespace, pkgManifest.Namespace, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static bool FilterShowOnlyNotInstalled(PkgManifest pkgManifest) {
+            return !FilterShowOnlyInstalled(pkgManifest);
         }
 
     }

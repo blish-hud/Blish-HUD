@@ -15,6 +15,12 @@ namespace Blish_HUD.Modules.UI.Views {
 
     public class ManagePkgView : View {
 
+        public enum PkgVersionRelationship {
+            NotInstalled,
+            CanUpdate,
+            CurrentVersion
+        }
+
         public event EventHandler<ValueEventArgs<Version>> VersionSelected;
         public event EventHandler<EventArgs>               ActionClicked;
 
@@ -96,14 +102,36 @@ namespace Blish_HUD.Modules.UI.Views {
             }
         }
 
-        public bool CanUpdate {
-            get => _statusImage?.Visible ?? throw new ViewNotBuiltException();
-            set => (_statusImage ?? throw new ViewNotBuiltException()).Visible = value;
+        private void SetRelationIcon(PkgVersionRelationship pkgVersionRelationship) {
+            switch (pkgVersionRelationship) {
+                case PkgVersionRelationship.NotInstalled:
+                    _statusImage.Visible      = false;
+                    break;
+                case PkgVersionRelationship.CanUpdate:
+                    _statusImage.Texture          = GameService.Content.GetTexture("common/157397");
+                    _statusImage.BasicTooltipText = "A newer version of this module is available.";
+                    _statusImage.Visible          = true;
+                    break;
+                case PkgVersionRelationship.CurrentVersion:
+                    _statusImage.Texture          = GameService.Content.GetTexture("common/157330");
+                    _statusImage.BasicTooltipText = "This module is installed and up to date.";
+                    _statusImage.Visible          = true;
+                    break;
+            }
         }
 
-        public bool RequiresUpdate { get; set; }
+        private PkgVersionRelationship _versionRelationship = PkgVersionRelationship.NotInstalled;
 
-        public SemVer.Range ModuleSupportedBlishHudVersion { get; set; }
+        public PkgVersionRelationship VersionRelationship {
+            get => _versionRelationship;
+            set {
+                if (_statusImage == null) throw new ViewNotBuiltException();
+
+                _versionRelationship = value;
+
+                SetRelationIcon(value);
+            }
+        }
 
         private Label          _nameLabel;
         private Label          _authLabel;

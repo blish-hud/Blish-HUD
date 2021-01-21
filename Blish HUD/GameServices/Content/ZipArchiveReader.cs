@@ -33,13 +33,11 @@ namespace Blish_HUD.Content {
         public IDataReader GetSubPath(string subPath) {
             return new ZipArchiveReader(_archivePath, Path.Combine(subPath));
         }
-
-        /// <inheritdoc />
+        
         public string GetPathRepresentation(string relativeFilePath = null) {
             return $"{_archivePath}[{Path.GetFileName(Path.Combine(_subPath, relativeFilePath ?? string.Empty))}]";
         }
-
-        /// <inheritdoc />
+        
         public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {
             var validEntries = _archive.Entries.Where(e => e.Name.EndsWith($"{fileExtension}", StringComparison.OrdinalIgnoreCase)).ToList();
 
@@ -50,8 +48,7 @@ namespace Blish_HUD.Content {
                 loadFileFunc.Invoke(entryStream, this);
             }
         }
-
-        /// <inheritdoc />
+        
         public bool FileExists(string filePath) {
             return _archive.Entries.Any(entry =>
                 string.Equals(GetUniformFileName(entry.FullName), GetUniformFileName(Path.Combine(_subPath, filePath)), StringComparison.OrdinalIgnoreCase)
@@ -75,8 +72,7 @@ namespace Blish_HUD.Content {
 
             return null;
         }
-
-        /// <inheritdoc />
+        
         public Stream GetFileStream(string filePath) {
             ZipArchiveEntry fileEntry;
 
@@ -96,8 +92,7 @@ namespace Blish_HUD.Content {
 
             return null;
         }
-
-        /// <inheritdoc />
+        
         public byte[] GetFileBytes(string filePath) {
             // We know GetFileStream returns a MemoryStream, so we don't check
             using (var fileStream = GetFileStream(filePath) as MemoryStream) {
@@ -108,8 +103,7 @@ namespace Blish_HUD.Content {
 
             return null;
         }
-
-        /// <inheritdoc />
+        
         public int GetFileBytes(string filePath, out byte[] fileBuffer) {
             fileBuffer = null;
 
@@ -136,7 +130,12 @@ namespace Blish_HUD.Content {
             return await Task.FromResult(GetFileBytes(filePath));
         }
 
-        /// <inheritdoc />
+        public void DeleteRoot() {
+            this.Dispose();
+            
+            File.Delete(_archivePath);
+        }
+        
         public void Dispose() {
             _archive?.Dispose();
         }
