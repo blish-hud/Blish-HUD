@@ -29,7 +29,8 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private void FinalizeInstalledPackage(string modulePath) {
             if (_existingModule != null) {
-                if (!GameService.Module.UnregisterModule(_existingModule)) return;
+                _existingModule.DataReader.DeleteRoot();
+                _existingModule.Dispose();
             }
 
             _existingModule = GameService.Module.RegisterPackedModule(modulePath);
@@ -58,12 +59,11 @@ namespace Blish_HUD.Modules.UI.Presenters {
                     if (!File.Exists(fullPath)) {
                         File.WriteAllBytes(fullPath, downloadedModule);
                     } else {
-                        Logger.Info($"Module already exists at path '{fullPath}'.");
+                        Logger.Warn($"Module already exists at path '{fullPath}'.");
+                        return;
                     }
 
                     Logger.Info($"Module saved to '{fullPath}'.");
-
-                    TempUtil.VoidFilePendingDeletion(fullPath);
 
                     FinalizeInstalledPackage(fullPath);
                 } else {
@@ -77,6 +77,13 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private async Task ReplacePackage() {
             Logger.Info($"Package replacement initiated for {_existingModule.Manifest.GetDetailedName()}.");
 
+            bool wasEnabled = _existingModule.Enabled;
+
+            if (wasEnabled) {
+                this.View.PackageActionText = "Disabling module...";
+                _existingModule.Disable();
+            }
+
             this.View.PackageActionText = Strings.GameServices.ModulesService.PkgInstall_Progress_Upgrading;
 
             string moduleName = Path.GetFileName(_existingModule.DataReader.PhysicalPath);
@@ -88,13 +95,13 @@ namespace Blish_HUD.Modules.UI.Presenters {
                 return;
             }
 
-            TempUtil.EnqueueFileForDeletion(_existingModule.DataReader.PhysicalPath);
-
             await InstallPackage();
-        }
 
-        private void DeletePackage() {
-
+            if (wasEnabled && _existingModule != null) {
+                // Ensure that module is set to enabled for when Blish HUD restarts
+                GameService.Module.ModuleStates.Value[_existingModule.Manifest.Namespace].Enabled = true;
+                GameService.Settings.Save();
+            }
         }
 
         private Version GetDefaultVersion() {
@@ -138,7 +145,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
                 }
 
                 // The selected version is the current version
-                return (null, Strings.GameServices.ModulesService.PkgManagement_UpToDate);
+                return (null, Strings.GameServices.ModulesService.PkgManagement_CurrentVersion);
             } else {
                 // We don't have this module at all
                 return (InstallPackage, Strings.GameServices.ModulesService.PkgManagement_Install);

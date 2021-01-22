@@ -88,7 +88,7 @@ namespace Blish_HUD.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exit.
+        ///   Looks up a localized string similar to Exit {0}.
         /// </summary>
         internal static string Action_Exit {
             get {
@@ -97,7 +97,7 @@ namespace Blish_HUD.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restart.
+        ///   Looks up a localized string similar to Restart {0}.
         /// </summary>
         internal static string Action_Restart {
             get {
@@ -129,6 +129,15 @@ namespace Blish_HUD.Strings {
         internal static string Options {
             get {
                 return ResourceManager.GetString("Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search....
+        /// </summary>
+        internal static string PlaceholderSearch {
+            get {
+                return ResourceManager.GetString("PlaceholderSearch", resourceCulture);
             }
         }
         

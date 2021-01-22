@@ -395,6 +395,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current Version.
+        /// </summary>
+        internal static string PkgManagement_CurrentVersion {
+            get {
+                return ResourceManager.GetString("PkgManagement_CurrentVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downgrade.
         /// </summary>
         internal static string PkgManagement_Downgrade {
@@ -409,6 +418,15 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string PkgManagement_Install {
             get {
                 return ResourceManager.GetString("PkgManagement_Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blish HUD requires a restart before some modules can be re-enabled..
+        /// </summary>
+        internal static string PkgManagement_ModulesNeedRestart {
+            get {
+                return ResourceManager.GetString("PkgManagement_ModulesNeedRestart", resourceCulture);
             }
         }
         
@@ -454,15 +472,6 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string PkgManagement_Update {
             get {
                 return ResourceManager.GetString("PkgManagement_Update", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Up to Date.
-        /// </summary>
-        internal static string PkgManagement_UpToDate {
-            get {
-                return ResourceManager.GetString("PkgManagement_UpToDate", resourceCulture);
             }
         }
     }

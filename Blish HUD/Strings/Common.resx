@@ -128,4 +128,8 @@
   <data name="Action_Restart" xml:space="preserve">
     <value>Restart {0}</value>
   </data>
+  <data name="PlaceholderSearch" xml:space="preserve">
+    <value>Search...</value>
+    <comment>Shown in search boxes as a placeholder</comment>
+  </data>
 </root>

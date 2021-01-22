@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Modules.Managers {
-    public class ContentsManager {
+    public class ContentsManager : IDisposable {
 
         protected static readonly Logger Logger = Logger.GetLogger<ContentsManager>();
 
@@ -111,6 +111,10 @@ namespace Blish_HUD.Modules.Managers {
         /// <param name="filePath">The path to the file.</param>
         public Stream GetFileStream(string filePath) {
             return _reader.GetFileStream(filePath);
+        }
+
+        public void Dispose() {
+            _reader?.Dispose();
         }
 
     }

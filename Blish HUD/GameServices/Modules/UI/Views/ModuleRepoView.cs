@@ -1,23 +1,26 @@
 ﻿using System;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
-using Blish_HUD.Input;
+using Blish_HUD.Graphics.UI.Exceptions;
 using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Presenters;
+using Blish_HUD.Strings.GameServices;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Modules.UI.Views {
     public class ModuleRepoView : View {
 
-        public FlowPanel RepoFlowPanel { get; private set; }
+        public FlowPanel        RepoFlowPanel { get; private set; }
+        public ContextMenuStrip SettingsMenu  { get; private set; }
 
-        public ContextMenuStrip SettingsMenu { get; private set; }
-
-        private TextBox _searchbox;
-
+        private TextBox        _searchbox;
         private StandardButton _restartBlishHud;
+        private Label          _restartBlishHudWarning;
 
-        private Label _restartBlishHudWarning;
+        public bool DirtyAssemblyStateExists {
+            get => (_restartBlishHud ?? throw new ViewNotBuiltException()).Visible;
+            set => _restartBlishHudWarning.Visible = (_restartBlishHud ?? throw new ViewNotBuiltException()).Visible = value;
+        }
 
         public ModuleRepoView() { /* NOOP */ }
 
@@ -26,13 +29,13 @@ namespace Blish_HUD.Modules.UI.Views {
         }
 
         protected override void Build(Panel buildPanel) {
-            _searchbox = new TextBox() {
-                PlaceholderText = "Search...",
-                Width           = buildPanel.Width        - (32 + 24),
+            _searchbox = new TextBox {
+                PlaceholderText = Strings.Common.PlaceholderSearch,
+                Width           = buildPanel.Width - 56,
                 Parent          = buildPanel
             };
 
-            var settingsButton = new GlowButton() {
+            var settingsButton = new GlowButton {
                 Location         = new Point(_searchbox.Right + 4, _searchbox.Top),
                 Icon             = GameService.Content.GetTexture("common/157109"),
                 ActiveIcon       = GameService.Content.GetTexture("common/157110"),
@@ -43,9 +46,9 @@ namespace Blish_HUD.Modules.UI.Views {
 
             this.SettingsMenu = new ContextMenuStrip();
 
-            this.RepoFlowPanel = new FlowPanel() {
+            this.RepoFlowPanel = new FlowPanel {
                 Width               = buildPanel.Width,
-                Height              = buildPanel.Height - _searchbox.Bottom - 12 - 27 - 5,
+                Height              = buildPanel.Height - _searchbox.Bottom - 44,
                 Top                 = _searchbox.Bottom                     + 12,
                 CanScroll           = true,
                 ControlPadding      = new Vector2(0, 5),
@@ -53,38 +56,41 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent              = buildPanel
             };
 
-            _restartBlishHud = new StandardButton() {
-                Text    = "Restart Blish HUD",
-                Width   = 128,
-                Enabled = false,
+            _restartBlishHud = new StandardButton {
+                Text    = string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD),
+                Width   = 132,
                 Top     = this.RepoFlowPanel.Bottom + 5,
+                Right   = this.RepoFlowPanel.Right  - 23,
+                Visible = false,
                 Parent  = buildPanel,
             };
 
-            _restartBlishHudWarning = new Label() {
-                Text              = "Some module changes that have been made will require Blish HUD to restart.",
+            _restartBlishHudWarning = new Label {
+                Text              = ModulesService.PkgManagement_ModulesNeedRestart,
                 AutoSizeWidth     = true,
                 AutoSizeHeight    = false,
                 VerticalAlignment = VerticalAlignment.Middle,
-                TextColor         = Color.Yellow, // TODO: Warning color
+                TextColor         = Control.StandardColors.Yellow,
                 Height            = _restartBlishHud.Height,
-                Location          = new Point(_restartBlishHud.Right + 5, _restartBlishHud.Top),
+                Top               = _restartBlishHud.Top,
+                Right             = _restartBlishHud.Left - 4,
+                Visible           = false,
                 Parent            = buildPanel
             };
 
             _searchbox.TextChanged += SearchboxOnTextChanged;
 
-            _restartBlishHud.Click += (object sender, MouseEventArgs args) => {
+            _restartBlishHud.Click += (sender, args) => {
                 GameService.Overlay.Restart();
             };
 
-            settingsButton.Click += delegate(object sender, MouseEventArgs args) {
+            settingsButton.Click += (sender, args) => {
                 SettingsMenu.Show((Control) sender);
             };
         }
 
         private void SearchboxOnTextChanged(object sender, EventArgs e) {
-            this.RepoFlowPanel.FilterChildren<ViewContainer>((viewContainer) => PkgParamFilter(viewContainer, PkgNeedsUpdateFilter, PkgSearchFilter));
+            this.RepoFlowPanel.FilterChildren<ViewContainer>(viewContainer => PkgParamFilter(viewContainer, PkgNeedsUpdateFilter, PkgSearchFilter));
         }
 
         private bool PkgSearchFilter(ViewContainer viewContainer) {

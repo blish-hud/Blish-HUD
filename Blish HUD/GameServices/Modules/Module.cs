@@ -129,10 +129,11 @@ namespace Blish_HUD.Modules {
         }
 
         public void DoUpdate(GameTime gameTime) {
-            if (_runState == ModuleRunState.Loaded)
+            if (_runState == ModuleRunState.Loaded) {
                 Update(gameTime);
-            else
+            } else {
                 CheckForLoaded();
+            }
         }
 
         private void DoUnload() {
@@ -194,6 +195,7 @@ namespace Blish_HUD.Modules {
 
         protected virtual void Dispose(bool disposing) {
             DoUnload();
+            this.ModuleParameters.ContentsManager?.Dispose();
         }
 
         /// <inheritdoc />

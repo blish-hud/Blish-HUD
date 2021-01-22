@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
@@ -12,39 +13,30 @@ namespace Blish_HUD.Modules {
 
         private static readonly Logger Logger = Logger.GetLogger<ModuleManager>();
 
+        private static readonly List<string> _dirtyNamespaces = new List<string>();
+
         public event EventHandler<EventArgs> ModuleEnabled;
         public event EventHandler<EventArgs> ModuleDisabled;
 
         private Assembly _moduleAssembly;
-
-        private bool _enabled              = false;
+        
         private bool _forceAllowDependency = false;
 
+        /// <summary>
+        /// Indicates that the modules assembly has been loaded into memory.
+        /// </summary>
         public bool AssemblyLoaded => _moduleAssembly != null;
-
-        public bool Enabled {
-            get => _enabled;
-            set {
-                if (_enabled == value) return;
-
-                if (value) { 
-                    this.Enable();
-
-                    if (_enabled) {
-                        this.ModuleEnabled?.Invoke(this, EventArgs.Empty);
-                    }
-                } else {
-                    this.Disable();
-
-                    if (!_enabled) {
-                        this.ModuleDisabled?.Invoke(this, EventArgs.Empty);
-                    }
-                }
-
-                this.State.Enabled = _enabled;
-                GameService.Settings.Save();
-            }
-        }
+        
+        /// <summary>
+        /// Used to indicate if a different version of the assembly has previously
+        /// been loaded preventing us from loading another of a different version.
+        /// </summary>
+        public bool IsModuleAssemblyStateDirty { get; private set; }
+        
+        /// <summary>
+        /// Indicates if the module is currently enabled.
+        /// </summary>
+        public bool Enabled { get; private set; }
 
         public bool DependenciesMet =>
             State.IgnoreDependencies
@@ -64,10 +56,16 @@ namespace Blish_HUD.Modules {
             this.State      = state;
             this.DataReader = dataReader;
 
+            if (_dirtyNamespaces.Contains(this.Manifest.Namespace)) {
+                this.IsModuleAssemblyStateDirty = true;
+            }
+
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
         }
 
-        private void Enable() {
+        public bool TryEnable() {
+            if (this.Enabled || this.IsModuleAssemblyStateDirty) return false;
+
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 
             if (moduleParams != null) {
@@ -79,15 +77,40 @@ namespace Blish_HUD.Modules {
                     ComposeModuleFromFileSystemReader(packagePath, moduleParams);
 
                     if (this.ModuleInstance != null) {
-                        _enabled = true;
+                        if (!_dirtyNamespaces.Contains(this.Manifest.Namespace)) {
+                            _dirtyNamespaces.Add(this.Manifest.Namespace);
+                        }
+
+                        this.Enabled = true;
 
                         this.ModuleInstance.DoInitialize();
                         this.ModuleInstance.DoLoad();
+
+                        this.ModuleEnabled?.Invoke(this, EventArgs.Empty);
                     }
                 } else {
-                    throw new FileNotFoundException($"Assembly '{packagePath}' could not be loaded from {this.DataReader.GetType().Name}.");
+                    Logger.Error($"Assembly '{packagePath}' could not be loaded from {this.DataReader.GetType().Name}.");
                 }
             }
+
+            this.State.Enabled = this.Enabled;
+            GameService.Settings.Save();
+
+            return this.Enabled;
+        }
+
+        public void Disable() {
+            if (!this.Enabled) return;
+
+            this.Enabled = false;
+
+            this.ModuleInstance?.Dispose();
+            this.ModuleInstance = null;
+            
+            this.ModuleDisabled?.Invoke(this, EventArgs.Empty);
+
+            this.State.Enabled = this.Enabled;
+            GameService.Settings.Save();
         }
 
         private Assembly LoadPackagedAssembly(string assemblyPath) {
@@ -123,7 +146,7 @@ namespace Blish_HUD.Modules {
         }
 
         private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args) {
-            if (_enabled || _forceAllowDependency) {
+            if (this.Enabled || _forceAllowDependency) {
                 var assemblyDetails = new AssemblyName(args.Name);
 
                 string assemblyPath = $"{assemblyDetails.Name}.dll";
@@ -144,13 +167,6 @@ namespace Blish_HUD.Modules {
             }
 
             return null;
-        }
-
-        private void Disable() {
-            _enabled = false;
-
-            this.ModuleInstance?.Dispose();
-            this.ModuleInstance = null;
         }
 
         private void ComposeModuleFromFileSystemReader(string dllName, ModuleParameters parameters) {
@@ -199,6 +215,10 @@ namespace Blish_HUD.Modules {
 
         public void Dispose() {
             Disable();
+
+            GameService.Module.UnregisterModule(this);
+
+            _moduleAssembly = null;
 
             this.DataReader?.Dispose();
         }

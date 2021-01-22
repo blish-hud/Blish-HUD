@@ -29,6 +29,9 @@ namespace Blish_HUD {
         private const string MODULE_EXTENSION    = ".bhm";
         private const string MODULE_MANIFESTNAME = "manifest.json";
 
+        public event EventHandler<ValueEventArgs<ModuleManager>> ModuleRegistered;
+        public event EventHandler<ValueEventArgs<ModuleManager>> ModuleUnregistered;
+
         private SettingCollection _moduleSettings;
 
         internal string ModulesDirectory => DirectoryUtil.RegisterDirectory(MODULES_DIRECTORY);
@@ -38,13 +41,9 @@ namespace Blish_HUD {
 
         public SettingEntry<Dictionary<string, ModuleState>> ModuleStates => _moduleStates;
 
-        private readonly List<ModuleManager> _modules;
-        public IReadOnlyList<ModuleManager> Modules => _modules.ToList();
-
-        public ModuleService() {
-            _modules = new List<ModuleManager>();
-        }
-
+        private readonly List<ModuleManager>          _modules = new List<ModuleManager>();
+        public           IReadOnlyList<ModuleManager> Modules => _modules.ToList();
+        
         protected override void Initialize() {
             _moduleSettings = Settings.RegisterRootSettingCollection(MODULE_SETTINGS);
 
@@ -79,9 +78,14 @@ namespace Blish_HUD {
                                                    _moduleStates.Value[moduleManifest.Namespace],
                                                    moduleReader);
 
-            moduleManager.Enabled = enableModule;
-
             _modules.Add(moduleManager);
+
+            this.ModuleRegistered?.Invoke(this, new ValueEventArgs<ModuleManager>(moduleManager));
+
+            if (enableModule) {
+                moduleManager.TryEnable();
+            }
+
             RegisterModuleMenuInSettings(moduleManager);
 
             return moduleManager;
@@ -137,16 +141,18 @@ namespace Blish_HUD {
         /// Unregisters the module.
         /// </summary>
         /// <returns>Returns if the assembly was ever loaded or not (thus indicating if it has been fully unloaded or not).</returns>
-        public bool UnregisterModule(ModuleManager moduleManager) {
+        public void UnregisterModule(ModuleManager moduleManager) {
             if (moduleManager == null) throw new ArgumentNullException(nameof(moduleManager));
 
-            if (!_modules.Contains(moduleManager)) return false;
+            if (!_modules.Contains(moduleManager)) return;
 
-            moduleManager.Enabled = false;
+            moduleManager.Disable();
+
+            _modules.Remove(moduleManager);
+
+            this.ModuleUnregistered?.Invoke(this, new ValueEventArgs<ModuleManager>(moduleManager));
 
             UnregisterModuleMenuInSettings(moduleManager);
-
-            return !moduleManager.AssemblyLoaded;
         }
 
         /// <summary>
@@ -187,9 +193,7 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
-                if (debugModule != null) {
-                    debugModule.Enabled = true;
-                }
+                debugModule?.TryEnable();
             }
 
             // Get the base version string and see if we've exported the modules for this version yet
@@ -235,7 +239,7 @@ namespace Blish_HUD {
         }
 
         private void RegisterRepoManagementInSettings() {
-            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem("Module Repo"), m => new ModuleRepoView(new PublicPkgRepoProvider()));
+            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem("Module Repo", Content.GetTexture("156764-noarrow")), m => new ModuleRepoView(new PublicPkgRepoProvider()), int.MaxValue - 11);
         }
 
         private View HandleModuleSettingMenu(MenuItem menuItem) {

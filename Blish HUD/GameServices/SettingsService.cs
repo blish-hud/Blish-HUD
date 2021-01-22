@@ -143,7 +143,9 @@ namespace Blish_HUD {
             return this.Settings.AddSubCollection(collectionKey, false);
         }
 
-        protected override void Unload() { /* NOOP */ }
+        protected override void Unload() {
+            Save(true);
+        }
 
         protected override void Update(GameTime gameTime) {
             if (_dirtySave) {

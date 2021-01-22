@@ -15,8 +15,7 @@ namespace Blish_HUD.Content {
         private readonly string _subPath;
 
         private readonly Mutex _exclusiveStreamAccessMutex;
-
-        public string PhysicalPath => _archivePath;
+        public  string PhysicalPath => _archivePath;
 
         public ZipArchiveReader(string archivePath, string subPath = "") {
             if (!File.Exists((archivePath)))

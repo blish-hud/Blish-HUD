@@ -15,6 +15,7 @@ namespace Blish_HUD.Modules.UI.Views {
         public event EventHandler<EventArgs> DisableModuleClicked;
 
         private Label _moduleTextLabel;
+        private Label _moduleAssemblyDirtiedWarning;
         private Image _moduleHeaderLabel;
         private Label _moduleNameLabel;
         private Label _moduleVersionLabel;
@@ -47,6 +48,11 @@ namespace Blish_HUD.Modules.UI.Views {
             {ModuleRunState.Unloading, (Strings.GameServices.ModulesService.ModuleState_Disabling, Control.StandardColors.Yellow)},
             {ModuleRunState.FatalError, (Strings.GameServices.ModulesService.ModuleState_FatalError, Control.StandardColors.Red)}
         };
+
+        public bool ModuleAssemblyStateDirtied {
+            get => _moduleAssemblyDirtiedWarning.Visible;
+            set => _moduleAssemblyDirtiedWarning.Visible = value;
+        }
 
         public string ModuleName {
             get => _moduleNameLabel.Text;
@@ -152,6 +158,16 @@ namespace Blish_HUD.Modules.UI.Views {
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
                 StrokeText     = true,
+                Parent         = buildPanel
+            };
+
+            _moduleAssemblyDirtiedWarning = new Label() {
+                Text           = "Blish HUD must be restarted before this module can be re-enabled.",
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                Right          = buildPanel.Width - 12,
+                StrokeText     = true,
+                TextColor      = Control.StandardColors.Yellow,
                 Parent         = buildPanel
             };
 
