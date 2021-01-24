@@ -44,10 +44,11 @@ namespace Blish_HUD.Settings.UI.Views {
             _settingFlowPanel = new FlowPanel() {
                 Size                = buildPanel.Size,
                 FlowDirection       = ControlFlowDirection.SingleTopToBottom,
-                ControlPadding      = new Vector2(5, 2),
+                ControlPadding      = new Vector2(5,  2),
                 OuterControlPadding = new Vector2(10, 15),
                 WidthSizingMode     = SizingMode.Fill,
                 HeightSizingMode    = SizingMode.AutoSize,
+                AutoSizePadding     = new Point(0, 15),
                 Parent              = buildPanel
             };
 
