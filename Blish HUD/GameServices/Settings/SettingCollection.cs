@@ -11,11 +11,19 @@ namespace Blish_HUD.Settings {
 
         public class SettingCollectionConverter : JsonConverter<SettingCollection> {
 
+            private const string ATTR_LAZY       = "Lazy";
+            private const string ATTR_RENDERINUI = "Ui";
+            private const string ATTR_ENTRIES    = "Entries";
+
             public override void WriteJson(JsonWriter writer, SettingCollection value, JsonSerializer serializer) {
                 var settingCollectionObject = new JObject();
 
                 if (value.LazyLoaded) {
-                    settingCollectionObject.Add("Lazy", value.LazyLoaded);
+                    settingCollectionObject.Add(ATTR_LAZY, value.LazyLoaded);
+                }
+
+                if (value.RenderInUi) {
+                    settingCollectionObject.Add(ATTR_RENDERINUI, value.RenderInUi);
                 }
 
                 var entryArray = value._entryTokens as JArray;
@@ -27,7 +35,7 @@ namespace Blish_HUD.Settings {
                     }
                 }
 
-                settingCollectionObject.Add("Entries", entryArray);
+                settingCollectionObject.Add(ATTR_ENTRIES, entryArray);
 
                 settingCollectionObject.WriteTo(writer);
             }
@@ -35,19 +43,22 @@ namespace Blish_HUD.Settings {
             public override SettingCollection ReadJson(JsonReader reader, Type objectType, SettingCollection existingValue, bool hasExistingValue, JsonSerializer serializer) {
                 if (reader.TokenType == JsonToken.Null) return null;
 
-                JObject jObj = JObject.Load(reader);
+                var jObj = JObject.Load(reader);
 
-                var isLazy = false;
+                bool isLazy     = false;
+                bool renderInUi = false;
 
-                if (jObj["Lazy"] != null) {
-                    isLazy = jObj["Lazy"].Value<bool>();
+                if (jObj[ATTR_LAZY] != null) {
+                    isLazy = jObj[ATTR_LAZY].Value<bool>();
                 }
 
-                if (jObj["Entries"] != null) {
-                    return new SettingCollection(isLazy, jObj["Entries"]);
+                if (jObj[ATTR_RENDERINUI] != null) {
+                    renderInUi = jObj[ATTR_RENDERINUI].Value<bool>();
                 }
 
-                return new SettingCollection(isLazy);
+                return jObj[ATTR_ENTRIES] != null
+                           ? new SettingCollection(isLazy, jObj[ATTR_ENTRIES]) { RenderInUi = renderInUi }
+                           : new SettingCollection(isLazy) { RenderInUi = renderInUi };
             }
 
         }

@@ -105,6 +105,18 @@ namespace Blish_HUD.Controls {
             get => _heightSizingMode;
             set => SetProperty(ref _heightSizingMode, value);
         }
+        
+        private Point _autoSizePadding = Point.Zero;
+
+        /// <summary>
+        /// If <see cref="HeightSizingMode"/> or <see cref="WidthSizingMode"/> is set to
+        /// <see cref="SizingMode.AutoSize"/>, then <see cref="AutoSizePadding"/> is
+        /// added to the size.
+        /// </summary>
+        public Point AutoSizePadding {
+            get => _autoSizePadding;
+            set => SetProperty(ref _autoSizePadding, value);
+        }
 
         public List<Control> GetDescendants() {
             var allDescendants = _children.ToList();
@@ -211,11 +223,11 @@ namespace Blish_HUD.Controls {
             if (this.Parent != null) { 
                 this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
                                                       this.Width,
-                                                      _contentBounds.X + (this.Width - this.ContentRegion.Width),
+                                                      _contentBounds.X                            + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
                                                       this.Parent.ContentRegion.Width - this.Left),
                                       GetUpdatedSizing(this.HeightSizingMode,
                                                       this.Height,
-                                                      _contentBounds.Y + (this.Height - this.ContentRegion.Height),
+                                                      _contentBounds.Y                 + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
                                                       this.Parent.ContentRegion.Height - this.Top));
             }
 
