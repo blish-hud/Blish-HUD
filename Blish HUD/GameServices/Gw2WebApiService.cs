@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Collections.Generic;
-using System.Drawing.Text;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.WebApi.Caching;
 using Gw2Sharp.WebApi.V2.Models;
@@ -25,14 +24,16 @@ namespace Blish_HUD {
 
         #region Cache Handling
 
-        private ICacheMethod _sharedWebCache;
-        private ICacheMethod _sharedRenderCache;
+        private TokenComplianceMiddleware _sharedTokenBucketMiddleware;
+        private ICacheMethod              _sharedWebCache;
+        private ICacheMethod              _sharedRenderCache;
 
         private void InitCache() {
             var bucket = new TokenBucket(300, 5);
 
-            _sharedWebCache    = new TokenCompliantCacheWrapper(new MemoryCacheMethod(), bucket);
-            _sharedRenderCache = new MemoryCacheMethod();
+            _sharedTokenBucketMiddleware = new TokenComplianceMiddleware(bucket);
+            _sharedWebCache              = new MemoryCacheMethod();
+            _sharedRenderCache           = new MemoryCacheMethod();
         }
 
         #endregion
@@ -45,8 +46,8 @@ namespace Blish_HUD {
         private void CreateInternalConnection() {
             InitCache();
 
-            _anonymousConnection  = new ManagedConnection(string.Empty, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
-            _privilegedConnection = new ManagedConnection(string.Empty, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            _anonymousConnection  = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            _privilegedConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
         }
 
         public   ManagedConnection AnonymousConnection  => _anonymousConnection;
@@ -183,14 +184,12 @@ namespace Blish_HUD {
         #endregion
 
         public ManagedConnection GetConnection(string accessToken) {
-            return _cachedConnections.GetOrAdd(accessToken, (token) => new ManagedConnection(token, _sharedWebCache, _sharedRenderCache));
+            return _cachedConnections.GetOrAdd(accessToken, (token) => new ManagedConnection(token, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache));
         }
 
         protected override void Unload() { /* NOOP */ }
 
-        protected override void Update(GameTime gameTime) {
-            
-        }
+        protected override void Update(GameTime gameTime) { /* NOOP */ }
 
     }
 }
