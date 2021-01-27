@@ -140,7 +140,6 @@ namespace Blish_HUD {
         /// <summary>
         /// Unregisters the module.
         /// </summary>
-        /// <returns>Returns if the assembly was ever loaded or not (thus indicating if it has been fully unloaded or not).</returns>
         public void UnregisterModule(ModuleManager moduleManager) {
             if (moduleManager == null) throw new ArgumentNullException(nameof(moduleManager));
 
