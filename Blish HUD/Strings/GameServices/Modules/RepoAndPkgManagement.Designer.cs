@@ -61,6 +61,24 @@ namespace Blish_HUD.Strings.GameServices.Modules {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A newer version of this module is available..
+        /// </summary>
+        internal static string PkgRepo_PackageRelationship_CanUpdate {
+            get {
+                return ResourceManager.GetString("PkgRepo_PackageRelationship_CanUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This module is installed and up to date..
+        /// </summary>
+        internal static string PkgRepo_PackageRelationship_CurrentVersion {
+            get {
+                return ResourceManager.GetString("PkgRepo_PackageRelationship_CurrentVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Only Show Installed Modules.
         /// </summary>
         internal static string PkgRepo_ProviderExtraOption_FilterInstalledModules {

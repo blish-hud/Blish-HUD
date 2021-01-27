@@ -109,12 +109,12 @@ namespace Blish_HUD.Modules.UI.Views {
                     break;
                 case PkgVersionRelationship.CanUpdate:
                     _statusImage.Texture          = GameService.Content.GetTexture("common/157397");
-                    _statusImage.BasicTooltipText = "A newer version of this module is available.";
+                    _statusImage.BasicTooltipText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageRelationship_CanUpdate;
                     _statusImage.Visible          = true;
                     break;
                 case PkgVersionRelationship.CurrentVersion:
                     _statusImage.Texture          = GameService.Content.GetTexture("common/157330");
-                    _statusImage.BasicTooltipText = "This module is installed and up to date.";
+                    _statusImage.BasicTooltipText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageRelationship_CurrentVersion;
                     _statusImage.Visible          = true;
                     break;
             }
@@ -175,12 +175,11 @@ namespace Blish_HUD.Modules.UI.Views {
             };
 
             _statusImage = new Image(GameService.Content.GetTexture("common/157397")) {
-                Visible          = false,
-                Size             = new Point(16, 16),
-                Top              = _versionDropdown.Height / 2 - 8 + _versionDropdown.Top,
-                Right            = _versionDropdown.Left           - 8,
-                BasicTooltipText = "A newer version of this module is available.",
-                Parent           = buildPanel
+                Visible = false,
+                Size    = new Point(16, 16),
+                Top     = _versionDropdown.Height / 2 - 8 + _versionDropdown.Top,
+                Right   = _versionDropdown.Left           - 8,
+                Parent  = buildPanel
             };
 
             _actionButton = new StandardButton() {
