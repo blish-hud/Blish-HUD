@@ -70,7 +70,7 @@ namespace Blish_HUD.Gw2WebApi {
 
             try {
                 return await updateFunc().ConfigureAwait(false);
-            } catch (TooManyRequestsException ex) {
+            } catch (TooManyRequestsException) {
                 // Penalize our token count - we've hit the rate limited
                 this.Tokens = Math.Min(this.Tokens - this.RefillAmount, -1);
 

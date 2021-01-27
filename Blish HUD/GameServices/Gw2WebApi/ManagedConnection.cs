@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 using Gw2Sharp;
 using Gw2Sharp.WebApi;
 using Gw2Sharp.WebApi.Caching;
-using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Gw2WebApi {
     public sealed class ManagedConnection {
@@ -19,7 +16,7 @@ namespace Blish_HUD.Gw2WebApi {
 
         public IGw2WebApiClient Client => _internalClient;
 
-        public ManagedConnection(string accessToken, ICacheMethod webApiCache, ICacheMethod renderCache = null, TimeSpan? renderCacheDuration = null) {
+        public ManagedConnection(string accessToken, TokenComplianceMiddleware tokenComplianceMiddle, ICacheMethod webApiCache, ICacheMethod renderCache = null, TimeSpan? renderCacheDuration = null) {
             string ua = $"BlishHUD/{Program.OverlayVersion}";
 
             _internalConnection = new Connection(accessToken,
@@ -28,6 +25,8 @@ namespace Blish_HUD.Gw2WebApi {
                                                  renderCache,
                                                  renderCacheDuration ?? TimeSpan.MaxValue,
                                                  ua);
+            
+            _internalConnection.Middleware.Add(tokenComplianceMiddle);
 
             _internalClient = new Gw2Client(_internalConnection).WebApi;
 
