@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Flurl.Http;
 using Newtonsoft.Json;
@@ -112,12 +111,14 @@ namespace Blish_HUD.Modules.Pkgs {
         }
 
         public IEnumerable<(string OptionName, Action<bool> OptionAction, bool IsToggle)> GetExtraOptions() {
-            yield return ("Force Reload Repository", async (toggleState) => { await LoadRepo(); }, false);
+            // Actions
+            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_ReloadRepository, async (toggleState) => { await LoadRepo(); }, false);
 
-            yield return ("Only Show Supported Versions", (toggleState) => ToggleFilter(FilterShowOnlySupportedVersion, toggleState), true);
-            yield return ("Only Show Modules With Updates", (toggleState) => ToggleFilter(FilterShowOnlyUpdates,        toggleState), true);
-            yield return ("Only Show Installed Modules", (toggleState) => ToggleFilter(FilterShowOnlyInstalled,         toggleState), true);
-            yield return ("Only Show Modules Not Installed", (toggleState) => ToggleFilter(FilterShowOnlyNotInstalled,  toggleState), true);
+            // Filters
+            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterSupportedVersions, (toggleState) => ToggleFilter(FilterShowOnlySupportedVersion, toggleState), true);
+            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterModulesWithUpdates, (toggleState) => ToggleFilter(FilterShowOnlyUpdates,         toggleState), true);
+            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterInstalledModules, (toggleState) => ToggleFilter(FilterShowOnlyInstalled,         toggleState), true);
+            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterNotInstalledModules, (toggleState) => ToggleFilter(FilterShowOnlyNotInstalled,   toggleState), true);
         }
 
         private void ToggleFilter(Func<PkgManifest, bool> filterFunc, bool state) {

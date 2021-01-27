@@ -112,6 +112,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ModulesService.resx</DependentUpon>
     </Compile>
+    <Compile Update="Strings\GameServices\Modules\RepoAndPkgManagement.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RepoAndPkgManagement.resx</DependentUpon>
+    </Compile>
     <Compile Update="Strings\GameServices\OverlayService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -160,6 +165,10 @@
     <EmbeddedResource Update="Strings\GameServices\ModulesService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ModulesService.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Strings\GameServices\Modules\RepoAndPkgManagement.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>RepoAndPkgManagement.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Strings\GameServices\OverlayService.resx">
       <Generator>ResXFileCodeGenerator</Generator>

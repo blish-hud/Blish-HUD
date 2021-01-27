@@ -238,7 +238,7 @@ namespace Blish_HUD {
         }
 
         private void RegisterRepoManagementInSettings() {
-            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem("Module Repo", Content.GetTexture("156764-noarrow")), m => new ModuleRepoView(new PublicPkgRepoProvider()), int.MaxValue - 11);
+            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection, Content.GetTexture("156764-noarrow")), m => new ModuleRepoView(new PublicPkgRepoProvider()), int.MaxValue - 11);
         }
 
         private View HandleModuleSettingMenu(MenuItem menuItem) {
