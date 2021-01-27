@@ -80,7 +80,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             bool wasEnabled = _existingModule.Enabled;
 
             if (wasEnabled) {
-                this.View.PackageActionText = "Disabling module...";
+                this.View.PackageActionText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageStatus_DisablingModule;
                 _existingModule.Disable();
             }
 

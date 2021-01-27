@@ -79,6 +79,15 @@ namespace Blish_HUD.Strings.GameServices.Modules {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disabling module....
+        /// </summary>
+        internal static string PkgRepo_PackageStatus_DisablingModule {
+            get {
+                return ResourceManager.GetString("PkgRepo_PackageStatus_DisablingModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Only Show Installed Modules.
         /// </summary>
         internal static string PkgRepo_ProviderExtraOption_FilterInstalledModules {

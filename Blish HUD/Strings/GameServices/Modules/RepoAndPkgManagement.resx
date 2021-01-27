@@ -121,4 +121,7 @@
   <data name="PkgRepo_PackageRelationship_CurrentVersion" xml:space="preserve">
     <value>This module is installed and up to date.</value>
   </data>
+  <data name="PkgRepo_PackageStatus_DisablingModule" xml:space="preserve">
+    <value>Disabling module...</value>
+  </data>
 </root>
