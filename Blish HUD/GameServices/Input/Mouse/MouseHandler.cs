@@ -22,6 +22,11 @@ namespace Blish_HUD.Input {
         public MouseState State { get; private set; }
 
         /// <summary>
+        ///     Indicates if the camera is being dragged.
+        /// </summary>
+        public bool CameraDragging { get; private set; }
+
+        /// <summary>
         ///     The <see cref="Control" /> that the mouse last moved over.
         /// </summary>
         public Control ActiveControl {
@@ -37,8 +42,6 @@ namespace Blish_HUD.Input {
         }
 
         private Control _activeControl;
-
-        private bool _cameraDragging;
 
         /// <summary>
         ///     Indicates if the <see cref="ActiveControl" /> has <see cref="Control.Captures" />
@@ -58,13 +61,13 @@ namespace Blish_HUD.Input {
                 return false;
             }
 
-            if (_cameraDragging && mouseEventArgs.EventType == MouseEventType.RightMouseButtonReleased) {
-                _cameraDragging = false;
+            if (CameraDragging && mouseEventArgs.EventType == MouseEventType.RightMouseButtonReleased) {
+                CameraDragging = false;
             } else if (_hudFocused && !_hookOverride) {
                 _mouseEvent = mouseEventArgs;
                 return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased;
             } else if (mouseEventArgs.EventType == MouseEventType.RightMouseButtonPressed) {
-                _cameraDragging = true;
+                CameraDragging = true;
             }
 
             return false;
@@ -101,7 +104,7 @@ namespace Blish_HUD.Input {
                 return;
             }
 
-            if (_cameraDragging) {
+            if (CameraDragging) {
                 return;
             }
 
