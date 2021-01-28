@@ -237,35 +237,29 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateContentRegion() {
-            if (_children.Any()) {
-                this.ContentRegion = new Rectangle(0, MenuItemHeight, _size.X, _children.Where(c => c.Visible).Max(c => c.Bottom));
-            } else {
-                this.ContentRegion = new Rectangle(0, MenuItemHeight, _size.X, 0);
-            }
+            var children = _children.ToList();
+
+            int bottomChild = ReflowChildLayout(children);
+
+            this.ContentRegion = children.Any()
+                                     ? new Rectangle(0, this.MenuItemHeight, _size.X, bottomChild)
+                                     : new Rectangle(0, this.MenuItemHeight, _size.X, 0);
 
             this.Height = !_collapsed
                               ? this.ContentRegion.Bottom
                               : this.MenuItemHeight;
         }
 
-        protected override void OnResized(ResizedEventArgs e) {
-            foreach (var childMenuItem in _children) {
-                childMenuItem.Width = e.CurrentSize.X;
-            }
-
-            base.OnResized(e);
-        }
-
         protected override void OnClick(MouseEventArgs e) {
-            if (_canCheck && this.MouseOverIconBox) { /* Mouse was clicked inside of the checkbox */
-
+            if (_canCheck && this.MouseOverIconBox) { 
+                // Mouse was clicked inside of the checkbox
                 Checked = !Checked;
-            } else if (_overSection && _children.Any()) { /* Mouse was clicked inside of the mainbody of the MenuItem */
-
+            } else if (_overSection && _children.Any()) {
+                // Mouse was clicked inside of the mainbody of the MenuItem
                 ToggleAccordionState();
-            } else if (_overSection && _canCheck) { /* Mouse was clicked inside of the mainbody of the MenuItem,
-                                           but we have no children, so we toggle checkbox */
-
+            } else if (_overSection && _canCheck) { 
+                // Mouse was clicked inside of the mainbody of the MenuItem,
+                // but we have no children, so we toggle checkbox
                 Checked = !Checked;
             }
 
@@ -280,10 +274,11 @@ namespace Blish_HUD.Controls {
             // Helps us know when the mouse is over the MenuItem itself, or actually over its children
             OverSection = RelativeMousePosition.Y <= _menuItemHeight;
 
-            if (OverSection)
+            if (OverSection) {
                 _scrollEffect.Enable();
-            else
+            } else {
                 _scrollEffect.Disable();
+            }
 
             // Used if this menu item has its checkbox enabled
             MouseOverIconBox = _canCheck
@@ -312,14 +307,22 @@ namespace Blish_HUD.Controls {
             newChild.MenuItemHeight = this.MenuItemHeight;
             newChild.MenuDepth = this.MenuDepth + 1;
 
-            // We'll bind the top of the new control to the bottom of the last control we added
-            var lastItem = _children.LastOrDefault();
-            if (lastItem != null)
-                Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
-                                                     () => lastItem.Bottom, applyLeft: true);
+            ReflowChildLayout(_children.ToArray());
         }
 
-        /// <inheritdoc />
+        private int ReflowChildLayout(IEnumerable<Control> allChildren) {
+            int lastBottom = 0;
+
+            foreach (var child in allChildren.Where(c => c.Visible)) {
+                child.Location = new Point(0, lastBottom);
+                child.Width    = this.Width;
+
+                lastBottom = child.Bottom;
+            }
+
+            return lastBottom;
+        }
+        
         public bool ToggleAccordionState() {
             this.Collapsed = !_collapsed;
 

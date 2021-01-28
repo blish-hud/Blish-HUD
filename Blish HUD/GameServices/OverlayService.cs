@@ -24,7 +24,7 @@ namespace Blish_HUD {
 
         private const string APPLICATION_SETTINGS = "OverlayConfiguration";
 
-        private const int FORCE_EXIT_TIMEOUT = 4000;
+        internal const int FORCE_EXIT_TIMEOUT = 4000;
 
         public event EventHandler<ValueEventArgs<CultureInfo>> UserLocaleChanged;
 

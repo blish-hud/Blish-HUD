@@ -203,4 +203,37 @@ Download some modules and place them in the modules folder.</value>
   <data name="NoModules_OpenFolder" xml:space="preserve">
     <value>Open Modules Folder</value>
   </data>
+  <data name="PkgManagement_Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="PkgManagement_Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="PkgManagement_CurrentVersion" xml:space="preserve">
+    <value>Current Version</value>
+  </data>
+  <data name="PkgManagement_Downgrade" xml:space="preserve">
+    <value>Downgrade</value>
+  </data>
+  <data name="PkgManagement_Progress_FailedToGetReleases" xml:space="preserve">
+    <value>Failed to pull root from package repo.</value>
+  </data>
+  <data name="PkgManagement_Progress_CheckingRepository" xml:space="preserve">
+    <value>Checking repository...</value>
+  </data>
+  <data name="PkgManagement_Progress_GettingModuleList" xml:space="preserve">
+    <value>Getting module list...</value>
+  </data>
+  <data name="PkgManagement_Progress_FailedToReadOrParseRepoManifest" xml:space="preserve">
+    <value>Failed to get or parse latest repo manifest.</value>
+  </data>
+  <data name="PkgInstall_Progress_Installing" xml:space="preserve">
+    <value>Installing...</value>
+  </data>
+  <data name="PkgInstall_Progress_Upgrading" xml:space="preserve">
+    <value>Upgrading...</value>
+  </data>
+  <data name="PkgManagement_ModulesNeedRestart" xml:space="preserve">
+    <value>Blish HUD requires a restart before some modules can be re-enabled.</value>
+  </data>
 </root>

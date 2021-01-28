@@ -1,9 +1,10 @@
-﻿using Blish_HUD.Modules.Managers;
+﻿using System;
+using Blish_HUD.Modules.Managers;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules {
 
-    public class ModuleParameters {
+    public class ModuleParameters : IDisposable {
 
         private static readonly Logger Logger = Logger.GetLogger<ModuleParameters>();
 
@@ -60,6 +61,10 @@ namespace Blish_HUD.Modules {
             }
 
             return builtModuleParameters;
+        }
+
+        public void Dispose() {
+            _contentsManager?.Dispose();
         }
 
     }

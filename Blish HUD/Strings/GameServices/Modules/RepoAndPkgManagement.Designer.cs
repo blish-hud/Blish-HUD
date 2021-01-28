@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Blish_HUD.Strings {
+namespace Blish_HUD.Strings.GameServices.Modules {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Blish_HUD.Strings {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Common {
+    internal class RepoAndPkgManagement {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Common() {
+        internal RepoAndPkgManagement() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Blish_HUD.Strings {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Blish_HUD.Strings.Common", typeof(Common).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Blish_HUD.Strings.GameServices.Modules.RepoAndPkgManagement", typeof(RepoAndPkgManagement).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,92 +61,83 @@ namespace Blish_HUD.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Accept.
+        ///   Looks up a localized string similar to A newer version of this module is available..
         /// </summary>
-        internal static string Action_Accept {
+        internal static string PkgRepo_PackageRelationship_CanUpdate {
             get {
-                return ResourceManager.GetString("Action_Accept", resourceCulture);
+                return ResourceManager.GetString("PkgRepo_PackageRelationship_CanUpdate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancel.
+        ///   Looks up a localized string similar to This module is installed and up to date..
         /// </summary>
-        internal static string Action_Cancel {
+        internal static string PkgRepo_PackageRelationship_CurrentVersion {
             get {
-                return ResourceManager.GetString("Action_Cancel", resourceCulture);
+                return ResourceManager.GetString("PkgRepo_PackageRelationship_CurrentVersion", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clear.
+        ///   Looks up a localized string similar to Disabling module....
         /// </summary>
-        internal static string Action_Clear {
+        internal static string PkgRepo_PackageStatus_DisablingModule {
             get {
-                return ResourceManager.GetString("Action_Clear", resourceCulture);
+                return ResourceManager.GetString("PkgRepo_PackageStatus_DisablingModule", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exit {0}.
+        ///   Looks up a localized string similar to Only Show Installed Modules.
         /// </summary>
-        internal static string Action_Exit {
+        internal static string PkgRepo_ProviderExtraOption_FilterInstalledModules {
             get {
-                return ResourceManager.GetString("Action_Exit", resourceCulture);
+                return ResourceManager.GetString("PkgRepo_ProviderExtraOption_FilterInstalledModules", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restart {0}.
+        ///   Looks up a localized string similar to Only Show Modules With Updates.
         /// </summary>
-        internal static string Action_Restart {
+        internal static string PkgRepo_ProviderExtraOption_FilterModulesWithUpdates {
             get {
-                return ResourceManager.GetString("Action_Restart", resourceCulture);
+                return ResourceManager.GetString("PkgRepo_ProviderExtraOption_FilterModulesWithUpdates", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Blish HUD.
+        ///   Looks up a localized string similar to Only Show Modules Not Installed.
         /// </summary>
-        internal static string BlishHUD {
+        internal static string PkgRepo_ProviderExtraOption_FilterNotInstalledModules {
             get {
-                return ResourceManager.GetString("BlishHUD", resourceCulture);
+                return ResourceManager.GetString("PkgRepo_ProviderExtraOption_FilterNotInstalledModules", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Instructions.
+        ///   Looks up a localized string similar to Only Show Supported Versions.
         /// </summary>
-        internal static string Instructions {
+        internal static string PkgRepo_ProviderExtraOption_FilterSupportedVersions {
             get {
-                return ResourceManager.GetString("Instructions", resourceCulture);
+                return ResourceManager.GetString("PkgRepo_ProviderExtraOption_FilterSupportedVersions", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Options.
+        ///   Looks up a localized string similar to Force Reload Repository.
         /// </summary>
-        internal static string Options {
+        internal static string PkgRepo_ProviderExtraOption_ReloadRepository {
             get {
-                return ResourceManager.GetString("Options", resourceCulture);
+                return ResourceManager.GetString("PkgRepo_ProviderExtraOption_ReloadRepository", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Search....
+        ///   Looks up a localized string similar to Module Repo.
         /// </summary>
-        internal static string PlaceholderSearch {
+        internal static string PkgRepoSection {
             get {
-                return ResourceManager.GetString("PlaceholderSearch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unknown.
-        /// </summary>
-        internal static string Unknown {
-            get {
-                return ResourceManager.GetString("Unknown", resourceCulture);
+                return ResourceManager.GetString("PkgRepoSection", resourceCulture);
             }
         }
     }

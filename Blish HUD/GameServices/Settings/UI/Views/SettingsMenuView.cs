@@ -28,8 +28,8 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void Build(Panel buildPanel) {
             var settingsMenuSection = new Panel() {
                 ShowBorder = true,
-                Size       = new Point(buildPanel.Width - 765, buildPanel.Height - 74),
-                Location   = new Point(5,                      50),
+                Size       = new Point(265, 680),
+                Location   = new Point(9,   10),
                 Title      = Strings.GameServices.SettingsService.SettingsTab,
                 Parent     = buildPanel,
                 CanScroll  = true,
@@ -46,8 +46,8 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _settingViewContainer = new ViewContainer() {
                 FadeView = true,
-                Size     = new Point(748, buildPanel.Size.Y - 24 * 2),
-                Location = new Point(buildPanel.Width       - 770, 24),
+                Size     = new Point(718, buildPanel.Size.Y - 24 * 2),
+                Location = new Point(buildPanel.Width       - 740, 10),
                 Parent   = buildPanel
             };
         }

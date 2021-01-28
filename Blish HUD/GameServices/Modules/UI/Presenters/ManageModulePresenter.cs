@@ -72,10 +72,11 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private void DisplayStaticDetails() {
             // Load static details based on the manifest
 
-            this.View.ModuleName        = this.Model.Manifest.Name;
-            this.View.ModuleNamespace   = this.Model.Manifest.Namespace;
-            this.View.ModuleDescription = this.Model.Manifest.Description;
-            this.View.ModuleVersion     = this.Model.Manifest.Version;
+            this.View.ModuleName                 = this.Model.Manifest.Name;
+            this.View.ModuleNamespace            = this.Model.Manifest.Namespace;
+            this.View.ModuleDescription          = this.Model.Manifest.Description;
+            this.View.ModuleVersion              = this.Model.Manifest.Version;
+            this.View.ModuleAssemblyStateDirtied = this.Model.IsModuleAssemblyStateDirty;
 
             this.View.AuthorImage = GetModuleAuthorImage();
             this.View.AuthorName  = GetModuleAuthor();
@@ -93,7 +94,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private ContextMenuStripItem BuildClearSettingsMenuItem() {
             var clearSettings = new ContextMenuStripItem() {Text = Strings.GameServices.ModulesService.ModuleOption_ClearSettings };
 
-            clearSettings.BasicTooltipText = (clearSettings.Enabled = GetModuleCanEnable()) == true
+            clearSettings.BasicTooltipText = (clearSettings.Enabled = !this.Model.Enabled) == true
                                                  ? Strings.GameServices.ModulesService.ModuleOption_ClearSettings_DescriptionEnabled
                                                  : Strings.GameServices.ModulesService.ModuleOption_ClearSettings_DescriptionDisabled;
 
@@ -160,12 +161,12 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void ViewOnEnableModuleClicked(object sender, EventArgs e) {
-            this.Model.Enabled = true;
+            this.Model.TryEnable();
             SubscribeToModuleRunState();
         }
 
         private void ViewOnDisableModuleClicked(object sender, EventArgs e) {
-            this.Model.Enabled = false;
+            this.Model.Disable();
         }
 
         private void SubscribeToModuleRunState() {
@@ -195,6 +196,10 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private bool GetModuleCanEnable() {
             // Can't enable if already enabled
             if (this.Model.Enabled) return false;
+
+            // can't enable if model assembly is dirty
+            // (i.e. previous version of it has been loaded)
+            if (this.Model.IsModuleAssemblyStateDirty) return false;
 
             // Can't enable if there is an instance of the
             // module already while the module is unloading

@@ -10,6 +10,11 @@ namespace Blish_HUD.Content {
     public interface IDataReader : IDisposable {
 
         /// <summary>
+        /// The physical path or root of what the <see cref="IDataReader"/> represents.
+        /// </summary>
+        string PhysicalPath { get; }
+
+        /// <summary>
         /// Gets a new <see cref="IDataReader"/> with the root path set to the provided <see cref="subPath"/>.
         /// </summary>
         /// <param name="subPath">A sub path within the context of the <see cref="IDataReader"/>.</param>
@@ -85,6 +90,11 @@ namespace Blish_HUD.Content {
         /// If the file does not exist or cannot be read, the <see cref="Task"/> will result in <see cref="T:null"/> instead of a <see cref="T:byte[]"/>.
         /// </returns>
         Task<byte[]> GetFileBytesAsync(string filePath);
+
+        /// <summary>
+        /// Deletes the root of what this <see cref="IDataReader"/> is representing.
+        /// </summary>
+        void DeleteRoot();
 
     }
 
