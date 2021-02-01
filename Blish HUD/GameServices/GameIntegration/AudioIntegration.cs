@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Debug;
 using Blish_HUD.GameServices;
 using Blish_HUD.Settings;
 using CSCore.CoreAudioAPI;
-using Humanizer.DateTimeHumanizeStrategy;
 using Microsoft.Xna.Framework;
-using SharpDX.MediaFoundation;
 
 namespace Blish_HUD.GameIntegration {
     public sealed class AudioIntegration : ServiceModule<GameIntegrationService> {
