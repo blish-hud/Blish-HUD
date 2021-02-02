@@ -115,13 +115,26 @@ namespace Blish_HUD.Input {
 
         private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) { _textInputDelegate?.EndInvoke(asyncResult); }
 
+        private bool ShouldBlockKeyEvent(Keys key) {
+            // Prevent blocking shift for input capitalization
+            // if (key == Keys.LeftShift || key == Keys.RightShift) return false; // "SHIFT" support temporarily disabled
+
+            // Prevent blocking alt modifier
+            if (key == Keys.LeftAlt || key == Keys.RightAlt) return false;
+
+            // Prevent blocking alt + x modifier
+            if (_keysDown.Contains(Keys.LeftAlt) || _keysDown.Contains(Keys.RightAlt)) return false;
+
+            return true;
+        }
+
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
             if (_textInputDelegate != null) {
                 string chars = TypedInputUtil.VkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
                 _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);
-                return true /* key != Keys.LeftShift && key != Keys.RightShift */; // "SHIFT" support temporarily disabled
+                return ShouldBlockKeyEvent(key);
             }
 
             // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
