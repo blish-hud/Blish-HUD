@@ -121,6 +121,11 @@ namespace Blish_HUD {
         }
 
         public void PlaySoundEffectByName(string soundName) {
+            if (GameService.GameIntegration.Audio.AudioDevice == null) {
+                // No device is set yet or there isn't one to use
+                return;
+            }
+
             const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
             var filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
             if (_audioDataReader.FileExists(filePath)) {
