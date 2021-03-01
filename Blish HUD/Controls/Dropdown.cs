@@ -4,6 +4,7 @@ using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
@@ -63,7 +64,12 @@ namespace Blish_HUD.Controls {
 
             private void InputOnMousedOffDropdownPanel(object sender, MouseEventArgs e) {
                 if (!this.MouseOver) {
-                    _assocDropdown.HideDropdownPanel();
+                    if (e.EventType == MouseEventType.RightMouseButtonPressed) {
+                        // Required to prevent right-click exiting the menu from eating the next left click
+                        _assocDropdown.HideDropdownPanelWithoutDebounce();
+                    } else {
+                        _assocDropdown.HideDropdownPanel();
+                    }
                 }
             }
 
@@ -143,7 +149,7 @@ namespace Blish_HUD.Controls {
             protected override void DisposeControl() {
                 if (_assocDropdown != null) {
                     _assocDropdown._lastPanel = null;
-                    _assocDropdown = null;
+                    _assocDropdown            = null;
                 }
 
                 Input.Mouse.LeftMouseButtonPressed  -= InputOnMousedOffDropdownPanel;
@@ -237,6 +243,10 @@ namespace Blish_HUD.Controls {
             _hadPanel = _mouseOver;
             _lastPanel?.Dispose();
         }
+        private void HideDropdownPanelWithoutDebounce() {
+            HideDropdownPanel();
+            _hadPanel = false;
+        }
 
         /// <inheritdoc />
         protected override CaptureType CapturesInput() {
@@ -248,7 +258,7 @@ namespace Blish_HUD.Controls {
 
             if (_lastPanel == null && !_hadPanel) {
                 _lastPanel = DropdownPanel.ShowPanel(this);
-            } else if (_hadPanel) {
+            } else {
                 _hadPanel = false;
             }
         }
