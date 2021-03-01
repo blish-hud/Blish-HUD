@@ -242,6 +242,7 @@ namespace Blish_HUD.Controls {
             _hadPanel = _mouseOver;
             _lastPanel?.Dispose();
         }
+
         private void HideDropdownPanelWithoutDebounce() {
             HideDropdownPanel();
             _hadPanel = false;
