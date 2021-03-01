@@ -92,7 +92,7 @@ namespace Blish_HUD.Controls {
 
             if (_layoutNubBounds.Contains(this.RelativeMousePosition)) {
                 _dragging   = true;
-                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X;
+                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X + BUMPER_WIDTH;
             }
         }
 
