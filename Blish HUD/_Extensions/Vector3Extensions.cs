@@ -21,6 +21,10 @@ namespace Blish_HUD {
         }
 
         public static List<Vector3> SetResolution(this List<Vector3> points, float pointResolution) {
+            if (!points.Any()) {
+                return new List<Vector3>(0);
+            }
+
             List<Vector3> tempPoints = new List<Vector3>();
      
             var lstPoint = points[0];
