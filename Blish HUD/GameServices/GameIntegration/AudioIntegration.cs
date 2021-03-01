@@ -58,7 +58,7 @@ namespace Blish_HUD.GameIntegration {
             _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2, Strings.GameServices.OverlayService.Setting_Volume_DisplayName, Strings.GameServices.OverlayService.Setting_Volume_Description);
             _volumeSetting.SetRange(0.0f, MAX_VOLUME);
 
-            _deviceSetting = audioSettings.DefineSetting(DEVICE_SETTINGS, Devices.Gw2OutputDevice, Strings.GameServices.OverlayService.Setting_AudioDevice_DisplayName, Strings.GameServices.OverlayService.Setting_AudioDevice_Description);
+            _deviceSetting = audioSettings.DefineSetting(DEVICE_SETTINGS, Devices.Gw2OutputDevice, Strings.GameServices.OverlayService.Setting_AudioDevice_DisplayName, Strings.GameServices.OverlayService.Setting_AudioDevice_Description + " (This setting is temporarily disabled in this version)");
             // This setting is disabled (so we force it to show "default")
             // See https://github.com/blish-hud/Blish-HUD/issues/355#issuecomment-787713586
             _deviceSetting.Value = Devices.DefaultDevice;
