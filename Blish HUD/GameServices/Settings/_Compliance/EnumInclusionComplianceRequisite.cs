@@ -1,12 +1,12 @@
 ﻿using System;
 
 namespace Blish_HUD.Settings {
-    public struct EnumComplianceRequisite<T> : IComplianceRequisite
+    public readonly struct EnumInclusionComplianceRequisite<T> : IComplianceRequisite
         where T : Enum {
 
         public T[] IncludedValues { get; }
 
-        public EnumComplianceRequisite(params T[] includedValues) {
+        public EnumInclusionComplianceRequisite(params T[] includedValues) {
             this.IncludedValues = includedValues;
         }
 

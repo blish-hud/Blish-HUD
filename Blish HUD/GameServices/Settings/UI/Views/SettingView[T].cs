@@ -63,7 +63,13 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected abstract void BuildSetting(Panel buildPanel);
 
-        public virtual void SetComplianceRequisite(IComplianceRequisite complianceRequisite) { /* NOOP */ }
+        public virtual bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
+            return false;
+        }
+
+        public void HandleBaseComplianceRequisite(IComplianceRequisite complianceRequisite) {
+            /* Currently none - NOOP */
+        }
 
         private void Refresh() {
             RefreshDisplayName(_displayName);

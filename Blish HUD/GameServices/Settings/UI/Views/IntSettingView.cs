@@ -1,16 +1,23 @@
-﻿using System;
-using Blish_HUD.Controls;
-
-namespace Blish_HUD.Settings.UI.Views {
+﻿namespace Blish_HUD.Settings.UI.Views {
     public class IntSettingView : NumericSettingView<int> {
 
         public IntSettingView(SettingEntry<int> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
         
-        public override void SetComplianceRequisite(IComplianceRequisite complianceRequisite) {
-            if (complianceRequisite is IntComplianceRequisite intRequisite) {
-                _valueTrackBar.MinValue = intRequisite.MinValue;
-                _valueTrackBar.MaxValue = intRequisite.MaxValue;
+        public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
+            switch (complianceRequisite) {
+                case IntRangeRangeComplianceRequisite intRangeRequisite:
+                    _valueTrackBar.MinValue = intRangeRequisite.MinValue;
+                    _valueTrackBar.MaxValue = intRangeRequisite.MaxValue;
+                    break;
+                case SettingDisabledComplianceRequisite disabledRequisite:
+                    _displayNameLabel.Enabled = !disabledRequisite.Disabled;
+                    _valueTrackBar.Enabled    = !disabledRequisite.Disabled;
+                    break;
+                default:
+                    return false;
             }
+
+            return true;
         }
 
         protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) {

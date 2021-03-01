@@ -5,16 +5,39 @@ using System.Linq;
 namespace Blish_HUD.Settings {
     public static class SettingComplianceExtensions {
 
-        private static readonly Dictionary<SettingEntry, IComplianceRequisite> _complianceRequisites = new Dictionary<SettingEntry, IComplianceRequisite>();
+        private static readonly Dictionary<SettingEntry, Dictionary<Type, IComplianceRequisite>> _complianceRequisites = new Dictionary<SettingEntry, Dictionary<Type, IComplianceRequisite>>();
 
         /// <summary>
-        /// Returns the <see cref="IComplianceRequisite"/> associated with a setting, if one has been specified.
+        /// Returns the <see cref="IComplianceRequisite"/>s associated with a setting, if any have been specified.
         /// </summary>
-        public static IComplianceRequisite GetComplianceRequisite(this SettingEntry setting) {
+        public static IEnumerable<IComplianceRequisite> GetComplianceRequisite(this SettingEntry setting) {
             return _complianceRequisites.ContainsKey(setting)
-                       ? _complianceRequisites[setting]
-                       : null;
+                       ? _complianceRequisites[setting].Values.ToList()
+                       : Enumerable.Empty<IComplianceRequisite>();
         }
+
+        private static void SetComplianceRequisite<T>(SettingEntry setting, T complianceRequisite)
+            where T : IComplianceRequisite {
+
+            if (!_complianceRequisites.ContainsKey(setting)) {
+                _complianceRequisites[setting] = new Dictionary<Type, IComplianceRequisite>(2);
+            }
+
+            _complianceRequisites[setting][typeof(T)] = complianceRequisite;
+        }
+
+        #region GENERAL COMPLIANCE
+
+        private const bool DEFAULT_DISABLED = true;
+
+        /// <summary>
+        /// Sets the setting to be disabled or enabled in the UI.
+        /// </summary>
+        public static void SetDisabled(this SettingEntry setting, bool disabled = DEFAULT_DISABLED) {
+            SetComplianceRequisite(setting, new SettingDisabledComplianceRequisite(disabled));
+        }
+
+        #endregion
 
         #region INT COMPLIANCE
 
@@ -25,7 +48,7 @@ namespace Blish_HUD.Settings {
         /// Sets the minimum and maximum <c>int</c> value a user can set the setting to from the UI.
         /// </summary>
         public static void SetRange(this SettingEntry<int> setting, int minValue = DEFAULT_MININT, int maxValue = DEFAULT_MAXINT) {
-            _complianceRequisites[setting] = new IntComplianceRequisite(minValue, maxValue);
+            SetComplianceRequisite(setting, new IntRangeRangeComplianceRequisite(minValue, maxValue));
         }
 
         #endregion
@@ -39,7 +62,7 @@ namespace Blish_HUD.Settings {
         /// Sets the minimum and maximum <c>float</c> value a user can set the setting to from the UI.
         /// </summary>
         public static void SetRange(this SettingEntry<float> setting, float minValue = DEFAULT_MINFLOAT, float maxValue = DEFAULT_MAXFLOAT) {
-            _complianceRequisites[setting] = new FloatComplianceRequisite(minValue, maxValue);
+            SetComplianceRequisite(setting, new FloatRangeRangeComplianceRequisite(minValue, maxValue));
         }
 
         #endregion
@@ -50,7 +73,7 @@ namespace Blish_HUD.Settings {
         /// Limits the enum values a user can set the setting to in the UI to just the provided values.
         /// </summary>
         public static void SetIncluded<T>(this SettingEntry<T> setting, params T[] included) where T : Enum {
-            _complianceRequisites[setting] = new EnumComplianceRequisite<T>(included);
+            SetComplianceRequisite(setting, new EnumInclusionComplianceRequisite<T>(included));
         }
 
         /// <summary>
@@ -59,7 +82,7 @@ namespace Blish_HUD.Settings {
         public static void SetExcluded<T>(this SettingEntry<T> setting, params T[] excluded) where T : Enum {
             T[] values = EnumUtil.GetCachedValues<T>();
 
-            _complianceRequisites[setting] = new EnumComplianceRequisite<T>(values.Except(excluded).ToArray());
+            SetComplianceRequisite(setting, new EnumInclusionComplianceRequisite<T>(values.Except(excluded).ToArray()));
         }
 
         #endregion
