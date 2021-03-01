@@ -8,6 +8,7 @@ using Blish_HUD.Content;
 using CSCore;
 using CSCore.Codecs;
 using CSCore.Codecs.WAV;
+using CSCore.CoreAudioAPI;
 using CSCore.SoundOut;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -137,23 +138,9 @@ namespace Blish_HUD {
             try {
                 const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
                 var          filePath                    = soundName + SOUND_EFFECT_FILE_EXTENSION;
-
+            
                 if (_audioDataReader.FileExists(filePath)) {
-                    var soundEffect = _audioDataReader.GetFileStream(filePath);
-                    var waveSource  = new WaveFileReader(soundEffect);
-
-                    var soundOutput = new WasapiOut() {Device = GameService.GameIntegration.Audio.AudioDevice,};
-                    soundOutput.Initialize(waveSource);
-                    soundOutput.Volume = GameService.GameIntegration.Audio.Volume;
-
-                    Task.Run(() => {
-                                 soundOutput.Play();
-                                 soundOutput.WaitForStopped();
-
-                                 // This will dispose the sound effect stream and the wave source too
-                                 soundOutput.Dispose();
-                             });
-
+                    SoundEffect.FromStream(_audioDataReader.GetFileStream(filePath)).Play(GameService.GameIntegration.Audio.Volume, 0, 0);
                 }
 
                 _playRemainingAttempts = 3;
@@ -161,7 +148,7 @@ namespace Blish_HUD {
                 _playRemainingAttempts--;
                 Logger.Warn(ex, "Failed to play sound effect.");
             }
-        }
+}
 
         private static string RefPath => ApplicationSettings.Instance.RefPath ?? REF_FILE;
 
