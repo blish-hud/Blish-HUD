@@ -61,7 +61,7 @@ namespace Blish_HUD.Input {
                 return false;
             }
 
-            if (CameraDragging && mouseEventArgs.EventType == MouseEventType.RightMouseButtonReleased) {
+            if (mouseEventArgs.EventType == MouseEventType.RightMouseButtonReleased) {
                 CameraDragging = false;
             } else if (_hudFocused && !_hookOverride) {
                 _mouseEvent = mouseEventArgs;
