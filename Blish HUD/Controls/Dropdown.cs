@@ -4,7 +4,6 @@ using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
