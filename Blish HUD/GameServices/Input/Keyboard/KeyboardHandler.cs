@@ -53,6 +53,13 @@ namespace Blish_HUD.Input {
 
         private readonly List<Keys> _keysDown = new List<Keys>();
 
+        // Keys which, when pressed, should never be captured by the keyboard hook
+        private readonly HashSet<Keys> _hookIgnoredKeys = new HashSet<Keys>() {
+            Keys.LeftAlt,
+            Keys.RightAlt,
+            Keys.NumLock
+        };
+
         /// <summary>
         /// A list of keys currently being pressed down.
         /// </summary>
@@ -119,8 +126,8 @@ namespace Blish_HUD.Input {
             // Prevent blocking shift for input capitalization
             // if (key == Keys.LeftShift || key == Keys.RightShift) return false; // "SHIFT" support temporarily disabled
 
-            // Prevent blocking alt modifier
-            if (key == Keys.LeftAlt || key == Keys.RightAlt) return false;
+            // Skip keys that we wish to explicitly ignore
+            if (_hookIgnoredKeys.Contains(key)) return false;
 
             // Prevent blocking alt + x modifier
             if (_keysDown.Contains(Keys.LeftAlt) || _keysDown.Contains(Keys.RightAlt)) return false;

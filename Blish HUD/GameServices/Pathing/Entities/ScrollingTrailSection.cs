@@ -84,7 +84,7 @@ namespace Blish_HUD.Pathing.Entities {
 
         public ScrollingTrailSection() : base(null) { /* NOOP */ }
 
-        public ScrollingTrailSection(List<Vector3> trailPoints) : base(trailPoints) { /* NOOP */ }
+        public ScrollingTrailSection(List<Vector3> trailPoints) : base(trailPoints.SetResolution(30f)) { /* NOOP */ }
 
 
         protected override List<Vector3> PostProcess() {
