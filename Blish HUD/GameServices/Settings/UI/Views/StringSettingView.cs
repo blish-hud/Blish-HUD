@@ -14,6 +14,19 @@ namespace Blish_HUD.Settings.UI.Views {
 
         public StringSettingView(SettingEntry<string> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
 
+        public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
+            switch (complianceRequisite) {
+                case SettingDisabledComplianceRequisite disabledRequisite:
+                    _displayNameLabel.Enabled = !disabledRequisite.Disabled;
+                    _stringTextbox.Enabled    = !disabledRequisite.Disabled;
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
         protected override void BuildSetting(Panel buildPanel) {
             _displayNameLabel = new Label() {
                 AutoSizeWidth = true,

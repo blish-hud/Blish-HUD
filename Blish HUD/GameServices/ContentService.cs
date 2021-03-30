@@ -8,6 +8,7 @@ using Blish_HUD.Content;
 using CSCore;
 using CSCore.Codecs;
 using CSCore.Codecs.WAV;
+using CSCore.CoreAudioAPI;
 using CSCore.SoundOut;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -120,32 +121,34 @@ namespace Blish_HUD {
             _audioDataReader = zipArchiveReader.GetSubPath("audio");
         }
 
+        // Temporary failsafe until all audio bugs are resolved
+        private int _playRemainingAttempts = 3;
+
         public void PlaySoundEffectByName(string soundName) {
+            if (_playRemainingAttempts <= 0) {
+                // We keep failing to play sound effects - don't even bother
+                return;
+            }
+
             if (GameService.GameIntegration.Audio.AudioDevice == null) {
                 // No device is set yet or there isn't one to use
                 return;
             }
 
-            const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
-            var filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
-            if (_audioDataReader.FileExists(filePath)) {
-                var soundEffect = _audioDataReader.GetFileStream(filePath);
-                var waveSource = new WaveFileReader(soundEffect);
-                
-                var soundOutput = new WasapiOut() { Device = GameService.GameIntegration.Audio.AudioDevice, };
-                soundOutput.Initialize(waveSource);
-                soundOutput.Volume = GameService.GameIntegration.Audio.Volume;
+            try {
+                const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
+                var          filePath                    = soundName + SOUND_EFFECT_FILE_EXTENSION;
+            
+                if (_audioDataReader.FileExists(filePath)) {
+                    SoundEffect.FromStream(_audioDataReader.GetFileStream(filePath)).Play(GameService.GameIntegration.Audio.Volume, 0, 0);
+                }
 
-                Task.Run(() => {
-                    soundOutput.Play();
-                    soundOutput.WaitForStopped();
-
-                    // This will dispose the sound effect stream and the wave source too
-                    soundOutput.Dispose();
-                });
-
+                _playRemainingAttempts = 3;
+            } catch (Exception ex) {
+                _playRemainingAttempts--;
+                Logger.Warn(ex, "Failed to play sound effect.");
             }
-        }
+}
 
         private static string RefPath => ApplicationSettings.Instance.RefPath ?? REF_FILE;
 

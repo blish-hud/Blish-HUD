@@ -48,14 +48,25 @@ namespace Blish_HUD.Settings.UI.Views {
             _enumDropdown.ValueChanged += EnumDropdownOnValueChanged;
         }
 
-        public override void SetComplianceRequisite(IComplianceRequisite complianceRequisite) {
-            if (complianceRequisite is EnumComplianceRequisite<TEnum> enumRequisite) {
-                IEnumerable<TEnum> toRemove = _enumValues.Except(enumRequisite.IncludedValues);
+        public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
+            switch (complianceRequisite) {
+                case EnumInclusionComplianceRequisite<TEnum> enumInclusionRequisite:
+                    IEnumerable<TEnum> toRemove = _enumValues.Except(enumInclusionRequisite.IncludedValues);
 
-                foreach (var value in toRemove) {
-                    _enumDropdown.Items.Remove(value.Humanize(LetterCasing.Title));
-                }
+                    foreach (var value in toRemove) {
+                        _enumDropdown.Items.Remove(value.Humanize(LetterCasing.Title));
+                    }
+
+                    break;
+                case SettingDisabledComplianceRequisite disabledRequisite:
+                    _displayNameLabel.Enabled = !disabledRequisite.Disabled;
+                    _enumDropdown.Enabled     = !disabledRequisite.Disabled;
+                    break;
+                default:
+                    return false;
             }
+
+            return true;
         }
 
         private void EnumDropdownOnValueChanged(object sender, ValueChangedEventArgs e) {
