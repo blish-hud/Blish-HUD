@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Debug;
@@ -13,6 +14,7 @@ namespace Blish_HUD.GameIntegration {
         private static readonly Logger Logger = Logger.GetLogger<AudioIntegration>();
 
         public enum Devices {
+            [Description("GW2 Output Device")]
             Gw2OutputDevice,
             DefaultDevice
         }
