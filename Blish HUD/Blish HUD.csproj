@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
@@ -235,7 +235,6 @@
 
   <ItemGroup>
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <Target Name="BuildRef" AfterTargets="Build">
