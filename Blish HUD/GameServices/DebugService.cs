@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Blish_HUD.Debug;
+using Blish_HUD.Graphics;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -168,7 +169,7 @@ namespace Blish_HUD {
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
 
-            spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.CurrentAverage, 0)}", new Vector2(debugLeft, 25), Color.Red);
+            spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {(GameService.Graphics.FrameLimiter == FramerateMethod.SyncWithGame ? "Synced" : Math.Round(Debug.FrameCounter.CurrentAverage, 0).ToString())}", new Vector2(debugLeft, 25), Color.Red);
 
             int i = 0;
 
