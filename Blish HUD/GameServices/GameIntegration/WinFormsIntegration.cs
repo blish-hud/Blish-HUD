@@ -30,13 +30,13 @@ namespace Blish_HUD.GameIntegration {
 
         private void WrapMainForm() {
             _formWrapper = new Form();
-            BlishHud.Form.Hide();
-            BlishHud.Form.Show(_formWrapper);
-            BlishHud.Form.Visible = false;
+            BlishHud.Instance.Form.Hide();
+            BlishHud.Instance.Form.Show(_formWrapper);
+            BlishHud.Instance.Form.Visible = false;
         }
 
         public void SetShowInTaskbar(bool showInTaskbar) {
-            WindowUtil.SetShowInTaskbar(BlishHud.FormHandle, showInTaskbar);
+            WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, showInTaskbar);
         }
 
         private void BuildTrayIcon() {

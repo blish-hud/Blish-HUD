@@ -107,7 +107,7 @@ namespace Blish_HUD.Controls {
 
             GameService.Input.Mouse.MouseMoved += (sender, e) => {
                 var scaledMousePos = Input.Mouse.State.Position.ScaleToUi();
-                if (scaledMousePos.Y < BlishHud.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
+                if (scaledMousePos.Y < BlishHud.Instance.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
                     foreach (var cornerIcon in CornerIcons) {
                         cornerIcon.MouseInHouse = scaledMousePos.X < cornerIcon.Left || cornerIcon.MouseOver;
                     }

@@ -103,7 +103,7 @@ namespace Blish_HUD {
                 _gw2Process = value;
 
                 if (value == null || _gw2Process.MainWindowHandle == IntPtr.Zero) {
-                    BlishHud.Form.Invoke((MethodInvoker) (() => { BlishHud.Form.Visible = false; }));
+                    BlishHud.Instance.Form.Invoke((MethodInvoker) (() => { BlishHud.Instance.Form.Visible = false; }));
 
                     _gw2Process = null;
                 } else {
@@ -169,8 +169,8 @@ namespace Blish_HUD {
             this.TacO       = new TacOIntegration(this);
             this.WinForms   = new WinFormsIntegration(this);
 
-            BlishHud.Form.Shown += delegate {
-                WindowUtil.SetupOverlay(BlishHud.FormHandle);
+            BlishHud.Instance.Form.Shown += delegate {
+                WindowUtil.SetupOverlay(BlishHud.Instance.FormHandle);
             };
 
             TryAttachToGw2();
@@ -203,9 +203,7 @@ namespace Blish_HUD {
                     OnGw2Exit(null, EventArgs.Empty);
                 }
 
-                BlishHud.Form.Invoke((MethodInvoker) (() => {
-                    BlishHud.Form.Visible = true;
-                }));
+                BlishHud.Instance.Form.Invoke((MethodInvoker) (() => { BlishHud.Instance.Form.Visible = true; }));
             }
         }
 
@@ -283,7 +281,7 @@ namespace Blish_HUD {
                 this.TacO.Update(gameTime);
                 this.WinForms.Update(gameTime);
 
-                var updateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
+                var updateResult = WindowUtil.UpdateOverlay(BlishHud.Instance.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
 
                 switch (updateResult.Response) {
                     case WindowUtil.OverlayUpdateResponse.WithFocus:

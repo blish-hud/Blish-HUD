@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using Blish_HUD.Graphics;
 using Blish_HUD.Gw2Mumble;
 using Gw2Sharp;
 using Microsoft.Xna.Framework;
@@ -73,20 +75,33 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            this.TimeSinceTick += gameTime.ElapsedGameTime;
+            for (int syncSkip = 1000; syncSkip > 0; syncSkip--) {
+                if (syncSkip < 1000) {
+                    Logger.GetLogger<Gw2MumbleService>().Trace($"syncSkip: {syncSkip}");
+                }
+                this.TimeSinceTick += gameTime.ElapsedGameTime;
 
-            _rawClient.Update();
+                _rawClient.Update();
 
-            if (_rawClient.Tick > _prevTick) {
-                _prevTick = _rawClient.Tick;
+                if (_rawClient.Tick > _prevTick) {
+                    _prevTick = _rawClient.Tick;
 
-                this.TimeSinceTick = TimeSpan.Zero;
+                    this.TimeSinceTick = TimeSpan.Zero;
 
-                _delayedTicks = 0;
+                    _delayedTicks = 0;
 
-                UpdateDetails(gameTime);
-            } else {
-                _delayedTicks++;
+                    UpdateDetails(gameTime);
+                } else {
+                    _delayedTicks++;
+
+                    if (GameService.Graphics.FrameLimiter == FramerateMethod.SyncWithGame && GameService.GameIntegration.Gw2IsRunning) {
+                        Thread.Sleep(2);
+                        gameTime = new GameTime(gameTime.TotalGameTime + TimeSpan.FromMilliseconds(2), TimeSpan.FromMilliseconds(2));
+                        continue;
+                    }
+                }
+
+                break;
             }
         }
 

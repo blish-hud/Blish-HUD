@@ -84,6 +84,7 @@ namespace Blish_HUD {
 
             _allServices = new GameService[] {
                 Debug,
+                Input,
                 Store,
                 Settings,
                 Content,
@@ -92,7 +93,6 @@ namespace Blish_HUD {
                 Animation,
                 Graphics,
                 Overlay,
-                Input,
                 GameIntegration,
                 Pathing,
                 Module,

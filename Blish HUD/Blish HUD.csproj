@@ -97,6 +97,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GameIntegrationService.resx</DependentUpon>
     </Compile>
+    <Compile Update="Strings\GameServices\GraphicsService.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GraphicsService.resx</DependentUpon>
+    </Compile>
     <Compile Update="Strings\GameServices\Gw2ApiService.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -153,6 +158,10 @@
     <EmbeddedResource Update="Strings\GameServices\GameIntegrationService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>GameIntegrationService.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Strings\GameServices\GraphicsService.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GraphicsService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Strings\GameServices\Gw2ApiService.resx">
       <Generator>ResXFileCodeGenerator</Generator>
