@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Blish_HUD {
 
@@ -122,9 +124,16 @@ namespace Blish_HUD {
             }
 
             base.Update(gameTime);
+
+            _drawLag += gameTime.ElapsedGameTime.TotalSeconds;
         }
 
+        private double _drawLag;
+
         protected override void Draw(GameTime gameTime) {
+            GameService.Debug.TickFrameCounter(_drawLag);
+            _drawLag = 0;
+
             if (!GameService.GameIntegration.Gw2IsRunning) return;
 
             GameService.Graphics.Render(gameTime, _basicSpriteBatch);
@@ -136,8 +145,7 @@ namespace Blish_HUD {
 
                 _basicSpriteBatch.End();
             }
-
-
+            
             base.Draw(gameTime);
         }
     }

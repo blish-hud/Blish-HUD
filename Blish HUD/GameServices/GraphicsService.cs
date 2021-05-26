@@ -65,7 +65,9 @@ namespace Blish_HUD {
         private SettingEntry<bool>            _enableVsyncSetting;
 
         public FramerateMethod FrameLimiter {
-            get => _frameLimiterSetting.Value;
+            get => ApplicationSettings.Instance.TargetFramerate > 0
+                       ? FramerateMethod.Custom
+                       : _frameLimiterSetting.Value;
             set => _frameLimiterSetting.Value = value;
         }
 
@@ -136,7 +138,9 @@ namespace Blish_HUD {
             _frameLimiterSetting.SetExcluded(FramerateMethod.Custom);
 
             if (ApplicationSettings.Instance.TargetFramerate > 0) {
-                _frameLimiterSetting.SetDisabled(); // Disable frame limiter setting - user has manually specified via launch arg
+                // Disable frame limiter setting and update description - user has manually specified via launch arg
+                _frameLimiterSetting.SetDisabled();
+                _frameLimiterSetting.Description += Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Locked_Description;
 
                 FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.Custom, FramerateMethod.Custom));
             }
@@ -151,7 +155,7 @@ namespace Blish_HUD {
             switch (e.NewValue) {
                 case FramerateMethod.Custom: // Only enabled via launch options
                     BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1d / ApplicationSettings.Instance.TargetFramerate);
+                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate);
                     break;
                 case FramerateMethod.SyncWithGame:
                     BlishHud.Instance.IsFixedTimeStep   = false;

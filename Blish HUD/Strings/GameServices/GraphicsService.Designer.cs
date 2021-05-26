@@ -88,6 +88,16 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 
+        ///(Disabled because Blish HUD was started with --maxfps specified).
+        /// </summary>
+        internal static string Setting_FramerateLimiter_Locked_Description {
+            get {
+                return ResourceManager.GetString("Setting_FramerateLimiter_Locked_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enabling Vsync limits the frame rate of Blish HUD to the monitor refresh rate to prevent screen tearing..
         /// </summary>
         internal static string Setting_Vsync_Description {

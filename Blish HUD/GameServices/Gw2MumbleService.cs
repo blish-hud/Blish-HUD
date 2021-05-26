@@ -5,12 +5,13 @@ using Blish_HUD.Gw2Mumble;
 using Gw2Sharp;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.Mumble;
-
 namespace Blish_HUD {
 
     public class Gw2MumbleService : GameService {
 
         private const string DEFAULT_MUMBLEMAPNAME = "MumbleLink";
+
+        private readonly TimeSpan _syncDelay = TimeSpan.FromMilliseconds(1);
 
         private IGw2MumbleClient _rawClient;
 
@@ -75,12 +76,9 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            for (int syncSkip = 1000; syncSkip > 0; syncSkip--) {
-                if (syncSkip < 1000) {
-                    Logger.GetLogger<Gw2MumbleService>().Trace($"syncSkip: {syncSkip}");
-                }
-                this.TimeSinceTick += gameTime.ElapsedGameTime;
+            this.TimeSinceTick += gameTime.ElapsedGameTime;
 
+            while (true) { 
                 _rawClient.Update();
 
                 if (_rawClient.Tick > _prevTick) {
@@ -94,9 +92,15 @@ namespace Blish_HUD {
                 } else {
                     _delayedTicks++;
 
-                    if (GameService.Graphics.FrameLimiter == FramerateMethod.SyncWithGame && GameService.GameIntegration.Gw2IsRunning) {
-                        Thread.Sleep(2);
-                        gameTime = new GameTime(gameTime.TotalGameTime + TimeSpan.FromMilliseconds(2), TimeSpan.FromMilliseconds(2));
+                    if (GameService.Graphics.FrameLimiter == FramerateMethod.SyncWithGame
+                        && GameService.GameIntegration.Gw2IsRunning) {
+
+                        Thread.Sleep(_syncDelay);
+
+                        this.TimeSinceTick       += _syncDelay;
+                        gameTime.ElapsedGameTime += _syncDelay;
+                        gameTime.TotalGameTime   += _syncDelay;
+
                         continue;
                     }
                 }
