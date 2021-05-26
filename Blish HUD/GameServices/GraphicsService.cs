@@ -125,7 +125,7 @@ namespace Blish_HUD {
 
         private void DefineSettings(SettingCollection settings) {
             _frameLimiterSetting = settings.DefineSetting("FramerateLimiter", FramerateMethod.SyncWithGame, Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName, Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
-            _enableVsyncSetting = settings.DefineSetting("EnableVsync", false, "Enable Vsync", "Enabling Vsync limits the frame rate of Blish HUD to the monitor refresh rate to prevent screen tearing.");
+            _enableVsyncSetting = settings.DefineSetting("EnableVsync", false, Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName, Strings.GameServices.GraphicsService.Setting_Vsync_Description);
 
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
             _enableVsyncSetting.SettingChanged  += EnableVsyncChanged;

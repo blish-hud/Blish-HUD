@@ -107,4 +107,10 @@
   <data name="Setting_FramerateLimiter_Description" xml:space="preserve">
     <value>The method used to determine the framerate that Blish HUD should run at.</value>
   </data>
+  <data name="Setting_Vsync_DisplayName" xml:space="preserve">
+    <value>Enable Vsync</value>
+  </data>
+  <data name="Setting_Vsync_Description" xml:space="preserve">
+    <value>Enabling Vsync limits the frame rate of Blish HUD to the monitor refresh rate to prevent screen tearing.</value>
+  </data>
 </root>
