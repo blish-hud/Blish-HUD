@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
+using Blish_HUD.Graphics;
 using Blish_HUD.Gw2Mumble;
 using Gw2Sharp;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.Mumble;
-
 namespace Blish_HUD {
 
     public class Gw2MumbleService : GameService {
 
         private const string DEFAULT_MUMBLEMAPNAME = "MumbleLink";
+
+        private readonly TimeSpan _syncDelay = TimeSpan.FromMilliseconds(3);
 
         private IGw2MumbleClient _rawClient;
 
@@ -74,7 +78,7 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
-
+            
             _rawClient.Update();
 
             if (_rawClient.Tick > _prevTick) {
@@ -87,6 +91,13 @@ namespace Blish_HUD {
                 UpdateDetails(gameTime);
             } else {
                 _delayedTicks++;
+
+                if (GameService.Graphics.FrameLimiter == FramerateMethod.SyncWithGame
+                    && GameService.GameIntegration.Gw2IsRunning
+                    && this.TimeSinceTick.TotalSeconds < 0.5) {
+
+                    BlishHud.Instance.SuppressDraw();
+                }
             }
         }
 

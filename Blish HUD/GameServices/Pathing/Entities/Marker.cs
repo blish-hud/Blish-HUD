@@ -24,7 +24,7 @@ namespace Blish_HUD.Pathing.Entities {
         private static readonly Texture2D _fadeTexture;
 
         static Marker() {
-            _sharedMarkerEffect = new MarkerEffect(BlishHud.ActiveContentManager.Load<Effect>(@"effects\marker"));
+            _sharedMarkerEffect = new MarkerEffect(GameService.Content.ContentManager.Load<Effect>(@"effects\marker"));
             _fadeTexture = GameService.Content.GetTexture("uniformclouds_blur30");
         }
 

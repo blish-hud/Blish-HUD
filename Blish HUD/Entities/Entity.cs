@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace Blish_HUD.Entities {
     public abstract class Entity : INotifyPropertyChanged, IUpdatable, IRenderable3D {
 
-        protected static BasicEffect StandardEffect { get; } = new BasicEffect(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice) { TextureEnabled = true };
+        protected static BasicEffect StandardEffect { get; } = new BasicEffect(BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice) { TextureEnabled = true };
 
         protected Vector3 _position     = Vector3.Zero;
         protected Vector3 _rotation     = Vector3.Zero;

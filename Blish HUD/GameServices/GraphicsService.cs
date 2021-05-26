@@ -2,12 +2,16 @@
 using System.Collections.Concurrent;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
+using Blish_HUD.Graphics;
+using Blish_HUD.Settings;
 using Gw2Sharp.Mumble.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD {
     public class GraphicsService:GameService {
+
+        private const string GRAPHICS_SETTINGS = "GraphicsConfiguration";
 
         #region Load Static
 
@@ -36,34 +40,50 @@ namespace Blish_HUD {
             return 1f;
         }
 
-        private Matrix _uiScaleTransform = Matrix.Identity;
-        public Matrix UIScaleTransform => _uiScaleTransform;
+        public  Matrix UIScaleTransform { get; private set; } = Matrix.Identity;
 
-        private float _uiScaleMultiplier = 1f;
-        public float UIScaleMultiplier => _uiScaleMultiplier;
+        public  float UIScaleMultiplier { get; private set; } = 1f;
 
         public Screen SpriteScreen => _spriteScreen;
 
         public World World => _world;
 
-        public GraphicsDeviceManager GraphicsDeviceManager => BlishHud.ActiveGraphicsDeviceManager;
+        public GraphicsDeviceManager GraphicsDeviceManager => BlishHud.Instance.ActiveGraphicsDeviceManager;
 
-        public GraphicsDevice GraphicsDevice => BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice;
+        public GraphicsDevice GraphicsDevice => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
 
         public int WindowWidth => this.GraphicsDevice.Viewport.Width;
         public int WindowHeight => this.GraphicsDevice.Viewport.Height;
 
-        private float _aspectRatio;
-        public  float AspectRatio => _aspectRatio;
+        public  float AspectRatio { get; private set; }
+
+        internal SettingCollection _graphicsSettings;
+
+        public SettingCollection GraphicsSettings => _graphicsSettings;
+
+        private SettingEntry<FramerateMethod> _frameLimiterSetting;
+        private SettingEntry<bool>            _enableVsyncSetting;
+
+        public FramerateMethod FrameLimiter {
+            get => ApplicationSettings.Instance.TargetFramerate > 0
+                       ? FramerateMethod.Custom
+                       : _frameLimiterSetting.Value;
+            set => _frameLimiterSetting.Value = value;
+        }
+
+        public bool EnableVsync {
+            get => _enableVsyncSetting.Value;
+            set => _enableVsyncSetting.Value = value;
+        }
 
         public Point Resolution {
-            get => new Point(BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferWidth, BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
+            get => new Point(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth, BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
             set {
                 try {
-                    BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
-                    BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
+                    BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
+                    BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
 
-                    BlishHud.ActiveGraphicsDeviceManager.ApplyChanges();
+                    BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
 
                     // Exception would be from the code above, but don't update our
                     // scaling if there is an exception
@@ -89,7 +109,7 @@ namespace Blish_HUD {
             this.SpriteScreen.Size = new Point((int)(newSize.X / this.UIScaleMultiplier), (int)(newSize.Y / this.UIScaleMultiplier));
 
             // Update the aspect ratio
-            _aspectRatio = (float)Graphics.WindowWidth / (float)Graphics.WindowHeight;
+            this.AspectRatio = (float)Graphics.WindowWidth / (float)Graphics.WindowHeight;
         }
 
         protected override void Initialize() {
@@ -97,8 +117,63 @@ namespace Blish_HUD {
             // Might do better error handling later on
             ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { GameService.Overlay.Restart(); };
 
-            _uiScaleMultiplier = GetScaleRatio(UiSize.Normal);
-            _uiScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
+            this.UIScaleMultiplier = GetScaleRatio(UiSize.Normal);
+            this.UIScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
+
+            _graphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
+
+            DefineSettings(_graphicsSettings);
+        }
+
+        private void DefineSettings(SettingCollection settings) {
+            _frameLimiterSetting = settings.DefineSetting("FramerateLimiter", FramerateMethod.SyncWithGame, Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName, Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
+            _enableVsyncSetting = settings.DefineSetting("EnableVsync", true, Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName, Strings.GameServices.GraphicsService.Setting_Vsync_Description);
+
+            _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
+            _enableVsyncSetting.SettingChanged  += EnableVsyncChanged;
+
+            EnableVsyncChanged(_enableVsyncSetting, new ValueChangedEventArgs<bool>(_enableVsyncSetting.Value, _enableVsyncSetting.Value));
+            FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
+
+            _frameLimiterSetting.SetExcluded(FramerateMethod.Custom);
+
+            if (ApplicationSettings.Instance.TargetFramerate > 0) {
+                // Disable frame limiter setting and update description - user has manually specified via launch arg
+                _frameLimiterSetting.SetDisabled();
+                _frameLimiterSetting.Description += Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Locked_Description;
+
+                FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.Custom, FramerateMethod.Custom));
+            }
+        }
+
+        private void EnableVsyncChanged(object sender, ValueChangedEventArgs<bool> e) {
+            GraphicsDeviceManager.SynchronizeWithVerticalRetrace = e.NewValue;
+            GraphicsDeviceManager.ApplyChanges();
+        }
+
+        private void FrameLimiterSettingMethodChanged(object sender, ValueChangedEventArgs<FramerateMethod> e) {
+            switch (e.NewValue) {
+                case FramerateMethod.Custom: // Only enabled via launch options
+                    BlishHud.Instance.IsFixedTimeStep   = true;
+                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate);
+                    break;
+                case FramerateMethod.SyncWithGame:
+                    BlishHud.Instance.IsFixedTimeStep   = false;
+                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
+                    break;
+                case FramerateMethod.LockedTo30Fps:
+                    BlishHud.Instance.IsFixedTimeStep   = true;
+                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
+                    break;
+                case FramerateMethod.LockedTo60Fps:
+                    BlishHud.Instance.IsFixedTimeStep   = true;
+                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
+                    break;
+                case FramerateMethod.Unlimited:
+                    BlishHud.Instance.IsFixedTimeStep   = false;
+                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
+                    break;
+            }
         }
 
         internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
@@ -131,10 +206,11 @@ namespace Blish_HUD {
         }
 
         private void UIOnUISizeChanged(object sender, ValueEventArgs<UiSize> e) {
-            _uiScaleMultiplier     = GetScaleRatio(e.Value);
-            this.SpriteScreen.Size = new Point((int)(BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferWidth / _uiScaleMultiplier), (int)(BlishHud.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / _uiScaleMultiplier));
+            this.UIScaleMultiplier = GetScaleRatio(e.Value);
+            this.SpriteScreen.Size = new Point((int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth / this.UIScaleMultiplier),
+                                               (int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / this.UIScaleMultiplier));
 
-            _uiScaleTransform = Matrix.CreateScale(_uiScaleMultiplier);
+            this.UIScaleTransform = Matrix.CreateScale(this.UIScaleMultiplier);
         }
 
         protected override void Unload() { /* NOOP */ }

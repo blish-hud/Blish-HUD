@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using EntryPoint;
 using EntryPoint.Exceptions;
@@ -123,7 +124,7 @@ namespace Blish_HUD {
             OptionParameter(OPTION_TARGETFRAMERATE, 'f'),
             Help("The frame rate Blish HUD should target when rendering.")
         ]
-        public double TargetFramerate { get; private set; } = 60d;
+        public double TargetFramerate { get; private set; } = -1;
 
         public const string OPTION_UNLOCKFPS = "unlockfps";
         /// <summary>
@@ -131,8 +132,9 @@ namespace Blish_HUD {
         /// </summary>
         [
             Option(OPTION_UNLOCKFPS, 'F'),
-            Help("Unlocks the frame limit allowing Blish HUD to render as fast as possible.  This will cause higher CPU and GPU utilization.")
+            Help("Deprecated as of v0.8.0.  Instead use the 'Frame Limiter' setting found in the Blish HUD graphics settings section.")
         ]
+        [Obsolete("Deprecated as of v0.8.0.  Instead use the 'Frame Limiter' setting found in the Blish HUD graphics settings section.")]
         public bool UnlockFps { get; private set; }
 
         #endregion

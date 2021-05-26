@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Blish_HUD.Debug;
+using Blish_HUD.Graphics;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -204,7 +205,11 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            this.FrameCounter.Update(gameTime.GetElapsedSeconds());
+            /* NOOP */
+        }
+
+        internal void TickFrameCounter(double elapsedTime) {
+            this.FrameCounter.Update(elapsedTime);
         }
 
         protected override void Unload() {

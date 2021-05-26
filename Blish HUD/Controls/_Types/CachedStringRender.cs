@@ -60,13 +60,13 @@ namespace Blish_HUD.Controls {
         }
 
         private void InitRender(GraphicsDevice graphicsDevice) {
-            var cachedRenderTarget = new RenderTarget2D(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice,
+            var cachedRenderTarget = new RenderTarget2D(BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice,
                                                         this.DestinationRectangle.Width,
                                                         this.DestinationRectangle.Height,
                                                         false,
                                                         SurfaceFormat.Color,
                                                         DepthFormat.None,
-                                                        BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice.PresentationParameters.MultiSampleCount,
+                                                        BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.PresentationParameters.MultiSampleCount,
                                                         RenderTargetUsage.PreserveContents);
 
             _proxyControl.Size = this.DestinationRectangle.Size;
