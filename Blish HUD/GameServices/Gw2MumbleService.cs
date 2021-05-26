@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using Blish_HUD.Graphics;
 using Blish_HUD.Gw2Mumble;
@@ -11,7 +12,7 @@ namespace Blish_HUD {
 
         private const string DEFAULT_MUMBLEMAPNAME = "MumbleLink";
 
-        private readonly TimeSpan _syncDelay = TimeSpan.FromMilliseconds(1);
+        private readonly TimeSpan _syncDelay = TimeSpan.FromMilliseconds(3);
 
         private IGw2MumbleClient _rawClient;
 
@@ -77,35 +78,26 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
+            
+            _rawClient.Update();
 
-            while (true) { 
-                _rawClient.Update();
+            if (_rawClient.Tick > _prevTick) {
+                _prevTick = _rawClient.Tick;
 
-                if (_rawClient.Tick > _prevTick) {
-                    _prevTick = _rawClient.Tick;
+                this.TimeSinceTick = TimeSpan.Zero;
 
-                    this.TimeSinceTick = TimeSpan.Zero;
+                _delayedTicks = 0;
 
-                    _delayedTicks = 0;
+                UpdateDetails(gameTime);
+            } else {
+                _delayedTicks++;
 
-                    UpdateDetails(gameTime);
-                } else {
-                    _delayedTicks++;
+                if (GameService.Graphics.FrameLimiter == FramerateMethod.SyncWithGame
+                    && GameService.GameIntegration.Gw2IsRunning
+                    && this.TimeSinceTick.TotalSeconds < 0.5) {
 
-                    if (GameService.Graphics.FrameLimiter == FramerateMethod.SyncWithGame
-                        && GameService.GameIntegration.Gw2IsRunning) {
-
-                        Thread.Sleep(_syncDelay);
-
-                        this.TimeSinceTick       += _syncDelay;
-                        gameTime.ElapsedGameTime += _syncDelay;
-                        gameTime.TotalGameTime   += _syncDelay;
-
-                        continue;
-                    }
+                    BlishHud.Instance.SuppressDraw();
                 }
-
-                break;
             }
         }
 
