@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Blish_HUD.Debug;
 using Blish_HUD.Graphics;
+using Blish_HUD.Gw2Mumble;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -122,7 +123,7 @@ namespace Blish_HUD {
 
         private const int FRAME_DURATION_SAMPLES = 100;
 
-        public FrameCounter FrameCounter { get; private set; }
+        public DynamicallySmoothedValue<float> FrameCounter { get; private set; }
 
         #endregion
 
@@ -169,7 +170,7 @@ namespace Blish_HUD {
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
 
-            spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.CurrentAverage, 0)}", new Vector2(debugLeft, 25), Color.Red);
+            spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.Value, 0)}", new Vector2(debugLeft, 25), Color.Red);
 
             int i = 0;
 
@@ -187,7 +188,7 @@ namespace Blish_HUD {
         #region Service Implementation
 
         protected override void Initialize() {
-            this.FrameCounter = new FrameCounter(FRAME_DURATION_SAMPLES);
+            this.FrameCounter = new DynamicallySmoothedValue<float>(FRAME_DURATION_SAMPLES);
 
             if (!ApplicationSettings.Instance.DebugEnabled) {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
@@ -208,8 +209,8 @@ namespace Blish_HUD {
             /* NOOP */
         }
 
-        internal void TickFrameCounter(double elapsedTime) {
-            this.FrameCounter.Update(elapsedTime);
+        internal void TickFrameCounter(float elapsedTime) {
+            this.FrameCounter.PushValue(1f / elapsedTime);
         }
 
         protected override void Unload() {
