@@ -125,10 +125,10 @@ namespace Blish_HUD {
 
             base.Update(gameTime);
 
-            _drawLag += gameTime.ElapsedGameTime.TotalSeconds;
+            _drawLag += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
-        private double _drawLag;
+        private float _drawLag;
 
         protected override void Draw(GameTime gameTime) {
             GameService.Debug.TickFrameCounter(_drawLag);
