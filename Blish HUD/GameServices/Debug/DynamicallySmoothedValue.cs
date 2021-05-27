@@ -63,7 +63,7 @@ namespace Blish_HUD.Debug {
             T total = default;
 
             for (int i = 1; i < currentSize + 1; i++) {
-                total = _addExpression(total, this[_ringIndex - currentSize + i]);
+                total = _addExpression(total, this[_ringIndex + (this.BufferLength - currentSize) + i]);
             }
 
             return _divideExpression(total, currentSize);
