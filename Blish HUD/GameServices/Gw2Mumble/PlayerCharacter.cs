@@ -90,12 +90,22 @@ namespace Blish_HUD.Gw2Mumble {
         /// <inheritdoc cref="IGw2MumbleClient.Mount"/>
         public MountType CurrentMount => _service.RawClient.Mount;
 
+        private const int POSITIONBUFFER_MAXSIZE  = 12;
+        private const int POSITIONBUFFER_CURRSIZE = 8;
+
+        private readonly DynamicallySmoothedValue<Vector3> _positionBuffer = new DynamicallySmoothedValue<Vector3>(POSITIONBUFFER_MAXSIZE, () => POSITIONBUFFER_CURRSIZE);
+
         internal PlayerCharacter(Gw2MumbleService service) {
             _service = service;
         }
 
         internal void Update(GameTime gameTime) {
-            _position = _service.RawClient.AvatarPosition.ToXnaVector3();
+            _positionBuffer.PushValue(_service.RawClient.AvatarPosition.ToXnaVector3());
+
+            _position = GameService.Graphics.SmoothCharacterPosition
+                            ? _positionBuffer.Value
+                            : _service.RawClient.AvatarPosition.ToXnaVector3();
+            
             _forward  = _service.RawClient.AvatarFront.ToXnaVector3();
 
             HandleEvents();

@@ -5,17 +5,22 @@
     /// <typeparam name="T">The <c>Type</c> the <see cref="RingBuffer{T}"/> contains.</typeparam>
     public class RingBuffer<T> {
 
-        private int _ringIndex;
+        protected int _ringIndex;
 
         /// <summary>
-        /// The internal buffer backing this <see cref="RingBuffer{T}"/>.
+        /// The array backing this buffer.
         /// </summary>
         public T[] InternalBuffer { get; }
 
         /// <summary>
-        /// Creates a 
+        /// The length of the buffer.
         /// </summary>
-        /// <param name="bufferLength"></param>
+        public int BufferLength => this.InternalBuffer.Length;
+
+        /// <summary>
+        /// Creates a ring buffer of size <paramref name="bufferLength"/>.
+        /// </summary>
+        /// <param name="bufferLength">The size of the buffer.</param>
         public RingBuffer(int bufferLength) {
             this.InternalBuffer = new T[bufferLength];
         }
@@ -24,9 +29,20 @@
         /// Pushes a value into the <see cref="RingBuffer{T}"/>.
         /// </summary>
         /// <param name="value">The value to push into this <see cref="RingBuffer{T}"/>.</param>
-        public void PushValue(T value) {
+        public virtual void PushValue(T value) {
             this.InternalBuffer[_ringIndex] = value;
-            _ringIndex                      = (_ringIndex + 1) % this.InternalBuffer.Length;
+
+            _ringIndex = (_ringIndex + 1) % this.BufferLength;
+        }
+
+        public T this[int index] {
+            get {
+                if (index < 0) {
+                    index = this.BufferLength + (index % this.BufferLength);
+                }
+
+                return this.InternalBuffer[index % this.BufferLength];
+            }
         }
 
     }

@@ -63,6 +63,7 @@ namespace Blish_HUD {
 
         private SettingEntry<FramerateMethod> _frameLimiterSetting;
         private SettingEntry<bool>            _enableVsyncSetting;
+        private SettingEntry<bool>            _smoothCharacterPositionSetting;
 
         public FramerateMethod FrameLimiter {
             get => ApplicationSettings.Instance.TargetFramerate > 0
@@ -74,6 +75,11 @@ namespace Blish_HUD {
         public bool EnableVsync {
             get => _enableVsyncSetting.Value;
             set => _enableVsyncSetting.Value = value;
+        }
+
+        public bool SmoothCharacterPosition {
+            get => _smoothCharacterPositionSetting.Value;
+            set => _smoothCharacterPositionSetting.Value = value;
         }
 
         public Point Resolution {
@@ -126,8 +132,20 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _frameLimiterSetting = settings.DefineSetting("FramerateLimiter", FramerateMethod.SyncWithGame, Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName, Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
-            _enableVsyncSetting = settings.DefineSetting("EnableVsync", true, Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName, Strings.GameServices.GraphicsService.Setting_Vsync_Description);
+            _frameLimiterSetting = settings.DefineSetting("FramerateLimiter",
+                                                          FramerateMethod.SyncWithGame,
+                                                          Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
+                                                          Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
+
+            _enableVsyncSetting = settings.DefineSetting("EnableVsync",
+                                                         true,
+                                                         Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName,
+                                                         Strings.GameServices.GraphicsService.Setting_Vsync_Description);
+
+            _smoothCharacterPositionSetting = settings.DefineSetting("EnableCharacterPositionBuffer",
+                                                                     true,
+                                                                     Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
+                                                                     Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
 
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
             _enableVsyncSetting.SettingChanged  += EnableVsyncChanged;

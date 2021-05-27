@@ -98,6 +98,24 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If enabled, the character position is smoothed to prevent 3D overlay elements from jumping around..
+        /// </summary>
+        internal static string Setting_SmoothCharacterPosition_Description {
+            get {
+                return ResourceManager.GetString("Setting_SmoothCharacterPosition_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smooth Character Position.
+        /// </summary>
+        internal static string Setting_SmoothCharacterPosition_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_SmoothCharacterPosition_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enabling Vsync limits the frame rate of Blish HUD to the monitor refresh rate to prevent screen tearing..
         /// </summary>
         internal static string Setting_Vsync_Description {
