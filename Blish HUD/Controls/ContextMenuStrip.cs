@@ -22,21 +22,52 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
+        private static readonly List<WeakReference<ContextMenuStrip>> _contextMenuStrips = new List<WeakReference<ContextMenuStrip>>();
+
         private static readonly Texture2D _textureMenuEdge;
 
         static ContextMenuStrip() {
             _textureMenuEdge = Content.GetTexture("scrollbar-track");
+
+            Input.Mouse.LeftMouseButtonPressed  += HandleMouseButtonPressed;
+            Input.Mouse.RightMouseButtonPressed += HandleMouseButtonPressed;
+        }
+
+        private static void RegisterContextMenuStrip(ContextMenuStrip contextMenuStrip) {
+            lock (_contextMenuStrips) {
+                _contextMenuStrips.Add(new WeakReference<ContextMenuStrip>(contextMenuStrip));
+            }
+        }
+
+        private static void HandleMouseButtonPressed(object sender, MouseEventArgs e) {
+            lock (_contextMenuStrips) {
+                WeakReference<ContextMenuStrip>[] allMenuStrips = _contextMenuStrips.ToArray();
+
+                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true }) return;
+
+                foreach (var cmsRef in allMenuStrips) {
+                    if (!cmsRef.TryGetTarget(out var cms)) {
+                        _contextMenuStrips.Remove(cmsRef);
+                        continue;
+                    }
+
+                    if (!cms.Visible) continue;
+
+                    if (!cms.MouseOver) cms.Hide();
+                }
+            }
         }
 
         #endregion
+
+        private Point _targetPosition = Point.Zero;
 
         public ContextMenuStrip() {
             this.Visible = false;
             this.Width   = CONTROL_WIDTH;
             this.ZIndex  = Screen.CONTEXTMENU_BASEINDEX;
 
-            Input.Mouse.LeftMouseButtonPressed  += MouseButtonPressed;
-            Input.Mouse.RightMouseButtonPressed += MouseButtonPressed;
+            RegisterContextMenuStrip(this);
         }
 
         protected override void OnShown(EventArgs e) {
@@ -70,6 +101,8 @@ namespace Blish_HUD.Controls {
         }
 
         public void Show(Point position) {
+            _targetPosition = position;
+
             this.Location = new Point(position.X, GetVerticalOffset(position.Y));
             
             base.Show();
@@ -77,12 +110,14 @@ namespace Blish_HUD.Controls {
 
         public void Show(Control activeControl) {
             if (activeControl is ContextMenuStripItem parentMenu) {
+                _targetPosition = new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top + 19);
+
                 this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, GetVerticalOffset(parentMenu.AbsoluteBounds.Top, 19));
                 this.ZIndex = parentMenu.Parent.ZIndex + 1;
             } else {
-                (int x, int y) = activeControl.AbsoluteBounds.Location;
+                _targetPosition = activeControl.AbsoluteBounds.Location;
 
-                this.Location = new Point(x, GetVerticalOffset(y, 0, activeControl.Height));
+                this.Location = new Point(activeControl.AbsoluteBounds.Location.X, GetVerticalOffset(activeControl.AbsoluteBounds.Location.Y, 0, activeControl.Height));
             }
 
             base.Show();
@@ -104,14 +139,6 @@ namespace Blish_HUD.Controls {
         protected override void OnChildRemoved(ChildChangedEventArgs e) {
             base.OnChildRemoved(e);
             OnChildMembershipChanged(e);
-        }
-
-        private void MouseButtonPressed(object sender, MouseEventArgs e) {
-            if (!this.Visible) return;
-            if (Input.Mouse.ActiveControl is ContextMenuStripItem menuStrip && menuStrip.CanCheck) return;
-
-            if (!this.MouseOver)
-                this.Hide();
         }
 
         public ContextMenuStripItem AddMenuItem(string text) {
@@ -147,6 +174,10 @@ namespace Blish_HUD.Controls {
             } else {
                 e.ChangedChild.MouseEntered -= ChildOnMouseEntered;
                 e.ChangedChild.Resized      -= ChildOnResized;
+            }
+
+            if (this.Visible) {
+                this.Location = new Point(_targetPosition.X, GetVerticalOffset(_targetPosition.Y));
             }
 
             this.Invalidate();
