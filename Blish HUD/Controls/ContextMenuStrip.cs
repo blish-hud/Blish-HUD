@@ -117,7 +117,7 @@ namespace Blish_HUD.Controls {
             } else {
                 _targetPosition = activeControl.AbsoluteBounds.Location;
 
-                this.Location = new Point(activeControl.AbsoluteBounds.Location.X, GetVerticalOffset(activeControl.AbsoluteBounds.Location.Y, 0, activeControl.Height));
+                this.Location = new Point(_targetPosition.X, GetVerticalOffset(_targetPosition.Y, 0, activeControl.Height));
             }
 
             base.Show();
