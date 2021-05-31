@@ -283,6 +283,14 @@ namespace Blish_HUD.Controls {
 
         public virtual void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
+        protected override void DisposeControl() {
+            foreach (var descendant in GetDescendants()) {
+                descendant.Dispose();
+            }
+
+            base.DisposeControl();
+        }
+
         #region IEnumerable Implementation
 
         public IEnumerator<Control> GetEnumerator() {
