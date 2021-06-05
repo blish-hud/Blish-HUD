@@ -43,7 +43,7 @@ namespace Blish_HUD.Controls {
             lock (_contextMenuStrips) {
                 WeakReference<ContextMenuStrip>[] allMenuStrips = _contextMenuStrips.ToArray();
 
-                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true }) return;
+                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true } || Input.Mouse.ActiveControl is ContextMenuStrip) return;
 
                 foreach (var cmsRef in allMenuStrips) {
                     if (!cmsRef.TryGetTarget(out var cms)) {
