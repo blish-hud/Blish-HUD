@@ -199,7 +199,7 @@ namespace Blish_HUD {
             _funcTimes = new ConcurrentDictionary<string, DebugCounter>();
 
             this.OverlayTexts = new OverlayStrings();
-            this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.Entities.Count}");
+            this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.Entities.Count()}");
             this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("volume",      _ => "Average In-Game Volume: " + GameIntegration.Audio.Volume);

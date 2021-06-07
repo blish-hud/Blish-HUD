@@ -3,12 +3,12 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Blish_HUD.Entities.Effects {
-    public abstract class EntityEffect : Effect {
+namespace Blish_HUD.Graphics {
+    public abstract class SharedEffect : Effect, IEffect {
 
-        private static readonly Logger Logger = Logger.GetLogger<EntityEffect>();
+        private static readonly Logger Logger = Logger.GetLogger<SharedEffect>();
 
-        private static readonly HashSet<EntityEffect> _loadedEffects = new HashSet<EntityEffect>();
+        private static readonly HashSet<SharedEffect> _loadedEffects = new HashSet<SharedEffect>();
 
         internal static void UpdateEffects(GameTime gameTime) {
             foreach (var loadedEffect in _loadedEffects.ToArray()) {
@@ -22,7 +22,7 @@ namespace Blish_HUD.Entities.Effects {
             }
         }
 
-        private static void RegisterEntityEffect(EntityEffect effectInstance) {
+        private static void RegisterEntityEffect(SharedEffect effectInstance) {
             Logger.Debug("EntityEffect {effectName} was registered.", effectInstance.GetType().FullName);
             _loadedEffects.Add(effectInstance);
         }
@@ -30,17 +30,17 @@ namespace Blish_HUD.Entities.Effects {
         #region ctors
 
         /// <inheritdoc />
-        protected EntityEffect(Effect cloneSource) : base(cloneSource) {
+        protected SharedEffect(Effect cloneSource) : base(cloneSource) {
             RegisterEntityEffect(this);
         }
 
         /// <inheritdoc />
-        protected EntityEffect(GraphicsDevice graphicsDevice, byte[] effectCode) : base(graphicsDevice, effectCode) {
+        protected SharedEffect(GraphicsDevice graphicsDevice, byte[] effectCode) : base(graphicsDevice, effectCode) {
             RegisterEntityEffect(this);
         }
 
         /// <inheritdoc />
-        protected EntityEffect(GraphicsDevice graphicsDevice, byte[] effectCode, int index, int count) : base(graphicsDevice, effectCode, index, count) {
+        protected SharedEffect(GraphicsDevice graphicsDevice, byte[] effectCode, int index, int count) : base(graphicsDevice, effectCode, index, count) {
             RegisterEntityEffect(this);
         }
 

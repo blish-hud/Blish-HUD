@@ -1,11 +1,11 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Blish_HUD.Graphics;
 
 namespace Blish_HUD.Entities {
-    public abstract class Entity : INotifyPropertyChanged, IUpdatable, IRenderable3D {
+    public abstract class Entity : INotifyPropertyChanged, IEntity {
 
         protected static BasicEffect StandardEffect { get; } = new BasicEffect(BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice) { TextureEnabled = true };
 
@@ -124,6 +124,8 @@ namespace Blish_HUD.Entities {
         public virtual float DistanceFromPlayer => Vector3.Distance(this.Position, GameService.Gw2Mumble.PlayerCharacter.Position);
         public virtual float DistanceFromCamera => Vector3.Distance(this.Position, GameService.Gw2Mumble.PlayerCamera.Position);
 
+        public float DrawOrder => Vector3.DistanceSquared(this.Position, GameService.Gw2Mumble.PlayerCamera.Position);
+
         private EntityText BuildTitleText() {
             var entityText = new EntityText(this) {
                 VerticalOffset = 2f
@@ -147,6 +149,10 @@ namespace Blish_HUD.Entities {
             Draw(graphicsDevice);
 
             this.Billboard?.DoDraw(graphicsDevice);
+        }
+
+        public void Render(GraphicsDevice graphicsDevice, IWorld world, ICamera camera) {
+            DoDraw(graphicsDevice);
         }
 
         public abstract void HandleRebuild(GraphicsDevice graphicsDevice);

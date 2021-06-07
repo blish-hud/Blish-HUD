@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Blish_HUD.Entities;
 using Blish_HUD.Pathing;
 using Blish_HUD.Pathing.Content;
@@ -38,20 +39,20 @@ namespace Blish_HUD {
         private void ProcessPathableState(IPathable<Entity> pathable) {
             if (pathable.MapId == Gw2Mumble.CurrentMap.Id || pathable.MapId == -1) {
                 //pathable.Active = true;
-                Graphics.World.Entities.Add(pathable.ManagedEntity);
+                Graphics.World.AddEntity(pathable.ManagedEntity);
             } else if (Graphics.World.Entities.Contains(pathable.ManagedEntity)) {
                 //pathable.Active = false;
-                Graphics.World.Entities.Remove(pathable.ManagedEntity);
+                Graphics.World.RemoveEntity(pathable.ManagedEntity);
             }
         }
 
         private void ProcessAddedPathable(IPathable<Entity> pathable) {
-            Graphics.World.Entities.Add(pathable.ManagedEntity);
+            Graphics.World.AddEntity(pathable.ManagedEntity);
             this.Pathables.Add(pathable);
         }
 
         private void ProcessRemovedPathable(IPathable<Entity> pathable) {
-            Graphics.World.Entities.Remove(pathable.ManagedEntity);
+            Graphics.World.RemoveEntity(pathable.ManagedEntity);
             this.Pathables.Remove(pathable);
         }
 
