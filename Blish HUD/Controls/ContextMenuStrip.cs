@@ -14,8 +14,8 @@ namespace Blish_HUD.Controls {
 
         private const int BORDER_PADDING = 2;
 
-        private const int ITEM_WIDTH          = 135;
-        private const int ITEM_HEIGHT         = 22;
+        private const int ITEM_WIDTH = 135;
+        private const int ITEM_HEIGHT = 22;
         private const int ITEM_VERTICALMARGIN = 6;
 
         private const int CONTROL_WIDTH = BORDER_PADDING + ITEM_WIDTH + BORDER_PADDING;
@@ -29,7 +29,7 @@ namespace Blish_HUD.Controls {
         static ContextMenuStrip() {
             _textureMenuEdge = Content.GetTexture("scrollbar-track");
 
-            Input.Mouse.LeftMouseButtonPressed  += HandleMouseButtonPressed;
+            Input.Mouse.LeftMouseButtonPressed += HandleMouseButtonPressed;
             Input.Mouse.RightMouseButtonPressed += HandleMouseButtonPressed;
         }
 
@@ -43,7 +43,7 @@ namespace Blish_HUD.Controls {
             lock (_contextMenuStrips) {
                 WeakReference<ContextMenuStrip>[] allMenuStrips = _contextMenuStrips.ToArray();
 
-                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true }) return;
+                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true } || Input.Mouse.ActiveControl is ContextMenuStrip) return;
 
                 foreach (var cmsRef in allMenuStrips) {
                     if (!cmsRef.TryGetTarget(out var cms)) {
@@ -60,12 +60,12 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        private Point _targetPosition = Point.Zero;
+        private (Point Position, int DownOffset, int UpOffset) _targetOffset;
 
         public ContextMenuStrip() {
             this.Visible = false;
-            this.Width   = CONTROL_WIDTH;
-            this.ZIndex  = Screen.CONTEXTMENU_BASEINDEX;
+            this.Width = CONTROL_WIDTH;
+            this.ZIndex = Screen.CONTEXTMENU_BASEINDEX;
 
             RegisterContextMenuStrip(this);
         }
@@ -78,7 +78,7 @@ namespace Blish_HUD.Controls {
                 this.Visible = false;
                 return;
             }
-            
+
             base.OnShown(e);
         }
 
@@ -91,7 +91,7 @@ namespace Blish_HUD.Controls {
 
         private int GetVerticalOffset(int yStart, int downOffset = 0, int upOffset = 0) {
             int yUnderDef = Graphics.SpriteScreen.Bottom - (yStart + _size.Y);
-            int yAboveDef = Graphics.SpriteScreen.Top    + (yStart - _size.Y);
+            int yAboveDef = Graphics.SpriteScreen.Top + (yStart - _size.Y);
 
             return yUnderDef > 0 || yUnderDef > yAboveDef
                        // flip down
@@ -100,24 +100,23 @@ namespace Blish_HUD.Controls {
                        : yStart - _size.Y + downOffset;
         }
 
-        public void Show(Point position) {
-            _targetPosition = position;
+        private void SetPositionFromOffset((Point Position, int DownOffset, int UpOffset) offset) {
+            this.Location = new Point(offset.Position.X, GetVerticalOffset(offset.Position.Y, offset.DownOffset, offset.UpOffset));
+        }
 
-            this.Location = new Point(position.X, GetVerticalOffset(position.Y));
-            
+        public void Show(Point position) {
+            SetPositionFromOffset(_targetOffset = (position, 0, 0));
+
             base.Show();
         }
 
         public void Show(Control activeControl) {
             if (activeControl is ContextMenuStripItem parentMenu) {
-                _targetPosition = new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top + 19);
+                SetPositionFromOffset(_targetOffset = (new Point(parentMenu.AbsoluteBounds.Right - 3, parentMenu.AbsoluteBounds.Top), 19, 0));
 
-                this.Location = new Point(parentMenu.AbsoluteBounds.Right - 3, GetVerticalOffset(parentMenu.AbsoluteBounds.Top, 19));
                 this.ZIndex = parentMenu.Parent.ZIndex + 1;
             } else {
-                _targetPosition = activeControl.AbsoluteBounds.Location;
-
-                this.Location = new Point(_targetPosition.X, GetVerticalOffset(_targetPosition.Y, 0, activeControl.Height));
+                SetPositionFromOffset(_targetOffset = (activeControl.AbsoluteBounds.Location, 0, activeControl.Height));
             }
 
             base.Show();
@@ -143,7 +142,7 @@ namespace Blish_HUD.Controls {
 
         public ContextMenuStripItem AddMenuItem(string text) {
             return new ContextMenuStripItem() {
-                Text   = text,
+                Text = text,
                 Parent = this
             };
         }
@@ -170,14 +169,14 @@ namespace Blish_HUD.Controls {
                 newChild.Height = ITEM_HEIGHT;
 
                 newChild.MouseEntered += ChildOnMouseEntered;
-                newChild.Resized      += ChildOnResized;
+                newChild.Resized += ChildOnResized;
             } else {
                 e.ChangedChild.MouseEntered -= ChildOnMouseEntered;
-                e.ChangedChild.Resized      -= ChildOnResized;
+                e.ChangedChild.Resized -= ChildOnResized;
             }
 
             if (this.Visible) {
-                this.Location = new Point(_targetPosition.X, GetVerticalOffset(_targetPosition.Y));
+                SetPositionFromOffset(_targetOffset);
             }
 
             this.Invalidate();
@@ -212,7 +211,7 @@ namespace Blish_HUD.Controls {
                     lastChildBottom = menuItem.Bottom;
                 }
 
-                _size = new Point(maxChildWidth   + BORDER_PADDING * 2,
+                _size = new Point(maxChildWidth + BORDER_PADDING * 2,
                                   lastChildBottom + BORDER_PADDING);
 
                 foreach (var childItem in this.Children) {
@@ -259,7 +258,7 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this,
                                    _textureMenuEdge,
                                    new Rectangle(_size.X - _textureMenuEdge.Width, 1, _textureMenuEdge.Width, _size.Y - 2),
-                                   new Rectangle(0,                           1, _textureMenuEdge.Width, _size.Y - 2),
+                                   new Rectangle(0, 1, _textureMenuEdge.Width, _size.Y - 2),
                                    Color.White * 0.8f);
         }
     }
