@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Xml;
 using Blish_HUD.Pathing.Behaviors;
 using Blish_HUD.Pathing.Content;
 using Microsoft.Xna.Framework;

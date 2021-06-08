@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Pathing.Entities.Effects {
-    public class MarkerEffect : Blish_HUD.Entities.Effects.EntityEffect {
+    public class MarkerEffect : Graphics.SharedEffect {
 
         // Per-effect parameters
         private const string PARAMETER_VIEW           = "View";
