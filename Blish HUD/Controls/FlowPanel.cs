@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 
-namespace Blish_HUD.Controls
-{
-
-    public enum ControlFlowDirection
-    {
+namespace Blish_HUD.Controls {
+    
+    public enum ControlFlowDirection {
         /// <summary>
         /// Child controls are organized left to right.
         /// When the width of the container is exceeded,
@@ -57,47 +55,42 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// Child controls are organized top to bottom.
         /// They will be organized into a single column
-        /// regardless of the horizontal space available.
+        /// regardless of the vertical space available.
         /// </summary>
         SingleTopToBottom,
 
         /// <summary>
         /// Child controls are organized bottom to top.
         /// They will be organized into a single column
-        /// regardless of the horizontal space available.
+        /// regardless of the vertical space available.
         /// </summary>
         SingleBottomToTop,
     }
 
-    public class FlowPanel : Panel
-    {
-
+    public class AlertPanelContainer : Panel {
+        
         protected Vector2 _controlPadding = Vector2.Zero;
-        public Vector2 ControlPadding
-        {
+        public Vector2 ControlPadding {
             get => _controlPadding;
             set => SetProperty(ref _controlPadding, value, true);
         }
 
         protected Vector2 _outerControlPadding = Vector2.Zero;
-        public Vector2 OuterControlPadding
-        {
+        public Vector2 OuterControlPadding {
             get => _outerControlPadding;
             set => SetProperty(ref _outerControlPadding, value, true);
         }
 
         protected bool _padLeftBeforeControl = false;
         [Obsolete("Use OuterControlPadding instead.")]
-        public bool PadLeftBeforeControl
-        {
+        public bool PadLeftBeforeControl {
             get => _padLeftBeforeControl;
             set => SetProperty(ref _padLeftBeforeControl, value, true);
         }
 
         protected bool _padTopBeforeControl = false;
         [Obsolete("Use OuterControlPadding instead.")]
-        public bool PadTopBeforeControl
-        {
+        public bool PadTopBeforeControl {
             get => _padTopBeforeControl;
             set => SetProperty(ref _padTopBeforeControl, value, true);
         }
@@ -107,40 +100,34 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// The method / direction that should be used when flowing controls.
         /// </summary>
-        public ControlFlowDirection FlowDirection
-        {
+        public ControlFlowDirection FlowDirection {
             get => _flowDirection;
             set => SetProperty(ref _flowDirection, value, true);
         }
 
-        protected override void OnChildAdded(ChildChangedEventArgs e)
-        {
+        protected override void OnChildAdded(ChildChangedEventArgs e) {
             base.OnChildAdded(e);
             OnChildrenChanged(e);
 
             e.ChangedChild.Resized += ChangedChildOnResized;
         }
 
-        protected override void OnChildRemoved(ChildChangedEventArgs e)
-        {
+        protected override void OnChildRemoved(ChildChangedEventArgs e) {
             base.OnChildRemoved(e);
             OnChildrenChanged(e);
 
             e.ChangedChild.Resized -= ChangedChildOnResized;
         }
 
-        private void ChangedChildOnResized(object sender, ResizedEventArgs e)
-        {
+        private void ChangedChildOnResized(object sender, ResizedEventArgs e) {
             ReflowChildLayout(_children);
         }
 
-        private void OnChildrenChanged(ChildChangedEventArgs e)
-        {
+        private void OnChildrenChanged(ChildChangedEventArgs e) {
             ReflowChildLayout(e.ResultingChildren);
         }
 
-        public override void RecalculateLayout()
-        {
+        public override void RecalculateLayout() {
             ReflowChildLayout(_children);
 
             base.RecalculateLayout();
@@ -151,8 +138,7 @@ namespace Blish_HUD.Controls
         /// that don't match the provided filter function to be
         /// not visible.
         /// </summary>
-        public void FilterChildren<TControl>(Func<TControl, bool> filter) where TControl : Control
-        {
+        public void FilterChildren<TControl>(Func<TControl, bool> filter) where TControl : Control {
             _children.Cast<TControl>().ToList().ForEach(tc => tc.Visible = filter(tc));
             ReflowChildLayout(_children);
         }
@@ -163,8 +149,7 @@ namespace Blish_HUD.Controls
         /// </summary>
         /// <typeparam name="TControl"></typeparam>
         /// <param name="comparison"></param>
-        public void SortChildren<TControl>(Comparison<TControl> comparison) where TControl : Control
-        {
+        public void SortChildren<TControl>(Comparison<TControl> comparison) where TControl : Control {
             var tempChildren = _children.Cast<TControl>().ToList();
             tempChildren.Sort(comparison);
 
@@ -173,8 +158,7 @@ namespace Blish_HUD.Controls
             ReflowChildLayout(_children);
         }
 
-        private void ReflowChildLayoutLeftToRight(IEnumerable<Control> allChildren)
-        {
+        private void ReflowChildLayoutLeftToRight(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
@@ -182,16 +166,14 @@ namespace Blish_HUD.Controls
             float currentBottom = outerPadY;
             float lastRight = outerPadX;
 
-            foreach (var child in allChildren.Where(c => c.Visible))
-            {
+            foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next row
-                if (child.Width >= this.Width - lastRight)
-                {
+                if (child.Width >= this.Width - lastRight) {
                     currentBottom = nextBottom + _controlPadding.Y;
                     lastRight = outerPadX;
                 }
 
-                child.Location = new Point((int)lastRight, (int)currentBottom);
+                child.Location = new Point((int) lastRight, (int) currentBottom);
 
                 lastRight = child.Right + _controlPadding.X;
 
@@ -200,8 +182,7 @@ namespace Blish_HUD.Controls
             }
         }
 
-        private void ReflowChildLayoutRightToLeft(IEnumerable<Control> allChildren)
-        {
+        private void ReflowChildLayoutRightToLeft(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
@@ -209,27 +190,23 @@ namespace Blish_HUD.Controls
             float currentBottom = outerPadY;
             float lastLeft = this.Width - outerPadX;
 
-            foreach (var child in allChildren.Where(c => c.Visible))
-            {
+            foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next row
-                if (outerPadX > lastLeft - child.Width)
-                {
+                if (outerPadX > lastLeft - child.Width) {
                     currentBottom = nextBottom + _controlPadding.Y;
                     lastLeft = this.Width - outerPadX;
                 }
 
-                child.Location = new Point((int)(lastLeft - child.Width), (int)currentBottom);
+                child.Location = new Point((int) (lastLeft - child.Width), (int) currentBottom);
 
                 lastLeft = child.Left - _controlPadding.X;
-                Debug.WriteLine(lastLeft - child.Width);
 
                 // Ensure rows don't overlap
                 nextBottom = Math.Max(nextBottom, child.Bottom);
             }
         }
 
-        private void ReflowChildLayoutTopToBottom(IEnumerable<Control> allChildren)
-        {
+        private void ReflowChildLayoutTopToBottom(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
@@ -237,16 +214,14 @@ namespace Blish_HUD.Controls
             float currentRight = outerPadX;
             float lastBottom = outerPadY;
 
-            foreach (var child in allChildren.Where(c => c.Visible))
-            {
+            foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next column
-                if (child.Height >= this.Height - lastBottom)
-                {
+                if (child.Height >= this.Height - lastBottom) {
                     currentRight = nextRight + _controlPadding.X;
                     lastBottom = outerPadY;
                 }
 
-                child.Location = new Point((int)currentRight, (int)lastBottom);
+                child.Location = new Point((int) currentRight, (int) lastBottom);
 
                 lastBottom = child.Bottom + _controlPadding.Y;
 
@@ -255,8 +230,7 @@ namespace Blish_HUD.Controls
             }
         }
 
-        private void ReflowChildLayoutBottomToTop(IEnumerable<Control> allChildren)
-        {
+        private void ReflowChildLayoutBottomToTop(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
@@ -264,16 +238,14 @@ namespace Blish_HUD.Controls
             float currentRight = outerPadX;
             float lastTop = this.Height - outerPadY;
 
-            foreach (var child in allChildren.Where(c => c.Visible))
-            {
+            foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next column
-                if (outerPadY > lastTop - child.Height)
-                {
+                if (outerPadY > lastTop - child.Height) {
                     currentRight = nextRight + _controlPadding.X;
                     lastTop = this.Height - outerPadY;
                 }
 
-                child.Location = new Point((int)currentRight, (int)(lastTop - child.Height));
+                child.Location = new Point((int) currentRight, (int) (lastTop - child.Height));
 
                 lastTop = child.Top - _controlPadding.Y;
 
@@ -282,73 +254,63 @@ namespace Blish_HUD.Controls
             }
         }
 
-        private void ReflowChildLayoutSingleLeftToRight(IEnumerable<Control> allChildren)
-        {
+        private void ReflowChildLayoutSingleLeftToRight(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
             var lastLeft = outerPadX;
 
-            foreach (var child in allChildren)
-            {
-                child.Location = new Point((int)lastLeft, (int)outerPadY);
+            foreach (var child in allChildren) {
+                child.Location = new Point((int) lastLeft, (int) outerPadY);
 
                 lastLeft = child.Right + _controlPadding.X;
             }
         }
 
-        private void ReflowChildLayoutSingleRightToLeft(IEnumerable<Control> allChildren)
-        {
+        private void ReflowChildLayoutSingleRightToLeft(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
             var lastLeft = this.Width - outerPadX;
 
-            foreach (var child in allChildren)
-            {
-                child.Location = new Point((int)(lastLeft - child.Width), (int)outerPadY);
+            foreach (var child in allChildren) {
+                child.Location = new Point((int) (lastLeft - child.Width), (int) outerPadY);
 
                 lastLeft = child.Left - _controlPadding.X;
             }
         }
 
-        private void ReflowChildLayoutSingleTopToBottom(IEnumerable<Control> allChildren)
-        {
+        private void ReflowChildLayoutSingleTopToBottom(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
             var lastBottom = outerPadY;
 
-            foreach (var child in allChildren)
-            {
-                child.Location = new Point((int)outerPadX, (int)lastBottom);
+            foreach (var child in allChildren) {
+                child.Location = new Point((int) outerPadX, (int) lastBottom);
 
                 lastBottom = child.Bottom + _controlPadding.Y;
             }
         }
 
-        private void ReflowChildLayoutSingleBottomToTop(IEnumerable<Control> allChildren)
-        {
+        private void ReflowChildLayoutSingleBottomToTop(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
             var lastTop = this.Height - outerPadY;
 
-            foreach (var child in allChildren)
-            {
-                child.Location = new Point((int)outerPadX, (int)(lastTop - child.Height));
+            foreach (var child in allChildren) {
+                child.Location = new Point((int) outerPadX, (int) (lastTop - child.Height));
 
                 lastTop = child.Top - _controlPadding.Y;
             }
         }
 
-        private void ReflowChildLayout(List<Control> allChildren)
-        {
+        private void ReflowChildLayout(List<Control> allChildren) {
             var filteredChildren = allChildren.ToList().Where(c => c.GetType() != typeof(Scrollbar)
                                                                 && c.Visible);
 
-            switch (_flowDirection)
-            {
+            switch (_flowDirection) {
                 case ControlFlowDirection.LeftToRight:
                     ReflowChildLayoutLeftToRight(filteredChildren);
                     break;
@@ -375,6 +337,5 @@ namespace Blish_HUD.Controls
                     break;
             }
         }
-
     }
 }
