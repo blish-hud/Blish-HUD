@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Controls {
-    
+
     public enum ControlFlowDirection {
         /// <summary>
         /// Child controls are organized left to right.
@@ -68,7 +68,7 @@ namespace Blish_HUD.Controls {
     }
 
     public class FlowPanel : Panel {
-        
+
         protected Vector2 _controlPadding = Vector2.Zero;
         public Vector2 ControlPadding {
             get => _controlPadding;
