@@ -67,7 +67,7 @@ namespace Blish_HUD.Controls {
         SingleBottomToTop,
     }
 
-    public class AlertPanelContainer : Panel {
+    public class FlowPanel : Panel {
         
         protected Vector2 _controlPadding = Vector2.Zero;
 
