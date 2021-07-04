@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,6 +33,11 @@ namespace Blish_HUD.Content {
                 return _activeTexture2D;
             }
         }
+        
+        /// <summary>
+        /// Occurs when the <see cref="Texture"/> of the <see cref="AsyncTexture2D"/> is replaced.
+        /// </summary>
+        public event EventHandler<AsyncTextureSwapEventArgs> TextureSwapped;
 
         /// <summary>
         /// Create an <see cref="AsyncTexture2D"/> where the current <see cref="Texture"/> is a single transparent pixel.
@@ -59,6 +64,7 @@ namespace Blish_HUD.Content {
         }
 
         private void ApplyTextureSwap(GameTime gameTime) {
+            this.TextureSwapped?.Invoke(this, new AsyncTextureSwapEventArgs(_activeTexture2D, _stagedTexture2D));
             _activeTexture2D = _stagedTexture2D;
             _stagedTexture2D = null;
         }
