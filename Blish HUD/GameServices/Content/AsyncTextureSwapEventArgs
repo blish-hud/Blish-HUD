@@ -2,7 +2,7 @@ using System;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Content {
-    public class TextureSwapEventArgs : EventArgs {
+    public class AsyncTextureSwapEventArgs : EventArgs {
 
         /// <summary>
         /// The type of keyboard event.
@@ -14,7 +14,7 @@ namespace Blish_HUD.Content {
         /// </summary>
         public Texture2D NewTexture { get; }
 
-        public TextureSwapEventArgs(Texture2D oldTexture, Texture2D newTexture) {
+        public AsyncTextureSwapEventArgs(Texture2D oldTexture, Texture2D newTexture) {
             this.OldTexture = oldTexture;
             this.NewTexture = newTexture;
         }
