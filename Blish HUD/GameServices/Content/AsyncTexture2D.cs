@@ -65,7 +65,7 @@ namespace Blish_HUD.Content {
         }
 
         private void ApplyTextureSwap(GameTime gameTime) {
-            Texture2D previousTexture2D = _activeTexture;
+            Texture2D previousTexture2D = _activeTexture2D;
             _activeTexture2D = _stagedTexture2D;
             _stagedTexture2D = null;
             this.TextureSwapped?.Invoke(this, new ValueChangedEventArgs<Texture2D>(previousTexture2D, _activeTexture2D));
