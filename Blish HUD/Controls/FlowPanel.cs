@@ -70,21 +70,18 @@ namespace Blish_HUD.Controls {
     public class FlowPanel : Panel {
         
         protected Vector2 _controlPadding = Vector2.Zero;
-
         public Vector2 ControlPadding {
             get => _controlPadding;
             set => SetProperty(ref _controlPadding, value, true);
         }
 
         protected Vector2 _outerControlPadding = Vector2.Zero;
-
         public Vector2 OuterControlPadding {
             get => _outerControlPadding;
             set => SetProperty(ref _outerControlPadding, value, true);
         }
 
         protected bool _padLeftBeforeControl = false;
-
         [Obsolete("Use OuterControlPadding instead.")]
         public bool PadLeftBeforeControl {
             get => _padLeftBeforeControl;
@@ -92,7 +89,6 @@ namespace Blish_HUD.Controls {
         }
 
         protected bool _padTopBeforeControl = false;
-
         [Obsolete("Use OuterControlPadding instead.")]
         public bool PadTopBeforeControl {
             get => _padTopBeforeControl;
