@@ -5,12 +5,12 @@ namespace Blish_HUD.Content {
     public class AsyncTextureSwapEventArgs : EventArgs {
 
         /// <summary>
-        /// The type of keyboard event.
+        /// The active texture before the swap
         /// </summary>
         public Texture2D OldTexture { get; }
 
         /// <summary>
-        /// The key that triggered the event.
+        /// The new active texture after the swap
         /// </summary>
         public Texture2D NewTexture { get; }
 
