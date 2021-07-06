@@ -15,28 +15,12 @@ namespace Blish_HUD.Controls {
         LeftToRight,
 
         /// <summary>
-        /// Child controls are organized right to left.
-        /// When the width of the container is exceeded,
-        /// the remaining children are brought to the next
-        /// row to continue to be organized.
-        /// </summary>
-        RightToLeft,
-
-        /// <summary>
         /// Child controls are organized top to bottom.
         /// When the height of the container is exceeded,
         /// the remaining children are brought to the next
         /// column to continue to be organized.
         /// </summary>
         TopToBottom,
-
-        /// <summary>
-        /// Child controls are organized bottom to top.
-        /// When the height of the container is exceeded,
-        /// the remaining children are brought to the next
-        /// column to continue to be organized.
-        /// </summary>
-        BottomToTop,
 
         /// <summary>
         /// Child controls are organized left to right.
@@ -46,25 +30,41 @@ namespace Blish_HUD.Controls {
         SingleLeftToRight,
 
         /// <summary>
-        /// Child controls are organized right to left.
-        /// They will be organized into a single row
-        /// regardless of the horizontal space available.
-        /// </summary>
-        SingleRightToLeft,
-
-        /// <summary>
         /// Child controls are organized top to bottom.
         /// They will be organized into a single column
         /// regardless of the vertical space available.
         /// </summary>
         SingleTopToBottom,
+        
+        /// <summary>
+        /// Child controls are organized right to left.
+        /// When the width of the container is exceeded,
+        /// the remaining children are brought to the next
+        /// row to continue to be organized.
+        /// </summary>
+        RightToLeft,
+        
+        /// <summary>
+        /// Child controls are organized right to left.
+        /// They will be organized into a single row
+        /// regardless of the horizontal space available.
+        /// </summary>
+        SingleRightToLeft,
+        
+        /// <summary>
+        /// Child controls are organized bottom to top.
+        /// When the height of the container is exceeded,
+        /// the remaining children are brought to the next
+        /// column to continue to be organized.
+        /// </summary>
+        BottomToTop,
 
         /// <summary>
         /// Child controls are organized bottom to top.
         /// They will be organized into a single column
         /// regardless of the vertical space available.
         /// </summary>
-        SingleBottomToTop,
+        SingleBottomToTop
     }
 
     public class FlowPanel : Panel {
