@@ -128,6 +128,16 @@ namespace Blish_HUD.Settings {
             return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }).Value;
         }
 
+        public bool ContainsSetting(string entryKey) {
+            return (this.Entries.Any(entry => string.Equals(entry.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        public bool TryGetSetting(string entryKey, out SettingEntry settingEntry) {
+            settingEntry = this[entryKey];
+
+            return settingEntry != null;
+        }
+
         private void Load() {
             if (_entryTokens == null) return;
 
