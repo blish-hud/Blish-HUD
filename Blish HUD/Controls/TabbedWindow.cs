@@ -45,7 +45,7 @@ namespace Blish_HUD.Controls {
         public int SelectedTabIndex {
             get => _selectedTabIndex;
             set {
-                if (SetProperty(ref _selectedTabIndex, value)) {
+                if (SetProperty(ref _selectedTabIndex, value, true)) {
                     OnTabChanged(EventArgs.Empty);
                 }
             }
