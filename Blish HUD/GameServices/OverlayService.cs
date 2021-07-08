@@ -195,18 +195,12 @@ namespace Blish_HUD {
 
         private void BuildMainWindow() {
             this.BlishHudWindow = new TabbedWindow() {
-                Parent = Graphics.SpriteScreen,
-                Title  = Strings.Common.BlishHUD,
-                Emblem = Content.GetTexture("blishhud-emblem")
-            };
-
-            // Center the window so that you don't have to drag it over every single time (which is really annoying)
-            // TODO: Save window positions to settings so that they remember where they were last
-            Graphics.SpriteScreen.Resized += delegate {
-                if (!this.BlishHudWindow.Visible) {
-                    this.BlishHudWindow.Location = new Point(Graphics.WindowWidth / 2 - this.BlishHudWindow.Width / 2,
-                                                             Graphics.WindowHeight / 2 - this.BlishHudWindow.Height / 2);
-                }
+                Parent        = Graphics.SpriteScreen,
+                Title         = Strings.Common.BlishHUD,
+                Emblem        = Content.GetTexture("blishhud-emblem"),
+                Location      = new Point(256, 256),
+                SavesPosition = true,
+                Id            = $"{nameof(OverlayService)}_BlishHUD_38d37290-b5f9-447d-97ea-45b0b50e5f55"
             };
 
             BuildSettingTab();

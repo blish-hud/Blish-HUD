@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Blish_HUD.Input;
+using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,6 +13,8 @@ namespace Blish_HUD.Controls {
         private const int SUBTITLE_OFFSET = 20;
 
         #region Load Static
+
+        private const string WINDOW_SETTINGS = "WindowSettings";
 
         private static readonly Texture2D _textureTitleBarLeft;
         private static readonly Texture2D _textureTitleBarRight;
@@ -25,6 +28,8 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureWindowResizableCorner;
         private static readonly Texture2D _textureWindowResizableCornerActive;
 
+        private static readonly SettingCollection _windowSettings;
+
         static WindowBase() {
             _textureTitleBarLeft = Content.GetTexture("titlebar-inactive");
             _textureTitleBarRight = Content.GetTexture("window-topright");
@@ -37,6 +42,8 @@ namespace Blish_HUD.Controls {
             _textureWindowCorner = Content.GetTexture(@"controls/window/156008");
             _textureWindowResizableCorner = Content.GetTexture(@"controls/window/156009");
             _textureWindowResizableCornerActive = Content.GetTexture(@"controls/window/156010");
+
+            _windowSettings = GameService.Settings.Settings.AddSubCollection(WINDOW_SETTINGS);
         }
 
         #endregion
@@ -87,6 +94,27 @@ namespace Blish_HUD.Controls {
         public bool TopMost {
             get => _topMost;
             set => SetProperty(ref _topMost, value);
+        }
+
+        protected bool _savesPosition;
+
+        /// <summary>
+        /// If <c>true</c>, the window will remember its position between Blish HUD sessions.
+        /// Requires that <see cref="Id"/> be set.
+        /// </summary>
+        public bool SavesPosition {
+            get => _savesPosition;
+            set => SetProperty(ref _savesPosition, value);
+        }
+
+        private string _id;
+        /// <summary>
+        /// A unique id to identify the window.  Used with <see cref="SavesPosition"/> as a unique
+        /// identifier to remember where the window is positioned.
+        /// </summary>
+        public string Id {
+            get => _id;
+            set => SetProperty(ref _id, value);
         }
 
         protected bool StandardWindow = false;
@@ -159,7 +187,7 @@ namespace Blish_HUD.Controls {
 
             this.ZIndex = Screen.WINDOW_BASEZINDEX;
 
-            Input.Mouse.LeftMouseButtonReleased += delegate { Dragging = false; };
+            Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseRelease;
 
             _animFade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
             _animFade.Pause();
@@ -258,10 +286,15 @@ namespace Blish_HUD.Controls {
             base.OnLeftMouseButtonPressed(e);
         }
 
-        protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
-            Dragging = false;
+        private void OnGlobalMouseRelease(object sender, MouseEventArgs e) {
+            if (this.Visible && this.Dragging) {
+                // Save position for next launch
+                if (this.SavesPosition && this.Id != null) {
+                    (_windowSettings[this.Id] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id, this.Location)).Value = this.Location;
+                }
 
-            base.OnLeftMouseButtonReleased(e);
+                Dragging = false;
+            }
         }
 
         #region Window Navigation
@@ -302,10 +335,17 @@ namespace Blish_HUD.Controls {
         public override void Show() {
             if (_visible) return;
 
-            // TODO: Ensure window can't also go off too far to the right or bottom
+            // Restore position from previous session
+            if (this.SavesPosition && this.Id != null) {
+                if (_windowSettings.TryGetSetting(this.Id, out var windowPosition)) {
+                    this.Location = (windowPosition as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
+                }
+            }
+
+            // Ensure that the window is actually on the screen (accounts for screen size changes, etc.)
             this.Location = new Point(
-                Math.Max(0, _location.X),
-                Math.Max(0, _location.Y)
+                MathHelper.Clamp(_location.X, 0, GameService.Graphics.SpriteScreen.Width - 64),
+                MathHelper.Clamp(_location.Y, 0, GameService.Graphics.SpriteScreen.Height - 64)
             );
 
             this.Opacity = 0;
@@ -317,6 +357,7 @@ namespace Blish_HUD.Controls {
         public override void Hide() {
             if (!this.Visible) return;
 
+            this.Dragging = false;
             _animFade.Resume();
             Content.PlaySoundEffectByName(@"window-close");
         }
@@ -419,6 +460,12 @@ namespace Blish_HUD.Controls {
         }
 
 #endregion
+
+        protected override void DisposeControl() {
+            Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseRelease;
+
+            base.DisposeControl();
+        }
 
     }
 }
