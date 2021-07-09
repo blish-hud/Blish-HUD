@@ -1,4 +1,4 @@
-next-version: 0.5.2
+next-version: 0.8.0
 assembly-versioning-scheme: MajorMinor
 mode: ContinuousDeployment
 major-version-bump-message: '\+\+major'
