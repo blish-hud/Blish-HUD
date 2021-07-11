@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Blish_HUD.ArcDps {
 
@@ -10,44 +11,61 @@ namespace Blish_HUD.ArcDps {
 
         private static readonly Logger Logger = Logger.GetLogger<SocketListener>();
 
-        public delegate void Message(MessageData data);
-
         private readonly int _bufferSize;
 
-        private readonly SocketAsyncEventArgs _socketAsyncReceiveEventArgs;
-        private          Socket               _listenSocket;
+        private CancellationTokenSource _cancellationTokenSource;
 
         public SocketListener(int bufferSize) {
             _bufferSize = bufferSize;
-
-            var socketAsyncEventArgs = new SocketAsyncEventArgs();
-            socketAsyncEventArgs.Completed += OnIoCompleted;
-            socketAsyncEventArgs.SetBuffer(new byte[bufferSize], 0, bufferSize);
-            _socketAsyncReceiveEventArgs = socketAsyncEventArgs;
         }
 
-        public event Message ReceivedMessage;
+        public event EventHandler<MessageData> ReceivedMessage;
+
+        public event EventHandler<SocketError> OnSocketError;
 
         public void Start(IPEndPoint localEndPoint) {
-            _listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) {
+            if (_cancellationTokenSource is { IsCancellationRequested: false }) {
+                Logger.Warn("Start() was called more than once. Call Stop() before calling Start() again.");
+                return;
+            }
+
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            var listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) {
                 ReceiveBufferSize = _bufferSize
             };
 
-            _socketAsyncReceiveEventArgs.AcceptSocket   = _listenSocket;
-            _socketAsyncReceiveEventArgs.RemoteEndPoint = localEndPoint;
+            _cancellationTokenSource.Token.Register(() => Release(listenSocket));
+
+            var socketEventArgs = new SocketAsyncEventArgs();
+            socketEventArgs.Completed += OnIoCompleted;
+            socketEventArgs.SetBuffer(new byte[_bufferSize], 0, _bufferSize);
+            socketEventArgs.AcceptSocket   = listenSocket;
+            socketEventArgs.RemoteEndPoint = localEndPoint;
 
             try {
-                if (!_listenSocket.ConnectAsync(_socketAsyncReceiveEventArgs)) ProcessConnect(_socketAsyncReceiveEventArgs);
+                // The next line returns true when the operation is pending; false when it completed without delay
+                if (!listenSocket.ConnectAsync(socketEventArgs)) {
+                    ProcessConnect(socketEventArgs);
+                }
             } catch (Exception e) {
                 Logger.Warn(e, "Failed to connect to Arcdps-BHUD bridge.");
             }
         }
 
         public void Stop() {
+            _cancellationTokenSource.Cancel();
+        }
+
+        public void Release(Socket listenSocket) {
             try {
-                _listenSocket.Close();
-            } catch {
-                // ignored
+                if (listenSocket.Connected) {
+                    listenSocket.Shutdown(SocketShutdown.Receive);
+                }
+
+                listenSocket.Close();
+            } catch (Exception reason) {
+                Logger.Warn(reason, "An unexpected error occurred when disconnecting the Arcdps-BHUD bridge.");
             }
         }
 
@@ -63,62 +81,75 @@ namespace Blish_HUD.ArcDps {
         }
 
         private void ProcessConnect(SocketAsyncEventArgs e) {
+            if (e.SocketError != SocketError.Success) {
+                this.OnSocketError?.Invoke(this, e.SocketError);
+                return;
+            }
+
             try {
-                _socketAsyncReceiveEventArgs.UserToken = new AsyncUserToken(e.AcceptSocket);
-                if (!e.AcceptSocket.ReceiveAsync(_socketAsyncReceiveEventArgs)) ProcessReceive(_socketAsyncReceiveEventArgs);
+                e.UserToken = new AsyncUserToken();
+
+                // The next line returns true when the operation is pending; false when it completed without delay
+                if (!e.AcceptSocket.ReceiveAsync(e)) {
+                    ProcessReceive(e);
+                }
             } catch {
                 // ignored
             }
         }
 
         private void ProcessReceive(SocketAsyncEventArgs e) {
-            while (true) {
-                if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success) {
-                    if (!(e.UserToken is AsyncUserToken token)) return;
+            var token = (AsyncUserToken)e.UserToken;
 
-                    ProcessReceivedData(
-                                        token.DataStartOffset,
-                                        token.NextReceiveOffset - token.DataStartOffset + e.BytesTransferred, 0, token, e
-                                       );
+            do {
+                if (e.SocketError == SocketError.Success) {
+                    if (e.BytesTransferred > 0) {
+                        ProcessReceivedData(
+                                            token.DataStartOffset,
+                                            token.NextReceiveOffset - token.DataStartOffset + e.BytesTransferred, 0, token, e.Buffer
+                                           );
 
-                    token.NextReceiveOffset += e.BytesTransferred;
+                        token.NextReceiveOffset += e.BytesTransferred;
 
-                    if (token.NextReceiveOffset == e.Buffer.Length) {
-                        token.NextReceiveOffset = 0;
+                        if (token.NextReceiveOffset == e.Buffer.Length) {
+                            token.NextReceiveOffset = 0;
 
-                        if (token.DataStartOffset < e.Buffer.Length) {
-                            int notYesProcessDataSize = e.Buffer.Length - token.DataStartOffset;
-                            Buffer.BlockCopy(e.Buffer, token.DataStartOffset, e.Buffer, 0, notYesProcessDataSize);
+                            if (token.DataStartOffset < e.Buffer.Length) {
+                                int notYesProcessDataSize = e.Buffer.Length - token.DataStartOffset;
+                                Buffer.BlockCopy(e.Buffer, token.DataStartOffset, e.Buffer, 0, notYesProcessDataSize);
 
-                            token.NextReceiveOffset = notYesProcessDataSize;
+                                token.NextReceiveOffset = notYesProcessDataSize;
+                            }
+
+                            token.DataStartOffset = 0;
                         }
 
-                        token.DataStartOffset = 0;
+                        e.SetBuffer(token.NextReceiveOffset, e.Buffer.Length - token.NextReceiveOffset);
                     }
-
-                    e.SetBuffer(token.NextReceiveOffset, e.Buffer.Length - token.NextReceiveOffset);
-
-                    if (!token.Socket.ReceiveAsync(e)) continue;
                 } else {
-                    var token = e.UserToken as AsyncUserToken;
-                    token?.Dispose();
+                    this.OnSocketError?.Invoke(this, e.SocketError);
                 }
 
-                break;
-            }
+                if (_cancellationTokenSource.IsCancellationRequested) {
+                    break;
+                }
+            } while (!e.AcceptSocket.ReceiveAsync(e)); // Returns true when the operation is pending; false when it completed without delay
+
         }
 
         private void ProcessReceivedData(
-            int            dataStartOffset, int                  totalReceivedDataSize, int alreadyProcessedDataSize,
-            AsyncUserToken token,           SocketAsyncEventArgs e
+            int            dataStartOffset, int    totalReceivedDataSize, int alreadyProcessedDataSize,
+            AsyncUserToken token,           byte[] buffer
         ) {
             while (true) {
-                if (alreadyProcessedDataSize >= totalReceivedDataSize) return;
+                if (alreadyProcessedDataSize >= totalReceivedDataSize) {
+                    return;
+                }
 
                 if (token.MessageSize == null) {
                     if (totalReceivedDataSize - alreadyProcessedDataSize > MESSAGE_HEADER_SIZE) {
-                        var headerData = new byte[MESSAGE_HEADER_SIZE];
-                        Buffer.BlockCopy(e.Buffer, dataStartOffset, headerData, 0, MESSAGE_HEADER_SIZE);
+                        byte[] headerData = new byte[MESSAGE_HEADER_SIZE];
+                        Buffer.BlockCopy(buffer, dataStartOffset, headerData, 0, MESSAGE_HEADER_SIZE);
                         int messageSize = BitConverter.ToInt32(headerData, 0);
 
                         token.MessageSize     = messageSize;
@@ -132,9 +163,9 @@ namespace Blish_HUD.ArcDps {
                     int messageSize = token.MessageSize.Value;
 
                     if (totalReceivedDataSize - alreadyProcessedDataSize >= messageSize) {
-                        var messageData = new byte[messageSize];
-                        Buffer.BlockCopy(e.Buffer, dataStartOffset, messageData, 0, messageSize);
-                        ProcessMessage(messageData, token, e);
+                        byte[] messageData = new byte[messageSize];
+                        Buffer.BlockCopy(buffer, dataStartOffset, messageData, 0, messageSize);
+                        ProcessMessage(messageData, token);
 
                         token.DataStartOffset = dataStartOffset + messageSize;
                         token.MessageSize     = null;
@@ -149,8 +180,8 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
-        private void ProcessMessage(byte[] messageData, AsyncUserToken token, SocketAsyncEventArgs e) {
-            this.ReceivedMessage?.Invoke(new MessageData {Message = messageData, Token = token});
+        private void ProcessMessage(byte[] messageData, AsyncUserToken token) {
+            this.ReceivedMessage?.Invoke(this, new MessageData { Message = messageData, Token = token });
         }
 
     }
