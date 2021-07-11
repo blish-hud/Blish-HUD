@@ -115,10 +115,10 @@ namespace Blish_HUD.ArcDps {
                             token.NextReceiveOffset = 0;
 
                             if (token.DataStartOffset < e.Buffer.Length) {
-                                int notYesProcessDataSize = e.Buffer.Length - token.DataStartOffset;
-                                Buffer.BlockCopy(e.Buffer, token.DataStartOffset, e.Buffer, 0, notYesProcessDataSize);
+                                int notYetProcessed = e.Buffer.Length - token.DataStartOffset;
+                                Buffer.BlockCopy(e.Buffer, token.DataStartOffset, e.Buffer, 0, notYetProcessed);
 
-                                token.NextReceiveOffset = notYesProcessDataSize;
+                                token.NextReceiveOffset = notYetProcessed;
                             }
 
                             token.DataStartOffset = 0;
