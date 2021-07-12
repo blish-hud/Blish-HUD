@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using Blish_HUD.ArcDps;
 using Blish_HUD.ArcDps.Common;
@@ -95,6 +96,7 @@ namespace Blish_HUD {
             _stopwatch              =  new Stopwatch();
             _server                 =  new SocketListener(200_000);
             _server.ReceivedMessage += MessageHandler;
+            _server.OnSocketError += SocketErrorHandler;
             #if DEBUG
             this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
             #endif
@@ -136,7 +138,7 @@ namespace Blish_HUD {
             this.RenderPresent = elapsed < _leeway;
         }
 
-        private void MessageHandler(MessageData data) {
+        private void MessageHandler(object sender, MessageData data) {
             switch (data.Message[0]) {
                 case (byte) MessageType.ImGui:
                     this.HudIsActive = data.Message[1] != 0;
@@ -148,6 +150,11 @@ namespace Blish_HUD {
                     ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
                     break;
             }
+        }
+
+        private void SocketErrorHandler(object sender, SocketError socketError) {
+            var listener = (SocketListener)sender;
+            listener.Stop();
         }
 
         private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType) {
