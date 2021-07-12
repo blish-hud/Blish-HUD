@@ -1,5 +1,15 @@
 <Project>
 
+  <PropertyGroup>
+    <!-- If the user hasn't defined these properties, we'll set the default -->
+    <BlishHUDModuleOutputPath Condition="'$(BlishHUDModuleOutputPath)'==''">$(OutDir)</BlishHUDModuleOutputPath>
+    <BlishHUDModuleFileName Condition="'$(BlishHUDModuleFileName)'==''">$(ProjectName)</BlishHUDModuleFileName>
+    <BlishHUDModuleFileExtension Condition="'$(BlishHUDModuleFileExtension)'==''">.bhm</BlishHUDModuleFileExtension>
+
+    <BlishHUDModuleFilePath>$(BlishHUDModuleOutputPath)$(BlishHUDModuleFileName)$(BlishHUDModuleFileExtension)</BlishHUDModuleFilePath>
+    <BlishHUDModuleTempPath>$(OutDir).bhm</BlishHUDModuleTempPath>
+  </PropertyGroup>
+  
   <Target Name="CheckBlishHUDModuleRequiredFiles" BeforeTargets="Build">
     <!-- Check for manifest.json -->
     <Error Condition="!Exists('$(ProjectDir)manifest.json')" Text="The file &quot;$(ProjectDir)manifest.json&quot; was not found. This file is required for creating a Blish HUD module." />
@@ -10,7 +20,7 @@
 
   <Target Name="BuildBlishHUDModule" AfterTargets="Build">
     <!-- Remove existing bhm file -->
-    <Delete Files="$(OutDir)$(ProjectName).bhm" />
+    <Delete Files="$(BlishHUDModuleFilePath)" />
 
     <!-- Copy manifest.json -->
     <Copy SourceFiles="$(ProjectDir)manifest.json" DestinationFolder="$(OutDir)" />
@@ -25,19 +35,19 @@
     <ItemGroup>
       <OutFiles Include="$(OutDir)**" />
     </ItemGroup>
-    <Copy SourceFiles="@(OutFiles)" DestinationFolder="$(OutDir).bhm\%(RecursiveDir)" />
+    <Copy SourceFiles="@(OutFiles)" DestinationFolder="$(BlishHUDModuleTempPath)\%(RecursiveDir)" />
 
     <!-- Zip subfolder -->
-    <ZipDirectory SourceDirectory="$(OutDir).bhm" DestinationFile="$(OutDir)$(ProjectName).bhm" Overwrite="true" />
+    <ZipDirectory SourceDirectory="$(BlishHUDModuleTempPath)" DestinationFile="$(BlishHUDModuleFilePath)" Overwrite="true" />
 
     <!-- Remove the temporary subfolder -->
-    <RemoveDir Directories="$(OutDir).bhm" />
+    <RemoveDir Directories="$(BlishHUDModuleTempPath)" />
   </Target>
 
   <Target Name="CleanBlishHUDModule" AfterTargets="Clean">
     <RemoveDir Directories="$(OutDir)ref" />
     <Delete Files="$(OutDir)manifest.json" />
-    <Delete Files="$(OutDir)$(ProjectName).bhm" />
+    <Delete Files="$(BlishHUDModuleFilePath)" />
   </Target>
 
 </Project>
