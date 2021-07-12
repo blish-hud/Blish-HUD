@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <!-- If the user hasn't defined these properties, we'll set the default -->
-    <BlishHUDModuleOutputPath Condition="'$(BlishHUDModuleOutputPath)'==''">$(OutDir)</BlishHUDModuleOutputPath>
+    <BlishHUDModuleOutputDir Condition="'$(BlishHUDModuleOutputDir)'==''">$(OutDir)</BlishHUDModuleOutputDir>
     <BlishHUDModuleFileName Condition="'$(BlishHUDModuleFileName)'==''">$(ProjectName)</BlishHUDModuleFileName>
     <BlishHUDModuleFileExtension Condition="'$(BlishHUDModuleFileExtension)'==''">.bhm</BlishHUDModuleFileExtension>
 
-    <BlishHUDModuleFilePath>$(BlishHUDModuleOutputPath)$(BlishHUDModuleFileName)$(BlishHUDModuleFileExtension)</BlishHUDModuleFilePath>
+    <BlishHUDModuleFilePath>$(BlishHUDModuleOutputDir)$(BlishHUDModuleFileName)$(BlishHUDModuleFileExtension)</BlishHUDModuleFilePath>
     <BlishHUDModuleTempPath>$(OutDir).bhm</BlishHUDModuleTempPath>
   </PropertyGroup>
   
