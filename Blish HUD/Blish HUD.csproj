@@ -57,9 +57,9 @@
 
   <ItemGroup>
     <!-- Make sure that content files are only included through MonoGame and nothing else -->
-    <!--<Compile Remove="Content\**" />-->
-    <!--<EmbeddedResource Remove="Content\**" />-->
-    <!--<None Remove="Content\**" />-->
+    <Compile Remove="Content\**" />
+    <EmbeddedResource Remove="Content\**" />
+    <None Remove="Content\**" />
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
 
@@ -224,7 +224,6 @@
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="all" />
     <PackageReference Include="Octokit" Version="0.32.0" PrivateAssets="all" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" PrivateAssets="all" />
-    <PackageReference Include="System.Security.Permissions" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
