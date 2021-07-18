@@ -16,7 +16,7 @@ namespace Blish_HUD.Controls {
         private const int SCROLL_ARROW      = 50;
         private const int SCROLL_CONT_ARROW = 10;
         private const int SCROLL_CONT_TRACK = 15;
-        private const int SCROLL_WHEEL      = 100;
+        private const int SCROLL_WHEEL      = 30;
 
         #region Load Static
 
