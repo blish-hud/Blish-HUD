@@ -306,7 +306,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 CanScroll  = true,
                 ShowBorder = true,
                 Title      = Strings.GameServices.ModulesService.ModuleManagement_ModuleSettings,
-                Size       = new Point(_dependencyView.Right - _permissionView.Left, 222),
+                Size       = new Point(_dependencyView.Right - _permissionView.Left - 10, 222),
                 Location   = new Point(_permissionView.Left,                         _permissionView.Bottom + Panel.MenuStandard.ControlOffset.Y),
                 Parent     = _collapsePanel
             };
