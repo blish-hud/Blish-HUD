@@ -208,6 +208,8 @@ namespace Blish_HUD.Modules {
                 Logger.Warn(ex, "Module {module} failed to be composed.", this.Manifest.GetDetailedName());
             } catch (FileNotFoundException ex) {
                 Logger.Warn(ex, "Module {module} failed to load a dependency.", this.Manifest.GetDetailedName());
+            } catch (ReflectionTypeLoadException ex) {
+                Logger.Warn(ex, "Module {module} failed to load because it depended on something not available in this version.  Ensure you are using the correct module and Blish HUD versions.", this.Manifest.GetDetailedName());
             }
 
             _forceAllowDependency = false;
