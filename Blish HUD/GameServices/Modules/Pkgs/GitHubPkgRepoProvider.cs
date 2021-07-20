@@ -63,7 +63,7 @@ namespace Blish_HUD.Modules.Pkgs {
         }
 
         private async Task<(PkgManifest[] PkgManifests, Exception Exception)> LoadPkgManifestsFromGitHub(IEnumerable<GitHubRelease> releases) {
-            (PkgManifest[] PkgManifests, Exception Exception) lastReleaseSet = (null, null);
+            (PkgManifest[] PkgManifests, Exception Exception) lastReleaseSet = (Array.Empty<PkgManifest>(), null);
 
             foreach (var release in releases) {
                 string compressedReleaseUrl = release.Assets.First(asset => asset.Name.Equals(ASSET_PACKAGE_NAME, StringComparison.InvariantCultureIgnoreCase)).BrowserDownloadUrl;
@@ -73,9 +73,7 @@ namespace Blish_HUD.Modules.Pkgs {
                 if (lastReleaseSet.Exception == null) break;
             }
 
-            return lastReleaseSet.PkgManifests != null
-                ? lastReleaseSet
-                : (Array.Empty<PkgManifest>(), null);
+            return lastReleaseSet;
         }
         
     }
