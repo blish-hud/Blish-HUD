@@ -1,16 +1,23 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
 using Blish_HUD.Overlay;
+using Blish_HUD.Overlay.SelfUpdater;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
 using Blish_HUD.Settings.UI.Views;
+using Flurl.Http;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
@@ -130,19 +137,29 @@ namespace Blish_HUD {
         /// Instructs Blish HUD to unload and then restart.
         /// </summary>
         public void Restart() {
+            Restart(Enumerable.Empty<string>());
+        }
+
+        public void Restart(params string[] additionaArgs) {
+            Restart(additionaArgs.ToList());
+        }
+
+        public void Restart(IEnumerable<string> additionalArgs) {
             this.BeginExit(0);
 
             // REF: https://referencesource.microsoft.com/#System.Windows.Forms/winforms/Managed/System/WinForms/Application.cs,1447
 
             var arguments = Environment.GetCommandLineArgs()
-                                                      .Skip(1)
-                                                      .Where(arg => !string.Equals(arg, $"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}", StringComparison.OrdinalIgnoreCase))
-                                                      .Append($"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}")
-                                                      .Select(arg => $"\"{arg}\"");
+                                       .Skip(1)
+                                       .Where(arg => !string.Equals(arg, $"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}", StringComparison.OrdinalIgnoreCase))
+                                       .Append($"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}")
+                                       .Select(arg => arg.Contains("\"") ? arg : $"\"{arg}\"");
 
             var currentStartInfo = Process.GetCurrentProcess().StartInfo;
             currentStartInfo.FileName  = Application.ExecutablePath;
-            currentStartInfo.Arguments = string.Join(" ", arguments);
+            currentStartInfo.Arguments = string.Join(" ", arguments.Concat(additionalArgs.Select(arg => arg.Contains("\"") ? arg : $"\"{arg}\"")));
+
+            Logger.Info($"Restarting with launch args: {currentStartInfo.Arguments}");
 
             Process.Start(currentStartInfo);
 
@@ -188,6 +205,16 @@ namespace Blish_HUD {
             }
         }
 
+        internal async Task SelfUpdate(CoreVersionManifest coreVersionManifest) {
+            this.BlishMenuIcon.LoadingMessage = "Unloading modules...";
+            GameService.Module.DoUnload();
+            this.BlishHudWindow.Hide();
+            this.BlishMenuIcon.Enabled = false;
+            this.BlishMenuIcon.LoadingMessage = "Downloading Blish HUD for install...";
+
+            await SelfUpdateUtil.BeginUpdate(coreVersionManifest);
+        }
+
         protected override void Load() {
             BuildMainWindow();
             BuildCornerIcon();
@@ -215,9 +242,9 @@ namespace Blish_HUD {
 
             this.BlishContextMenu                                                                                          =  this.BlishMenuIcon.Menu;
             this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD)).Click += delegate { Restart(); };
-            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit,    Strings.Common.BlishHUD)).Click += delegate { Exit(); };
+            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit,    Strings.Common.BlishHUD)).Click += delegate { Exit(); };;
 
-            this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
+            this.BlishMenuIcon.Click += delegate {
                 this.BlishHudWindow.ToggleWindow();
             };
         }

@@ -23,7 +23,7 @@ namespace Blish_HUD {
         }
 
         public override void OnUserFacingException(UserFacingException e, string message) {
-            MessageBox.Show("Invalid launch option(s) specified.  See --help for available options.", "Failed to launch Blish HUD", MessageBoxButtons.OK);
+            MessageBox.Show($"Invalid launch option(s) specified.  See --help for available options.\r\n\r\n{e.Message}", "Failed to launch Blish HUD", MessageBoxButtons.OK);
         }
 
         public override void OnHelpInvoked(string helpText) {
@@ -48,6 +48,7 @@ namespace Blish_HUD {
          * w, window    - The name of the window to overlay.
          *
          * restartskipmutex - Forces Blish HUD to allow multiple instances.  Used internally to prevent race condition issues when Blish HUD is restarted.
+         * handleupdate     - Blish HUD checks and unpacks a provided zip file 
          */
 
         #region Game Integration

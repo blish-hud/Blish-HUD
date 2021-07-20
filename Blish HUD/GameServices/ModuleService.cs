@@ -269,7 +269,10 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
-            foreach (var module in _modules) {
+            var moduleSet = _modules.ToArray();
+            _modules.Clear();
+
+            foreach (var module in moduleSet) {
                 if (module.Enabled) {
                     try {
                         Logger.Info("Unloading module {module}.", module.Manifest.GetDetailedName());

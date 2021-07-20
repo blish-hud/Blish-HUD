@@ -156,4 +156,7 @@ trademarks are the property of their respective owners.</value>
   <data name="Setting_AudioDevice_Description" xml:space="preserve">
     <value>This determines the Audio output device used by Blish HUD. The Gw2OutputDevice adjusts itself to whatever GW2 is using.</value>
   </data>
+  <data name="AboutAnetNotAffiliatedNotice" xml:space="preserve">
+    <value>This application is not affiliated with ArenaNet, Guild Wars 2, or any of their partners.</value>
+  </data>
 </root>

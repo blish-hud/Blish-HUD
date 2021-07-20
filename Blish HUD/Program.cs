@@ -16,7 +16,7 @@ namespace Blish_HUD {
 
         private const string APP_GUID = "{5802208e-71ca-4745-ab1b-d851bc17a460}";
 
-        public static SemVer.Version OverlayVersion { get; } = new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
+        public static SemVer.Version OverlayVersion { get; } = new SemVer.Version("0.8.0");  //new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
 
         private static void EnableLogging() {
             // Make sure logging and logging services are available as soon as possible
@@ -46,6 +46,8 @@ namespace Blish_HUD {
 
             Logger.Debug("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
             
+            SelfUpdateUtil.TryHandleUpdate();
+
             if (!ApplicationSettings.Instance.RestartSkipMutex) {
                 // Single instance handling
                 _singleInstanceMutex = new Mutex(true, ApplicationSettings.Instance.MumbleMapName != null
