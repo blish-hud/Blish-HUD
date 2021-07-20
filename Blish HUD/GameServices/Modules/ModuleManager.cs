@@ -83,10 +83,16 @@ namespace Blish_HUD.Modules {
 
                         this.Enabled = true;
 
-                        this.ModuleInstance.DoInitialize();
-                        this.ModuleInstance.DoLoad();
+                        try {
+                            this.ModuleInstance.DoInitialize();
+                            this.ModuleInstance.DoLoad();
 
-                        this.ModuleEnabled?.Invoke(this, EventArgs.Empty);
+                            this.ModuleEnabled?.Invoke(this, EventArgs.Empty);
+                        } catch (TypeLoadException ex) {
+                            this.ModuleInstance = null;
+                            this.Enabled        = false;
+                            Logger.Error(ex, "Module {module} failed to load because it depended on a type which is not available in this version.  Ensure you are using the correct module and Blish HUD versions.", this.Manifest.GetDetailedName());
+                        }
                     }
                 } else {
                     Logger.Error($"Assembly '{packagePath}' could not be loaded from {this.DataReader.GetType().Name}.");
@@ -208,6 +214,8 @@ namespace Blish_HUD.Modules {
                 Logger.Warn(ex, "Module {module} failed to be composed.", this.Manifest.GetDetailedName());
             } catch (FileNotFoundException ex) {
                 Logger.Warn(ex, "Module {module} failed to load a dependency.", this.Manifest.GetDetailedName());
+            } catch (ReflectionTypeLoadException ex) {
+                Logger.Warn(ex, "Module {module} failed to load because it depended on something not available in this version.  Ensure you are using the correct module and Blish HUD versions.", this.Manifest.GetDetailedName());
             }
 
             _forceAllowDependency = false;
