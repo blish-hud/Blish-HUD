@@ -44,6 +44,8 @@ namespace Blish_HUD.Input {
         }
 
         public void Unload() {
+            if (process == null || debugHelperMessageService == null) return;
+
             Logger.Debug("Unloading DebugHelper input hooks");
             debugHelperMessageService.Stop();
             pingTimer.Stop();

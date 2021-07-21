@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -9,7 +10,7 @@ using Blish_HUD.Overlay.SelfUpdater;
 using Flurl.Http;
 
 namespace Blish_HUD {
-    public static class SelfUpdateUtil {
+    internal static class SelfUpdateUtil {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(SelfUpdateUtil));
 
@@ -17,23 +18,28 @@ namespace Blish_HUD {
         private const string FILE_EXE       = "Blish HUD.exe";
         private const string FILE_EXEBACKUP = FILE_EXE + "__bak";
 
-        public static void TryHandleUpdate() {
+        public static bool TryHandleUpdate() {
             string unpackPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), FILE_UNPACKZIP);
             
             if (!File.Exists(unpackPath)) {
-                return;
+                return true;
             }
 
-            // Try to make sure parent process has closed so none of the
-            // files are still locked - there are better ways to do this
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
+            if (ApplicationSettings.Instance.ParentPid > 0) {
+                // Wait up to 10 seconds for the previous Blish HUD instance to close.
+                for (int i = 20; Process.GetProcesses().Any(x => x.Id == ApplicationSettings.Instance.ParentPid) && i > 0; i++) {
+                    System.Threading.Thread.Sleep(500);
+                }
+            }
 
             try {
                 HandleUpdate(unpackPath);
             } catch (Exception ex) {
-                MessageBox.Show($"Failed to complete update!\r\n\r\n{ex.Message}", "", MessageBoxButtons.OK);
-                // TODO: Bubble up to exit Blish HUD immediately.
+                MessageBox.Show($"Failed to complete update!  Launch Blish HUD again to try to complete the update again.\r\n\r\n{ex.Message}", "", MessageBoxButtons.OK);
+                return false;
             }
+
+            return true;
         }
 
         private static void HandleUpdate(string unpackPath) {
@@ -84,13 +90,13 @@ namespace Blish_HUD {
             string unpackDestination = await coreVersionManifest.Url.DownloadFileAsync(Path.GetDirectoryName(Application.ExecutablePath), FILE_UNPACKZIP);
             Logger.Info($"Finished downloading {unpackDestination}.");
 
-            using var dataSha256 = System.Security.Cryptography.SHA256.Create();
-            using var unpackFile = File.OpenRead(unpackDestination);
-            byte[] rawChecksum = dataSha256.ComputeHash(unpackFile);
-            string checksum = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
+            using var dataSha256  = System.Security.Cryptography.SHA256.Create();
+            using var unpackFile  = File.OpenRead(unpackDestination);
+            byte[]    rawChecksum = dataSha256.ComputeHash(unpackFile);
+            string    checksum    = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
 
-            if (string.Equals(coreVersionManifest.Checksum, checksum, StringComparison.InvariantCultureIgnoreCase)) {
-                ScreenNotification.ShowNotification("Update failed!  Download was invalid (checksum failed).  Blish HUD will restart.  No changes were made.", ScreenNotification.NotificationType.Error, null, 8);
+            if (!string.Equals(coreVersionManifest.Checksum, checksum, StringComparison.InvariantCultureIgnoreCase)) {
+                ScreenNotification.ShowNotification("Update failed!  Download was invalid (checksum failed).\r\nBlish HUD will restart.  No changes were made.", ScreenNotification.NotificationType.Error, null, 8);
                 unpackFile.Dispose();
                 File.Delete(unpackDestination);
 
@@ -117,7 +123,7 @@ namespace Blish_HUD {
 
                 unpackFile.Dispose();
 
-                GameService.Overlay.Restart();
+                GameService.Overlay.Restart($"--{ApplicationSettings.OPTION_PARENTPID} {Process.GetCurrentProcess().Id}");
             }
         }
 

@@ -48,7 +48,7 @@ namespace Blish_HUD {
          * w, window    - The name of the window to overlay.
          *
          * restartskipmutex - Forces Blish HUD to allow multiple instances.  Used internally to prevent race condition issues when Blish HUD is restarted.
-         * handleupdate     - Blish HUD checks and unpacks a provided zip file 
+         * parentpid        - Reference for restarts to check the parent process ID.
          */
 
         #region Game Integration
@@ -175,6 +175,13 @@ namespace Blish_HUD {
             Help("Forces Blish HUD to allow multiple instances.  Used internally to prevent race condition issues when Blish HUD is restarted.")
         ]
         public bool RestartSkipMutex { get; private set; }
+
+        public const string OPTION_PARENTPID = "parentpid";
+        [
+            OptionParameter(OPTION_PARENTPID),
+            Help("Forces the new instance to wait for the specified PID to exit before loading.  Used internally to prevent race conditions when Blish HUD is updating.")
+        ]
+        public int ParentPid { get; private set; }
 
         #endregion
 

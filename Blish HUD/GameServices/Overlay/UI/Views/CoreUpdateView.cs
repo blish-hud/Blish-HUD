@@ -72,9 +72,6 @@ namespace Blish_HUD.Overlay.UI.Views {
         public CoreUpdateView() : this(null) { /* NOOP */ }
 
         protected override void Build(Panel buildPanel) {
-            //buildPanel.BackgroundColor = Color.Magenta;
-            //buildPanel.ClipsBounds = false;
-
             var version = new Label {
                 AutoSizeWidth     = true,
                 VerticalAlignment = VerticalAlignment.Middle,
@@ -96,6 +93,11 @@ namespace Blish_HUD.Overlay.UI.Views {
                 BasicTooltipText = Strings.Common.Options,
                 Parent           = buildPanel
             };
+
+            var settingsContextMenu   = new ContextMenuStrip();
+            var openChangeLog         = settingsContextMenu.AddMenuItem("View Changelog");
+            var toggleShowPrereleases = settingsContextMenu.AddMenuItem("Show Prereleases");
+            toggleShowPrereleases.CanCheck = true;
 
             _versionDropdown = new Dropdown() {
                 Width  = 128,

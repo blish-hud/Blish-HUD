@@ -151,13 +151,15 @@ namespace Blish_HUD {
 
             var arguments = Environment.GetCommandLineArgs()
                                        .Skip(1)
-                                       .Where(arg => !string.Equals(arg, $"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}", StringComparison.OrdinalIgnoreCase))
+                                       .Where(arg => 
+                                                  !string.Equals(arg, $"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}", StringComparison.OrdinalIgnoreCase)
+                                               && !arg.StartsWith($"--{ApplicationSettings.OPTION_PARENTPID}", StringComparison.OrdinalIgnoreCase))
                                        .Append($"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}")
                                        .Select(arg => arg.Contains("\"") ? arg : $"\"{arg}\"");
 
             var currentStartInfo = Process.GetCurrentProcess().StartInfo;
             currentStartInfo.FileName  = Application.ExecutablePath;
-            currentStartInfo.Arguments = string.Join(" ", arguments.Concat(additionalArgs.Select(arg => arg.Contains("\"") ? arg : $"\"{arg}\"")));
+            currentStartInfo.Arguments = string.Join(" ", arguments.Concat(additionalArgs /*.Select(arg => arg.Contains("\"") ? arg : $"\"{arg}\"") */));
 
             Logger.Info($"Restarting with launch args: {currentStartInfo.Arguments}");
 
@@ -208,6 +210,7 @@ namespace Blish_HUD {
         internal async Task SelfUpdate(CoreVersionManifest coreVersionManifest) {
             this.BlishMenuIcon.LoadingMessage = "Unloading modules...";
             GameService.Module.DoUnload();
+            GameService.Input.DoUnload();
             this.BlishHudWindow.Hide();
             this.BlishMenuIcon.Enabled = false;
             this.BlishMenuIcon.LoadingMessage = "Downloading Blish HUD for install...";
