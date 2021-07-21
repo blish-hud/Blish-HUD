@@ -36,6 +36,7 @@ namespace Blish_HUD {
                 HandleUpdate(unpackPath);
             } catch (Exception ex) {
                 MessageBox.Show($"Failed to complete update!  Launch Blish HUD again to try to complete the update again.\r\n\r\n{ex.Message}", "", MessageBoxButtons.OK);
+                Logger.Fatal(ex, "Failed to complete update!");
                 return false;
             }
 
