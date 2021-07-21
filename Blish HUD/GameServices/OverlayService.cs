@@ -245,7 +245,7 @@ namespace Blish_HUD {
 
             this.BlishContextMenu                                                                                          =  this.BlishMenuIcon.Menu;
             this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD)).Click += delegate { Restart(); };
-            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit,    Strings.Common.BlishHUD)).Click += delegate { Exit(); };;
+            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit,    Strings.Common.BlishHUD)).Click += delegate { Exit(); };
 
             this.BlishMenuIcon.Click += delegate {
                 this.BlishHudWindow.ToggleWindow();
