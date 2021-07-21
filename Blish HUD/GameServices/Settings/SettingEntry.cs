@@ -50,13 +50,17 @@ namespace Blish_HUD.Settings {
         }
 
         [JsonIgnore]
-        public string Description { get; set; }
+        public Func<string> GetDescriptionFunc { get; set; } = () => null;
 
         [JsonIgnore]
-        public string DisplayName { get; set; }
+        public Func<string> GetDisplayNameFunc { get; set; } = () => null;
 
-        [JsonIgnore, Obsolete]
-        public SettingsService.SettingTypeRendererDelegate Renderer { get; set; }
+
+        [JsonIgnore]
+        public string Description => this.GetDescriptionFunc();
+
+        [JsonIgnore]
+        public string DisplayName => this.GetDisplayNameFunc();
 
         /// <summary>
         /// The unique key used to identify the <see cref="SettingEntry"/> in the <see cref="SettingCollection"/>.
