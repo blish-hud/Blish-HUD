@@ -138,18 +138,18 @@ namespace Blish_HUD {
         private void DefineSettings(SettingCollection settings) {
             _frameLimiterSetting = settings.DefineSetting("FramerateLimiter",
                                                           FramerateMethod.SyncWithGame,
-                                                          Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
-                                                          Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
+                                                          () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
+                                                          () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
 
             _enableVsyncSetting = settings.DefineSetting("EnableVsync",
                                                          true,
-                                                         Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName,
-                                                         Strings.GameServices.GraphicsService.Setting_Vsync_Description);
+                                                         () => Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName,
+                                                         () => Strings.GameServices.GraphicsService.Setting_Vsync_Description);
 
             _smoothCharacterPositionSetting = settings.DefineSetting("EnableCharacterPositionBuffer",
                                                                      true,
-                                                                     Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
-                                                                     Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
+                                                                     () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
 
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
             _enableVsyncSetting.SettingChanged  += EnableVsyncChanged;
@@ -162,7 +162,7 @@ namespace Blish_HUD {
             if (ApplicationSettings.Instance.TargetFramerate > 0) {
                 // Disable frame limiter setting and update description - user has manually specified via launch arg
                 _frameLimiterSetting.SetDisabled();
-                _frameLimiterSetting.Description += Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Locked_Description;
+                _frameLimiterSetting.GetDescriptionFunc = () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description + Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Locked_Description;
 
                 FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.Custom, FramerateMethod.Custom));
             }

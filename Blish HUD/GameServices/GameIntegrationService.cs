@@ -136,7 +136,7 @@ namespace Blish_HUD {
         private void DefineSettings(SettingCollection settings) {
             const string UNDEFINED_EXECPATH = "NotDetected";
 
-            _gw2ExecutablePath = settings.DefineSetting("Gw2ExecutablePath", UNDEFINED_EXECPATH, "Gw2-64.exe Path", "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
+            _gw2ExecutablePath = settings.DefineSetting("Gw2ExecutablePath", UNDEFINED_EXECPATH, () => "Gw2-64.exe Path", () => "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
 
             // We do this to avoid trying to detect in the registry
             // unless we have never detected the true path
