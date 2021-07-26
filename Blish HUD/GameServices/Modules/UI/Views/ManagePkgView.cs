@@ -38,6 +38,7 @@ namespace Blish_HUD.Modules.UI.Views {
             get => _nameLabel?.Text ?? throw new ViewNotBuiltException();
             set {
                 (_nameLabel ?? throw new ViewNotBuiltException()).Text = value;
+                _nameLabel.Visible                                     = true;
                 _authLabel.Left                                        = _nameLabel.Right + 10;
             }
         }
@@ -153,6 +154,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 AutoSizeHeight = true,
                 Font           = GameService.Content.DefaultFont18,
                 Location       = new Point(5, 5),
+                Visible        = false,
                 Parent         = buildPanel
             };
 
