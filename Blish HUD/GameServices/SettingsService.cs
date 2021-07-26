@@ -20,11 +20,9 @@ namespace Blish_HUD {
 
         private const string SETTINGS_FILENAME = "settings.json";
 
+        [Obsolete]
         public delegate void SettingTypeRendererDelegate(SettingEntry setting, Panel settingPanel);
-
-        [JsonIgnore, Obsolete("Use SettingViews instead.")]
-        public Dictionary<Type, SettingTypeRendererDelegate> SettingTypeRenderers = new Dictionary<Type, SettingTypeRendererDelegate>();
-
+        
         [JsonIgnore]
         internal JsonSerializerSettings JsonReaderSettings { get; private set; }
         
@@ -116,28 +114,7 @@ namespace Blish_HUD {
             Logger.Debug("Settings were saved successfully.");
         }
 
-        private void LoadRenderers() {
-            SettingTypeRenderers.Clear();
-
-            // bool setting renderer
-            SettingTypeRenderers.Add(typeof(bool), (setting, panel) => {
-                var strongSetting = (SettingEntry<bool>) setting;
-
-                var settingCtrl = new Checkbox() {
-                    Text             = strongSetting.DisplayName,
-                    BasicTooltipText = strongSetting.Description,
-                    Checked          = strongSetting.Value,
-                    Parent           = panel
-                };
-
-                Adhesive.Binding.CreateTwoWayBinding(() => settingCtrl.Checked,
-                                                     () => strongSetting.Value);
-            });
-        }
-
-        protected override void Load() {
-            LoadRenderers();
-        }
+        protected override void Load() { /* NOOP */ }
 
         internal SettingCollection RegisterRootSettingCollection(string collectionKey) {
             return this.Settings.AddSubCollection(collectionKey, false);
@@ -154,49 +131,6 @@ namespace Blish_HUD {
                 if (_saveBuffer > SAVE_INTERVAL) {
                     PerformSave();
                 }
-            }
-        }
-
-        [Obsolete("Use SettingView views instead of this to generate from SettingCollections.")]
-        public void RenderSettingsToPanel(Container panel, IEnumerable<SettingEntry> settings, int width = 325) {
-            var listSettings = settings.ToList();
-
-            Logger.Debug("Rendering {numberOfSettings} settings to panel.", listSettings.Count());
-
-            int lastBottom = 0;
-
-            void CreateRenderer(SettingEntry settingEntry, SettingTypeRendererDelegate renderer) {
-                var settingPanel = new Panel() {
-                    Size     = new Point(width, 25),
-                    Location = new Point(0,     lastBottom + 10)
-                };
-
-                renderer.Invoke(settingEntry, settingPanel);
-
-                settingPanel.Parent = panel;
-
-                lastBottom = settingPanel.Bottom;
-            }
-
-            foreach (var settingEntry in listSettings) {
-                if (settingEntry.Renderer != null) {
-                    CreateRenderer(settingEntry, settingEntry.Renderer);
-                    continue;
-                }
-
-                if (this.SettingTypeRenderers.TryGetValue(settingEntry.SettingType, out var matchingRenderer)) {
-                    CreateRenderer(settingEntry, matchingRenderer);
-                    continue;
-                }
-
-
-                var subTypeRenderer = this.SettingTypeRenderers.FirstOrDefault(kv => settingEntry.SettingType.IsSubclassOf(kv.Key)).Value;
-                if (subTypeRenderer != null) {
-                    CreateRenderer(settingEntry, subTypeRenderer);
-                    continue;
-                }
-
-                Logger.Warn("Could not identify a setting renderer for setting {settingName} of type {settingType}, so it will not be displayed.", settingEntry.EntryKey, settingEntry.SettingType.FullName);
             }
         }
         
