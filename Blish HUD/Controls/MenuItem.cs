@@ -147,7 +147,7 @@ namespace Blish_HUD.Controls {
                 int leftSideBuilder = ICON_PADDING;
 
                 // Add space if we need to render dropdown arrow
-                if (_children.Any())
+                if (!_children.IsEmpty)
                     leftSideBuilder += ARROW_SIZE;
 
                 return leftSideBuilder;
@@ -191,7 +191,7 @@ namespace Blish_HUD.Controls {
         public void Select() {
             if (this.Selected) return;
 
-            if (_children.Any())
+            if (!_children.IsEmpty)
                 throw new InvalidOperationException("MenuItems with sub-MenuItems can not be selected directly.");
 
             _scrollEffect.ForceActive = true;
@@ -210,7 +210,7 @@ namespace Blish_HUD.Controls {
             OnItemSelected(new ControlActivatedEventArgs(menuItem));
 
             // Expand to show the selected MenuItem, if necessary
-            if (_children.Any()) {
+            if (!_children.IsEmpty) {
                 this.Expand();
             }
 
@@ -237,7 +237,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateContentRegion() {
-            var children = _children.ToList();
+            var children = _children.GetNoLockArray();
 
             int bottomChild = ReflowChildLayout(children);
 
@@ -254,7 +254,7 @@ namespace Blish_HUD.Controls {
             if (_canCheck && this.MouseOverIconBox) { 
                 // Mouse was clicked inside of the checkbox
                 Checked = !Checked;
-            } else if (_overSection && _children.Any()) {
+            } else if (_overSection && !_children.IsEmpty) {
                 // Mouse was clicked inside of the mainbody of the MenuItem
                 ToggleAccordionState();
             } else if (_overSection && _canCheck) { 
@@ -263,7 +263,7 @@ namespace Blish_HUD.Controls {
                 Checked = !Checked;
             }
 
-            if (!_children.Any()) {
+            if (_children.IsEmpty) {
                 this.Select();
             }
 
@@ -307,7 +307,7 @@ namespace Blish_HUD.Controls {
             newChild.MenuItemHeight = this.MenuItemHeight;
             newChild.MenuDepth = this.MenuDepth + 1;
 
-            ReflowChildLayout(_children.ToArray());
+            ReflowChildLayout(_children.GetNoLockArray());
         }
 
         private int ReflowChildLayout(IEnumerable<Control> allChildren) {
@@ -382,7 +382,7 @@ namespace Blish_HUD.Controls {
             int currentLeftSidePadding = this.LeftSidePadding;
 
             // If MenuItem has children, show dropdown arrow
-            if (_children.Any())
+            if (!_children.IsEmpty)
                 DrawDropdownArrow(spriteBatch);
 
             TextureRegion2D firstItemSprite = null;
@@ -395,7 +395,7 @@ namespace Blish_HUD.Controls {
                 extension = !this.Enabled ? "-disabled" : extension;
 
                 firstItemSprite = Resources.Checkable.TextureRegionsCheckbox.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
-            } else if (this.Icon != null && !this.Children.Any()) {
+            } else if (this.Icon != null && _children.IsEmpty) {
                 // performance?
                 firstItemSprite = new TextureRegion2D(this.Icon);
             }
@@ -409,7 +409,7 @@ namespace Blish_HUD.Controls {
 
             if (_canCheck) {
                 currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
-            } else if (_children.Any()) {
+            } else if (!_children.IsEmpty) {
                 currentLeftSidePadding += ICON_PADDING;
             } else if (_icon != null) {
                 currentLeftSidePadding += ICON_SIZE + ICON_PADDING;

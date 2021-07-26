@@ -74,7 +74,7 @@ namespace Blish_HUD.Controls {
             this.Parent = GameService.Graphics.SpriteScreen;
 
             // If we have no children, don't display (and don't even call 'Shown' event)
-            if (!_children.Any()) {
+            if (_children.IsEmpty) {
                 this.Visible = false;
                 return;
             }
@@ -198,7 +198,7 @@ namespace Blish_HUD.Controls {
         }
 
         public override void RecalculateLayout() {
-            if (_children.Any()) {
+            if (!_children.IsEmpty) {
                 int maxChildWidth = CONTROL_WIDTH;
 
                 int lastChildBottom = BORDER_PADDING - ITEM_VERTICALMARGIN;

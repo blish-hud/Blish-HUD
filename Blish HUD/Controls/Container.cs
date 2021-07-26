@@ -119,9 +119,9 @@ namespace Blish_HUD.Controls {
         }
 
         public List<Control> GetDescendants() {
-            var allDescendants = _children.ToList();
+            var allDescendants = _children.GetNoLockList();
 
-            foreach (var child in _children) {
+            foreach (var child in this.Children) {
                 if (!(child is Container container)) continue;
 
                 allDescendants.AddRange(container.GetDescendants());
@@ -133,7 +133,7 @@ namespace Blish_HUD.Controls {
         public bool AddChild(Control child) {
             if (_children.Contains(child)) return true;
 
-            var resultingChildren = _children.ToList();
+            var resultingChildren = _children.GetNoLockList();
             resultingChildren.Add(child);
 
             var evRes = new ChildChangedEventArgs(this, child, true, resultingChildren);
@@ -151,7 +151,7 @@ namespace Blish_HUD.Controls {
         public bool RemoveChild(Control child) {
             if (!_children.Contains(child)) return true;
 
-            var resultingChildren = _children.ToList();
+            var resultingChildren = _children.GetNoLockList();
             resultingChildren.Remove(child);
 
             var evRes = new ChildChangedEventArgs(this, child, false, resultingChildren);
@@ -174,8 +174,6 @@ namespace Blish_HUD.Controls {
         }
 
         public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            Control[] zSortedChildren = _children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => _children.IndexOf(c)).ToArray();
-
             Control thisResult  = null;
             Control childResult = null;
 
@@ -183,9 +181,10 @@ namespace Blish_HUD.Controls {
                 thisResult = base.TriggerMouseInput(mouseEventType, ms);
             }
 
-            for (int i = 0; i < zSortedChildren.Length; i++) {
-                ref var childControl = ref zSortedChildren[i];
+            List<Control>               children        = _children.GetNoLockList();
+            IOrderedEnumerable<Control> zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
 
+            foreach (var childControl in zSortedChildren) {
                 if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
                     childResult = childControl.TriggerMouseInput(mouseEventType, ms);
 
@@ -215,7 +214,7 @@ namespace Blish_HUD.Controls {
         public sealed override void DoUpdate(GameTime gameTime) {
             UpdateContainer(gameTime);
 
-            Control[] children = _children.ToArray();
+            Control[] children = _children.GetNoLockArray();
 
             _contentBounds = ControlUtil.GetControlBounds(children);
 
@@ -232,9 +231,7 @@ namespace Blish_HUD.Controls {
             }
 
             // Update our children
-            for (int i = 0; i < children.Length; i++) {
-                ref var childControl = ref children[i];
-
+            foreach (var childControl in children) {
                 // Update child if it is visible or if it hasn't rendered yet (needs a first time calc)
                 if (childControl.Visible || childControl.LayoutState != LayoutState.Ready) {
                     childControl.Update(gameTime);
@@ -264,13 +261,11 @@ namespace Blish_HUD.Controls {
 
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
             var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
-
-            Control[] zSortedChildren = _children.OrderBy(i => i.ZIndex).ToArray();
+            
+            var zSortedChildren = _children.OrderBy(i => i.ZIndex);
 
             // Render each visible child
-            for (int i = 0; i < zSortedChildren.Length; i++) {
-                ref var childControl = ref zSortedChildren[i];
-
+            foreach (var childControl in zSortedChildren) {
                 if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
                     var childBounds = new Rectangle(Point.Zero, childControl.Size);
 
@@ -294,7 +289,7 @@ namespace Blish_HUD.Controls {
         #region IEnumerable Implementation
 
         public IEnumerator<Control> GetEnumerator() {
-            return this.Children.GetEnumerator();
+            return _children.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

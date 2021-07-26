@@ -128,8 +128,8 @@ namespace Blish_HUD.Controls {
         public override void UpdateContainer(GameTime gameTime) {
             int totalItemHeight = 0;
 
-            for (int i = 0; i < _children.Count; i++) {
-                totalItemHeight = Math.Max(_children[i].Bottom, totalItemHeight);
+            foreach (var child in _children.GetNoLockArray()) {
+                totalItemHeight = Math.Max(child.Bottom, totalItemHeight);
             }
 
             this.Height = totalItemHeight;

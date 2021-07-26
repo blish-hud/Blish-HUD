@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 
 namespace Blish_HUD.Controls {
@@ -43,12 +45,16 @@ namespace Blish_HUD.Controls {
 
         public bool IsReadOnly => false;
 
+        public bool IsEmpty { get; private set; } = true;
+
         public ControlCollection() {
             _innerList = new List<T>();
         }
 
         public ControlCollection(IEnumerable<T> existingControls) {
             _innerList = new List<T>(existingControls);
+
+            this.IsEmpty = !_innerList.Any();
         }
 
         public IEnumerator<T> GetEnumerator() {
@@ -65,6 +71,8 @@ namespace Blish_HUD.Controls {
             _listLock.EnterWriteLock();
             _innerList.Add(item);
             _listLock.ExitWriteLock();
+
+            this.IsEmpty = false;
         }
 
         public void AddRange(IEnumerable<T> items) {
@@ -74,9 +82,17 @@ namespace Blish_HUD.Controls {
         }
 
         public void Clear() {
+            T[] oldItems = this.GetNoLockArray();
+
             _listLock.EnterWriteLock();
             _innerList.Clear();
             _listLock.ExitWriteLock();
+
+            this.IsEmpty = true;
+
+            foreach (var item in oldItems) {
+                item.Parent = null;
+            }
         }
 
         public bool Contains(T item) {
@@ -105,6 +121,7 @@ namespace Blish_HUD.Controls {
             try {
                 return _innerList.Remove(item);
             } finally {
+                this.IsEmpty = !_innerList.Any();
                 _listLock.ExitWriteLock();
             }
         }
@@ -123,6 +140,26 @@ namespace Blish_HUD.Controls {
 
         public IReadOnlyCollection<T> AsReadOnly() {
             return new ReadOnlyCollection<T>(this);
+        }
+
+        public List<T> GetNoLockList() {
+            _listLock.EnterReadLock();
+
+            try {
+                return new List<T>(_innerList);
+            } finally {
+                _listLock.ExitReadLock();
+            }
+        }
+
+        public T[] GetNoLockArray() {
+            var items = new T[_innerList.Count];
+
+            _listLock.EnterReadLock();
+            _innerList.CopyTo(items, 0);
+            _listLock.ExitReadLock();
+
+            return items;
         }
 
         public int IndexOf(T item) {
