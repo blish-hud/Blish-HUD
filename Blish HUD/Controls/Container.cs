@@ -22,13 +22,13 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<RegionChangedEventArgs> ContentResized;
 
-        protected List<Control> _children;
+        protected ControlCollection<Control> _children;
 
         [Newtonsoft.Json.JsonIgnore]
         public IReadOnlyCollection<Control> Children => _children.AsReadOnly();
 
         protected Container() {
-            _children = new List<Control>();
+            _children = new ControlCollection<Control>();
         }
 
         protected virtual void OnChildAdded(ChildChangedEventArgs e) {
