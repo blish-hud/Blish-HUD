@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,38 +6,38 @@ using System.Threading;
 
 namespace Blish_HUD.Controls {
 
-    public class ControlEnumerator<T> : IEnumerator<T> {
-
-        private readonly IEnumerator<T>       _inner;
-        private readonly ReaderWriterLockSlim _rwLock;
-
-        public ControlEnumerator(IEnumerator<T> inner, ReaderWriterLockSlim rwLock) {
-            _inner  = inner;
-            _rwLock = rwLock;
-
-            _rwLock.EnterReadLock();
-        }
-
-        public bool MoveNext() {
-            return _inner.MoveNext();
-        }
-
-        public void Reset() {
-            _inner.Reset();
-        }
-
-        public object Current => _inner.Current;
-
-        T IEnumerator<T>.Current => _inner.Current;
-
-        public void Dispose() {
-            _rwLock.ExitReadLock();
-        }
-
-    }
-
     public class ControlCollection<T> : IList<T>
         where T : Control {
+
+        private class ControlEnumerator<TEnum> : IEnumerator<TEnum> {
+
+            private readonly IEnumerator<TEnum>   _inner;
+            private readonly ReaderWriterLockSlim _rwLock;
+
+            public ControlEnumerator(IEnumerator<TEnum> inner, ReaderWriterLockSlim rwLock) {
+                _inner  = inner;
+                _rwLock = rwLock;
+
+                _rwLock.EnterReadLock();
+            }
+
+            public bool MoveNext() {
+                return _inner.MoveNext();
+            }
+
+            public void Reset() {
+                _inner.Reset();
+            }
+
+            public object Current => _inner.Current;
+
+            TEnum IEnumerator<TEnum>.Current => _inner.Current;
+
+            public void Dispose() {
+                _rwLock.ExitReadLock();
+            }
+
+        }
 
         private readonly List<T>              _innerList;
         private readonly ReaderWriterLockSlim _listLock  = new ReaderWriterLockSlim();
