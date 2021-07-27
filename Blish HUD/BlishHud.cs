@@ -60,6 +60,7 @@ namespace Blish_HUD {
 
             this.Window.IsBorderless = true;
             this.Window.AllowAltF4   = false;
+            this.InactiveSleepTime   = TimeSpan.Zero;
 
             // Initialize all game services
             foreach (var service in GameService.All) {
