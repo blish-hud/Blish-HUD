@@ -31,7 +31,7 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 #### Prerequisites
 
 - [Visual Studio 2019](https://visualstudio.microsoft.com/vs/)
-- [MonoGame 3.7.1](http://community.monogame.net/t/monogame-3-7-1-release/11173)
+- [MonoGame development tools](https://docs.monogame.net/articles/getting_started/1_setting_up_your_development_environment_windows.html)
 - [.NET 4.7.1 Developer Pack](https://www.microsoft.com/en-us/download/details.aspx?id=56119)
 - [Visual C++ Redistributable 2012](https://www.microsoft.com/en-us/download/details.aspx?id=30679)
 
