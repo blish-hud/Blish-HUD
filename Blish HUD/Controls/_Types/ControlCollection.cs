@@ -152,9 +152,8 @@ namespace Blish_HUD.Controls {
         }
 
         public T[] GetNoLockArray() {
-            var items = new T[_innerList.Count];
-
             _listLock.EnterReadLock();
+            var items = new T[_innerList.Count];
             _innerList.CopyTo(items, 0);
             _listLock.ExitReadLock();
 
