@@ -49,7 +49,7 @@ namespace Blish_HUD.Input {
         /// <param name="vkCode">VKCode</param>
         /// <param name="isKeyDown">Is the key down event?</param>
         /// <returns>String representing single unicode character.</returns>
-        public static string VkCodeToString(uint vkCode, bool isKeyDown) {
+        public static string VkCodeToString(uint vkCode, bool isKeyDown, bool shift) {
             // ToUnicodeEx needs StringBuilder, it populates that during execution.
             System.Text.StringBuilder sbString = new System.Text.StringBuilder(5);
 
@@ -110,6 +110,9 @@ namespace Blish_HUD.Input {
                 // Single character in buffer
                 case 1:
                     ret = sbString[0].ToString();
+                    if (shift) {
+                        ret = ret.ToUpper();
+                    }
                     break;
 
                 // Two or more (only two of them is relevant)
