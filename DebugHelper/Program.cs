@@ -1,12 +1,13 @@
-﻿using System;
-using System.Windows.Forms;
-using Blish_HUD.DebugHelper.Services;
+﻿using Blish_HUD.DebugHelper.Services;
 using Blish_HUD.DebugHelperLib.Services;
+using System;
+using System.Windows.Forms;
 
 namespace Blish_HUD.DebugHelper {
 
     internal static class Program {
 
+        [STAThread]
         internal static void Main(string[] args) {
 
             using var inStream  = Console.OpenStandardInput();
