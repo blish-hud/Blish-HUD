@@ -140,7 +140,8 @@ namespace Blish_HUD {
                                                       .Append($"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}")
                                                       .Select(arg => $"\"{arg}\"");
 
-            var currentStartInfo = Process.GetCurrentProcess().StartInfo;
+            using var process = Process.GetCurrentProcess();
+            var currentStartInfo = process.StartInfo;
             currentStartInfo.FileName  = Application.ExecutablePath;
             currentStartInfo.Arguments = string.Join(" ", arguments);
 
