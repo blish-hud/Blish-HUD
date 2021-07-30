@@ -37,6 +37,18 @@ namespace Blish_HUD.Input {
         [DllImport("kernel32.dll")]
         private static extern uint GetCurrentThreadId();
 
+        [DllImport("user32.dll")]
+        static extern short VkKeyScan(char c);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern int ToAscii(
+            uint uVirtKey,
+            uint uScanCode,
+            byte[] lpKeyState,
+            out uint lpChar,
+            uint flags
+            );
+
         private static uint   _lastVkCode   = 0;
         private static uint   _lastScanCode = 0;
         private static byte[] _lastKeyState = new byte[255];
@@ -111,7 +123,11 @@ namespace Blish_HUD.Input {
                 case 1:
                     ret = sbString[0].ToString();
                     if (shift) {
-                        ret = ret.ToUpper();
+                        System.Text.StringBuilder bar = new System.Text.StringBuilder(5);
+                        foreach (char foo in ret.ToCharArray()) {
+                            bar.Append(GetModifiedKey(foo));
+                        }
+                        ret = bar.ToString();
                     }
                     break;
 
@@ -152,6 +168,29 @@ namespace Blish_HUD.Input {
                 byte[] lpKeyStateNull = new byte[255];
                 rc = ToUnicodeEx(vk, sc, lpKeyStateNull, sb, sb.Capacity, 0, hkl);
             } while (rc < 0);
+        }
+
+        // Reference: https://stackoverflow.com/a/17387605
+        public static char GetModifiedKey(char c) {
+            short vkKeyScanResult = VkKeyScan(c);
+
+            // a result of -1 indicates no key translates to input character
+            if (vkKeyScanResult == -1)
+                throw new ArgumentException("No key mapping for " + c);
+
+            // vkKeyScanResult & 0xff is the base key, without any modifiers
+            uint code = (uint)vkKeyScanResult & 0xff;
+
+            // set shift key pressed
+            byte[] b = new byte[256];
+            b[0x10] = 0x80;
+
+            uint r;
+            // return value of 1 expected (1 character copied to r)
+            if (1 != ToAscii(code, code, b, out r, 0))
+                throw new ApplicationException("Could not translate modified state");
+
+            return (char)r;
         }
 
     }

@@ -126,7 +126,7 @@ namespace Blish_HUD.Input {
 
         private bool ShouldBlockKeyEvent(Keys key) {
             // Prevent blocking shift for input capitalization
-            if (_keysDown.Contains(Keys.LeftShift) || _keysDown.Contains(Keys.RightShift)) return false; // "SHIFT" support temporarily disabled
+            //if (_keysDown.Contains(Keys.LeftShift) || _keysDown.Contains(Keys.RightShift)) return false; // "SHIFT" support temporarily disabled
 
             // Skip keys that we wish to explicitly ignore
             if (_hookIgnoredKeys.Contains(key)) return false;
