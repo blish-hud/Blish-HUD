@@ -195,30 +195,10 @@
   <ItemGroup>
     <PackageReference Include="Adhesive" Version="2.0.1-alpha" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="AsyncClipboardService" Version="[1.7.1]" />
-    <!--
-    >>>
-    >>> Temporarily disabled Fody for .NET Core
-    >>>
-
-    <PackageReference Include="Costura.Fody" Version="4.1.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    -->
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DynamicLanguageRuntime" Version="1.2.2" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="EntryPoint" Version="1.3.0" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
-    <!--
-    >>>
-    >>> Temporarily disabled Fody for .NET Core
-    >>>
-    
-    <PackageReference Include="Fody" Version="6.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    -->
     <PackageReference Include="Gw2Sharp" Version="[1.0.0]" />
     <PackageReference Include="Humanizer.Core.de" Version="2.6.2" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="Humanizer.Core.es" Version="2.6.2" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />

@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.IO.Compression;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Blish_HUD.Content;
-using CSCore;
-using CSCore.Codecs;
-using CSCore.Codecs.WAV;
-using CSCore.CoreAudioAPI;
-using CSCore.SoundOut;
+﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace Blish_HUD {
 
@@ -27,15 +21,15 @@ namespace Blish_HUD {
         #region Load Static
 
         private static readonly ConcurrentDictionary<string, SoundEffect> _loadedSoundEffects;
-        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts;
-        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures;
-        private static readonly ConcurrentDictionary<string, Stream>      _loadedFiles;
+        private static readonly ConcurrentDictionary<string, BitmapFont> _loadedBitmapFonts;
+        private static readonly ConcurrentDictionary<string, Texture2D> _loadedTextures;
+        private static readonly ConcurrentDictionary<string, Stream> _loadedFiles;
 
         static ContentService() {
             _loadedSoundEffects = new ConcurrentDictionary<string, SoundEffect>();
-            _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
-            _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
-            _loadedFiles        = new ConcurrentDictionary<string, Stream>();
+            _loadedBitmapFonts = new ConcurrentDictionary<string, BitmapFont>();
+            _loadedTextures = new ConcurrentDictionary<string, Texture2D>();
+            _loadedFiles = new ConcurrentDictionary<string, Stream>();
         }
 
         #endregion
@@ -72,20 +66,20 @@ namespace Blish_HUD {
 
         private IDataReader _audioDataReader;
 
-        private BitmapFont  _defaultFont12;
-        public  BitmapFont  DefaultFont12 => _defaultFont12 ??= GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular);
+        private BitmapFont _defaultFont12;
+        public BitmapFont DefaultFont12 => _defaultFont12 ??= GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular);
 
         private BitmapFont _defaultFont14;
-        public  BitmapFont DefaultFont14 => _defaultFont14 ??= GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular);
+        public BitmapFont DefaultFont14 => _defaultFont14 ??= GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular);
 
         private BitmapFont _defaultFont16;
-        public  BitmapFont DefaultFont16 => _defaultFont16 ??= GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular);
+        public BitmapFont DefaultFont16 => _defaultFont16 ??= GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular);
 
         private BitmapFont _defaultFont18;
-        public  BitmapFont DefaultFont18 => _defaultFont18 ??= GetFont(FontFace.Menomonia, FontSize.Size18, FontStyle.Regular);
+        public BitmapFont DefaultFont18 => _defaultFont18 ??= GetFont(FontFace.Menomonia, FontSize.Size18, FontStyle.Regular);
 
         private BitmapFont _defaultFont32;
-        public  BitmapFont DefaultFont32 => _defaultFont32 ??= GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular);
+        public BitmapFont DefaultFont32 => _defaultFont32 ??= GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular);
 
         public enum FontFace {
             Menomonia
@@ -137,8 +131,8 @@ namespace Blish_HUD {
 
             try {
                 const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
-                var          filePath                    = soundName + SOUND_EFFECT_FILE_EXTENSION;
-            
+                var filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
+
                 if (_audioDataReader.FileExists(filePath)) {
                     SoundEffect.FromStream(_audioDataReader.GetFileStream(filePath)).Play(GameService.GameIntegration.Audio.Volume, 0, 0);
                 }
@@ -148,7 +142,7 @@ namespace Blish_HUD {
                 _playRemainingAttempts--;
                 Logger.Warn(ex, "Failed to play sound effect.");
             }
-}
+        }
 
         private static string RefPath => ApplicationSettings.Instance.RefPath ?? REF_FILE;
 
@@ -181,14 +175,14 @@ namespace Blish_HUD {
                         }
                     }
 
-                    #if DEBUG
+#if DEBUG
                     System.IO.Directory.CreateDirectory(@"ref\to-include");
 
                     // Makes it easy to know what's in use so that it can be added to the ref archive later
                     if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
 
                     return TextureFromFile($@"ref\{filepath}");
-                    #endif
+#endif
 
                     return null;
                 }
@@ -253,18 +247,18 @@ namespace Blish_HUD {
 
             Gw2WebApi.AnonymousConnection.Client.Render.DownloadToByteArrayAsync(requestUrl)
                      .ContinueWith((textureDataResponse) => {
-                        if (textureDataResponse.Exception != null) {
-                            Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
-                            return;
-                        }
+                         if (textureDataResponse.Exception != null) {
+                             Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
+                             return;
+                         }
 
-                        var textureData = textureDataResponse.Result;
+                         var textureData = textureDataResponse.Result;
 
-                        using (var textureStream = new MemoryStream(textureData)) {
-                            var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
+                         using (var textureStream = new MemoryStream(textureData)) {
+                             var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
 
-                            returnedTexture.SwapTexture(loadedTexture);
-                        }
+                             returnedTexture.SwapTexture(loadedTexture);
+                         }
                      });
 
             return returnedTexture;
@@ -286,7 +280,7 @@ namespace Blish_HUD {
             }
 
             string signature = splitUri.Groups[1].Value;
-            string fileId    = splitUri.Groups[2].Value;
+            string fileId = splitUri.Groups[2].Value;
 
             return GetRenderServiceTexture(signature, fileId);
         }
