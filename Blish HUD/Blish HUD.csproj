@@ -224,10 +224,6 @@
       <AdditionalProperties>CopyPublishedOutput=true</AdditionalProperties>
     </ProjectReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.ComponentModel.Composition" />
-  </ItemGroup>
   
   
   <!-- Custom build steps follow -->
