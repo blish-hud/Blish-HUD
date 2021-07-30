@@ -1,8 +1,9 @@
-﻿using System.Diagnostics;
+﻿using Blish_HUD.DebugHelperLib.Models;
+using Blish_HUD.DebugHelperLib.Services;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Timers;
-using Blish_HUD.DebugHelperLib.Models;
-using Blish_HUD.DebugHelperLib.Services;
 
 namespace Blish_HUD.Input {
 
@@ -21,7 +22,7 @@ namespace Blish_HUD.Input {
             Logger.Debug("Loading DebugHelper input hooks");
 
             process = new Process {
-                StartInfo = new ProcessStartInfo(Path.Combine(Path.GetDirectoryName(typeof(DebugHelperMouseHookManager).Assembly.Location), "DebugHelper/Blish HUD.DebugHelper.exe"), Process.GetCurrentProcess().Id.ToString()) {
+                StartInfo = new ProcessStartInfo(Path.Combine(AppContext.BaseDirectory, "DebugHelper/Blish HUD.DebugHelper.exe"), Environment.ProcessId.ToString()) {
                     RedirectStandardInput  = true,
                     RedirectStandardOutput = true,
                     UseShellExecute        = false,
