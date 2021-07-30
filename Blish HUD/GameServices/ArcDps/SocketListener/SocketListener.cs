@@ -40,7 +40,7 @@ namespace Blish_HUD.ArcDps {
             var socketEventArgs = new SocketAsyncEventArgs();
             socketEventArgs.Completed += OnIoCompleted;
             socketEventArgs.SetBuffer(new byte[_bufferSize], 0, _bufferSize);
-            socketEventArgs.AcceptSocket   = listenSocket;
+            socketEventArgs.AcceptSocket = listenSocket;
             socketEventArgs.RemoteEndPoint = localEndPoint;
 
             try {
@@ -54,7 +54,7 @@ namespace Blish_HUD.ArcDps {
         }
 
         public void Stop() {
-            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource?.Cancel();
         }
 
         public void Release(Socket listenSocket) {
@@ -138,8 +138,8 @@ namespace Blish_HUD.ArcDps {
         }
 
         private void ProcessReceivedData(
-            int            dataStartOffset, int    totalReceivedDataSize, int alreadyProcessedDataSize,
-            AsyncUserToken token,           byte[] buffer
+            int dataStartOffset, int totalReceivedDataSize, int alreadyProcessedDataSize,
+            AsyncUserToken token, byte[] buffer
         ) {
             while (true) {
                 if (alreadyProcessedDataSize >= totalReceivedDataSize) {
@@ -152,10 +152,10 @@ namespace Blish_HUD.ArcDps {
                         Buffer.BlockCopy(buffer, dataStartOffset, headerData, 0, MESSAGE_HEADER_SIZE);
                         int messageSize = BitConverter.ToInt32(headerData, 0);
 
-                        token.MessageSize     = messageSize;
+                        token.MessageSize = messageSize;
                         token.DataStartOffset = dataStartOffset + MESSAGE_HEADER_SIZE;
 
-                        dataStartOffset          =  token.DataStartOffset;
+                        dataStartOffset = token.DataStartOffset;
                         alreadyProcessedDataSize += MESSAGE_HEADER_SIZE;
                         continue;
                     }
@@ -168,9 +168,9 @@ namespace Blish_HUD.ArcDps {
                         ProcessMessage(messageData, token);
 
                         token.DataStartOffset = dataStartOffset + messageSize;
-                        token.MessageSize     = null;
+                        token.MessageSize = null;
 
-                        dataStartOffset          =  token.DataStartOffset;
+                        dataStartOffset = token.DataStartOffset;
                         alreadyProcessedDataSize += messageSize;
                         continue;
                     }
