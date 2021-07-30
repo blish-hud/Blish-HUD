@@ -287,7 +287,7 @@ namespace Blish_HUD.Controls {
             
             // Draw dropdown arrow
             spriteBatch.DrawOnCtrl(this,
-                                   this.MouseOver ? _textureArrowActive : _textureArrow,
+                                   (this.Enabled && this.MouseOver) ? _textureArrowActive : _textureArrow,
                                    new Rectangle(_size.X - _textureArrow.Width - 5,
                                                  _size.Y / 2                 - _textureArrow.Height / 2,
                                                  _textureArrow.Width,
@@ -300,7 +300,9 @@ namespace Blish_HUD.Controls {
                                          new Rectangle(5, 0,
                                                        _size.X - 10 - _textureArrow.Width,
                                                        _size.Y),
-                                         Color.FromNonPremultiplied(239, 240, 239, 255));
+                                         (this.Enabled
+                                              ? Color.FromNonPremultiplied(239, 240, 239, 255)
+                                              : Control.StandardColors.DisabledText));
         }
 
     }

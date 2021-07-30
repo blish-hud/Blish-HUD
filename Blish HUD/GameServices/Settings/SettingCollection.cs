@@ -98,7 +98,7 @@ namespace Blish_HUD.Settings {
             }
         }
 
-        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName = null, string description = null, SettingsService.SettingTypeRendererDelegate renderer = null) {
+        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, Func<string> displayNameFunc = null, Func<string> descriptionFunc = null) {
             // We don't need to check if we've loaded because the first check uses this[key] which
             // will load if we haven't already since it references this.Entries instead of _entries
             if (!(this[entryKey] is SettingEntry<TEntry> definedEntry)) {
@@ -106,12 +106,16 @@ namespace Blish_HUD.Settings {
                 _entries.Add(definedEntry);
             }
 
-            definedEntry.DisplayName    = displayName;
-            definedEntry.Description    = description;
-            definedEntry.Renderer       = renderer;
-            definedEntry.SessionDefined = true;
+            definedEntry.GetDisplayNameFunc = displayNameFunc ?? (() => null);
+            definedEntry.GetDescriptionFunc = descriptionFunc ?? (() => null);
+            definedEntry.SessionDefined     = true;
 
             return definedEntry;
+        }
+
+        [Obsolete("This function does not produce a localization friendly SettingEntry.")]
+        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName, string description, SettingsService.SettingTypeRendererDelegate renderer = null) {
+            return DefineSetting(entryKey, defaultValue, () => displayName, () => description);
         }
 
         public void UndefineSetting(string entryKey) {
@@ -126,6 +130,16 @@ namespace Blish_HUD.Settings {
 
         public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) {
             return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }).Value;
+        }
+
+        public bool ContainsSetting(string entryKey) {
+            return (this.Entries.Any(entry => string.Equals(entry.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        public bool TryGetSetting(string entryKey, out SettingEntry settingEntry) {
+            settingEntry = this[entryKey];
+
+            return settingEntry != null;
         }
 
         private void Load() {

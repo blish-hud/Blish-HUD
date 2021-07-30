@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Blish_HUD {
 
@@ -8,43 +10,44 @@ namespace Blish_HUD {
 
         private static readonly Logger Logger = Logger.GetLogger<BlishHud>();
 
-        #region Internal Static Members
-
-        private static GraphicsDeviceManager                          _activeGraphicsDeviceManager;
-        private static Microsoft.Xna.Framework.Content.ContentManager _activeContentManager;
+        #region Internal Members for Services
 
         /// <summary>
         /// Exposed through the <see cref="GraphicsService"/>'s <see cref="GraphicsService.GraphicsDeviceManager"/>.
         /// </summary>
-        internal static GraphicsDeviceManager ActiveGraphicsDeviceManager => _activeGraphicsDeviceManager;
+        internal GraphicsDeviceManager ActiveGraphicsDeviceManager { get; }
 
         /// <summary>
         /// Exposed through the <see cref="ContentService"/>'s <see cref="ContentService.ContentManager"/>.
         /// </summary>
-        internal static Microsoft.Xna.Framework.Content.ContentManager ActiveContentManager => _activeContentManager;
+        internal Microsoft.Xna.Framework.Content.ContentManager ActiveContentManager { get; }
+
+        internal static BlishHud Instance;
 
         #endregion
 
-        public static IntPtr FormHandle { get; private set; }
+        public IntPtr FormHandle { get; private set; }
 
-        public static System.Windows.Forms.Form Form { get; private set; }
+        public System.Windows.Forms.Form Form { get; private set; }
 
         // TODO: Move this into GraphicsService
-        public static RasterizerState UiRasterizer { get; private set; }
+        public RasterizerState UiRasterizer { get; private set; }
 
         // Primarily used to draw debug text
         private SpriteBatch _basicSpriteBatch;
 
         public BlishHud() {
-            _activeGraphicsDeviceManager = new GraphicsDeviceManager(this);
-            _activeGraphicsDeviceManager.PreparingDeviceSettings += delegate(object sender, PreparingDeviceSettingsEventArgs args) {
+            BlishHud.Instance = this;
+
+            this.ActiveGraphicsDeviceManager = new GraphicsDeviceManager(this);
+            this.ActiveGraphicsDeviceManager.PreparingDeviceSettings += delegate(object sender, PreparingDeviceSettingsEventArgs args) {
                 args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 4;
             };
 
-            _activeGraphicsDeviceManager.GraphicsProfile     = GraphicsProfile.HiDef;
-            _activeGraphicsDeviceManager.PreferMultiSampling = true;
+            this.ActiveGraphicsDeviceManager.GraphicsProfile     = GraphicsProfile.HiDef;
+            this.ActiveGraphicsDeviceManager.PreferMultiSampling = true;
 
-            _activeContentManager = this.Content;
+            this.ActiveContentManager = this.Content;
 
             this.Content.RootDirectory = "Content";
 
@@ -57,14 +60,7 @@ namespace Blish_HUD {
 
             this.Window.IsBorderless = true;
             this.Window.AllowAltF4   = false;
-
-            if (ApplicationSettings.Instance.UnlockFps) {
-                ActiveGraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
-                this.IsFixedTimeStep                                       = false;
-            } else {
-                // Defaults to 60fps
-                this.TargetElapsedTime = TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate);
-            }
+            this.InactiveSleepTime   = TimeSpan.Zero;
 
             // Initialize all game services
             foreach (var service in GameService.All) {
@@ -106,6 +102,13 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
+            if (gameTime.TotalGameTime.TotalSeconds == 0) {
+                Logger.Trace("Skipping first update.");
+                // Update is called before the first render
+                // Skip to get to the first render as fast as possible
+                return;
+            }
+
             // If gw2 isn't open - only update the most important things:
             if (!GameService.GameIntegration.Gw2IsRunning) {
                 GameService.Debug.DoUpdate(gameTime);
@@ -122,9 +125,16 @@ namespace Blish_HUD {
             }
 
             base.Update(gameTime);
+
+            _drawLag += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
+        private float _drawLag;
+
         protected override void Draw(GameTime gameTime) {
+            GameService.Debug.TickFrameCounter(_drawLag);
+            _drawLag = 0;
+
             if (!GameService.GameIntegration.Gw2IsRunning) return;
 
             GameService.Graphics.Render(gameTime, _basicSpriteBatch);
@@ -136,8 +146,7 @@ namespace Blish_HUD {
 
                 _basicSpriteBatch.End();
             }
-
-
+            
             base.Draw(gameTime);
         }
     }

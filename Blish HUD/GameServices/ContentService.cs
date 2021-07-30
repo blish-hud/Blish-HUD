@@ -8,6 +8,7 @@ using Blish_HUD.Content;
 using CSCore;
 using CSCore.Codecs;
 using CSCore.Codecs.WAV;
+using CSCore.CoreAudioAPI;
 using CSCore.SoundOut;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -110,7 +111,7 @@ namespace Blish_HUD {
             Italic
         }
 
-        public Microsoft.Xna.Framework.Content.ContentManager ContentManager => Blish_HUD.BlishHud.ActiveContentManager;
+        public Microsoft.Xna.Framework.Content.ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
 
         protected override void Initialize() { /* NOOP */ }
 
@@ -120,32 +121,34 @@ namespace Blish_HUD {
             _audioDataReader = zipArchiveReader.GetSubPath("audio");
         }
 
+        // Temporary failsafe until all audio bugs are resolved
+        private int _playRemainingAttempts = 3;
+
         public void PlaySoundEffectByName(string soundName) {
+            if (_playRemainingAttempts <= 0) {
+                // We keep failing to play sound effects - don't even bother
+                return;
+            }
+
             if (GameService.GameIntegration.Audio.AudioDevice == null) {
                 // No device is set yet or there isn't one to use
                 return;
             }
 
-            const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
-            var filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
-            if (_audioDataReader.FileExists(filePath)) {
-                var soundEffect = _audioDataReader.GetFileStream(filePath);
-                var waveSource = new WaveFileReader(soundEffect);
-                
-                var soundOutput = new WasapiOut() { Device = GameService.GameIntegration.Audio.AudioDevice, };
-                soundOutput.Initialize(waveSource);
-                soundOutput.Volume = GameService.GameIntegration.Audio.Volume;
+            try {
+                const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
+                var          filePath                    = soundName + SOUND_EFFECT_FILE_EXTENSION;
+            
+                if (_audioDataReader.FileExists(filePath)) {
+                    SoundEffect.FromStream(_audioDataReader.GetFileStream(filePath)).Play(GameService.GameIntegration.Audio.Volume, 0, 0);
+                }
 
-                Task.Run(() => {
-                    soundOutput.Play();
-                    soundOutput.WaitForStopped();
-
-                    // This will dispose the sound effect stream and the wave source too
-                    soundOutput.Dispose();
-                });
-
+                _playRemainingAttempts = 3;
+            } catch (Exception ex) {
+                _playRemainingAttempts--;
+                Logger.Warn(ex, "Failed to play sound effect.");
             }
-        }
+}
 
         private static string RefPath => ApplicationSettings.Instance.RefPath ?? REF_FILE;
 
@@ -153,7 +156,7 @@ namespace Blish_HUD {
         private static Texture2D TextureFromFile(string filepath) {
             if (File.Exists(filepath)) {
                 using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    return TextureUtil.FromStreamPremultiplied(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, fileStream);
+                    return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, fileStream);
                 }
             } else return null;
         }
@@ -174,7 +177,7 @@ namespace Blish_HUD {
                             var textureCanSeek = new MemoryStream();
                             textureStream.CopyTo(textureCanSeek);
 
-                            return TextureUtil.FromStreamPremultiplied(BlishHud.ActiveGraphicsDeviceManager.GraphicsDevice, textureCanSeek);
+                            return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek);
                         }
                     }
 
@@ -193,7 +196,7 @@ namespace Blish_HUD {
         }
 
         public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
-            return BlishHud.ActiveContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
+            return GameService.Content.ContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
         }
 
         public void PurgeTextureCache(string textureName) {
@@ -218,7 +221,7 @@ namespace Blish_HUD {
 
             if (cachedTexture == null) {
                 try {
-                    cachedTexture = BlishHud.ActiveContentManager.Load<Texture2D>(textureName);
+                    cachedTexture = GameService.Content.ContentManager.Load<Texture2D>(textureName);
                 } catch (ContentLoadException) {
                     Logger.Warn("Could not find {textureName} precompiled or in the ref archive.", textureName);
                 }
@@ -294,7 +297,7 @@ namespace Blish_HUD {
             string fullFontName = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{style.ToString().ToLowerInvariant()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
-                var loadedFont = Blish_HUD.BlishHud.ActiveContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
+                var loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
                 loadedFont.LetterSpacing = -1;
                 _loadedBitmapFonts.TryAdd(fullFontName, loadedFont);
 

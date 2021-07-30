@@ -31,7 +31,7 @@ namespace Blish_HUD {
             this.BlendState        = blendState;
             this.SamplerState      = samplerState;
             this.DepthStencilState = depthStencilState;
-            this.RasterizerState   = rasterizerState ?? BlishHud.UiRasterizer;
+            this.RasterizerState   = rasterizerState ?? BlishHud.Instance.UiRasterizer;
             this.Effect            = effect;
             this.TransformMatrix   = transformMatrix;
         }
@@ -55,7 +55,7 @@ namespace Blish_HUD {
                               parameters.BlendState,
                               parameters.SamplerState,
                               parameters.DepthStencilState,
-                              parameters.RasterizerState ?? BlishHud.UiRasterizer,
+                              parameters.RasterizerState ?? BlishHud.Instance.UiRasterizer,
                               parameters.Effect,
                               parameters.TransformMatrix ?? GameService.Graphics.UIScaleTransform);
         }

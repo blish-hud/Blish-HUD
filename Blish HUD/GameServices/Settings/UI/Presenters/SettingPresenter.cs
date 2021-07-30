@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Settings.UI.Views;
@@ -37,10 +38,12 @@ namespace Blish_HUD.Settings.UI.Presenters {
         }
 
         private void UpdateViewComplianceRequisite() {
-            var complianceRequisite = this.Model.GetComplianceRequisite();
+            IEnumerable<IComplianceRequisite> complianceRequisites = this.Model.GetComplianceRequisite();
 
-            if (complianceRequisite != null) {
-                this.View.SetComplianceRequisite(complianceRequisite);
+            foreach (var complianceRequisite in complianceRequisites) {
+                if (!this.View.HandleComplianceRequisite(complianceRequisite)) {
+                    this.View.HandleBaseComplianceRequisite(complianceRequisite);
+                }
             }
         }
 

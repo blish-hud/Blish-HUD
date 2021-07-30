@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SemVer;
 using Range = SemVer.Range;
+using Version = SemVer.Version;
 
 namespace Blish_HUD.Modules {
 
@@ -52,6 +53,7 @@ namespace Blish_HUD.Modules {
             if (this.IsBlishHud) {
                 return new ModuleDependencyCheckDetails(this,
                                                         this.VersionRange.IsSatisfied(Program.OverlayVersion.BaseVersion())
+                                                        || Program.OverlayVersion.BaseVersion() == new Version(0, 0, 0) // Ensure local builds ignore prerequisite
                                                             ? ModuleDependencyCheckResult.Available
                                                             : ModuleDependencyCheckResult.AvailableWrongVersion);
             }

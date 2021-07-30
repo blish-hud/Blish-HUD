@@ -4,7 +4,9 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD {
     public class InputService : GameService {
 
-        private readonly IHookManager hookManager;
+        private static readonly Logger Logger = Logger.GetLogger<InputService>();
+
+        private readonly IHookManager _hookManager;
 
         /// <summary>
         /// Provides details about the current mouse state.
@@ -21,29 +23,31 @@ namespace Blish_HUD {
             Keyboard = new KeyboardHandler();
 
             if (ApplicationSettings.Instance.DebugEnabled) {
-                hookManager = new DebugHelperHookManager();
+                _hookManager = new DebugHelperHookManager();
             } else {
-                hookManager = new WinApiHookManager();
+                _hookManager = new WinApiHookManager();
             }
         }
 
         internal void EnableHooks() {
-            if (hookManager.EnableHook()) {
-                hookManager.RegisterMouseHandler(Mouse.HandleInput);
-                hookManager.RegisterKeyboardHandler(Keyboard.HandleInput);
+            if (_hookManager.EnableHook()) {
+                _hookManager.RegisterMouseHandler(Mouse.HandleInput);
+                _hookManager.RegisterKeyboardHandler(Keyboard.HandleInput);
+            } else {
+                Logger.Error("Failed to acquire hook!");
             }
         }
 
         internal void DisableHooks() {
-            hookManager.DisableHook();
-            hookManager.UnregisterMouseHandler(Mouse.HandleInput);
-            hookManager.UnregisterKeyboardHandler(Keyboard.HandleInput);
+            _hookManager.DisableHook();
+            _hookManager.UnregisterMouseHandler(Mouse.HandleInput);
+            _hookManager.UnregisterKeyboardHandler(Keyboard.HandleInput);
         }
 
         protected override void Initialize() { /* NOOP */ }
 
         protected override void Load() {
-            hookManager.Load();
+            _hookManager.Load();
             GameIntegration.Gw2AcquiredFocus += (s, e) => EnableHooks();
             GameIntegration.Gw2LostFocus += (s, e) => DisableHooks();
             GameIntegration.Gw2Closed += (s, e) => DisableHooks();
@@ -51,7 +55,7 @@ namespace Blish_HUD {
 
         protected override void Unload() {
             DisableHooks();
-            hookManager.Unload();
+            _hookManager.Unload();
         }
 
         protected override void Update(GameTime gameTime) {

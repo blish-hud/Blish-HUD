@@ -103,7 +103,7 @@ namespace Blish_HUD {
                 _gw2Process = value;
 
                 if (value == null || _gw2Process.MainWindowHandle == IntPtr.Zero) {
-                    BlishHud.Form.Invoke((MethodInvoker) (() => { BlishHud.Form.Visible = false; }));
+                    BlishHud.Instance.Form.Invoke((MethodInvoker) (() => { BlishHud.Instance.Form.Visible = false; }));
 
                     _gw2Process = null;
                 } else {
@@ -136,7 +136,7 @@ namespace Blish_HUD {
         private void DefineSettings(SettingCollection settings) {
             const string UNDEFINED_EXECPATH = "NotDetected";
 
-            _gw2ExecutablePath = settings.DefineSetting("Gw2ExecutablePath", UNDEFINED_EXECPATH, "Gw2-64.exe Path", "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
+            _gw2ExecutablePath = settings.DefineSetting("Gw2ExecutablePath", UNDEFINED_EXECPATH, () => "Gw2-64.exe Path", () => "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
 
             // We do this to avoid trying to detect in the registry
             // unless we have never detected the true path
@@ -169,8 +169,8 @@ namespace Blish_HUD {
             this.TacO       = new TacOIntegration(this);
             this.WinForms   = new WinFormsIntegration(this);
 
-            BlishHud.Form.Shown += delegate {
-                WindowUtil.SetupOverlay(BlishHud.FormHandle);
+            BlishHud.Instance.Form.Shown += delegate {
+                WindowUtil.SetupOverlay(BlishHud.Instance.FormHandle);
             };
 
             TryAttachToGw2();
@@ -203,9 +203,7 @@ namespace Blish_HUD {
                     OnGw2Exit(null, EventArgs.Empty);
                 }
 
-                BlishHud.Form.Invoke((MethodInvoker) (() => {
-                    BlishHud.Form.Visible = true;
-                }));
+                BlishHud.Instance.Form.Invoke((MethodInvoker) (() => { BlishHud.Instance.Form.Visible = true; }));
             }
         }
 
@@ -283,7 +281,7 @@ namespace Blish_HUD {
                 this.TacO.Update(gameTime);
                 this.WinForms.Update(gameTime);
 
-                var updateResult = WindowUtil.UpdateOverlay(BlishHud.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
+                var updateResult = WindowUtil.UpdateOverlay(BlishHud.Instance.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
 
                 switch (updateResult.Response) {
                     case WindowUtil.OverlayUpdateResponse.WithFocus:
@@ -338,17 +336,28 @@ namespace Blish_HUD {
         /// Methods related to interaction with the in-game chat.
         /// </summary>
         public interface IGameChat {
-            void Send(string message);
-            void Paste(string text);
-            Task<string> GetInputText();
-            void Clear();
-        }
-        private class GameChat : IGameChat {
             /// <summary>
             /// Sends a message to the chat.
             /// </summary>
+            void Send(string message);
+            /// <summary>
+            /// Adds a string to the input field.
+            /// </summary>
+            void Paste(string text);
+            /// <summary>
+            /// Returns the current string in the input field.
+            /// </summary>
+            Task<string> GetInputText();
+            /// <summary>
+            /// Clears the input field.
+            /// </summary>
+            void Clear();
+        }
+        ///<inheritdoc/>
+        private class GameChat : IGameChat {
+            ///<inheritdoc/>
             public async void Send(string message) {
-                if (IsBusy() && !IsTextValid(message)) return;
+                if (IsBusy() || !IsTextValid(message)) return;
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
                 await ClipboardUtil.WindowsClipboardService.SetTextAsync(message)
                                    .ContinueWith(clipboardResult => {
@@ -369,9 +378,7 @@ namespace Blish_HUD {
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
                                            }); });
             }
-            /// <summary>
-            /// Adds a string to the input field.
-            /// </summary>
+            ///<inheritdoc/>
             public async void Paste(string text) {
                 if (IsBusy()) return;
                 string currentInput = await GetInputText();
@@ -395,9 +402,7 @@ namespace Blish_HUD {
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
                                            }); });
             }
-            /// <summary>
-            /// Returns the current string in the input field.
-            /// </summary>
+            ///<inheritdoc/>
             public async Task<string> GetInputText() {
                 if (IsBusy()) return "";
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
@@ -418,9 +423,7 @@ namespace Blish_HUD {
                                                       });
                 return inputText;
             }
-            /// <summary>
-            /// Clears the input field.
-            /// </summary>
+            ///<inheritdoc/>
             public void Clear() {
                 if (IsBusy()) return;
                 Task.Run(() => {

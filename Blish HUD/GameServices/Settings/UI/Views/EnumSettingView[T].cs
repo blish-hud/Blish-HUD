@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
+using Humanizer;
 using Microsoft.Scripting.Utils;
 using Microsoft.Xna.Framework;
 
@@ -42,27 +43,34 @@ namespace Blish_HUD.Settings.UI.Views {
                 Parent = buildPanel
             };
 
-            _enumDropdown.Items.AddRange(_enumValues.Select(e => e.ToString()));
+            _enumDropdown.Items.AddRange(_enumValues.Select(e => e.Humanize(LetterCasing.Title)));
 
             _enumDropdown.ValueChanged += EnumDropdownOnValueChanged;
         }
 
-        public override void SetComplianceRequisite(IComplianceRequisite complianceRequisite) {
-            if (complianceRequisite is EnumComplianceRequisite<TEnum> enumRequisite) {
-                IEnumerable<TEnum> toRemove = _enumValues.Except(enumRequisite.IncludedValues);
+        public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
+            switch (complianceRequisite) {
+                case EnumInclusionComplianceRequisite<TEnum> enumInclusionRequisite:
+                    IEnumerable<TEnum> toRemove = _enumValues.Except(enumInclusionRequisite.IncludedValues);
 
-                foreach (var value in toRemove) {
-                    _enumDropdown.Items.Remove(value.ToString());
-                }
+                    foreach (var value in toRemove) {
+                        _enumDropdown.Items.Remove(value.Humanize(LetterCasing.Title));
+                    }
+
+                    break;
+                case SettingDisabledComplianceRequisite disabledRequisite:
+                    _displayNameLabel.Enabled = !disabledRequisite.Disabled;
+                    _enumDropdown.Enabled     = !disabledRequisite.Disabled;
+                    break;
+                default:
+                    return false;
             }
+
+            return true;
         }
 
         private void EnumDropdownOnValueChanged(object sender, ValueChangedEventArgs e) {
-            if (Enum.TryParse(e.CurrentValue, true, out TEnum value)) {
-                this.OnValueChanged(new ValueEventArgs<TEnum>(value));
-            } else {
-                _enumDropdown.SelectedItem = this.Value.ToString();
-            }
+            this.OnValueChanged(new ValueEventArgs<TEnum>(e.CurrentValue.DehumanizeTo<TEnum>()));
         }
 
         private void UpdateSizeAndLayout() {
@@ -88,7 +96,7 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void RefreshValue(TEnum value) {
-            _enumDropdown.SelectedItem = value.ToString();
+            _enumDropdown.SelectedItem = value.Humanize(LetterCasing.Title);
         }
 
         protected override void Unload() {

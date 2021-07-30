@@ -53,11 +53,13 @@ namespace Blish_HUD.Input {
 
         private readonly List<Keys> _keysDown = new List<Keys>();
 
-        // Keys which, when pressed, should never be captured by the keyboard hook
+        // Keys which, when pressed, should never be captured exclusively by the keyboard hook
         private readonly HashSet<Keys> _hookIgnoredKeys = new HashSet<Keys>() {
             Keys.LeftAlt,
             Keys.RightAlt,
-            Keys.NumLock
+            Keys.NumLock,
+            Keys.LeftWindows,
+            Keys.RightWindows
         };
 
         /// <summary>

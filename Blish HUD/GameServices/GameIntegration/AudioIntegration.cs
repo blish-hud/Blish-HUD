@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Debug;
@@ -13,6 +14,7 @@ namespace Blish_HUD.GameIntegration {
         private static readonly Logger Logger = Logger.GetLogger<AudioIntegration>();
 
         public enum Devices {
+            [Description("GW2 Output Device")]
             Gw2OutputDevice,
             DefaultDevice
         }
@@ -33,7 +35,7 @@ namespace Blish_HUD.GameIntegration {
 
         private readonly List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)> _gw2AudioDevices = new List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)>();
 
-        private double _timeSinceCheck = 0;
+        private double _timeSinceCheck             = 0;
         private double _timeSinceAudioDeviceUpdate = 0;
 
         private float? _volume;
@@ -54,10 +56,16 @@ namespace Blish_HUD.GameIntegration {
 
         public AudioIntegration(GameIntegrationService service) : base(service) {
             var audioSettings = GameService.Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
-            _useGameVolume = audioSettings.DefineSetting(USEGAMEVOLUME_SETTINGS, true, Strings.GameServices.OverlayService.Setting_UseGameVolume_DisplayName, Strings.GameServices.OverlayService.Setting_UseGameVolume_Description);
-            _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2, Strings.GameServices.OverlayService.Setting_Volume_DisplayName, Strings.GameServices.OverlayService.Setting_Volume_Description);
+            _useGameVolume = audioSettings.DefineSetting(USEGAMEVOLUME_SETTINGS, true, () => Strings.GameServices.OverlayService.Setting_UseGameVolume_DisplayName, () => Strings.GameServices.OverlayService.Setting_UseGameVolume_Description);
+            _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2, () => Strings.GameServices.OverlayService.Setting_Volume_DisplayName, () => Strings.GameServices.OverlayService.Setting_Volume_Description);
             _volumeSetting.SetRange(0.0f, MAX_VOLUME);
-            _deviceSetting = audioSettings.DefineSetting(DEVICE_SETTINGS, Devices.Gw2OutputDevice, Strings.GameServices.OverlayService.Setting_AudioDevice_DisplayName, Strings.GameServices.OverlayService.Setting_AudioDevice_Description);
+
+            _deviceSetting = audioSettings.DefineSetting(DEVICE_SETTINGS, Devices.Gw2OutputDevice, () => Strings.GameServices.OverlayService.Setting_AudioDevice_DisplayName, () => Strings.GameServices.OverlayService.Setting_AudioDevice_Description + " (This setting is temporarily disabled in this version)");
+            // This setting is disabled (so we force it to show "default")
+            // See https://github.com/blish-hud/Blish-HUD/issues/355#issuecomment-787713586
+            _deviceSetting.Value = Devices.DefaultDevice;
+            _deviceSetting.SetDisabled();
+
             _deviceEnumerator = new MMDeviceEnumerator();
 
             if (_deviceSetting.Value == Devices.DefaultDevice) {
@@ -71,9 +79,12 @@ namespace Blish_HUD.GameIntegration {
             UpdateActiveAudioDeviceManager();
 
             _deviceEnumerator.DefaultDeviceChanged += delegate { UpdateActiveAudioDeviceManager(); };
-            _service.Gw2Started += delegate { UpdateActiveAudioDeviceManager(); };
+            _service.Gw2Started                    += delegate { UpdateActiveAudioDeviceManager(); };
+
             _deviceSetting.SettingChanged += delegate {
-                if (_deviceSetting.Value == Devices.DefaultDevice) AudioDevice = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                if (_deviceSetting.Value == Devices.DefaultDevice) {
+                    this.AudioDevice = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                }
             };
         }
 

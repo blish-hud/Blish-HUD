@@ -1,9 +1,10 @@
 ﻿using System;
+using Blish_HUD.Entities;
 using Gw2Sharp.Mumble;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Gw2Mumble {
-    public class PlayerCamera {
+    public class PlayerCamera : ICamera {
 
         private readonly Gw2MumbleService _service;
 
@@ -15,15 +16,9 @@ namespace Blish_HUD.Gw2Mumble {
         private Matrix _playerView;
         private Matrix _projection;
         private Matrix _worldViewProjection;
-
-        /// <summary>
-        /// The closest distance entities are rendered.
-        /// </summary>
+        
         public float NearPlaneRenderDistance { get; } = 0.01f;
-
-        /// <summary>
-        /// The farthest distance entities are rendered.
-        /// </summary>
+        
         public float FarPlaneRenderDistance  { get; } = 1000.0f;
 
         #region Mumble Proxied Fields
