@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 using Blish_HUD.Content;
 using CSCore;
 using CSCore.Codecs;
@@ -88,7 +90,17 @@ namespace Blish_HUD {
         public  BitmapFont DefaultFont32 => _defaultFont32 ??= GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular);
 
         public enum FontFace {
-            Menomonia
+            Menomonia,
+            NewKrytan,
+            Ascalonian,
+            CanthanIdeogram,
+            GWTwoFont,
+            Elizabeth,
+            Cagliostro,
+            PTSerif,
+            StoweTitling,
+            StoweOpenFace
+
         }
 
         public enum FontSize {
@@ -297,7 +309,17 @@ namespace Blish_HUD {
             string fullFontName = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{style.ToString().ToLowerInvariant()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
-                var loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
+
+                BitmapFont loadedFont;
+                try {
+                    loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
+                } catch (ContentLoadException e) {
+                    // We can always offer every size, but we cannot always offer every style and have to fallback to regular.
+                    Logger.Debug("Font face {0} does not support {1} style. Use Regular style instead.", font.ToString(), style.ToString());
+                    string fullFontNameFallback = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{FontStyle.Regular.ToString().ToLowerInvariant()}";
+                    loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontNameFallback}");
+                }
+
                 loadedFont.LetterSpacing = -1;
                 _loadedBitmapFonts.TryAdd(fullFontName, loadedFont);
 
