@@ -33,7 +33,7 @@ namespace Blish_HUD.Input {
             };
             process.Exited += Process_Exited;
 
-            Logger.Debug("Starting subprocess: \"{FileName}\" {Arguments}", process.StartInfo.FileName, process.StartInfo.Arguments);
+            Logger.Debug("Starting subprocess: {FileName} {Arguments}", process.StartInfo.FileName, process.StartInfo.Arguments);
             process.Start();
 
             debugHelperMessageService = new StreamMessageService(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
