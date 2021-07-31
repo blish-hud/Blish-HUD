@@ -35,7 +35,7 @@ jobs:
       - name: Run dotnet restore
         run: dotnet restore
       - name: Run dotnet publish
-        run: dotnet publish -c Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }} -o publish
+        run: dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true --self-contained false -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }} -o publish
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:

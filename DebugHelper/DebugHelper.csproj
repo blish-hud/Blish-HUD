@@ -6,24 +6,11 @@
     <AssemblyName>Blish HUD.DebugHelper</AssemblyName>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
+    <DebugType>embedded</DebugType>
     <Platforms>x64</Platforms>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
-
-  <!--
-  >>>
-  >>> Temporarily disabled Fody for .NET Core
-  >>>
-
-  <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="4.1.0" />
-    <PackageReference Include="Fody" Version="6.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  -->
 
   <ItemGroup>
     <ProjectReference Include="..\DebugHelperLib\DebugHelperLib.csproj" />

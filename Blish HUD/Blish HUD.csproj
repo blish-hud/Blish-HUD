@@ -4,6 +4,7 @@
     <Platforms>x64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>WinExe</OutputType>
+    <DebugType>embedded</DebugType>
     <RootNamespace>Blish_HUD</RootNamespace>
     <ApplicationIcon>blishraster2_0dw_icon.ico</ApplicationIcon>
     <MonoGamePlatform>Windows</MonoGamePlatform>

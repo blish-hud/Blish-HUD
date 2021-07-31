@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -48,10 +49,11 @@ namespace Blish_HUD.GameIntegration {
 
             this.TrayIconMenu = new ContextMenuStrip();
 
-            // Found this here: https://stackoverflow.com/a/25409865/595437
+            // Found this here: https://stackoverflow.com/a/25409865/595437 (modified to support single file publishing in .NET 5+)
             // Extract the tray icon from our assembly
+            using var process = Process.GetCurrentProcess();
             _trayIcon = new NotifyIcon() {
-                Icon             = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
+                Icon             = Icon.ExtractAssociatedIcon(process.MainModule.FileName),
                 Text             = trayIconText,
                 Visible          = true,
                 ContextMenuStrip = this.TrayIconMenu
