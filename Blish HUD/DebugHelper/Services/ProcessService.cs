@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Blish_HUD.DebugHelper.Services {
 
-    internal class ProcessService : IDebugService {
+    internal sealed class ProcessService : IDebugService, IDisposable {
 
         private readonly Process process;
 
@@ -17,6 +17,11 @@ namespace Blish_HUD.DebugHelper.Services {
         public void Stop() { process.Exited -= Process_Exited; }
 
         private void Process_Exited(object sender, EventArgs e) { Environment.Exit(0); }
+
+        public void Dispose() {
+            Stop();
+            process.Dispose();
+        }
 
     }
 

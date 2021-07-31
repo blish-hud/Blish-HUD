@@ -50,9 +50,9 @@ namespace Blish_HUD.Input {
 
         public MouseEventArgs(MouseEventType eventType, bool isDoubleClick) : this(eventType) { this.IsDoubleClick = isDoubleClick; }
 
-        internal MouseEventArgs(MouseEventType eventType, MouseLLHookStruct details) : this(
-                                                                                            eventType, details.Point.X, details.Point.Y, details.MouseData, details.Flags,
-                                                                                            details.Time, (int)details.Extra
+        internal MouseEventArgs(MouseEventType eventType, MOUSELLHOOKSTRUCT details) : this(
+                                                                                            eventType, details.pt.x, details.pt.y, details.mouseData, details.flags,
+                                                                                            details.time, details.extraInfo
                                                                                            ) { }
 
         internal MouseEventArgs(MouseEventType eventType, int pointX, int pointY, int mouseData, int flags, int time, int extraInfo) : this(eventType) {

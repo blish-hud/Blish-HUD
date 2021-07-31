@@ -83,7 +83,7 @@ namespace Blish_HUD {
             using var inStream = Console.OpenStandardInput();
             using var outStream = Console.OpenStandardOutput();
 
-            var processService = new ProcessService(mainProcessId);
+            using var processService = new ProcessService(mainProcessId);
             using var messageService = new StreamMessageService(inStream, outStream);
             using var mouseHookService = new MouseHookService(messageService);
             using var keyboardHookService = new KeyboardHookService(messageService);

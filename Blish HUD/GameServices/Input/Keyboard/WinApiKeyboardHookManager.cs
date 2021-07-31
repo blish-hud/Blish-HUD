@@ -6,12 +6,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
 
-    internal class WinApiKeyboardHookManager : WinApiInputHookManager<HandleKeyboardInputDelegate>, IKeyboardHookManager {
+    internal class WinApiKeyboardHookManager : WinApiBaseHookManager<HandleKeyboardInputDelegate>, IKeyboardHookManager {
 
         protected override HookType HookType { get; } = HookType.WH_KEYBOARD_LL;
 
         protected override int HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
-            if (nCode != 0) return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
+            if (nCode != 0) return User32.CallNextHookEx(this.HookType, nCode, wParam, lParam);
 
             KeyboardEventType eventType = (KeyboardEventType)(((uint)wParam % 2) + 256); // filter out SysKeyDown & SysKeyUp
             Keys              key       = (Keys)Marshal.ReadInt32(lParam);
@@ -29,7 +29,7 @@ namespace Blish_HUD.Input {
             if (isHandled)
                 return 1;
             else
-                return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
+                return User32.CallNextHookEx(this.HookType, nCode, wParam, lParam);
         }
 
     }

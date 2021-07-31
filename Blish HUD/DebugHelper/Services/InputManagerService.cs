@@ -8,7 +8,7 @@ using WFTimer = System.Windows.Forms.Timer;
 
 namespace Blish_HUD.DebugHelper.Services {
 
-    internal class InputManagerService : IDebugService, IDisposable {
+    internal sealed class InputManagerService : IDebugService, IDisposable {
 
         private const int PING_TIMEOUT_BEFORE_PAUSING_HOOKS = 50;
 
@@ -81,24 +81,10 @@ namespace Blish_HUD.DebugHelper.Services {
             keyboardHookService.Stop();
         }
 
-        #region IDisposable Support
-
-        private bool isDisposed = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool isDisposing) {
-            if (isDisposed) return;
-
-            if (isDisposing) {
-                Stop();
-                timeoutTimer.Dispose();
-            }
-
-            isDisposed = true;
+        public void Dispose() {
+            Stop();
+            timeoutTimer.Dispose();
         }
-
-        public void Dispose() { Dispose(true); }
-
-        #endregion
 
     }
 

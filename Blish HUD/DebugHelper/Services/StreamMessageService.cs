@@ -8,7 +8,7 @@ using ProtoBuf;
 
 namespace Blish_HUD.DebugHelper.Services {
 
-    public class StreamMessageService : IMessageService, IDisposable {
+    internal sealed class StreamMessageService : IMessageService, IDisposable {
 
         private readonly ConcurrentDictionary<ulong, ManualResetEventSlim> waitingMessages   = new ConcurrentDictionary<ulong, ManualResetEventSlim>();
         private readonly ConcurrentDictionary<ulong, Message>              receivedMessages  = new ConcurrentDictionary<ulong, Message>();
@@ -97,20 +97,9 @@ namespace Blish_HUD.DebugHelper.Services {
             message.Id = (time << 23) | (processId << 13) | seq;
         }
 
-        #region IDisposable Support
-
-        private bool isDisposed = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool isDisposing) {
-            if (isDisposed) return;
-
-            if (isDisposing) Stop();
-            isDisposed = true;
+        public void Dispose() {
+            Stop();
         }
-
-        public void Dispose() { Dispose(true); }
-
-        #endregion
 
     }
 

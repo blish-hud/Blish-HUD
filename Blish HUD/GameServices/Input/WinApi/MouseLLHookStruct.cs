@@ -1,17 +1,15 @@
-﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Input.WinApi {
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct MouseLLHookStruct {
+    internal struct MOUSELLHOOKSTRUCT {
 
-        public Point  Point     { get; }
-        public int    MouseData { get; }
-        public int    Flags     { get; }
-        public int    Time      { get; }
-        public IntPtr Extra     { get; }
+        public POINT pt;
+        public int   mouseData;
+        public int   flags;
+        public int   time;
+        public int   extraInfo;
 
     }
 
