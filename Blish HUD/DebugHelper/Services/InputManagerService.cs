@@ -2,8 +2,7 @@
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
-using Blish_HUD.DebugHelperLib.Models;
-using Blish_HUD.DebugHelperLib.Services;
+using Blish_HUD.DebugHelper.Models;
 using TTimer = System.Timers.Timer;
 using WFTimer = System.Windows.Forms.Timer;
 

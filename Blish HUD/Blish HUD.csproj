@@ -213,17 +213,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="Octokit" Version="0.32.0" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
+    <PackageReference Include="protobuf-net" Version="3.0.101" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="System.ComponentModel.Composition" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\DebugHelperLib\DebugHelperLib.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\DebugHelper\DebugHelper.csproj" PrivateAssets="all">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
-      <AdditionalProperties>CopyPublishedOutput=true</AdditionalProperties>
-    </ProjectReference>
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
   </ItemGroup>
   
   

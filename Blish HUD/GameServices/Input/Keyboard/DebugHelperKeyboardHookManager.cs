@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using Blish_HUD.DebugHelperLib.Models;
-using Blish_HUD.DebugHelperLib.Services;
+using Blish_HUD.DebugHelper.Models;
+using Blish_HUD.DebugHelper.Services;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {

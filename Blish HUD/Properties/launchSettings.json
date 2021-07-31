@@ -6,6 +6,10 @@
     "PowerShell HUD": {
       "commandName": "Project",
       "commandLineArgs": "-p powershell -w ConsoleWindowClass"
+    },
+    "Help": {
+      "commandName": "Project",
+      "commandLineArgs": "-h"
     }
   }
 }

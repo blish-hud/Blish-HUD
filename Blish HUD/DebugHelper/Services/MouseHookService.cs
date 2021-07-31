@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Blish_HUD.DebugHelper.Native;
-using Blish_HUD.DebugHelperLib.Models;
-using Blish_HUD.DebugHelperLib.Services;
+using Blish_HUD.DebugHelper.Models;
 
 namespace Blish_HUD.DebugHelper.Services {
 
-    internal class KeyboardHookService : IDebugService, IDisposable {
+    internal class MouseHookService : IDebugService, IDisposable {
 
         private const int CALLBACK_TIMEOUT = 10;
 
@@ -14,13 +13,13 @@ namespace Blish_HUD.DebugHelper.Services {
         private readonly User32.HOOKPROC hookProc; // Store the callback delegate, otherwise it might get garbage collected
         private          IntPtr          hook;
 
-        public KeyboardHookService(IMessageService messageService) {
+        public MouseHookService(IMessageService messageService) {
             this.messageService = messageService;
             hookProc            = HookCallback;
         }
 
         public void Start() {
-            if (hook == IntPtr.Zero) hook = User32.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, hookProc, Marshal.GetHINSTANCE(typeof(MouseHookService).Module), 0);
+            if (hook == IntPtr.Zero) hook = User32.SetWindowsHookEx(HookType.WH_MOUSE_LL, hookProc, Marshal.GetHINSTANCE(typeof(MouseHookService).Module), 0);
         }
 
         public void Stop() {
@@ -29,17 +28,22 @@ namespace Blish_HUD.DebugHelper.Services {
         }
 
         private int HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
-            if (nCode != 0) return User32.CallNextHookEx(HookType.WH_KEYBOARD_LL, nCode, wParam, lParam);
+            if (nCode != 0) return User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
 
-            uint eventType = ((uint)wParam % 2) + 256; // filter out SysKeyDown & SysKeyUp
-            int  key       = Marshal.ReadInt32(lParam);
+            int               eventType  = (int)wParam;
+            MOUSELLHOOKSTRUCT hookStruct = Marshal.PtrToStructure<MOUSELLHOOKSTRUCT>(lParam);
 
-            var message = new KeyboardEventMessage {
+            var message = new MouseEventMessage {
                 EventType = eventType,
-                Key       = key
+                PointX    = hookStruct.pt.x,
+                PointY    = hookStruct.pt.y,
+                MouseData = hookStruct.mouseData,
+                Flags     = hookStruct.flags,
+                Time      = hookStruct.time,
+                ExtraInfo = hookStruct.extraInfo
             };
 
-            KeyboardResponseMessage? response = messageService.SendAndWait<KeyboardResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
+            MouseResponseMessage? response = messageService.SendAndWait<MouseResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
 
             if (response?.IsHandled == true)
                 return 1;

@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using Blish_HUD.DebugHelperLib.Models;
+using Blish_HUD.DebugHelper.Models;
 using ProtoBuf;
 
-namespace Blish_HUD.DebugHelperLib.Services {
+namespace Blish_HUD.DebugHelper.Services {
 
     public class StreamMessageService : IMessageService, IDisposable {
 
