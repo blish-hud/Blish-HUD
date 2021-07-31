@@ -187,7 +187,7 @@ namespace Blish_HUD.Input {
 
             uint r;
             // return value of 1 expected (1 character copied to r)
-            if (1 != ToAscii(code, code, b, out r, 0))
+            if (ToAscii(code, code, b, out r, 0) != 1)
                 throw new ApplicationException("Could not translate modified state");
 
             return (char)r;
