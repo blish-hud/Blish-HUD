@@ -1,10 +1,4 @@
-﻿/*
- * This code has been adapted from Ciantic's `keyboardlistener.cs` (https://gist.github.com/Ciantic/471698#file-keyboardlistener-cs-L224-L427)
- * We include adaptions for dead-key handling from Urutar (https://gist.github.com/Ciantic/471698#gistcomment-1448512)
- */
-
-using Microsoft.Xna.Framework.Input;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Input {
@@ -15,19 +9,10 @@ namespace Blish_HUD.Input {
         // because of this behavior, "^" is called dead key)
 
         [DllImport("user32.dll")]
-        private static extern int ToUnicodeEx(uint wVirtKey, uint wScanCode, byte[] lpKeyState, [Out, MarshalAs(UnmanagedType.LPWStr)] System.Text.StringBuilder pwszBuff, int cchBuff, uint wFlags, IntPtr dwhkl);
+        public static extern int ToUnicode(uint virtualKeyCode, uint scanCode, byte[] keyboardState, [Out, MarshalAs(UnmanagedType.LPWStr, SizeConst = 64)] System.Text.StringBuilder receivingBuffer, int bufferSize, uint flags);
 
         [DllImport("user32.dll")]
-        private static extern uint MapVirtualKeyEx(uint uCode, uint uMapType, IntPtr dwhkl);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-        private static extern IntPtr GetKeyboardLayout(uint dwLayout);
-
-        [DllImport("User32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
-        [DllImport("User32.dll")]
-        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        private static extern uint MapVirtualKey(uint virtualKeyCode, uint mapType);
 
         private static uint   _lastVkCode   = 0;
         private static uint   _lastScanCode = 0;
@@ -45,11 +30,8 @@ namespace Blish_HUD.Input {
             // ToUnicodeEx needs StringBuilder, it populates that during execution.
             System.Text.StringBuilder output = new System.Text.StringBuilder(5);
 
-            // Get the current keyboard layout
-            IntPtr HKL = GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), out _));
-
             byte[] keyState = new byte[256];
-            uint scanCode = MapVirtualKeyEx(virtKeyCode, 0, HKL);
+            uint scanCode = MapVirtualKey(virtKeyCode, 0);
 
             switch (scanCode) {
                 case 42:
@@ -63,7 +45,7 @@ namespace Blish_HUD.Input {
 
             if(_isShiftDown || Console.CapsLock) keyState[0x10] = 0x80;
 
-            int result = ToUnicodeEx(virtKeyCode, scanCode, keyState, output, (int)5, (uint)0, HKL);
+            int result = ToUnicode(virtKeyCode, scanCode, keyState, output, (int)5, (uint)0);
 
             switch (result) {
                 case -1:
@@ -72,7 +54,7 @@ namespace Blish_HUD.Input {
 
                     // clear buffer because it will otherwise crash `public Rectangle AbsoluteBounds` in Control.cs
                     // this will probably also cause case:2 to never trigger
-                    while (ToUnicodeEx(virtKeyCode, scanCode, keyState, output, (int)5, (uint)0, HKL) < 0);
+                    while (ToUnicode(virtKeyCode, scanCode, keyState, output, (int)5, (uint)0) < 0);
 
                     // TODO: handle dead keys
 
