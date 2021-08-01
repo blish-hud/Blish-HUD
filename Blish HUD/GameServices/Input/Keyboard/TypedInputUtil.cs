@@ -18,9 +18,6 @@ namespace Blish_HUD.Input {
         private static extern int ToUnicodeEx(uint wVirtKey, uint wScanCode, byte[] lpKeyState, [Out, MarshalAs(UnmanagedType.LPWStr)] System.Text.StringBuilder pwszBuff, int cchBuff, uint wFlags, IntPtr dwhkl);
 
         [DllImport("user32.dll")]
-        private static extern bool GetKeyboardState(byte[] lpKeyState);
-
-        [DllImport("user32.dll")]
         private static extern uint MapVirtualKeyEx(uint uCode, uint uMapType, IntPtr dwhkl);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
@@ -31,24 +28,6 @@ namespace Blish_HUD.Input {
 
         [DllImport("User32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-        [DllImport("user32.dll")]
-        private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
-
-        [DllImport("kernel32.dll")]
-        private static extern uint GetCurrentThreadId();
-
-        [DllImport("user32.dll")]
-        static extern short VkKeyScan(char c);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern int ToAscii(
-            uint uVirtKey,
-            uint uScanCode,
-            byte[] lpKeyState,
-            out uint lpChar,
-            uint flags
-            );
 
         private static uint   _lastVkCode   = 0;
         private static uint   _lastScanCode = 0;
@@ -82,7 +61,7 @@ namespace Blish_HUD.Input {
                     break;
             }
 
-            if(_isShiftDown) keyState[0x10] = 0x80;
+            if(_isShiftDown || Console.CapsLock) keyState[0x10] = 0x80;
 
             int result = ToUnicodeEx(virtKeyCode, scanCode, keyState, output, (int)5, (uint)0, HKL);
 

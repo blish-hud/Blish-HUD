@@ -59,7 +59,8 @@ namespace Blish_HUD.Input {
             Keys.RightAlt,
             Keys.NumLock,
             Keys.LeftWindows,
-            Keys.RightWindows
+            Keys.RightWindows,
+            Keys.CapsLock
         };
 
         /// <summary>
