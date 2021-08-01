@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.IO;
-using System.IO.Compression;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
-using Blish_HUD.Content;
-using CSCore;
-using CSCore.Codecs;
-using CSCore.Codecs.WAV;
-using CSCore.CoreAudioAPI;
-using CSCore.SoundOut;
+﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace Blish_HUD {
 
@@ -99,8 +91,8 @@ namespace Blish_HUD {
             Cagliostro,
             PTSerif,
             StoweTitling,
-            StoweOpenFace
-
+            StoweOpenFace,
+            Asuran
         }
 
         public enum FontSize {
@@ -305,7 +297,7 @@ namespace Blish_HUD {
 
         #endregion
 
-        public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
+        public BitmapFont GetFont(FontFace font, FontSize size = FontSize.Size11, FontStyle style = FontStyle.Regular) {
             string fullFontName = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{style.ToString().ToLowerInvariant()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
@@ -315,7 +307,7 @@ namespace Blish_HUD {
                     loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
                 } catch (ContentLoadException e) {
                     // We can always offer every size, but we cannot always offer every style and have to fallback to regular.
-                    Logger.Debug("Font face {0} does not support {1} style. Use Regular style instead.", font.ToString(), style.ToString());
+                    Logger.Debug("{0}: Font face {1} does not support {2} style. Use Regular style instead.", e.ToString(), font.ToString(), style.ToString());
                     string fullFontNameFallback = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{FontStyle.Regular.ToString().ToLowerInvariant()}";
                     loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontNameFallback}");
                 }
