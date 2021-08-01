@@ -307,7 +307,7 @@ namespace Blish_HUD {
                     loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
                 } catch (ContentLoadException e) {
                     // We can always offer every size, but we cannot always offer every style and have to fallback to regular.
-                    Logger.Debug("{0}: Font face {1} does not support {2} style. Use Regular style instead.", e.ToString(), font.ToString(), style.ToString());
+                    Logger.Debug("{0}: Font face {1} does not support {2} style. Use Regular style instead.", e.GetType().ToString(), font.ToString(), style.ToString());
                     string fullFontNameFallback = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{FontStyle.Regular.ToString().ToLowerInvariant()}";
                     loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontNameFallback}");
                 }
