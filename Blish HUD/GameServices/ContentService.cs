@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
@@ -82,16 +83,29 @@ namespace Blish_HUD {
         public  BitmapFont DefaultFont32 => _defaultFont32 ??= GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular);
 
         public enum FontFace {
+            [Description("Guild Wars 2 UI font")]
             Menomonia,
-            NewKrytan,
-            Ascalonian,
-            CanthanIdeogram,
+            [Description("Guild Wars 2 Title font")]
             GWTwoFont,
+            [Description("Substitute to Eason Pro Inline Caps")]
             Elizabeth,
-            Cagliostro,
-            PTSerif,
-            StoweTitling,
+            [Description("Substitute to Eason Pro Inline Caps")]
             StoweOpenFace,
+            [Description("Substitute to Eason Pro")]
+            StoweTitling,
+            [Description("Substitute to Eason Pro")]
+            PTSerif,
+            [Description("Substitute to Cronos")]
+            Lato,
+            [Description("Substitute to Cronos")]
+            Cagliostro,
+            [Description("New Krytan Typeface")]
+            NewKrytan,
+            [Description("Ascalonian Typeface")]
+            Ascalonian,
+            [Description("Canthan Ideogram")]
+            Canthan,
+            [Description("Asuran Script")]
             Asuran
         }
 
