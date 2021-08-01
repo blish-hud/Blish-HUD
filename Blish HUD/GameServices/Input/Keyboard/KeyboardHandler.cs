@@ -58,8 +58,8 @@ namespace Blish_HUD.Input {
             Keys.LeftAlt,
             Keys.RightAlt,
             Keys.NumLock,
-            Keys.LeftWindows,
-            Keys.RightWindows,
+            Keys.LeftWindows,  // TODO: let the OS handle all key presses that are made during the Windows-key is pressed
+            Keys.RightWindows, //       i.e. pressing win+space does not result in keyboard layout changes but just opens the start menu
             Keys.CapsLock
         };
 
