@@ -3,6 +3,7 @@
  * We include adaptions for dead-key handling from Urutar (https://gist.github.com/Ciantic/471698#gistcomment-1448512)
  */
 
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Runtime.InteropServices;
 
@@ -53,145 +54,68 @@ namespace Blish_HUD.Input {
         private static uint   _lastScanCode = 0;
         private static byte[] _lastKeyState = new byte[255];
         private static bool   _lastIsDead   = false;
+        private static bool   _isShiftDown = false;
 
         /// <summary>
-        /// Convert VKCode to Unicode.
-        /// <remarks>isKeyDown is required for because of keyboard state inconsistencies!</remarks>
+        /// Convert virtual-key code and keyboard state to unicode string
         /// </summary>
-        /// <param name="vkCode">VKCode</param>
-        /// <param name="isKeyDown">Is the key down event?</param>
-        /// <returns>String representing single unicode character.</returns>
-        public static string VkCodeToString(uint vkCode, bool isKeyDown, bool shift) {
+        /// <param name="virtKeyCode"></param>
+        /// <param name="isKeyDown"></param>
+        /// <returns></returns>
+        public static string VirtKeyCodeToString(uint virtKeyCode, bool isKeyDown) {
             // ToUnicodeEx needs StringBuilder, it populates that during execution.
-            System.Text.StringBuilder sbString = new System.Text.StringBuilder(5);
+            System.Text.StringBuilder output = new System.Text.StringBuilder(5);
 
-            byte[] bKeyState = new byte[255];
-            bool bKeyStateStatus;
-            bool isDead = false;
+            // Get the current keyboard layout
+            IntPtr HKL = GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), out _));
 
-            // Gets the current windows window handle, threadID, processID
-            var  currentHWnd           = GetForegroundWindow();
-            uint currentWindowThreadId = GetWindowThreadProcessId(currentHWnd, out _);
+            byte[] keyState = new byte[256];
+            uint scanCode = MapVirtualKeyEx(virtKeyCode, 0, HKL);
 
-            // This programs Thread ID
-            uint thisProgramThreadId = GetCurrentThreadId();
-
-            // Attach to active thread so we can get that keyboard state
-            if (AttachThreadInput(thisProgramThreadId, currentWindowThreadId, true)) {
-                // Current state of the modifiers in keyboard
-                bKeyStateStatus = GetKeyboardState(bKeyState);
-
-                // Detach
-                AttachThreadInput(thisProgramThreadId, currentWindowThreadId, false);
-            } else {
-                // Could not attach, perhaps it is this process?
-                bKeyStateStatus = GetKeyboardState(bKeyState);
-            }
-
-            // On failure we return empty string.
-            if (!bKeyStateStatus)
-                return "";
-
-            // Gets the layout of keyboard
-            var hkl = GetKeyboardLayout(currentWindowThreadId);
-
-            // Maps the virtual keycode
-            uint lScanCode = MapVirtualKeyEx(vkCode, 0, hkl);
-
-            // Keyboard state goes inconsistent if this is not in place. In other words, we need to call above commands in UP events also.
-            if (!isKeyDown)
-                return "";
-
-            // Converts the VKCode to unicode
-            int relevantKeyCountInBuffer = ToUnicodeEx(vkCode, lScanCode, bKeyState, sbString, sbString.Capacity, 0, hkl);
-
-            string ret = "";
-
-            switch (relevantKeyCountInBuffer) {
-                // Dead keys (^,`...)
-                case -1:
-                    isDead = true;
-
-                    // We must clear the buffer because ToUnicodeEx messed it up, see below.
-                    ClearKeyboardBuffer(vkCode, lScanCode, hkl);
-                    break;
-
-                case 0:
-                    break;
-
-                // Single character in buffer
-                case 1:
-                    ret = sbString[0].ToString();
-                    if (shift) {
-                        System.Text.StringBuilder bar = new System.Text.StringBuilder(5);
-                        foreach (char foo in ret.ToCharArray()) {
-                            bar.Append(GetModifiedKey(foo));
-                        }
-                        ret = bar.ToString();
-                    }
-                    break;
-
-                // Two or more (only two of them is relevant)
-                case 2:
+            switch (scanCode) {
+                case 42:
+                case 54:
+                    // left or right shift is pressed
+                    _isShiftDown = isKeyDown;
+                    return "";
                 default:
-                    ret = sbString.ToString().Substring(0, 2);
                     break;
             }
 
-            // We inject the last dead key back, since ToUnicodeEx removed it.
-            // More about this peculiar behavior see e.g: 
-            //   http://www.experts-exchange.com/Programming/System/Windows__Programming/Q_23453780.html
-            //   http://blogs.msdn.com/michkap/archive/2005/01/19/355870.aspx
-            //   http://blogs.msdn.com/michkap/archive/2007/10/27/5717859.aspx
-            if (_lastVkCode != 0 && _lastIsDead) {
-                System.Text.StringBuilder sbTemp = new System.Text.StringBuilder(5);
-                ToUnicodeEx(_lastVkCode, _lastScanCode, _lastKeyState, sbTemp, sbTemp.Capacity, 0, hkl);
-                _lastVkCode = 0;
+            if(_isShiftDown) keyState[0x10] = 0x80;
 
-                return ret;
+            int result = ToUnicodeEx(virtKeyCode, scanCode, keyState, output, (int)5, (uint)0, HKL);
+
+            switch (result) {
+                case -1:
+                    // dead-key character (accent or diacritic)
+                    _lastIsDead = true;
+
+                    // clear buffer because it will otherwise crash `public Rectangle AbsoluteBounds` in Control.cs
+                    // this will probably also cause case:2 to never trigger
+                    while (ToUnicodeEx(virtKeyCode, scanCode, keyState, output, (int)5, (uint)0, HKL) < 0);
+
+                    // TODO: handle dead keys
+
+                    return "";
+                case 0:
+                    // no translation for the current state of the keyboard
+                    break;
+                case 2:
+                    // two or more characters were written to the buffer
+                    // this is most likely a dead-key that could not be combined with the current one
+                    break;
+                case 1:
+                default:
+                    // single character was written to the buffer
+                    break;
+
             }
 
-            // Save these
-            _lastScanCode = lScanCode;
-            _lastVkCode   = vkCode;
-            _lastIsDead   = isDead;
-            _lastKeyState = (byte[])bKeyState.Clone();
+            _lastIsDead = false;
 
-            return ret;
+            if (isKeyDown) return output.ToString();
+            else return "";
         }
-
-        private static void ClearKeyboardBuffer(uint vk, uint sc, IntPtr hkl) {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(10);
-
-            int rc;
-            do {
-                byte[] lpKeyStateNull = new byte[255];
-                rc = ToUnicodeEx(vk, sc, lpKeyStateNull, sb, sb.Capacity, 0, hkl);
-            } while (rc < 0);
-        }
-
-        // Reference: https://stackoverflow.com/a/17387605
-        public static char GetModifiedKey(char c) {
-            short vkKeyScanResult = VkKeyScan(c);
-
-            // a result of -1 indicates no key translates to input character
-            if (vkKeyScanResult == -1)
-                throw new ArgumentException("No key mapping for " + c);
-
-            // vkKeyScanResult & 0xff is the base key, without any modifiers
-            uint code = (uint)vkKeyScanResult & 0xff;
-
-            // set shift key pressed
-            byte[] b = new byte[256];
-            b[0x10] = 0x80;
-
-            uint r;
-            // return value of 1 expected (1 character copied to r)
-            if (ToAscii(code, code, b, out r, 0) != 1)
-                throw new ApplicationException("Could not translate modified state");
-
-            return (char)r;
-        }
-
     }
 }
