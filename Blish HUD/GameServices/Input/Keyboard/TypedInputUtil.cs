@@ -20,10 +20,10 @@ namespace Blish_HUD.Input {
         [DllImport("user32.dll")]
         private static extern byte GetKeyState(int keyState);
 
-        private static uint   _lastVkCode   = 0;
-        private static uint   _lastScanCode = 0;
+        private static uint _lastVirtKeyCode = 0;
+        private static uint _lastScanCode = 0;
         private static byte[] _lastKeyState = new byte[256];
-        private static bool   _lastIsDead   = false;
+        private static bool _lastIsDead = false;
         private static byte VK_SHIFT = 0x10;
         private static byte VK_MENU = 0x12;
 
@@ -36,6 +36,7 @@ namespace Blish_HUD.Input {
         public static string VirtKeyCodeToString(uint virtKeyCode, bool isKeyDown) {
             // ToUnicodeEx needs StringBuilder, it populates that during execution.
             System.Text.StringBuilder output = new System.Text.StringBuilder(5);
+            bool isDead = false;
 
             byte[] keyState = new byte[256];
             uint scanCode = MapVirtualKey(virtKeyCode, 0);
@@ -56,13 +57,23 @@ namespace Blish_HUD.Input {
             switch (result) {
                 case -1:
                     // dead-key character (accent or diacritic)
-                    _lastIsDead = true;
 
                     // clear buffer because it will otherwise crash `public Rectangle AbsoluteBounds` in Control.cs
                     // this will probably also cause case:2 to never trigger
                     while (ToUnicode(virtKeyCode, scanCode, keyState, output, (int)5, (uint)0) < 0) { }
 
-                    // TODO: handle dead keys
+                    // reinject last key becase apparently when calling functions related to keyboard inputs
+                    // messes up their internal states everywhere. :rolleyes:
+                    // for reference see https://gist.github.com/Ciantic/471698
+                    if (_lastVirtKeyCode != 0 && _lastIsDead) {
+                        System.Text.StringBuilder temp = new System.Text.StringBuilder(5);
+                        ToUnicode(_lastVirtKeyCode, _lastScanCode, _lastKeyState, temp, (int)5, (uint)0);
+                    }
+
+                    _lastIsDead = true;
+                    _lastVirtKeyCode = virtKeyCode;
+                    _lastScanCode = scanCode;
+                    _lastKeyState = (byte[])keyState.Clone();
 
                     return "";
                 case 0:
