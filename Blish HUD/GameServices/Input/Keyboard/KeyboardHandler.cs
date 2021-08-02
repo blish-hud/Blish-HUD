@@ -60,7 +60,11 @@ namespace Blish_HUD.Input {
             Keys.NumLock,
             Keys.LeftWindows,  // TODO: let the OS handle all key presses that are made during the Windows-key is pressed
             Keys.RightWindows, //       i.e. pressing win+space does not result in keyboard layout changes but just opens the start menu
-            Keys.CapsLock
+            Keys.CapsLock,
+            Keys.LeftShift,
+            Keys.RightShift,
+            Keys.LeftControl,
+            Keys.RightControl
         };
 
         /// <summary>
@@ -126,14 +130,8 @@ namespace Blish_HUD.Input {
         private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) { _textInputDelegate?.EndInvoke(asyncResult); }
 
         private bool ShouldBlockKeyEvent(Keys key) {
-            // Prevent blocking shift for input capitalization
-            if (_keysDown.Contains(Keys.LeftShift) || _keysDown.Contains(Keys.RightShift)) return false; // "SHIFT" support temporarily disabled
-
             // Skip keys that we wish to explicitly ignore
             if (_hookIgnoredKeys.Contains(key)) return false;
-
-            // Prevent blocking alt + x modifier
-            if (_keysDown.Contains(Keys.LeftAlt) || _keysDown.Contains(Keys.RightAlt)) return false;
 
             return true;
         }
