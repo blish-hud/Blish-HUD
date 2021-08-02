@@ -25,7 +25,10 @@ namespace Blish_HUD.Input {
         private static byte[] _lastKeyState = new byte[256];
         private static bool _lastIsDead = false;
         private static byte VK_SHIFT = 0x10;
+        private static byte VK_CONTROL = 0x11;
         private static byte VK_MENU = 0x12;
+
+        private static bool _isCtrlDown = false; // Hack to get CTRL+C/X/V/Y/A working again
 
         /// <summary>
         /// Convert virtual-key code and keyboard state to unicode string
@@ -40,6 +43,15 @@ namespace Blish_HUD.Input {
             byte[] keyState = new byte[256];
             uint scanCode = MapVirtualKey(vkCode, 0);
 
+            // Hack to get CTRL+C/X/V/Y/A working again
+            switch (scanCode) {
+                case 29:
+                    _isCtrlDown = isKeyDown;
+                    return "";
+                default:
+                    break;
+            }
+
             // aparrently GetKeyboardState() has a problem returning the correct states
             // if called just on its own - calling GetKeyState() before seems to fix
             // this as stated in the following post:
@@ -50,6 +62,7 @@ namespace Blish_HUD.Input {
             if (!GetKeyboardState(keyState)) {
                 return "";
             }
+            if (_isCtrlDown) keyState[VK_CONTROL] = 0x80; // Hack to get CTRL+C/X/V/Y/A working again
 
             int result = ToUnicode(vkCode, scanCode, keyState, output, (int)5, (uint)0);
 
@@ -78,6 +91,7 @@ namespace Blish_HUD.Input {
                     break;
                 case 0:
                     // no translation for the current state of the keyboard
+                    return "";
                 case 2:
                     // two or more characters were written to the buffer
                     // this is most likely a dead-key that could not be combined with the current one
