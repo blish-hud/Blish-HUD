@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
+using SharpDX.Direct3D9;
 
 namespace Blish_HUD {
 
@@ -326,7 +327,9 @@ namespace Blish_HUD {
                     loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontNameFallback}");
                 }
 
-                loadedFont.LetterSpacing = -1;
+                if (font == FontFace.Menomonia)
+                    loadedFont.LetterSpacing = -1;
+
                 _loadedBitmapFonts.TryAdd(fullFontName, loadedFont);
 
                 return loadedFont;

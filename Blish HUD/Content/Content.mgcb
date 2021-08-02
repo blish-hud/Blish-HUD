@@ -119,6 +119,1086 @@
 /processorParam:DebugMode=Auto
 /build:effects/trail.fx
 
+#begin fonts/ascalonian/ascalonian-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-11-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-11-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-12-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-12-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-14-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-14-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-16-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-16-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-18-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-18-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-20-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-20-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-22-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-22-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-24-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-24-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-32-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-32-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-34-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-34-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-36-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-36-regular_0.png
+
+#begin fonts/ascalonian/ascalonian-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ascalonian/ascalonian-8-regular.fnt
+
+#begin fonts/ascalonian/ascalonian-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ascalonian/ascalonian-8-regular_0.png
+
+#begin fonts/asuran/asuran-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-11-regular.fnt
+
+#begin fonts/asuran/asuran-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-11-regular_0.png
+
+#begin fonts/asuran/asuran-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-12-regular.fnt
+
+#begin fonts/asuran/asuran-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-12-regular_0.png
+
+#begin fonts/asuran/asuran-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-14-regular.fnt
+
+#begin fonts/asuran/asuran-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-14-regular_0.png
+
+#begin fonts/asuran/asuran-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-16-regular.fnt
+
+#begin fonts/asuran/asuran-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-16-regular_0.png
+
+#begin fonts/asuran/asuran-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-18-regular.fnt
+
+#begin fonts/asuran/asuran-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-18-regular_0.png
+
+#begin fonts/asuran/asuran-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-20-regular.fnt
+
+#begin fonts/asuran/asuran-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-20-regular_0.png
+
+#begin fonts/asuran/asuran-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-22-regular.fnt
+
+#begin fonts/asuran/asuran-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-22-regular_0.png
+
+#begin fonts/asuran/asuran-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-24-regular.fnt
+
+#begin fonts/asuran/asuran-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-24-regular_0.png
+
+#begin fonts/asuran/asuran-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-32-regular.fnt
+
+#begin fonts/asuran/asuran-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-32-regular_0.png
+
+#begin fonts/asuran/asuran-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-34-regular.fnt
+
+#begin fonts/asuran/asuran-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-34-regular_0.png
+
+#begin fonts/asuran/asuran-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-36-regular.fnt
+
+#begin fonts/asuran/asuran-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-36-regular_0.png
+
+#begin fonts/asuran/asuran-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/asuran/asuran-8-regular.fnt
+
+#begin fonts/asuran/asuran-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/asuran/asuran-8-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-11-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-11-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-11-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-11-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-11-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-11-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-12-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-12-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-12-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-12-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-12-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-12-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-14-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-14-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-14-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-14-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-14-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-14-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-16-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-16-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-16-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-16-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-16-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-16-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-18-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-18-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-18-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-18-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-18-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-18-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-20-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-20-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-20-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-20-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-20-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-20-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-22-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-22-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-22-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-22-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-22-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-22-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-24-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-24-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-24-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-24-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-24-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-24-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-32-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-32-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-32-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-32-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-32-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-32-italic_1.png
+
+#begin fonts/cagliostro/cagliostro-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-32-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-32-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-34-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-34-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-34-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-34-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-34-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-34-italic_1.png
+
+#begin fonts/cagliostro/cagliostro-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-34-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-34-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-36-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-36-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-36-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-36-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-36-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-36-italic_1.png
+
+#begin fonts/cagliostro/cagliostro-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-36-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-36-regular_0.png
+
+#begin fonts/cagliostro/cagliostro-36-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-36-regular_1.png
+
+#begin fonts/cagliostro/cagliostro-8-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-8-italic.fnt
+
+#begin fonts/cagliostro/cagliostro-8-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-8-italic_0.png
+
+#begin fonts/cagliostro/cagliostro-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/cagliostro/cagliostro-8-regular.fnt
+
+#begin fonts/cagliostro/cagliostro-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/cagliostro/cagliostro-8-regular_0.png
+
+#begin fonts/canthan/canthan-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-11-regular.fnt
+
+#begin fonts/canthan/canthan-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-11-regular_0.png
+
+#begin fonts/canthan/canthan-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-12-regular.fnt
+
+#begin fonts/canthan/canthan-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-12-regular_0.png
+
+#begin fonts/canthan/canthan-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-14-regular.fnt
+
+#begin fonts/canthan/canthan-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-14-regular_0.png
+
+#begin fonts/canthan/canthan-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-16-regular.fnt
+
+#begin fonts/canthan/canthan-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-16-regular_0.png
+
+#begin fonts/canthan/canthan-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-18-regular.fnt
+
+#begin fonts/canthan/canthan-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-18-regular_0.png
+
+#begin fonts/canthan/canthan-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-20-regular.fnt
+
+#begin fonts/canthan/canthan-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-20-regular_0.png
+
+#begin fonts/canthan/canthan-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-22-regular.fnt
+
+#begin fonts/canthan/canthan-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-22-regular_0.png
+
+#begin fonts/canthan/canthan-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-24-regular.fnt
+
+#begin fonts/canthan/canthan-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-24-regular_0.png
+
+#begin fonts/canthan/canthan-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-32-regular.fnt
+
+#begin fonts/canthan/canthan-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-32-regular_0.png
+
+#begin fonts/canthan/canthan-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-34-regular.fnt
+
+#begin fonts/canthan/canthan-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-34-regular_0.png
+
+#begin fonts/canthan/canthan-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-36-regular.fnt
+
+#begin fonts/canthan/canthan-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-36-regular_0.png
+
+#begin fonts/canthan/canthan-36-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-36-regular_1.png
+
+#begin fonts/canthan/canthan-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/canthan/canthan-8-regular.fnt
+
+#begin fonts/canthan/canthan-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/canthan/canthan-8-regular_0.png
+
 #begin fonts/consolas-10.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -160,6 +1240,1134 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:fonts/consolas-8-bold.spritefont
+
+#begin fonts/elizabeth/elizabeth-11-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-11-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-11-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-11-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-11-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-11-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-12-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-12-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-12-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-12-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-12-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-12-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-14-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-14-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-14-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-14-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-14-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-14-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-16-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-16-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-16-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-16-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-16-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-16-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-18-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-18-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-18-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-18-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-18-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-18-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-20-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-20-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-20-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-20-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-20-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-20-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-22-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-22-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-22-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-22-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-22-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-22-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-24-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-24-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-24-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-24-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-24-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-24-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-32-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-32-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-32-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-32-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-32-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-32-italic_1.png
+
+#begin fonts/elizabeth/elizabeth-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-32-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-32-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-34-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-34-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-34-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-34-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-34-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-34-italic_1.png
+
+#begin fonts/elizabeth/elizabeth-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-34-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-34-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-36-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-36-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-36-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-36-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-36-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-36-italic_1.png
+
+#begin fonts/elizabeth/elizabeth-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-36-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-36-regular_0.png
+
+#begin fonts/elizabeth/elizabeth-8-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-8-italic.fnt
+
+#begin fonts/elizabeth/elizabeth-8-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-8-italic_0.png
+
+#begin fonts/elizabeth/elizabeth-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/elizabeth/elizabeth-8-regular.fnt
+
+#begin fonts/elizabeth/elizabeth-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/elizabeth/elizabeth-8-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-11-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-11-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-12-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-12-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-14-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-14-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-16-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-16-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-18-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-18-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-20-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-20-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-22-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-22-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-24-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-24-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-32-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-32-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-34-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-34-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-36-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-36-regular_0.png
+
+#begin fonts/gwtwofont/gwtwofont-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/gwtwofont/gwtwofont-8-regular.fnt
+
+#begin fonts/gwtwofont/gwtwofont-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/gwtwofont/gwtwofont-8-regular_0.png
+
+#begin fonts/lato/lato-11-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-11-italic.fnt
+
+#begin fonts/lato/lato-11-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-11-italic_0.png
+
+#begin fonts/lato/lato-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-11-regular.fnt
+
+#begin fonts/lato/lato-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-11-regular_0.png
+
+#begin fonts/lato/lato-12-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-12-italic.fnt
+
+#begin fonts/lato/lato-12-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-12-italic_0.png
+
+#begin fonts/lato/lato-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-12-regular.fnt
+
+#begin fonts/lato/lato-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-12-regular_0.png
+
+#begin fonts/lato/lato-14-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-14-italic.fnt
+
+#begin fonts/lato/lato-14-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-14-italic_0.png
+
+#begin fonts/lato/lato-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-14-regular.fnt
+
+#begin fonts/lato/lato-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-14-regular_0.png
+
+#begin fonts/lato/lato-16-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-16-italic.fnt
+
+#begin fonts/lato/lato-16-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-16-italic_0.png
+
+#begin fonts/lato/lato-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-16-regular.fnt
+
+#begin fonts/lato/lato-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-16-regular_0.png
+
+#begin fonts/lato/lato-18-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-18-italic.fnt
+
+#begin fonts/lato/lato-18-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-18-italic_0.png
+
+#begin fonts/lato/lato-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-18-regular.fnt
+
+#begin fonts/lato/lato-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-18-regular_0.png
+
+#begin fonts/lato/lato-20-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-20-italic.fnt
+
+#begin fonts/lato/lato-20-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-20-italic_0.png
+
+#begin fonts/lato/lato-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-20-regular.fnt
+
+#begin fonts/lato/lato-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-20-regular_0.png
+
+#begin fonts/lato/lato-22-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-22-italic.fnt
+
+#begin fonts/lato/lato-22-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-22-italic_0.png
+
+#begin fonts/lato/lato-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-22-regular.fnt
+
+#begin fonts/lato/lato-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-22-regular_0.png
+
+#begin fonts/lato/lato-24-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-24-italic.fnt
+
+#begin fonts/lato/lato-24-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-24-italic_0.png
+
+#begin fonts/lato/lato-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-24-regular.fnt
+
+#begin fonts/lato/lato-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-24-regular_0.png
+
+#begin fonts/lato/lato-32-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-32-italic.fnt
+
+#begin fonts/lato/lato-32-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-32-italic_0.png
+
+#begin fonts/lato/lato-32-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-32-italic_1.png
+
+#begin fonts/lato/lato-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-32-regular.fnt
+
+#begin fonts/lato/lato-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-32-regular_0.png
+
+#begin fonts/lato/lato-32-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-32-regular_1.png
+
+#begin fonts/lato/lato-34-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-34-italic.fnt
+
+#begin fonts/lato/lato-34-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-34-italic_0.png
+
+#begin fonts/lato/lato-34-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-34-italic_1.png
+
+#begin fonts/lato/lato-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-34-regular.fnt
+
+#begin fonts/lato/lato-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-34-regular_0.png
+
+#begin fonts/lato/lato-34-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-34-regular_1.png
+
+#begin fonts/lato/lato-36-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-36-italic.fnt
+
+#begin fonts/lato/lato-36-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-36-italic_0.png
+
+#begin fonts/lato/lato-36-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-36-italic_1.png
+
+#begin fonts/lato/lato-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-36-regular.fnt
+
+#begin fonts/lato/lato-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-36-regular_0.png
+
+#begin fonts/lato/lato-36-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-36-regular_1.png
+
+#begin fonts/lato/lato-8-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-8-italic.fnt
+
+#begin fonts/lato/lato-8-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-8-italic_0.png
+
+#begin fonts/lato/lato-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/lato/lato-8-regular.fnt
+
+#begin fonts/lato/lato-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/lato/lato-8-regular_0.png
 
 #begin fonts/menomonia/menomonia-11-italic.fnt
 /importer:BitmapFontImporter
@@ -514,4 +2722,1912 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:fonts/menomonia-8-regular_0.tga
+
+#begin fonts/newkrytan/newkrytan-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-11-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-11-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-12-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-12-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-14-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-14-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-16-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-16-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-18-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-18-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-20-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-20-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-20-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-20-regular_1.png
+
+#begin fonts/newkrytan/newkrytan-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-22-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-22-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-22-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-22-regular_1.png
+
+#begin fonts/newkrytan/newkrytan-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-24-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-24-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-24-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-24-regular_1.png
+
+#begin fonts/newkrytan/newkrytan-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-32-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-32-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-32-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-32-regular_1.png
+
+#begin fonts/newkrytan/newkrytan-32-regular_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-32-regular_2.png
+
+#begin fonts/newkrytan/newkrytan-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-34-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-34-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-34-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-34-regular_1.png
+
+#begin fonts/newkrytan/newkrytan-34-regular_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-34-regular_2.png
+
+#begin fonts/newkrytan/newkrytan-34-regular_3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-34-regular_3.png
+
+#begin fonts/newkrytan/newkrytan-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-36-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-36-regular_0.png
+
+#begin fonts/newkrytan/newkrytan-36-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-36-regular_1.png
+
+#begin fonts/newkrytan/newkrytan-36-regular_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-36-regular_2.png
+
+#begin fonts/newkrytan/newkrytan-36-regular_3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-36-regular_3.png
+
+#begin fonts/newkrytan/newkrytan-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/newkrytan/newkrytan-8-regular.fnt
+
+#begin fonts/newkrytan/newkrytan-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/newkrytan/newkrytan-8-regular_0.png
+
+#begin fonts/ptserif/ptserif-11-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-11-italic.fnt
+
+#begin fonts/ptserif/ptserif-11-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-11-italic_0.png
+
+#begin fonts/ptserif/ptserif-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-11-regular.fnt
+
+#begin fonts/ptserif/ptserif-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-11-regular_0.png
+
+#begin fonts/ptserif/ptserif-12-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-12-italic.fnt
+
+#begin fonts/ptserif/ptserif-12-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-12-italic_0.png
+
+#begin fonts/ptserif/ptserif-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-12-regular.fnt
+
+#begin fonts/ptserif/ptserif-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-12-regular_0.png
+
+#begin fonts/ptserif/ptserif-14-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-14-italic.fnt
+
+#begin fonts/ptserif/ptserif-14-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-14-italic_0.png
+
+#begin fonts/ptserif/ptserif-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-14-regular.fnt
+
+#begin fonts/ptserif/ptserif-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-14-regular_0.png
+
+#begin fonts/ptserif/ptserif-16-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-16-italic.fnt
+
+#begin fonts/ptserif/ptserif-16-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-16-italic_0.png
+
+#begin fonts/ptserif/ptserif-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-16-regular.fnt
+
+#begin fonts/ptserif/ptserif-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-16-regular_0.png
+
+#begin fonts/ptserif/ptserif-18-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-18-italic.fnt
+
+#begin fonts/ptserif/ptserif-18-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-18-italic_0.png
+
+#begin fonts/ptserif/ptserif-18-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-18-italic_1.png
+
+#begin fonts/ptserif/ptserif-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-18-regular.fnt
+
+#begin fonts/ptserif/ptserif-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-18-regular_0.png
+
+#begin fonts/ptserif/ptserif-18-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-18-regular_1.png
+
+#begin fonts/ptserif/ptserif-20-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-20-italic.fnt
+
+#begin fonts/ptserif/ptserif-20-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-20-italic_0.png
+
+#begin fonts/ptserif/ptserif-20-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-20-italic_1.png
+
+#begin fonts/ptserif/ptserif-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-20-regular.fnt
+
+#begin fonts/ptserif/ptserif-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-20-regular_0.png
+
+#begin fonts/ptserif/ptserif-20-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-20-regular_1.png
+
+#begin fonts/ptserif/ptserif-22-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-22-italic.fnt
+
+#begin fonts/ptserif/ptserif-22-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-22-italic_0.png
+
+#begin fonts/ptserif/ptserif-22-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-22-italic_1.png
+
+#begin fonts/ptserif/ptserif-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-22-regular.fnt
+
+#begin fonts/ptserif/ptserif-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-22-regular_0.png
+
+#begin fonts/ptserif/ptserif-22-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-22-regular_1.png
+
+#begin fonts/ptserif/ptserif-24-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-24-italic.fnt
+
+#begin fonts/ptserif/ptserif-24-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-24-italic_0.png
+
+#begin fonts/ptserif/ptserif-24-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-24-italic_1.png
+
+#begin fonts/ptserif/ptserif-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-24-regular.fnt
+
+#begin fonts/ptserif/ptserif-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-24-regular_0.png
+
+#begin fonts/ptserif/ptserif-24-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-24-regular_1.png
+
+#begin fonts/ptserif/ptserif-32-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-32-italic.fnt
+
+#begin fonts/ptserif/ptserif-32-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-32-italic_0.png
+
+#begin fonts/ptserif/ptserif-32-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-32-italic_1.png
+
+#begin fonts/ptserif/ptserif-32-italic_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-32-italic_2.png
+
+#begin fonts/ptserif/ptserif-32-italic_3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-32-italic_3.png
+
+#begin fonts/ptserif/ptserif-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-32-regular.fnt
+
+#begin fonts/ptserif/ptserif-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-32-regular_0.png
+
+#begin fonts/ptserif/ptserif-32-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-32-regular_1.png
+
+#begin fonts/ptserif/ptserif-32-regular_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-32-regular_2.png
+
+#begin fonts/ptserif/ptserif-34-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-34-italic.fnt
+
+#begin fonts/ptserif/ptserif-34-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-34-italic_0.png
+
+#begin fonts/ptserif/ptserif-34-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-34-italic_1.png
+
+#begin fonts/ptserif/ptserif-34-italic_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-34-italic_2.png
+
+#begin fonts/ptserif/ptserif-34-italic_3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-34-italic_3.png
+
+#begin fonts/ptserif/ptserif-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-34-regular.fnt
+
+#begin fonts/ptserif/ptserif-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-34-regular_0.png
+
+#begin fonts/ptserif/ptserif-34-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-34-regular_1.png
+
+#begin fonts/ptserif/ptserif-34-regular_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-34-regular_2.png
+
+#begin fonts/ptserif/ptserif-34-regular_3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-34-regular_3.png
+
+#begin fonts/ptserif/ptserif-36-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-36-italic.fnt
+
+#begin fonts/ptserif/ptserif-36-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-italic_0.png
+
+#begin fonts/ptserif/ptserif-36-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-italic_1.png
+
+#begin fonts/ptserif/ptserif-36-italic_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-italic_2.png
+
+#begin fonts/ptserif/ptserif-36-italic_3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-italic_3.png
+
+#begin fonts/ptserif/ptserif-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-36-regular.fnt
+
+#begin fonts/ptserif/ptserif-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-regular_0.png
+
+#begin fonts/ptserif/ptserif-36-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-regular_1.png
+
+#begin fonts/ptserif/ptserif-36-regular_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-regular_2.png
+
+#begin fonts/ptserif/ptserif-36-regular_3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-regular_3.png
+
+#begin fonts/ptserif/ptserif-8-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-8-italic.fnt
+
+#begin fonts/ptserif/ptserif-8-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-8-italic_0.png
+
+#begin fonts/ptserif/ptserif-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/ptserif/ptserif-8-regular.fnt
+
+#begin fonts/ptserif/ptserif-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-8-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-11-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-11-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-11-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-11-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-11-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-11-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-12-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-12-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-12-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-12-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-12-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-12-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-14-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-14-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-14-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-14-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-14-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-14-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-16-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-16-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-16-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-16-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-16-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-16-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-18-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-18-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-18-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-18-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-18-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-18-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-20-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-20-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-20-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-20-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-20-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-20-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-22-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-22-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-22-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-22-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-22-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-22-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-24-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-24-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-24-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-24-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-24-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-24-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-32-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-32-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-32-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-32-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-32-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-32-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-34-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-34-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-34-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-34-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-34-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-34-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-36-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-36-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-36-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-36-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-36-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-36-italic_1.png
+
+#begin fonts/stoweopenface/stoweopenface-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-36-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-36-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-8-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-8-italic.fnt
+
+#begin fonts/stoweopenface/stoweopenface-8-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-8-italic_0.png
+
+#begin fonts/stoweopenface/stoweopenface-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stoweopenface/stoweopenface-8-regular.fnt
+
+#begin fonts/stoweopenface/stoweopenface-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-8-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-11-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-11-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-11-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-11-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-11-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-11-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-11-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-11-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-12-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-12-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-12-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-12-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-12-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-12-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-12-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-12-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-14-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-14-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-14-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-14-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-14-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-14-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-14-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-14-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-16-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-16-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-16-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-16-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-16-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-16-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-16-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-16-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-18-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-18-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-18-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-18-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-18-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-18-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-18-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-18-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-20-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-20-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-20-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-20-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-20-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-20-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-20-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-20-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-22-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-22-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-22-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-22-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-22-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-22-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-22-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-22-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-24-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-24-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-24-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-24-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-24-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-24-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-24-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-24-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-32-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-32-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-32-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-32-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-32-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-32-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-32-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-32-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-34-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-34-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-34-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-34-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-34-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-34-italic_1.png
+
+#begin fonts/stowetitling/stowetitling-34-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-34-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-34-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-34-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-36-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-36-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-36-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-36-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-36-italic_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-36-italic_1.png
+
+#begin fonts/stowetitling/stowetitling-36-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-36-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-36-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-36-regular_0.png
+
+#begin fonts/stowetitling/stowetitling-36-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-36-regular_1.png
+
+#begin fonts/stowetitling/stowetitling-8-italic.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-8-italic.fnt
+
+#begin fonts/stowetitling/stowetitling-8-italic_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-8-italic_0.png
+
+#begin fonts/stowetitling/stowetitling-8-regular.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/stowetitling/stowetitling-8-regular.fnt
+
+#begin fonts/stowetitling/stowetitling-8-regular_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stowetitling/stowetitling-8-regular_0.png
 
