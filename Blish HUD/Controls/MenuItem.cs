@@ -237,7 +237,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateContentRegion() {
-            var children = _children.GetNoLockArray();
+            var children = _children.ToArray();
 
             int bottomChild = ReflowChildLayout(children);
 
@@ -307,7 +307,7 @@ namespace Blish_HUD.Controls {
             newChild.MenuItemHeight = this.MenuItemHeight;
             newChild.MenuDepth = this.MenuDepth + 1;
 
-            ReflowChildLayout(_children.GetNoLockArray());
+            ReflowChildLayout(_children.ToArray());
         }
 
         private int ReflowChildLayout(IEnumerable<Control> allChildren) {

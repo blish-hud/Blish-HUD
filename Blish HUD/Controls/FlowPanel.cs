@@ -307,8 +307,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void ReflowChildLayout(IEnumerable<Control> allChildren) {
-            var filteredChildren = allChildren.ToList().Where(c => c.GetType() != typeof(Scrollbar)
-                                                                   && c.Visible);
+            var filteredChildren = allChildren.Where(c => c.GetType() != typeof(Scrollbar) && c.Visible);
 
             switch (_flowDirection) {
                 case ControlFlowDirection.LeftToRight:

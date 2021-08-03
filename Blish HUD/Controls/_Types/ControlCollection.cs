@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 
@@ -17,8 +17,6 @@ namespace Blish_HUD.Controls {
             public ControlEnumerator(IEnumerator<TEnum> inner, ReaderWriterLockSlim rwLock) {
                 _inner  = inner;
                 _rwLock = rwLock;
-
-                _rwLock.EnterReadLock();
             }
 
             public bool MoveNext() {
@@ -39,8 +37,8 @@ namespace Blish_HUD.Controls {
 
         }
 
-        private readonly List<T>              _innerList;
-        private readonly ReaderWriterLockSlim _listLock  = new ReaderWriterLockSlim();
+        private readonly List<T> _innerList;
+        private readonly ReaderWriterLockSlim    _listLock = new ReaderWriterLockSlim();
 
         public bool IsReadOnly => false;
 
@@ -57,6 +55,8 @@ namespace Blish_HUD.Controls {
         }
 
         public IEnumerator<T> GetEnumerator() {
+            _listLock.EnterReadLock();
+
             return new ControlEnumerator<T>(_innerList.GetEnumerator(), _listLock);
         }
 
@@ -81,7 +81,7 @@ namespace Blish_HUD.Controls {
         }
 
         public void Clear() {
-            T[] oldItems = this.GetNoLockArray();
+            T[] oldItems = this.ToArray();
 
             _listLock.EnterWriteLock();
             _innerList.Clear();
@@ -105,13 +105,7 @@ namespace Blish_HUD.Controls {
         }
 
         public void CopyTo(T[] array, int arrayIndex) {
-            _listLock.EnterReadLock();
-
-            try {
-                _innerList.CopyTo(array, arrayIndex);
-            } finally {
-                _listLock.ExitReadLock();
-            }
+            throw new Exception($"{nameof(CopyTo)} not supported.  If using LINQ, ensure you call .ToList or .ToArray directly on {nameof(ControlCollection<T>)} first.");
         }
 
         public bool Remove(T item) {
@@ -137,11 +131,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public IReadOnlyCollection<T> AsReadOnly() {
-            return new ReadOnlyCollection<T>(this);
-        }
-
-        public List<T> GetNoLockList() {
+        public List<T> ToList() {
             _listLock.EnterReadLock();
 
             try {
@@ -151,7 +141,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public T[] GetNoLockArray() {
+        public T[] ToArray() {
             _listLock.EnterReadLock();
             var items = new T[_innerList.Count];
             _innerList.CopyTo(items, 0);
