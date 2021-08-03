@@ -30,9 +30,6 @@ namespace Blish_HUD.Input {
         /// <summary>
         /// Convert virtual-key code and keyboard state to unicode string
         /// </summary>
-        /// <param name="vkCode"></param>
-        /// <param name="isKeyDown"></param>
-        /// <returns></returns>
         internal static string vkCodeToString(uint vkCode, bool isKeyDown) {
             // ToUnicode needs StringBuilder, it populates that during execution.
             var output = new StringBuilder(5);
