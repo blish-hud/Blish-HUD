@@ -9,7 +9,7 @@ namespace Blish_HUD.Input {
         // because of this behavior, "^" is called dead key)
 
         [DllImport("user32.dll")]
-        public static extern int ToUnicode(uint vkCode, uint scanCode, byte[] keyboardState, [Out, MarshalAs(UnmanagedType.LPWStr, SizeConst = 64)] System.Text.StringBuilder receivingBuffer, int bufferSize, uint flags);
+        private static extern int ToUnicode(uint vkCode, uint scanCode, byte[] keyState, [Out, MarshalAs(UnmanagedType.LPWStr, SizeConst = 64)] System.Text.StringBuilder receivingBuffer, int bufferSize, uint flags);
 
         [DllImport("user32.dll")]
         private static extern uint MapVirtualKey(uint vkCode, uint mapType);
@@ -20,12 +20,11 @@ namespace Blish_HUD.Input {
         [DllImport("user32.dll")]
         private static extern byte GetKeyState(int keyState);
 
-        private static uint _lastVirtKeyCode = 0;
-        private static uint _lastScanCode = 0;
+        private static uint _lastVirtKeyCode;
+        private static uint _lastScanCode;
         private static byte[] _lastKeyState = new byte[256];
-        private static bool _lastIsDead = false;
+        private static bool _lastIsDead;
         private static byte VK_SHIFT = 0x10;
-        private static byte VK_CONTROL = 0x11;
         private static byte VK_MENU = 0x12;
 
         /// <summary>
@@ -34,14 +33,14 @@ namespace Blish_HUD.Input {
         /// <param name="vkCode"></param>
         /// <param name="isKeyDown"></param>
         /// <returns></returns>
-        public static string VirtKeyCodeToString(uint vkCode, bool isKeyDown) {
-            // ToUnicodeEx needs StringBuilder, it populates that during execution.
+        internal static string vkCodeToString(uint vkCode, bool isKeyDown) {
+            // ToUnicode needs StringBuilder, it populates that during execution.
             var output = new StringBuilder(5);
 
             byte[] keyState = new byte[256];
             uint scanCode = MapVirtualKey(vkCode, 0);
 
-            // aparrently GetKeyboardState() has a problem returning the correct states
+            // apparently GetKeyboardState() has a problem returning the correct states
             // if called just on its own - calling GetKeyState() before seems to fix
             // this as stated in the following post:
             // https://stackoverflow.com/a/53713024
@@ -62,7 +61,7 @@ namespace Blish_HUD.Input {
                     // see also: http://archives.miloush.net/michkap/archive/2005/01/19/355870.html
                     while (ToUnicode(vkCode, scanCode, keyState, output, (int)5, (uint)0) < 0) { }
 
-                    // reinject last key becase apparently when calling functions related to keyboard inputs
+                    // reinject last key because apparently when calling functions related to keyboard inputs
                     // messes up their internal states everywhere. :rolleyes:
                     // for reference see https://gist.github.com/Ciantic/471698
                     if (_lastVirtKeyCode != 0 && _lastIsDead) {

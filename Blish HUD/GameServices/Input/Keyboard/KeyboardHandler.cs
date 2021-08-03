@@ -55,14 +55,14 @@ namespace Blish_HUD.Input {
 
         // Keys which, when pressed, should never be captured exclusively by the keyboard hook
         private readonly HashSet<Keys> _hookIgnoredKeys = new HashSet<Keys>() {
-            Keys.LeftAlt,
-            Keys.RightAlt,
             Keys.NumLock,
-            Keys.LeftWindows,  // TODO: let the OS handle all key presses that are made during the Windows-key is pressed
-            Keys.RightWindows, //       i.e. pressing win+space does not result in keyboard layout changes but just opens the start menu
             Keys.CapsLock,
+            Keys.LeftWindows,
+            Keys.RightWindows,
             Keys.LeftControl,
             Keys.RightControl,
+            Keys.LeftAlt,
+            Keys.RightAlt,
             Keys.LeftShift,
             Keys.RightShift
         };
@@ -130,6 +130,8 @@ namespace Blish_HUD.Input {
         private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) { _textInputDelegate?.EndInvoke(asyncResult); }
 
         private bool ShouldBlockKeyEvent(Keys key) {
+            // TODO: WIN key combinations should probably completely handled by the OS
+
             // Skip keys that we wish to explicitly ignore
             if (_hookIgnoredKeys.Contains(key)) return false;
 
@@ -140,7 +142,7 @@ namespace Blish_HUD.Input {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
             if (_textInputDelegate != null) {
-                string chars = TypedInputUtil.VirtKeyCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
+                string chars = TypedInputUtil.vkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
                 _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);
                 return ShouldBlockKeyEvent(key);
             }
