@@ -61,8 +61,8 @@ namespace Blish_HUD.Input {
             Keys.LeftWindows,  // TODO: let the OS handle all key presses that are made during the Windows-key is pressed
             Keys.RightWindows, //       i.e. pressing win+space does not result in keyboard layout changes but just opens the start menu
             Keys.CapsLock,
-            //Keys.LeftControl,  // Hack to get CTRL+C/X/V/Y/A working again
-            //Keys.RightControl, //
+            Keys.LeftControl,
+            Keys.RightControl,
             Keys.LeftShift,
             Keys.RightShift
         };
