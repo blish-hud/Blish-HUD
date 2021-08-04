@@ -9,6 +9,10 @@ namespace Blish_HUD.Controls {
     public class ControlCollection<T> : IList<T>
         where T : Control {
 
+        // BREAKME: We'd prefer to not implement IList and instead use a
+        // different interface, but it will be a breaking change. We should
+        // revise this the next time we make a major breaking change.
+
         private class ControlEnumerator<TEnum> : IEnumerator<TEnum> {
 
             private readonly IEnumerator<TEnum>   _inner;
@@ -77,6 +81,7 @@ namespace Blish_HUD.Controls {
         public void AddRange(IEnumerable<T> items) {
             _listLock.EnterWriteLock();
             _innerList.AddRange(items);
+            this.IsEmpty = !_innerList.Any();
             _listLock.ExitWriteLock();
         }
 
@@ -104,8 +109,12 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Do not use.
+        /// </summary>
+        [Obsolete("Do not use. Throws an exception.")]
         public void CopyTo(T[] array, int arrayIndex) {
-            throw new Exception($"{nameof(CopyTo)} not supported.  If using LINQ, ensure you call .ToList or .ToArray directly on {nameof(ControlCollection<T>)} first.");
+            throw new InvalidOperationException($"{nameof(CopyTo)} not supported.  If using LINQ, ensure you call .ToList or .ToArray directly on {nameof(ControlCollection<T>)} first.");
         }
 
         public bool Remove(T item) {
