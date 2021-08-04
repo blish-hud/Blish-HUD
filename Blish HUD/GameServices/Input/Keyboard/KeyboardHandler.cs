@@ -142,7 +142,7 @@ namespace Blish_HUD.Input {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
             if (_textInputDelegate != null) {
-                string chars = TypedInputUtil.vkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
+                string chars = TypedInputUtil.VkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
                 _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);
                 return ShouldBlockKeyEvent(key);
             }

@@ -20,17 +20,18 @@ namespace Blish_HUD.Input {
         [DllImport("user32.dll")]
         private static extern byte GetKeyState(int keyState);
 
+        private const byte VK_SHIFT = 0x10;
+        private const byte VK_MENU = 0x12;
+
         private static uint _lastVirtKeyCode;
         private static uint _lastScanCode;
         private static byte[] _lastKeyState = new byte[256];
         private static bool _lastIsDead;
-        private static byte VK_SHIFT = 0x10;
-        private static byte VK_MENU = 0x12;
 
         /// <summary>
         /// Convert virtual-key code and keyboard state to unicode string
         /// </summary>
-        internal static string vkCodeToString(uint vkCode, bool isKeyDown) {
+        internal static string VkCodeToString(uint vkCode, bool isKeyDown) {
             // ToUnicode needs StringBuilder, it populates that during execution.
             var output = new StringBuilder(5);
 
