@@ -15,7 +15,7 @@ namespace Blish_HUD.Graphics.UI {
 
         public IPresenter Presenter { get; private set; } = _sharedNullPresenter;
 
-        protected ViewContainer ViewTarget { get; private set; }
+        protected Panel ViewTarget { get; private set; }
 
         protected View() { /* NOOP */ }
 
@@ -26,8 +26,6 @@ namespace Blish_HUD.Graphics.UI {
         public View WithPresenter(IPresenter presenter) {
             Presenter = presenter
                       ?? throw new ArgumentNullException(nameof(presenter));
-
-            this.ViewTarget?.Show(this);
 
             return this;
         }
@@ -43,7 +41,7 @@ namespace Blish_HUD.Graphics.UI {
         }
 
         public void DoBuild(Panel buildPanel) {
-            this.ViewTarget = (ViewContainer)buildPanel;
+            this.ViewTarget = buildPanel;
 
             Build(buildPanel);
 

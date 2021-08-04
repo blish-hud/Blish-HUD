@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using Blish_HUD.Common.UI.Views;
 using Blish_HUD.Controls.Effects;
 using Blish_HUD.Input;
 using Newtonsoft.Json;
@@ -86,21 +87,13 @@ namespace Blish_HUD.Controls {
 
         #endregion
         
-        private static readonly Tooltip _sharedTooltip;
-        private static readonly Label   _sharedTooltipLabel;
+        //private static readonly Tooltip _sharedTooltip;
+        //private static readonly Label   _sharedTooltipLabel;
 
         static Control() {
             _defaultSpriteBatchParameters = new SpriteBatchParameters();
 
-            // Build shared tooltip
-            _sharedTooltip = new Tooltip();
-            _sharedTooltipLabel = new Label() {
-                Text           = "Loading...",
-                AutoSizeHeight = true,
-                AutoSizeWidth  = true,
-                ShowShadow     = true,
-                Parent         = _sharedTooltip,
-            };
+            Tooltip.EnableTooltips();
         }
 
         #endregion
@@ -122,11 +115,6 @@ namespace Blish_HUD.Controls {
         }
 
         private static void OnActiveControlChanged(ControlActivatedEventArgs e) {
-            if (!string.IsNullOrEmpty(e.ActivatedControl?._basicTooltipText)) {
-                _sharedTooltip.CurrentControl = e.ActivatedControl;
-                _sharedTooltipLabel.Text      = e.ActivatedControl._basicTooltipText;
-            }
-
             ActiveControlChanged?.Invoke(null, e);
         }
 
@@ -436,7 +424,13 @@ namespace Blish_HUD.Controls {
         /// Do not use this if you are already using <see cref="BasicTooltipText"/>.
         /// </summary>
         public Tooltip Tooltip {
-            get => _tooltip;
+            get {
+                if (_tooltip != null && !_tooltip._disposedValue) return _tooltip;
+
+                return !string.IsNullOrWhiteSpace(_basicTooltipText)
+                    ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
+                    : null;
+            }
             set => SetProperty(ref _tooltip, value);
         }
 
@@ -450,27 +444,19 @@ namespace Blish_HUD.Controls {
             set {
                 if (!SetProperty(ref _basicTooltipText, value)) return;
 
-                // In the event that the tooltip text is changed while it's
-                // being shown (or the mouse is over the control), this
-                // portion will update it and display it (if it isn't already).
-                if (Control.ActiveControl == this) {
-                    _sharedTooltipLabel.Text = value;
+                if (Control.ActiveControl == this && _tooltip != null) {
+                    // In the event that the tooltip text is changed while it's
+                    // being shown (or the mouse is over the control), this
+                    // portion will update it and display it (if it isn't already).
 
-                    if (!string.IsNullOrEmpty(value)) {
-                        _sharedTooltip.Show(Input.Mouse.Position + new Point(Tooltip.MOUSE_VERTICAL_MARGIN, -Tooltip.MOUSE_VERTICAL_MARGIN * 2));
-                    }
+                    if (_tooltip.CurrentView is BasicTooltipView tooltipView && !string.IsNullOrWhiteSpace(value)) {
+                        tooltipView.Text = value;
+                        return;
+                    }    
                 }
 
-                if (!string.IsNullOrEmpty(value)) {
-                    this.Tooltip = _sharedTooltip;
-
-                    this.MouseEntered += delegate {
-                        _sharedTooltipLabel.Text = this.BasicTooltipText;
-                    };
-                } else {
-                    this.Tooltip?.Hide();
-                    this.Tooltip = null;
-                }
+                _tooltip?.Hide();
+                _tooltip = null;
             }
         }
 
