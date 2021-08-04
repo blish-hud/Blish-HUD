@@ -43,7 +43,7 @@ namespace Blish_HUD.Controls {
 
         private static readonly Logger Logger = Logger.GetLogger<TextInputBase>();
 
-        protected static readonly char[] WordSeperators  = { ' ', '\n', '`', '~', '!', '@', '#', '%', '^', '&', '*', '(', ')', '-', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?' };
+        protected static readonly char[] WordSeperators = { ' ', '\n', '`', '~', '!', '@', '#', '%', '^', '&', '*', '(', ')', '-', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?' };
 
         private static readonly Color _highlightColor = new Color(92, 80, 103, 150);
 
@@ -209,34 +209,8 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnTextInput(string value) {
-            bool ctrlDown = this.IsCtrlDown;
-
             foreach (char c in value) {
-                if (char.IsControl(c)) continue;
                 if (_font.GetCharacterRegion(c) == null) continue;
-
-                if (ctrlDown) {
-                    switch (c) {
-                        case 'c':
-                            HandleCopy();
-                            return;
-                        case 'x':
-                            HandleCut();
-                            return;
-                        case 'v':
-                            HandlePaste();
-                            return;
-                        case 'z':
-                            HandleUndo();
-                            return;
-                        case 'y':
-                            HandleRedo();
-                            return;
-                        case 'a':
-                            SelectAll();
-                            return;
-                    }
-                }
 
                 InputChar(c);
             }
@@ -553,6 +527,24 @@ namespace Blish_HUD.Controls {
                 case Keys.Enter:
                     HandleEnter();
                     break;
+                case Keys.C:
+                    if (this.IsCtrlDown) HandleCopy();
+                    return;
+                case Keys.X:
+                    if (this.IsCtrlDown) HandleCut();
+                    return;
+                case Keys.V:
+                    if (this.IsCtrlDown) HandlePaste();
+                    return;
+                case Keys.Z:
+                    if (this.IsCtrlDown) HandleUndo();
+                    return;
+                case Keys.Y:
+                    if (this.IsCtrlDown) HandleRedo();
+                    return;
+                case Keys.A:
+                    if (this.IsCtrlDown) SelectAll();
+                    return;
                 default:
                     // Skip key repeat state
                     return;
@@ -568,10 +560,10 @@ namespace Blish_HUD.Controls {
 
                 ClipboardUtil.WindowsClipboardService.SetTextAsync(clipboardText)
                              .ContinueWith((clipboardResult) => {
-                                  if (clipboardResult.IsFaulted) {
-                                      Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {clipboardText}!", clipboardText);
-                                  }
-                              });
+                                 if (clipboardResult.IsFaulted) {
+                                     Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {clipboardText}!", clipboardText);
+                                 }
+                             });
             }
         }
 
@@ -583,14 +575,14 @@ namespace Blish_HUD.Controls {
         protected virtual void HandlePaste() {
             ClipboardUtil.WindowsClipboardService.GetTextAsync()
                          .ContinueWith((clipboardTask) => {
-                              if (!clipboardTask.IsFaulted) {
-                                  if (!string.IsNullOrEmpty(clipboardTask.Result)) {
-                                      Paste(clipboardTask.Result);
-                                  }
-                              } else {
+                             if (!clipboardTask.IsFaulted) {
+                                 if (!string.IsNullOrEmpty(clipboardTask.Result)) {
+                                     Paste(clipboardTask.Result);
+                                 }
+                             } else {
                                  Logger.Warn(clipboardTask.Exception, "Failed to read clipboard text from system clipboard!");
-                              }
-                          });
+                             }
+                         });
         }
 
         protected virtual void HandleUndo() {

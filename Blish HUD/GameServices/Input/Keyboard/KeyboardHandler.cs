@@ -55,11 +55,16 @@ namespace Blish_HUD.Input {
 
         // Keys which, when pressed, should never be captured exclusively by the keyboard hook
         private readonly HashSet<Keys> _hookIgnoredKeys = new HashSet<Keys>() {
+            Keys.NumLock,
+            Keys.CapsLock,
+            Keys.LeftWindows,
+            Keys.RightWindows,
+            Keys.LeftControl,
+            Keys.RightControl,
             Keys.LeftAlt,
             Keys.RightAlt,
-            Keys.NumLock,
-            Keys.LeftWindows,
-            Keys.RightWindows
+            Keys.LeftShift,
+            Keys.RightShift
         };
 
         /// <summary>
@@ -125,14 +130,10 @@ namespace Blish_HUD.Input {
         private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) { _textInputDelegate?.EndInvoke(asyncResult); }
 
         private bool ShouldBlockKeyEvent(Keys key) {
-            // Prevent blocking shift for input capitalization
-            // if (key == Keys.LeftShift || key == Keys.RightShift) return false; // "SHIFT" support temporarily disabled
+            // TODO: WIN key combinations should probably completely handled by the OS
 
             // Skip keys that we wish to explicitly ignore
             if (_hookIgnoredKeys.Contains(key)) return false;
-
-            // Prevent blocking alt + x modifier
-            if (_keysDown.Contains(Keys.LeftAlt) || _keysDown.Contains(Keys.RightAlt)) return false;
 
             return true;
         }
