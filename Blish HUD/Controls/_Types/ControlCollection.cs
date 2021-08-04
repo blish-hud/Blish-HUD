@@ -37,8 +37,8 @@ namespace Blish_HUD.Controls {
 
         }
 
-        private readonly List<T> _innerList;
-        private readonly ReaderWriterLockSlim    _listLock = new ReaderWriterLockSlim();
+        private readonly List<T>              _innerList;
+        private readonly ReaderWriterLockSlim _listLock = new ReaderWriterLockSlim();
 
         public bool IsReadOnly => false;
 
