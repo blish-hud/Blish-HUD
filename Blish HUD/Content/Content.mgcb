@@ -3733,6 +3733,18 @@
 /processorParam:TextureFormat=Color
 /build:fonts/ptserif/ptserif-36-regular_3.png
 
+#begin fonts/ptserif/ptserif-36-regular_4.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/ptserif/ptserif-36-regular_4.png
+
 #begin fonts/ptserif/ptserif-8-italic.fnt
 /importer:BitmapFontImporter
 /processor:BitmapFontProcessor
@@ -4152,6 +4164,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:fonts/stoweopenface/stoweopenface-36-regular_0.png
+
+#begin fonts/stoweopenface/stoweopenface-36-regular_1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/stoweopenface/stoweopenface-36-regular_1.png
 
 #begin fonts/stoweopenface/stoweopenface-8-italic.fnt
 /importer:BitmapFontImporter
