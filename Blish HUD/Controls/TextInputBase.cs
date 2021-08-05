@@ -187,9 +187,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int Length => _text.Length;
 
-        /// <summary>
         /// Get state of modifier keys
-        /// </summary>
         protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
         protected bool IsCtrlDown  => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
         protected bool IsAltDown   => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
