@@ -73,9 +73,8 @@ namespace Blish_HUD.Controls {
             
             _listLock.EnterWriteLock();
             _innerList.Add(item);
-            _listLock.ExitWriteLock();
-
             this.IsEmpty = false;
+            _listLock.ExitWriteLock();
         }
 
         public void AddRange(IEnumerable<T> items) {
@@ -90,10 +89,9 @@ namespace Blish_HUD.Controls {
 
             _listLock.EnterWriteLock();
             _innerList.Clear();
-            _listLock.ExitWriteLock();
-
             this.IsEmpty = true;
-
+            _listLock.ExitWriteLock();
+            
             foreach (var item in oldItems) {
                 item.Parent = null;
             }
