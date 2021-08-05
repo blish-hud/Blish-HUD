@@ -9,13 +9,10 @@ namespace Blish_HUD.Controls {
     /// <summary>
     /// Acts as a container to build and house the lifecycle of any provided <see cref="IView"/>.
     /// </summary>
-    public class ViewContainer : Panel {
+    public class ViewContainer : Panel, IViewContainer {
 
         private const float FADE_DURATION = 0.35f;
 
-        /// <summary>
-        /// The current state of the view.
-        /// </summary>
         public ViewState ViewState { get; private set; } = ViewState.None;
 
         private bool _fadeView = false;
@@ -28,10 +25,7 @@ namespace Blish_HUD.Controls {
             get => _fadeView;
             set => SetProperty(ref _fadeView, value);
         }
-
-        /// <summary>
-        /// The <see cref="IView"/> this container is currently displaying.
-        /// </summary>
+        
         public IView CurrentView { get; private set; }
 
         private Tween _fadeInAnimation;
