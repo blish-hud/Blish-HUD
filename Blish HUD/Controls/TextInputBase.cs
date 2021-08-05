@@ -187,8 +187,10 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int Length => _text.Length;
 
+        /// Get state of modifier keys
         protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
         protected bool IsCtrlDown  => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
+        protected bool IsAltDown   => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
 
         protected bool _multiline;
         protected bool _caretVisible;
@@ -487,19 +489,45 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
+            // Remove keyup event early to prevent executing special actions twice
             if (e.EventType == KeyboardEventType.KeyUp) {
                 _keyRepeatStates.Remove(e.Key);
                 return;
+            }
+
+            // Skip key repeated execution for these
+            switch (e.Key) {
+                case Keys.Insert:
+                    _insertMode = !_insertMode;
+                    return;
+                case Keys.Home:
+                    HandleHome(this.IsCtrlDown);
+                    return;
+                case Keys.End:
+                    HandleEnd(this.IsCtrlDown);
+                    return;
+                case Keys.C:
+                    if (this.IsCtrlDown && !this.IsAltDown) HandleCopy();
+                    return;
+                case Keys.X:
+                    if (this.IsCtrlDown && !this.IsAltDown) HandleCut();
+                    return;
+                case Keys.V:
+                    if (this.IsCtrlDown && !this.IsAltDown) HandlePaste();
+                    return;
+                case Keys.A:
+                    if (this.IsCtrlDown && !this.IsAltDown) SelectAll();
+                    return;
+                default:
+                    break;
             }
 
             if (!_keyRepeatStates.ContainsKey(e.Key)) {
                 _keyRepeatStates.Add(e.Key, new KeyRepeatState(GameService.Overlay.CurrentGameTime, e));
             }
 
+            // Key events that can trigger multiple times when key is held down
             switch (e.Key) {
-                case Keys.Insert:
-                    _insertMode = !_insertMode;
-                    break;
                 case Keys.Left:
                     HandleLeft(this.IsCtrlDown);
                     break;
@@ -518,36 +546,17 @@ namespace Blish_HUD.Controls {
                 case Keys.Delete:
                     HandleDelete();
                     break;
-                case Keys.Home:
-                    HandleHome(this.IsCtrlDown);
-                    break;
-                case Keys.End:
-                    HandleEnd(this.IsCtrlDown);
-                    break;
                 case Keys.Enter:
                     HandleEnter();
                     break;
-                case Keys.C:
-                    if (this.IsCtrlDown) HandleCopy();
-                    return;
-                case Keys.X:
-                    if (this.IsCtrlDown) HandleCut();
-                    return;
-                case Keys.V:
-                    if (this.IsCtrlDown) HandlePaste();
-                    return;
                 case Keys.Z:
-                    if (this.IsCtrlDown) HandleUndo();
-                    return;
+                    if (this.IsCtrlDown && !this.IsAltDown) HandleUndo();
+                    break;
                 case Keys.Y:
-                    if (this.IsCtrlDown) HandleRedo();
-                    return;
-                case Keys.A:
-                    if (this.IsCtrlDown) SelectAll();
-                    return;
+                    if (this.IsCtrlDown && !this.IsAltDown) HandleRedo();
+                    break;
                 default:
-                    // Skip key repeat state
-                    return;
+                    break;
             }
         }
 
