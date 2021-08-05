@@ -22,13 +22,13 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<RegionChangedEventArgs> ContentResized;
 
-        protected List<Control> _children;
+        protected ControlCollection<Control> _children;
 
         [Newtonsoft.Json.JsonIgnore]
-        public IReadOnlyCollection<Control> Children => _children.AsReadOnly();
+        public ControlCollection<Control> Children => _children;
 
         protected Container() {
-            _children = new List<Control>();
+            _children = new ControlCollection<Control>();
         }
 
         protected virtual void OnChildAdded(ChildChangedEventArgs e) {
@@ -121,7 +121,7 @@ namespace Blish_HUD.Controls {
         public List<Control> GetDescendants() {
             var allDescendants = _children.ToList();
 
-            foreach (var child in _children) {
+            foreach (var child in this.Children) {
                 if (!(child is Container container)) continue;
 
                 allDescendants.AddRange(container.GetDescendants());
@@ -174,8 +174,6 @@ namespace Blish_HUD.Controls {
         }
 
         public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            Control[] zSortedChildren = _children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => _children.IndexOf(c)).ToArray();
-
             Control thisResult  = null;
             Control childResult = null;
 
@@ -183,9 +181,10 @@ namespace Blish_HUD.Controls {
                 thisResult = base.TriggerMouseInput(mouseEventType, ms);
             }
 
-            for (int i = 0; i < zSortedChildren.Length; i++) {
-                ref var childControl = ref zSortedChildren[i];
+            List<Control>               children        = _children.ToList();
+            IOrderedEnumerable<Control> zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
 
+            foreach (var childControl in zSortedChildren) {
                 if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
                     childResult = childControl.TriggerMouseInput(mouseEventType, ms);
 
@@ -232,9 +231,7 @@ namespace Blish_HUD.Controls {
             }
 
             // Update our children
-            for (int i = 0; i < children.Length; i++) {
-                ref var childControl = ref children[i];
-
+            foreach (var childControl in children) {
                 // Update child if it is visible or if it hasn't rendered yet (needs a first time calc)
                 if (childControl.Visible || childControl.LayoutState != LayoutState.Ready) {
                     childControl.Update(gameTime);
@@ -264,13 +261,11 @@ namespace Blish_HUD.Controls {
 
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
             var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
-
-            Control[] zSortedChildren = _children.OrderBy(i => i.ZIndex).ToArray();
+            
+            var zSortedChildren = _children.ToArray().OrderBy(i => i.ZIndex);
 
             // Render each visible child
-            for (int i = 0; i < zSortedChildren.Length; i++) {
-                ref var childControl = ref zSortedChildren[i];
-
+            foreach (var childControl in zSortedChildren) {
                 if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
                     var childBounds = new Rectangle(Point.Zero, childControl.Size);
 
@@ -294,7 +289,7 @@ namespace Blish_HUD.Controls {
         #region IEnumerable Implementation
 
         public IEnumerator<Control> GetEnumerator() {
-            return this.Children.GetEnumerator();
+            return _children.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

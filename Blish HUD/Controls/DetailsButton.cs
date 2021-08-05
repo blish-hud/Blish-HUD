@@ -276,7 +276,7 @@ namespace Blish_HUD.Controls {
                                                _bottomSectionHeight);
 
             if (_showToggleButton && _children.Any(c => c.Visible)) {
-                var lastControl = _children.FindLast(c => c.Visible);
+                var lastControl = _children.Last(c => c.Visible);
 
                 lastControl.Right = this.ContentRegion.Width - 4;
             }
@@ -382,7 +382,7 @@ namespace Blish_HUD.Controls {
 
             // Draw toggle icon background
             if (_showToggleButton && _children.Any(c => c.Visible)) {
-                var lastControl = _children.FindLast(c => c.Visible);
+                var lastControl = _children.Last(c => c.Visible);
 
                 var cornerStart = new Point(lastControl.Left - 4 + this.ContentRegion.X,
                                             _size.Y - _bottomSectionHeight);

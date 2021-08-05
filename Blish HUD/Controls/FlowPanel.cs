@@ -153,7 +153,7 @@ namespace Blish_HUD.Controls {
             var tempChildren = _children.Cast<TControl>().ToList();
             tempChildren.Sort(comparison);
 
-            _children = tempChildren.Cast<Control>().ToList();
+            _children = new ControlCollection<Control>(tempChildren);
 
             ReflowChildLayout(_children);
         }
@@ -306,9 +306,8 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void ReflowChildLayout(List<Control> allChildren) {
-            var filteredChildren = allChildren.ToList().Where(c => c.GetType() != typeof(Scrollbar)
-                                                                   && c.Visible);
+        private void ReflowChildLayout(IEnumerable<Control> allChildren) {
+            var filteredChildren = allChildren.Where(c => c.GetType() != typeof(Scrollbar) && c.Visible);
 
             switch (_flowDirection) {
                 case ControlFlowDirection.LeftToRight:

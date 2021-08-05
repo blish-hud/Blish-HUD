@@ -408,11 +408,14 @@ namespace Blish_HUD.Controls {
             get {
                 if (_parent == null) return this.LocalBounds;
 
+                var parentBounds        = _parent.AbsoluteBounds;
+                var parentContentRegion = _parent.ContentRegion;
+
                 // Clean this up
                 // This is really the absolute bounds of the ContentRegion currently because mouse
                 // input is currently using this to determine if the click was within the region
-                return new Rectangle(_parent.AbsoluteBounds.X + _parent.ContentRegion.X + _location.X - _parent.HorizontalScrollOffset,
-                                     _parent.AbsoluteBounds.Y + _parent.ContentRegion.Y + _location.Y - _parent.VerticalScrollOffset,
+                return new Rectangle(parentBounds.X + parentContentRegion.X + _location.X - _parent.HorizontalScrollOffset,
+                                     parentBounds.Y + parentContentRegion.Y + _location.Y - _parent.VerticalScrollOffset,
                                      _size.X,
                                      _size.Y);
             }
