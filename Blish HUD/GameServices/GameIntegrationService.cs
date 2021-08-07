@@ -25,11 +25,7 @@ namespace Blish_HUD {
         public event EventHandler<EventArgs> Gw2AcquiredFocus;
         public event EventHandler<EventArgs> Gw2LostFocus;
 
-        public event EventHandler<ValueEventArgs<bool>> IsInGameChanged; 
-
-        // How long, in seconds, between each
-        // check to see if GW2 is running
-        private const int GW2_EXE_CHECKRATE = 15;
+        public event EventHandler<ValueEventArgs<bool>> IsInGameChanged;
 
         private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
@@ -258,6 +254,8 @@ namespace Blish_HUD {
 
             if (!Overlay.StayInTray.Value) {
                 Overlay.Exit();
+            } else {
+                Overlay.Restart();
             }
         }
 
@@ -267,13 +265,10 @@ namespace Blish_HUD {
             this.TacO.Unload();
             this.WinForms.Unload();
         }
-        
-        // Keeps track of how long it's been since we last checked for the gw2 process
-        private double _lastGw2Check = 0;
 
         protected override void Update(GameTime gameTime) {
             // Determine if we are in game or not
-            this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5;
+            this.IsInGame = Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5 && this.Gw2IsRunning;
 
             if (this.Gw2IsRunning) {
                 this.ClientType.Update(gameTime);
@@ -311,13 +306,7 @@ namespace Blish_HUD {
                         break;
                 }
             } else {
-                _lastGw2Check += gameTime.ElapsedGameTime.TotalSeconds;
-                
-                if (_lastGw2Check > GW2_EXE_CHECKRATE) {
-                    TryAttachToGw2();
-
-                    _lastGw2Check = 0;
-                }
+                TryAttachToGw2();
             }
         }
 
