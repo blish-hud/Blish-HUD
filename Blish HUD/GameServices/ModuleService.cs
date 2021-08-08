@@ -32,14 +32,14 @@ namespace Blish_HUD {
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleRegistered;
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleUnregistered;
 
-        private SettingCollection _moduleSettings;
+        private ISettingCollection _moduleSettings;
 
         internal string ModulesDirectory => DirectoryUtil.RegisterDirectory(MODULES_DIRECTORY);
 
-        private SettingEntry<List<string>>                    _exportedOnVersions;
-        private SettingEntry<Dictionary<string, ModuleState>> _moduleStates;
+        private ISettingEntry<List<string>>                    _exportedOnVersions;
+        private ISettingEntry<Dictionary<string, ModuleState>> _moduleStates;
 
-        public SettingEntry<Dictionary<string, ModuleState>> ModuleStates => _moduleStates;
+        public ISettingEntry<Dictionary<string, ModuleState>> ModuleStates => _moduleStates;
 
         private readonly List<ModuleManager>          _modules = new List<ModuleManager>();
         public           IReadOnlyList<ModuleManager> Modules => _modules.ToList();
@@ -50,7 +50,7 @@ namespace Blish_HUD {
             DefineSettings(_moduleSettings);
         }
 
-        private void DefineSettings(SettingCollection settings) {
+        private void DefineSettings(ISettingCollection settings) {
             _moduleStates       = settings.DefineSetting(MODULESTATES_CORE_SETTING, new Dictionary<string, ModuleState>());
             _exportedOnVersions = settings.DefineSetting(EXPORTED_VERSION_SETTING,  new List<string>());
         }

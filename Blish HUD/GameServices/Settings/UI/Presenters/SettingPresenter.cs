@@ -5,11 +5,11 @@ using Blish_HUD.Graphics.UI;
 using Blish_HUD.Settings.UI.Views;
 
 namespace Blish_HUD.Settings.UI.Presenters {
-    public class SettingPresenter<TSetting> : Presenter<SettingView<TSetting>, SettingEntry<TSetting>> {
+    public class SettingPresenter<TSetting> : Presenter<SettingView<TSetting>, IUiSettingEntry<TSetting>> {
 
         private bool _changeReady = false;
 
-        public SettingPresenter(SettingView<TSetting> view, SettingEntry<TSetting> model) : base(view, model) { /* NOOP */ }
+        public SettingPresenter(SettingView<TSetting> view, IUiSettingEntry<TSetting> model) : base(view, model) { /* NOOP */ }
 
         protected override Task<bool> Load(IProgress<string> progress) {
             this.Model.SettingChanged += ModelOnSettingChanged;

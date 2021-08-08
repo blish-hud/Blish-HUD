@@ -12,7 +12,7 @@ namespace Blish_HUD.Settings.UI.Views {
         private Label   _displayNameLabel;
         private TextBox _stringTextbox;
 
-        public StringSettingView(SettingEntry<string> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
+        public StringSettingView(IUiSettingEntry<string> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
 
         public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {

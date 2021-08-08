@@ -14,7 +14,7 @@ namespace Blish_HUD.Settings.UI.Views {
         protected Label    _displayNameLabel;
         protected TrackBar _valueTrackBar;
 
-        protected NumericSettingView(SettingEntry<T> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
+        protected NumericSettingView(IUiSettingEntry<T> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
 
         protected override void BuildSetting(Panel buildPanel) {
             _displayNameLabel = new Label() {

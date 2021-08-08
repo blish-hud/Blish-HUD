@@ -116,9 +116,9 @@ namespace Blish_HUD {
             }
         }
 
-        private SettingCollection _gameIntegrationSettings;
+        private ISettingCollection _gameIntegrationSettings;
 
-        private SettingEntry<string> _gw2ExecutablePath;
+        private IUiSettingEntry<string> _gw2ExecutablePath;
 
         public string Gw2ExecutablePath => _gw2ExecutablePath.Value;
         protected override void Initialize() {
@@ -129,10 +129,10 @@ namespace Blish_HUD {
             DefineSettings(_gameIntegrationSettings);
         }
 
-        private void DefineSettings(SettingCollection settings) {
+        private void DefineSettings(ISettingCollection settings) {
             const string UNDEFINED_EXECPATH = "NotDetected";
 
-            _gw2ExecutablePath = settings.DefineSetting("Gw2ExecutablePath", UNDEFINED_EXECPATH, () => "Gw2-64.exe Path", () => "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
+            _gw2ExecutablePath = settings.DefineUiSetting("Gw2ExecutablePath", UNDEFINED_EXECPATH, () => "Gw2-64.exe Path", () => "The path to the game's executable. This is auto-detected, so don't change this unless you know what you're doing.");
 
             // We do this to avoid trying to detect in the registry
             // unless we have never detected the true path

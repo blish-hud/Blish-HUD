@@ -7,7 +7,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private KeybindingAssigner _keybindingAssigner;
 
-        public KeybindingSettingView(SettingEntry<KeyBinding> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
+        public KeybindingSettingView(IUiSettingEntry<KeyBinding> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
 
         public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {

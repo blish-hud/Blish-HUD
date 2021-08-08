@@ -1,172 +1,249 @@
 ﻿using System;
-using System.Collections;
+using System.Buffers;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Blish_HUD.Settings {
 
-    public sealed class SettingCollection : IEnumerable<SettingEntry> {
+    internal sealed class SettingCollection : ISettingCollection {
 
-        public class SettingCollectionConverter : JsonConverter<SettingCollection> {
+        private const string JSON_PROPERTY_NAME_ENTRY_KEY = "Key";
+        private const string JSON_PROPERTY_NAME_RENDER_IN_UI = "Ui";
+        private const string JSON_PROPERTY_NAME_ENTRIES = "Entries";
 
-            private const string ATTR_LAZY       = "Lazy";
-            private const string ATTR_RENDERINUI = "Ui";
-            private const string ATTR_ENTRIES    = "Entries";
+        private static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions {
+            AllowTrailingCommas = true,
+            Converters = {
+                new JsonStringEnumConverter(),
+                new SettingCollectionConverter(),
+                new RuntimeTypeJsonConverter<ISettingEntry>()
+            },
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNameCaseInsensitive = true,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            WriteIndented = true
+        };
+        
+        public event PropertyChangedEventHandler PropertyChanged;
 
-            public override void WriteJson(JsonWriter writer, SettingCollection value, JsonSerializer serializer) {
-                var settingCollectionObject = new JObject();
-
-                if (value.LazyLoaded) {
-                    settingCollectionObject.Add(ATTR_LAZY, value.LazyLoaded);
-                }
-
-                if (value.RenderInUi) {
-                    settingCollectionObject.Add(ATTR_RENDERINUI, value.RenderInUi);
-                }
-
-                var entryArray = value._entryTokens as JArray;
-                if (value.Loaded) {
-                    entryArray = new JArray();
-
-                    foreach (var entryObject in value._entries.Where(e => !e.IsNull).Select(entry => JObject.FromObject(entry, serializer))) {
-                        entryArray.Add(entryObject);
-                    }
-                }
-
-                settingCollectionObject.Add(ATTR_ENTRIES, entryArray);
-
-                settingCollectionObject.WriteTo(writer);
-            }
-
-            public override SettingCollection ReadJson(JsonReader reader, Type objectType, SettingCollection existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                if (reader.TokenType == JsonToken.Null) return null;
-
-                var jObj = JObject.Load(reader);
-
-                bool isLazy     = false;
-                bool renderInUi = false;
-
-                if (jObj[ATTR_LAZY] != null) {
-                    isLazy = jObj[ATTR_LAZY].Value<bool>();
-                }
-
-                if (jObj[ATTR_RENDERINUI] != null) {
-                    renderInUi = jObj[ATTR_RENDERINUI].Value<bool>();
-                }
-
-                return jObj[ATTR_ENTRIES] != null
-                           ? new SettingCollection(isLazy, jObj[ATTR_ENTRIES]) { RenderInUi = renderInUi }
-                           : new SettingCollection(isLazy) { RenderInUi = renderInUi };
-            }
-
+        public SettingCollection() {
+            RawEntries = new List<JsonElement>();
         }
 
-        private JToken _entryTokens;
 
-        private readonly bool _lazyLoaded;
-        private List<SettingEntry> _entries;
+        [JsonPropertyName(JSON_PROPERTY_NAME_RENDER_IN_UI)]
+        public bool RenderInUi { get; private set; }
 
-        public bool LazyLoaded => _lazyLoaded;
+        [JsonInclude]
+        [JsonPropertyName(JSON_PROPERTY_NAME_ENTRIES)]
+        public List<JsonElement> RawEntries { get; private set; }
 
-        public IReadOnlyList<SettingEntry> Entries {
-            get {
-                if (!this.Loaded) Load();
+        private readonly Dictionary<string, ISettingEntry> _cachedEntries = new Dictionary<string, ISettingEntry>(StringComparer.InvariantCultureIgnoreCase);
 
-                return _entries.AsReadOnly();
-            }
+
+        public ISettingCollection AddSubCollection(string collectionKey, bool renderInUi = false) {
+            var newCollection = new SettingCollection { RenderInUi = renderInUi };
+            return DefineSetting(collectionKey, (ISettingCollection)newCollection).Value;
         }
 
-        public bool Loaded => _entries != null;
-
-        public bool RenderInUi { get; set; }
-
-        public SettingCollection(bool lazy = false) {
-            _lazyLoaded  = lazy;
-            _entryTokens = null;
-
-            _entries = new List<SettingEntry>();
+        public bool TryGetSubCollection(string collectionKey, out ISettingCollection collection) {
+            var result = TryGetSetting<SettingCollection>(collectionKey, out var collectionEntry);
+            collection = collectionEntry?.Value;
+            return result;
         }
 
-        public SettingCollection(bool lazy, JToken entryTokens) {
-            _lazyLoaded  = lazy;
-            _entryTokens = entryTokens;
+        public ISettingCollection GetSubCollection(string collectionKey) =>
+            TryGetSubCollection(collectionKey, out var subCollection) ? subCollection : throw new KeyNotFoundException($"Sub collection {collectionKey} was not found");
 
-            if (!_lazyLoaded) {
-                Load();
+
+        public ISettingEntry<T> DefineSetting<T>(string entryKey, T defaultValue) {
+            var settingEntry = DefineGenericSetting<SettingEntry<T>, T>(entryKey, defaultValue);
+
+            if (!_cachedEntries.ContainsKey(entryKey)) {
+                _cachedEntries[entryKey] = settingEntry;
             }
+
+            return settingEntry;
         }
 
-        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, Func<string> displayNameFunc = null, Func<string> descriptionFunc = null) {
-            // We don't need to check if we've loaded because the first check uses this[key] which
-            // will load if we haven't already since it references this.Entries instead of _entries
-            if (!(this[entryKey] is SettingEntry<TEntry> definedEntry)) {
-                definedEntry = SettingEntry<TEntry>.InitSetting(entryKey, defaultValue);
-                _entries.Add(definedEntry);
+        public IUiSettingEntry<T> DefineUiSetting<T>(string entryKey, T defaultValue, Func<string> displayNameFunc, Func<string> descriptionFunc) {
+            var settingEntry = DefineGenericSetting<UiSettingEntry<T>, T>(entryKey, defaultValue);
+            settingEntry.GetDisplayNameFunc = displayNameFunc;
+            settingEntry.GetDescriptionFunc = descriptionFunc;
+
+            if (!_cachedEntries.ContainsKey(entryKey)) {
+                _cachedEntries[entryKey] = settingEntry;
             }
 
-            definedEntry.GetDisplayNameFunc = displayNameFunc ?? (() => null);
-            definedEntry.GetDescriptionFunc = descriptionFunc ?? (() => null);
-            definedEntry.SessionDefined     = true;
+            return settingEntry;
+        }
 
-            return definedEntry;
+        private TEntry DefineGenericSetting<TEntry, TValue>(string entryKey, TValue defaultValue) where TEntry : ISettingEntry<TValue>, new() {
+            var settingElement = TryGetSettingElement(entryKey);
+
+            TEntry settingEntry;
+            if (!settingElement.HasValue) {
+                // Create a new instance
+                settingEntry = new TEntry {
+                    EntryKey = entryKey,
+                    Value = defaultValue
+                };
+
+                SettingEntry_SettingUpdated(settingEntry, new EventArgs());
+            } else {
+                // The setting already exists, so populate it
+                settingEntry = new TEntry {
+                    EntryKey = entryKey
+                };
+                LoadSettingIntoObject(entryKey, settingEntry);
+            }
+
+            // Hook onto changes
+            settingEntry.SettingUpdated += SettingEntry_SettingUpdated;
+
+            return settingEntry;
         }
 
         [Obsolete("This function does not produce a localization friendly SettingEntry.")]
-        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName, string description, SettingsService.SettingTypeRendererDelegate renderer = null) {
-            return DefineSetting(entryKey, defaultValue, () => displayName, () => description);
-        }
+        public IUiSettingEntry<T> DefineSetting<T>(string entryKey, T defaultValue, string displayName, string description, SettingsService.SettingTypeRendererDelegate renderer) =>
+            DefineUiSetting(entryKey, defaultValue, () => displayName, () => description);
 
         public void UndefineSetting(string entryKey) {
-            if (this[entryKey] != null) {
-                _entries.Remove(this[entryKey]);
+            if (_cachedEntries.TryGetValue(entryKey, out var settingEntry)) {
+                settingEntry.SettingUpdated -= SettingEntry_SettingUpdated;
+                _cachedEntries.Remove(entryKey);
+            }
+
+            RemoveSetting(entryKey);
+        }
+
+        public bool ContainsSetting(string entryKey) =>
+            TryGetSettingElement(entryKey).HasValue;
+
+        public bool TryGetSetting<T>(string entryKey, out ISettingEntry<T> settingEntry) {
+            var loadedSettingEntry = new SettingEntry<T>();
+            if (LoadSettingIntoObject(entryKey, loadedSettingEntry)) {
+                settingEntry = loadedSettingEntry;
+                return true;
+            }
+
+            settingEntry = null;
+            return false;
+        }
+
+        public ISettingEntry<T> GetSetting<T>(string entryKey) =>
+            TryGetSetting<T>(entryKey, out var settingEntry) ? settingEntry : throw new KeyNotFoundException($"Setting {entryKey} was not found");
+
+        public IEnumerable<ISettingEntry> GetDefinedSettings(bool uiOnly = false) {
+            var genericUiType = typeof(IUiSettingEntry<>);
+
+            foreach (var settingEntry in _cachedEntries.Values) {
+                if (uiOnly) {
+                    if (settingEntry is ISettingEntry<ISettingCollection> collection && collection.Value.RenderInUi) {
+                        yield return settingEntry;
+                    }
+
+                    if (genericUiType.IsAssignableFrom(settingEntry.GetType().GetGenericTypeDefinition())) {
+                        yield return settingEntry;
+                    }
+                } else {
+                    yield return settingEntry;
+                }
             }
         }
 
-        public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
-            return AddSubCollection(collectionKey, false, lazyLoaded);
+
+        private bool LoadSettingIntoObject<T>(string entryKey, ISettingEntry<T> settingEntry) {
+            if (!ContainsSetting(entryKey)) {
+                return false;
+            }
+
+            settingEntry.Value = LoadSetting<T>(entryKey).Value;
+            return true;
         }
 
-        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) {
-            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }).Value;
+
+        private JsonElement? TryGetSettingElement(string entryKey) {
+            foreach (var element in RawEntries) {
+                // We check whether this element is the setting we're looking for
+
+                if (element.ValueKind != JsonValueKind.Object) {
+                    // Not a proper type
+                    continue;
+                }
+
+                if (!element.TryGetProperty(JSON_PROPERTY_NAME_ENTRY_KEY, out var keyElement)) {
+                    // Does not have the key defined
+                    continue;
+                }
+
+                if (keyElement.ValueKind != JsonValueKind.String) {
+                    // The key is not a string
+                    continue;
+                }
+
+                if (!keyElement.GetString().Equals(entryKey, StringComparison.OrdinalIgnoreCase)) {
+                    // The key is not the key we're looking for
+                    continue;
+                }
+
+                // Found the setting, stop
+                return element;
+            }
+
+            return null;
         }
 
-        public bool ContainsSetting(string entryKey) {
-            return (this.Entries.Any(entry => string.Equals(entry.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase)));
+        private ISettingEntry<T> LoadSetting<T>(string entryKey) {
+            var settingElement = TryGetSettingElement(entryKey);
+            if (!settingElement.HasValue) {
+                return default;
+            }
+            
+            // System.Text.Json 6.0 adds support for JsonSerializer.Deserialize with a JsonElement.
+            // We can use that once it's in preview 7, or out of preview.
+            var bufferWriter = new ArrayBufferWriter<byte>();
+            using var buffer = new Utf8JsonWriter(bufferWriter);
+            settingElement.Value.WriteTo(buffer);
+            buffer.Flush();
+
+            return JsonSerializer.Deserialize<SettingEntry<T>>(bufferWriter.WrittenSpan, _jsonSerializerOptions);
         }
 
-        public bool TryGetSetting(string entryKey, out SettingEntry settingEntry) {
-            settingEntry = this[entryKey];
+        private void StoreSetting(ISettingEntry settingEntry) {
+            RemoveSetting(settingEntry.EntryKey);
 
-            return settingEntry != null;
+            // System.Text.Json 6.0 adds support for JsonSerializer.Serialize to a JsonElement.
+            // We can use that once it's in preview 7, or out of preview.
+            using var document = JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(settingEntry, settingEntry.GetType(), _jsonSerializerOptions));
+            var setting = document.RootElement.Clone();
+            RawEntries.Add(setting);
         }
 
-        private void Load() {
-            if (_entryTokens == null) return;
-
-            _entries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings).Where((se) => se != null).ToList();
-
-            _entryTokens = null;
+        private void RemoveSetting(string entryKey) {
+            var elementToDelete = TryGetSettingElement(entryKey);
+            if (elementToDelete.HasValue) {
+                RawEntries.Remove(elementToDelete.Value);
+            }
         }
 
-        public SettingEntry this[int index] => this.Entries[index];
 
-        public SettingEntry this[string entryKey] => this.Entries.FirstOrDefault(se => string.Equals(se.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase));
+        private void SettingEntry_SettingUpdated(object sender, EventArgs e) {
+            if (!(sender is ISettingEntry settingEntry)) {
+                return;
+            }
 
-        #region IEnumerable
-
-        /// <inheritdoc />
-        public IEnumerator<SettingEntry> GetEnumerator() {
-            return this.Entries.GetEnumerator();
+            StoreSetting(settingEntry);
+            OnPropertyChanged(settingEntry.EntryKey);
         }
 
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
-        }
 
-        #endregion
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
     }
 

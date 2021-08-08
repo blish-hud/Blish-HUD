@@ -21,7 +21,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private TEnum[] _enumValues;
 
-        public EnumSettingView(SettingEntry<TEnum> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
+        public EnumSettingView(IUiSettingEntry<TEnum> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
 
         protected override Task<bool> Load(IProgress<string> progress) {
             progress.Report("Loading setting values...");

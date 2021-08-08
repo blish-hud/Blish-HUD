@@ -8,7 +8,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private Checkbox _boolCheckbox;
 
-        public BoolSettingView(SettingEntry<bool> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
+        public BoolSettingView(IUiSettingEntry<bool> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
 
         public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {

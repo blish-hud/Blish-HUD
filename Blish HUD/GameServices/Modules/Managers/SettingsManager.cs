@@ -3,11 +3,11 @@
 namespace Blish_HUD.Modules.Managers {
     public class SettingsManager {
 
-        public SettingCollection ModuleSettings { get; }
+        public ISettingCollection ModuleSettings { get; }
 
         private SettingsManager(ModuleManager module) {
             if (module.State.Settings == null) {
-                module.State.Settings = new SettingCollection(true);
+                module.State.Settings = new SettingCollection();
             }
 
             this.ModuleSettings = module.State.Settings;

@@ -1,91 +1,82 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Serialization;
 
 namespace Blish_HUD.Settings {
 
-    public abstract class SettingEntry : INotifyPropertyChanged {
+    internal class SettingEntry<T> : ISettingEntry<T> {
 
-        protected const string SETTINGTYPE_KEY  = "T";
-        protected const string SETTINGNAME_KEY  = "Key";
-        protected const string SETTINGVALUE_KEY = "Value";
+        private T value;
+     
+        public event EventHandler SettingUpdated;
+        public event EventHandler<ValueChangedEventArgs<T>> SettingChanged;
 
-        public class SettingEntryConverter : JsonConverter<SettingEntry> {
 
-            private static readonly Logger Logger = Logger.GetLogger<SettingEntryConverter>();
+        [JsonPropertyName("Key")]
+        public string EntryKey { get; set; }
 
-            public override void WriteJson(JsonWriter writer, SettingEntry value, JsonSerializer serializer) {
-                var entryObject = new JObject();
+        [JsonPropertyName("Value")]
+        public T Value {
+            get => value;
+            set {
+                if (Equals(this.value, value)) return;
 
-                var entryType = value.GetSettingType();
+                var prevValue = this.value;
+                this.value = value;
 
-                entryObject.Add(SETTINGTYPE_KEY,  $"{entryType.FullName}, {entryType.Assembly.GetName().Name}");
-                entryObject.Add(SETTINGNAME_KEY,  value.EntryKey);
-                entryObject.Add(SETTINGVALUE_KEY, JToken.FromObject(value.GetSettingValue(), serializer));
+                AttachSettingChangedListener(value);
+                DetachSettingChangedListener(prevValue);
 
-                entryObject.WriteTo(writer);
+                OnSettingChanged(new ValueChangedEventArgs<T>(prevValue, value));
             }
-
-            public override SettingEntry ReadJson(JsonReader reader, Type objectType, SettingEntry existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                var jObj = JObject.Load(reader);
-
-                string entryTypeString = jObj[SETTINGTYPE_KEY].Value<string>();
-                var    entryType       = Type.GetType(entryTypeString);
-
-                if (entryType == null) {
-                    Logger.Warn("Failed to load setting of missing type '{settingDefinedType}'.", entryTypeString);
-
-                    return null;
-                }
-
-                var entryGeneric = Activator.CreateInstance(typeof(SettingEntry<>).MakeGenericType(entryType));
-
-                serializer.Populate(jObj.CreateReader(), entryGeneric);
-
-                return entryGeneric as SettingEntry;
-            }
-
         }
 
-        [JsonIgnore]
-        public Func<string> GetDescriptionFunc { get; set; } = () => null;
 
-        [JsonIgnore]
-        public Func<string> GetDisplayNameFunc { get; set; } = () => null;
+        private void AttachSettingChangedListener(T value) {
+            if (value is INotifyPropertyChanged valueWithNotifyPropertyChanged) {
+                valueWithNotifyPropertyChanged.PropertyChanged += Value_PropertyChanged;
+            }
+            if (value is INotifyCollectionChanged valueWithNotifyCollectionChanged) {
+                valueWithNotifyCollectionChanged.CollectionChanged += Value_CollectionChanged;
+            }
+        }
+
+        private void DetachSettingChangedListener(T value) {
+            if (value == null) {
+                return;
+            }
+
+            if (value is INotifyPropertyChanged valueWithNotifyPropertyChanged) {
+                valueWithNotifyPropertyChanged.PropertyChanged -= Value_PropertyChanged;
+            }
+            if (value is INotifyCollectionChanged valueWithNotifyCollectionChanged) {
+                valueWithNotifyCollectionChanged.CollectionChanged -= Value_CollectionChanged;
+            }
+        }
 
 
-        [JsonIgnore]
-        public string Description => this.GetDescriptionFunc();
+        private void Value_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            OnSettingChanged(new ValueChangedEventArgs<T>(value, value));
+        }
 
-        [JsonIgnore]
-        public string DisplayName => this.GetDisplayNameFunc();
+        private void Value_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            OnSettingChanged(new ValueChangedEventArgs<T>(value, value));
+        }
 
-        /// <summary>
-        /// The unique key used to identify the <see cref="SettingEntry"/> in the <see cref="SettingCollection"/>.
-        /// </summary>
-        [JsonProperty(SETTINGNAME_KEY)]
-        public string EntryKey { get; protected set; }
+        private void OnSettingChanged(ValueChangedEventArgs<T> e) {
+            OnPropertyChanged(nameof(Value));
+            this.SettingChanged?.Invoke(this, e);
+            this.SettingUpdated?.Invoke(this, new EventArgs());
+        }
 
-        [JsonIgnore]
-        public bool SessionDefined { get; internal set; }
-
-        protected abstract Type GetSettingType();
-
-        protected abstract object GetSettingValue();
-
-        [JsonIgnore]
-        public bool IsNull => this.GetSettingValue() == null;
-
-        [JsonIgnore]
-        public Type SettingType => GetSettingType();
 
         #region Property Binding
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 

@@ -45,7 +45,7 @@ namespace Blish_HUD.Settings.UI.Views {
             }
         }
 
-        protected SettingView(SettingEntry<TSetting> setting, int definedWidth) {
+        protected SettingView(IUiSettingEntry<TSetting> setting, int definedWidth) {
             _definedWidth = definedWidth;
 
             this.WithPresenter(new SettingPresenter<TSetting>(this, setting));

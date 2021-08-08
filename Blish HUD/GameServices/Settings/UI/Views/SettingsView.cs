@@ -4,11 +4,11 @@ using Blish_HUD.Graphics.UI;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Settings.UI.Views {
-    public class SettingsView : SettingView<SettingCollection> {
+    public class SettingsView : SettingView<ISettingCollection> {
 
         private FlowPanel _settingFlowPanel;
 
-        private readonly SettingCollection _settings;
+        private readonly ISettingCollection _settings;
 
         private bool _lockBounds = true;
 
@@ -25,11 +25,11 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private ViewContainer _lastSettingContainer;
 
-        public SettingsView(SettingEntry<SettingCollection> setting, int definedWidth = -1) : base(setting, definedWidth) {
+        public SettingsView(IUiSettingEntry<ISettingCollection> setting, int definedWidth = -1) : base(setting, definedWidth) {
             _settings = setting.Value;
         }
-        public SettingsView(SettingCollection settings, int definedWidth = -1)
-            : this(new SettingEntry<SettingCollection>() { Value = settings }, definedWidth) { /* NOOP */ }
+        public SettingsView(ISettingCollection settings, int definedWidth = -1)
+            : this(new UiSettingEntry<ISettingCollection>() { Value = settings }, definedWidth) { /* NOOP */ }
 
         private void UpdateBoundsLocking(bool locked) {
             if (_settingFlowPanel == null) return;
@@ -52,7 +52,7 @@ namespace Blish_HUD.Settings.UI.Views {
                 Parent              = buildPanel
             };
 
-            foreach (var setting in _settings.Where(s => s.SessionDefined)) {
+            foreach (var setting in _settings.GetDefinedSettings(true)) {
                 IView settingView;
 
                 if ((settingView = SettingView.FromType(setting, _settingFlowPanel.Width)) != null) {
@@ -80,7 +80,7 @@ namespace Blish_HUD.Settings.UI.Views {
             _settingFlowPanel.BasicTooltipText = description;
         }
 
-        protected override void RefreshValue(SettingCollection value) { /* NOOP */ }
+        protected override void RefreshValue(ISettingCollection value) { /* NOOP */ }
 
     }
 }

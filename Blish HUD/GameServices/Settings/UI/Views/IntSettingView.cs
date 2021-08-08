@@ -1,7 +1,7 @@
 ﻿namespace Blish_HUD.Settings.UI.Views {
     public class IntSettingView : NumericSettingView<int> {
 
-        public IntSettingView(SettingEntry<int> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
+        public IntSettingView(IUiSettingEntry<int> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
         
         public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {

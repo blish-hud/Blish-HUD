@@ -12,7 +12,7 @@ namespace Blish_HUD.Modules {
 
         public bool IgnoreDependencies { get; set; }
 
-        public SettingCollection Settings { get; set; }
+        public ISettingCollection Settings { get; set; }
 
     }
 

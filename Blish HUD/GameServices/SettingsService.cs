@@ -1,18 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Blish_HUD.Controls;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
-using Container = Blish_HUD.Controls.Container;
-using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
 
-    [JsonObject]
     public class SettingsService : GameService {
+
+        private static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions {
+            AllowTrailingCommas = true,
+            Converters = {
+                new JsonStringEnumConverter(),
+                new SettingCollectionConverter()
+            },
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNameCaseInsensitive = true,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            WriteIndented = true
+        };
 
         private static readonly Logger Logger = Logger.GetLogger<SettingsService>();
 
@@ -21,12 +30,8 @@ namespace Blish_HUD {
         private const string SETTINGS_FILENAME = "settings.json";
 
         [Obsolete]
-        public delegate void SettingTypeRendererDelegate(SettingEntry setting, Panel settingPanel);
-        
-        [JsonIgnore]
-        internal JsonSerializerSettings JsonReaderSettings { get; private set; }
-        
-        [JsonIgnore]
+        public delegate void SettingTypeRendererDelegate(ISettingEntry setting, Panel settingPanel);
+
         private string _settingsPath;
 
         internal SettingCollection Settings { get; private set; }
@@ -35,15 +40,6 @@ namespace Blish_HUD {
         private double _saveBuffer;
 
         protected override void Initialize() {
-            JsonReaderSettings = new JsonSerializerSettings() {
-                PreserveReferencesHandling = PreserveReferencesHandling.None,
-                TypeNameHandling           = TypeNameHandling.Auto,
-                Converters = new List<JsonConverter>() {
-                    new SettingCollection.SettingCollectionConverter(),
-                    new SettingEntry.SettingEntryConverter()
-                }
-            };
-
             _settingsPath = Path.Combine(DirectoryUtil.BasePath, SETTINGS_FILENAME);
 
             // If settings aren't there, generate the file
@@ -58,7 +54,8 @@ namespace Blish_HUD {
             try {
                 rawSettings = File.ReadAllText(_settingsPath);
 
-                this.Settings = JsonConvert.DeserializeObject<SettingCollection>(rawSettings, JsonReaderSettings) ?? new SettingCollection(false);
+                this.Settings = JsonSerializer.Deserialize<SettingCollection>(rawSettings, _jsonSerializerOptions) ?? new SettingCollection();
+                this.Settings.PropertyChanged += Settings_PropertyChanged;
             } catch (Exception ex) {
                 if (alreadyFailed) {
                     Logger.Warn(ex, "Failed to load settings due to an unexpected exception while attempting to read them. Already tried creating a new settings file, so we won't try again.");
@@ -83,9 +80,15 @@ namespace Blish_HUD {
         private void PrepareSettingsFirstTime() {
             Logger.Info("Preparing default settings file.");
             this.Settings = new SettingCollection();
+            this.Settings.PropertyChanged += Settings_PropertyChanged;
             Save(true);
         }
 
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            Save();
+        }
+
+ 
         public void Save(bool forceSave = false) {
             if (!Loaded && !forceSave) return;
 
@@ -97,7 +100,7 @@ namespace Blish_HUD {
         }
 
         private void PerformSave() {
-            string rawSettings = JsonConvert.SerializeObject(this.Settings, Formatting.Indented, JsonReaderSettings);
+            string rawSettings = JsonSerializer.Serialize(this.Settings, _jsonSerializerOptions);
 
             try {
                 using (var settingsWriter = new StreamWriter(_settingsPath, false)) {
@@ -116,8 +119,8 @@ namespace Blish_HUD {
 
         protected override void Load() { /* NOOP */ }
 
-        internal SettingCollection RegisterRootSettingCollection(string collectionKey) {
-            return this.Settings.AddSubCollection(collectionKey, false);
+        internal ISettingCollection RegisterRootSettingCollection(string collectionKey) {
+            return this.Settings.AddSubCollection(collectionKey);
         }
 
         protected override void Unload() {

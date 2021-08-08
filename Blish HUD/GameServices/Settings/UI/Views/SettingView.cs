@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
 
@@ -8,34 +7,51 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(SettingView));
 
-        private static readonly Dictionary<Type, Func<SettingEntry, int, IView>> _typeLookup = new Dictionary<Type, Func<SettingEntry, int, IView>> {
-            {typeof(bool), (settingEntry,              definedWidth) => new BoolSettingView(settingEntry as SettingEntry<bool>, definedWidth)},
-            {typeof(string), (settingEntry,            definedWidth) => new StringSettingView(settingEntry as SettingEntry<string>, definedWidth)},
-            {typeof(float), (settingEntry,             definedWidth) => new FloatSettingView(settingEntry as SettingEntry<float>, definedWidth)},
-            {typeof(int), (settingEntry,               definedWidth) => new IntSettingView(settingEntry as SettingEntry<int>, definedWidth)},
-            {typeof(KeyBinding), (settingEntry,        definedWidth) => new KeybindingSettingView(settingEntry as SettingEntry<KeyBinding>, definedWidth)},
-            {typeof(SettingCollection), (settingEntry, definedWidth) => new SettingsView(settingEntry as SettingEntry<SettingCollection>, definedWidth)}
-        };
+        public static IView FromType(ISettingEntry setting, int definedWidth) {
 
-        public static IView FromType(SettingEntry setting, int definedWidth) {
-            if (_typeLookup.TryGetValue(setting.SettingType, out Func<SettingEntry, int, IView> typeView)) {
-                if (setting is SettingEntry<SettingCollection> settingCollection) {
-                    if (!settingCollection.Value.RenderInUi) {
-                        Logger.Debug($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because {nameof(SettingCollection.RenderInUi)} was false.");
-                        return null;
-                    }
+            // Check for common types
+            var view = setting switch {
+                IUiSettingEntry<bool> boolSetting => new BoolSettingView(boolSetting, definedWidth),
+                IUiSettingEntry<string> stringSetting => new StringSettingView(stringSetting, definedWidth),
+                IUiSettingEntry<float> floatSetting => new FloatSettingView(floatSetting, definedWidth),
+                IUiSettingEntry<int> intSetting => new IntSettingView(intSetting, definedWidth),
+                IUiSettingEntry<KeyBinding> keyBindingSetting => new KeybindingSettingView(keyBindingSetting, definedWidth),
+                ISettingEntry<ISettingCollection> collectionSetting => GetCollectionView(setting.EntryKey, collectionSetting.Value),
+
+                _ => (IView)null
+            };
+
+            // Check for additional types
+            if (view == null) {
+                // Extract the generic type from ISettingsEntry
+                var type = setting.GetType();
+                if (!type.IsGenericType) {
+                    Logger.Warn($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because the setting is not a generic settings type.");
+                    return null;
+                }
+                var genericType = type.GetGenericArguments().FirstOrDefault();
+                if (genericType == null) {
+                    Logger.Warn($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because the setting has no proper generic type argument.");
+                    return null;
                 }
 
-                return typeView(setting, definedWidth);
+                // Check for enum
+                if (type.IsEnum) {
+                    view = EnumSettingView.FromEnum(setting, definedWidth);
+                }
             }
 
-            if (setting.SettingType.IsEnum) {
-                return EnumSettingView.FromEnum(setting, definedWidth);
+            // Return view
+            return view;
+
+            SettingsView GetCollectionView(string collectionKey, ISettingCollection collection) {
+                if (!collection.RenderInUi) {
+                    Logger.Debug($"{nameof(SettingCollection)} {collectionKey} was skipped because {nameof(SettingCollection.RenderInUi)} was false.");
+                    return null;
+                }
+
+                return new SettingsView(collection, definedWidth);
             }
-
-            Logger.Debug($"Setting {setting.DisplayName} [{setting.EntryKey}] of type '{setting.SettingType.FullName}' does not have a renderer available.");
-
-            return null;
         }
 
     }

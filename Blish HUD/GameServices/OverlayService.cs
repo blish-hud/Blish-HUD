@@ -34,11 +34,11 @@ namespace Blish_HUD {
 
         public GameTime CurrentGameTime { get; private set; }
 
-        internal SettingCollection OverlaySettings { get; private set; }
+        internal ISettingCollection OverlaySettings { get; private set; }
 
-        public SettingEntry<Locale> UserLocale    { get; private set; }
-        public SettingEntry<bool>   StayInTray    { get; private set; }
-        public SettingEntry<bool>   ShowInTaskbar { get; private set; }
+        public IUiSettingEntry<Locale> UserLocale    { get; private set; }
+        public IUiSettingEntry<bool>   StayInTray    { get; private set; }
+        public IUiSettingEntry<bool>   ShowInTaskbar { get; private set; }
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
@@ -81,10 +81,10 @@ namespace Blish_HUD {
                                                  int.MaxValue - 12);
         }
 
-        private void DefineSettings(SettingCollection settings) {
-            this.UserLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
-            this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description);
-            this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
+        private void DefineSettings(ISettingCollection settings) {
+            this.UserLocale    = settings.DefineUiSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
+            this.StayInTray    = settings.DefineUiSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description);
+            this.ShowInTaskbar = settings.DefineUiSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
 
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);

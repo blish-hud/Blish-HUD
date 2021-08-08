@@ -161,7 +161,7 @@ namespace Blish_HUD.Modules {
         /// Define the settings you would like to use in your module.  Settings are persistent
         /// between updates to both Blish HUD and your module.
         /// </summary>
-        protected virtual void DefineSettings(SettingCollection settings) { /* NOOP */ }
+        protected virtual void DefineSettings(ISettingCollection settings) { /* NOOP */ }
 
         /// <summary>
         /// Load content and more here. This call is asynchronous, so it is a good time to
