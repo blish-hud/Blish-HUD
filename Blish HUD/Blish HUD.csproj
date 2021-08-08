@@ -233,6 +233,7 @@
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="all" />
     <PackageReference Include="Octokit" Version="0.32.0" PrivateAssets="all" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" PrivateAssets="all" />
+    <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
