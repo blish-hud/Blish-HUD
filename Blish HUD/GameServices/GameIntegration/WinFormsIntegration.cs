@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 using Blish_HUD.GameServices;
+using Blish_HUD.Properties;
 
 namespace Blish_HUD.GameIntegration {
     public class WinFormsIntegration : ServiceModule<GameIntegrationService> {
@@ -47,11 +46,9 @@ namespace Blish_HUD.GameIntegration {
             }
 
             this.TrayIconMenu = new ContextMenuStrip();
-
-            // Found this here: https://stackoverflow.com/a/25409865/595437
-            // Extract the tray icon from our assembly
+            
             _trayIcon = new NotifyIcon() {
-                Icon             = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
+                Icon             = Resources.Ico2039771,
                 Text             = trayIconText,
                 Visible          = true,
                 ContextMenuStrip = this.TrayIconMenu
