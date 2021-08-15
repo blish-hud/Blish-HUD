@@ -58,11 +58,11 @@ namespace Blish_HUD.Gw2Mumble {
 
         #endregion
 
-        private Logger logger = Logger.GetLogger<PlayerCharacter>();
-
         private Vector3 _position = Vector3.Zero;
         private Vector3 _forward  = Vector3.Forward;
         private Vector3? _lastCamDirection = null;
+
+        private const float _flushEpsilon = 0.0001f;
 
         /// <inheritdoc cref="IGw2MumbleClien t.AvatarPosition"/>
         public Vector3 Position => _position;
@@ -110,7 +110,7 @@ namespace Blish_HUD.Gw2Mumble {
             Matrix cam = Matrix.CreateLookAt(camPosition, camPosition + camDirection, new Vector3(0.0f, 1.0f, 0.0f));
             Matrix cami = Matrix.Invert(cam);
 
-            if (_lastCamDirection.HasValue && Vector3.DistanceSquared(_lastCamDirection.Value, camDirection) >= 0.00001f) {
+            if (_lastCamDirection.HasValue && Vector3.DistanceSquared(_lastCamDirection.Value, camDirection) >= _flushEpsilon) {
                 _positionBuffer.flush();
             }
 
