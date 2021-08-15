@@ -5,7 +5,7 @@
     /// <typeparam name="T">The <c>Type</c> the <see cref="RingBuffer{T}"/> contains.</typeparam>
     public class RingBuffer<T> {
 
-        protected int _ringIndex;
+        protected int _ringIndex = 0;
 
         /// <summary>
         /// The array backing this buffer.

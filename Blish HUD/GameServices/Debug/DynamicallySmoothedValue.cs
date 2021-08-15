@@ -16,7 +16,7 @@ namespace Blish_HUD.Debug {
         /// </summary>
         public T Value => _cachedValue ??= GetAverageValue();
 
-        private readonly Func<int> _getBufferLengthFunc;
+        private int _currentSize;
 
         private readonly Func<T, T, T>     _addExpression;
         private readonly Func<T, float, T> _divideExpression;
@@ -26,9 +26,8 @@ namespace Blish_HUD.Debug {
         /// </summary>
         /// <param name="bufferMax">The maximum length of the buffer.</param>
         /// <param name="getBufferLengthFunc">The function used to decide how much of the buffer should be used to calculate the average.</param>
-        public DynamicallySmoothedValue(int bufferMax, Func<int> getBufferLengthFunc = null) : base(bufferMax) {
-            _getBufferLengthFunc = getBufferLengthFunc ?? (() => bufferMax);
-
+        public DynamicallySmoothedValue(int bufferMax) : base(bufferMax) {
+            _currentSize = 0;
             _addExpression    = PrepareAddExpression<T>();
             _divideExpression = PrepareDivideExpression<T>();
         }
@@ -51,22 +50,28 @@ namespace Blish_HUD.Debug {
                                                                   paramB).Compile();
         }
 
+        public void flush() {
+            _ringIndex = 0;
+            _currentSize = 0;
+        }
+
         public override void PushValue(T value) {
             base.PushValue(value);
+
+            if (_currentSize < BufferLength)
+                _currentSize++;
 
             _cachedValue = null;
         }
 
         private T GetAverageValue() {
-            int currentSize = _getBufferLengthFunc();
-
             T total = default;
 
-            for (int i = 1; i < currentSize + 1; i++) {
-                total = _addExpression(total, this[_ringIndex + (this.BufferLength - currentSize) + i]);
+            for (int i = 0; i < _currentSize; i++) {
+                total = _addExpression(total, this[_ringIndex - i - 1]);
             }
 
-            return _divideExpression(total, currentSize);
+            return _divideExpression(total, _currentSize);
         }
 
     }
