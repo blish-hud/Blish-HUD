@@ -13,22 +13,10 @@ namespace Blish_HUD.Controls {
         public const int CONTEXTMENU_BASEINDEX = 50;
         public const int DROPDOWN_BASEINDEX    = int.MaxValue - 64;
         public const int TOOLTIP_BASEZINDEX    = int.MaxValue - 32;
-
-        /// <inheritdoc />
+        
         protected override CaptureType CapturesInput() {
             return CaptureType.None;
         }
-
-        //public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-        //    List<Control> ZSortedChildren = _children.OrderByDescending(i => i.ZIndex).ToList();
-
-        //    foreach (var childControl in ZSortedChildren) {
-        //        if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible)
-        //            return childControl.TriggerMouseInput(mouseEventType, ms);
-        //    }
-
-        //    return null;
-        //}
 
     }
 }
