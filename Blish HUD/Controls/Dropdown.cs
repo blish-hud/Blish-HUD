@@ -248,11 +248,6 @@ namespace Blish_HUD.Controls {
             _hadPanel = false;
         }
 
-        /// <inheritdoc />
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
-
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 

@@ -77,10 +77,6 @@ namespace Blish_HUD.Controls {
             return _glowEffect;
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
-
         public GlowButton() {
             _spriteBatchParameters = new SpriteBatchParameters(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             this.Size = new Point(BUTTON_WIDTH, BUTTON_HEIGHT);

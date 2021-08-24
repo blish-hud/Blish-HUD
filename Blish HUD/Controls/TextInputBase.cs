@@ -723,8 +723,6 @@ namespace Blish_HUD.Controls {
             HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition), e.IsDoubleClick);
         }
 
-        protected override CaptureType CapturesInput() { return CaptureType.Mouse; }
-
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion) {
             // Draw the placeholder text
             if (!_focused && _text.Length == 0) {

@@ -245,10 +245,6 @@ namespace Blish_HUD.Controls {
             this.EffectBehind = _scrollEffect;
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse | CaptureType.Filter;
-        }
-
         protected override void OnMouseMoved(MouseEventArgs e) {
             _scrollEffect.SetEnableState(
                                          _highlightType == DetailsHighlightType.ScrollingHighlight

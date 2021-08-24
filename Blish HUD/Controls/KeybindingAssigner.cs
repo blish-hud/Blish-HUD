@@ -106,8 +106,6 @@ namespace Blish_HUD.Controls {
             newHkAssign.Show();
         }
 
-        protected override CaptureType CapturesInput() { return CaptureType.Filter | CaptureType.Mouse; }
-
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw white panel for keybinding name
             spriteBatch.DrawOnCtrl(this,

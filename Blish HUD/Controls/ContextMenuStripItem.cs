@@ -97,10 +97,6 @@ namespace Blish_HUD.Controls {
             base.OnMouseLeft(e);
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
-
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             var modifierTint = this.Enabled 
                                    ? this.MouseOver

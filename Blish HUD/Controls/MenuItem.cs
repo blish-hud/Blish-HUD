@@ -296,8 +296,6 @@ namespace Blish_HUD.Controls {
             base.OnMouseLeft(e);
         }
 
-        protected override CaptureType CapturesInput() => CaptureType.Mouse;
-
         protected override void OnChildAdded(ChildChangedEventArgs e) { 
             if (!(e.ChangedChild is MenuItem newChild)) {
                 e.Cancel = true;

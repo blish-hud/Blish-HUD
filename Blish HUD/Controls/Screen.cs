@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework.Input;
-
-namespace Blish_HUD.Controls {
+﻿namespace Blish_HUD.Controls {
     public class Screen:Container {
 
         public const int MENUUI_BASEINDEX      = 30; // Skillbox
