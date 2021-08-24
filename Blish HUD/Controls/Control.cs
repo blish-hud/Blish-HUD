@@ -21,7 +21,7 @@ namespace Blish_HUD.Controls {
         None = 0x0,
 
         /// <summary>
-        /// Mouse input (moves and clicks) are intercepted but this control will not block input from passing to Guild Wars 2 or to other Blish HUD controls.
+        /// Mouse and mouse wheel inputs are intercepted but this control will not block input from passing to Guild Wars 2 or to other Blish HUD controls.
         /// </summary>
         Filter = 0x1,
 
