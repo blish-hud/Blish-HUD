@@ -80,10 +80,6 @@ namespace Blish_HUD.Controls {
             this.BasicTooltipText = this.Color?.Name ?? "None";
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
-
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this, _possibleDrawVariations[drawVariation], bounds, this.Color?.Cloth?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
 

@@ -25,10 +25,6 @@ namespace Blish_HUD.Controls {
             _font = Content.DefaultFont14;
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Filter;
-        }
-
         /// <summary>
         /// If either <see cref="_autoSizeWidth"/> or <see cref="_autoSizeHeight"/> is enabled,
         /// this will indicate the size of the label region after <see cref="RecalculateLayout"/>

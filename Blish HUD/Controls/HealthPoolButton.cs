@@ -35,10 +35,6 @@ namespace Blish_HUD.Controls {
             base.OnLeftMouseButtonReleased(e);
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
-
         private void UpdateLocation(object sender, EventArgs e) {
             this.Location = new Point((Graphics.SpriteScreen.Width / 2 - this.Width / 2), (Graphics.SpriteScreen.Height - this.Height) - BOTTOMEDGE_GAP);
         }

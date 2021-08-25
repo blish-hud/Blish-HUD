@@ -118,6 +118,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _autoSizePadding, value);
         }
 
+        protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
+
         public List<Control> GetDescendants() {
             var allDescendants = _children.ToList();
 
@@ -189,7 +191,12 @@ namespace Blish_HUD.Controls {
                     childResult = childControl.TriggerMouseInput(mouseEventType, ms);
 
                     if (childResult != null) {
-                        break;
+                        if (!childResult.Captures.HasFlag(CaptureType.Filter)) {
+                            break;
+                        }
+
+                        // Child has Filter flag so we have to pretend we didn't see it
+                        childResult = null;
                     }
                 }
             }

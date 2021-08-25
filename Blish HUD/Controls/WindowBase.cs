@@ -271,10 +271,6 @@ namespace Blish_HUD.Controls {
             base.OnMouseLeft(e);
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse | CaptureType.MouseWheel | CaptureType.Filter;
-        }
-
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             if (MouseOverTitleBar) {
                 Dragging  = true;

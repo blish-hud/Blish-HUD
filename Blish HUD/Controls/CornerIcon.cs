@@ -148,11 +148,6 @@ namespace Blish_HUD.Controls {
         }
 
         /// <inheritdoc />
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
-
-        /// <inheritdoc />
         protected override void OnClick(MouseEventArgs e) {
             Content.PlaySoundEffectByName(@"button-click");
 

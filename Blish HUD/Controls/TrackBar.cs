@@ -107,10 +107,6 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
-
         private Rectangle _layoutNubBounds;
         private Rectangle _layoutLeftBumper;
         private Rectangle _layoutRightBumper;

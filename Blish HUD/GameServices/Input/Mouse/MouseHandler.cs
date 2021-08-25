@@ -32,9 +32,7 @@ namespace Blish_HUD.Input {
         public Control ActiveControl {
             get => _activeControl;
             private set {
-                _hudFocused   = value != null;
-                _hookOverride = value != null && value.Captures.HasFlag(CaptureType.ForceNone);
-
+                _hudFocused    = value != null;
                 _activeControl = value;
 
                 Control.ActiveControl = value;
@@ -42,12 +40,6 @@ namespace Blish_HUD.Input {
         }
 
         private Control _activeControl;
-
-        /// <summary>
-        ///     Indicates if the <see cref="ActiveControl" /> has <see cref="Control.Captures" />
-        ///     set to <see cref="CaptureType.ForceNone" />.
-        /// </summary>
-        private bool _hookOverride;
 
         private bool _hudFocused;
 
@@ -61,14 +53,19 @@ namespace Blish_HUD.Input {
                 return false;
             }
 
-            if (mouseEventArgs.EventType == MouseEventType.RightMouseButtonReleased) {
-                CameraDragging = false;
-            } else if (_hudFocused && !_hookOverride) {
+            if (_hudFocused) {
                 _mouseEvent = mouseEventArgs;
-                return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased;
-            } else if (mouseEventArgs.EventType == MouseEventType.RightMouseButtonPressed) {
-                CameraDragging = true;
+
+                return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased  // Never block the users input if they are releasing the left mouse button
+                    && mouseEventArgs.EventType != MouseEventType.RightMouseButtonReleased // Never block the users input if they are releasing the right mouse button
+                    && !this.ActiveControl.Captures.HasFlag(CaptureType.DoNotBlock);       // If the current control has capture forced off, then do not block
             }
+
+            this.CameraDragging = mouseEventArgs.EventType switch {
+                MouseEventType.RightMouseButtonPressed => true,
+                MouseEventType.RightMouseButtonReleased => false,
+                _ => this.CameraDragging
+            };
 
             return false;
         }
@@ -123,10 +120,6 @@ namespace Blish_HUD.Input {
 
             // Handle mouse moved
             if (prevMouseState.Position != this.State.Position) {
-                if (_hookOverride) {
-                    this.ActiveControl = this.ActiveControl.MouseOver ? this.ActiveControl : null;
-                }
-
                 this.ActiveControl = GameService.Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseMoved, this.State);
                 this.MouseMoved?.Invoke(this, new MouseEventArgs(MouseEventType.MouseMoved));
             }
@@ -138,35 +131,6 @@ namespace Blish_HUD.Input {
                 }
 
                 _mouseEvent = null;
-            }
-
-            // Handle mouse left pressed/released
-            if (prevMouseState.LeftButton != this.State.LeftButton) {
-                switch (this.State.LeftButton) {
-                    case ButtonState.Pressed:
-                        this.LeftMouseButtonPressed?.Invoke(this, new MouseEventArgs(MouseEventType.LeftMouseButtonPressed));
-                        break;
-                    case ButtonState.Released:
-                        this.LeftMouseButtonReleased?.Invoke(this, new MouseEventArgs(MouseEventType.LeftMouseButtonReleased));
-                        break;
-                }
-            }
-
-            // Handle mouse right pressed/released
-            if (prevMouseState.RightButton != this.State.RightButton) {
-                switch (this.State.RightButton) {
-                    case ButtonState.Pressed:
-                        this.RightMouseButtonPressed?.Invoke(this, new MouseEventArgs(MouseEventType.RightMouseButtonPressed));
-                        break;
-                    case ButtonState.Released:
-                        this.RightMouseButtonReleased?.Invoke(this, new MouseEventArgs(MouseEventType.RightMouseButtonReleased));
-                        break;
-                }
-            }
-
-            // Handle mouse scroll
-            if (this.State.ScrollWheelValue != 0) {
-                this.MouseWheelScrolled?.Invoke(this, new MouseEventArgs(MouseEventType.MouseWheelScrolled));
             }
         }
 
