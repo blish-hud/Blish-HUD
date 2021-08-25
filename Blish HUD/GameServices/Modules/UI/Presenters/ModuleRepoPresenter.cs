@@ -50,6 +50,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             foreach (var option in this.Model.GetExtraOptions()) {
                 var menuItem = this.View.SettingsMenu.AddMenuItem(option.OptionName);
                 menuItem.CanCheck = option.IsToggle;
+                menuItem.Checked  = option.IsChecked;
                 menuItem.Click += delegate {
                     option.OptionAction(menuItem.Checked);
 
