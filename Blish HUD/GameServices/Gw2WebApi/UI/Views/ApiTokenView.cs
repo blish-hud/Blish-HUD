@@ -108,12 +108,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private void SetActive(bool active) {
             _active = active;
 
-            this.ViewTarget.BackgroundTexture = _active
+            (this.ViewTarget as Panel).BackgroundTexture = _active
                                                     ? GameService.Content.GetTexture("1060353-crop")
                                                     : GameService.Content.GetTexture("1863945-crop");
         }
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             _failedTokenLbl = new Label() {
                 Size                = buildPanel.Size,
                 HorizontalAlignment = HorizontalAlignment.Center,

@@ -51,7 +51,7 @@ namespace Blish_HUD.Settings.UI.Views {
             this.WithPresenter(new SettingPresenter<TSetting>(this, setting));
         }
 
-        protected sealed override void Build(Panel buildPanel) {
+        protected sealed override void Build(Container buildPanel) {
             if (_definedWidth > 0) {
                 buildPanel.Width = _definedWidth;
             }
@@ -61,7 +61,7 @@ namespace Blish_HUD.Settings.UI.Views {
             Refresh();
         }
 
-        protected abstract void BuildSetting(Panel buildPanel);
+        protected abstract void BuildSetting(Container buildPanel);
 
         public virtual bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             return false;

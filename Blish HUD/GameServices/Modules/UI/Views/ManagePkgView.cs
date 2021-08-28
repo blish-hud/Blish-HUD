@@ -147,7 +147,7 @@ namespace Blish_HUD.Modules.UI.Views {
             this.WithPresenter(new ManagePkgPresenter(this, model));
         }
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             _nameLabel = new Label() {
                 Text           = "W",
                 AutoSizeWidth  = true,

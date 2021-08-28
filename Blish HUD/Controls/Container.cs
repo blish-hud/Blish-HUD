@@ -15,7 +15,7 @@ namespace Blish_HUD.Controls {
     /// A control that is capable of having child controls that are drawn when the container is drawn.
     /// Classes that inherit should be packaged controls that that manage their own controls internally.
     /// </summary>
-    public abstract class Container : Control, IEnumerable<Control> {
+    public abstract class Container : Control, IEnumerable<Control>, IContainer {
 
         public event EventHandler<ChildChangedEventArgs> ChildAdded;
         public event EventHandler<ChildChangedEventArgs> ChildRemoved;
@@ -120,16 +120,20 @@ namespace Blish_HUD.Controls {
 
         protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
 
-        public List<Control> GetDescendants() {
-            var allDescendants = _children.ToList();
+        public IEnumerable<Control> GetDescendants() {
+            // Breadth-first unrolling without the inefficiency of direction recursion.
+            var remainingChildren = new Queue<Control>(this.Children);
 
-            foreach (var child in this.Children) {
-                if (!(child is Container container)) continue;
+            while (remainingChildren.Count > 0) {
+                var child = remainingChildren.Dequeue();
+                yield return child;
 
-                allDescendants.AddRange(container.GetDescendants());
+                if (child is Container container) {
+                    foreach (var containerChild in container) {
+                        remainingChildren.Enqueue(containerChild);
+                    }
+                }
             }
-
-            return allDescendants;
         }
 
         public bool AddChild(Control child) {

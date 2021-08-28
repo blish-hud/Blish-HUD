@@ -63,7 +63,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _tokenCheckDebounceWrapper = ((Action<string>)CheckToken).Debounce();
         }
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             var registerLbl = new Label() {
                 Text           = Strings.GameServices.Gw2ApiService.ManageApiKeys_Title,
                 Font           = GameService.Content.DefaultFont32,

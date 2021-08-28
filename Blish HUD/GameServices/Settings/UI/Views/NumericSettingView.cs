@@ -16,7 +16,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected NumericSettingView(SettingEntry<T> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
 
-        protected override void BuildSetting(Panel buildPanel) {
+        protected override void BuildSetting(Container buildPanel) {
             _displayNameLabel = new Label() {
                 AutoSizeWidth = true,
                 Location      = new Point(CONTROL_PADDING, 0),

@@ -28,7 +28,7 @@ namespace Blish_HUD.Modules.UI.Views {
             this.WithPresenter(new ModuleRepoPresenter(this, pkgRepoProvider));
         }
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             _searchbox = new TextBox {
                 PlaceholderText = Strings.Common.PlaceholderSearch,
                 Width           = buildPanel.Width - 56,

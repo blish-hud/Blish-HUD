@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-   public class Tooltip : Panel, IViewContainer {
+   public class Tooltip : Container, IViewContainer {
         
         internal const int MOUSE_VERTICAL_MARGIN = 18;
 

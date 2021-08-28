@@ -31,8 +31,8 @@ namespace Blish_HUD {
         public TabbedWindow     BlishHudWindow   { get; private set; }
         public CornerIcon       BlishMenuIcon    { get; private set; }
         public ContextMenuStrip BlishContextMenu { get; private set; }
-
-        public GameTime CurrentGameTime { get; private set; }
+        
+        public  GameTime CurrentGameTime { get; private set; } = new GameTime(TimeSpan.Zero, TimeSpan.Zero);
 
         internal SettingCollection OverlaySettings { get; private set; }
 
@@ -220,6 +220,27 @@ namespace Blish_HUD {
             };
 
             BuildSettingTab();
+
+            var testWindow = new StandardWindow(Content.GetTexture("controls/window/155985"), new Rectangle(40, 26, 913, 691), new Rectangle(70, 71, 839, 605)) {
+                Parent = Graphics.SpriteScreen,
+                Title         = "StandardWindow",
+                Emblem        = Content.GetTexture("controls/window/156022"),
+                Subtitle      = "Example Subtitle",
+                SavesPosition = true,
+                Id            = $"{nameof(OverlayService)}_BlishHUD_38d37290-b5f9-447d-97ea-45b0b50e5f56"
+            };
+
+            var testWindow2 = new StandardWindow(Content.GetTexture("controls/window/155997"), new Rectangle(24, 30, 545, 630), new Rectangle(46, 50, 506, 571)) {
+                Parent   = Graphics.SpriteScreen,
+                Title    = "Window 2",
+                Emblem   = Content.GetTexture("controls/window/156022"),
+                Subtitle = "[T]",
+                SavesPosition = true,
+                Id = $"{nameof(OverlayService)}_BlishHUD_38d37290-b5f9-447d-97ea-45b0b50e5f57"
+            };
+
+            testWindow.Show(new OverlaySettingsView());
+            //testWindow2.Show();
         }
 
         private void BuildCornerIcon() {

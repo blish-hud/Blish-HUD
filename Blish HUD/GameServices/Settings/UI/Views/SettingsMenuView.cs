@@ -25,7 +25,7 @@ namespace Blish_HUD.Settings.UI.Views {
             this.WithPresenter(new SettingsMenuPresenter(this, settingsMenuRegistrar));
         }
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             var settingsMenuSection = new Panel() {
                 ShowBorder = true,
                 Size       = new Point(265, 680),

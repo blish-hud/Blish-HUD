@@ -40,7 +40,7 @@ namespace Blish_HUD.Settings.UI.Views {
             this.ViewTarget.HeightSizingMode = SizingMode.AutoSize;
         }
 
-        protected override void BuildSetting(Panel buildPanel) {
+        protected override void BuildSetting(Container buildPanel) {
             _settingFlowPanel = new FlowPanel() {
                 Size                = buildPanel.Size,
                 FlowDirection       = ControlFlowDirection.SingleTopToBottom,

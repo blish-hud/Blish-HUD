@@ -21,7 +21,7 @@ namespace Blish_HUD.Common.UI.Views {
             this.Text = text;
         }
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             _tooltipLabel.Parent = buildPanel;
 
             buildPanel.Hidden += (sender, args) => buildPanel.Dispose();
