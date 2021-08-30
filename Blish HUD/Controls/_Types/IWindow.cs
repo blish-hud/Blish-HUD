@@ -1,4 +1,7 @@
 ﻿namespace Blish_HUD.Controls {
+    /// <summary>
+    /// Implemented by controls intended to be treated as windows.  Use with <see cref="WindowBase2.RegisterWindow"/>.
+    /// </summary>
     public interface IWindow {
 
         /// <summary>
