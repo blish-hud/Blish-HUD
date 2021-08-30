@@ -455,13 +455,7 @@ namespace Blish_HUD.Controls {
                     ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
                     : null;
             }
-            set {
-                var oldTooltip = _tooltip;
-
-                if (SetProperty(ref _tooltip, value)) {
-                    _tooltip?.Hide();
-                }
-            }
+            set => SetProperty(ref _tooltip, value);
         }
 
         private string _basicTooltipText;
