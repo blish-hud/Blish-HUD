@@ -29,15 +29,9 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<ValueChangedEventArgs<Tab>> TabChanged;
 
-        /// <summary>
-        /// A collection of <see cref="Tab"/> controls, in the order they will be displayed in the window.
-        /// </summary>
         public TabCollection Tabs { get; }
 
         private Tab _selectedTab = null;
-        /// <summary>
-        /// The actively selected tab.
-        /// </summary>
         public Tab SelectedTab {
             get => _selectedTab;
             set {
@@ -55,6 +49,10 @@ namespace Blish_HUD.Controls {
 
         protected  virtual void OnTabChanged(ValueChangedEventArgs<Tab> e) {
             ShowView(e.NewValue?.View());
+
+            if (this.Visible && e.PreviousValue != null) {
+                Content.PlaySoundEffectByName($"tab-swap-{RandomUtil.GetRandom(1, 5)}");
+            }
 
             TabChanged?.Invoke(this, e);
         }
