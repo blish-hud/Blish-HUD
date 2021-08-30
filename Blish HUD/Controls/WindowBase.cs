@@ -408,13 +408,9 @@ namespace Blish_HUD.Controls {
         protected virtual void PaintTitleBar(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_mouseOver && MouseOverTitleBar) {
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarLeftActive,  _layoutLeftTitleBarBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeftActive,  _layoutLeftTitleBarBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarRightActive, _layoutRightTitleBarBounds);
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRightActive, _layoutRightTitleBarBounds);
             } else {
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarLeft,  _layoutLeftTitleBarBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeft,  _layoutLeftTitleBarBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _layoutRightTitleBarBounds);
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _layoutRightTitleBarBounds);
             }
 
