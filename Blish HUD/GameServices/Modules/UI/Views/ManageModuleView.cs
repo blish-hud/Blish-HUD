@@ -149,7 +149,7 @@ namespace Blish_HUD.Modules.UI.Views {
             }
         }
 
-        protected override void Build(Container buildPanel) {
+        protected override void Build(Container viewTarget) {
             // Header
 
             _moduleTextLabel = new Label() {
@@ -158,24 +158,24 @@ namespace Blish_HUD.Modules.UI.Views {
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
                 StrokeText     = true,
-                Parent         = buildPanel
+                Parent         = viewTarget
             };
 
             _moduleAssemblyDirtiedWarning = new Label() {
                 Text           = "Blish HUD must be restarted before this module can be re-enabled.",
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Right          = buildPanel.Width - 12,
+                Right          = viewTarget.Width - 12,
                 StrokeText     = true,
                 TextColor      = Control.StandardColors.Yellow,
-                Parent         = buildPanel
+                Parent         = viewTarget
             };
 
             _moduleHeaderLabel = new Image() {
                 Texture  = GameService.Content.GetTexture("358411"),
                 Location = new Point(0,   _moduleTextLabel.Bottom - 6),
                 Size     = new Point(875, 110),
-                Parent   = buildPanel
+                Parent   = viewTarget
             };
 
             _moduleNameLabel = new Label() {
@@ -185,7 +185,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 AutoSizeWidth  = true,
                 StrokeText     = true,
                 Location       = new Point(_moduleTextLabel.Left, _moduleTextLabel.Bottom),
-                Parent         = buildPanel
+                Parent         = viewTarget
             };
 
             _moduleVersionLabel = new Label() {
@@ -196,7 +196,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 StrokeText        = true,
                 Font              = GameService.Content.DefaultFont12,
                 Location          = new Point(_moduleNameLabel.Right + 8, _moduleNameLabel.Top),
-                Parent            = buildPanel
+                Parent            = viewTarget
             };
 
             _moduleStateLabel = new Label() {
@@ -207,7 +207,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 StrokeText        = true,
                 Font              = GameService.Content.DefaultFont12,
                 Location          = new Point(_moduleVersionLabel.Right + 8, _moduleNameLabel.Top),
-                Parent            = buildPanel
+                Parent            = viewTarget
             };
 
             // Author
@@ -215,7 +215,7 @@ namespace Blish_HUD.Modules.UI.Views {
             _authorImage = new Image() {
                 Location = new Point(_moduleNameLabel.Left, _moduleNameLabel.Bottom),
                 Size     = new Point(32,               32),
-                Parent   = buildPanel
+                Parent   = viewTarget
             };
 
             _authoredByLabel = new Label() {
@@ -226,7 +226,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 VerticalAlignment = VerticalAlignment.Bottom,
                 Font              = GameService.Content.DefaultFont12,
                 Location          = new Point(_authorImage.Right + 2, _authorImage.Top - 2),
-                Parent            = buildPanel
+                Parent            = viewTarget
             };
 
             _authorNameLabel = new Label() {
@@ -235,23 +235,23 @@ namespace Blish_HUD.Modules.UI.Views {
                 AutoSizeHeight = true,
                 StrokeText     = true,
                 Location       = new Point(_authorImage.Right + 2, _authoredByLabel.Bottom),
-                Parent         = buildPanel
+                Parent         = viewTarget
             };
 
             // Enable & disable module
 
             _enableButton = new StandardButton() {
-                Location = new Point(buildPanel.Width - 192, _moduleHeaderLabel.Top + _moduleHeaderLabel.Height / 4 - StandardButton.STANDARD_CONTROL_HEIGHT / 2),
+                Location = new Point(viewTarget.Width - 192, _moduleHeaderLabel.Top + _moduleHeaderLabel.Height / 4 - StandardButton.STANDARD_CONTROL_HEIGHT / 2),
                 Text     = Strings.GameServices.ModulesService.ModuleManagement_EnableModule,
                 Enabled  = false,
-                Parent   = buildPanel
+                Parent   = viewTarget
             };
 
             _disableButton = new StandardButton() {
-                Location = new Point(buildPanel.Width - 192, _enableButton.Bottom + 2),
+                Location = new Point(viewTarget.Width - 192, _enableButton.Bottom + 2),
                 Text     = Strings.GameServices.ModulesService.ModuleManagement_DisableModule,
                 Enabled  = false,
-                Parent   = buildPanel
+                Parent   = viewTarget
             };
 
             _enableButton.Click  += delegate { EnableModuleClicked?.Invoke(this, EventArgs.Empty); };
@@ -260,10 +260,10 @@ namespace Blish_HUD.Modules.UI.Views {
             // Collapse Sections
 
             _collapsePanel = new Panel() {
-                Size      = new Point(buildPanel.Width, buildPanel.Height - _moduleNameLabel.Bottom + 32 + 4),
+                Size      = new Point(viewTarget.Width, viewTarget.Height - _moduleNameLabel.Bottom + 32 + 4),
                 Location  = new Point(0,                _moduleNameLabel.Bottom + 32                     + 4),
                 CanScroll = true,
-                Parent    = buildPanel
+                Parent    = viewTarget
             };
 
             // Description
@@ -335,7 +335,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 ActiveIcon       = GameService.Content.GetTexture("common/157110"),
                 Visible          = false,
                 BasicTooltipText = Strings.Common.Options,
-                Parent           = buildPanel
+                Parent           = viewTarget
             };
 
             _settingsButton.Click += delegate { _settingMenu?.Show(_settingsButton); };

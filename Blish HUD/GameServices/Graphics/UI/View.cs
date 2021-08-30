@@ -40,10 +40,10 @@ namespace Blish_HUD.Graphics.UI {
             return loadResult;
         }
 
-        public void DoBuild(Container buildPanel) {
-            this.ViewTarget = buildPanel;
+        public void DoBuild(Container viewTarget) {
+            this.ViewTarget = viewTarget;
 
-            Build(buildPanel);
+            Build(viewTarget);
 
             this.Built?.Invoke(this, EventArgs.Empty);
 
@@ -60,9 +60,8 @@ namespace Blish_HUD.Graphics.UI {
         protected virtual async Task<bool> Load(IProgress<string> progress) {
             return await Task.FromResult(true);
         }
-
-
-        protected virtual void Build(Container buildPanel) { /* NOOP */ }
+        
+        protected virtual void Build(Container viewTarget) { /* NOOP */ }
 
         protected virtual void Unload() { /* NOOP */ }
 

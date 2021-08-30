@@ -15,7 +15,7 @@ namespace Blish_HUD.Controls {
     /// A control that is capable of having child controls that are drawn when the container is drawn.
     /// Classes that inherit should be packaged controls that that manage their own controls internally.
     /// </summary>
-    public abstract class Container : Control, IEnumerable<Control>, IContainer {
+    public abstract class Container : Control, IEnumerable<Control> {
 
         public event EventHandler<ChildChangedEventArgs> ChildAdded;
         public event EventHandler<ChildChangedEventArgs> ChildRemoved;

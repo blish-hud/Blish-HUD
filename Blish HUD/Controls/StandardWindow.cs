@@ -2,8 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Blish_HUD.Controls
-{
+namespace Blish_HUD.Controls {
+    /// <summary>
+    /// The StandardWindow is a control meant to replicate the standard Guild Wars 2 windows.
+    /// </summary>
     public class StandardWindow : WindowBase2 {
 
         public StandardWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) {

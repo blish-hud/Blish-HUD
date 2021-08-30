@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
@@ -64,8 +66,42 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        #region Static Window Management
+
+        private static readonly List<IWindow> _windows = new List<IWindow>();
+
+        /// <summary>
+        /// Registers the window so that its zindex can be calculated against other windows.
+        /// </summary>
+        public static void RegisterWindow(IWindow window) {
+            _windows.Add(window);
+        }
+
+        /// <summary>
+        /// Unregisters the window so that its zindex is not longer calculated against other windows.
+        /// </summary>
+        public static void UnregisterWindow(IWindow window) {
+            _windows.Remove(window);
+        }
+
+        /// <summary>
+        /// Returns the calculated zindex offset.  This should be added to the base zindex (typically <see cref="Screen.WINDOW_BASEZINDEX"/>) and returned as the zindex.
+        /// </summary>
+        public static int GetZIndex(IWindow thisWindow) {
+            if (!_windows.Contains(thisWindow)) {
+                throw new InvalidOperationException($"{nameof(thisWindow)} must be registered with {nameof(RegisterWindow)} before ZIndex can automatically be calculated.");
+            }
+
+            return Screen.WINDOW_BASEZINDEX + _windows.OrderBy(window => window.TopMost)
+                                                      .ThenBy(window => window.LastInteraction)
+                                                      .TakeWhile(window => window != thisWindow)
+                                                      .Count();
+        }
+
+        #endregion
+
         public override int ZIndex {
-            get => _zIndex + IWindowImpl.GetZIndex(this);
+            get => _zIndex + WindowBase2.GetZIndex(this);
             set => SetProperty(ref _zIndex, value);
         }
 
@@ -154,7 +190,7 @@ namespace Blish_HUD.Controls {
         private readonly Glide.Tween _animFade;
 
         protected WindowBase2() {
-            IWindowImpl.RegisterWindow(this);
+            WindowBase2.RegisterWindow(this);
 
             this.Opacity = 0f;
             this.Visible = false;
@@ -238,10 +274,12 @@ namespace Blish_HUD.Controls {
 
         #region ViewContainer
 
-        public ViewState ViewState   { get; private set; } = ViewState.None;
-        public IView     CurrentView { get; private set; }
+        public ViewState ViewState   { get; protected set; } = ViewState.None;
+        public IView     CurrentView { get; protected set; }
 
         protected void ShowView(IView view) {
+            ClearView();
+
             if (view == null) return;
 
             this.ViewState = ViewState.Loading;
@@ -252,6 +290,11 @@ namespace Blish_HUD.Controls {
 
             view.Loaded += OnViewBuilt;
             view.DoLoad(progressIndicator).ContinueWith(BuildView);
+        }
+
+        protected void ClearView() {
+            this.ClearChildren();
+            this.ViewState = ViewState.None;
         }
 
         private void OnViewBuilt(object sender, EventArgs e) {
@@ -344,7 +387,7 @@ namespace Blish_HUD.Controls {
             int sideBarHeight     = this.WindowRegion.Height       + STANDARD_TITLEBAR_VERTICAL_OFFSET;
 
             this.SidebarActiveBounds   = new Rectangle(_leftTitleBarDrawBounds.X, sideBarTop, SIDEBAR_WIDTH, this.SideBarHeight);
-            this._sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X, sideBarTop + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
+            _sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X, sideBarTop + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
 
             // Corner bounds
             this.ResizeHandleBounds = new Rectangle(this.Width  - _textureWindowCorner.Width,
@@ -541,7 +584,7 @@ namespace Blish_HUD.Controls {
                 this.CurrentView.DoUnload();
             }
 
-            IWindowImpl.UnregisterWindow(this);
+            WindowBase2.UnregisterWindow(this);
 
             GameService.Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseRelease;
 

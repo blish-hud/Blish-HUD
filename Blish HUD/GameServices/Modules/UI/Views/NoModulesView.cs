@@ -6,10 +6,10 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules.UI.Views {
     public class NoModulesView : View {
 
-        protected override void Build(Container buildPanel) {
+        protected override void Build(Container viewTarget) {
             var info = new Label() {
-                Size                = buildPanel.Size / new Point(1, 2),
-                Parent              = buildPanel,
+                Size                = viewTarget.Size / new Point(1, 2),
+                Parent              = viewTarget,
                 Text                = Strings.GameServices.ModulesService.NoModules_Info,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment   = VerticalAlignment.Middle,
@@ -18,9 +18,9 @@ namespace Blish_HUD.Modules.UI.Views {
 
             var openDir = new StandardButton() {
                 Text     = Strings.GameServices.ModulesService.NoModules_OpenFolder,
-                Parent   = buildPanel,
+                Parent   = viewTarget,
                 Width    = 200,
-                Location = new Point(buildPanel.Size.X / 2 - 100, info.Bottom - 100),
+                Location = new Point(viewTarget.Size.X / 2 - 100, info.Bottom - 100),
             };
 
             openDir.Click += delegate {

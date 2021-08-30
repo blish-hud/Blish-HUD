@@ -49,7 +49,7 @@ namespace Blish_HUD.Controls {
         #endregion
 
         public override int ZIndex {
-            get => _zIndex + IWindowImpl.GetZIndex(this);
+            get => _zIndex + WindowBase2.GetZIndex(this);
             set => SetProperty(ref _zIndex, value);
         }
 
@@ -188,7 +188,7 @@ namespace Blish_HUD.Controls {
         #endregion
 
         protected WindowBase() {
-            IWindowImpl.RegisterWindow(this);
+            WindowBase2.RegisterWindow(this);
 
             this.Opacity = 0f;
             this.Visible = false;
@@ -477,7 +477,7 @@ namespace Blish_HUD.Controls {
 #endregion
 
         protected override void DisposeControl() {
-            IWindowImpl.UnregisterWindow(this);
+            WindowBase2.UnregisterWindow(this);
 
             Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseRelease;
 

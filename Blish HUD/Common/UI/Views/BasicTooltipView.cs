@@ -21,10 +21,10 @@ namespace Blish_HUD.Common.UI.Views {
             this.Text = text;
         }
 
-        protected override void Build(Container buildPanel) {
-            _tooltipLabel.Parent = buildPanel;
+        protected override void Build(Container viewTarget) {
+            _tooltipLabel.Parent = viewTarget;
 
-            buildPanel.Hidden += (sender, args) => buildPanel.Dispose();
+            viewTarget.Hidden += (sender, args) => viewTarget.Dispose();
         }
 
     }

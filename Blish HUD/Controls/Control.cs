@@ -119,7 +119,6 @@ namespace Blish_HUD.Controls {
             _defaultSpriteBatchParameters = new SpriteBatchParameters();
 
             Tooltip.EnableTooltips();
-            IWindowImpl.EnableWindows();
         }
 
         #endregion
@@ -456,7 +455,13 @@ namespace Blish_HUD.Controls {
                     ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
                     : null;
             }
-            set => SetProperty(ref _tooltip, value);
+            set {
+                var oldTooltip = _tooltip;
+
+                if (SetProperty(ref _tooltip, value)) {
+                    _tooltip?.Hide();
+                }
+            }
         }
 
         private string _basicTooltipText;

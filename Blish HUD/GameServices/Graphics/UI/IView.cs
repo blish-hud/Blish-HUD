@@ -34,8 +34,8 @@ namespace Blish_HUD.Graphics.UI {
         /// <summary>
         /// Builds out the UI components utilized by this <see cref="IView"/>.
         /// </summary>
-        /// <param name="buildPanel">The destination <see cref="Container"/> (<see cref="IViewContainer"/>) this <see cref="IView"/> will be shown in.</param>
-        void DoBuild(Container buildPanel);
+        /// <param name="viewTarget">The destination <see cref="Container"/> (<see cref="IViewContainer"/>) this <see cref="IView"/> will be shown in.</param>
+        void DoBuild(Container viewTarget);
 
         /// <summary>
         /// Unload any resources that need to be manually unloaded

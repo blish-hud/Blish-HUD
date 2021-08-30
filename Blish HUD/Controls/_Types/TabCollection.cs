@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Blish_HUD.Controls._Types {
-    public class TabCollection : ICollection<ITab> {
+namespace Blish_HUD.Controls {
+    public class TabCollection : ICollection<Tab> {
 
-        private List<ITab> _tabs = new List<ITab>();
+        private List<Tab> _tabs = new List<Tab>();
 
-        public IEnumerator<ITab> GetEnumerator() {
+        private readonly ITabOwner _owner;
+
+        public TabCollection(ITabOwner owner) {
+            _owner = owner;
+        }
+
+        public IEnumerator<Tab> GetEnumerator() {
             return _tabs.GetEnumerator();
         }
 
@@ -15,25 +21,42 @@ namespace Blish_HUD.Controls._Types {
             return GetEnumerator();
         }
 
-        public void Add(ITab item) {
-            _tabs.Add(item);
-            _tabs = _tabs.OrderBy(tab => tab.Priority).ToList();
+        public void Add(Tab item) {
+            _tabs = new List<Tab>(_tabs.Concat(new []{ item }).OrderBy(tab => tab.OrderPriority));
+
+            if (_tabs.Count == 1) {
+                _owner.SelectedTab = item;
+            }
         }
 
         public void Clear() {
             _tabs.Clear();
+
+            _owner.SelectedTab = null;
         }
 
-        public bool Contains(ITab item) {
+        public bool Contains(Tab item) {
             return _tabs.Contains(item);
         }
 
-        public void CopyTo(ITab[] array, int arrayIndex) {
+        public void CopyTo(Tab[] array, int arrayIndex) {
             _tabs.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(ITab item) {
+        public bool Remove(Tab item) {
             return _tabs.Remove(item);
+        }
+
+        public int IndexOf(Tab tab) {
+            return _tabs.IndexOf(tab);
+        }
+
+        public Tab FromIndex(int tabIndex) {
+            if (tabIndex >= 0 && tabIndex < _tabs.Count) {
+                return _tabs[tabIndex];
+            }
+
+            return null;
         }
 
         public int  Count      => _tabs.Count;

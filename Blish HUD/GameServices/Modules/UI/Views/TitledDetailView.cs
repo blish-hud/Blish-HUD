@@ -31,12 +31,12 @@ namespace Blish_HUD.Modules.UI.Views {
             set => _rootPanel.Title = value;
         }
 
-        protected sealed override void Build(Container buildPanel) {
+        protected sealed override void Build(Container viewTarget) {
             _rootPanel = new Panel() {
-                Size       = buildPanel.ContentRegion.Size,
+                Size       = viewTarget.ContentRegion.Size,
                 ShowBorder = true,
                 CanScroll  = true,
-                Parent     = buildPanel
+                Parent     = viewTarget
             };
 
             _warningIcon = new GlowButton() {
@@ -46,16 +46,16 @@ namespace Blish_HUD.Modules.UI.Views {
                 ActiveIcon = GameService.Content.GetTexture("common/440024"),
                 Visible     = false,
                 ClipsBounds = false,
-                Parent      = buildPanel
+                Parent      = viewTarget
             };
 
             _menuButton = new GlowButton() {
-                Location         = new Point(buildPanel.ContentRegion.Width - 42, 3),
+                Location         = new Point(viewTarget.ContentRegion.Width - 42, 3),
                 Icon             = GameService.Content.GetTexture("common/157109"),
                 ActiveIcon       = GameService.Content.GetTexture("common/157110"),
                 BasicTooltipText = Strings.Common.Options,
                 Visible          = false,
-                Parent           = buildPanel
+                Parent           = viewTarget
             };
 
             _menuButton.Click += MenuButtonOnClick;
