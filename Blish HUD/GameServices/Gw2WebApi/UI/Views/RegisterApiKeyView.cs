@@ -63,7 +63,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _tokenCheckDebounceWrapper = ((Action<string>)CheckToken).Debounce();
         }
 
-        protected override void Build(Container viewTarget) {
+        protected override void Build(Container buildPanel) {
             var registerLbl = new Label() {
                 Text           = Strings.GameServices.Gw2ApiService.ManageApiKeys_Title,
                 Font           = GameService.Content.DefaultFont32,
@@ -71,15 +71,15 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 AutoSizeHeight = true,
                 AutoSizeWidth  = true,
                 Location       = new Point(25, 25),
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             _apiKeyTextBox = new TextBox() {
                 Location = new Point(registerLbl.Left, registerLbl.Bottom + 10),
                 Font     = GameService.Content.DefaultFont16,
-                Width    = viewTarget.Width - 50,
+                Width    = buildPanel.Width - 50,
                 Height   = 43,
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             _apiKeyTextBox.TextChanged += ApiKeyTextBoxOnTextChanged;
@@ -89,7 +89,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Width  = 96,
                 Right  = _apiKeyTextBox.Right,
                 Top    = _apiKeyTextBox.Bottom + 5,
-                Parent = viewTarget
+                Parent = buildPanel
             };
 
             var clearKeyBttn = new StandardButton() {
@@ -97,20 +97,20 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Width  = 96,
                 Right  = _registerKeyBttn.Left - 10,
                 Top    = _registerKeyBttn.Top,
-                Parent = viewTarget
+                Parent = buildPanel
             };
 
             _tokenStatusImg = new Image() {
                 Size     = new Point(32,                  32),
                 Location = new Point(_apiKeyTextBox.Left, _apiKeyTextBox.Bottom + 5),
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             _loadingSpinner = new LoadingSpinner() {
                 Size     = _tokenStatusImg.Size,
                 Location = _tokenStatusImg.Location,
                 Visible  = false,
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             _tokenStatusLbl = new Label() {
@@ -118,16 +118,16 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 AutoSizeWidth = true,
                 Location      = new Point(_tokenStatusImg.Right + 5, _tokenStatusImg.Top),
                 Height        = _tokenStatusImg.Height,
-                Parent        = viewTarget
+                Parent        = buildPanel
             };
 
             _tokensList = new FlowPanel {
                 Location            = new Point(_apiKeyTextBox.Left, _tokenStatusImg.Bottom                     + 25),
-                Size                = new Point(380,                 viewTarget.Height - _tokenStatusImg.Bottom - 25),
+                Size                = new Point(380,                 buildPanel.Height - _tokenStatusImg.Bottom - 25),
                 OuterControlPadding = new Vector2(11, 11),
                 CanScroll           = true,
                 ShowBorder          = true,
-                Parent              = viewTarget
+                Parent              = buildPanel
             };
 
 
@@ -148,7 +148,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
                 StrokeText     = true,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             var bullet = GameService.Content.GetTexture("155038");
@@ -158,7 +158,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             var step1Bullet = new Image(bullet) {
                 Size     = new Point(16,                16),
                 Location = new Point(instructions.Left, instructions.Bottom + 10),
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             var step1 = new Label() {
@@ -167,7 +167,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             var openAnetApplicationsBttn = new StandardButton() {
@@ -175,13 +175,13 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Icon     = GameService.Content.GetTexture("common/1441452"),
                 Size     = new Point(256,        32),
                 Location = new Point(step1.Left, step1.Bottom + 5),
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             var step2Bullet = new Image(bullet) {
                 Size     = new Point(16,                16),
                 Location = new Point(step1Bullet.Left, openAnetApplicationsBttn.Bottom + offset),
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             var step2 = new Label() {
@@ -190,13 +190,13 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             var step3Bullet = new Image(bullet) {
                 Size     = new Point(16,               16),
                 Location = new Point(step1Bullet.Left, step2.Bottom + offset),
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             var step3 = new Label() {
@@ -205,7 +205,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             var step3Warn = new Label() {
@@ -215,13 +215,13 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Font           = GameService.Content.DefaultFont12,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             var step4Bullet = new Image(bullet) {
                 Size     = new Point(16,               16),
                 Location = new Point(step1Bullet.Left, step3Warn.Bottom + offset),
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             var step4 = new Label() {
@@ -230,13 +230,13 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             var step5Bullet = new Image(bullet) {
                 Size     = new Point(16,               16),
                 Location = new Point(step1Bullet.Left, step4.Bottom + offset),
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             var step5 = new Label() {
@@ -245,7 +245,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Font           = GameService.Content.DefaultFont16,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             openAnetApplicationsBttn.Click += delegate { Process.Start("https://account.arena.net/applications"); };

@@ -5,12 +5,12 @@ using Blish_HUD.Settings.UI.Views;
 namespace Blish_HUD.Overlay.UI.Views {
     public class OverlaySettingsView : View {
 
-        protected override void Build(Container viewTarget) {
+        protected override void Build(Container buildPanel) {
             var rootPanel = new FlowPanel() {
                 WidthSizingMode  = SizingMode.Fill,
                 HeightSizingMode = SizingMode.Fill,
                 FlowDirection    = ControlFlowDirection.SingleTopToBottom,
-                Parent           = viewTarget
+                Parent           = buildPanel
             };
 
             BuildOverlaySettings(rootPanel);

@@ -147,7 +147,7 @@ namespace Blish_HUD.Modules.UI.Views {
             this.WithPresenter(new ManagePkgPresenter(this, model));
         }
 
-        protected override void Build(Container viewTarget) {
+        protected override void Build(Container buildPanel) {
             _nameLabel = new Label() {
                 Text           = "W",
                 AutoSizeWidth  = true,
@@ -155,7 +155,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 Font           = GameService.Content.DefaultFont18,
                 Location       = new Point(5, 5),
                 Visible        = false,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             _authLabel = new Label() {
@@ -166,14 +166,14 @@ namespace Blish_HUD.Modules.UI.Views {
                 VerticalAlignment = VerticalAlignment.Bottom,
                 Left              = _nameLabel.Right + 10,
                 Top               = _nameLabel.Top,
-                Parent            = viewTarget
+                Parent            = buildPanel
             };
 
             _versionDropdown = new Dropdown() {
                 Width   = 128,
-                Right   = viewTarget.Width - 5,
+                Right   = buildPanel.Width - 5,
                 Top     = 5,
-                Parent  = viewTarget
+                Parent  = buildPanel
             };
 
             _statusImage = new Image(GameService.Content.GetTexture("common/157397")) {
@@ -181,22 +181,22 @@ namespace Blish_HUD.Modules.UI.Views {
                 Size    = new Point(16, 16),
                 Top     = _versionDropdown.Height / 2 - 8 + _versionDropdown.Top,
                 Right   = _versionDropdown.Left           - 8,
-                Parent  = viewTarget
+                Parent  = buildPanel
             };
 
             _actionButton = new StandardButton() {
                 Width  = 132,
-                Right  = viewTarget.Width  - 3,
-                Bottom = viewTarget.Height - 3,
-                Parent = viewTarget
+                Right  = buildPanel.Width  - 3,
+                Bottom = buildPanel.Height - 3,
+                Parent = buildPanel
             };
 
             _descLabel = new Label() {
                 WrapText          = true,
                 Font              = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic),
                 Location          = new Point(_nameLabel.Left, _nameLabel.Bottom + 4),
-                Size              = new Point(_actionButton.Left                 - _nameLabel.Left * 2, viewTarget.Height - _nameLabel.Bottom - 8),
-                Parent            = viewTarget,
+                Size              = new Point(_actionButton.Left                 - _nameLabel.Left * 2, buildPanel.Height - _nameLabel.Bottom - 8),
+                Parent            = buildPanel,
                 VerticalAlignment = VerticalAlignment.Top
             };
 

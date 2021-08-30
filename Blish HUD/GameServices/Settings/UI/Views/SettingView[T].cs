@@ -51,12 +51,12 @@ namespace Blish_HUD.Settings.UI.Views {
             this.WithPresenter(new SettingPresenter<TSetting>(this, setting));
         }
 
-        protected sealed override void Build(Container viewTarget) {
+        protected sealed override void Build(Container buildPanel) {
             if (_definedWidth > 0) {
-                viewTarget.Width = _definedWidth;
+                buildPanel.Width = _definedWidth;
             }
 
-            BuildSetting(viewTarget);
+            BuildSetting(buildPanel);
 
             Refresh();
         }

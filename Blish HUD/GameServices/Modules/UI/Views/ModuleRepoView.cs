@@ -28,11 +28,11 @@ namespace Blish_HUD.Modules.UI.Views {
             this.WithPresenter(new ModuleRepoPresenter(this, pkgRepoProvider));
         }
 
-        protected override void Build(Container viewTarget) {
+        protected override void Build(Container buildPanel) {
             _searchbox = new TextBox {
                 PlaceholderText = Strings.Common.PlaceholderSearch,
-                Width           = viewTarget.Width - 56,
-                Parent          = viewTarget
+                Width           = buildPanel.Width - 56,
+                Parent          = buildPanel
             };
 
             var settingsButton = new GlowButton {
@@ -41,19 +41,19 @@ namespace Blish_HUD.Modules.UI.Views {
                 ActiveIcon       = GameService.Content.GetTexture("common/157110"),
                 Visible          = true,
                 BasicTooltipText = Strings.Common.Options,
-                Parent           = viewTarget
+                Parent           = buildPanel
             };
 
             this.SettingsMenu = new ContextMenuStrip();
 
             this.RepoFlowPanel = new FlowPanel {
-                Width               = viewTarget.Width,
-                Height              = viewTarget.Height - _searchbox.Bottom - 44,
+                Width               = buildPanel.Width,
+                Height              = buildPanel.Height - _searchbox.Bottom - 44,
                 Top                 = _searchbox.Bottom                     + 12,
                 CanScroll           = true,
                 ControlPadding      = new Vector2(0, 5),
                 OuterControlPadding = new Vector2(5, 5),
-                Parent              = viewTarget
+                Parent              = buildPanel
             };
 
             _restartBlishHud = new StandardButton {
@@ -62,7 +62,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 Top     = this.RepoFlowPanel.Bottom + 5,
                 Right   = this.RepoFlowPanel.Right  - 23,
                 Visible = false,
-                Parent  = viewTarget,
+                Parent  = buildPanel,
             };
 
             _restartBlishHudWarning = new Label {
@@ -75,7 +75,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 Top               = _restartBlishHud.Top,
                 Right             = _restartBlishHud.Left - 4,
                 Visible           = false,
-                Parent            = viewTarget
+                Parent            = buildPanel
             };
 
             _searchbox.TextChanged += SearchboxOnTextChanged;

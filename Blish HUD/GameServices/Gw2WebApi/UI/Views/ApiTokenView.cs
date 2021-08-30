@@ -113,9 +113,9 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                                                     : GameService.Content.GetTexture("1863945-crop");
         }
 
-        protected override void Build(Container viewTarget) {
+        protected override void Build(Container buildPanel) {
             _failedTokenLbl = new Label() {
-                Size                = viewTarget.Size,
+                Size                = buildPanel.Size,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment   = VerticalAlignment.Middle,
                 Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia,
@@ -123,7 +123,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                                                    ContentService.FontStyle.Italic),
                 Text    = Strings.GameServices.Gw2ApiService.TokenStatus_FailedToLoad,
                 Visible = _errored,
-                Parent  = viewTarget
+                Parent  = buildPanel
             };
 
             _accountNameLbl = new Label() {
@@ -132,15 +132,15 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 ShowShadow     = true,
                 Location       = new Point(10, 10),
                 AutoSizeHeight = true,
-                Width          = viewTarget.Width - 20,
+                Width          = buildPanel.Width - 20,
                 Visible        = !_errored,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             _regionFlagImg = new Image() {
                 Size     = new Point(16,                   16),
                 Location = new Point(_accountNameLbl.Left, _accountNameLbl.Bottom + 2),
-                Parent   = viewTarget
+                Parent   = buildPanel
             };
 
             _accountCommanderImg = new Image(GameService.Content.GetTexture("common/1234943")) {
@@ -148,37 +148,37 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Location         = new Point(_regionFlagImg.Right + 4, _regionFlagImg.Top),
                 BasicTooltipText = Strings.GameServices.Gw2ApiService.AccountInfo_Commander,
                 Visible          = false,
-                Parent           = viewTarget
+                Parent           = buildPanel
             };
 
             _tokenKeyLbl = new Label() {
                 Text           = "[Token Key]",
                 AutoSizeHeight = true,
-                Width          = viewTarget.Width / 4,
+                Width          = buildPanel.Width / 4,
                 Left           = _accountNameLbl.Left,
-                Bottom         = viewTarget.Height - 10,
+                Bottom         = buildPanel.Height - 10,
                 Visible        = !_errored,
-                Parent         = viewTarget
+                Parent         = buildPanel
             };
 
             _tokenNameLbl = new Label() {
                 Text                = "[Token Name]",
                 HorizontalAlignment = HorizontalAlignment.Right,
                 AutoSizeHeight      = true,
-                Width               = (viewTarget.Width / 4) * 3 - 30,
+                Width               = (buildPanel.Width / 4) * 3 - 30,
                 Left                = _tokenKeyLbl.Right         + 10,
                 Bottom              = _tokenKeyLbl.Bottom,
                 Visible             = !_errored,
-                Parent              = viewTarget
+                Parent              = buildPanel
             };
 
             _deleteBttn = new GlowButton() {
                 Icon             = GameService.Content.GetTexture("common/733269"),
                 ActiveIcon       = GameService.Content.GetTexture("common/733270"),
-                Location         = new Point(viewTarget.Width - 26, 10),
+                Location         = new Point(buildPanel.Width - 26, 10),
                 Size             = new Point(16,                    16),
                 BasicTooltipText = Strings.GameServices.Gw2ApiService.ManageApiKeys_DeleteToken,
-                Parent           = viewTarget
+                Parent           = buildPanel
             };
 
             _deleteBttn.Click += DeleteRegisteredToken;
