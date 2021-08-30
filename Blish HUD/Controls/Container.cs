@@ -121,7 +121,7 @@ namespace Blish_HUD.Controls {
         protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
 
         public IEnumerable<Control> GetDescendants() {
-            // Breadth-first unrolling without the inefficiency of direction recursion.
+            // Breadth-first unrolling without the inefficiency of recursion.
             var remainingChildren = new Queue<Control>(this.Children);
 
             while (remainingChildren.Count > 0) {
