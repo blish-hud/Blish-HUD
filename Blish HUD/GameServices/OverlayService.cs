@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Input;
 using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay;
@@ -15,7 +16,9 @@ using Blish_HUD.Settings;
 using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MenuItem = Blish_HUD.Controls.MenuItem;
 
 namespace Blish_HUD {
@@ -41,6 +44,8 @@ namespace Blish_HUD {
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
+        public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
+        public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
@@ -87,6 +92,8 @@ namespace Blish_HUD {
             this.UserLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
             this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description);
             this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
+            this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape", true,                   () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName, () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
+            this.HideAllInterface = settings.DefineSetting(nameof(this.HideAllInterface), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H),                        () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
 
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);
