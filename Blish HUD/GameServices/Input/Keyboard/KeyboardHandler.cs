@@ -54,6 +54,7 @@ namespace Blish_HUD.Input {
         private readonly List<Keys> _keysDown = new List<Keys>();
 
         // Keys which, when pressed, should never be captured exclusively by the keyboard hook
+        // TODO: implement a more elegant way to not capture global hotkeys
         private readonly HashSet<Keys> _hookIgnoredKeys = new HashSet<Keys>() {
             Keys.NumLock,
             Keys.CapsLock,
@@ -64,7 +65,8 @@ namespace Blish_HUD.Input {
             Keys.LeftAlt,
             Keys.RightAlt,
             Keys.LeftShift,
-            Keys.RightShift
+            Keys.RightShift,
+            Keys.Tab
         };
 
         /// <summary>
