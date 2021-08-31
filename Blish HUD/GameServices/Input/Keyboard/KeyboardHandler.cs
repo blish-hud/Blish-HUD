@@ -64,7 +64,8 @@ namespace Blish_HUD.Input {
             Keys.LeftAlt,
             Keys.RightAlt,
             Keys.LeftShift,
-            Keys.RightShift
+            Keys.RightShift,
+            Keys.Tab
         };
 
         /// <summary>
