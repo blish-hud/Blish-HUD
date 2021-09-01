@@ -415,16 +415,18 @@ namespace Blish_HUD.Controls {
         [JsonIgnore]
         public Rectangle AbsoluteBounds {
             get {
-                if (_parent == null) return this.LocalBounds;
+                var parent = this.Parent;
 
-                var parentBounds        = _parent.AbsoluteBounds;
-                var parentContentRegion = _parent.ContentRegion;
+                if (parent == null) return this.LocalBounds;
+
+                var parentBounds        = parent.AbsoluteBounds;
+                var parentContentRegion = parent.ContentRegion;
 
                 // Clean this up
                 // This is really the absolute bounds of the ContentRegion currently because mouse
                 // input is currently using this to determine if the click was within the region
-                return new Rectangle(parentBounds.X + parentContentRegion.X + _location.X - _parent.HorizontalScrollOffset,
-                                     parentBounds.Y + parentContentRegion.Y + _location.Y - _parent.VerticalScrollOffset,
+                return new Rectangle(parentBounds.X + parentContentRegion.X + _location.X - parent.HorizontalScrollOffset,
+                                     parentBounds.Y + parentContentRegion.Y + _location.Y - parent.VerticalScrollOffset,
                                      _size.X,
                                      _size.Y);
             }
@@ -648,11 +650,13 @@ namespace Blish_HUD.Controls {
         }
         
         protected float AbsoluteOpacity(bool isInternal) {
-            if (_parent == null) return _opacity;
+            var parent = this.Parent;
+
+            if (parent == null) return _opacity;
 
             return isInternal
-                       ? _parent.AbsoluteOpacity(true) - (1f - _opacity)
-                       : MathHelper.Clamp(_parent.AbsoluteOpacity(true) - (1f - _opacity), 0f, 1f);
+                       ? parent.AbsoluteOpacity(true) - (1f - _opacity)
+                       : MathHelper.Clamp(parent.AbsoluteOpacity(true) - (1f - _opacity), 0f, 1f);
         }
 
         public float AbsoluteOpacity() {
