@@ -36,17 +36,13 @@ namespace Blish_HUD {
 
         static DirectoryUtil() {
             // Prepare user documents directory
-            // Check if current working directory contains "Settings" folder
+            // Check if Blish directory contains "Settings" folder
             // in that case override MyDocuments location as default for portability
             // --settings cli argument has still priority
-            string BlishExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
-
-            if (Directory.Exists(Path.Combine(Path.GetDirectoryName(BlishExeFilePath), @"Settings"))) {
+            if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Settings"))) {
                 BasePath = ApplicationSettings.Instance.UserSettingsPath
-                        ?? Path.Combine(Path.GetDirectoryName(BlishExeFilePath), @"Settings");
-            }
-            else {
+                        ?? Path.Combine(Directory.GetCurrentDirectory(), "Settings");
+            } else {
                 BasePath = ApplicationSettings.Instance.UserSettingsPath
                         ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                    Environment.SpecialFolderOption.DoNotVerify),
