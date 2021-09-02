@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using Blish_HUD.DebugHelperLib.Models;
+using Blish_HUD.DebugHelper.Models;
 using ProtoBuf;
 
-namespace Blish_HUD.DebugHelperLib.Services {
+namespace Blish_HUD.DebugHelper.Services {
 
     public class StreamMessageService : IMessageService, IDisposable {
 
@@ -66,7 +66,7 @@ namespace Blish_HUD.DebugHelperLib.Services {
 
         public T SendAndWait<T>(Message message) where T : Message => SendAndWait<T>(message, TimeSpan.FromMilliseconds(-1))!;
 
-        public T? SendAndWait<T>(Message message, TimeSpan timeout) where T : Message {
+        public T SendAndWait<T>(Message message, TimeSpan timeout) where T : Message {
             using var fResetEvent = new ManualResetEventSlim(false);
 
             lock (outLock) {
@@ -89,9 +89,11 @@ namespace Blish_HUD.DebugHelperLib.Services {
         private void SetId(Message message) {
             if (message.Id != 0) return;
 
-            ulong time      = (ulong)(DateTime.UtcNow - Process.GetCurrentProcess().StartTime).TotalMilliseconds & 0x1FFFFFFFFFF;
-            ulong processId = (ulong)Process.GetCurrentProcess().Id                                              & 0x3FF;
-            ulong seq       = (ulong)Interlocked.Increment(ref lastMessageId)                                    & 0x1FFF;
+            using var process = Process.GetCurrentProcess();
+
+            ulong time      = (ulong)(DateTime.UtcNow - process.StartTime).TotalMilliseconds & 0x1FFFFFFFFFF;
+            ulong processId = (ulong)process.Id                                              & 0x3FF;
+            ulong seq       = (ulong)Interlocked.Increment(ref lastMessageId)                & 0x1FFF;
             message.Id = (time << 23) | (processId << 13) | seq;
         }
 

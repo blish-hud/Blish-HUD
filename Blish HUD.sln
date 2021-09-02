@@ -5,15 +5,11 @@ VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blish HUD", "Blish HUD\Blish HUD.csproj", "{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugHelper", "DebugHelper\DebugHelper.csproj", "{953BF03E-0AD8-4240-B448-05871BC08579}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0C6D94B-7035-478B-BA1B-CEB7A5D079BD}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Resources.Designer.t4 = Resources.Designer.t4
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugHelperLib", "DebugHelperLib\DebugHelperLib.csproj", "{6E4AF619-8380-41F6-A83B-0DEFC20FEC8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,21 +21,13 @@ Global
 		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|x64.Build.0 = Debug|x64
 		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x64.ActiveCfg = Release|x64
 		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x64.Build.0 = Release|x64
-		{953BF03E-0AD8-4240-B448-05871BC08579}.Debug|x64.ActiveCfg = Debug|x64
-		{953BF03E-0AD8-4240-B448-05871BC08579}.Debug|x64.Build.0 = Debug|x64
-		{953BF03E-0AD8-4240-B448-05871BC08579}.Release|x64.ActiveCfg = Release|x64
-		{953BF03E-0AD8-4240-B448-05871BC08579}.Release|x64.Build.0 = Release|x64
-		{6E4AF619-8380-41F6-A83B-0DEFC20FEC8C}.Debug|x64.ActiveCfg = Debug|x64
-		{6E4AF619-8380-41F6-A83B-0DEFC20FEC8C}.Debug|x64.Build.0 = Debug|x64
-		{6E4AF619-8380-41F6-A83B-0DEFC20FEC8C}.Release|x64.ActiveCfg = Release|x64
-		{6E4AF619-8380-41F6-A83B-0DEFC20FEC8C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_ConfirmAddLanguageFile = True
-		RESX_AutoCreateNewLanguageFiles = True
 		SolutionGuid = {BCD3C4BD-915D-4622-A220-D39D18A327D9}
+		RESX_AutoCreateNewLanguageFiles = True
+		RESX_ConfirmAddLanguageFile = True
 	EndGlobalSection
 EndGlobal

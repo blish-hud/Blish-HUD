@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Blish_HUD.DebugHelper.Services;
+using EntryPoint;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using EntryPoint;
 
 namespace Blish_HUD {
 
@@ -37,15 +39,23 @@ namespace Blish_HUD {
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args) {
-            if (Cli.Parse<ApplicationSettings>(args).CliExitEarly) return;
+        private static void Main(string[] args) {
+            var settings = Cli.Parse<ApplicationSettings>(args);
+
+            if (settings.MainProcessId.HasValue) {
+                // The only current subprocess is our DebugHelper
+                RunDebugHelper(settings.MainProcessId.Value);
+                return;
+            }
+
+            if (settings.CliExitEarly) return;
 
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
 
             EnableLogging();
 
             Logger.Debug("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
-            
+
             if (!ApplicationSettings.Instance.RestartSkipMutex) {
                 // Single instance handling
                 _singleInstanceMutex = new Mutex(true, ApplicationSettings.Instance.MumbleMapName != null
@@ -67,6 +77,25 @@ namespace Blish_HUD {
             if (!ApplicationSettings.Instance.RestartSkipMutex) {
                 _singleInstanceMutex.ReleaseMutex();
             }
+        }
+
+        private static void RunDebugHelper(int mainProcessId) {
+            using var inStream = Console.OpenStandardInput();
+            using var outStream = Console.OpenStandardOutput();
+
+            var processService = new ProcessService(mainProcessId);
+            using var messageService = new StreamMessageService(inStream, outStream);
+            using var mouseHookService = new MouseHookService(messageService);
+            using var keyboardHookService = new KeyboardHookService(messageService);
+            using var inputManagerService = new InputManagerService(messageService, mouseHookService, keyboardHookService);
+
+            processService?.Start();
+            messageService.Start();
+            mouseHookService.Start();
+            keyboardHookService.Start();
+            inputManagerService.Start();
+
+            Application.Run();
         }
 
     }

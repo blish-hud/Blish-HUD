@@ -235,34 +235,26 @@
     <PackageReference Include="Octokit" Version="0.32.0" PrivateAssets="all" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" PrivateAssets="all" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
+    <PackageReference Include="protobuf-net" Version="3.0.101" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\DebugHelperLib\DebugHelperLib.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\DebugHelper\DebugHelper.csproj" PrivateAssets="all">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>Content</OutputItemType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </ProjectReference>
-  </ItemGroup>
-
+  
   <ItemGroup>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <Target Name="BuildRef" AfterTargets="Build">
-    <!-- Build ref.dat -->
+  <!-- Build ref.dat -->
     <ZipDirectory SourceDirectory="$(ProjectDir)ref" DestinationFile="$(OutDir)/ref.dat" Overwrite="true" />
   </Target>
   
   <Target Name="CleanRef" AfterTargets="Clean">
-    <!-- Clean custom output files -->
+  <!-- Clean custom output files -->
     <Delete Files="$(OutDir)/ref.dat" />
   </Target>
 
   <Target Name="AfterBuildContent" AfterTargets="BuildContent">
-    <!-- This will keep MonoGame compiled content files from being included in NuGet packages -->
+  <!-- This will keep MonoGame compiled content files from being included in NuGet packages -->
     <ItemGroup>
       <Content Update="$(ProjectDir)Content\bin\**" Pack="False" />
     </ItemGroup>

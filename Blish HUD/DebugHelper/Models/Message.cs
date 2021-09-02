@@ -1,6 +1,6 @@
 ﻿using ProtoBuf;
 
-namespace Blish_HUD.DebugHelperLib.Models {
+namespace Blish_HUD.DebugHelper.Models {
 
     [ProtoContract]
     [ProtoInclude(1, typeof(PingMessage))]
