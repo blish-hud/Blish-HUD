@@ -244,17 +244,17 @@
   </ItemGroup>
 
   <Target Name="BuildRef" AfterTargets="Build">
-  <!-- Build ref.dat -->
+    <!-- Build ref.dat -->
     <ZipDirectory SourceDirectory="$(ProjectDir)ref" DestinationFile="$(OutDir)/ref.dat" Overwrite="true" />
   </Target>
   
   <Target Name="CleanRef" AfterTargets="Clean">
-  <!-- Clean custom output files -->
+    <!-- Clean custom output files -->
     <Delete Files="$(OutDir)/ref.dat" />
   </Target>
 
   <Target Name="AfterBuildContent" AfterTargets="BuildContent">
-  <!-- This will keep MonoGame compiled content files from being included in NuGet packages -->
+    <!-- This will keep MonoGame compiled content files from being included in NuGet packages -->
     <ItemGroup>
       <Content Update="$(ProjectDir)Content\bin\**" Pack="False" />
     </ItemGroup>
