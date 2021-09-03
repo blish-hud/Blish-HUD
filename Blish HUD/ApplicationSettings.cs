@@ -175,6 +175,16 @@ namespace Blish_HUD {
         ]
         public bool RestartSkipMutex { get; private set; }
 
+        public const string OPTION_MAINPROCESSID = "mainprocessid";
+        /// <summary>
+        /// The main Blish HUD process id. Used internally for subprocesses.
+        /// </summary>
+        [
+            OptionParameter(OPTION_MAINPROCESSID),
+            Help("The main Blish HUD process id. Used internally for subprocesses.")
+        ]
+        public int? MainProcessId { get; private set; }
+
         #endregion
 
     }
