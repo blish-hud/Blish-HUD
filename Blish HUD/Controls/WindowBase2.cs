@@ -187,6 +187,15 @@ namespace Blish_HUD.Controls {
             private set => SetProperty(ref _dragging, value);
         }
 
+        private bool _resizing;
+        /// <summary>
+        /// Indicates if the window is actively being resized.
+        /// </summary>
+        public bool Resizing {
+            get => _resizing;
+            private set => SetProperty(ref _resizing, value);
+        }
+
         private readonly Glide.Tween _animFade;
 
         protected WindowBase2() {
@@ -217,6 +226,9 @@ namespace Blish_HUD.Controls {
                 Location += nOffset;
 
                 _dragStart = Input.Mouse.Position;
+            } else if (this.Resizing) {
+                var nOffset = Input.Mouse.Position - _dragStart;
+                this.Size = HandleWindowResize(_resizeStart + nOffset);
             }
         }
 
@@ -404,7 +416,8 @@ namespace Blish_HUD.Controls {
         protected bool MouseOverExitButton   { get; private set; }
         protected bool MouseOverResizeHandle { get; private set; }
 
-        private Point _dragStart = Point.Zero;
+        private Point _dragStart   = Point.Zero;
+        private Point _resizeStart = Point.Zero;
 
         protected override void OnMouseMoved(MouseEventArgs e) {
             ResetMouseRegionStates();
@@ -423,13 +436,14 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalMouseRelease(object sender, MouseEventArgs e) {
-            if (this.Visible && this.Dragging) {
+            if (this.Visible && (this.Dragging || this.Resizing)) {
                 // Save position for next launch
                 if (this.SavesPosition && this.Id != null) {
                     (_windowSettings[this.Id] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id, this.Location)).Value = this.Location;
                 }
 
-                Dragging = false;
+                this.Dragging = false;
+                this.Resizing = false;
             }
         }
 
@@ -443,7 +457,11 @@ namespace Blish_HUD.Controls {
 
             if (this.MouseOverTitleBar) {
                 this.Dragging = true;
-                _dragStart = Input.Mouse.Position;
+                _dragStart    = Input.Mouse.Position;
+            } else if (this.MouseOverResizeHandle) {
+                this.Resizing = true;
+                _resizeStart  = this.Size;
+                _dragStart    = Input.Mouse.Position;
             } else if (this.MouseOverExitButton && this.CanClose) {
                 Hide();
             }
@@ -455,6 +473,15 @@ namespace Blish_HUD.Controls {
             this.MouseOverTitleBar     = false;
             this.MouseOverExitButton   = false;
             this.MouseOverResizeHandle = false;
+        }
+
+        /// <summary>
+        /// Modifies the window size as it's being resized.
+        /// Override to lock the window size at specific intervals or implement other resize behaviors.
+        /// </summary>
+        protected virtual Point HandleWindowResize(Point newSize) {
+            return new Point(MathHelper.Clamp(newSize.X, SidebarActiveBounds.Right + STANDARD_MARGIN, 1024),
+                             MathHelper.Clamp(newSize.Y, TitleBarBounds.Bottom     + STANDARD_MARGIN, 1024));
         }
 
         public void BringWindowToFront() {
@@ -509,7 +536,7 @@ namespace Blish_HUD.Controls {
         private void PaintCorner(SpriteBatch spriteBatch) {
             if (this.CanResize) {
                 spriteBatch.DrawOnCtrl(this,
-                                       this.MouseOverResizeHandle
+                                       this.MouseOverResizeHandle || this.Resizing
                                        ? _textureWindowResizableCornerActive
                                        : _textureWindowResizableCorner,
                                        this.ResizeHandleBounds);
