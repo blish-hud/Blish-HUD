@@ -253,19 +253,25 @@ namespace Blish_HUD {
 
             Gw2WebApi.AnonymousConnection.Client.Render.DownloadToByteArrayAsync(requestUrl)
                      .ContinueWith((textureDataResponse) => {
-                        if (textureDataResponse.Exception != null) {
-                            Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
-                            return;
-                        }
+                                       if (textureDataResponse.Exception != null) {
+                                           Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
+                                           return;
+                                       }
 
-                        var textureData = textureDataResponse.Result;
+                                       try {
+                                           var textureData = textureDataResponse.Result;
 
-                        using (var textureStream = new MemoryStream(textureData)) {
-                            var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
+                                           using (var textureStream = new MemoryStream(textureData)) {
+                                               var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
 
-                            returnedTexture.SwapTexture(loadedTexture);
-                        }
-                     });
+                                               returnedTexture.SwapTexture(loadedTexture);
+                                           }
+                                       } catch (Exception ex) {
+                                           Logger.Warn(ex, $"Render service texture {requestUrl} failed to load.");
+
+                                           returnedTexture.SwapTexture(Textures.Error);
+                                       }
+                                   });
 
             return returnedTexture;
         }
