@@ -45,6 +45,13 @@ namespace Blish_HUD {
         public OverlaySettingsTab SettingsTab { get; private set; }
 
         /// <summary>
+        /// Indicates that Blish HUD is actively attempting to exit.
+        /// </summary>
+        public bool Exiting { get; private set; }
+
+        private readonly object _exitLock = new object();
+
+        /// <summary>
         /// Allows you to enqueue a call that will occur during the next time the update loop executes.
         /// </summary>
         /// <param name="call">A method accepting <see cref="GameTime" /> as a parameter.</param>
@@ -109,12 +116,19 @@ namespace Blish_HUD {
         /// Instructs Blish HUD to unload and exit.
         /// </summary>
         public void Exit() {
-            this.BeginExit(FORCE_EXIT_TIMEOUT);
+            if (!this.BeginExit(FORCE_EXIT_TIMEOUT)) return;
 
             ActiveBlishHud.Exit();
         }
 
-        private void BeginExit(int timeout) {
+        private bool BeginExit(int timeout) {
+            lock (_exitLock) {
+                if (this.Exiting) return false;
+                this.Exiting = true;
+            }
+
+            Logger.Info($"Exiting [{timeout}]!");
+
             GameService.Settings.Save(true);
 
             if (timeout > 0) {
@@ -124,13 +138,15 @@ namespace Blish_HUD {
                                 Environment.Exit(0);
                             }) {IsBackground = true}).Start();
             }
+
+            return true;
         } 
         
         /// <summary>
         /// Instructs Blish HUD to unload and then restart.
         /// </summary>
         public void Restart() {
-            this.BeginExit(0);
+            if (!this.BeginExit(0)) return;
 
             // REF: https://referencesource.microsoft.com/#System.Windows.Forms/winforms/Managed/System/WinForms/Application.cs,1447
 

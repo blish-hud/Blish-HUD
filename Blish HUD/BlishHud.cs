@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Diagnostics;
+using System.Drawing;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace Blish_HUD {
 
@@ -28,7 +29,7 @@ namespace Blish_HUD {
 
         public IntPtr FormHandle { get; private set; }
 
-        public System.Windows.Forms.Form Form { get; private set; }
+        public Form Form { get; private set; }
 
         // TODO: Move this into GraphicsService
         public RasterizerState UiRasterizer { get; private set; }
@@ -56,7 +57,11 @@ namespace Blish_HUD {
         
         protected override void Initialize() {
             FormHandle = this.Window.Handle;
-            Form       = System.Windows.Forms.Control.FromHandle(FormHandle).FindForm();
+            Form       = Control.FromHandle(FormHandle).FindForm();
+
+            // Avoid the flash the window shows when the application launches
+            Form.Size     = new Size(1, 1);
+            Form.Location = new System.Drawing.Point(-Form.Width * 2, -Form.Height * 2);
 
             this.Window.IsBorderless = true;
             this.Window.AllowAltF4   = false;
@@ -92,7 +97,7 @@ namespace Blish_HUD {
 
         protected override void UnloadContent() {
             base.UnloadContent();
-
+            
             Logger.Debug("Unloading services.");
             
             // Let all of the game services have a chance to unload
@@ -102,17 +107,16 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            if (gameTime.TotalGameTime.TotalSeconds == 0) {
-                Logger.Trace("Skipping first update.");
-                // Update is called before the first render
-                // Skip to get to the first render as fast as possible
-                return;
-            }
-
-            // If gw2 isn't open - only update the most important things:
             if (!GameService.GameIntegration.Gw2IsRunning) {
+                // If gw2 isn't open so only run the essentials
                 GameService.Debug.DoUpdate(gameTime);
                 GameService.GameIntegration.DoUpdate(gameTime);
+
+                for (int i = 0; i < 200; i++) { // Wait ~10 seconds between checks
+                    if (GameService.GameIntegration.Gw2IsRunning || GameService.Overlay.Exiting) break;
+                    Thread.Sleep(50);
+                    Application.DoEvents();
+                }
 
                 return;
             }

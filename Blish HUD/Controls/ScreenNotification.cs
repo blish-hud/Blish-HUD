@@ -93,13 +93,11 @@ namespace Blish_HUD.Controls {
 
             _targetTop = this.Top;
         }
-
-        /// <inheritdoc />
+        
         protected override CaptureType CapturesInput() {
-            return CaptureType.ForceNone;
+            return CaptureType.Filter;
         }
-
-        /// <inheritdoc />
+        
         public override void RecalculateLayout() {
             switch (_type) {
                 case NotificationType.Info:

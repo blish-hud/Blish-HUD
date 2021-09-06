@@ -63,10 +63,6 @@ namespace Blish_HUD.Controls {
             base.OnLeftMouseButtonReleased(e);
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
-
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             string state = "-unchecked";
             state = this.Checked ? "-checked" : state;

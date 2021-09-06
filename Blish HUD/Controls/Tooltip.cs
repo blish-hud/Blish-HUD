@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Blish_HUD.Common.UI.Views;
+using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-   public class Tooltip : Container {
+   public class Tooltip : Panel, IViewContainer {
         
-        internal const int MOUSE_VERTICAL_MARGIN = 18;
+        internal const int MOUSE_VERTICAL_MARGIN = 36;
 
         private const int PADDING = 2;
 
         #region Load Static
 
-        private static readonly Thickness _contentEdgeBuffer;
+        private static Thickness _contentEdgeBuffer;
 
-        private static readonly List<Tooltip> _allTooltips;
+        private static List<Tooltip> _allTooltips;
 
-        private static readonly Texture2D _textureTooltip;
+        private static Texture2D _textureTooltip;
 
-        static Tooltip() {
+        internal static void EnableTooltips() {
             _contentEdgeBuffer = new Thickness(4, 4, 3, 6);
 
             _textureTooltip = Content.GetTexture("tooltip");
@@ -71,7 +74,7 @@ namespace Blish_HUD.Controls {
         private static void UpdateTooltipPosition(Tooltip tooltip) {
             int topPos = Input.Mouse.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height > 0
                              ? -Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height
-                             : Tooltip.MOUSE_VERTICAL_MARGIN * 2;
+                             : Tooltip.MOUSE_VERTICAL_MARGIN;
 
             int leftPos = Input.Mouse.Position.X + tooltip.Width < Graphics.SpriteScreen.Width
                               ? 0
@@ -82,6 +85,10 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        public ViewState ViewState   { get; private set; } = ViewState.None;
+
+        public IView CurrentView { get; private set; }
+
         public Control CurrentControl { get; set; }
 
         private Glide.Tween _animFadeLifecycle;
@@ -90,8 +97,38 @@ namespace Blish_HUD.Controls {
             this.ZIndex = Screen.TOOLTIP_BASEZINDEX;
 
             this.Padding = new Thickness(PADDING);
+            this.Visible = false;
 
             _allTooltips.Add(this);
+        }
+
+        public Tooltip(ITooltipView tooltipView) : this() {
+            ShowView(tooltipView);
+        }
+
+        private void ShowView(ITooltipView newView) {
+            if (newView == null) return;
+
+            this.ViewState = ViewState.Loading;
+
+            this.CurrentView = newView;
+
+            var progressIndicator = new Progress<string>((progressReport) => { /* NOOP */ });
+
+            newView.Loaded += OnViewBuilt;
+            newView.DoLoad(progressIndicator).ContinueWith(BuildView);
+        }
+
+        private void OnViewBuilt(object sender, EventArgs e) {
+            this.CurrentView.Loaded -= OnViewBuilt;
+
+            ViewState = ViewState.Loaded;
+        }
+
+        private void BuildView(Task<bool> loadResult) {
+            if (loadResult.Result) {
+                this.CurrentView.DoBuild(this);
+            }
         }
 
         protected override void OnChildAdded(ChildChangedEventArgs e) {
@@ -123,8 +160,10 @@ namespace Blish_HUD.Controls {
 
         public override void UpdateContainer(GameTime gameTime) {
             if (this.CurrentControl != null && !this.CurrentControl.Visible) {
-                this.Visible        = false;
+                this.Hide();
                 this.CurrentControl = null;
+            } else if (this.Visible) {
+                UpdateTooltipPosition(this);
             }
         }
 
@@ -207,5 +246,11 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 1, 1, _size.Y - 2).Add(-PADDING, -PADDING, 0, PADDING * 2), Color.Black * 0.6f);
         }
 
-    }
+        protected override void DisposeControl() {
+            this.CurrentView?.DoUnload();
+
+            base.DisposeControl();
+        }
+
+   }
 }

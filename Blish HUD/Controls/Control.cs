@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using Blish_HUD.Common.UI.Views;
 using Blish_HUD.Controls.Effects;
 using Blish_HUD.Input;
 using Newtonsoft.Json;
@@ -12,14 +13,42 @@ using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
 
 namespace Blish_HUD.Controls {
 
+    /// <summary>
+    /// Defines how input should be captured and if that input should be blocked from passing onward to Guild Wars 2.
+    /// </summary>
     [Flags]
     public enum CaptureType {
-        None       = 0x0,
-        Filter     = 0x1,
-        Keyboard   = 0x2,
-        Mouse      = 0x4,
+        None = 0x0,
+
+        /// <summary>
+        /// Mouse and mouse wheel inputs are intercepted but this control will not block input from passing to Guild Wars 2 or to other Blish HUD controls.
+        /// </summary>
+        Filter = 0x1,
+
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        [Obsolete("This capture type is not implemented.  Do not use it.", true)]
+        Keyboard = 0x2,
+
+        /// <summary>
+        /// The default <c>CaptureType</c>.
+        /// Intercepts mouse input (allowing for: <see cref="Control.LeftMouseButtonPressed"/>, <see cref="Control.LeftMouseButtonReleased"/>, <see cref="Control.RightMouseButtonPressed"/>,
+        /// <see cref="Control.RightMouseButtonReleased"/>, <see cref="Control.MouseMoved"/>, <see cref="Control.MouseEntered"/>, <see cref="Control.MouseLeft"/>).
+        /// Input is also blocked from being sent through to Guild Wars 2 unless the <see cref="DoNotBlock"/> flag is also set.
+        /// </summary>
+        Mouse = 0x4,
+
+        /// <summary>
+        /// Intercepts mouse wheel scrolling (allowing for: <see cref="Control.MouseWheelScrolled"/>).
+        /// Mouse wheel input is also blocked from being sent through to Guild Wars 2 unless the <see cref="DoNotBlock"/> flag is also set.
+        /// </summary>
         MouseWheel = 0x8,
-        ForceNone  = 0x16
+
+        /// <summary>
+        /// If applied, the control will not block mouse or mouse wheel input from passing to Guild Wars 2 regardless of what input it detects from other flags.
+        /// </summary>
+        DoNotBlock = 0x16
     }
 
     public abstract class Control : INotifyPropertyChanged, IDisposable {
@@ -85,22 +114,11 @@ namespace Blish_HUD.Controls {
         private static readonly SpriteBatchParameters _defaultSpriteBatchParameters;
 
         #endregion
-        
-        private static readonly Tooltip _sharedTooltip;
-        private static readonly Label   _sharedTooltipLabel;
 
         static Control() {
             _defaultSpriteBatchParameters = new SpriteBatchParameters();
 
-            // Build shared tooltip
-            _sharedTooltip = new Tooltip();
-            _sharedTooltipLabel = new Label() {
-                Text           = "Loading...",
-                AutoSizeHeight = true,
-                AutoSizeWidth  = true,
-                ShowShadow     = true,
-                Parent         = _sharedTooltip,
-            };
+            Tooltip.EnableTooltips();
         }
 
         #endregion
@@ -122,11 +140,6 @@ namespace Blish_HUD.Controls {
         }
 
         private static void OnActiveControlChanged(ControlActivatedEventArgs e) {
-            if (!string.IsNullOrEmpty(e.ActivatedControl?._basicTooltipText)) {
-                _sharedTooltip.CurrentControl = e.ActivatedControl;
-                _sharedTooltipLabel.Text      = e.ActivatedControl._basicTooltipText;
-            }
-
             ActiveControlChanged?.Invoke(null, e);
         }
 
@@ -230,17 +243,13 @@ namespace Blish_HUD.Controls {
         public bool MouseOver {
             get => _mouseOver;
             private set {
-                if (_mouseOver == value) return;
-
-                _mouseOver = value;
-
-                if (_mouseOver) {
-                    OnMouseEntered(new MouseEventArgs(MouseEventType.MouseEntered));
-                } else {
-                    OnMouseLeft(new MouseEventArgs(MouseEventType.MouseLeft));
+                if (SetProperty(ref _mouseOver, value)) {
+                    if (_mouseOver) {
+                        OnMouseEntered(new MouseEventArgs(MouseEventType.MouseEntered));
+                    } else {
+                        OnMouseLeft(new MouseEventArgs(MouseEventType.MouseLeft));
+                    }
                 }
-
-                OnPropertyChanged();
             }
         }
 
@@ -406,13 +415,18 @@ namespace Blish_HUD.Controls {
         [JsonIgnore]
         public Rectangle AbsoluteBounds {
             get {
-                if (_parent == null) return this.LocalBounds;
+                var parent = this.Parent;
+
+                if (parent == null) return this.LocalBounds;
+
+                var parentBounds        = parent.AbsoluteBounds;
+                var parentContentRegion = parent.ContentRegion;
 
                 // Clean this up
                 // This is really the absolute bounds of the ContentRegion currently because mouse
                 // input is currently using this to determine if the click was within the region
-                return new Rectangle(_parent.AbsoluteBounds.X + _parent.ContentRegion.X + _location.X - _parent.HorizontalScrollOffset,
-                                     _parent.AbsoluteBounds.Y + _parent.ContentRegion.Y + _location.Y - _parent.VerticalScrollOffset,
+                return new Rectangle(parentBounds.X + parentContentRegion.X + _location.X - parent.HorizontalScrollOffset,
+                                     parentBounds.Y + parentContentRegion.Y + _location.Y - parent.VerticalScrollOffset,
                                      _size.X,
                                      _size.Y);
             }
@@ -436,7 +450,13 @@ namespace Blish_HUD.Controls {
         /// Do not use this if you are already using <see cref="BasicTooltipText"/>.
         /// </summary>
         public Tooltip Tooltip {
-            get => _tooltip;
+            get {
+                if (_tooltip != null && !_tooltip._disposedValue) return _tooltip;
+
+                return !string.IsNullOrWhiteSpace(_basicTooltipText)
+                    ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
+                    : null;
+            }
             set => SetProperty(ref _tooltip, value);
         }
 
@@ -450,27 +470,19 @@ namespace Blish_HUD.Controls {
             set {
                 if (!SetProperty(ref _basicTooltipText, value)) return;
 
-                // In the event that the tooltip text is changed while it's
-                // being shown (or the mouse is over the control), this
-                // portion will update it and display it (if it isn't already).
-                if (Control.ActiveControl == this) {
-                    _sharedTooltipLabel.Text = value;
+                if (Control.ActiveControl == this && _tooltip != null) {
+                    // In the event that the tooltip text is changed while it's
+                    // being shown (or the mouse is over the control), this
+                    // portion will update it and display it (if it isn't already).
 
-                    if (!string.IsNullOrEmpty(value)) {
-                        _sharedTooltip.Show(Input.Mouse.Position + new Point(Tooltip.MOUSE_VERTICAL_MARGIN, -Tooltip.MOUSE_VERTICAL_MARGIN * 2));
-                    }
+                    if (_tooltip.CurrentView is BasicTooltipView tooltipView && !string.IsNullOrWhiteSpace(value)) {
+                        tooltipView.Text = value;
+                        return;
+                    }    
                 }
 
-                if (!string.IsNullOrEmpty(value)) {
-                    this.Tooltip = _sharedTooltip;
-
-                    this.MouseEntered += delegate {
-                        _sharedTooltipLabel.Text = this.BasicTooltipText;
-                    };
-                } else {
-                    this.Tooltip?.Hide();
-                    this.Tooltip = null;
-                }
+                _tooltip?.Hide();
+                _tooltip = null;
             }
         }
 
@@ -638,11 +650,13 @@ namespace Blish_HUD.Controls {
         }
         
         protected float AbsoluteOpacity(bool isInternal) {
-            if (_parent == null) return _opacity;
+            var parent = this.Parent;
+
+            if (parent == null) return _opacity;
 
             return isInternal
-                       ? _parent.AbsoluteOpacity(true) - (1f - _opacity)
-                       : MathHelper.Clamp(_parent.AbsoluteOpacity(true) - (1f - _opacity), 0f, 1f);
+                       ? parent.AbsoluteOpacity(true) - (1f - _opacity)
+                       : MathHelper.Clamp(parent.AbsoluteOpacity(true) - (1f - _opacity), 0f, 1f);
         }
 
         public float AbsoluteOpacity() {
@@ -653,41 +667,61 @@ namespace Blish_HUD.Controls {
         /// Specifies which type of input this <see cref="Control"/> accepts, possibly blocks from other <see cref="Control"/>s, and prevents the game from seeing.
         /// </summary>
         public CaptureType Captures => CapturesInput();
-
-        // TODO: Consider making CapturesInput abstract
+        
         /// <summary>
-        /// Override to specify which type of input this <see cref="Control"/> accepts.
+        /// Override to specify which type of input this <see cref="Control"/> accepts or intercepts.
         /// </summary>
         /// <seealso cref="Captures"/>
         protected virtual CaptureType CapturesInput() {
-            return CaptureType.Filter;
+            return CaptureType.Mouse;
+        }
+
+        protected void TriggerMouseEvent(MouseEventType mouseEventType) {
+            switch (mouseEventType) {
+                case MouseEventType.LeftMouseButtonPressed:
+                    OnLeftMouseButtonPressed(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed));
+                    break;
+                case MouseEventType.LeftMouseButtonReleased:
+                    OnLeftMouseButtonReleased(new MouseEventArgs(MouseEventType.LeftMouseButtonReleased));
+                    break;
+                case MouseEventType.RightMouseButtonPressed:
+                    OnRightMouseButtonPressed(new MouseEventArgs(MouseEventType.RightMouseButtonPressed));
+                    break;
+                case MouseEventType.RightMouseButtonReleased:
+                    OnRightMouseButtonReleased(new MouseEventArgs(MouseEventType.RightMouseButtonReleased));
+                    break;
+                case MouseEventType.MouseMoved:
+                    OnMouseMoved(new MouseEventArgs(MouseEventType.MouseMoved));
+                    this.MouseOver = true;
+                    break;
+                case MouseEventType.MouseWheelScrolled:
+                    OnMouseWheelScrolled(new MouseEventArgs(MouseEventType.MouseWheelScrolled));
+                    break;
+            }
         }
 
         public virtual Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
             var inputCapture = CapturesInput();
 
-            if (inputCapture == CaptureType.None) return null;
-
             switch (mouseEventType) {
-                case MouseEventType.LeftMouseButtonPressed:
-                    OnLeftMouseButtonPressed(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed));
-                    return this;
-                case MouseEventType.LeftMouseButtonReleased:
-                    OnLeftMouseButtonReleased(new MouseEventArgs(MouseEventType.LeftMouseButtonReleased));
-                    return this;
-                case MouseEventType.RightMouseButtonPressed:
-                    OnRightMouseButtonPressed(new MouseEventArgs(MouseEventType.RightMouseButtonPressed));
-                    return this;
-                case MouseEventType.RightMouseButtonReleased:
-                    OnRightMouseButtonReleased(new MouseEventArgs(MouseEventType.RightMouseButtonReleased));
-                    return this;
                 case MouseEventType.MouseMoved:
-                    OnMouseMoved(new MouseEventArgs(MouseEventType.MouseMoved));
-                    this.MouseOver = true;
-                    return this;
+                case MouseEventType.LeftMouseButtonPressed:
+                case MouseEventType.LeftMouseButtonReleased:
+                case MouseEventType.RightMouseButtonPressed:
+                case MouseEventType.RightMouseButtonReleased:
+                case MouseEventType.MouseEntered:
+                case MouseEventType.MouseLeft:
+                    if (inputCapture.HasFlag(CaptureType.Mouse) || inputCapture.HasFlag(CaptureType.Filter)) {
+                        TriggerMouseEvent(mouseEventType);
+                        return this;
+                    }
+                    break;
                 case MouseEventType.MouseWheelScrolled:
-                    OnMouseWheelScrolled(new MouseEventArgs(MouseEventType.MouseWheelScrolled));
-                    return inputCapture.HasFlag(CaptureType.MouseWheel) ? this : null;
+                    if (inputCapture.HasFlag(CaptureType.MouseWheel) || inputCapture.HasFlag(CaptureType.Filter)) {
+                        TriggerMouseEvent(mouseEventType);
+                        return this;
+                    }
+                    break;
             }
 
             return null;

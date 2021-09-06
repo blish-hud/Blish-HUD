@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 using Blish_HUD.GameServices;
+using Blish_HUD.Properties;
 
 namespace Blish_HUD.GameIntegration {
     public class WinFormsIntegration : ServiceModule<GameIntegrationService> {

@@ -20,11 +20,15 @@ namespace Blish_HUD.Controls {
 
         private const int CONTROL_WIDTH = BORDER_PADDING + ITEM_WIDTH + BORDER_PADDING;
 
+        private const int CLICK_DEBOUNCE = 100;
+
         #region Load Static
 
         private static readonly List<WeakReference<ContextMenuStrip>> _contextMenuStrips = new List<WeakReference<ContextMenuStrip>>();
 
         private static readonly Texture2D _textureMenuEdge;
+
+        private static double _lastOpenTime;
 
         static ContextMenuStrip() {
             _textureMenuEdge = Content.GetTexture("scrollbar-track");
@@ -40,6 +44,10 @@ namespace Blish_HUD.Controls {
         }
 
         private static void HandleMouseButtonPressed(object sender, MouseEventArgs e) {
+            // Debounce to prevent mistakenly closing the menu immediatley after opening (or when
+            // this event is triggered after the same event that triggered it to open)
+            if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastOpenTime < CLICK_DEBOUNCE) return;
+
             lock (_contextMenuStrips) {
                 WeakReference<ContextMenuStrip>[] allMenuStrips = _contextMenuStrips.ToArray();
 
@@ -71,10 +79,13 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnShown(EventArgs e) {
+            // Keep track of when we opened for debounce
+            _lastOpenTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
+
             this.Parent = GameService.Graphics.SpriteScreen;
 
             // If we have no children, don't display (and don't even call 'Shown' event)
-            if (!_children.Any()) {
+            if (_children.IsEmpty) {
                 this.Visible = false;
                 return;
             }
@@ -193,12 +204,8 @@ namespace Blish_HUD.Controls {
             this.Invalidate();
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Filter;
-        }
-
         public override void RecalculateLayout() {
-            if (_children.Any()) {
+            if (!_children.IsEmpty) {
                 int maxChildWidth = CONTROL_WIDTH;
 
                 int lastChildBottom = BORDER_PADDING - ITEM_VERTICALMARGIN;

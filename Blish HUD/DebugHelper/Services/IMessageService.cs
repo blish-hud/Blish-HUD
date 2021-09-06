@@ -17,7 +17,7 @@ namespace Blish_HUD.DebugHelper.Services {
 
         T SendAndWait<T>(Message message) where T : Message;
 
-        T? SendAndWait<T>(Message message, TimeSpan timeout) where T : Message;
+        T SendAndWait<T>(Message message, TimeSpan timeout) where T : Message;
 
     }
 

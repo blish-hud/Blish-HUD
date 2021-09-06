@@ -43,7 +43,7 @@ namespace Blish_HUD.Controls {
 
         private static readonly Logger Logger = Logger.GetLogger<TextInputBase>();
 
-        protected static readonly char[] WordSeperators  = { ' ', '\n', '`', '~', '!', '@', '#', '%', '^', '&', '*', '(', ')', '-', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?' };
+        protected static readonly char[] WordSeperators = { ' ', '\n', '`', '~', '!', '@', '#', '%', '^', '&', '*', '(', ')', '-', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?' };
 
         private static readonly Color _highlightColor = new Color(92, 80, 103, 150);
 
@@ -187,8 +187,10 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int Length => _text.Length;
 
+        /// Get state of modifier keys
         protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
         protected bool IsCtrlDown  => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
+        protected bool IsAltDown   => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
 
         protected bool _multiline;
         protected bool _caretVisible;
@@ -209,34 +211,8 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnTextInput(string value) {
-            bool ctrlDown = this.IsCtrlDown;
-
             foreach (char c in value) {
-                if (char.IsControl(c)) continue;
                 if (_font.GetCharacterRegion(c) == null) continue;
-
-                if (ctrlDown) {
-                    switch (c) {
-                        case 'c':
-                            HandleCopy();
-                            return;
-                        case 'x':
-                            HandleCut();
-                            return;
-                        case 'v':
-                            HandlePaste();
-                            return;
-                        case 'z':
-                            HandleUndo();
-                            return;
-                        case 'y':
-                            HandleRedo();
-                            return;
-                        case 'a':
-                            SelectAll();
-                            return;
-                    }
-                }
 
                 InputChar(c);
             }
@@ -513,19 +489,45 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
+            // Remove keyup event early to prevent executing special actions twice
             if (e.EventType == KeyboardEventType.KeyUp) {
                 _keyRepeatStates.Remove(e.Key);
                 return;
+            }
+
+            // Skip key repeated execution for these
+            switch (e.Key) {
+                case Keys.Insert:
+                    _insertMode = !_insertMode;
+                    return;
+                case Keys.Home:
+                    HandleHome(this.IsCtrlDown);
+                    return;
+                case Keys.End:
+                    HandleEnd(this.IsCtrlDown);
+                    return;
+                case Keys.C:
+                    if (this.IsCtrlDown && !this.IsAltDown) HandleCopy();
+                    return;
+                case Keys.X:
+                    if (this.IsCtrlDown && !this.IsAltDown) HandleCut();
+                    return;
+                case Keys.V:
+                    if (this.IsCtrlDown && !this.IsAltDown) HandlePaste();
+                    return;
+                case Keys.A:
+                    if (this.IsCtrlDown && !this.IsAltDown) SelectAll();
+                    return;
+                default:
+                    break;
             }
 
             if (!_keyRepeatStates.ContainsKey(e.Key)) {
                 _keyRepeatStates.Add(e.Key, new KeyRepeatState(GameService.Overlay.CurrentGameTime, e));
             }
 
+            // Key events that can trigger multiple times when key is held down
             switch (e.Key) {
-                case Keys.Insert:
-                    _insertMode = !_insertMode;
-                    break;
                 case Keys.Left:
                     HandleLeft(this.IsCtrlDown);
                     break;
@@ -544,18 +546,17 @@ namespace Blish_HUD.Controls {
                 case Keys.Delete:
                     HandleDelete();
                     break;
-                case Keys.Home:
-                    HandleHome(this.IsCtrlDown);
-                    break;
-                case Keys.End:
-                    HandleEnd(this.IsCtrlDown);
-                    break;
                 case Keys.Enter:
                     HandleEnter();
                     break;
+                case Keys.Z:
+                    if (this.IsCtrlDown && !this.IsAltDown) HandleUndo();
+                    break;
+                case Keys.Y:
+                    if (this.IsCtrlDown && !this.IsAltDown) HandleRedo();
+                    break;
                 default:
-                    // Skip key repeat state
-                    return;
+                    break;
             }
         }
 
@@ -568,10 +569,10 @@ namespace Blish_HUD.Controls {
 
                 ClipboardUtil.WindowsClipboardService.SetTextAsync(clipboardText)
                              .ContinueWith((clipboardResult) => {
-                                  if (clipboardResult.IsFaulted) {
-                                      Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {clipboardText}!", clipboardText);
-                                  }
-                              });
+                                 if (clipboardResult.IsFaulted) {
+                                     Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {clipboardText}!", clipboardText);
+                                 }
+                             });
             }
         }
 
@@ -583,14 +584,14 @@ namespace Blish_HUD.Controls {
         protected virtual void HandlePaste() {
             ClipboardUtil.WindowsClipboardService.GetTextAsync()
                          .ContinueWith((clipboardTask) => {
-                              if (!clipboardTask.IsFaulted) {
-                                  if (!string.IsNullOrEmpty(clipboardTask.Result)) {
-                                      Paste(clipboardTask.Result);
-                                  }
-                              } else {
+                             if (!clipboardTask.IsFaulted) {
+                                 if (!string.IsNullOrEmpty(clipboardTask.Result)) {
+                                     Paste(clipboardTask.Result);
+                                 }
+                             } else {
                                  Logger.Warn(clipboardTask.Exception, "Failed to read clipboard text from system clipboard!");
-                              }
-                          });
+                             }
+                         });
         }
 
         protected virtual void HandleUndo() {
@@ -721,8 +722,6 @@ namespace Blish_HUD.Controls {
 
             HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition), e.IsDoubleClick);
         }
-
-        protected override CaptureType CapturesInput() { return CaptureType.Mouse; }
 
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion) {
             // Draw the placeholder text

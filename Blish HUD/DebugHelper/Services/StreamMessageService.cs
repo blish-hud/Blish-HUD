@@ -66,7 +66,7 @@ namespace Blish_HUD.DebugHelper.Services {
 
         public T SendAndWait<T>(Message message) where T : Message => SendAndWait<T>(message, TimeSpan.FromMilliseconds(-1))!;
 
-        public T? SendAndWait<T>(Message message, TimeSpan timeout) where T : Message {
+        public T SendAndWait<T>(Message message, TimeSpan timeout) where T : Message {
             using var fResetEvent = new ManualResetEventSlim(false);
 
             lock (outLock) {

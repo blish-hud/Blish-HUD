@@ -1,9 +1,4 @@
-﻿/*
- * This code has been adapted from Ciantic's `keyboardlistener.cs` (https://gist.github.com/Ciantic/471698#file-keyboardlistener-cs-L224-L427)
- * We include adaptions for dead-key handling from Urutar (https://gist.github.com/Ciantic/471698#gistcomment-1448512)
- */
-
-using System;
+﻿using System.Text;
 using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Input {
@@ -14,142 +9,87 @@ namespace Blish_HUD.Input {
         // because of this behavior, "^" is called dead key)
 
         [DllImport("user32.dll")]
-        private static extern int ToUnicodeEx(uint wVirtKey, uint wScanCode, byte[] lpKeyState, [Out, MarshalAs(UnmanagedType.LPWStr)] System.Text.StringBuilder pwszBuff, int cchBuff, uint wFlags, IntPtr dwhkl);
+        private static extern int ToUnicode(uint vkCode, uint scanCode, byte[] keyState, [Out, MarshalAs(UnmanagedType.LPWStr, SizeConst = 64)] System.Text.StringBuilder receivingBuffer, int bufferSize, uint flags);
 
         [DllImport("user32.dll")]
-        private static extern bool GetKeyboardState(byte[] lpKeyState);
+        private static extern uint MapVirtualKey(uint vkCode, uint mapType);
 
         [DllImport("user32.dll")]
-        private static extern uint MapVirtualKeyEx(uint uCode, uint uMapType, IntPtr dwhkl);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-        private static extern IntPtr GetKeyboardLayout(uint dwLayout);
-
-        [DllImport("User32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
-        [DllImport("User32.dll")]
-        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        private static extern bool GetKeyboardState(byte[] keyboardState);
 
         [DllImport("user32.dll")]
-        private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+        private static extern byte GetKeyState(int keyState);
 
-        [DllImport("kernel32.dll")]
-        private static extern uint GetCurrentThreadId();
+        private const byte VK_SHIFT = 0x10;
+        private const byte VK_MENU = 0x12;
 
-        private static uint   _lastVkCode   = 0;
-        private static uint   _lastScanCode = 0;
-        private static byte[] _lastKeyState = new byte[255];
-        private static bool   _lastIsDead   = false;
+        private static uint _lastVirtKeyCode;
+        private static uint _lastScanCode;
+        private static byte[] _lastKeyState = new byte[256];
+        private static bool _lastIsDead;
 
         /// <summary>
-        /// Convert VKCode to Unicode.
-        /// <remarks>isKeyDown is required for because of keyboard state inconsistencies!</remarks>
+        /// Convert virtual-key code and keyboard state to unicode string
         /// </summary>
-        /// <param name="vkCode">VKCode</param>
-        /// <param name="isKeyDown">Is the key down event?</param>
-        /// <returns>String representing single unicode character.</returns>
-        public static string VkCodeToString(uint vkCode, bool isKeyDown) {
-            // ToUnicodeEx needs StringBuilder, it populates that during execution.
-            System.Text.StringBuilder sbString = new System.Text.StringBuilder(5);
+        internal static string VkCodeToString(uint vkCode, bool isKeyDown) {
+            // ToUnicode needs StringBuilder, it populates that during execution.
+            var output = new StringBuilder(5);
 
-            byte[] bKeyState = new byte[255];
-            bool bKeyStateStatus;
-            bool isDead = false;
+            byte[] keyState = new byte[256];
+            uint scanCode = MapVirtualKey(vkCode, 0);
 
-            // Gets the current windows window handle, threadID, processID
-            var  currentHWnd           = GetForegroundWindow();
-            uint currentWindowThreadId = GetWindowThreadProcessId(currentHWnd, out _);
+            // apparently GetKeyboardState() has a problem returning the correct states
+            // if called just on its own - calling GetKeyState() before seems to fix
+            // this as stated in the following post:
+            // https://stackoverflow.com/a/53713024
+            GetKeyState(VK_SHIFT);
+            GetKeyState(VK_MENU);
 
-            // This programs Thread ID
-            uint thisProgramThreadId = GetCurrentThreadId();
-
-            // Attach to active thread so we can get that keyboard state
-            if (AttachThreadInput(thisProgramThreadId, currentWindowThreadId, true)) {
-                // Current state of the modifiers in keyboard
-                bKeyStateStatus = GetKeyboardState(bKeyState);
-
-                // Detach
-                AttachThreadInput(thisProgramThreadId, currentWindowThreadId, false);
-            } else {
-                // Could not attach, perhaps it is this process?
-                bKeyStateStatus = GetKeyboardState(bKeyState);
+            if (!GetKeyboardState(keyState)) {
+                return "";
             }
 
-            // On failure we return empty string.
-            if (!bKeyStateStatus)
-                return "";
+            int result = ToUnicode(vkCode, scanCode, keyState, output, (int)5, (uint)0);
 
-            // Gets the layout of keyboard
-            var hkl = GetKeyboardLayout(currentWindowThreadId);
-
-            // Maps the virtual keycode
-            uint lScanCode = MapVirtualKeyEx(vkCode, 0, hkl);
-
-            // Keyboard state goes inconsistent if this is not in place. In other words, we need to call above commands in UP events also.
-            if (!isKeyDown)
-                return "";
-
-            // Converts the VKCode to unicode
-            int relevantKeyCountInBuffer = ToUnicodeEx(vkCode, lScanCode, bKeyState, sbString, sbString.Capacity, 0, hkl);
-
-            string ret = "";
-
-            switch (relevantKeyCountInBuffer) {
-                // Dead keys (^,`...)
+            switch (result) {
                 case -1:
-                    isDead = true;
+                    // dead-key character (accent or diacritic)
 
-                    // We must clear the buffer because ToUnicodeEx messed it up, see below.
-                    ClearKeyboardBuffer(vkCode, lScanCode, hkl);
+                    // clear buffer because it will otherwise crash `public Rectangle AbsoluteBounds` in Control.cs
+                    // see also: http://archives.miloush.net/michkap/archive/2005/01/19/355870.html
+                    while (ToUnicode(vkCode, scanCode, keyState, output, (int)5, (uint)0) < 0) { }
+
+                    // reinject last key because apparently when calling functions related to keyboard inputs
+                    // messes up their internal states everywhere. :rolleyes:
+                    // for reference see https://gist.github.com/Ciantic/471698
+                    if (_lastVirtKeyCode != 0 && _lastIsDead) {
+                        var temp = new StringBuilder(5);
+                        ToUnicode(_lastVirtKeyCode, _lastScanCode, _lastKeyState, temp, (int)5, (uint)0);
+                    }
+
+                    _lastIsDead = true;
+                    _lastVirtKeyCode = vkCode;
+                    _lastScanCode = scanCode;
+                    _lastKeyState = (byte[])keyState.Clone();
+
+                    if (isKeyDown) return "";
                     break;
-
                 case 0:
-                    break;
-
-                // Single character in buffer
-                case 1:
-                    ret = sbString[0].ToString();
-                    break;
-
-                // Two or more (only two of them is relevant)
+                    // no translation for the current state of the keyboard
+                    return "";
                 case 2:
+                    // two or more characters were written to the buffer
+                    // this is most likely a dead-key that could not be combined with the current one
+                case 1:
                 default:
-                    ret = sbString.ToString().Substring(0, 2);
+                    // single character was written to the buffer
                     break;
+
             }
 
-            // We inject the last dead key back, since ToUnicodeEx removed it.
-            // More about this peculiar behavior see e.g: 
-            //   http://www.experts-exchange.com/Programming/System/Windows__Programming/Q_23453780.html
-            //   http://blogs.msdn.com/michkap/archive/2005/01/19/355870.aspx
-            //   http://blogs.msdn.com/michkap/archive/2007/10/27/5717859.aspx
-            if (_lastVkCode != 0 && _lastIsDead) {
-                System.Text.StringBuilder sbTemp = new System.Text.StringBuilder(5);
-                ToUnicodeEx(_lastVkCode, _lastScanCode, _lastKeyState, sbTemp, sbTemp.Capacity, 0, hkl);
-                _lastVkCode = 0;
+            _lastIsDead = false;
 
-                return ret;
-            }
-
-            // Save these
-            _lastScanCode = lScanCode;
-            _lastVkCode   = vkCode;
-            _lastIsDead   = isDead;
-            _lastKeyState = (byte[])bKeyState.Clone();
-
-            return ret;
+            return isKeyDown ? output.ToString() : "";
         }
-
-        private static void ClearKeyboardBuffer(uint vk, uint sc, IntPtr hkl) {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(10);
-
-            int rc;
-            do {
-                byte[] lpKeyStateNull = new byte[255];
-                rc = ToUnicodeEx(vk, sc, lpKeyStateNull, sb, sb.Capacity, 0, hkl);
-            } while (rc < 0);
-        }
-
     }
 }

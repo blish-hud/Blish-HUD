@@ -9,6 +9,7 @@
     <ApplicationIcon>blishraster2_0dw_icon.ico</ApplicationIcon>
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <UseWindowsForms>true</UseWindowsForms>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -67,6 +68,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Strings\Common.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -135,6 +141,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Strings\Common.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Common.Designer.cs</LastGenOutput>
@@ -206,11 +216,11 @@
     <PackageReference Include="Humanizer.Core.fr" Version="2.6.2" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="JsonSubTypes" Version="1.6.0" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
-    <PackageReference Include="MonoGame.Extended" Version="3.8.*" />
-    <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="3.8.*" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
+    <PackageReference Include="MonoGame.Extended" Version="[3.8.0]" />
+    <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="3.8.0" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="[3.8.0.1641]" />
+    <PackageReference Include="Newtonsoft.Json" Version="[13.0.1]" />
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="Octokit" Version="0.32.0" PrivateAssets="compile;runtime;contentFiles;build;buildMultitargeting;buildTransitive;analyzers;native" />
     <PackageReference Include="protobuf-net" Version="3.0.101" />
