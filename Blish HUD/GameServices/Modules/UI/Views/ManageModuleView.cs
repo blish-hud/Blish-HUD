@@ -140,7 +140,7 @@ namespace Blish_HUD.Modules.UI.Views {
             _dependencyView.Show(view);
         }
 
-        public void SetSettingsView(SettingsView view) {
+        public void SetSettingsView(IView view) {
             _settingMessageLabel.Hide();
             _settingView.Show(view);
 

@@ -13,6 +13,8 @@ using Humanizer;
 namespace Blish_HUD.Modules.UI.Presenters {
     public class ManageModulePresenter : Presenter<ManageModuleView, ModuleManager> {
 
+        private static readonly Logger Logger = Logger.GetLogger<ManageModulePresenter>();
+
         public ManageModulePresenter(ManageModuleView view, ModuleManager model) : base(view, model) { /* NOOP */ }
 
         private ModulePermissionView _permissionView;
@@ -130,10 +132,14 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void DisplaySettingsView(bool enable) {
-            SettingsView toDisplay = null;
+            IView toDisplay = null;
 
             if (enable) {
-                toDisplay = new SettingsView(this.Model.State.Settings);
+                try {
+                    toDisplay = this.Model.ModuleInstance.GetSettingsView();
+                } catch (Exception ex) {
+                    Logger.Warn(ex, $"Failed to load settings view from module '{this.Model.Manifest.GetDetailedName()}'.");
+                }
             }
 
             this.View.SetSettingsView(toDisplay);
