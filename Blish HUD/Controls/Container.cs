@@ -120,16 +120,20 @@ namespace Blish_HUD.Controls {
 
         protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
 
-        public List<Control> GetDescendants() {
-            var allDescendants = _children.ToList();
+        public IEnumerable<Control> GetDescendants() {
+            // Breadth-first unrolling without the inefficiency of recursion.
+            var remainingChildren = new Queue<Control>(this.Children);
 
-            foreach (var child in this.Children) {
-                if (!(child is Container container)) continue;
+            while (remainingChildren.Count > 0) {
+                var child = remainingChildren.Dequeue();
+                yield return child;
 
-                allDescendants.AddRange(container.GetDescendants());
+                if (child is Container container) {
+                    foreach (var containerChild in container) {
+                        remainingChildren.Enqueue(containerChild);
+                    }
+                }
             }
-
-            return allDescendants;
         }
 
         public bool AddChild(Control child) {

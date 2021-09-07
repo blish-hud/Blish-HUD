@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Overlay.UI.Views {
     public class AboutView : View {
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             _ = new Image(GameService.Content.GetTexture("1025164")) {
                 SpriteEffects = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically,
                 Location = new Point(buildPanel.Width - 1024 + 100 - 45, buildPanel.Height - 256 + 100 - 63 + 15),

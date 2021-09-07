@@ -6,7 +6,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-    public abstract class WindowBase : Container {
+
+    [Obsolete("This control will be removed in the future.  Use WindowBase2 instead.")]
+    public abstract class WindowBase : Container, IWindow {
 
         private const int COMMON_MARGIN = 16;
         private const int TITLE_OFFSET = 80;
@@ -31,22 +33,27 @@ namespace Blish_HUD.Controls {
         private static readonly SettingCollection _windowSettings;
 
         static WindowBase() {
-            _textureTitleBarLeft = Content.GetTexture("titlebar-inactive");
-            _textureTitleBarRight = Content.GetTexture("window-topright");
-            _textureTitleBarLeftActive = Content.GetTexture("titlebar-active");
+            _textureTitleBarLeft        = Content.GetTexture("titlebar-inactive");
+            _textureTitleBarRight       = Content.GetTexture("window-topright");
+            _textureTitleBarLeftActive  = Content.GetTexture("titlebar-active");
             _textureTitleBarRightActive = Content.GetTexture("window-topright-active");
 
-            _textureExitButton = Content.GetTexture("button-exit");
+            _textureExitButton       = Content.GetTexture("button-exit");
             _textureExitButtonActive = Content.GetTexture("button-exit-active");
 
-            _textureWindowCorner = Content.GetTexture(@"controls/window/156008");
-            _textureWindowResizableCorner = Content.GetTexture(@"controls/window/156009");
+            _textureWindowCorner                = Content.GetTexture(@"controls/window/156008");
+            _textureWindowResizableCorner       = Content.GetTexture(@"controls/window/156009");
             _textureWindowResizableCornerActive = Content.GetTexture(@"controls/window/156010");
 
             _windowSettings = GameService.Settings.Settings.AddSubCollection(WINDOW_SETTINGS);
         }
 
         #endregion
+
+        public override int ZIndex {
+            get => _zIndex + WindowBase2.GetZIndex(this);
+            set => SetProperty(ref _zIndex, value);
+        }
 
         protected string _title = "No Title";
         /// <summary>
@@ -96,8 +103,9 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _topMost, value);
         }
 
-        protected bool _savesPosition;
+        public double LastInteraction => _lastInteraction;
 
+        protected bool _savesPosition;
         /// <summary>
         /// If <c>true</c>, the window will remember its position between Blish HUD sessions.
         /// Requires that <see cref="Id"/> be set.
@@ -182,10 +190,12 @@ namespace Blish_HUD.Controls {
         #endregion
 
         protected WindowBase() {
+            WindowBase2.RegisterWindow(this);
+
             this.Opacity = 0f;
             this.Visible = false;
 
-            this.ZIndex = Screen.WINDOW_BASEZINDEX;
+            _zIndex = Screen.WINDOW_BASEZINDEX;
 
             Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseRelease;
 
@@ -272,6 +282,8 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
+            BringWindowToFront();
+
             if (MouseOverTitleBar) {
                 Dragging  = true;
                 DragStart = Input.Mouse.Position;
@@ -293,9 +305,16 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public void BringWindowToFront() {
+            _lastInteraction = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
+        }
+
+        public bool CanClose => true;
+
         #region Window Navigation
 
         private readonly LinkedList<Panel> _currentNav = new LinkedList<Panel>();
+        private          double            _lastInteraction;
 
         public virtual void Navigate(Panel newPanel, bool keepHistory = true) {
             if (!keepHistory)
@@ -329,6 +348,8 @@ namespace Blish_HUD.Controls {
         }
 
         public override void Show() {
+            BringWindowToFront();
+
             if (_visible) return;
 
             // Restore position from previous session
@@ -389,13 +410,9 @@ namespace Blish_HUD.Controls {
         protected virtual void PaintTitleBar(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_mouseOver && MouseOverTitleBar) {
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarLeftActive,  _layoutLeftTitleBarBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeftActive,  _layoutLeftTitleBarBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarRightActive, _layoutRightTitleBarBounds);
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRightActive, _layoutRightTitleBarBounds);
             } else {
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarLeft,  _layoutLeftTitleBarBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeft,  _layoutLeftTitleBarBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _layoutRightTitleBarBounds);
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _layoutRightTitleBarBounds);
             }
 
@@ -458,6 +475,8 @@ namespace Blish_HUD.Controls {
 #endregion
 
         protected override void DisposeControl() {
+            WindowBase2.UnregisterWindow(this);
+
             Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseRelease;
 
             base.DisposeControl();

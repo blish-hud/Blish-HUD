@@ -10,6 +10,7 @@ using Blish_HUD.Input;
 
 namespace Blish_HUD.Controls {
 
+    [Obsolete("This control will be removed in the future.  Use TabbedWindow2 instead.")]
     public class TabbedWindow : WindowBase {
 
         private const int TAB_HEIGHT    = 52;

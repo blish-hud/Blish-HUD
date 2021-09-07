@@ -172,7 +172,7 @@ namespace Blish_HUD.Controls {
 
         protected virtual void OnLeftMouseButtonReleased(MouseEventArgs e) {
             this.LeftMouseButtonReleased?.Invoke(this, e);
-
+            
             if (_enabled) {
                 // Distinguish click from double-click
                 if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastClickTime < SystemInformation.DoubleClickTime) {
@@ -528,7 +528,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected int _zIndex = 5;
-        public int ZIndex {
+        public virtual int ZIndex {
             get => _zIndex;
             set => SetProperty(ref _zIndex, value);
         }

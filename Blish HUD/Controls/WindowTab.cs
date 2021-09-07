@@ -1,8 +1,9 @@
-﻿using Blish_HUD.Content;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using Blish_HUD.Content;
 
 namespace Blish_HUD.Controls {
 
+    [Obsolete("This control will be removed in the future.  Use TabbedWindow2 and Tab class instead.")]
     public class WindowTab {
         public string         Name     { get; set; }
         public AsyncTexture2D Icon     { get; set; }

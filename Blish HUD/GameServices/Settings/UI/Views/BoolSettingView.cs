@@ -22,7 +22,7 @@ namespace Blish_HUD.Settings.UI.Views {
             return true;
         }
 
-        protected override void BuildSetting(Panel buildPanel) {
+        protected override void BuildSetting(Container buildPanel) {
             _boolCheckbox = new Checkbox() {
                 Location = new Point(CONTROL_PADDING),
                 Parent   = buildPanel

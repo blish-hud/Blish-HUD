@@ -7,6 +7,8 @@ using System.Threading;
 using System.Windows.Forms;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Modules.Pkgs;
+using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
@@ -31,8 +33,8 @@ namespace Blish_HUD {
         public TabbedWindow     BlishHudWindow   { get; private set; }
         public CornerIcon       BlishMenuIcon    { get; private set; }
         public ContextMenuStrip BlishContextMenu { get; private set; }
-
-        public GameTime CurrentGameTime { get; private set; }
+        
+        public  GameTime CurrentGameTime { get; private set; } = new GameTime(TimeSpan.Zero, TimeSpan.Zero);
 
         internal SettingCollection OverlaySettings { get; private set; }
 

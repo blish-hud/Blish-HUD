@@ -149,7 +149,7 @@ namespace Blish_HUD.Modules.UI.Views {
             }
         }
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             // Header
 
             _moduleTextLabel = new Label() {

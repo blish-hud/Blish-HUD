@@ -5,7 +5,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         public FloatSettingView(SettingEntry<float> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
 
-        protected override void BuildSetting(Panel buildPanel) {
+        protected override void BuildSetting(Container buildPanel) {
             base.BuildSetting(buildPanel);
 
             _valueTrackBar.SmallStep = true;

@@ -31,7 +31,7 @@ namespace Blish_HUD.Modules.UI.Views {
             set => _rootPanel.Title = value;
         }
 
-        protected sealed override void Build(Panel buildPanel) {
+        protected sealed override void Build(Container buildPanel) {
             _rootPanel = new Panel() {
                 Size       = buildPanel.ContentRegion.Size,
                 ShowBorder = true,

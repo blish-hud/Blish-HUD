@@ -15,7 +15,7 @@ namespace Blish_HUD.Graphics.UI {
 
         public IPresenter Presenter { get; private set; } = _sharedNullPresenter;
 
-        protected Panel ViewTarget { get; private set; }
+        protected Container ViewTarget { get; private set; }
 
         protected View() { /* NOOP */ }
 
@@ -40,7 +40,7 @@ namespace Blish_HUD.Graphics.UI {
             return loadResult;
         }
 
-        public void DoBuild(Panel buildPanel) {
+        public void DoBuild(Container buildPanel) {
             this.ViewTarget = buildPanel;
 
             Build(buildPanel);
@@ -60,9 +60,8 @@ namespace Blish_HUD.Graphics.UI {
         protected virtual async Task<bool> Load(IProgress<string> progress) {
             return await Task.FromResult(true);
         }
-
-
-        protected virtual void Build(Panel buildPanel) { /* NOOP */ }
+        
+        protected virtual void Build(Container buildPanel) { /* NOOP */ }
 
         protected virtual void Unload() { /* NOOP */ }
 

@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD.Modules.UI.Views {
     public class NoModulesView : View {
 
-        protected override void Build(Panel buildPanel) {
+        protected override void Build(Container buildPanel) {
             var info = new Label() {
                 Size                = buildPanel.Size / new Point(1, 2),
                 Parent              = buildPanel,

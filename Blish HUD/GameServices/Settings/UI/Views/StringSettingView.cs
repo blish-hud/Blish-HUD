@@ -27,7 +27,7 @@ namespace Blish_HUD.Settings.UI.Views {
             return true;
         }
 
-        protected override void BuildSetting(Panel buildPanel) {
+        protected override void BuildSetting(Container buildPanel) {
             _displayNameLabel = new Label() {
                 AutoSizeWidth = true,
                 Location      = new Point(CONTROL_PADDING, 0),
