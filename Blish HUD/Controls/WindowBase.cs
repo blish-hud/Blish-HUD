@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
+
+    [Obsolete("This control will be removed in the future.  Use WindowBase2 instead.")]
     public abstract class WindowBase : Container, IWindow {
 
         private const int COMMON_MARGIN = 16;
