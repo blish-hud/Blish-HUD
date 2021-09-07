@@ -305,6 +305,8 @@ namespace Blish_HUD {
                         }
                         break;
                 }
+
+                BlishHud.Instance.Form.Visible = !updateResult.Minimized;
             } else {
                 TryAttachToGw2();
             }
