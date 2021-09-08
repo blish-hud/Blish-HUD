@@ -65,7 +65,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            if (this.HoveredTab != null && this.HoveredTab.Enabled) {
+            if (this.HoveredTab is { Enabled: true }) {
                 this.SelectedTab = this.HoveredTab;
             }
 
@@ -106,8 +106,8 @@ namespace Blish_HUD.Controls {
 
                     spriteBatch.DrawOnCtrl(this,
                                            this.WindowBackground,
-                                           tabBounds.OffsetBy(2, 0),
-                                           new Rectangle(this.WindowRegion.Left + tabBounds.X + 2,
+                                           tabBounds,
+                                           new Rectangle(this.WindowRegion.Left + tabBounds.X,
                                                          tabBounds.Y - (int)this.Padding.Top,
                                                          tabBounds.Width,
                                                          tabBounds.Height));

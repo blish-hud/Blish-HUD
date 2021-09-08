@@ -36,8 +36,6 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _settingFlowPanel.ShowBorder  = !locked;
             _settingFlowPanel.CanCollapse = !locked;
-
-            this.ViewTarget.HeightSizingMode = SizingMode.AutoSize;
         }
 
         protected override void BuildSetting(Container buildPanel) {
