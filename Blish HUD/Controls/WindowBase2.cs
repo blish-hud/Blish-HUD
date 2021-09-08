@@ -22,7 +22,8 @@ namespace Blish_HUD.Controls {
 
         private const int STANDARD_MARGIN = 16; // Standard margin used to space the "X" button, etc.
 
-        private const int SIDEBAR_WIDTH = 46;
+        private const int SIDEBAR_WIDTH  = 46;
+        private const int SIDEBAR_OFFSET = 3; // Used to account for the small edge of transparency at the bottom of the titlebar and between the sidebar and the window background
 
         #region Load Static
 
@@ -398,8 +399,8 @@ namespace Blish_HUD.Controls {
             int sideBarTop        = _leftTitleBarDrawBounds.Bottom - STANDARD_TITLEBAR_VERTICAL_OFFSET;
             int sideBarHeight     = this.WindowRegion.Height       + STANDARD_TITLEBAR_VERTICAL_OFFSET;
 
-            this.SidebarActiveBounds   = new Rectangle(_leftTitleBarDrawBounds.X, sideBarTop, SIDEBAR_WIDTH, this.SideBarHeight);
-            _sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X, sideBarTop + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
+            this.SidebarActiveBounds   = new Rectangle(_leftTitleBarDrawBounds.X + SIDEBAR_OFFSET, sideBarTop - SIDEBAR_OFFSET,                      SIDEBAR_WIDTH, this.SideBarHeight);
+            _sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X + SIDEBAR_OFFSET, sideBarTop - SIDEBAR_OFFSET + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
 
             // Corner bounds
             this.ResizeHandleBounds = new Rectangle(this.Width  - _textureWindowCorner.Width,
