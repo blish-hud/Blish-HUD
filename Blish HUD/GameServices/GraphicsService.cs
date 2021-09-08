@@ -191,6 +191,10 @@ namespace Blish_HUD {
                     BlishHud.Instance.IsFixedTimeStep   = true;
                     BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
                     break;
+                case FramerateMethod.LockedTo90Fps:
+                    BlishHud.Instance.IsFixedTimeStep   = true;
+                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 90d);
+                    break;
                 case FramerateMethod.Unlimited:
                     BlishHud.Instance.IsFixedTimeStep   = false;
                     BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
