@@ -25,7 +25,7 @@ namespace Blish_HUD.Controls {
         }
 
         public void Add(Tab item) {
-            _tabs = new List<Tab>(_tabs.Concat(new []{ item }).OrderByDescending(tab => tab.OrderPriority));
+            _tabs = new List<Tab>(_tabs.Concat(new []{ item }).OrderBy(tab => tab.OrderPriority));
 
             if (_tabs.Count == 1) {
                 _owner.SelectedTab = item;
