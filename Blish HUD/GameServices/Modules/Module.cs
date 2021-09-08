@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Blish_HUD.Graphics.UI;
 using Blish_HUD.Settings;
+using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Modules {
@@ -164,12 +166,16 @@ namespace Blish_HUD.Modules {
         protected virtual void DefineSettings(SettingCollection settings) { /* NOOP */ }
 
         /// <summary>
-        /// Load content and more here. This call is asynchronous, so it is a good time to
-        /// run any long running steps for your module. Be careful when instancing
-        /// <see cref="Blish_HUD.Entities.Entity"/> and <see cref="Blish_HUD.Controls.Control"/>.
-        /// Setting their parent is not thread-safe and can cause the application to crash.
-        /// You will want to queue them to add later while on the main thread or in a delegate queued
-        /// with <see cref="OverlayService.QueueMainThreadUpdate(Action{GameTime})"/>.
+        /// The <see cref="IView"/> to display in the settings area of the module when it is enabled.
+        /// By default, this is a <see cref="SettingsView"/> of your module settings.
+        /// </summary>
+        public virtual IView GetSettingsView() {
+            return new SettingsView(this.ModuleParameters.SettingsManager.ModuleSettings);
+        }
+
+        /// <summary>
+        /// Load content and more here. This call is asynchronous, so it is a good time to run
+        /// any long running steps for your module including loading resources from file or ref.
         /// </summary>
         protected virtual async Task LoadAsync() { /* NOOP */ }
 

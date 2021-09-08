@@ -46,8 +46,8 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _settingViewContainer = new ViewContainer() {
                 FadeView = true,
-                Size     = new Point(718, buildPanel.Size.Y - 24 * 2),
-                Location = new Point(buildPanel.Width       - 740, 10),
+                Size     = new Point(718,                    settingsMenuSection.Height),
+                Location = new Point(buildPanel.Width - 740, 10),
                 Parent   = buildPanel
             };
         }
