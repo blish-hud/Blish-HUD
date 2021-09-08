@@ -240,9 +240,9 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public void ToggleWindow() {
             if (this.Visible) {
-                Show();
-            } else {
                 Hide();
+            } else {
+                Show();
             }
         }
 
