@@ -106,8 +106,8 @@ namespace Blish_HUD.Controls {
 
                     spriteBatch.DrawOnCtrl(this,
                                            this.WindowBackground,
-                                           tabBounds.OffsetBy(2, 0),
-                                           new Rectangle(this.WindowRegion.Left + tabBounds.X + 2,
+                                           tabBounds.OffsetBy(0, 0),
+                                           new Rectangle(this.WindowRegion.Left + tabBounds.X,
                                                          tabBounds.Y - (int)this.Padding.Top,
                                                          tabBounds.Width,
                                                          tabBounds.Height));
