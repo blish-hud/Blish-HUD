@@ -254,6 +254,7 @@ namespace Blish_HUD {
         protected override void Update(GameTime gameTime) {
             foreach (var module in _modules) {
                 if (module.Enabled) {
+                    GameService.Debug.StartTimeFunc(module.Manifest.Name);
                     try {
                         module.ModuleInstance.DoUpdate(gameTime);
                     } catch (Exception ex) {
@@ -264,6 +265,7 @@ namespace Blish_HUD {
                             throw;
                         }
                     }
+                    GameService.Debug.StopTimeFunc(module.Manifest.Name);
                 }
             }
         }
