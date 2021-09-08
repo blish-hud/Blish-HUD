@@ -96,7 +96,7 @@ namespace Blish_HUD {
                     && GameService.GameIntegration.Gw2IsRunning
                     && this.TimeSinceTick.TotalSeconds < 0.5) {
 
-                    BlishHud.Instance.SuppressDraw();
+                    BlishHud.Instance.SkipDraw();
                 }
             }
         }

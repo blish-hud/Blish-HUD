@@ -135,7 +135,19 @@ namespace Blish_HUD {
 
         private float _drawLag;
 
+        private bool _skipDraw = false;
+
+        internal void SkipDraw() {
+            _skipDraw = true;
+        }
+
         protected override void Draw(GameTime gameTime) {
+            if (_skipDraw) {
+                Thread.Sleep(1);
+                _skipDraw = false;
+                return;
+            }
+
             GameService.Debug.TickFrameCounter(_drawLag);
             _drawLag = 0;
 
