@@ -10,23 +10,23 @@ namespace Blish_HUD.Overlay.UI.Views {
         protected override void Build(Container buildPanel) {
             _ = new Image(GameService.Content.GetTexture("1025164")) {
                 SpriteEffects = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically,
-                Location = new Point(buildPanel.Width - 1024 + 100 - 45, buildPanel.Height - 256 + 100 - 63 + 15),
-                ClipsBounds = false,
-                Parent = buildPanel
+                Location      = new Point(buildPanel.Width - 969, buildPanel.Height - 220),
+                ClipsBounds   = false,
+                Parent        = buildPanel
             };
 
             var gw2CopyrightStatement = new Label() {
-                Font = GameService.Content.DefaultFont16,
-                Text = string.Format(Strings.GameServices.OverlayService.AboutAnetNotice, DateTime.Now.Year),
-                AutoSizeHeight = true,
-                Width = buildPanel.Width,
-                StrokeText = true,
+                Font                = GameService.Content.DefaultFont16,
+                Text                = string.Format(Strings.GameServices.OverlayService.AboutAnetNotice, DateTime.Now.Year),
+                AutoSizeHeight      = true,
+                Width               = buildPanel.Width,
+                StrokeText          = true,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Top,
-                Parent = buildPanel
+                VerticalAlignment   = VerticalAlignment.Top,
+                Parent              = buildPanel
             };
 
-            gw2CopyrightStatement.Location = new Point(0, buildPanel.Height - gw2CopyrightStatement.Height - 48);
+            gw2CopyrightStatement.Location = new Point(0, buildPanel.Height - gw2CopyrightStatement.Height - 64);
 
             var lovePanel = new Panel() {
                 Size = new Point(buildPanel.Width - 128, 128),
@@ -54,15 +54,15 @@ namespace Blish_HUD.Overlay.UI.Views {
 
             var version = new Label() {
                 AutoSizeHeight = true,
-                AutoSizeWidth = true,
-                Text = $"Blish HUD v{Program.OverlayVersion}",
-                Font = GameService.Content.DefaultFont14,
-                StrokeText = true,
-                ClipsBounds = false,
-                Parent = buildPanel
+                AutoSizeWidth  = true,
+                Text           = $"Blish HUD v{Program.OverlayVersion}",
+                Font           = GameService.Content.DefaultFont14,
+                StrokeText     = true,
+                ClipsBounds    = false,
+                Parent         = buildPanel
             };
 
-            version.Location = new Point(buildPanel.Width - version.Width + 8, buildPanel.Height - version.Height + 24);
+            version.Location = new Point(buildPanel.Width - version.Width + 8, buildPanel.Height - version.Height);
         }
 
     }
