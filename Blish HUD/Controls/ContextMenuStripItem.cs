@@ -85,7 +85,9 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            this.Submenu?.Show(this);
+            if (this.Enabled) {
+                this.Submenu?.Show(this);
+            }
 
             base.OnMouseEntered(e);
         }
