@@ -166,8 +166,10 @@ namespace Blish_HUD.Controls {
         protected override void OnMouseMoved(MouseEventArgs e) {
             if (_isLoading && _mouseOver && this.RelativeMousePosition.Y >= _standardIconBounds.Bottom) {
                 this.BasicTooltipText = _loadingMessage;
-            } else {
+            } else if (this.Tooltip == null) {
                 this.BasicTooltipText = _iconName;
+            } else {
+                this.BasicTooltipText = null;
             }
 
             base.OnMouseMoved(e);
