@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Blish_HUD.Controls;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
@@ -143,6 +144,16 @@ namespace Blish_HUD.Input {
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
+            // Handle the escape key, which should close the active window (if any)
+            if (key == Keys.Escape) {
+                var activeWindow = WindowBase2.ActiveWindow;
+                if (activeWindow != null) {
+                    activeWindow.Hide();
+                    return true;
+                }
+            }
+
+            // Handle text input
             if (_textInputDelegate != null) {
                 string chars = TypedInputUtil.VkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
                 _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);
