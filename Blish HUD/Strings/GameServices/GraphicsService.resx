@@ -123,4 +123,10 @@
   <data name="Setting_SmoothCharacterPosition_Description" xml:space="preserve">
     <value>If enabled, the character position is smoothed to prevent 3D overlay elements from jumping around.</value>
   </data>
+  <data name="Setting_DPIScaling_DisplayName" xml:space="preserve">
+    <value>DPI Scaling</value>
+  </data>
+  <data name="Setting_DPIScaling_Description" xml:space="preserve">
+    <value>Enables additional scaling of the UI according to your system settings.</value>
+  </data>
 </root>
