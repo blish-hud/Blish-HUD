@@ -158,7 +158,7 @@ namespace Blish_HUD.Input {
                     // If we found an active context menu item, close it
                     var activeWindow = WindowBase2.ActiveWindow;
 
-                    if (activeWindow != null) {
+                    if (activeWindow != null && activeWindow.CanClose) {
                         activeWindow.Hide();
                         return true;
                     }
