@@ -176,11 +176,20 @@ namespace Blish_HUD.Controls {
             get => _savesPosition;
             set => SetProperty(ref _savesPosition, value);
         }
+        protected bool _savesSize;
+        /// <summary>
+        /// If <c>true</c>, the window will remember its size between Blish HUD sessions.
+        /// Requires that <see cref="Id"/> be set.
+        /// </summary>
+        public bool SavesSize {
+            get => _savesSize;
+            set => SetProperty(ref _savesSize, value);
+        }
 
         private string _id;
         /// <summary>
-        /// A unique id to identify the window.  Used with <see cref="SavesPosition"/> as a unique
-        /// identifier to remember where the window is positioned.
+        /// A unique id to identify the window.  Used with <see cref="SavesPosition"/> and <see cref="SavesSize"/> as a unique
+        /// identifier to remember the window position and size.
         /// </summary>
         public string Id {
             get => _id;
@@ -237,7 +246,16 @@ namespace Blish_HUD.Controls {
                 _dragStart = Input.Mouse.Position;
             } else if (this.Resizing) {
                 var nOffset = Input.Mouse.Position - _dragStart;
+                Point prevSize = this.Size;
                 this.Size = HandleWindowResize(_resizeStart + nOffset);
+
+                this.TitleBarBounds = new Rectangle(0, 0, this.Size.X, STANDARD_TITLEBAR_HEIGHT);
+
+                _backgroundDrawBounds = new Rectangle(0, STANDARD_TITLEBAR_HEIGHT, this.Size.X, this.Size.Y - STANDARD_TITLEBAR_HEIGHT);
+                this.ContentRegion = new Rectangle(ContentRegion.X,
+                                                   ContentRegion.Y,
+                                                   this.Size.X - (prevSize.X - ContentRegion.Width),
+                                                   this.Size.Y - (prevSize.Y - ContentRegion.Height));
             }
         }
 
@@ -265,8 +283,22 @@ namespace Blish_HUD.Controls {
 
             // Restore position from previous session
             if (this.SavesPosition && this.Id != null) {
-                if (_windowSettings.TryGetSetting(this.Id, out var windowPosition)) {
+                if (_windowSettings.TryGetSetting(this.Id + "_Position", out var windowPosition)) {
                     this.Location = (windowPosition as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
+                }
+            }
+            if (this.SavesSize && this.Id != null) {
+                if (_windowSettings.TryGetSetting(this.Id + "_Size", out var windowSize)) {
+                    Point prevSize = this.Size;
+                    this.Size = (windowSize as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
+
+                    this.TitleBarBounds = new Rectangle(0, 0, this.Size.X, STANDARD_TITLEBAR_HEIGHT);
+
+                    _backgroundDrawBounds = new Rectangle(0, STANDARD_TITLEBAR_HEIGHT, this.Size.X, this.Size.Y - STANDARD_TITLEBAR_HEIGHT);
+                    this.ContentRegion = new Rectangle(ContentRegion.X,
+                                                       ContentRegion.Y,
+                                                       this.Size.X - (prevSize.X - ContentRegion.Width),
+                                                       this.Size.Y - (prevSize.Y - ContentRegion.Height));
                 }
             }
 
@@ -398,7 +430,7 @@ namespace Blish_HUD.Controls {
             }
 
             // Exit button bounds
-            this.ExitButtonBounds = new Rectangle(_rightTitleBarDrawBounds.Right - (STANDARD_MARGIN * 2) - _textureExitButton.Width,
+            this.ExitButtonBounds = new Rectangle(_rightTitleBarDrawBounds.Right - STANDARD_MARGIN - 8 - _textureExitButton.Width,
                                                   _rightTitleBarDrawBounds.Y     + STANDARD_MARGIN,
                                                   _textureExitButton.Width,
                                                   _textureExitButton.Height);
@@ -411,8 +443,8 @@ namespace Blish_HUD.Controls {
             _sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X + SIDEBAR_OFFSET, sideBarTop - SIDEBAR_OFFSET + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
 
             // Corner bounds
-            this.ResizeHandleBounds = new Rectangle(this.Width  - _textureWindowCorner.Width,
-                                                    this.Height - _textureWindowCorner.Height,
+            this.ResizeHandleBounds = new Rectangle(this.ContentRegion.Right - _textureWindowCorner.Width,
+                                                    this.ContentRegion.Bottom - _textureWindowCorner.Height,
                                                     _textureWindowCorner.Width,
                                                     _textureWindowCorner.Height);
         }
@@ -431,13 +463,19 @@ namespace Blish_HUD.Controls {
         protected override void OnMouseMoved(MouseEventArgs e) {
             ResetMouseRegionStates();
 
+            Rectangle resizebounds = new Rectangle(
+                this.ResizeHandleBounds.X + this.ResizeHandleBounds.Width - 20,
+                this.ResizeHandleBounds.Y + this.ResizeHandleBounds.Height - 20,
+                20,
+                20);
+
             if (this.RelativeMousePosition.Y < this.TitleBarBounds.Bottom) {
                 if (this.ExitButtonBounds.Contains(this.RelativeMousePosition)) {
                     this.MouseOverExitButton = true;
                 } else {
                     this.MouseOverTitleBar = true;
                 }
-            } else if (_canResize && this.ResizeHandleBounds.Contains(this.RelativeMousePosition)) {
+            } else if (_canResize && resizebounds.Contains(this.RelativeMousePosition)) {
                 this.MouseOverResizeHandle = true;
             }
 
@@ -448,7 +486,10 @@ namespace Blish_HUD.Controls {
             if (this.Visible && (this.Dragging || this.Resizing)) {
                 // Save position for next launch
                 if (this.SavesPosition && this.Id != null) {
-                    (_windowSettings[this.Id] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id, this.Location)).Value = this.Location;
+                    (_windowSettings[this.Id + "_Position"] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id + "_Position", this.Location)).Value = this.Location;
+                }
+                if (this.SavesSize && this.Id != null) {
+                    (_windowSettings[this.Id + "_Size"] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id + "_Size", this.Size)).Value = this.Size;
                 }
 
                 this.Dragging = false;
@@ -514,7 +555,7 @@ namespace Blish_HUD.Controls {
 
             this.Size = new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT);
 
-            _backgroundDrawBounds = new Rectangle(-windowRegion.Left, -windowRegion.Top + STANDARD_TITLEBAR_HEIGHT, background.Width, background.Height);
+            _backgroundDrawBounds = new Rectangle(windowRegion.X, windowRegion.Y + STANDARD_TITLEBAR_HEIGHT, windowRegion.Width, windowRegion.Height);
 
             this.Padding = new Thickness(Math.Max(windowRegion.Top - STANDARD_TITLEBAR_HEIGHT, STANDARD_TITLEBAR_VERTICAL_OFFSET), // We have to include the padding of the titlebar just in case
                                          background.Width                        - windowRegion.Right,
