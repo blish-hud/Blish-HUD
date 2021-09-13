@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using Blish_HUD.Controls;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
@@ -143,6 +145,27 @@ namespace Blish_HUD.Input {
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
+            // Handle the escape key, which should close the active window or top level context menu (if any)
+            if (key == Keys.Escape) {
+                var activeContextMenu = GameService.Graphics.SpriteScreen.Children
+                   .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
+
+                if (activeContextMenu != null) { 
+                    // If we found an active context menu item, close it
+                    activeContextMenu.Hide();
+                    return true;
+                } else {
+                    // If we found an active context menu item, close it
+                    var activeWindow = WindowBase2.ActiveWindow;
+
+                    if (activeWindow != null && activeWindow.CanClose) {
+                        activeWindow.Hide();
+                        return true;
+                    }
+                }
+            }
+
+            // Handle text input
             if (_textInputDelegate != null) {
                 string chars = TypedInputUtil.VkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
                 _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);

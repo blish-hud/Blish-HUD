@@ -99,6 +99,14 @@ namespace Blish_HUD.Controls {
                                                       .Count();
         }
 
+        /// <summary>
+        /// Gets or sets the active window. Returns null if no window is visible.
+        /// </summary>
+        public static IWindow ActiveWindow {
+            get  => _windows.Where(w => w.Visible).OrderByDescending(GetZIndex).FirstOrDefault(); 
+            set => value.BringWindowToFront();
+        }
+
         #endregion
 
         public override int ZIndex {

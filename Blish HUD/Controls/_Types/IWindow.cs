@@ -5,6 +5,11 @@
     public interface IWindow {
 
         /// <summary>
+        /// Returns true if the window is currently visible.
+        /// </summary>
+        bool Visible { get; }
+
+        /// <summary>
         /// If the window should be forced on top of all other windows.
         /// </summary>
         bool TopMost { get; }
@@ -23,6 +28,17 @@
         /// If <c>true</c> the window can support closing itself (X icon or pressing ESC).  Otherwise, an external action will be required to close it.
         /// </summary>
         bool CanClose { get; }
+
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
+        void Hide();
+
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
+        void Show();
+
 
     }
 }
