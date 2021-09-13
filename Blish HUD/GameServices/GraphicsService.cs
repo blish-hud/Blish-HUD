@@ -47,9 +47,10 @@ namespace Blish_HUD {
             return 1f;
         }
 
-        public float GetDpiScaleRatio() {
-            if (DpiScaling) {
-                return GetDpiForWindow(GameService.GameIntegration.Gw2WindowHandle) / 96f;
+        public float GetDpiScaleRatio(bool enabled) {
+            if (enabled) {
+                int dpi = GetDpiForWindow(GameService.GameIntegration.Gw2WindowHandle);
+                return dpi != 0 ? dpi / 96f : 1f;
             }
 
             return 1f;
@@ -149,7 +150,8 @@ namespace Blish_HUD {
             // Might do better error handling later on
             ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { GameService.Overlay.Restart(); };
 
-            this.UIScaleMultiplier = GetScaleRatio(UiSize.Normal);
+            this.UISizeMultiplier  = GetScaleRatio(UiSize.Normal);
+            this.UIScaleMultiplier = UISizeMultiplier * DpiMultiplier;
             this.UIScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
 
             _graphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
@@ -186,7 +188,6 @@ namespace Blish_HUD {
 
             EnableVsyncChanged(_enableVsyncSetting, new ValueChangedEventArgs<bool>(_enableVsyncSetting.Value, _enableVsyncSetting.Value));
             FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
-            DpiScalingSettingChanged(_dpiScalingSetting, new ValueChangedEventArgs<bool>(_dpiScalingSetting.Value, _dpiScalingSetting.Value));
 
             _frameLimiterSetting.SetExcluded(FramerateMethod.Custom);
 
@@ -234,7 +235,7 @@ namespace Blish_HUD {
         }
 
         private void DpiScalingSettingChanged(Object sender, ValueChangedEventArgs<bool> e) {
-            this.DpiMultiplier     = GetDpiScaleRatio();
+            this.DpiMultiplier     = GetDpiScaleRatio(e.NewValue);
             this.UIScaleMultiplier = DpiMultiplier * UISizeMultiplier;
 
             Rescale();
@@ -266,7 +267,8 @@ namespace Blish_HUD {
         }
 
         protected override void Load() {
-            GameService.Gw2Mumble.UI.UISizeChanged += UIOnUISizeChanged;
+            GameService.Gw2Mumble.UI.UISizeChanged      += UIOnUISizeChanged;
+            GameService.GameIntegration.FinishedLoading += OnGameIntegrationServiceFinishedLoading;
         }
 
         private void UIOnUISizeChanged(object sender, ValueEventArgs<UiSize> e) {
@@ -274,6 +276,10 @@ namespace Blish_HUD {
             this.UIScaleMultiplier = UISizeMultiplier * DpiMultiplier;
 
             Rescale();
+        }
+
+        private void OnGameIntegrationServiceFinishedLoading(object sender, EventArgs e) {
+            DpiScalingSettingChanged(sender, new ValueChangedEventArgs<bool>(_dpiScalingSetting.Value, _dpiScalingSetting.Value));
         }
 
         private void Rescale() {
