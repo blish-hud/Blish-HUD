@@ -114,10 +114,9 @@ namespace Blish_HUD {
             void Clear();
         }
         ///<inheritdoc/>
-        /// 
-        [Obsolete("No longer supported here in Core.", true)]
         private class GameChat : IGameChat {
             ///<inheritdoc/>
+            [Obsolete("No longer supported here in Core.", true)]
             public async void Send(string message) {
                 if (IsBusy() || !IsTextValid(message)) return;
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
@@ -140,7 +139,9 @@ namespace Blish_HUD {
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
                                            }); });
             }
+
             ///<inheritdoc/>
+            [Obsolete("No longer supported here in Core.", true)]
             public async void Paste(string text) {
                 if (IsBusy()) return;
                 string currentInput = await GetInputText();
@@ -164,7 +165,9 @@ namespace Blish_HUD {
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
                                            }); });
             }
+
             ///<inheritdoc/>
+            [Obsolete("No longer supported here in Core.", true)]
             public async Task<string> GetInputText() {
                 if (IsBusy()) return "";
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
@@ -186,6 +189,7 @@ namespace Blish_HUD {
                 return inputText;
             }
             ///<inheritdoc/>
+            [Obsolete("No longer supported here in Core.", true)]
             public void Clear() {
                 if (IsBusy()) return;
                 Task.Run(() => {
@@ -198,13 +202,16 @@ namespace Blish_HUD {
                     Unfocus();
                 });
             }
+
             private void Focus() {
                 Unfocus();
                 Keyboard.Stroke(VirtualKeyShort.RETURN);
             }
+
             private void Unfocus() {
                 Mouse.Click(MouseButton.LEFT, Graphics.GraphicsDevice.Viewport.Width / 2, 0);
             }
+
             private bool IsTextValid(string text) {
                 return (text != null && text.Length < 200);
                 // More checks? (Symbols: https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset)
