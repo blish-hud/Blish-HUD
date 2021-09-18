@@ -1,9 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Controls.Intern;
 using Blish_HUD.GameIntegration;
@@ -69,7 +67,7 @@ namespace Blish_HUD {
 
         internal SettingCollection ServiceSettings { get; private set; }
 
-        public GameIntegrationService() {
+        internal GameIntegrationService() {
             SetServiceModules(this.Gw2Proc    = new Gw2ProcIntegration(this),
                               this.ClientType = new ClientTypeIntegration(this),
                               this.Audio      = new AudioIntegration(this),

@@ -19,36 +19,30 @@ namespace Blish_HUD {
 
         #region Categorized Mumble Data
 
-        private Info            _info;
-        private PlayerCharacter _playerCharacter;
-        private PlayerCamera    _playerCamera;
-        private CurrentMap      _currentMap;
-        private UI              _ui;
-
         /// <summary>
         /// Provides information about the Mumble connection and about the game instance in realtime.
         /// </summary>
-        public Info Info => _info;
+        public Info Info { get; private set; }
 
         /// <summary>
         /// Provides data about the active player's character in realtime.
         /// </summary>
-        public PlayerCharacter PlayerCharacter => _playerCharacter;
+        public PlayerCharacter PlayerCharacter { get; private set; }
 
         /// <summary>
         /// Provides data about the active player's camera in realtime.
         /// </summary>
-        public PlayerCamera PlayerCamera => _playerCamera;
+        public PlayerCamera PlayerCamera { get; private set; }
 
         /// <summary>
         /// Provides data about the in-game UI state in realtime.
         /// </summary>
-        public UI UI => _ui;
+        public UI UI { get; private set; }
 
         /// <summary>
         /// Provides data about the map the player is currently on in realtime.
         /// </summary>
-        public CurrentMap CurrentMap => _currentMap;
+        public CurrentMap CurrentMap { get; private set; }
 
         #endregion
 
@@ -62,17 +56,19 @@ namespace Blish_HUD {
 
         public int Tick => _rawClient.Tick;
 
-        protected override void Initialize() {
+        internal Gw2MumbleService() {
             _rawClient = new Gw2Client().Mumble[ApplicationSettings.Instance.MumbleMapName ?? DEFAULT_MUMBLEMAPNAME];
+
+            this.Info            = new Info(this);
+            this.PlayerCharacter = new PlayerCharacter(this);
+            this.PlayerCamera    = new PlayerCamera(this);
+            this.CurrentMap      = new CurrentMap(this);
+            this.UI              = new UI(this);
         }
 
-        protected override void Load() {
-            _info            = new Info(this);
-            _playerCharacter = new PlayerCharacter(this);
-            _playerCamera    = new PlayerCamera(this);
-            _currentMap      = new CurrentMap(this);
-            _ui              = new UI(this);
-        }
+        protected override void Initialize() { /* NOOP */ }
+
+        protected override void Load() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
@@ -100,11 +96,11 @@ namespace Blish_HUD {
         }
 
         private void UpdateDetails(GameTime gameTime) {
-            _info.Update(gameTime);
-            _playerCharacter.Update(gameTime);
-            _playerCamera.Update(gameTime);
-            _currentMap.Update(gameTime);
-            _ui.Update(gameTime);
+            this.Info.Update(gameTime);
+            this.PlayerCharacter.Update(gameTime);
+            this.PlayerCamera.Update(gameTime);
+            this.CurrentMap.Update(gameTime);
+            this.UI.Update(gameTime);
         }
 
         protected override void Unload() {
