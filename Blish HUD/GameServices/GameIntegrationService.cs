@@ -114,6 +114,8 @@ namespace Blish_HUD {
             void Clear();
         }
         ///<inheritdoc/>
+        /// 
+        [Obsolete("No longer supported here in Core.", true)]
         private class GameChat : IGameChat {
             ///<inheritdoc/>
             public async void Send(string message) {
