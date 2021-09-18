@@ -49,7 +49,7 @@ namespace Blish_HUD {
 
         public float GetDpiScaleRatio(bool enabled) {
             if (enabled) {
-                int dpi = GetDpiForWindow(GameService.GameIntegration.Gw2WindowHandle);
+                int dpi = GetDpiForWindow(GameService.GameIntegration.Gw2Proc.Gw2WindowHandle);
                 return dpi != 0 ? dpi / 96f : 1f;
             }
 
@@ -246,7 +246,7 @@ namespace Blish_HUD {
 
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game and map is closed
-            if (GameService.GameIntegration.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
+            if (GameService.GameIntegration.Gw2Proc.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
                 this.World.Render(this.GraphicsDevice);
             GameService.Debug.StopTimeFunc("3D objects");
 

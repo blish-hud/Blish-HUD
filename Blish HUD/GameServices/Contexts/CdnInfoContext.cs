@@ -53,7 +53,7 @@ namespace Blish_HUD.Contexts {
         #region Context Management
 
         public CdnInfoContext() {
-            GameService.GameIntegration.Gw2Started += GameIntegrationOnGw2Started;
+            GameService.GameIntegration.Gw2Proc.Gw2Started += GameIntegrationOnGw2Started;
         }
 
         /// <inheritdoc />

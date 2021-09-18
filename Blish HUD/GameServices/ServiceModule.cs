@@ -1,8 +1,7 @@
-﻿using Blish_HUD.Settings;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameServices {
-    public abstract class ServiceModule<T> : IUpdatable
+    public abstract class ServiceModule<T> : IServiceModule
         where T : GameService {
 
         protected readonly T _service;
@@ -11,9 +10,11 @@ namespace Blish_HUD.GameServices {
             _service = service;
         }
 
+        public virtual void Load() { /* NOOP */ }
+
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
 
-        internal virtual void Unload() { /* NOOP */ }
+        public virtual void Unload() { /* NOOP */ }
 
     }
 }
