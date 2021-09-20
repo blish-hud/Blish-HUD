@@ -30,7 +30,8 @@ namespace Blish_HUD {
 
         #endregion
 
-        [DllImport("user32.dll")] private static extern int GetDpiForWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern int GetDpiForWindow(IntPtr hWnd);
 
         public float GetScaleRatio(UiSize currScale) {
             switch (currScale) {
@@ -47,10 +48,15 @@ namespace Blish_HUD {
             return 1f;
         }
 
-        public float GetDpiScaleRatio(bool enabled) {
-            if (enabled) {
+        public float GetDpiScaleRatio() {
+            if (this.DpiScalingMethod == DpiMethod.UseGameDpi
+             || this.DpiScalingMethod == DpiMethod.SyncWithGame && GameIntegration.GfxSettings.DpiScaling.GetValueOrDefault()) {
                 int dpi = GetDpiForWindow(GameService.GameIntegration.Gw2Proc.Gw2WindowHandle);
-                return dpi != 0 ? dpi / 96f : 1f;
+
+                // If DPI is 0 then the window handle is likely not valid
+                return dpi != 0
+                           ? dpi / 96f
+                           : 1f;
             }
 
             return 1f;
@@ -59,11 +65,6 @@ namespace Blish_HUD {
         public  Matrix UIScaleTransform { get; private set; } = Matrix.Identity;
 
         public  float UIScaleMultiplier { get; private set; } = 1f;
-
-        public float UISizeMultiplier { get; private set; } = 1f;
-
-        public float DpiMultiplier { get; private set; } = 1f;
-
 
         public Screen SpriteScreen => _spriteScreen;
 
@@ -85,7 +86,7 @@ namespace Blish_HUD {
         private SettingEntry<FramerateMethod> _frameLimiterSetting;
         private SettingEntry<bool>            _enableVsyncSetting;
         private SettingEntry<bool>            _smoothCharacterPositionSetting;
-        private SettingEntry<bool>            _dpiScalingSetting;
+        private SettingEntry<DpiMethod>       _dpiScalingMethodSetting;
 
         public FramerateMethod FrameLimiter {
             get => ApplicationSettings.Instance.TargetFramerate > 0
@@ -104,9 +105,9 @@ namespace Blish_HUD {
             set => _smoothCharacterPositionSetting.Value = value;
         }
         
-        public bool DpiScaling {
-            get => _dpiScalingSetting.Value;
-            set => _dpiScalingSetting.Value = value;
+        public DpiMethod DpiScalingMethod {
+            get => _dpiScalingMethodSetting.Value;
+            set => _dpiScalingMethodSetting.Value = value;
         }
 
         public Point Resolution {
@@ -150,9 +151,9 @@ namespace Blish_HUD {
             // Might do better error handling later on
             ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { GameService.Overlay.Restart(); };
 
-            this.UISizeMultiplier  = GetScaleRatio(UiSize.Normal);
-            this.UIScaleMultiplier = UISizeMultiplier * DpiMultiplier;
-            this.UIScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
+            //this.UISizeMultiplier  = GetScaleRatio(UiSize.Normal);
+            //this.UIScaleMultiplier = UISizeMultiplier * DpiMultiplier;
+            //this.UIScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
 
             _graphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
 
@@ -175,8 +176,8 @@ namespace Blish_HUD {
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
 
-            _dpiScalingSetting = settings.DefineSetting("DPIScaling",
-                                                        true,
+            _dpiScalingMethodSetting = settings.DefineSetting(nameof(DpiScalingMethod),
+                                                        DpiMethod.SyncWithGame,
                                                         () => Strings.GameServices.GraphicsService.Setting_DPIScaling_DisplayName,
                                                         () => Strings.GameServices.GraphicsService.Setting_DPIScaling_Description);
 
@@ -184,7 +185,6 @@ namespace Blish_HUD {
 
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
             _enableVsyncSetting.SettingChanged  += EnableVsyncChanged;
-            _dpiScalingSetting .SettingChanged  += DpiScalingSettingChanged;
 
             EnableVsyncChanged(_enableVsyncSetting, new ValueChangedEventArgs<bool>(_enableVsyncSetting.Value, _enableVsyncSetting.Value));
             FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
@@ -234,13 +234,6 @@ namespace Blish_HUD {
             }
         }
 
-        private void DpiScalingSettingChanged(Object sender, ValueChangedEventArgs<bool> e) {
-            this.DpiMultiplier     = GetDpiScaleRatio(e.NewValue);
-            this.UIScaleMultiplier = DpiMultiplier * UISizeMultiplier;
-
-            Rescale();
-        }
-
         internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
             this.GraphicsDevice.Clear(Color.Transparent);
 
@@ -266,23 +259,11 @@ namespace Blish_HUD {
             GameService.Debug.StopTimeFunc("Render Queue");
         }
 
-        protected override void Load() {
-            GameService.Gw2Mumble.UI.UISizeChanged      += UIOnUISizeChanged;
-            GameService.GameIntegration.FinishedLoading += OnGameIntegrationServiceFinishedLoading;
-        }
-
-        private void UIOnUISizeChanged(object sender, ValueEventArgs<UiSize> e) {
-            this.UISizeMultiplier  = GetScaleRatio(e.Value);
-            this.UIScaleMultiplier = UISizeMultiplier * DpiMultiplier;
-
-            Rescale();
-        }
-
-        private void OnGameIntegrationServiceFinishedLoading(object sender, EventArgs e) {
-            DpiScalingSettingChanged(sender, new ValueChangedEventArgs<bool>(_dpiScalingSetting.Value, _dpiScalingSetting.Value));
-        }
+        protected override void Load() { /* NOOP */ }
 
         private void Rescale() {
+            this.UIScaleMultiplier = GetDpiScaleRatio() * GetScaleRatio(GameService.Gw2Mumble.UI.UISize);
+
             this.SpriteScreen.Size = new Point((int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  / this.UIScaleMultiplier),
                                                (int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / this.UIScaleMultiplier));
 
@@ -292,6 +273,8 @@ namespace Blish_HUD {
         protected override void Unload() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) {
+            Rescale();
+
             this.World.Update(gameTime);
             SharedEffect.UpdateEffects(gameTime);
             this.SpriteScreen.Update(gameTime);

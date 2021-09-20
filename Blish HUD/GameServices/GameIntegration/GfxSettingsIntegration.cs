@@ -19,6 +19,8 @@ namespace Blish_HUD.GameIntegration {
 
         private const int FILELOCKED_ATTEMPTS = 3;
 
+        public event EventHandler<EventArgs> GfxSettingsReloaded;
+
         public FrameLimitSetting? FrameLimit => GetStringEnumSetting(FrameLimitSetting.FromString);
 
         public ShadowsSetting? Shadows => GetStringEnumSetting(ShadowsSetting.FromString);
@@ -78,6 +80,12 @@ namespace Blish_HUD.GameIntegration {
         /// "Forces the framerate to syncrhronize with the monitor's refresh rate.  Helps elimiate tearing artifacts but can result in artificually low framerates."
         /// </summary>
         public bool? VerticalSync => GetBoolSetting();
+
+        /// <summary>
+        /// Indicates the value of the in-game setting "DPI Scaling" which is described in game as:
+        /// "Enables additional scaling of the UI according to your system settings."
+        /// </summary>
+        public bool? DpiScaling => GetBoolSetting();
 
         private readonly Dictionary<string, string> _settings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -192,6 +200,8 @@ namespace Blish_HUD.GameIntegration {
                             _settings[settingName] = settingValue;
 
                             Logger.Trace($"Loaded {settingName} = {settingValue} from GSA.");
+
+                            GfxSettingsReloaded?.Invoke(this, EventArgs.Empty);
                         }
                     }
 
