@@ -16,11 +16,35 @@ namespace Blish_HUD {
 
         private const string GAMEINTEGRATION_SETTINGS = "GameIntegrationConfiguration";
 
-        public Gw2ProcIntegration    Gw2Proc    { get; private set; }
+        /// <summary>
+        /// Contains information and references about the attached Guild Wars 2 process.
+        /// </summary>
+        public Gw2ProcIntegration Gw2Proc { get; private set; }
+
+        /// <summary>
+        /// Contains information pulled from the attached Guild Wars 2's in-game graphics settings (via GSA API file).
+        /// </summary>
+        public GfxSettingsIntegration GfxSettings { get; private set; }
+
+        /// <summary>
+        /// Contains information about the attached Guild Wars 2's client type.
+        /// </summary>
         public ClientTypeIntegration ClientType { get; private set; }
-        public AudioIntegration      Audio      { get; private set; }
-        public TacOIntegration       TacO       { get; private set; }
-        public WinFormsIntegration   WinForms   { get; private set; }
+
+        /// <summary>
+        /// Contains information about the attached Guild War 2's volume level based on the users selected audio settings.
+        /// </summary>
+        public AudioIntegration Audio { get; private set; }
+
+        /// <summary>
+        /// Contains information about any running TacO processes.
+        /// </summary>
+        public TacOIntegration TacO { get; private set; }
+
+        /// <summary>
+        /// Contains our own WinForm integrations.
+        /// </summary>
+        public WinFormsIntegration WinForms { get; private set; }
 
         #region Obsolete Gw2Proc
 
@@ -68,11 +92,12 @@ namespace Blish_HUD {
         internal SettingCollection ServiceSettings { get; private set; }
 
         internal GameIntegrationService() {
-            SetServiceModules(this.Gw2Proc    = new Gw2ProcIntegration(this),
-                              this.ClientType = new ClientTypeIntegration(this),
-                              this.Audio      = new AudioIntegration(this),
-                              this.TacO       = new TacOIntegration(this),
-                              this.WinForms   = new WinFormsIntegration(this));
+            SetServiceModules(this.Gw2Proc     = new Gw2ProcIntegration(this),
+                              this.GfxSettings = new GfxSettingsIntegration(this),
+                              this.ClientType  = new ClientTypeIntegration(this),
+                              this.Audio       = new AudioIntegration(this),
+                              this.TacO        = new TacOIntegration(this),
+                              this.WinForms    = new WinFormsIntegration(this));
         }
 
         protected override void Initialize() {

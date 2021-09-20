@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Security.AccessControl;
 using System.Windows.Forms;
 using Blish_HUD.GameServices;
 using Blish_HUD.Settings;
+using Gapotchenko.FX.Diagnostics;
 using Microsoft.Win32;
 using Microsoft.Xna.Framework;
 
@@ -18,6 +20,8 @@ namespace Blish_HUD.GameIntegration {
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
         private const string GW2_GAMEWINDOW_NAME  = "ArenaNet_Dx_Window_Class";
+
+        private const string APPDATA_ENVKEY = "appdata";
 
         #region Events
 
@@ -105,6 +109,16 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
+        private string _appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        /// <summary>
+        /// Indicates the associated AppData path used by the active Guild Wars 2 instance.
+        /// Primarily used when the user is multiboxing and the appdata directory could be changed.
+        /// </summary>
+        public string AppDataPath {
+            get => _appDataPath;
+            private set => PropertyUtil.SetProperty(ref _appDataPath, value);
+        }
+
         // Settings
         private SettingEntry<string> _gw2ExecutablePath;
 
@@ -152,6 +166,12 @@ namespace Blish_HUD.GameIntegration {
             } else {
                 if (_gw2Process.MainModule != null) {
                     _gw2ExecutablePath.Value = _gw2Process.MainModule.FileName;
+                }
+
+                var envs = newProcess.ReadEnvironmentVariables();
+
+                if (envs.ContainsKey(APPDATA_ENVKEY)) {
+                    this.AppDataPath = envs[APPDATA_ENVKEY];
                 }
             }
 
