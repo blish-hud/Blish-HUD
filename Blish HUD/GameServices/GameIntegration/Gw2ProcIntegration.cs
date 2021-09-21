@@ -19,7 +19,8 @@ namespace Blish_HUD.GameIntegration {
         private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
-        private const string GW2_GAMEWINDOW_NAME  = "ArenaNet_Dx_Window_Class";
+        private const string GW2_GAMEWINDOW_NAME   = "ArenaNet_Dx_Window_Class";
+        private const string GW2_PATCHWINDOW_CLASS = "ArenaNet";
 
         private const string APPDATA_ENVKEY = "appdata";
 
@@ -177,9 +178,11 @@ namespace Blish_HUD.GameIntegration {
 
             // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
             // window is the game window name (so we know we are passed the login screen)
+            string windowClass = WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle);
+
             this.Gw2IsRunning = _gw2Process != null
-                             && WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle) == (ApplicationSettings.Instance.WindowName
-                                                                                                   ?? GW2_GAMEWINDOW_NAME);
+                             && windowClass == ApplicationSettings.Instance.WindowName
+                             || windowClass != GW2_PATCHWINDOW_CLASS;
         }
 
         private void OnGameFocusChanged(object sender, ValueEventArgs<bool> e) {
