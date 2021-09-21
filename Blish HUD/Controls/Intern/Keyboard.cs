@@ -21,7 +21,7 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void Press(VirtualKeyShort key, bool sendToSystem = false)
         {
-            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Proc.Gw2IsRunning || sendToSystem)
             {
                 var nInputs = new[]
                 {
@@ -46,7 +46,7 @@ namespace Blish_HUD.Controls.Intern
                 ExtraKeyInfo lParam = new ExtraKeyInfo(){
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Proc.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
         /// <summary>
@@ -56,7 +56,7 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void Release(VirtualKeyShort key, bool sendToSystem = false)
         {
-            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Proc.Gw2IsRunning || sendToSystem)
             {
                 var nInputs = new[]
                 {
@@ -86,7 +86,7 @@ namespace Blish_HUD.Controls.Intern
                     prevKeyState = 1,
                     transitionState = 1
                 };
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Proc.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
         }
         /// <summary>

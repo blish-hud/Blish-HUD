@@ -107,13 +107,13 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            if (!GameService.GameIntegration.Gw2IsRunning) {
+            if (!GameService.GameIntegration.Gw2Proc.Gw2IsRunning) {
                 // If gw2 isn't open so only run the essentials
                 GameService.Debug.DoUpdate(gameTime);
                 GameService.GameIntegration.DoUpdate(gameTime);
 
                 for (int i = 0; i < 200; i++) { // Wait ~10 seconds between checks
-                    if (GameService.GameIntegration.Gw2IsRunning || GameService.Overlay.Exiting) break;
+                    if (GameService.GameIntegration.Gw2Proc.Gw2IsRunning || GameService.Overlay.Exiting) break;
                     Thread.Sleep(50);
                     Application.DoEvents();
                 }
@@ -151,7 +151,7 @@ namespace Blish_HUD {
             GameService.Debug.TickFrameCounter(_drawLag);
             _drawLag = 0;
 
-            if (!GameService.GameIntegration.Gw2IsRunning) return;
+            if (!GameService.GameIntegration.Gw2Proc.Gw2IsRunning) return;
 
             GameService.Graphics.Render(gameTime, _basicSpriteBatch);
 
