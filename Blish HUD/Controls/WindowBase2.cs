@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Controls {
     public abstract class WindowBase2 : Container, IWindow, IViewContainer {
 
-        private const int STANDARD_TITLEBAR_HEIGHT = 40;
+        private const int STANDARD_TITLEBAR_HEIGHT = 45;
 
         private const int STANDARD_TITLEBAR_VERTICAL_OFFSET        = 11; // The vertical distance into the titlebar textures before it starts
         private const int STANDARD_LEFTTITLEBAR_HORIZONTAL_OFFSET  = 2;  // The horizontal distance into the left titlebar texture until it starts
@@ -238,6 +238,7 @@ namespace Blish_HUD.Controls {
             });
         }
 
+        private Point _resizeAmount = new Point(0,0);
         public override void UpdateContainer(GameTime gameTime) {
             if (this.Dragging) {
                 var nOffset = Input.Mouse.Position - _dragStart;
@@ -246,16 +247,16 @@ namespace Blish_HUD.Controls {
                 _dragStart = Input.Mouse.Position;
             } else if (this.Resizing) {
                 var nOffset = Input.Mouse.Position - _dragStart;
-                Point prevSize = this.Size;
-                this.Size = HandleWindowResize(_resizeStart + nOffset);
+                //Point newSize = HandleWindowResize(_resizeStart + nOffset);
 
-                this.TitleBarBounds = new Rectangle(0, 0, this.Size.X, STANDARD_TITLEBAR_HEIGHT);
+                if (_dragStart.X + nOffset.X > this.Size.X || _dragStart.X + nOffset.X < this.Location.X)
+                    nOffset.X = 0;
+                if (_dragStart.Y + nOffset.Y > this.Size.Y || _dragStart.Y + nOffset.Y < this.Location.Y)
+                    nOffset.Y = 0;
 
-                _backgroundDrawBounds = new Rectangle(0, STANDARD_TITLEBAR_HEIGHT, this.Size.X, this.Size.Y - STANDARD_TITLEBAR_HEIGHT);
-                this.ContentRegion = new Rectangle(ContentRegion.X,
-                                                   ContentRegion.Y,
-                                                   this.Size.X - (prevSize.X - ContentRegion.Width),
-                                                   this.Size.Y - (prevSize.Y - ContentRegion.Height));
+                _resizeAmount += nOffset;
+
+                _dragStart = Input.Mouse.Position;
             }
         }
 
@@ -289,16 +290,8 @@ namespace Blish_HUD.Controls {
             }
             if (this.SavesSize && this.Id != null) {
                 if (_windowSettings.TryGetSetting(this.Id + "_Size", out var windowSize)) {
-                    Point prevSize = this.Size;
-                    this.Size = (windowSize as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
-
-                    this.TitleBarBounds = new Rectangle(0, 0, this.Size.X, STANDARD_TITLEBAR_HEIGHT);
-
-                    _backgroundDrawBounds = new Rectangle(0, STANDARD_TITLEBAR_HEIGHT, this.Size.X, this.Size.Y - STANDARD_TITLEBAR_HEIGHT);
-                    this.ContentRegion = new Rectangle(ContentRegion.X,
-                                                       ContentRegion.Y,
-                                                       this.Size.X - (prevSize.X - ContentRegion.Width),
-                                                       this.Size.Y - (prevSize.Y - ContentRegion.Height));
+                    Point newSize = (windowSize as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
+                    _resizeAmount = newSize;
                 }
             }
 
@@ -430,7 +423,7 @@ namespace Blish_HUD.Controls {
             }
 
             // Exit button bounds
-            this.ExitButtonBounds = new Rectangle(_rightTitleBarDrawBounds.Right - STANDARD_MARGIN - 8 - _textureExitButton.Width,
+            this.ExitButtonBounds = new Rectangle(_rightTitleBarDrawBounds.Right - (STANDARD_MARGIN * 2) - _textureExitButton.Width,
                                                   _rightTitleBarDrawBounds.Y     + STANDARD_MARGIN,
                                                   _textureExitButton.Width,
                                                   _textureExitButton.Height);
@@ -443,8 +436,8 @@ namespace Blish_HUD.Controls {
             _sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X + SIDEBAR_OFFSET, sideBarTop - SIDEBAR_OFFSET + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
 
             // Corner bounds
-            this.ResizeHandleBounds = new Rectangle(this.ContentRegion.Right - _textureWindowCorner.Width,
-                                                    this.ContentRegion.Bottom - _textureWindowCorner.Height,
+            this.ResizeHandleBounds = new Rectangle(this.WindowRegion.Width - _textureWindowCorner.Width,
+                                                    this.WindowRegion.Height - _textureWindowCorner.Height,
                                                     _textureWindowCorner.Width,
                                                     _textureWindowCorner.Height);
         }
@@ -470,12 +463,12 @@ namespace Blish_HUD.Controls {
                 20);
 
             if (this.RelativeMousePosition.Y < this.TitleBarBounds.Bottom) {
-                if (this.ExitButtonBounds.Contains(this.RelativeMousePosition)) {
+                if (this.ExitButtonBounds.Add(new Rectangle(_resizeAmount.X,0,0,0)).Contains(this.RelativeMousePosition)) {
                     this.MouseOverExitButton = true;
                 } else {
                     this.MouseOverTitleBar = true;
                 }
-            } else if (_canResize && resizebounds.Contains(this.RelativeMousePosition)) {
+            } else if (_canResize && resizebounds.Add(new Rectangle(_resizeAmount.X, _resizeAmount.Y, 0, 0)).Contains(this.RelativeMousePosition)) {
                 this.MouseOverResizeHandle = true;
             }
 
@@ -489,7 +482,7 @@ namespace Blish_HUD.Controls {
                     (_windowSettings[this.Id + "_Position"] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id + "_Position", this.Location)).Value = this.Location;
                 }
                 if (this.SavesSize && this.Id != null) {
-                    (_windowSettings[this.Id + "_Size"] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id + "_Size", this.Size)).Value = this.Size;
+                    (_windowSettings[this.Id + "_Size"] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id + "_Size", _resizeAmount)).Value = _resizeAmount;
                 }
 
                 this.Dragging = false;
@@ -510,7 +503,7 @@ namespace Blish_HUD.Controls {
                 _dragStart    = Input.Mouse.Position;
             } else if (this.MouseOverResizeHandle) {
                 this.Resizing = true;
-                _resizeStart  = this.Size;
+                _resizeStart  = this.WindowRegion.Size + _resizeAmount;
                 _dragStart    = Input.Mouse.Position;
             } else if (this.MouseOverExitButton && this.CanClose) {
                 Hide();
@@ -531,7 +524,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         protected virtual Point HandleWindowResize(Point newSize) {
             return new Point(MathHelper.Clamp(newSize.X, SidebarActiveBounds.Right + STANDARD_MARGIN, 1024),
-                             MathHelper.Clamp(newSize.Y, TitleBarBounds.Bottom     + STANDARD_MARGIN, 1024));
+                             MathHelper.Clamp(newSize.Y, TitleBarBounds.Bottom     + STANDARD_MARGIN, 1024)); 
         }
 
         public void BringWindowToFront() {
@@ -553,9 +546,10 @@ namespace Blish_HUD.Controls {
             this.WindowRelativeContentRegion = contentRegion;
             this.TitleBarBounds              = new Rectangle(0, 0, windowRegion.Width, STANDARD_TITLEBAR_HEIGHT);
 
-            this.Size = new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT);
+            //this.Size = new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT);
+            this.Size = new Point(background.Width, background.Height);
 
-            _backgroundDrawBounds = new Rectangle(windowRegion.X, windowRegion.Y + STANDARD_TITLEBAR_HEIGHT, windowRegion.Width, windowRegion.Height);
+            _backgroundDrawBounds = new Rectangle(-windowRegion.Left, -windowRegion.Top + STANDARD_TITLEBAR_HEIGHT, background.Width, background.Height);
 
             this.Padding = new Thickness(Math.Max(windowRegion.Top - STANDARD_TITLEBAR_HEIGHT, STANDARD_TITLEBAR_VERTICAL_OFFSET), // We have to include the padding of the titlebar just in case
                                          background.Width                        - windowRegion.Right,
@@ -589,9 +583,9 @@ namespace Blish_HUD.Controls {
                                        this.MouseOverResizeHandle || this.Resizing
                                        ? _textureWindowResizableCornerActive
                                        : _textureWindowResizableCorner,
-                                       this.ResizeHandleBounds);
+                                       this.ResizeHandleBounds.Add(new Rectangle(_resizeAmount.X, _resizeAmount.Y,0,0)));
             } else {
-                spriteBatch.DrawOnCtrl(this, _textureWindowCorner, this.ResizeHandleBounds);
+                spriteBatch.DrawOnCtrl(this, _textureWindowCorner, this.ResizeHandleBounds.Add(new Rectangle(_resizeAmount.X, _resizeAmount.Y, 0, 0)));
             }
         }
 
@@ -610,19 +604,44 @@ namespace Blish_HUD.Controls {
 
         private void PaintWindowBackground(SpriteBatch spriteBatch) {
             if (this.ShowSideBar) {
-                spriteBatch.DrawOnCtrl(this, this.WindowBackground, _backgroundDrawBounds.OffsetBy(this.WindowRegion.Left + SIDEBAR_WIDTH, 0), new Rectangle(this.WindowRegion.Left + SIDEBAR_WIDTH, 0, this.WindowBackground.Width - this.WindowRegion.Left + SIDEBAR_WIDTH, this.WindowBackground.Height));
+                spriteBatch.DrawOnCtrl(this, this.WindowBackground, _backgroundDrawBounds.OffsetBy(this.WindowRegion.Left + SIDEBAR_WIDTH, 0), new Rectangle(this.WindowRegion.Left + SIDEBAR_WIDTH, 0, this.WindowBackground.Width - this.WindowRegion.Left + SIDEBAR_WIDTH, this.WindowBackground.Height).Add(new Rectangle(0, 0, _resizeAmount.X, _resizeAmount.Y)));
             } else {
-                spriteBatch.DrawOnCtrl(this, this.WindowBackground, _backgroundDrawBounds);
+                Point WindowCorner = new Point(this.ResizeHandleBounds.Right, this.ResizeHandleBounds.Bottom);
+                Point BGCorner = new Point(_backgroundDrawBounds.Right, _backgroundDrawBounds.Bottom);
+                Point Difference = new Point(BGCorner.X - WindowCorner.X, BGCorner.Y - WindowCorner.Y);
+                Point Ratio = new Point(WindowCorner.X / BGCorner.X, WindowCorner.Y / BGCorner.Y);
+                Point newWindowCorner = new Point(WindowCorner.X + _resizeAmount.X, WindowCorner.Y + _resizeAmount.Y);
+                Point newBGCorner = new Point(
+                    newWindowCorner.X + Difference.X,
+                    newWindowCorner.Y + Difference.Y
+                    );
+                newBGCorner = new Point(
+                    newWindowCorner.X * Ratio.X,
+                    newWindowCorner.Y * Ratio.Y
+                    );
+
+
+                spriteBatch.DrawOnCtrl(
+                    this, 
+                    this.WindowBackground, 
+                    new Rectangle (_backgroundDrawBounds.X,
+                    _backgroundDrawBounds.Y,
+                    _backgroundDrawBounds.Width + _resizeAmount.X,
+                    _backgroundDrawBounds.Height + _resizeAmount.Y
+                    //(this.WindowRegion.X * (WindowBackground.Height / WindowBackground.Width)),
+                    //(this.WindowRegion.Y * (WindowBackground.Width / WindowBackground.Height))
+                    )
+                );
             }
         }
 
         private void PaintTitleBar(SpriteBatch spriteBatch) {
             if (this.MouseOver && this.MouseOverTitleBar) {
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeftActive,  _leftTitleBarDrawBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarRightActive, _rightTitleBarDrawBounds);
+                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeftActive,  _leftTitleBarDrawBounds.Add(new Rectangle(0, 0, _resizeAmount.X, 0)));
+                spriteBatch.DrawOnCtrl(this, _textureTitleBarRightActive, _rightTitleBarDrawBounds.Add(new Rectangle(0, 0, _resizeAmount.X, 0)));
             } else {
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeft,  _leftTitleBarDrawBounds);
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _rightTitleBarDrawBounds);
+                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeft, _leftTitleBarDrawBounds.Add(new Rectangle(0,0,_resizeAmount.X,0)));
+                spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _rightTitleBarDrawBounds.Add(new Rectangle(0, 0, _resizeAmount.X, 0)));
             }
         }
 
@@ -641,7 +660,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, MouseOverExitButton
                                                  ? _textureExitButtonActive
                                                  : _textureExitButton,
-                                       this.ExitButtonBounds);
+                                       this.ExitButtonBounds.Add(new Rectangle(_resizeAmount.X, 0, 0, 0)));
             }
         }
 
