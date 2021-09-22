@@ -48,9 +48,9 @@ namespace Blish_HUD {
 
         protected override void Load() {
             _hookManager.Load();
-            GameIntegration.Gw2Proc.Gw2AcquiredFocus += (s, e) => EnableHooks();
-            GameIntegration.Gw2Proc.Gw2LostFocus     += (s, e) => DisableHooks();
-            GameIntegration.Gw2Proc.Gw2Closed        += (s, e) => DisableHooks();
+            GameIntegration.Gw2Instance.Gw2AcquiredFocus += (s, e) => EnableHooks();
+            GameIntegration.Gw2Instance.Gw2LostFocus     += (s, e) => DisableHooks();
+            GameIntegration.Gw2Instance.Gw2Closed        += (s, e) => DisableHooks();
         }
 
         protected override void Unload() {

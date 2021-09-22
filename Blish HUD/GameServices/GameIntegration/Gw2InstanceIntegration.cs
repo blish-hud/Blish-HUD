@@ -12,9 +12,9 @@ using Microsoft.Win32;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameIntegration {
-    public class Gw2ProcIntegration : ServiceModule<GameIntegrationService> {
+    public class Gw2InstanceIntegration : ServiceModule<GameIntegrationService> {
 
-        private static readonly Logger Logger = Logger.GetLogger<Gw2ProcIntegration>();
+        private static readonly Logger Logger = Logger.GetLogger<Gw2InstanceIntegration>();
 
         private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
@@ -127,10 +127,10 @@ namespace Blish_HUD.GameIntegration {
 
         private bool _exitLocked = false;
 
-        public Gw2ProcIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+        public Gw2InstanceIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
-            DefineSettings(_service.ServiceSettings.AddSubCollection(nameof(Gw2ProcIntegration)));
+            DefineSettings(_service.ServiceSettings.AddSubCollection(nameof(Gw2InstanceIntegration)));
 
             GameService.Gw2Mumble.Info.IsGameFocusedChanged += OnGameFocusChanged;
 

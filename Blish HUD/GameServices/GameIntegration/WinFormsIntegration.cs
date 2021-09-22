@@ -62,7 +62,7 @@ namespace Blish_HUD.GameIntegration {
             _launchGw2Tsi.Click     += delegate { LaunchGw2(false); };
 
             _trayIcon.DoubleClick += delegate {
-                if (!_service.Gw2Proc.Gw2IsRunning) {
+                if (!_service.Gw2Instance.Gw2IsRunning) {
                     LaunchGw2(true);
                 }
             };
@@ -76,8 +76,8 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void TrayIconMenuOnOpening(object sender, CancelEventArgs e) {
-            _launchGw2Tsi.Enabled = _launchGw2AutoTsi.Enabled = !_service.Gw2Proc.Gw2IsRunning
-                                                             && File.Exists(_service.Gw2Proc.Gw2ExecutablePath);
+            _launchGw2Tsi.Enabled = _launchGw2AutoTsi.Enabled = !_service.Gw2Instance.Gw2IsRunning
+                                                             && File.Exists(_service.Gw2Instance.Gw2ExecutablePath);
         }
 
         private void LaunchGw2(bool autologin = false) {
@@ -93,10 +93,10 @@ namespace Blish_HUD.GameIntegration {
                 args.Add($"-mumble \"{ApplicationSettings.Instance.MumbleMapName}\"");
             }
 
-            if (File.Exists(_service.Gw2Proc.Gw2ExecutablePath)) {
+            if (File.Exists(_service.Gw2Instance.Gw2ExecutablePath)) {
                 var gw2Proc = new Process {
                     StartInfo = {
-                        FileName  = _service.Gw2Proc.Gw2ExecutablePath,
+                        FileName  = _service.Gw2Instance.Gw2ExecutablePath,
                         Arguments = string.Join(" ", args)
                     }
                 };

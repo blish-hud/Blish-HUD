@@ -81,7 +81,7 @@ namespace Blish_HUD.GameIntegration {
             UpdateActiveAudioDeviceManager();
 
             _deviceEnumerator.DefaultDeviceChanged += delegate { UpdateActiveAudioDeviceManager(); };
-            _service.Gw2Proc.Gw2Started            += delegate { UpdateActiveAudioDeviceManager(); };
+            _service.Gw2Instance.Gw2Started            += delegate { UpdateActiveAudioDeviceManager(); };
 
             _deviceSetting.SettingChanged += delegate {
                 if (_deviceSetting.Value == Devices.DefaultDevice) {
@@ -96,7 +96,7 @@ namespace Blish_HUD.GameIntegration {
         }
 
         public override void Update(GameTime gameTime) {
-            if (_gw2AudioDevices.Count == 0 || !_service.Gw2Proc.Gw2IsRunning) return;
+            if (_gw2AudioDevices.Count == 0 || !_service.Gw2Instance.Gw2IsRunning) return;
 
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
             _timeSinceAudioDeviceUpdate += gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -152,7 +152,7 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void InitializeProcessMeterInformations() {
-            if (!_service.Gw2Proc.Gw2IsRunning) return;
+            if (!_service.Gw2Instance.Gw2IsRunning) return;
 
             _gw2AudioDevices.Clear();
             foreach (var device in _deviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active)) {
@@ -162,7 +162,7 @@ namespace Blish_HUD.GameIntegration {
                 foreach (var session in sessionEnumerator) {
                     using var processAudioSession = session.QueryInterface<AudioSessionControl2>();
 
-                    if (processAudioSession.Process.Id == _service.Gw2Proc.Gw2Process.Id) {
+                    if (processAudioSession.Process.Id == _service.Gw2Instance.Gw2Process.Id) {
                         var audioMeterInformation = session.QueryInterface<AudioMeterInformation>();
                         _gw2AudioDevices.Add((device, session.QueryInterface<AudioMeterInformation>()));
                         shouldDispose = false;
