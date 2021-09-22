@@ -263,7 +263,7 @@ namespace Blish_HUD {
 
             HandleEnqueuedUpdates(gameTime);
 
-            if (GameIntegration.Gw2Proc.IsInGame) {
+            if (GameIntegration.Gw2Instance.IsInGame) {
                 int offset = /* Offset +1 if Chinese client */ (GameService.GameIntegration.ClientType.ClientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
                            + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
 
