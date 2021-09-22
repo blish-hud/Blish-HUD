@@ -96,7 +96,7 @@ namespace Blish_HUD.GameIntegration {
         public GfxSettingsIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
-            _service.Gw2Proc.Gw2Started += Gw2Proc_Gw2Started;
+            _service.Gw2Instance.Gw2Started += Gw2Proc_Gw2Started;
 
             EnableWatchDir();
 
@@ -131,7 +131,7 @@ namespace Blish_HUD.GameIntegration {
 
         private void EnableWatchDir() {
             _fileSystemWatcher                       = new FileSystemWatcher();
-            _fileSystemWatcher.Path                  = Path.Combine(_service.Gw2Proc.AppDataPath, GFXSETTINGS_PATH);
+            _fileSystemWatcher.Path                  = Path.Combine(_service.Gw2Instance.AppDataPath, GFXSETTINGS_PATH);
             _fileSystemWatcher.NotifyFilter          = NotifyFilters.LastWrite;
             _fileSystemWatcher.Filter                = GFXSETTINGS_NAME;
             _fileSystemWatcher.EnableRaisingEvents   = true;
@@ -158,7 +158,7 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private bool TryGetGfxSettingsFileStream(out FileStream gfxSettingsFileStream) {
-            string path = Path.Combine(_service.Gw2Proc.AppDataPath, GFXSETTINGS_PATH, GFXSETTINGS_NAME);
+            string path = Path.Combine(_service.Gw2Instance.AppDataPath, GFXSETTINGS_PATH, GFXSETTINGS_NAME);
 
             gfxSettingsFileStream = null;
 
@@ -228,7 +228,7 @@ namespace Blish_HUD.GameIntegration {
         }
 
         public override void Unload() {
-            _service.Gw2Proc.Gw2Started -= Gw2Proc_Gw2Started;
+            _service.Gw2Instance.Gw2Started -= Gw2Proc_Gw2Started;
             _fileSystemWatcher.Changed  -= GfxSettingsFileChanged;
 
             _fileSystemWatcher.Dispose();

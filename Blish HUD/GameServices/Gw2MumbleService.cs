@@ -87,7 +87,7 @@ namespace Blish_HUD {
                 _delayedTicks++;
 
                 if (GameService.Graphics.FrameLimiter == FramerateMethod.SyncWithGame
-                    && GameService.GameIntegration.Gw2Proc.Gw2IsRunning
+                    && GameService.GameIntegration.Gw2Instance.Gw2IsRunning
                     && this.TimeSinceTick.TotalSeconds < 0.5) {
 
                     BlishHud.Instance.SkipDraw();
