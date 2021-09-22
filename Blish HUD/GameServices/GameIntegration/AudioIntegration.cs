@@ -27,11 +27,11 @@ namespace Blish_HUD.GameIntegration {
         private const    int                   AUDIO_DEVICE_UPDATE_INTERVAL = 10000;
         private const    int                   AUDIOBUFFER_LENGTH           = 20;
         private const    float                 MAX_VOLUME                   = 0.4f;
-        private readonly SettingEntry<bool>    _useGameVolume;
-        private readonly SettingEntry<Devices> _deviceSetting;
-        private readonly MMDeviceEnumerator    _deviceEnumerator;
-        private readonly RingBuffer<float>     _audioPeakBuffer = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
-        private readonly SettingEntry<float>   _volumeSetting;
+        private readonly RingBuffer<float>     _audioPeakBuffer             = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
+        private          SettingEntry<bool>    _useGameVolume;
+        private          SettingEntry<Devices> _deviceSetting;
+        private          MMDeviceEnumerator    _deviceEnumerator;
+        private          SettingEntry<float>   _volumeSetting;
 
         private readonly List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)> _gw2AudioDevices = new List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)>();
 
@@ -54,7 +54,9 @@ namespace Blish_HUD.GameIntegration {
         /// </summary>
         public MMDevice AudioDevice { get; private set; }
 
-        public AudioIntegration(GameIntegrationService service) : base(service) {
+        public AudioIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+
+        public override void Load() {
             var audioSettings = GameService.Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
             _useGameVolume = audioSettings.DefineSetting(USEGAMEVOLUME_SETTINGS, true, () => Strings.GameServices.OverlayService.Setting_UseGameVolume_DisplayName, () => Strings.GameServices.OverlayService.Setting_UseGameVolume_Description);
             _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2, () => Strings.GameServices.OverlayService.Setting_Volume_DisplayName, () => Strings.GameServices.OverlayService.Setting_Volume_Description);
@@ -79,7 +81,7 @@ namespace Blish_HUD.GameIntegration {
             UpdateActiveAudioDeviceManager();
 
             _deviceEnumerator.DefaultDeviceChanged += delegate { UpdateActiveAudioDeviceManager(); };
-            _service.Gw2Started                    += delegate { UpdateActiveAudioDeviceManager(); };
+            _service.Gw2Proc.Gw2Started            += delegate { UpdateActiveAudioDeviceManager(); };
 
             _deviceSetting.SettingChanged += delegate {
                 if (_deviceSetting.Value == Devices.DefaultDevice) {
@@ -94,7 +96,7 @@ namespace Blish_HUD.GameIntegration {
         }
 
         public override void Update(GameTime gameTime) {
-            if (_gw2AudioDevices.Count == 0) return;
+            if (_gw2AudioDevices.Count == 0 || !_service.Gw2Proc.Gw2IsRunning) return;
 
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
             _timeSinceAudioDeviceUpdate += gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -150,7 +152,7 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void InitializeProcessMeterInformations() {
-            if (!_service.Gw2IsRunning) return;
+            if (!_service.Gw2Proc.Gw2IsRunning) return;
 
             _gw2AudioDevices.Clear();
             foreach (var device in _deviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active)) {
@@ -160,7 +162,7 @@ namespace Blish_HUD.GameIntegration {
                 foreach (var session in sessionEnumerator) {
                     using var processAudioSession = session.QueryInterface<AudioSessionControl2>();
 
-                    if (processAudioSession.Process.Id == _service.Gw2Process.Id) {
+                    if (processAudioSession.Process.Id == _service.Gw2Proc.Gw2Process.Id) {
                         var audioMeterInformation = session.QueryInterface<AudioMeterInformation>();
                         _gw2AudioDevices.Add((device, session.QueryInterface<AudioMeterInformation>()));
                         shouldDispose = false;
@@ -173,7 +175,7 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
-        internal override void Unload() {
+        public override void Unload() {
             _deviceEnumerator?.Dispose();
 
             foreach (var device in _gw2AudioDevices) {
