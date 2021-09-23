@@ -171,8 +171,12 @@ namespace Blish_HUD.GameIntegration {
 
                 var envs = newProcess.ReadEnvironmentVariables();
 
-                if (envs.ContainsKey(APPDATA_ENVKEY)) {
-                    this.AppDataPath = envs[APPDATA_ENVKEY];
+                try {
+                    if (envs.ContainsKey(APPDATA_ENVKEY)) {
+                        this.AppDataPath = envs[APPDATA_ENVKEY];
+                    }
+                } catch (NullReferenceException e) {
+                    Logger.Warn(e, "Failed to grab Guild Wars 2 env variable.  It is likely exiting.");
                 }
             }
 
