@@ -19,8 +19,8 @@ namespace Blish_HUD {
         public KeyboardHandler Keyboard { get; }
 
         public InputService() {
-            Mouse = new MouseHandler();
-            Keyboard = new KeyboardHandler();
+            this.Mouse    = new MouseHandler();
+            this.Keyboard = new KeyboardHandler();
 
             if (ApplicationSettings.Instance.DebugEnabled) {
                 _hookManager = new DebugHelperHookManager();
@@ -33,6 +33,9 @@ namespace Blish_HUD {
             if (_hookManager.EnableHook()) {
                 _hookManager.RegisterMouseHandler(Mouse.HandleInput);
                 _hookManager.RegisterKeyboardHandler(Keyboard.HandleInput);
+
+                this.Mouse.OnEnable();
+                this.Keyboard.OnEnable();
             } else {
                 Logger.Error("Failed to acquire hook!");
             }
@@ -42,6 +45,9 @@ namespace Blish_HUD {
             _hookManager.DisableHook();
             _hookManager.UnregisterMouseHandler(Mouse.HandleInput);
             _hookManager.UnregisterKeyboardHandler(Keyboard.HandleInput);
+
+            this.Mouse.OnDisable();
+            this.Keyboard.OnDisable();
         }
 
         protected override void Initialize() { /* NOOP */ }
