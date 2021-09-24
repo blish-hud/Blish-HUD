@@ -22,7 +22,8 @@
             };
         }
 
-        public override int GetHashCode() => this.Value.GetHashCode();
+        public override int  GetHashCode()      => this.Value.GetHashCode();
+        public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
         public static implicit operator string(LodDistanceSetting lodDistanceSetting) => lodDistanceSetting.Value;
         public static implicit operator LodDistanceSetting(string value)              => new LodDistanceSetting(value);
