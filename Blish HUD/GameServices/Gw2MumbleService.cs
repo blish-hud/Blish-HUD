@@ -12,10 +12,8 @@ namespace Blish_HUD {
 
         private readonly TimeSpan _syncDelay = TimeSpan.FromMilliseconds(3);
 
-        private IGw2MumbleClient _rawClient;
-
         /// <inheritdoc cref="Gw2MumbleClient"/>
-        public IGw2MumbleClient RawClient => _rawClient;
+        public IGw2MumbleClient RawClient { get; }
 
         #region Categorized Mumble Data
 
@@ -47,17 +45,17 @@ namespace Blish_HUD {
         #endregion
 
         /// <inheritdoc cref="IGw2MumbleClient.IsAvailable"/>
-        public bool IsAvailable => _rawClient.IsAvailable;
+        public bool IsAvailable => this.RawClient.IsAvailable;
 
         public TimeSpan TimeSinceTick { get; private set; }
 
         private int _delayedTicks = 0;
         private int _prevTick = -1;
 
-        public int Tick => _rawClient.Tick;
+        public int Tick => this.RawClient.Tick;
 
         internal Gw2MumbleService() {
-            _rawClient = new Gw2Client().Mumble[ApplicationSettings.Instance.MumbleMapName ?? DEFAULT_MUMBLEMAPNAME];
+            this.RawClient = new Gw2Client().Mumble[ApplicationSettings.Instance.MumbleMapName ?? DEFAULT_MUMBLEMAPNAME];
 
             this.Info            = new Info(this);
             this.PlayerCharacter = new PlayerCharacter(this);
@@ -73,10 +71,10 @@ namespace Blish_HUD {
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
             
-            _rawClient.Update();
+            this.RawClient.Update();
 
-            if (_rawClient.Tick > _prevTick) {
-                _prevTick = _rawClient.Tick;
+            if (this.RawClient.Tick > _prevTick) {
+                _prevTick = this.RawClient.Tick;
 
                 this.TimeSinceTick = TimeSpan.Zero;
 
@@ -104,7 +102,7 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
-            _rawClient.Dispose();
+            this.RawClient.Dispose();
         }
 
     }
