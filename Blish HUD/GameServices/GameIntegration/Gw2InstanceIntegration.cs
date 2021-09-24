@@ -19,7 +19,6 @@ namespace Blish_HUD.GameIntegration {
         private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
-        private const string GW2_GAMEWINDOW_NAME   = "ArenaNet_Dx_Window_Class";
         private const string GW2_PATCHWINDOW_CLASS = "ArenaNet";
 
         private const string APPDATA_ENVKEY = "appdata";
