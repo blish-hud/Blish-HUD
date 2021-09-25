@@ -174,6 +174,7 @@ namespace Blish_HUD.GameIntegration {
                 BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = false; }));
 
                 _gw2Process = null;
+                this.Gw2IsRunning = false;
             } else {
                 if (_gw2Process.MainModule != null) {
                     _gw2ExecutablePath.Value = _gw2Process.MainModule.FileName;
@@ -188,18 +189,21 @@ namespace Blish_HUD.GameIntegration {
 
                 var envs = newProcess.ReadEnvironmentVariables();
 
-                if (envs.ContainsKey(APPDATA_ENVKEY)) {
-                    this.AppDataPath = envs[APPDATA_ENVKEY];
+                try {
+                    if (envs.ContainsKey(APPDATA_ENVKEY)) {
+                        this.AppDataPath = envs[APPDATA_ENVKEY];
+                    }
+                } catch (NullReferenceException e) {
+                    Logger.Warn(e, "Failed to grab Guild Wars 2 env variable.  It is likely exiting.");
                 }
+
+                // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
+                // window is the game window name (so we know we are passed the login screen)
+                string windowClass = WindowUtil.GetClassNameOfWindow(_gw2Process.MainWindowHandle);
+
+                this.Gw2IsRunning = windowClass == ApplicationSettings.Instance.WindowName
+                                 || windowClass != GW2_PATCHWINDOW_CLASS;
             }
-
-            // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
-            // window is the game window name (so we know we are passed the login screen)
-            string windowClass = WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle);
-
-            this.Gw2IsRunning = _gw2Process != null
-                             && windowClass == ApplicationSettings.Instance.WindowName
-                             || windowClass != GW2_PATCHWINDOW_CLASS;
         }
 
         private void OnGameFocusChanged(object sender, ValueEventArgs<bool> e) {
