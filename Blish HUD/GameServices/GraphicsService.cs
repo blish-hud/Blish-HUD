@@ -151,10 +151,6 @@ namespace Blish_HUD {
             // Might do better error handling later on
             ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { GameService.Overlay.Restart(); };
 
-            //this.UISizeMultiplier  = GetScaleRatio(UiSize.Normal);
-            //this.UIScaleMultiplier = UISizeMultiplier * DpiMultiplier;
-            //this.UIScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
-
             _graphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
 
             DefineSettings(_graphicsSettings);

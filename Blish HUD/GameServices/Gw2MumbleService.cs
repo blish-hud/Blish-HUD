@@ -50,14 +50,14 @@ namespace Blish_HUD {
         #endregion
 
         /// <inheritdoc cref="IGw2MumbleClient.IsAvailable"/>
-        public bool IsAvailable => RawClient.IsAvailable;
+        public bool IsAvailable => this.RawClient.IsAvailable;
 
         public TimeSpan TimeSinceTick { get; private set; }
 
         private int _delayedTicks = 0;
         private int _prevTick = -1;
 
-        public int Tick => RawClient.Tick;
+        public int Tick => this.RawClient.Tick;
 
         internal Gw2MumbleService() {
             _gw2Client = new Gw2Client();
@@ -76,10 +76,10 @@ namespace Blish_HUD {
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
 
-            RawClient.Update();
+            this.RawClient.Update();
 
-            if (RawClient.Tick > _prevTick) {
-                _prevTick = RawClient.Tick;
+            if (this.RawClient.Tick > _prevTick) {
+                _prevTick = this.RawClient.Tick;
 
                 this.TimeSinceTick = TimeSpan.Zero;
 
