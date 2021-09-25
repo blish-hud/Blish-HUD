@@ -119,6 +119,15 @@ namespace Blish_HUD.GameIntegration {
             private set => PropertyUtil.SetProperty(ref _appDataPath, value);
         }
 
+        private string _commandLine;
+        /// <summary>
+        /// The full command line of the current Guild Wars 2 process.
+        /// </summary>
+        public string CommandLine {
+            get => _commandLine;
+            private set => PropertyUtil.SetProperty(ref _commandLine, value);
+        }
+
         // Settings
         private SettingEntry<string> _gw2ExecutablePath;
 
@@ -167,6 +176,13 @@ namespace Blish_HUD.GameIntegration {
             } else {
                 if (_gw2Process.MainModule != null) {
                     _gw2ExecutablePath.Value = _gw2Process.MainModule.FileName;
+                }
+
+                try {
+                    this.CommandLine = newProcess.GetCommandLine();
+                } catch (Win32Exception e) {
+                    this.CommandLine = string.Empty;
+                    Logger.Warn(e, "A Win32Exception was encountered while trying to retrieve the process command line.");
                 }
 
                 var envs = newProcess.ReadEnvironmentVariables();

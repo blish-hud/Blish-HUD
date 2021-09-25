@@ -4,16 +4,21 @@ using Blish_HUD.Gw2Mumble;
 using Gw2Sharp;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.Mumble;
+using System.Text.RegularExpressions;
 namespace Blish_HUD {
 
     public class Gw2MumbleService : GameService {
 
         private const string DEFAULT_MUMBLEMAPNAME = "MumbleLink";
 
+        private static readonly Regex MUMBLE_LINK_REGEX = new Regex("^.+-mumble\\s+?\"(.+?)\".*$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         private readonly TimeSpan _syncDelay = TimeSpan.FromMilliseconds(3);
 
+        private readonly IGw2Client _gw2Client;
+
         /// <inheritdoc cref="Gw2MumbleClient"/>
-        public IGw2MumbleClient RawClient { get; }
+        public IGw2MumbleClient RawClient => GetRawClient();
 
         #region Categorized Mumble Data
 
@@ -55,7 +60,7 @@ namespace Blish_HUD {
         public int Tick => this.RawClient.Tick;
 
         internal Gw2MumbleService() {
-            this.RawClient = new Gw2Client().Mumble[ApplicationSettings.Instance.MumbleMapName ?? DEFAULT_MUMBLEMAPNAME];
+            _gw2Client = new Gw2Client();
 
             this.Info            = new Info(this);
             this.PlayerCharacter = new PlayerCharacter(this);
@@ -70,7 +75,7 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
-            
+
             this.RawClient.Update();
 
             if (this.RawClient.Tick > _prevTick) {
@@ -101,8 +106,34 @@ namespace Blish_HUD {
             this.UI.Update(gameTime);
         }
 
+        private IGw2MumbleClient GetRawClient() {
+            string linkName = GetLinkName();
+            return _gw2Client.Mumble[linkName];
+        }
+
+        private string GetLinkName() {
+            return ApplicationSettings.Instance.MumbleMapName ??
+                GetLinkNameFromCommandLine() ??
+                DEFAULT_MUMBLEMAPNAME;
+        }
+
+        private string GetLinkNameFromCommandLine() {
+            string commandLine = GameService.GameIntegration.Gw2Instance.CommandLine;
+
+            if (string.IsNullOrWhiteSpace(commandLine)) {
+                return null;
+            }
+
+            Match m = MUMBLE_LINK_REGEX.Match(commandLine);
+            if (m.Success) {
+                return m.Groups[1].Value;
+            } else {
+                return null;
+            }
+        }
+
         protected override void Unload() {
-            this.RawClient.Dispose();
+            _gw2Client.Dispose();
         }
 
     }
