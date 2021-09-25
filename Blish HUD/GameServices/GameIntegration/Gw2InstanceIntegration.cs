@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.AccessControl;
 using System.Windows.Forms;
-using Blish_HUD._Utils;
 using Blish_HUD.GameServices;
 using Blish_HUD.Settings;
 using Gapotchenko.FX.Diagnostics;

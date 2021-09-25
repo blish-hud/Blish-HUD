@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Blish_HUD._Utils {
-    public static class ProcessUtil {
+namespace Blish_HUD {
+    internal static class ProcessUtil {
         #region PInvoke Methods
 
         [DllImport("ntdll.dll", SetLastError = true)]
