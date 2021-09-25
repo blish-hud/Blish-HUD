@@ -213,9 +213,16 @@ namespace Blish_HUD.GameIntegration {
         private void TryAttachToGw2() {
             // Get process from Mumble if it is defined
             // otherwise just get the first instance running
-            this.Gw2Process = GetMumbleSpecifiedGw2Process()
-                           ?? GetDefaultGw2ProcessById()
-                           ?? GetDefaultGw2ProcessByName();
+            if (ApplicationSettings.Instance.MumbleMapName != null) {
+                // User-set mumble link name - so don't fallback.
+                this.Gw2Process = GetMumbleSpecifiedGw2Process();
+            } else {
+                // No user-set mumble link name - so fallback,
+                // starting with default mumble data if found
+                this.Gw2Process = GetMumbleSpecifiedGw2Process()
+                               ?? GetDefaultGw2ProcessById()
+                               ?? GetDefaultGw2ProcessByName();
+            }
 
             if (this.Gw2IsRunning) {
                 try {
