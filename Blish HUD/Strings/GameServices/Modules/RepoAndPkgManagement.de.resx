@@ -117,13 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Action_Accept" xml:space="preserve">
-    <value>Aceptar</value>
+  <data name="PkgRepoSection" xml:space="preserve">
+    <value>Modulbibliothek</value>
   </data>
-  <data name="Action_Cancel" xml:space="preserve">
-    <value>Cancelar</value>
+  <data name="PkgRepo_ProviderExtraOption_ReloadRepository" xml:space="preserve">
+    <value>Neuladen der Bibliothek erzwingen</value>
   </data>
-  <data name="BlishHUD" xml:space="preserve">
-    <value>Blish HUD</value>
+  <data name="PkgRepo_ProviderExtraOption_FilterSupportedVersions" xml:space="preserve">
+    <value>Zeige Nur Unterstützte Versionen</value>
+  </data>
+  <data name="PkgRepo_ProviderExtraOption_FilterModulesWithUpdates" xml:space="preserve">
+    <value>Zeige Nur Module mit Updates</value>
+  </data>
+  <data name="PkgRepo_ProviderExtraOption_FilterInstalledModules" xml:space="preserve">
+    <value>Zeige Nur Installierte Module</value>
+  </data>
+  <data name="PkgRepo_ProviderExtraOption_FilterNotInstalledModules" xml:space="preserve">
+    <value>Zeige Nur Nicht-Installierte Module</value>
+  </data>
+  <data name="PkgRepo_PackageRelationship_CanUpdate" xml:space="preserve">
+    <value>Eine neuere Version dieses Moduls ist verfügbar.</value>
+  </data>
+  <data name="PkgRepo_PackageStatus_DisablingModule" xml:space="preserve">
+    <value>Deaktiviere Modul...</value>
+  </data>
+  <data name="PkgRepo_PackageRelationship_CurrentVersion" xml:space="preserve">
+    <value>Dieses Modul ist installiert und auf dem aktuellsten Stand.</value>
   </data>
 </root>

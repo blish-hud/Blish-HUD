@@ -114,8 +114,7 @@
     <value>Enabling Vsync limits the frame rate of Blish HUD to the monitor refresh rate to prevent screen tearing.</value>
   </data>
   <data name="Setting_FramerateLimiter_Locked_Description" xml:space="preserve">
-    <value>
-(Disabled because Blish HUD was started with --maxfps specified)</value>
+    <value>(Disabled because Blish HUD was started with --maxfps specified)</value>
   </data>
   <data name="Setting_SmoothCharacterPosition_DisplayName" xml:space="preserve">
     <value>Smooth Character Position</value>
