@@ -18,10 +18,12 @@ namespace Blish_HUD {
 
         private static readonly Screen _spriteScreen;
         private static readonly World  _world;
+        private static readonly uint _legacyDpi;
 
         static GraphicsService() {
             _spriteScreen = new Screen();
             _world        = new World(GameService.Gw2Mumble.PlayerCamera);
+            _legacyDpi    = GetDpiLegacy();
 
             GameService.Gw2Mumble.FinishedLoading += delegate(object sender, EventArgs args) {
                 _world.Camera = GameService.Gw2Mumble.PlayerCamera;
@@ -31,7 +33,68 @@ namespace Blish_HUD {
         #endregion
 
         [DllImport("user32.dll")]
-        private static extern int GetDpiForWindow(IntPtr hWnd);
+        private static extern uint GetDpiForWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, MONITOR_DEFAULT dwFlags);
+
+        [DllImport("shcore.dll")]
+        private static extern int GetDpiForMonitor(IntPtr hmonitor, MONITOR_DPI_TYPE dpiType, out uint dpiX, out uint dpiY);
+
+        private enum MONITOR_DEFAULT : uint {
+            MONITOR_DEFAULTTONULL = 0,    // Returns NULL.
+            MONITOR_DEFAULTTOPRIMARY = 1, // Returns a handle to the primary display monitor.
+            MONITOR_DEFAULTTONEAREST = 2, // Returns a handle to the display monitor that is nearest to the window.
+        }
+
+        private enum MONITOR_DPI_TYPE {
+            MDT_EFFECTIVE_DPI = 0,
+            MDT_ANGULAR_DPI = 1,
+            MDT_RAW_DPI = 2,
+        }
+
+        private uint GetDpi() {
+            Version osVersion = Environment.OSVersion.Version;
+
+            switch (osVersion.Major, osVersion.Minor) {
+                case (6, 3):  // win8.1
+                    return GetDpiWin81();
+
+                case (10, 0): // win10 & 11
+                    if (osVersion.Build >= 14393) {
+                        // Windows 10 1607 or newer
+                        return GetDpiForWindow(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle);
+                    } else {
+                        return GetDpiWin81();
+                    }
+
+                // win8/2008r2/win7/older
+                default:
+                    return _legacyDpi;
+            }
+        }
+
+        private static uint GetDpiLegacy() {
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero)) {
+                return (uint)g.DpiY;
+            }
+        }
+
+        private uint GetDpiWin81() {
+            try {
+                IntPtr hWnd = GameService.GameIntegration.Gw2Instance.Gw2WindowHandle;
+                IntPtr hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULT.MONITOR_DEFAULTTONEAREST);
+
+                int hr = GetDpiForMonitor(hMonitor, MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI, out uint _, out uint dpiY);
+                Marshal.ThrowExceptionForHR(hr);
+
+                return dpiY;
+            }
+            catch {
+                return _legacyDpi;
+            }
+
+        }
 
         public float GetScaleRatio(UiSize currScale) {
             switch (currScale) {
@@ -50,14 +113,14 @@ namespace Blish_HUD {
 
         public float GetDpiScaleRatio() {
             if (this.DpiScalingMethod == DpiMethod.UseGameDpi
-             || this.DpiScalingMethod == DpiMethod.SyncWithGame && GameIntegration.GfxSettings.DpiScaling.GetValueOrDefault()) {
-                int dpi = GetDpiForWindow(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle);
+                 || this.DpiScalingMethod == DpiMethod.SyncWithGame && GameIntegration.GfxSettings.DpiScaling.GetValueOrDefault()) {
+                    uint dpi = GetDpi();
 
-                // If DPI is 0 then the window handle is likely not valid
-                return dpi != 0
-                           ? dpi / 96f
-                           : 1f;
-            }
+                    // If DPI is 0 then the window handle is likely not valid
+                    return dpi != 0
+                               ? dpi / 96f
+                               : 1f;
+                }
 
             return 1f;
         }
