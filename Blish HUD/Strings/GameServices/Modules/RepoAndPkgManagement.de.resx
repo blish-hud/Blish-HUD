@@ -124,16 +124,16 @@
     <value>Neuladen der Bibliothek erzwingen</value>
   </data>
   <data name="PkgRepo_ProviderExtraOption_FilterSupportedVersions" xml:space="preserve">
-    <value>Zeige Nur Unterstützte Versionen</value>
+    <value>Zeige nur unterstützte Versionen</value>
   </data>
   <data name="PkgRepo_ProviderExtraOption_FilterModulesWithUpdates" xml:space="preserve">
-    <value>Zeige Nur Module mit Updates</value>
+    <value>Zeige nur Module mit Updates</value>
   </data>
   <data name="PkgRepo_ProviderExtraOption_FilterInstalledModules" xml:space="preserve">
-    <value>Zeige Nur Installierte Module</value>
+    <value>Zeige nur installierte Module</value>
   </data>
   <data name="PkgRepo_ProviderExtraOption_FilterNotInstalledModules" xml:space="preserve">
-    <value>Zeige Nur Nicht-Installierte Module</value>
+    <value>Zeige nur nicht installierte Module</value>
   </data>
   <data name="PkgRepo_PackageRelationship_CanUpdate" xml:space="preserve">
     <value>Eine neuere Version dieses Moduls ist verfügbar.</value>

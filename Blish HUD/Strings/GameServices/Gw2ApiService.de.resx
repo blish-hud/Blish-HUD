@@ -178,7 +178,7 @@ drücke auf
 und drücke "Registrieren".</value>
   </data>
   <data name="CreateTokenInstructions_Warning" xml:space="preserve">
-    <value>Es kann ein Schlüssel mit wenig Berechtigungen
+    <value>Es kann ein Schlüssel mit weniger Berechtigungen
 registriert werden, jedoch könnten manche Features
 und Module nicht ordnungsgemäß funktionieren.
 
@@ -210,7 +210,7 @@ Es sind mindestens die Berechtigungen "account" und
     <value>Erforderliche Berechtigungen fehlen</value>
   </data>
   <data name="TokenStatus_PartialPermission" xml:space="preserve">
-    <value>Schlüssel fehlt Berechtigungen</value>
+    <value>Schlüssel fehlen Berechtigungen</value>
   </data>
   <data name="TokenStatus_ValidToken" xml:space="preserve">
     <value>{0} ({1}) - Gültiger Schlüssel</value>

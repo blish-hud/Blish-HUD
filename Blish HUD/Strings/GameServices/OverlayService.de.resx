@@ -157,7 +157,7 @@ eingetragene Warenzeichen der NCSOFT Corporation. Alle anderen Warenzeichen sind
 ihrer jeweiligen Besitzer.</value>
   </data>
   <data name="Setting_AudioDevice_Description" xml:space="preserve">
-    <value>Dies bestimmt das Audioausgabegerät welches von Blish HUD verwendet wird. Das GW2-Ausgabegerät passt sich an das Audiogerät von GW2 an.</value>
+    <value>Bestimmt das Audioausgabegerät welches von Blish HUD verwendet wird. Das Ausgabegerät passt sich an das gewählte Audiogerät von GW2 an.</value>
   </data>
   <data name="Setting_AudioDevice_DisplayName" xml:space="preserve">
     <value>Audiogerät</value>
