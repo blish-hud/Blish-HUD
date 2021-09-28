@@ -106,8 +106,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///(Disabled because Blish HUD was started with --maxfps specified).
+        ///   Looks up a localized string similar to (Disabled because Blish HUD was started with --maxfps specified).
         /// </summary>
         internal static string Setting_FramerateLimiter_Locked_Description {
             get {
