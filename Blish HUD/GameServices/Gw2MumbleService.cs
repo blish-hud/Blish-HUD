@@ -18,7 +18,7 @@ namespace Blish_HUD {
         private readonly IGw2Client _gw2Client;
 
         /// <inheritdoc cref="Gw2MumbleClient"/>
-        public IGw2MumbleClient RawClient => GetRawClient();
+        public IGw2MumbleClient RawClient { get; private set; }
 
         #region Categorized Mumble Data
 
@@ -61,6 +61,7 @@ namespace Blish_HUD {
 
         internal Gw2MumbleService() {
             _gw2Client = new Gw2Client();
+            this.RawClient = GetRawClient();
 
             this.Info            = new Info(this);
             this.PlayerCharacter = new PlayerCharacter(this);
@@ -71,7 +72,13 @@ namespace Blish_HUD {
 
         protected override void Initialize() { /* NOOP */ }
 
-        protected override void Load() { /* NOOP */ }
+        protected override void Load() {
+            GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
+        }
+
+        private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
+            this.RawClient = GetRawClient();
+        }
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
@@ -118,7 +125,7 @@ namespace Blish_HUD {
         }
 
         private string GetLinkNameFromCommandLine() {
-            string commandLine = GameService.GameIntegration.Gw2Instance.CommandLine;
+            string commandLine = GameService.GameIntegration?.Gw2Instance?.CommandLine;
 
             if (string.IsNullOrWhiteSpace(commandLine)) {
                 return null;
@@ -133,6 +140,7 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
+            GameService.GameIntegration.Gw2Instance.Gw2Started -= GameIntegrationOnGw2Started;
             _gw2Client.Dispose();
         }
 
