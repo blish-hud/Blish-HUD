@@ -163,7 +163,7 @@ ihrer jeweiligen Besitzer.</value>
     <value>Audiogerät</value>
   </data>
   <data name="Setting_UseGameVolume_Description" xml:space="preserve">
-    <value>Wenn aktiviert, wird Blish HUD seine Lautstärke an die des Spiels anpassen.</value>
+    <value>Wenn aktiviert, wird Blish HUD die Lautstärke an die des Spiels anpassen.</value>
   </data>
   <data name="Setting_UseGameVolume_DisplayName" xml:space="preserve">
     <value>Spiellautstärke verwenden</value>
