@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Blish_HUD.Debug;
 using Blish_HUD.GameServices;
 using Blish_HUD.Settings;
@@ -28,9 +27,9 @@ namespace Blish_HUD.GameIntegration {
         private const    int                   AUDIOBUFFER_LENGTH           = 20;
         private const    float                 MAX_VOLUME                   = 0.4f;
         private readonly RingBuffer<float>     _audioPeakBuffer             = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
+        private readonly MMDeviceEnumerator    _deviceEnumerator;
         private          SettingEntry<bool>    _useGameVolume;
         private          SettingEntry<Devices> _deviceSetting;
-        private          MMDeviceEnumerator    _deviceEnumerator;
         private          SettingEntry<float>   _volumeSetting;
 
         private readonly AudioEndpointNotificationReceiver _audioEndpointNotificationReceiver;
@@ -57,6 +56,7 @@ namespace Blish_HUD.GameIntegration {
 
         public AudioIntegration(GameIntegrationService service) : base(service) {
             _audioEndpointNotificationReceiver = new AudioEndpointNotificationReceiver();
+            _deviceEnumerator = new MMDeviceEnumerator();
         }
 
         public override void Load() {
@@ -71,31 +71,25 @@ namespace Blish_HUD.GameIntegration {
             _deviceSetting.Value = Devices.DefaultDevice;
             _deviceSetting.SetDisabled();
 
-            _deviceEnumerator = new MMDeviceEnumerator();
-
             if (_deviceSetting.Value == Devices.DefaultDevice) {
                 this.AudioDevice = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
             }
 
             PrepareListeners();
+            InitializeProcessMeterInformations();
         }
 
         private void PrepareListeners() {
-            UpdateActiveAudioDeviceManager();
+            _deviceEnumerator.RegisterEndpointNotificationCallback(_audioEndpointNotificationReceiver);
 
-            _audioEndpointNotificationReceiver.DefaultDeviceChanged += delegate { UpdateActiveAudioDeviceManager(); };
-            _service.Gw2Instance.Gw2Started            += delegate { UpdateActiveAudioDeviceManager(); };
+            _audioEndpointNotificationReceiver.DefaultDeviceChanged += delegate { InitializeProcessMeterInformations(); };
+            _service.Gw2Instance.Gw2Started                         += delegate { InitializeProcessMeterInformations(); };
 
             _deviceSetting.SettingChanged += delegate {
                 if (_deviceSetting.Value == Devices.DefaultDevice) {
                     this.AudioDevice = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
                 }
             };
-        }
-
-        private void UpdateActiveAudioDeviceManager() {
-            // Must be called from an MTA thread.
-            Task.Run(InitializeProcessMeterInformations);
         }
 
         public override void Update(GameTime gameTime) {
@@ -133,7 +127,7 @@ namespace Blish_HUD.GameIntegration {
             if (_timeSinceAudioDeviceUpdate > AUDIO_DEVICE_UPDATE_INTERVAL) {
                 _timeSinceAudioDeviceUpdate -= AUDIO_DEVICE_UPDATE_INTERVAL;
                 // This is needed to react to sound device changes in gw2
-                UpdateActiveAudioDeviceManager();
+                InitializeProcessMeterInformations();
             }
         }
 
@@ -178,7 +172,8 @@ namespace Blish_HUD.GameIntegration {
         }
 
         public override void Unload() {
-            _deviceEnumerator?.Dispose();
+            _deviceEnumerator.UnregisterEndpointNotificationCallback(_audioEndpointNotificationReceiver);
+            _deviceEnumerator.Dispose();
 
             foreach (var device in _gw2AudioDevices) {
                 device.AudioDevice.Dispose();
