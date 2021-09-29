@@ -185,15 +185,20 @@ namespace Blish_HUD.GameIntegration {
                     Logger.Warn(e, "A Win32Exception was encountered while trying to retrieve the process command line.");
                 }
 
-                var envs = newProcess.ReadEnvironmentVariables();
-
                 try {
+                    var envs = newProcess.ReadEnvironmentVariables();
+
                     if (envs.ContainsKey(APPDATA_ENVKEY)) {
                         this.AppDataPath = envs[APPDATA_ENVKEY];
                     }
+                } catch (EndOfStreamException) {
+                    // See: https://github.com/gapotchenko/Gapotchenko.FX/issues/2
+                    Logger.Warn("Failed to auto-detect Guild Wars 2 environment variables.  Restart Guild Wars 2 to try again.");
                 } catch (NullReferenceException e) {
                     Logger.Warn(e, "Failed to grab Guild Wars 2 env variable.  It is likely exiting.");
                 }
+
+
 
                 // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
                 // window is the game window name (so we know we are passed the login screen)
