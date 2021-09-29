@@ -153,4 +153,66 @@
   <data name="ManageApiKeys_Title" xml:space="preserve">
     <value>API-Schlüssel registrieren</value>
   </data>
+  <data name="AccountInfo_Character" xml:space="preserve">
+    <value>Charakter</value>
+  </data>
+  <data name="AccountInfo_Commander" xml:space="preserve">
+    <value>Kommandeur</value>
+  </data>
+  <data name="CreateTokenInstructions_Step1" xml:space="preserve">
+    <value>Navigiere zur offiziellen Anwendungsseite.</value>
+  </data>
+  <data name="CreateTokenInstructions_Step2" xml:space="preserve">
+    <value>Drücke "Neuer Schlüssel".</value>
+  </data>
+  <data name="CreateTokenInstructions_Step3" xml:space="preserve">
+    <value>Wähle alle Berechtigungen aus und
+drücke auf
+"API-SCHLÜSSEL ERSTELLEN".</value>
+  </data>
+  <data name="CreateTokenInstructions_Step4" xml:space="preserve">
+    <value>Kopiere den neuen Schlüssel.</value>
+  </data>
+  <data name="CreateTokenInstructions_Step5" xml:space="preserve">
+    <value>Füge den Schlüssel in das Feld oben ein
+und drücke "Registrieren".</value>
+  </data>
+  <data name="CreateTokenInstructions_Warning" xml:space="preserve">
+    <value>Es kann ein Schlüssel mit weniger Berechtigungen
+registriert werden, jedoch könnten manche Features
+und Module nicht ordnungsgemäß funktionieren.
+
+Es sind mindestens die Berechtigungen "account" und
+"characters" erforderlich.</value>
+  </data>
+  <data name="Link_ManageApplications" xml:space="preserve">
+    <value>Anwendungen</value>
+  </data>
+  <data name="ManageApiKeys_DeleteToken" xml:space="preserve">
+    <value>Schlüssel löschen</value>
+  </data>
+  <data name="ManageApiKeys_Register" xml:space="preserve">
+    <value>Registrieren</value>
+  </data>
+  <data name="Token_NoName" xml:space="preserve">
+    <value>(Kein Name)</value>
+  </data>
+  <data name="TokenStatus_AccountFailed" xml:space="preserve">
+    <value>Anfrage von Accountdetails fehlgeschlagen</value>
+  </data>
+  <data name="TokenStatus_FailedToLoad" xml:space="preserve">
+    <value>Laden von Schlüssel fehlgeschlagen.</value>
+  </data>
+  <data name="TokenStatus_InvalidToken" xml:space="preserve">
+    <value>Ungültiger Schlüssel</value>
+  </data>
+  <data name="TokenStatus_MissingMinPermission" xml:space="preserve">
+    <value>Erforderliche Berechtigungen fehlen</value>
+  </data>
+  <data name="TokenStatus_PartialPermission" xml:space="preserve">
+    <value>Schlüssel fehlen Berechtigungen</value>
+  </data>
+  <data name="TokenStatus_ValidToken" xml:space="preserve">
+    <value>{0} ({1}) - Gültiger Schlüssel</value>
+  </data>
 </root>

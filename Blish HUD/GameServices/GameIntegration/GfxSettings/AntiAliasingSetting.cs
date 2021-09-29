@@ -23,7 +23,8 @@ namespace Blish_HUD.GameIntegration.GfxSettings {
             };
         }
 
-        public override int GetHashCode() => this.Value.GetHashCode();
+        public override int  GetHashCode()      => this.Value.GetHashCode();
+        public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
         public static implicit operator string(AntiAliasingSetting antiAliasingSetting) => antiAliasingSetting.Value;
         public static implicit operator AntiAliasingSetting(string value)               => new AntiAliasingSetting(value);

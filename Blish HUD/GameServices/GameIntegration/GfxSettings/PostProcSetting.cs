@@ -20,7 +20,8 @@
             };
         }
 
-        public override int GetHashCode() => this.Value.GetHashCode();
+        public override int  GetHashCode()      => this.Value.GetHashCode();
+        public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
         public static implicit operator string(PostProcSetting postProcSetting) => postProcSetting.Value;
         public static implicit operator PostProcSetting(string value)           => new PostProcSetting(value);

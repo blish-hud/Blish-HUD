@@ -20,7 +20,8 @@
             };
         }
 
-        public override int GetHashCode() => this.Value.GetHashCode();
+        public override int  GetHashCode()      => this.Value.GetHashCode();
+        public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
         public static implicit operator string(ReflectionsSetting reflectionsSetting) => reflectionsSetting.Value;
         public static implicit operator ReflectionsSetting(string value)              => new ReflectionsSetting(value);

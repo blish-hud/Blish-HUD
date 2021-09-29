@@ -19,7 +19,6 @@ namespace Blish_HUD.GameIntegration {
         private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
-        private const string GW2_GAMEWINDOW_NAME   = "ArenaNet_Dx_Window_Class";
         private const string GW2_PATCHWINDOW_CLASS = "ArenaNet";
 
         private const string APPDATA_ENVKEY = "appdata";
@@ -120,6 +119,15 @@ namespace Blish_HUD.GameIntegration {
             private set => PropertyUtil.SetProperty(ref _appDataPath, value);
         }
 
+        private string _commandLine;
+        /// <summary>
+        /// The full command line of the current Guild Wars 2 process.
+        /// </summary>
+        public string CommandLine {
+            get => _commandLine;
+            private set => PropertyUtil.SetProperty(ref _commandLine, value);
+        }
+
         // Settings
         private SettingEntry<string> _gw2ExecutablePath;
 
@@ -170,15 +178,27 @@ namespace Blish_HUD.GameIntegration {
                     _gw2ExecutablePath.Value = _gw2Process.MainModule.FileName;
                 }
 
-                var envs = newProcess.ReadEnvironmentVariables();
+                try {
+                    this.CommandLine = newProcess.GetCommandLine();
+                } catch (Win32Exception e) {
+                    this.CommandLine = string.Empty;
+                    Logger.Warn(e, "A Win32Exception was encountered while trying to retrieve the process command line.");
+                }
 
                 try {
+                    var envs = newProcess.ReadEnvironmentVariables();
+
                     if (envs.ContainsKey(APPDATA_ENVKEY)) {
                         this.AppDataPath = envs[APPDATA_ENVKEY];
                     }
+                } catch (EndOfStreamException) {
+                    // See: https://github.com/gapotchenko/Gapotchenko.FX/issues/2
+                    Logger.Warn("Failed to auto-detect Guild Wars 2 environment variables.  Restart Guild Wars 2 to try again.");
                 } catch (NullReferenceException e) {
                     Logger.Warn(e, "Failed to grab Guild Wars 2 env variable.  It is likely exiting.");
                 }
+
+
 
                 // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
                 // window is the game window name (so we know we are passed the login screen)
@@ -198,9 +218,16 @@ namespace Blish_HUD.GameIntegration {
         private void TryAttachToGw2() {
             // Get process from Mumble if it is defined
             // otherwise just get the first instance running
-            this.Gw2Process = GetMumbleSpecifiedGw2Process()
-                           ?? GetDefaultGw2ProcessById()
-                           ?? GetDefaultGw2ProcessByName();
+            if (ApplicationSettings.Instance.MumbleMapName != null) {
+                // User-set mumble link name - so don't fallback.
+                this.Gw2Process = GetMumbleSpecifiedGw2Process();
+            } else {
+                // No user-set mumble link name - so fallback,
+                // starting with default mumble data if found
+                this.Gw2Process = GetMumbleSpecifiedGw2Process()
+                               ?? GetDefaultGw2ProcessById()
+                               ?? GetDefaultGw2ProcessByName();
+            }
 
             if (this.Gw2IsRunning) {
                 try {
