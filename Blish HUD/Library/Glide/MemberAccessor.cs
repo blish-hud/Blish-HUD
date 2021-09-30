@@ -41,7 +41,7 @@ namespace Glide
                     var argument = Expression.Parameter(typeof(object));
                     var setterCall = Expression.Call(
                         Expression.Convert(param, propInfo.DeclaringType),
-                        propInfo.GetSetMethod(),
+                        propInfo.GetSetMethod(true),
                         Expression.Convert(argument, propInfo.PropertyType));
 
                     setMethod = Expression.Lambda<Action<object, object>>(setterCall, param, argument).Compile();
