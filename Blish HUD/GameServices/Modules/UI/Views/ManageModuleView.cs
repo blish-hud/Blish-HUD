@@ -140,7 +140,7 @@ namespace Blish_HUD.Modules.UI.Views {
             _dependencyView.Show(view);
         }
 
-        public void SetSettingsView(SettingsView view) {
+        public void SetSettingsView(IView view) {
             _settingMessageLabel.Hide();
             _settingView.Show(view);
 
@@ -269,7 +269,7 @@ namespace Blish_HUD.Modules.UI.Views {
             // Description
 
             _descriptionPanel = new Panel() {
-                Size       = new Point(_collapsePanel.ContentRegion.Width, 180),
+                Size       = new Point(_collapsePanel.ContentRegion.Width, 125),
                 Title      = Strings.GameServices.ModulesService.ModuleManagement_Description,
                 ShowBorder = true,
                 CanScroll  = true,
@@ -287,7 +287,7 @@ namespace Blish_HUD.Modules.UI.Views {
             // Permissions
 
             _permissionView = new ViewContainer() {
-                Size     = _descriptionPanel.Size - new Point(350, 40),
+                Size     = _descriptionPanel.Size - new Point(350, 0),
                 Location = new Point(0, _descriptionPanel.Bottom + Panel.MenuStandard.ControlOffset.Y),
                 Parent   = _collapsePanel
             };
@@ -306,7 +306,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 CanScroll  = true,
                 ShowBorder = true,
                 Title      = Strings.GameServices.ModulesService.ModuleManagement_ModuleSettings,
-                Size       = new Point(_dependencyView.Right - _permissionView.Left - 10, 222),
+                Size       = new Point(_dependencyView.Right - _permissionView.Left - 10, 320),
                 Location   = new Point(_permissionView.Left,                         _permissionView.Bottom + Panel.MenuStandard.ControlOffset.Y),
                 Parent     = _collapsePanel
             };

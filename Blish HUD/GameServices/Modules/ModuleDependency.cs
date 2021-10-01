@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SemVer;
+using System;
+using System.Collections.Generic;
+using Range = SemVer.Range;
 using Version = SemVer.Version;
 
 namespace Blish_HUD.Modules {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
 using Blish_HUD.Graphics;
@@ -17,10 +18,12 @@ namespace Blish_HUD {
 
         private static readonly Screen _spriteScreen;
         private static readonly World  _world;
+        private static readonly uint _legacyDpi;
 
         static GraphicsService() {
             _spriteScreen = new Screen();
             _world        = new World(GameService.Gw2Mumble.PlayerCamera);
+            _legacyDpi    = GetDpiLegacy();
 
             GameService.Gw2Mumble.FinishedLoading += delegate(object sender, EventArgs args) {
                 _world.Camera = GameService.Gw2Mumble.PlayerCamera;
@@ -28,6 +31,70 @@ namespace Blish_HUD {
         }
 
         #endregion
+
+        [DllImport("user32.dll")]
+        private static extern uint GetDpiForWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, MONITOR_DEFAULT dwFlags);
+
+        [DllImport("shcore.dll")]
+        private static extern int GetDpiForMonitor(IntPtr hmonitor, MONITOR_DPI_TYPE dpiType, out uint dpiX, out uint dpiY);
+
+        private enum MONITOR_DEFAULT : uint {
+            MONITOR_DEFAULTTONULL = 0,    // Returns NULL.
+            MONITOR_DEFAULTTOPRIMARY = 1, // Returns a handle to the primary display monitor.
+            MONITOR_DEFAULTTONEAREST = 2, // Returns a handle to the display monitor that is nearest to the window.
+        }
+
+        private enum MONITOR_DPI_TYPE {
+            MDT_EFFECTIVE_DPI = 0,
+            MDT_ANGULAR_DPI = 1,
+            MDT_RAW_DPI = 2,
+        }
+
+        private uint GetDpi() {
+            Version osVersion = Environment.OSVersion.Version;
+
+            switch (osVersion.Major, osVersion.Minor) {
+                case (6, 3):  // win8.1
+                    return GetDpiWin81();
+
+                case (10, 0): // win10 & 11
+                    if (osVersion.Build >= 14393) {
+                        // Windows 10 1607 or newer
+                        return GetDpiForWindow(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle);
+                    } else {
+                        return GetDpiWin81();
+                    }
+
+                // win8/2008r2/win7/older
+                default:
+                    return _legacyDpi;
+            }
+        }
+
+        private static uint GetDpiLegacy() {
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero)) {
+                return (uint)g.DpiY;
+            }
+        }
+
+        private uint GetDpiWin81() {
+            try {
+                IntPtr hWnd = GameService.GameIntegration.Gw2Instance.Gw2WindowHandle;
+                IntPtr hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULT.MONITOR_DEFAULTTONEAREST);
+
+                int hr = GetDpiForMonitor(hMonitor, MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI, out uint _, out uint dpiY);
+                Marshal.ThrowExceptionForHR(hr);
+
+                return dpiY;
+            }
+            catch {
+                return _legacyDpi;
+            }
+
+        }
 
         public float GetScaleRatio(UiSize currScale) {
             switch (currScale) {
@@ -40,6 +107,20 @@ namespace Blish_HUD {
                 case UiSize.Larger:
                     return 1.103f;
             }
+
+            return 1f;
+        }
+
+        public float GetDpiScaleRatio() {
+            if (this.DpiScalingMethod == DpiMethod.UseGameDpi
+                 || this.DpiScalingMethod == DpiMethod.SyncWithGame && GameIntegration.GfxSettings.DpiScaling.GetValueOrDefault()) {
+                    uint dpi = GetDpi();
+
+                    // If DPI is 0 then the window handle is likely not valid
+                    return dpi != 0
+                               ? dpi / 96f
+                               : 1f;
+                }
 
             return 1f;
         }
@@ -68,6 +149,7 @@ namespace Blish_HUD {
         private SettingEntry<FramerateMethod> _frameLimiterSetting;
         private SettingEntry<bool>            _enableVsyncSetting;
         private SettingEntry<bool>            _smoothCharacterPositionSetting;
+        private SettingEntry<DpiMethod>       _dpiScalingMethodSetting;
 
         public FramerateMethod FrameLimiter {
             get => ApplicationSettings.Instance.TargetFramerate > 0
@@ -84,6 +166,11 @@ namespace Blish_HUD {
         public bool SmoothCharacterPosition {
             get => _smoothCharacterPositionSetting.Value;
             set => _smoothCharacterPositionSetting.Value = value;
+        }
+        
+        public DpiMethod DpiScalingMethod {
+            get => _dpiScalingMethodSetting.Value;
+            set => _dpiScalingMethodSetting.Value = value;
         }
 
         public Point Resolution {
@@ -127,9 +214,6 @@ namespace Blish_HUD {
             // Might do better error handling later on
             ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { GameService.Overlay.Restart(); };
 
-            this.UIScaleMultiplier = GetScaleRatio(UiSize.Normal);
-            this.UIScaleTransform  = Matrix.CreateScale(Graphics.UIScaleMultiplier);
-
             _graphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
 
             DefineSettings(_graphicsSettings);
@@ -150,6 +234,13 @@ namespace Blish_HUD {
                                                                      true,
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
+
+            _dpiScalingMethodSetting = settings.DefineSetting(nameof(DpiScalingMethod),
+                                                        DpiMethod.SyncWithGame,
+                                                        () => Strings.GameServices.GraphicsService.Setting_DPIScaling_DisplayName,
+                                                        () => Strings.GameServices.GraphicsService.Setting_DPIScaling_Description);
+
+
 
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
             _enableVsyncSetting.SettingChanged  += EnableVsyncChanged;
@@ -191,6 +282,10 @@ namespace Blish_HUD {
                     BlishHud.Instance.IsFixedTimeStep   = true;
                     BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
                     break;
+                case FramerateMethod.LockedTo90Fps:
+                    BlishHud.Instance.IsFixedTimeStep   = true;
+                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 90d);
+                    break;
                 case FramerateMethod.Unlimited:
                     BlishHud.Instance.IsFixedTimeStep   = false;
                     BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
@@ -203,7 +298,7 @@ namespace Blish_HUD {
 
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game and map is closed
-            if (GameService.GameIntegration.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
+            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
                 this.World.Render(this.GraphicsDevice);
             GameService.Debug.StopTimeFunc("3D objects");
 
@@ -223,13 +318,12 @@ namespace Blish_HUD {
             GameService.Debug.StopTimeFunc("Render Queue");
         }
 
-        protected override void Load() {
-            GameService.Gw2Mumble.UI.UISizeChanged += UIOnUISizeChanged;
-        }
+        protected override void Load() { /* NOOP */ }
 
-        private void UIOnUISizeChanged(object sender, ValueEventArgs<UiSize> e) {
-            this.UIScaleMultiplier = GetScaleRatio(e.Value);
-            this.SpriteScreen.Size = new Point((int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth / this.UIScaleMultiplier),
+        private void Rescale() {
+            this.UIScaleMultiplier = GetDpiScaleRatio() * GetScaleRatio(GameService.Gw2Mumble.UI.UISize);
+
+            this.SpriteScreen.Size = new Point((int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  / this.UIScaleMultiplier),
                                                (int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / this.UIScaleMultiplier));
 
             this.UIScaleTransform = Matrix.CreateScale(this.UIScaleMultiplier);
@@ -238,6 +332,8 @@ namespace Blish_HUD {
         protected override void Unload() { /* NOOP */ }
 
         protected override void Update(GameTime gameTime) {
+            Rescale();
+
             this.World.Update(gameTime);
             SharedEffect.UpdateEffects(gameTime);
             this.SpriteScreen.Update(gameTime);

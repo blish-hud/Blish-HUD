@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using Blish_HUD.GameServices;
 
 namespace Blish_HUD {
     public abstract class GameService {
@@ -23,6 +24,12 @@ namespace Blish_HUD {
 
         public bool Loaded { get; private set; }
 
+        private IServiceModule[] _serviceModules = Array.Empty<IServiceModule>();
+
+        protected void SetServiceModules(params IServiceModule[] serviceModules) {
+            _serviceModules = serviceModules ?? Array.Empty<IServiceModule>();
+        }
+
         public void DoInitialize(BlishHud game) {
             ActiveBlishHud = game;
 
@@ -32,17 +39,31 @@ namespace Blish_HUD {
         public void DoLoad() {
             Load();
 
+            foreach (var serviceModule in _serviceModules) {
+                serviceModule.Load();
+            }
+
             this.Loaded = true;
             OnFinishedLoading(EventArgs.Empty);
         }
 
         public void DoUnload() {
+            foreach (var serviceModule in _serviceModules) {
+                serviceModule.Unload();
+            }
+
             Unload();
 
             this.Loaded = false;
         }
 
-        public void DoUpdate(GameTime gameTime) => Update(gameTime);
+        public void DoUpdate(GameTime gameTime) {
+            foreach (var serviceModule in _serviceModules) {
+                serviceModule.Update(gameTime);
+            }
+
+            Update(gameTime);
+        }
 
         #region Static Service References
 

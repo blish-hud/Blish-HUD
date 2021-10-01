@@ -9,7 +9,9 @@ namespace Blish_HUD.GameIntegration {
 
         public Gw2ClientContext.ClientType ClientType { get; private set; } = Gw2ClientContext.ClientType.Unknown;
 
-        public ClientTypeIntegration(GameIntegrationService service) : base(service) {
+        public ClientTypeIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+
+        public override void Load() {
             GameService.Gw2Mumble.Info.BuildIdChanged += delegate { DetectClientType(); };
 
             GameService.Contexts.GetContext<CdnInfoContext>().StateChanged += OnCdnInfoContextStateChanged;

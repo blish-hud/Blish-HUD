@@ -22,7 +22,8 @@ namespace Blish_HUD.Controls {
 
         private const int STANDARD_MARGIN = 16; // Standard margin used to space the "X" button, etc.
 
-        private const int SIDEBAR_WIDTH = 46;
+        private const int SIDEBAR_WIDTH  = 46;
+        private const int SIDEBAR_OFFSET = 3; // Used to account for the small edge of transparency at the bottom of the titlebar and between the sidebar and the window background
 
         #region Load Static
 
@@ -96,6 +97,14 @@ namespace Blish_HUD.Controls {
                                                       .ThenBy(window => window.LastInteraction)
                                                       .TakeWhile(window => window != thisWindow)
                                                       .Count();
+        }
+
+        /// <summary>
+        /// Gets or sets the active window. Returns null if no window is visible.
+        /// </summary>
+        public static IWindow ActiveWindow {
+            get  => _windows.Where(w => w.Visible).OrderByDescending(GetZIndex).FirstOrDefault(); 
+            set => value.BringWindowToFront();
         }
 
         #endregion
@@ -187,6 +196,15 @@ namespace Blish_HUD.Controls {
             private set => SetProperty(ref _dragging, value);
         }
 
+        private bool _resizing;
+        /// <summary>
+        /// Indicates if the window is actively being resized.
+        /// </summary>
+        public bool Resizing {
+            get => _resizing;
+            private set => SetProperty(ref _resizing, value);
+        }
+
         private readonly Glide.Tween _animFade;
 
         protected WindowBase2() {
@@ -217,6 +235,9 @@ namespace Blish_HUD.Controls {
                 Location += nOffset;
 
                 _dragStart = Input.Mouse.Position;
+            } else if (this.Resizing) {
+                var nOffset = Input.Mouse.Position - _dragStart;
+                this.Size = HandleWindowResize(_resizeStart + nOffset);
             }
         }
 
@@ -228,9 +249,9 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public void ToggleWindow() {
             if (this.Visible) {
-                Show();
-            } else {
                 Hide();
+            } else {
+                Show();
             }
         }
 
@@ -386,8 +407,8 @@ namespace Blish_HUD.Controls {
             int sideBarTop        = _leftTitleBarDrawBounds.Bottom - STANDARD_TITLEBAR_VERTICAL_OFFSET;
             int sideBarHeight     = this.WindowRegion.Height       + STANDARD_TITLEBAR_VERTICAL_OFFSET;
 
-            this.SidebarActiveBounds   = new Rectangle(_leftTitleBarDrawBounds.X, sideBarTop, SIDEBAR_WIDTH, this.SideBarHeight);
-            _sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X, sideBarTop + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
+            this.SidebarActiveBounds   = new Rectangle(_leftTitleBarDrawBounds.X + SIDEBAR_OFFSET, sideBarTop - SIDEBAR_OFFSET,                      SIDEBAR_WIDTH, this.SideBarHeight);
+            _sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X + SIDEBAR_OFFSET, sideBarTop - SIDEBAR_OFFSET + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
 
             // Corner bounds
             this.ResizeHandleBounds = new Rectangle(this.Width  - _textureWindowCorner.Width,
@@ -404,7 +425,8 @@ namespace Blish_HUD.Controls {
         protected bool MouseOverExitButton   { get; private set; }
         protected bool MouseOverResizeHandle { get; private set; }
 
-        private Point _dragStart = Point.Zero;
+        private Point _dragStart   = Point.Zero;
+        private Point _resizeStart = Point.Zero;
 
         protected override void OnMouseMoved(MouseEventArgs e) {
             ResetMouseRegionStates();
@@ -423,13 +445,14 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalMouseRelease(object sender, MouseEventArgs e) {
-            if (this.Visible && this.Dragging) {
+            if (this.Visible && (this.Dragging || this.Resizing)) {
                 // Save position for next launch
                 if (this.SavesPosition && this.Id != null) {
                     (_windowSettings[this.Id] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id, this.Location)).Value = this.Location;
                 }
 
-                Dragging = false;
+                this.Dragging = false;
+                this.Resizing = false;
             }
         }
 
@@ -443,7 +466,11 @@ namespace Blish_HUD.Controls {
 
             if (this.MouseOverTitleBar) {
                 this.Dragging = true;
-                _dragStart = Input.Mouse.Position;
+                _dragStart    = Input.Mouse.Position;
+            } else if (this.MouseOverResizeHandle) {
+                this.Resizing = true;
+                _resizeStart  = this.Size;
+                _dragStart    = Input.Mouse.Position;
             } else if (this.MouseOverExitButton && this.CanClose) {
                 Hide();
             }
@@ -455,6 +482,15 @@ namespace Blish_HUD.Controls {
             this.MouseOverTitleBar     = false;
             this.MouseOverExitButton   = false;
             this.MouseOverResizeHandle = false;
+        }
+
+        /// <summary>
+        /// Modifies the window size as it's being resized.
+        /// Override to lock the window size at specific intervals or implement other resize behaviors.
+        /// </summary>
+        protected virtual Point HandleWindowResize(Point newSize) {
+            return new Point(MathHelper.Clamp(newSize.X, SidebarActiveBounds.Right + STANDARD_MARGIN, 1024),
+                             MathHelper.Clamp(newSize.Y, TitleBarBounds.Bottom     + STANDARD_MARGIN, 1024));
         }
 
         public void BringWindowToFront() {
@@ -509,7 +545,7 @@ namespace Blish_HUD.Controls {
         private void PaintCorner(SpriteBatch spriteBatch) {
             if (this.CanResize) {
                 spriteBatch.DrawOnCtrl(this,
-                                       this.MouseOverResizeHandle
+                                       this.MouseOverResizeHandle || this.Resizing
                                        ? _textureWindowResizableCornerActive
                                        : _textureWindowResizableCorner,
                                        this.ResizeHandleBounds);

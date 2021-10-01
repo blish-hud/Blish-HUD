@@ -42,7 +42,7 @@ namespace Blish_HUD.Controls {
         public Tab(AsyncTexture2D icon, Func<IView> view, string name = null, int? priority = null) {
             this.Icon          = icon;
             this.Name          = name;
-            this.OrderPriority = priority ?? icon.GetHashCode();
+            this.OrderPriority = priority ?? 0;
             this.View          = view;
         }
 

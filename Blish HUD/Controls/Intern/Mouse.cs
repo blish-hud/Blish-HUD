@@ -75,7 +75,7 @@ namespace Blish_HUD.Controls.Intern
                 xPos = pos.X;
                 yPos = pos.Y;
             }
-            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
                 var nInputs = new[]
                 {
@@ -101,7 +101,7 @@ namespace Blish_HUD.Controls.Intern
             {
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_BUTTONDOWN[button], wParam, lParam);
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDOWN[button], wParam, lParam);
             }
         }
         /// <summary>
@@ -119,7 +119,7 @@ namespace Blish_HUD.Controls.Intern
                 xPos = pos.X;
                 yPos = pos.Y;
             }
-            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
                 var nInputs = new[]
                 {
@@ -145,7 +145,7 @@ namespace Blish_HUD.Controls.Intern
             {
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_BUTTONUP[button], wParam, lParam);
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONUP[button], wParam, lParam);
             }
         }
         /// <summary>
@@ -167,7 +167,7 @@ namespace Blish_HUD.Controls.Intern
                 xPos = pos.X;
                 yPos = pos.Y;
             }
-            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
                 var nInputs = new[]
                 {
@@ -193,7 +193,7 @@ namespace Blish_HUD.Controls.Intern
             {
                 uint wParam = (uint)(0 | wheelDistance << 16);
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, horizontalWheel ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL, wParam, lParam);
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, horizontalWheel ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL, wParam, lParam);
             }
         }
         /// <summary>
@@ -204,14 +204,14 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void SetPosition(int xPos, int yPos, bool sendToSystem = false)
         {
-            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
                 PInvoke.SetCursorPos(xPos, yPos);
             }
             else
             {
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_MOUSEMOVE, 0, lParam);
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_MOUSEMOVE, 0, lParam);
             }
         }
         /// <summary>
@@ -244,7 +244,7 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void DoubleClick(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false)
         {
-            if (!GameService.GameIntegration.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
                 for (int i = 0; i <= 1; i++)
                 {
@@ -262,7 +262,7 @@ namespace Blish_HUD.Controls.Intern
                 }
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2WindowHandle, WM_BUTTONDBLCLK[button], wParam, lParam);
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDBLCLK[button], wParam, lParam);
             }
         }
     }

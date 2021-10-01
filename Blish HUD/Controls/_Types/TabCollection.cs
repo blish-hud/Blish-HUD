@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,11 +25,17 @@ namespace Blish_HUD.Controls {
             return GetEnumerator();
         }
 
-        public void Add(Tab item) {
-            _tabs = new List<Tab>(_tabs.Concat(new []{ item }).OrderByDescending(tab => tab.OrderPriority));
+        public void Add(Tab tab) {
+            if (tab == null) throw new ArgumentNullException(nameof(tab));
+
+            if (tab.OrderPriority == 0) {
+                tab.OrderPriority = _tabs.Count;
+            }
+
+            _tabs = new List<Tab>(_tabs.Concat(new []{ tab }).OrderBy(t => t.OrderPriority));
 
             if (_tabs.Count == 1) {
-                _owner.SelectedTab = item;
+                _owner.SelectedTab = tab;
             }
         }
 
@@ -46,8 +53,8 @@ namespace Blish_HUD.Controls {
             _tabs.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(Tab item) {
-            return _tabs.Remove(item);
+        public bool Remove(Tab tab) {
+            return _tabs.Remove(tab);
         }
 
         /// <summary>

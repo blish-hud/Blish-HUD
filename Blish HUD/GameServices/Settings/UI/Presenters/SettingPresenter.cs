@@ -31,8 +31,8 @@ namespace Blish_HUD.Settings.UI.Presenters {
         }
 
         protected override void UpdateView() {
-            UpdateViewDetails();
             UpdateViewComplianceRequisite();
+            UpdateViewDetails();
 
             _changeReady = true;
         }

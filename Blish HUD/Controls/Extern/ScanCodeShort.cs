@@ -174,5 +174,6 @@ namespace Blish_HUD.Controls.Extern
         NONAME = 0,
         PA1 = 0,
         OEM_CLEAR = 0,
+        EXTENDEDKEY = 224
     }
 }

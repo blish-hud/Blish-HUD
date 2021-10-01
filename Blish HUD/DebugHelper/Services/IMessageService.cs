@@ -1,7 +1,7 @@
 ﻿using System;
-using Blish_HUD.DebugHelperLib.Models;
+using Blish_HUD.DebugHelper.Models;
 
-namespace Blish_HUD.DebugHelperLib.Services {
+namespace Blish_HUD.DebugHelper.Services {
 
     public interface IMessageService {
 
@@ -17,7 +17,7 @@ namespace Blish_HUD.DebugHelperLib.Services {
 
         T SendAndWait<T>(Message message) where T : Message;
 
-        T? SendAndWait<T>(Message message, TimeSpan timeout) where T : Message;
+        T SendAndWait<T>(Message message, TimeSpan timeout) where T : Message;
 
     }
 

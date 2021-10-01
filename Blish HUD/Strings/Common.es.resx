@@ -123,4 +123,7 @@
   <data name="Action_Cancel" xml:space="preserve">
     <value>Cancelar</value>
   </data>
+  <data name="BlishHUD" xml:space="preserve">
+    <value>Blish HUD</value>
+  </data>
 </root>

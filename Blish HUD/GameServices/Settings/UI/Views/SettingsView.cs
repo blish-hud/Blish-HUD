@@ -36,8 +36,6 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _settingFlowPanel.ShowBorder  = !locked;
             _settingFlowPanel.CanCollapse = !locked;
-
-            this.ViewTarget.HeightSizingMode = SizingMode.AutoSize;
         }
 
         protected override void BuildSetting(Container buildPanel) {
@@ -57,8 +55,9 @@ namespace Blish_HUD.Settings.UI.Views {
 
                 if ((settingView = SettingView.FromType(setting, _settingFlowPanel.Width)) != null) {
                     _lastSettingContainer = new ViewContainer() {
-                        WidthSizingMode = SizingMode.Fill,
-                        Parent          = _settingFlowPanel
+                        WidthSizingMode   = SizingMode.Fill,
+                        HeightSizingMode  = SizingMode.AutoSize,
+                        Parent            = _settingFlowPanel
                     };
 
                     _lastSettingContainer.Show(settingView);

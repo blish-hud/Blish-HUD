@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Blish_HUD.Debug;
 using Blish_HUD.GameServices;
 using Blish_HUD.Settings;
-using CSCore.CoreAudioAPI;
 using Microsoft.Xna.Framework;
+using NAudio.CoreAudioApi;
 
 namespace Blish_HUD.GameIntegration {
     public sealed class AudioIntegration : ServiceModule<GameIntegrationService> {
@@ -27,12 +26,13 @@ namespace Blish_HUD.GameIntegration {
         private const    int                   AUDIO_DEVICE_UPDATE_INTERVAL = 10000;
         private const    int                   AUDIOBUFFER_LENGTH           = 20;
         private const    float                 MAX_VOLUME                   = 0.4f;
-        private readonly SettingEntry<bool>    _useGameVolume;
-        private readonly SettingEntry<Devices> _deviceSetting;
+        private readonly RingBuffer<float>     _audioPeakBuffer             = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
         private readonly MMDeviceEnumerator    _deviceEnumerator;
-        private readonly RingBuffer<float>     _audioPeakBuffer = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
-        private readonly SettingEntry<float>   _volumeSetting;
+        private          SettingEntry<bool>    _useGameVolume;
+        private          SettingEntry<Devices> _deviceSetting;
+        private          SettingEntry<float>   _volumeSetting;
 
+        private readonly AudioEndpointNotificationReceiver _audioEndpointNotificationReceiver;
         private readonly List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)> _gw2AudioDevices = new List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)>();
 
         private double _timeSinceCheck             = 0;
@@ -55,6 +55,11 @@ namespace Blish_HUD.GameIntegration {
         public MMDevice AudioDevice { get; private set; }
 
         public AudioIntegration(GameIntegrationService service) : base(service) {
+            _audioEndpointNotificationReceiver = new AudioEndpointNotificationReceiver();
+            _deviceEnumerator = new MMDeviceEnumerator();
+        }
+
+        public override void Load() {
             var audioSettings = GameService.Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
             _useGameVolume = audioSettings.DefineSetting(USEGAMEVOLUME_SETTINGS, true, () => Strings.GameServices.OverlayService.Setting_UseGameVolume_DisplayName, () => Strings.GameServices.OverlayService.Setting_UseGameVolume_Description);
             _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2, () => Strings.GameServices.OverlayService.Setting_Volume_DisplayName, () => Strings.GameServices.OverlayService.Setting_Volume_Description);
@@ -66,20 +71,19 @@ namespace Blish_HUD.GameIntegration {
             _deviceSetting.Value = Devices.DefaultDevice;
             _deviceSetting.SetDisabled();
 
-            _deviceEnumerator = new MMDeviceEnumerator();
-
             if (_deviceSetting.Value == Devices.DefaultDevice) {
                 this.AudioDevice = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
             }
 
             PrepareListeners();
+            InitializeProcessMeterInformations();
         }
 
         private void PrepareListeners() {
-            UpdateActiveAudioDeviceManager();
+            _deviceEnumerator.RegisterEndpointNotificationCallback(_audioEndpointNotificationReceiver);
 
-            _deviceEnumerator.DefaultDeviceChanged += delegate { UpdateActiveAudioDeviceManager(); };
-            _service.Gw2Started                    += delegate { UpdateActiveAudioDeviceManager(); };
+            _audioEndpointNotificationReceiver.DefaultDeviceChanged += delegate { InitializeProcessMeterInformations(); };
+            _service.Gw2Instance.Gw2Started                         += delegate { InitializeProcessMeterInformations(); };
 
             _deviceSetting.SettingChanged += delegate {
                 if (_deviceSetting.Value == Devices.DefaultDevice) {
@@ -88,13 +92,8 @@ namespace Blish_HUD.GameIntegration {
             };
         }
 
-        private void UpdateActiveAudioDeviceManager() {
-            // Must be called from an MTA thread.
-            Task.Run(InitializeProcessMeterInformations);
-        }
-
         public override void Update(GameTime gameTime) {
-            if (_gw2AudioDevices.Count == 0) return;
+            if (_gw2AudioDevices.Count == 0 || !_service.Gw2Instance.Gw2IsRunning) return;
 
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
             _timeSinceAudioDeviceUpdate += gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -105,7 +104,7 @@ namespace Blish_HUD.GameIntegration {
                 try {
                     var peakValues = new List<((MMDevice AudioDevice, AudioMeterInformation MeterInformation) Device, float Peak)>();
                     foreach (var device in _gw2AudioDevices) {
-                        peakValues.Add((device, device.MeterInformation.GetPeakValue()));
+                        peakValues.Add((device, device.MeterInformation.MasterPeakValue));
                     }
 
                     var (Device, Peak) = peakValues.OrderByDescending(x => x.Peak).First();
@@ -128,7 +127,7 @@ namespace Blish_HUD.GameIntegration {
             if (_timeSinceAudioDeviceUpdate > AUDIO_DEVICE_UPDATE_INTERVAL) {
                 _timeSinceAudioDeviceUpdate -= AUDIO_DEVICE_UPDATE_INTERVAL;
                 // This is needed to react to sound device changes in gw2
-                UpdateActiveAudioDeviceManager();
+                InitializeProcessMeterInformations();
             }
         }
 
@@ -150,19 +149,18 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void InitializeProcessMeterInformations() {
-            if (!_service.Gw2IsRunning) return;
+            if (!_service.Gw2Instance.Gw2IsRunning) return;
 
             _gw2AudioDevices.Clear();
-            foreach (var device in _deviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active)) {
-                using var sessionEnumerator = AudioSessionManager2.FromMMDevice(device).GetSessionEnumerator();
+            foreach (var device in _deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active)) {
+                var sessionEnumerator = device.AudioSessionManager.Sessions;
 
                 bool shouldDispose = true;
-                foreach (var session in sessionEnumerator) {
-                    using var processAudioSession = session.QueryInterface<AudioSessionControl2>();
+                for (int i = 0; i < sessionEnumerator.Count; i++) {
+                    using var audioSession = sessionEnumerator[i];
 
-                    if (processAudioSession.Process.Id == _service.Gw2Process.Id) {
-                        var audioMeterInformation = session.QueryInterface<AudioMeterInformation>();
-                        _gw2AudioDevices.Add((device, session.QueryInterface<AudioMeterInformation>()));
+                    if (audioSession.GetProcessID == _service.Gw2Instance.Gw2Process.Id) {
+                        _gw2AudioDevices.Add((device, audioSession.AudioMeterInformation));
                         shouldDispose = false;
                     }
                 }
@@ -173,12 +171,12 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
-        internal override void Unload() {
-            _deviceEnumerator?.Dispose();
+        public override void Unload() {
+            _deviceEnumerator.UnregisterEndpointNotificationCallback(_audioEndpointNotificationReceiver);
+            _deviceEnumerator.Dispose();
 
             foreach (var device in _gw2AudioDevices) {
                 device.AudioDevice.Dispose();
-                device.MeterInformation.Dispose();
             }
         }
 

@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Controls {
    public class Tooltip : Container, IViewContainer {
         
-        internal const int MOUSE_VERTICAL_MARGIN = 18;
+        internal const int MOUSE_VERTICAL_MARGIN = 36;
 
         private const int PADDING = 2;
 
@@ -74,7 +74,7 @@ namespace Blish_HUD.Controls {
         private static void UpdateTooltipPosition(Tooltip tooltip) {
             int topPos = Input.Mouse.Position.Y - Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height > 0
                              ? -Tooltip.MOUSE_VERTICAL_MARGIN - tooltip.Height
-                             : Tooltip.MOUSE_VERTICAL_MARGIN * 2;
+                             : Tooltip.MOUSE_VERTICAL_MARGIN;
 
             int leftPos = Input.Mouse.Position.X + tooltip.Width < Graphics.SpriteScreen.Width
                               ? 0

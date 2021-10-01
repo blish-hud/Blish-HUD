@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Windows.Forms;
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Control = Blish_HUD.Controls.Control;
 
 namespace Blish_HUD.Input {
 
@@ -27,7 +29,7 @@ namespace Blish_HUD.Input {
         public bool CameraDragging { get; private set; }
 
         /// <summary>
-        ///     The <see cref="Control" /> that the mouse last moved over.
+        ///     The <see cref="Controls.Control" /> that the mouse last moved over.
         /// </summary>
         public Control ActiveControl {
             get => _activeControl;
@@ -53,21 +55,26 @@ namespace Blish_HUD.Input {
                 return false;
             }
 
-            if (_hudFocused) {
-                _mouseEvent = mouseEventArgs;
-
-                return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased  // Never block the users input if they are releasing the left mouse button
-                    && mouseEventArgs.EventType != MouseEventType.RightMouseButtonReleased // Never block the users input if they are releasing the right mouse button
-                    && !this.ActiveControl.Captures.HasFlag(CaptureType.DoNotBlock);       // If the current control has capture forced off, then do not block
+            if (Form.ActiveForm != null && Form.ActiveForm.ClientRectangle.Contains(new System.Drawing.Point(mouseEventArgs.PointX, mouseEventArgs.PointY))) {
+                // If another form is active (like Debug, Pathing editor, etc.) don't intercept
+                return false;
             }
 
-            this.CameraDragging = mouseEventArgs.EventType switch {
-                MouseEventType.RightMouseButtonPressed => true,
-                MouseEventType.RightMouseButtonReleased => false,
-                _ => this.CameraDragging
-            };
+            if (!_hudFocused) {
+                this.CameraDragging = mouseEventArgs.EventType switch {
+                    MouseEventType.RightMouseButtonPressed => true,
+                    MouseEventType.RightMouseButtonReleased => false,
+                    _ => this.CameraDragging
+                };
+            }
 
-            return false;
+            if (this.CameraDragging) return false;
+            
+            _mouseEvent = mouseEventArgs;
+
+            return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased             // Never block the users input if they are releasing the left mouse button
+                && mouseEventArgs.EventType != MouseEventType.RightMouseButtonReleased            // Never block the users input if they are releasing the right mouse button
+                && (_hudFocused && !this.ActiveControl.Captures.HasFlag(CaptureType.DoNotBlock)); // If no control, or if the current control has capture forced off, then do not block
         }
 
         private bool HandleHookedMouseEvent(MouseEventArgs e) {
@@ -96,7 +103,7 @@ namespace Blish_HUD.Input {
         }
 
         public void Update() {
-            if (!GameService.GameIntegration.Gw2IsRunning || !GameService.GameIntegration.Gw2HasFocus) {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || !GameService.GameIntegration.Gw2Instance.Gw2HasFocus) {
                 _hudFocused = false;
                 return;
             }

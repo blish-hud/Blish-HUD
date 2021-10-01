@@ -143,7 +143,7 @@ namespace Blish_HUD {
 
         private void UpdateCharacterList(SettingEntry<string> definedKey) {
             GetCharacters(GetConnection(definedKey.Value)).ContinueWith((charactersResponse) => {
-                if (charactersResponse.Result != null) {
+                if (charactersResponse.Exception == null && charactersResponse.Result != null) {
                     foreach (string characterId in charactersResponse.Result) {
                         _characterRepository.AddOrUpdate(characterId, definedKey.Value, (k, o) => definedKey.Value);
                     }

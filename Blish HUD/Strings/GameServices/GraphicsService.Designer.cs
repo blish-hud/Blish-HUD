@@ -70,6 +70,24 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables additional scaling of the UI according to your system settings..
+        /// </summary>
+        internal static string Setting_DPIScaling_Description {
+            get {
+                return ResourceManager.GetString("Setting_DPIScaling_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DPI Scaling.
+        /// </summary>
+        internal static string Setting_DPIScaling_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_DPIScaling_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The method used to determine the framerate that Blish HUD should run at..
         /// </summary>
         internal static string Setting_FramerateLimiter_Description {
@@ -88,8 +106,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///(Disabled because Blish HUD was started with --maxfps specified).
+        ///   Looks up a localized string similar to (Disabled because Blish HUD was started with --maxfps specified).
         /// </summary>
         internal static string Setting_FramerateLimiter_Locked_Description {
             get {

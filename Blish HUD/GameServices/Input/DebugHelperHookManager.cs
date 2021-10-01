@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using Blish_HUD.DebugHelper.Models;
+using Blish_HUD.DebugHelper.Services;
+using System;
+using System.Diagnostics;
 using System.Timers;
-using Blish_HUD.DebugHelperLib.Models;
-using Blish_HUD.DebugHelperLib.Services;
 
 namespace Blish_HUD.Input {
 
@@ -20,16 +20,20 @@ namespace Blish_HUD.Input {
         public void Load() {
             Logger.Debug("Loading DebugHelper input hooks");
 
+            using var currentProcess = Process.GetCurrentProcess();
+            var processFileName = currentProcess.MainModule.FileName;
+
             process = new Process {
-                StartInfo = new ProcessStartInfo(Path.Combine(Path.GetDirectoryName(typeof(DebugHelperMouseHookManager).Assembly.Location), "Blish HUD.DebugHelper.exe"), Process.GetCurrentProcess().Id.ToString()) {
+                StartInfo = new ProcessStartInfo(processFileName, $"--mainprocessid {currentProcess.Id}") {
                     RedirectStandardInput  = true,
                     RedirectStandardOutput = true,
                     UseShellExecute        = false,
                     CreateNoWindow         = true
                 }
             };
+            process.Exited += Process_Exited;
 
-            Logger.Debug($"Starting external process: {process.StartInfo.FileName}");
+            Logger.Debug("Starting subprocess: \"{FileName}\" {Arguments}", process.StartInfo.FileName, process.StartInfo.Arguments);
             process.Start();
 
             debugHelperMessageService = new StreamMessageService(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
@@ -43,11 +47,15 @@ namespace Blish_HUD.Input {
             keyboardHookManager = new DebugHelperKeyboardHookManager(debugHelperMessageService);
         }
 
+        private void Process_Exited(object sender, EventArgs e) {
+            Logger.Debug("Subprocess with id {ProcessId} has exited with exit code {ExitCode}", process.Id, process.ExitCode);
+        }
+
         public void Unload() {
             Logger.Debug("Unloading DebugHelper input hooks");
             debugHelperMessageService.Stop();
             pingTimer.Stop();
-            Logger.Debug($"Killing external process: {process.StartInfo.FileName}");
+            Logger.Debug("Killing subprocess with id {ProcessId}", process.Id);
             if (!process.HasExited) process.Kill();
             debugHelperMessageService = null;
             process                   = null;

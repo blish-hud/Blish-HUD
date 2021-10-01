@@ -156,4 +156,22 @@ Guild Wars 2, Heart of Thorns und alle zugehörigen Logos und Designs sind Waren
 eingetragene Warenzeichen der NCSOFT Corporation. Alle anderen Warenzeichen sind das Eigentum
 ihrer jeweiligen Besitzer.</value>
   </data>
+  <data name="Setting_AudioDevice_Description" xml:space="preserve">
+    <value>Bestimmt das Audioausgabegerät welches von Blish HUD verwendet wird. Das Ausgabegerät passt sich an das gewählte Audiogerät von GW2 an.</value>
+  </data>
+  <data name="Setting_AudioDevice_DisplayName" xml:space="preserve">
+    <value>Audiogerät</value>
+  </data>
+  <data name="Setting_UseGameVolume_Description" xml:space="preserve">
+    <value>Wenn aktiviert, wird Blish HUD die Lautstärke an die des Spiels anpassen.</value>
+  </data>
+  <data name="Setting_UseGameVolume_DisplayName" xml:space="preserve">
+    <value>Spiellautstärke verwenden</value>
+  </data>
+  <data name="Setting_Volume_Description" xml:space="preserve">
+    <value>Bestimmt die Lautstärke von Blish HUD. Wirkt sich nur aus, wenn 'Spiellautstärke verwenden' deaktiviert ist.</value>
+  </data>
+  <data name="Setting_Volume_DisplayName" xml:space="preserve">
+    <value>Lautstärke</value>
+  </data>
 </root>

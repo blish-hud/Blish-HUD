@@ -9,7 +9,7 @@ namespace Blish_HUD.Modules.Pkgs {
 
         IEnumerable<PkgManifest> GetPkgManifests();
 
-        IEnumerable<(string OptionName, Action<bool> OptionAction, bool IsToggle)> GetExtraOptions();
+        IEnumerable<(string OptionName, Action<bool> OptionAction, bool IsToggle, bool IsChecked)> GetExtraOptions();
 
     }
 }

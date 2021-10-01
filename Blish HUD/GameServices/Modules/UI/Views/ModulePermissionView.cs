@@ -50,7 +50,6 @@ namespace Blish_HUD.Modules.UI.Views {
             foreach ((var permission, bool optional, string description, bool set) in permissions) {
                 var permissionCheckbox = new Checkbox() {
                     Text             = permission.ToString(),
-                    Checked          = set || !optional,
                     Enabled          = optional,
                     BasicTooltipText = description,
                     Parent           = _permissionFlowPanel
@@ -59,6 +58,8 @@ namespace Blish_HUD.Modules.UI.Views {
                 permissionCheckbox.CheckedChanged += delegate (object sender, CheckChangedEvent e) {
                     this.PermissionStateChanged?.Invoke(this, new KeyedValueChangedEventArgs<TokenPermission, bool>(permission, e.Checked));
                 };
+
+                permissionCheckbox.Checked = set || !optional;
             }
 
             // Show "No permissions requested" if there are none

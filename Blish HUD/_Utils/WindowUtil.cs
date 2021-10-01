@@ -35,6 +35,8 @@ namespace Blish_HUD {
         private const uint SWP_NOSIZE         = 0x0001;
         private const uint SWP_NOMOVE         = 0x0002;
 
+        private const int MINIMIZED_POS = -32000;
+
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool ClientToScreen(IntPtr hWnd, ref System.Drawing.Point lpPoint);
 
@@ -144,12 +146,13 @@ namespace Blish_HUD {
         public enum OverlayUpdateResponse {
             WithFocus,
             WithoutFocus,
+            Minimized,
             Errored
         }
 
         private static Rectangle pos;
 
-        internal static (OverlayUpdateResponse Response, int ErrorCode) UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle, bool wasOnTop) {
+        internal static (OverlayUpdateResponse Response, bool Minimized, int ErrorCode) UpdateOverlay(IntPtr winHandle, IntPtr gw2WindowHandle, bool wasOnTop) {
             var clientRect = new RECT();
             bool errGetClientRectResult = GetClientRect(gw2WindowHandle, ref clientRect);
 
@@ -158,7 +161,7 @@ namespace Blish_HUD {
                 int errorCode = Marshal.GetLastWin32Error();
 
                 Logger.Warn($"{nameof(GetClientRect)} failed with error code {errorCode}.");
-                return (OverlayUpdateResponse.Errored, errorCode);
+                return (OverlayUpdateResponse.Errored, false, errorCode);
             }
 
             var screenPoint = System.Drawing.Point.Empty;
@@ -169,7 +172,7 @@ namespace Blish_HUD {
                 int errorCode = Marshal.GetLastWin32Error();
 
                 Logger.Warn($"{nameof(ClientToScreen)} failed with error code {errorCode}.");
-                return (OverlayUpdateResponse.Errored, errorCode);
+                return (OverlayUpdateResponse.Errored, screenPoint.X == MINIMIZED_POS, errorCode);
             }
 
             GameService.Debug.StartTimeFunc("GetForegroundWindow");
@@ -187,7 +190,7 @@ namespace Blish_HUD {
                         SetWindowPos(winHandle, nextHandle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
                     }
                 }
-                return (OverlayUpdateResponse.WithoutFocus, 0);
+                return (OverlayUpdateResponse.WithoutFocus, screenPoint.X == MINIMIZED_POS, 0);
             }
 
             if (!wasOnTop) {
@@ -219,7 +222,7 @@ namespace Blish_HUD {
                 DwmExtendFrameIntoClientArea(winHandle, ref marg);
             }
 
-            return (OverlayUpdateResponse.WithFocus, 0);
+            return (OverlayUpdateResponse.WithFocus, screenPoint.X == MINIMIZED_POS, 0);
         }
 
         internal static string GetClassNameOfWindow(IntPtr hwnd) {

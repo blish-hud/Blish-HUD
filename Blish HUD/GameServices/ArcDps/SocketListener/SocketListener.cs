@@ -54,7 +54,7 @@ namespace Blish_HUD.ArcDps {
         }
 
         public void Stop() {
-            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource?.Cancel();
         }
 
         public void Release(Socket listenSocket) {
