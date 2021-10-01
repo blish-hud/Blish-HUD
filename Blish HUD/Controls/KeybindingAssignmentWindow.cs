@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Controls {
-    public class KeybindingAssignmentWindow : Container {
+    public class KeybindingAssignmentWindow : Container, IWindow {
 
         #region Load Static
 
@@ -78,6 +78,8 @@ namespace Blish_HUD.Controls {
         private string _assignmentDisplayString;
 
         public KeybindingAssignmentWindow(string assignmentName, ModifierKeys modifierKeys = ModifierKeys.None, Keys primaryKey = Keys.None) {
+            WindowBase2.RegisterWindow(this);
+
             _assignmentName = assignmentName;
             _modifierKeys   = modifierKeys;
             _primaryKey     = primaryKey;
@@ -95,8 +97,12 @@ namespace Blish_HUD.Controls {
         protected override void OnShown(EventArgs e) {
             Invalidate();
 
+            GameService.Input.Keyboard.SetTextInputListner(BlockGameInput);
+
             base.OnShown(e);
         }
+
+        private void BlockGameInput(string input) { /* NOOP */ }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
             if (e.Key == Keys.Escape) {
@@ -113,6 +119,8 @@ namespace Blish_HUD.Controls {
         }
 
         private void FinishAssignment() {
+            GameService.Input.Keyboard.UnsetTextInputListner(BlockGameInput);
+
             this.Dispose();
         }
 
@@ -203,8 +211,18 @@ namespace Blish_HUD.Controls {
         protected override void DisposeControl() {
             base.DisposeControl();
 
+            GameService.Input.Keyboard.UnsetTextInputListner(BlockGameInput);
+            WindowBase2.UnregisterWindow(this);
+
             Input.Keyboard.KeyStateChanged -= KeyboardOnKeyStateChanged;
         }
+
+        // We implement IWindow to avoid other windows from reacting to our ESC input
+
+        public bool   TopMost              => true;
+        public double LastInteraction      => double.MaxValue;
+        public bool   CanClose             => false;
+        public void   BringWindowToFront() { /* NOOP */ }
 
     }
 }
