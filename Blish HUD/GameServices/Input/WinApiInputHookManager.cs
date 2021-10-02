@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Blish_HUD.Input.WinApi;
+using System;
 using System.Collections.Generic;
-using Blish_HUD.Input.WinApi;
+using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Input {
 
@@ -26,6 +27,10 @@ namespace Blish_HUD.Input {
             Logger.Debug("Enabling");
 
             hook = HookExtern.SetWindowsHookEx(this.HookType, hookProc, IntPtr.Zero, 0);
+            if (hook == IntPtr.Zero) {
+                int error = Marshal.GetLastWin32Error();
+                Logger.Warn($"SetWindowsHookEx failed with code {error}");
+            }
             return hook != IntPtr.Zero;
         }
 
@@ -34,7 +39,10 @@ namespace Blish_HUD.Input {
 
             Logger.Debug("Disabling");
 
-            HookExtern.UnhookWindowsHookEx(hook);
+            if (!HookExtern.UnhookWindowsHookEx(hook)) {
+                int error = Marshal.GetLastWin32Error();
+                Logger.Warn($"SetWindowsHookEx failed with code {error}");
+            }
             hook = IntPtr.Zero;
         }
 
