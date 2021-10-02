@@ -41,7 +41,7 @@ namespace Blish_HUD.Input {
 
             if (!HookExtern.UnhookWindowsHookEx(hook)) {
                 int error = Marshal.GetLastWin32Error();
-                Logger.Warn($"SetWindowsHookEx failed with code {error}");
+                Logger.Warn($"UnhookWindowsHookEx failed with code {error}");
             }
             hook = IntPtr.Zero;
         }
