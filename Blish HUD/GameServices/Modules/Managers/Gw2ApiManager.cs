@@ -3,6 +3,7 @@ using Gw2Sharp.WebApi;
 using Gw2Sharp.WebApi.V2.Models;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 namespace Blish_HUD.Modules.Managers {
     public class Gw2ApiManager {
@@ -21,6 +22,8 @@ namespace Blish_HUD.Modules.Managers {
 
         private HashSet<TokenPermission> _activePermissions;
 
+        private JwtSecurityTokenHandler _subtokenHandler;
+
         private ManagedConnection _connection;
 
         public event EventHandler<ValueEventArgs<string>> SubtokenUpdated;
@@ -34,6 +37,7 @@ namespace Blish_HUD.Modules.Managers {
 
             _permissions       = permissions.ToHashSet();
             _activePermissions = new HashSet<TokenPermission>();
+            _subtokenHandler   = new JwtSecurityTokenHandler();
 
             RenewSubtoken();
         }
@@ -52,7 +56,9 @@ namespace Blish_HUD.Modules.Managers {
             GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
                        .ContinueWith(subtokenTask => {
                             if (_connection.SetApiKey(subtokenTask.Result)) {
-                                _activePermissions = new HashSet<TokenPermission>(_permissions);
+                                var jwtToken = _subtokenHandler.ReadJwtToken(subtokenTask.Result);
+                                _activePermissions = jwtToken.Claims.Where(x => x.Type.Equals("permissions") && Enum.TryParse(x.Value, true, out TokenPermission _))
+                                                                    .Select(y => (TokenPermission)Enum.Parse(typeof(TokenPermission), y.Value, true)).ToHashSet();
                                 SubtokenUpdated?.Invoke(this, new ValueEventArgs<string>(subtokenTask.Result));
                             }
                         });
