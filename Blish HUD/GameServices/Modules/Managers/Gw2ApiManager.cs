@@ -19,6 +19,8 @@ namespace Blish_HUD.Modules.Managers {
 
         private readonly HashSet<TokenPermission> _permissions;
 
+        private HashSet<TokenPermission> _activePermissions;
+
         private ManagedConnection _connection;
 
         public event EventHandler<ValueEventArgs<string>> SubtokenUpdated;
@@ -30,7 +32,8 @@ namespace Blish_HUD.Modules.Managers {
         private Gw2ApiManager(IEnumerable<TokenPermission> permissions) {
             _apiManagers.Add(this);
 
-            _permissions = permissions.ToHashSet();
+            _permissions       = permissions.ToHashSet();
+            _activePermissions = new HashSet<TokenPermission>();
 
             RenewSubtoken();
         }
@@ -47,20 +50,31 @@ namespace Blish_HUD.Modules.Managers {
             if (_permissions == null || !_permissions.Any()) return;
 
             GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
-                       .ContinueWith((subtokenTask) => {
-                            _connection.SetApiKey(subtokenTask.Result);
-                            SubtokenUpdated?.Invoke(this, new ValueEventArgs<string>(subtokenTask.Result));
-                       });
+                       .ContinueWith(subtokenTask => {
+                            if (_connection.SetApiKey(subtokenTask.Result)) {
+                                _activePermissions = new HashSet<TokenPermission>(_permissions);
+                                SubtokenUpdated?.Invoke(this, new ValueEventArgs<string>(subtokenTask.Result));
+                            }
+                        });
         }
 
+        [Obsolete("HavePermission is deprecated, please use HasPermission instead.")]
         public bool HavePermission(TokenPermission permission) {
             return _permissions.Contains(permission);
         }
 
+        [Obsolete("HavePermissions is deprecated, please use HasPermissions instead.")]
         public bool HavePermissions(IEnumerable<TokenPermission> permissions) {
             return _permissions.IsSupersetOf(permissions);
         }
 
+        public bool HasPermissions(IEnumerable<TokenPermission> permissions) {
+            return _activePermissions.IsSupersetOf(permissions);
+        }
+
+        public bool HasPermission(TokenPermission permission) {
+            return _activePermissions.Contains(permission);
+        }
     }
 
 }
