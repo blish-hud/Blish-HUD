@@ -22,11 +22,11 @@ namespace Blish_HUD.Modules.Managers {
 
         private HashSet<TokenPermission> _activePermissions;
 
-        private JwtSecurityTokenHandler _subtokenHandler;
+        private readonly JwtSecurityTokenHandler _subtokenHandler;
 
         private ManagedConnection _connection;
 
-        public event EventHandler<ValueEventArgs<string>> SubtokenUpdated;
+        public event EventHandler<ValueEventArgs<IEnumerable<TokenPermission>>> SubtokenUpdated;
 
         public IGw2WebApiClient Gw2ApiClient => _connection.Client;
 
@@ -59,7 +59,7 @@ namespace Blish_HUD.Modules.Managers {
                                 var jwtToken = _subtokenHandler.ReadJwtToken(subtokenTask.Result);
                                 _activePermissions = jwtToken.Claims.Where(x => x.Type.Equals("permissions") && Enum.TryParse(x.Value, true, out TokenPermission _))
                                                                     .Select(y => (TokenPermission)Enum.Parse(typeof(TokenPermission), y.Value, true)).ToHashSet();
-                                SubtokenUpdated?.Invoke(this, new ValueEventArgs<string>(subtokenTask.Result));
+                                SubtokenUpdated?.Invoke(this, new ValueEventArgs<IEnumerable<TokenPermission>>(_activePermissions));
                             }
                         });
         }
