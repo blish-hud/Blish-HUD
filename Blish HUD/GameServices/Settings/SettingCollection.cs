@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Settings.UI.Views;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -66,6 +67,7 @@ namespace Blish_HUD.Settings {
         private JToken _entryTokens;
 
         private readonly bool _lazyLoaded;
+        private ISettingViewFactorySelector _viewFactorySelector;
         private List<SettingEntry> _entries;
 
         public bool LazyLoaded => _lazyLoaded;
@@ -81,6 +83,13 @@ namespace Blish_HUD.Settings {
         public bool Loaded => _entries != null;
 
         public bool RenderInUi { get; set; }
+
+        private SettingCollection Parent { get; set; }
+
+        public ISettingViewFactorySelector ViewFactorySelector {
+            get => this._viewFactorySelector ?? this.Parent?.ViewFactorySelector ?? SettingViewFactorySelector.Default;
+            set => this._viewFactorySelector = value;
+        }
 
         public SettingCollection(bool lazy = false) {
             _lazyLoaded  = lazy;
@@ -99,6 +108,18 @@ namespace Blish_HUD.Settings {
         }
 
         public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, Func<string> displayNameFunc = null, Func<string> descriptionFunc = null) {
+            return DefineSettingInternal(entryKey, defaultValue, displayNameFunc, descriptionFunc, null);
+        }
+
+        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, Func<string> displayNameFunc, Func<string> descriptionFunc, SettingViewFactoryDelegate<TEntry> viewFactory) {
+            return DefineSettingInternal(entryKey, defaultValue, displayNameFunc, descriptionFunc, new InlineSettingViewFactory<TEntry>(viewFactory));
+        }
+
+        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue,Func<string> displayNameFunc, Func<string> descriptionFunc, ISettingViewFactory<TEntry> viewFactory) {
+            return DefineSettingInternal(entryKey, defaultValue, displayNameFunc, descriptionFunc, viewFactory);
+        }
+
+        private SettingEntry<TEntry> DefineSettingInternal<TEntry>(string entryKey, TEntry defaultValue, Func<string> displayNameFunc, Func<string> descriptionFunc, ISettingViewFactory<TEntry> viewFactory) {
             // We don't need to check if we've loaded because the first check uses this[key] which
             // will load if we haven't already since it references this.Entries instead of _entries
             if (!(this[entryKey] is SettingEntry<TEntry> definedEntry)) {
@@ -108,6 +129,7 @@ namespace Blish_HUD.Settings {
 
             definedEntry.GetDisplayNameFunc = displayNameFunc ?? (() => null);
             definedEntry.GetDescriptionFunc = descriptionFunc ?? (() => null);
+            definedEntry.ViewFactory        = viewFactory;
             definedEntry.SessionDefined     = true;
 
             return definedEntry;
@@ -129,7 +151,11 @@ namespace Blish_HUD.Settings {
         }
 
         public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) {
-            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }).Value;
+            return AddSubCollection(collectionKey, renderInUi, null, lazyLoaded);
+        }
+
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, ISettingViewFactorySelector settingViewFactorySelector, bool lazyLoaded = false) {
+            return DefineSettingInternal(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi, ViewFactorySelector = settingViewFactorySelector, Parent = this }, null, null, null).Value;
         }
 
         public bool ContainsSetting(string entryKey) {
