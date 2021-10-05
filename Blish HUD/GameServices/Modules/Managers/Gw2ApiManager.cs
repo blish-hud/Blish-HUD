@@ -1,11 +1,9 @@
-﻿using Gw2Sharp.WebApi;
+﻿using Blish_HUD.Gw2WebApi;
+using Gw2Sharp.WebApi;
+using Gw2Sharp.WebApi.V2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Blish_HUD.Gw2WebApi;
-using Gw2Sharp;
-using Gw2Sharp.WebApi.V2;
-using Gw2Sharp.WebApi.V2.Models;
-
 namespace Blish_HUD.Modules.Managers {
     public class Gw2ApiManager {
 
@@ -22,6 +20,8 @@ namespace Blish_HUD.Modules.Managers {
         private readonly HashSet<TokenPermission> _permissions;
 
         private ManagedConnection _connection;
+
+        public event EventHandler<ValueEventArgs<string>> SubtokenUpdated;
 
         public IGw2WebApiClient Gw2ApiClient => _connection.Client;
 
@@ -47,7 +47,10 @@ namespace Blish_HUD.Modules.Managers {
             if (_permissions == null || !_permissions.Any()) return;
 
             GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
-                       .ContinueWith((subtokenTask) => _connection.SetApiKey(subtokenTask.Result));
+                       .ContinueWith((subtokenTask) => {
+                            _connection.SetApiKey(subtokenTask.Result);
+                            SubtokenUpdated?.Invoke(this, new ValueEventArgs<string>(subtokenTask.Result));
+                       });
         }
 
         public bool HavePermission(TokenPermission permission) {
