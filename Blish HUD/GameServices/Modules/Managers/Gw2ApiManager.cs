@@ -18,13 +18,13 @@ namespace Blish_HUD.Modules.Managers {
             }
         }
 
+        private          ManagedConnection        _connection;
+
         private readonly HashSet<TokenPermission> _permissions;
 
-        private HashSet<TokenPermission> _activePermissions;
-
-        private readonly JwtSecurityTokenHandler _subtokenHandler;
-
-        private ManagedConnection _connection;
+        private readonly JwtSecurityTokenHandler  _subtokenHandler;
+        private          HashSet<TokenPermission> _activePermissions;
+        private          DateTime                 _expiresAt;
 
         public event EventHandler<ValueEventArgs<IEnumerable<TokenPermission>>> SubtokenUpdated;
 
@@ -59,6 +59,7 @@ namespace Blish_HUD.Modules.Managers {
                                 var jwtToken = _subtokenHandler.ReadJwtToken(subtokenTask.Result);
                                 _activePermissions = jwtToken.Claims.Where(x => x.Type.Equals("permissions") && Enum.TryParse(x.Value, true, out TokenPermission _))
                                                                     .Select(y => (TokenPermission)Enum.Parse(typeof(TokenPermission), y.Value, true)).ToHashSet();
+                                _expiresAt = jwtToken.ValidTo;
                                 SubtokenUpdated?.Invoke(this, new ValueEventArgs<IEnumerable<TokenPermission>>(_activePermissions));
                             }
                         });
@@ -75,11 +76,11 @@ namespace Blish_HUD.Modules.Managers {
         }
 
         public bool HasPermissions(IEnumerable<TokenPermission> permissions) {
-            return _activePermissions.IsSupersetOf(permissions);
+            return DateTime.UtcNow < _expiresAt && _activePermissions.IsSupersetOf(permissions);
         }
 
         public bool HasPermission(TokenPermission permission) {
-            return _activePermissions.Contains(permission);
+            return DateTime.UtcNow < _expiresAt && _activePermissions.Contains(permission);
         }
     }
 
