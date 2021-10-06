@@ -1,4 +1,5 @@
-﻿using Blish_HUD.Controls;
+﻿using System;
+using Blish_HUD.Controls;
 
 namespace Blish_HUD.Settings.UI.Views {
     public class FloatSettingView : NumericSettingView<float> {
@@ -33,6 +34,10 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void RefreshValue(float value) {
+            // Prevent us clamping the setting value before compliance is applied
+            _valueTrackBar.MinValue = Math.Min(_valueTrackBar.MinValue, value);
+            _valueTrackBar.MaxValue = Math.Max(_valueTrackBar.MaxValue, value);
+
             _valueTrackBar.Value = value;
         }
 
