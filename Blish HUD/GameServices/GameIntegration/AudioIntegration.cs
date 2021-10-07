@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Blish_HUD.Debug;
 using Blish_HUD.GameServices;
 using Blish_HUD.Settings;
@@ -71,25 +72,16 @@ namespace Blish_HUD.GameIntegration {
             _deviceSetting.Value = Devices.DefaultDevice;
             _deviceSetting.SetDisabled();
 
-            if (_deviceSetting.Value == Devices.DefaultDevice) {
-                this.AudioDevice = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            }
-
             PrepareListeners();
-            InitializeProcessMeterInformations();
+            UpdateAudioDevice();
         }
 
         private void PrepareListeners() {
             _deviceEnumerator.RegisterEndpointNotificationCallback(_audioEndpointNotificationReceiver);
 
-            _audioEndpointNotificationReceiver.DefaultDeviceChanged += delegate { InitializeProcessMeterInformations(); };
+            _audioEndpointNotificationReceiver.DefaultDeviceChanged += delegate { UpdateAudioDevice(); };
+            _deviceSetting.SettingChanged                           += delegate { UpdateAudioDevice(); };
             _service.Gw2Instance.Gw2Started                         += delegate { InitializeProcessMeterInformations(); };
-
-            _deviceSetting.SettingChanged += delegate {
-                if (_deviceSetting.Value == Devices.DefaultDevice) {
-                    this.AudioDevice = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-                }
-            };
         }
 
         public override void Update(GameTime gameTime) {
@@ -146,6 +138,29 @@ namespace Blish_HUD.GameIntegration {
             }
 
             return MathHelper.Clamp(total / _audioPeakBuffer.InternalBuffer.Length, 0, MAX_VOLUME);
+        }
+
+        private void UpdateAudioDevice() {
+            if (_deviceSetting.Value == Devices.DefaultDevice) {
+                if (TryGetDefaultAudioEndpoint(_deviceEnumerator, DataFlow.Render, Role.Multimedia, out MMDevice defaultDevice)) {
+                    this.AudioDevice = defaultDevice;
+                } else {
+                    this.AudioDevice = null;
+                }
+            }
+
+            InitializeProcessMeterInformations();
+        }
+
+        private static bool TryGetDefaultAudioEndpoint(MMDeviceEnumerator deviceEnumerator, DataFlow dataFlow, Role role, out MMDevice device) {
+            try {
+                device = deviceEnumerator.GetDefaultAudioEndpoint(dataFlow, role);
+                return true;
+            } catch (COMException ex) when ((uint)ex.HResult == 0x80070490) {
+                // HResult 0x80070490 = Element not found
+                device = null;
+                return false;
+            }
         }
 
         private void InitializeProcessMeterInformations() {
