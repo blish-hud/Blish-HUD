@@ -51,10 +51,12 @@ namespace Blish_HUD.Modules.Managers {
             // and while we wait for subtoken response.
             _connection = GameService.Gw2WebApi.AnonymousConnection;
 
-            if (!GameService.Gw2WebApi.PrivilegedConnection.HasApiKey() || _permissions == null || !_permissions.Any()) return;
+            if (_permissions == null || !_permissions.Any()) return;
 
             GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
                        .ContinueWith(subtokenTask => {
+                            if (subtokenTask.IsFaulted || string.IsNullOrEmpty(subtokenTask.Result)) return;
+
                             if (_connection.SetApiKey(subtokenTask.Result)) {
                                 var jwtToken = _subtokenHandler.ReadJwtToken(subtokenTask.Result);
                                 _activePermissions = jwtToken.Claims.Where(x => x.Type.Equals("permissions") && Enum.TryParse(x.Value, true, out TokenPermission _))

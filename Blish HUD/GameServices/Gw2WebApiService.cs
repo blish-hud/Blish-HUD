@@ -162,7 +162,7 @@ namespace Blish_HUD {
         }
 
         internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) {
-            return await RequestSubtoken(_privilegedConnection, permissions, days);
+            return _privilegedConnection.HasApiKey() ? await RequestSubtoken(_privilegedConnection, permissions, days) : string.Empty;
         }
 
         public async Task<string> RequestSubtoken(ManagedConnection connection, IEnumerable<TokenPermission> permissions, int days) {
