@@ -51,7 +51,7 @@ namespace Blish_HUD.Modules.Managers {
             // and while we wait for subtoken response.
             _connection = GameService.Gw2WebApi.AnonymousConnection;
 
-            if (_permissions == null || !_permissions.Any()) return;
+            if (!GameService.Gw2WebApi.PrivilegedConnection.HasApiKey() || _permissions == null || !_permissions.Any()) return;
 
             GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
                        .ContinueWith(subtokenTask => {

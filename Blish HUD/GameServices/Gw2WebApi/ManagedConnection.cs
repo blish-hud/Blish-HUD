@@ -53,5 +53,8 @@ namespace Blish_HUD.Gw2WebApi {
             return true;
         }
 
+        public bool HasApiKey() {
+            return !string.IsNullOrEmpty(_internalConnection.AccessToken);
+        }
     }
 }
