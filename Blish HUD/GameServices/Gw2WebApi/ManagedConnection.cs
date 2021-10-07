@@ -1,8 +1,10 @@
-﻿using System;
-using Gw2Sharp;
+﻿using Gw2Sharp;
 using Gw2Sharp.WebApi;
 using Gw2Sharp.WebApi.Caching;
-
+using Gw2Sharp.WebApi.V2.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 namespace Blish_HUD.Gw2WebApi {
     public sealed class ManagedConnection {
 
@@ -56,5 +58,10 @@ namespace Blish_HUD.Gw2WebApi {
         public bool HasApiKey() {
             return !string.IsNullOrEmpty(_internalConnection.AccessToken);
         }
+
+        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) {
+            return HasApiKey() ? await GameService.Gw2WebApi.RequestSubtoken(this, permissions, days) : string.Empty;
+        }
+
     }
 }

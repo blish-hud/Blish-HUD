@@ -53,7 +53,7 @@ namespace Blish_HUD.Modules.Managers {
 
             if (_permissions == null || !_permissions.Any()) return;
 
-            GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
+            GameService.Gw2WebApi.PrivilegedConnection.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
                        .ContinueWith(subtokenTask => {
                             if (subtokenTask.IsFaulted || string.IsNullOrEmpty(subtokenTask.Result)) return;
 
