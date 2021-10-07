@@ -161,6 +161,9 @@ namespace Blish_HUD {
             return (await connection.Client.V2.Characters.IdsAsync()).ToList();
         }
 
+        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) {
+            return await GameService.Gw2WebApi.RequestSubtoken(_privilegedConnection, permissions, days);
+        }
 
         public async Task<string> RequestSubtoken(ManagedConnection connection, IEnumerable<TokenPermission> permissions, int days) {
             try {

@@ -59,9 +59,5 @@ namespace Blish_HUD.Gw2WebApi {
             return !string.IsNullOrEmpty(_internalConnection.AccessToken);
         }
 
-        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) {
-            return HasApiKey() ? await GameService.Gw2WebApi.RequestSubtoken(this, permissions, days) : string.Empty;
-        }
-
     }
 }
