@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Blish_HUD.Controls.Extern;
-using Blish_HUD.Controls.Intern;
 using Blish_HUD.GameIntegration;
+using Blish_HUD.Input.Keyboard;
+using Blish_HUD.Input.Mouse;
+using Blish_HUD.Input.WinApi;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 

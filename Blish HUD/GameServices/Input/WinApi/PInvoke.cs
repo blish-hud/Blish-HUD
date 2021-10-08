@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
-
 namespace Blish_HUD.Input.WinApi {
     /// <summary>
     /// Struct representing a point.
