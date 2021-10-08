@@ -71,6 +71,8 @@ namespace Blish_HUD.Modules.Managers {
                                                  .Select(y => (TokenPermission)Enum.Parse(typeof(TokenPermission), y.Value, true))
                                                  .ToHashSet();
 
+                    // TODO: consider checking against the expiration claim.
+
                     SubtokenUpdated?.Invoke(this, new ValueEventArgs<IEnumerable<TokenPermission>>(_activePermissions));
                 } catch (Exception ex) {
                     Logger.Warn(ex, "Failed to parse API subtoken.");
