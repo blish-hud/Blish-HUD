@@ -42,7 +42,7 @@ namespace Blish_HUD.Gw2WebApi {
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             _internalConnection.Locale = e.NewValue;
 
-            Logger.Debug($"{nameof(ManagedConnection)} updated locale to {e.NewValue} (was {e.PrevousValue}).");
+            Logger.Debug($"{nameof(ManagedConnection)} updated locale to {e.NewValue} (was {e.PreviousValue}).");
         }
 
         public bool SetApiKey(string apiKey) {
