@@ -1,5 +1,4 @@
-﻿namespace Blish_HUD.Controls.Intern
-{
+﻿namespace Blish_HUD.Common.Gw2 {
     public enum GuildWarsControls
     {
         None,

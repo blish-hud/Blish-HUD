@@ -1,5 +1,4 @@
-namespace Blish_HUD.Controls.Extern
-{
+namespace Blish_HUD.Input.WinApi {
     public enum VirtualKeyShort : short
     {
         ///<summary>

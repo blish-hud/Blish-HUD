@@ -1,5 +1,4 @@
-namespace Blish_HUD.Controls.Extern
-{
+namespace Blish_HUD.Input.WinApi {
     internal enum ScanCodeShort : short
     {
         LBUTTON = 0,

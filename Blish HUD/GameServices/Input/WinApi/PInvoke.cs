@@ -2,8 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace Blish_HUD.Controls.Extern
-{
+namespace Blish_HUD.Input.WinApi {
     /// <summary>
     /// Struct representing a point.
     /// </summary>

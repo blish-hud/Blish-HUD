@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Blish_HUD.Controls.Extern;
-namespace Blish_HUD.Controls.Intern
+using System.Runtime.InteropServices;
+using Blish_HUD.Input.WinApi;
+namespace Blish_HUD.Input.Keyboard
 {
     public static class Keyboard
     {
@@ -13,6 +14,23 @@ namespace Blish_HUD.Controls.Intern
         private const uint MAPVK_VK_TO_CHAR = 0x02;
         private const uint MAPVK_VSC_TO_VK_EX = 0x03;
         private const uint MAPVK_VK_TO_VSC_EX = 0x04;
+
+        [Flags]
+        internal enum KeyEventF : uint {
+            EXTENDEDKEY = 0x0001,
+            KEYUP       = 0x0002,
+            SCANCODE    = 0x0008,
+            UNICODE     = 0x0004
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct KeybdInput {
+            internal VirtualKeyShort wVk;
+            internal ScanCodeShort   wScan;
+            internal KeyEventF       dwFlags;
+            internal int             time;
+            internal UIntPtr         dwExtraInfo;
+        }
 
         private static List<VirtualKeyShort> ExtendedKeys = new List<VirtualKeyShort> {
             VirtualKeyShort.INSERT,  VirtualKeyShort.HOME,   VirtualKeyShort.NEXT, 
@@ -31,11 +49,11 @@ namespace Blish_HUD.Controls.Intern
         {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
-                Extern.Input[] nInputs;
+                WinApi.Input[] nInputs;
                 if (ExtendedKeys.Contains(key)) {
                     nInputs = new[]
                     {
-                        new Extern.Input
+                        new WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
@@ -48,7 +66,7 @@ namespace Blish_HUD.Controls.Intern
                                 }
                             }
                         },
-                        new Extern.Input
+                        new WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
@@ -65,7 +83,7 @@ namespace Blish_HUD.Controls.Intern
                 } else {
                     nInputs = new[]
                     {
-                        new Extern.Input
+                        new WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
@@ -79,12 +97,12 @@ namespace Blish_HUD.Controls.Intern
                         }
                     };
                 }
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
             }
             else
             {
                 uint vkCode = (uint)key;
-                ExtraKeyInfo lParam = new ExtraKeyInfo() {
+                ExtraKeyInfo lParam = new ExtraKeyInfo {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
 
@@ -93,6 +111,7 @@ namespace Blish_HUD.Controls.Intern
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
+
         /// <summary>
         /// Releases a key.
         /// </summary>
@@ -102,11 +121,11 @@ namespace Blish_HUD.Controls.Intern
         {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
-                Extern.Input[] nInputs;
+                WinApi.Input[] nInputs;
                 if (ExtendedKeys.Contains(key)) {
                     nInputs = new[]
                     {
-                        new Extern.Input
+                        new WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
@@ -119,7 +138,7 @@ namespace Blish_HUD.Controls.Intern
                                 }
                             }
                         },
-                        new Extern.Input
+                        new WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
@@ -136,7 +155,7 @@ namespace Blish_HUD.Controls.Intern
                 } else {
                     nInputs = new[]
                     {
-                        new Extern.Input
+                        new WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
@@ -151,12 +170,12 @@ namespace Blish_HUD.Controls.Intern
                         }
                     };
                 }
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
             }
             else
             {
                 uint vkCode = (uint)key;
-                ExtraKeyInfo lParam = new ExtraKeyInfo() {
+                ExtraKeyInfo lParam = new ExtraKeyInfo {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
                     repeatCount = 1,
                     prevKeyState = 1,
@@ -168,6 +187,7 @@ namespace Blish_HUD.Controls.Intern
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
         }
+
         /// <summary>
         /// Performs a keystroke inwhich a key is pressed and immediately released once.
         /// </summary>
@@ -178,17 +198,16 @@ namespace Blish_HUD.Controls.Intern
             Press(key, sendToSystem);
             Release(key, sendToSystem);
         }
-    }
-    class ExtraKeyInfo
-    {
-        public ushort repeatCount;
-        public char scanCode;
-        public ushort extendedKey, prevKeyState, transitionState;
 
-        public int GetInt()
-        {
-            return repeatCount | (scanCode << 16) | (extendedKey << 24) |
-                (prevKeyState << 30) | (transitionState << 31);
+        private class ExtraKeyInfo {
+            public ushort repeatCount;
+            public char   scanCode;
+            public ushort extendedKey, prevKeyState, transitionState;
+
+            public int GetInt() {
+                return repeatCount | (scanCode << 16) | (extendedKey     << 24) |
+                       (prevKeyState           << 30) | (transitionState << 31);
+            }
         }
-    };
+    }
 }

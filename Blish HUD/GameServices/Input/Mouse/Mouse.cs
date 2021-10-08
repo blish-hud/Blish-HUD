@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Blish_HUD.Controls.Extern;
-namespace Blish_HUD.Controls.Intern
+using System.Runtime.InteropServices;
+using Blish_HUD.Input.WinApi;
+namespace Blish_HUD.Input.Mouse
 {
     public enum MouseButton
     {
@@ -11,6 +12,35 @@ namespace Blish_HUD.Controls.Intern
         MIDDLE,
         XBUTTON
     }
+
+    [Flags]
+    internal enum MouseEventF : uint {
+        ABSOLUTE        = 0x8000,
+        HWHEEL          = 0x01000,
+        MOVE            = 0x0001,
+        MOVE_NOCOALESCE = 0x2000,
+        LEFTDOWN        = 0x0002,
+        LEFTUP          = 0x0004,
+        RIGHTDOWN       = 0x0008,
+        RIGHTUP         = 0x0010,
+        MIDDLEDOWN      = 0x0020,
+        MIDDLEUP        = 0x0040,
+        VIRTUALDESK     = 0x4000,
+        WHEEL           = 0x0800,
+        XDOWN           = 0x0080,
+        XUP             = 0x0100
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct MouseInput {
+        internal int         dx;
+        internal int         dy;
+        internal int         mouseData;
+        internal MouseEventF dwFlags;
+        internal uint        time;
+        internal UIntPtr     dwExtraInfo;
+    }
+
     public static class Mouse
     {
         private const uint WM_MOUSEWHEEL = 0x020A;
@@ -25,6 +55,7 @@ namespace Blish_HUD.Controls.Intern
             { MouseButton.MIDDLE, MouseEventF.MIDDLEDOWN },
             { MouseButton.XBUTTON, MouseEventF.XDOWN }
         };
+
         private static Dictionary<MouseButton, MouseEventF> ButtonRelease = new Dictionary<MouseButton, MouseEventF>()
         {
             { MouseButton.LEFT, MouseEventF.LEFTUP },
@@ -32,6 +63,7 @@ namespace Blish_HUD.Controls.Intern
             { MouseButton.MIDDLE, MouseEventF.MIDDLEUP },
             { MouseButton.XBUTTON, MouseEventF.XUP }
         };
+
         private static Dictionary<MouseButton, VirtualKeyShort> VirtualButtonShort = new Dictionary<MouseButton, VirtualKeyShort>()
         {
             { MouseButton.LEFT, VirtualKeyShort.LBUTTON },
@@ -39,6 +71,7 @@ namespace Blish_HUD.Controls.Intern
             { MouseButton.MIDDLE, VirtualKeyShort.MBUTTON },
             { MouseButton.XBUTTON, VirtualKeyShort.XBUTTON1 }
         };
+
         private static Dictionary<MouseButton, uint> WM_BUTTONDOWN = new Dictionary<MouseButton, uint>()
         {
             { MouseButton.LEFT, 0x0201 },
@@ -46,6 +79,7 @@ namespace Blish_HUD.Controls.Intern
             { MouseButton.MIDDLE, 0x0207 },
             { MouseButton.XBUTTON, 0x020B }
         };
+
         private static Dictionary<MouseButton, uint> WM_BUTTONUP = new Dictionary<MouseButton, uint>()
         {
             { MouseButton.LEFT, 0x0202 },
@@ -53,6 +87,7 @@ namespace Blish_HUD.Controls.Intern
             { MouseButton.MIDDLE, 0x0208 },
             { MouseButton.XBUTTON, 0x020C }
         };
+
         private static Dictionary<MouseButton, uint> WM_BUTTONDBLCLK = new Dictionary<MouseButton, uint>()
         {
             { MouseButton.LEFT, 0x0203 },
@@ -60,6 +95,7 @@ namespace Blish_HUD.Controls.Intern
             { MouseButton.MIDDLE, 0x0209 },
             { MouseButton.XBUTTON, 0x020D }
         };
+
         /// <summary>
         /// Presses a mouse button.
         /// </summary>
@@ -79,7 +115,7 @@ namespace Blish_HUD.Controls.Intern
             {
                 var nInputs = new[]
                 {
-                    new Extern.Input
+                    new WinApi.Input
                     {
                         type = InputType.MOUSE,
                         U = new InputUnion
@@ -95,7 +131,7 @@ namespace Blish_HUD.Controls.Intern
                         }
                     }
                 };
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
             }
             else
             {
@@ -104,6 +140,7 @@ namespace Blish_HUD.Controls.Intern
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDOWN[button], wParam, lParam);
             }
         }
+
         /// <summary>
         /// Releases a mouse button.
         /// </summary>
@@ -123,7 +160,7 @@ namespace Blish_HUD.Controls.Intern
             {
                 var nInputs = new[]
                 {
-                    new Extern.Input
+                    new WinApi.Input
                     {
                         type = InputType.MOUSE,
                         U = new InputUnion
@@ -139,7 +176,7 @@ namespace Blish_HUD.Controls.Intern
                         }
                     }
                 };
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
             }
             else
             {
@@ -148,6 +185,7 @@ namespace Blish_HUD.Controls.Intern
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONUP[button], wParam, lParam);
             }
         }
+
         /// <summary>
         /// Rotates the mouse wheel.
         /// </summary>
@@ -171,7 +209,7 @@ namespace Blish_HUD.Controls.Intern
             {
                 var nInputs = new[]
                 {
-                    new Extern.Input
+                    new WinApi.Input
                     {
                         type = InputType.MOUSE,
                         U = new InputUnion
@@ -187,7 +225,7 @@ namespace Blish_HUD.Controls.Intern
                         }
                     }
                 };
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
+                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
             }
             else
             {
@@ -196,6 +234,7 @@ namespace Blish_HUD.Controls.Intern
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, horizontalWheel ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL, wParam, lParam);
             }
         }
+
         /// <summary>
         /// Sets the cursors absolute screen position.
         /// </summary>
@@ -214,6 +253,7 @@ namespace Blish_HUD.Controls.Intern
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_MOUSEMOVE, 0, lParam);
             }
         }
+
         /// <summary>
         /// Gets the cursors absolute screen position.
         /// </summary>
@@ -223,6 +263,7 @@ namespace Blish_HUD.Controls.Intern
             PInvoke.GetCursorPos(out lpPoint);
             return lpPoint;
         }
+
         /// <summary>
         /// Presses and immediately releases a mouse button ONCE.
         /// </summary>
@@ -235,6 +276,7 @@ namespace Blish_HUD.Controls.Intern
             Press(button, xPos, yPos, sendToSystem);
             Release(button, xPos, yPos, sendToSystem);
         }
+
         /// <summary>
         /// Performs a double click of a mouse button.
         /// </summary>
