@@ -133,13 +133,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             clearKeyBttn.Click += delegate { ClearApiKey(); };
 
-            _registerKeyBttn.Click += delegate {
-                GameService.Gw2WebApi.RegisterKey(_loadedDetails.AccountInfo.Name, this.ApiKey);
-
-                ReloadApiKeys();
-
-                ClearApiKey();
-            };
+            _registerKeyBttn.Click += RegisterKeyBttnClicked;
 
             var instructions = new Label() {
                 Text           = Strings.Common.Instructions,
@@ -253,6 +247,14 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             ReloadApiKeys();
 
             SetTokenStatus(ApiTokenStatusType.Neutral);
+        }
+
+        private async void RegisterKeyBttnClicked(object sender, Input.MouseEventArgs e) {
+            await GameService.Gw2WebApi.RegisterKey(_loadedDetails.AccountInfo.Name, this.ApiKey);
+
+            ReloadApiKeys();
+
+            ClearApiKey();
         }
 
         private void ReloadApiKeys() {

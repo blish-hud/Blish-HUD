@@ -5,16 +5,21 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Threading.Tasks;
+
 namespace Blish_HUD.Modules.Managers {
     public class Gw2ApiManager {
 
-        private const int SUBTOKEN_LIFETIME = 7;
+        private static readonly Logger Logger = Logger.GetLogger<Gw2ApiManager>();
+
+        private const int    SUBTOKEN_LIFETIME  = 7;
+        private const string SUBTOKEN_CLAIMTYPE = "permissions";
 
         private static readonly List<Gw2ApiManager> _apiManagers = new List<Gw2ApiManager>();
 
-        internal static void RenewAllSubtokens() {
+        internal static async Task RenewAllSubtokens() {
             foreach (var apiManager in _apiManagers) {
-                apiManager.RenewSubtoken();
+                await apiManager.RenewSubtoken();
             }
         }
 
@@ -24,7 +29,7 @@ namespace Blish_HUD.Modules.Managers {
 
         private readonly JwtSecurityTokenHandler _subtokenHandler;
 
-        private ManagedConnection _connection;
+        private readonly ManagedConnection _connection;
 
         public event EventHandler<ValueEventArgs<IEnumerable<TokenPermission>>> SubtokenUpdated;
 
@@ -32,47 +37,54 @@ namespace Blish_HUD.Modules.Managers {
 
         public List<TokenPermission> Permissions => _permissions.ToList();
 
-        private Gw2ApiManager(IEnumerable<TokenPermission> permissions) {
+        private Gw2ApiManager(IEnumerable<TokenPermission> permissions, ManagedConnection moduleConnection) {
             _apiManagers.Add(this);
 
             _permissions       = permissions.ToHashSet();
             _activePermissions = new HashSet<TokenPermission>();
             _subtokenHandler   = new JwtSecurityTokenHandler();
 
-            RenewSubtoken();
+            _connection = moduleConnection;
         }
 
         internal static Gw2ApiManager GetModuleInstance(ModuleManager module) {
-            return new Gw2ApiManager(module.State.UserEnabledPermissions ?? new TokenPermission[0]);
+            return new Gw2ApiManager(module.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>(), GameService.Gw2WebApi.GetConnection(string.Empty));
         }
 
-        private void RenewSubtoken() {
-            // Default to anonymous if permissions aren't requested
-            // and while we wait for subtoken response.
-            _connection = GameService.Gw2WebApi.AnonymousConnection;
-
+        internal async Task RenewSubtoken() {
+            // If we have no consented permissions, we early exit.
             if (_permissions == null || !_permissions.Any()) return;
 
-            GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME)
-                       .ContinueWith(subtokenTask => {
-                            if (_connection.SetApiKey(subtokenTask.Result)) {
-                                var jwtToken = _subtokenHandler.ReadJwtToken(subtokenTask.Result);
-                                _activePermissions = jwtToken.Claims.Where(x => x.Type.Equals("permissions") && Enum.TryParse(x.Value, true, out TokenPermission _))
-                                                                    .Select(y => (TokenPermission)Enum.Parse(typeof(TokenPermission), y.Value, true)).ToHashSet();
-                                SubtokenUpdated?.Invoke(this, new ValueEventArgs<IEnumerable<TokenPermission>>(_activePermissions));
-                            }
-                        });
+            string responseToken = string.Empty;
+
+            try {
+                responseToken = await GameService.Gw2WebApi.RequestPrivilegedSubtoken(_permissions, SUBTOKEN_LIFETIME);
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to get privileged subtoken for module.");
+            }
+
+            if (_connection.SetApiKey(responseToken) && _subtokenHandler.CanReadToken(responseToken)) {
+                try {
+                    var jwtToken = _subtokenHandler.ReadJwtToken(responseToken);
+
+                    _activePermissions = jwtToken.Claims.Where(x => x.Type.Equals(SUBTOKEN_CLAIMTYPE) && Enum.TryParse(x.Value, true, out TokenPermission _))
+                                                 .Select(y => (TokenPermission)Enum.Parse(typeof(TokenPermission), y.Value, true))
+                                                 .ToHashSet();
+
+                    // TODO: consider checking against the expiration claim.
+
+                    SubtokenUpdated?.Invoke(this, new ValueEventArgs<IEnumerable<TokenPermission>>(_activePermissions));
+                } catch (Exception ex) {
+                    Logger.Warn(ex, "Failed to parse API subtoken.");
+                }
+            }
         }
 
-        [Obsolete("HavePermission is deprecated, please use HasPermission instead.")]
-        public bool HavePermission(TokenPermission permission) {
-            return _permissions.Contains(permission);
-        }
+        [Obsolete("HavePermission is deprecated, please use HasPermission instead.", true)]
+        public bool HavePermission(TokenPermission permission) => HasPermission(permission);
 
-        [Obsolete("HavePermissions is deprecated, please use HasPermissions instead.")]
-        public bool HavePermissions(IEnumerable<TokenPermission> permissions) {
-            return _permissions.IsSupersetOf(permissions);
-        }
+        [Obsolete("HavePermissions is deprecated, please use HasPermissions instead.", true)]
+        public bool HavePermissions(IEnumerable<TokenPermission> permissions) => HasPermissions(permissions);
 
         public bool HasPermissions(IEnumerable<TokenPermission> permissions) {
             return _activePermissions.IsSupersetOf(permissions);

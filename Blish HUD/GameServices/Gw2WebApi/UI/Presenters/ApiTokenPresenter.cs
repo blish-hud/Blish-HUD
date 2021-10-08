@@ -56,8 +56,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
             return true;
         }
 
-        private void TokenDeleteClicked(object sender, EventArgs e) {
-            GameService.Gw2WebApi.UnregisterKey(this.Model);
+        private async void TokenDeleteClicked(object sender, EventArgs e) {
+            await GameService.Gw2WebApi.UnregisterKey(this.Model);
 
             this.View.RemoveTokenView();
         }

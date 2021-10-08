@@ -42,13 +42,17 @@ namespace Blish_HUD.Gw2WebApi {
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             _internalConnection.Locale = e.NewValue;
 
-            Logger.Debug($"{nameof(ManagedConnection)} updated locale to {e.NewValue} (was {e.PrevousValue}).");
+            Logger.Debug($"{nameof(ManagedConnection)} updated locale to {e.NewValue} (was {e.PreviousValue}).");
         }
 
         public bool SetApiKey(string apiKey) {
             if (string.Equals(_internalConnection.AccessToken, apiKey)) return false;
 
             _internalConnection.AccessToken = apiKey;
+
+            Logger.Debug(apiKey == string.Empty
+                             ? $"{_internalConnection.UserAgent} cleared API token."
+                             : $"{_internalConnection.UserAgent} updated API token to {apiKey}.");
 
             return true;
         }

@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Blish_HUD.Modules.Managers;
-using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules {
 
@@ -41,7 +41,6 @@ namespace Blish_HUD.Modules {
             var builtModuleParameters = new ModuleParameters {
                 _manifest = manifest,
 
-                // TODO: Change manager registers so that they only need an instance of the ExternalModule and not specific params
                 _settingsManager    = SettingsManager.GetModuleInstance(module),
                 _contentsManager    = ContentsManager.GetModuleInstance(module),
                 _directoriesManager = DirectoriesManager.GetModuleInstance(module),
@@ -61,6 +60,10 @@ namespace Blish_HUD.Modules {
             }
 
             return builtModuleParameters;
+        }
+
+        internal async Task LoadAsync() {
+            await _gw2ApiManager.RenewSubtoken();
         }
 
         public void Dispose() {
