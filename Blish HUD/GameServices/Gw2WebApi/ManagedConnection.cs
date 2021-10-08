@@ -50,6 +50,10 @@ namespace Blish_HUD.Gw2WebApi {
 
             _internalConnection.AccessToken = apiKey;
 
+            Logger.Debug(apiKey == string.Empty
+                             ? $"{_internalConnection.UserAgent} cleared API token."
+                             : $"{_internalConnection.UserAgent} updated API token to {apiKey}.");
+
             return true;
         }
 

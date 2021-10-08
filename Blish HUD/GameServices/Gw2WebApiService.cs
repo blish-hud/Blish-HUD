@@ -98,7 +98,7 @@ namespace Blish_HUD {
                 await UpdateBaseConnection(charApiKey);
                 Logger.Debug($"Associated key {charApiKey} with user {Gw2Mumble.PlayerCharacter.Name}.");
             } else {
-                if (string.IsNullOrWhiteSpace(Gw2Mumble.PlayerCharacter.Name)) {
+                if (!string.IsNullOrWhiteSpace(Gw2Mumble.PlayerCharacter.Name)) {
                     // We skip the message if no user is defined yet.
                     Logger.Info("Could not find registered API key associated with character {characterName}", Gw2Mumble.PlayerCharacter.Name);
                 }
@@ -117,9 +117,13 @@ namespace Blish_HUD {
         }
 
         private async Task RefreshRegisteredKeys() {
+            _characterRepository.Clear();
+
             foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
                 await UpdateCharacterList(key);
             }
+
+            await UpdateActiveApiKey();
         }
 
         #region API Management
@@ -130,12 +134,18 @@ namespace Blish_HUD {
             registeredKey.Value = apiKey;
 
             await UpdateCharacterList(registeredKey);
+            await UpdateActiveApiKey();
         }
 
-        public void UnregisterKey(string apiKey) {
+        public async Task UnregisterKey(string apiKey) {
             foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
                 if (string.Equals(apiKey, key.Value, StringComparison.InvariantCultureIgnoreCase) || key.Value.StartsWith(apiKey, StringComparison.InvariantCultureIgnoreCase)) {
                     _apiKeyRepository.UndefineSetting(key.EntryKey);
+
+                    await RefreshRegisteredKeys();
+
+                    await UpdateActiveApiKey();
+
                     break;
                 }
             }
@@ -157,8 +167,6 @@ namespace Blish_HUD {
             } catch (Exception ex) {
                 Logger.Warn(ex, "Failed to get list of associated characters for API key {keyName}.", definedKey.EntryKey);
             }
-
-            await UpdateActiveApiKey();
         }
 
         private async Task<List<string>> GetCharacters(ManagedConnection connection) {
