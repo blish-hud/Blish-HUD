@@ -19,7 +19,7 @@ namespace Blish_HUD.Controls.Intern
             VirtualKeyShort.DELETE,  VirtualKeyShort.END,    VirtualKeyShort.PRIOR,
             VirtualKeyShort.RMENU,   VirtualKeyShort.RSHIFT, VirtualKeyShort.RCONTROL,
             VirtualKeyShort.UP,      VirtualKeyShort.DOWN,   VirtualKeyShort.LEFT,     VirtualKeyShort.RIGHT,
-            VirtualKeyShort.NUMLOCK, VirtualKeyShort.PRINT
+            VirtualKeyShort.NUMLOCK, VirtualKeyShort.PRINT,  VirtualKeyShort.DIVIDE
         };
 
         /// <summary>
