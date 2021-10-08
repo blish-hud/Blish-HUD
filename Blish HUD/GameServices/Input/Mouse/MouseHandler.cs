@@ -3,8 +3,8 @@ using System.Windows.Forms;
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using XnaMouse = Microsoft.Xna.Framework.Input.Mouse;
 using Control = Blish_HUD.Controls.Control;
-
 namespace Blish_HUD.Input {
 
     public class MouseHandler : IInputHandler {
@@ -114,7 +114,7 @@ namespace Blish_HUD.Input {
 
             var prevMouseState = this.State;
 
-            var rawMouseState = Mouse.GetState();
+            var rawMouseState = XnaMouse.GetState();
 
             this.State = new MouseState((int) (rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
                                         (int) (rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
