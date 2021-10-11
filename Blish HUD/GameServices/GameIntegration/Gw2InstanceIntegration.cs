@@ -341,7 +341,9 @@ namespace Blish_HUD.GameIntegration {
                         break;
                 }
 
-                BlishHud.Instance.Form.Visible = !updateResult.Minimized;
+                if (BlishHud.Instance.Form.Visible != !updateResult.Minimized) {
+                    BlishHud.Instance.Form.Visible = !updateResult.Minimized;
+                }
             } else {
                 TryAttachToGw2();
             }
