@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Blish_HUD.Input.WinApi;
-namespace Blish_HUD.Input.Keyboard
+namespace Blish_HUD
 {
-    public static class Keyboard
+    public static class KeyboardUtil
     {
         private const uint WM_KEYDOWN = 0x0100;
         private const uint WM_KEYUP = 0x0101;
@@ -40,6 +40,14 @@ namespace Blish_HUD.Input.Keyboard
             VirtualKeyShort.NUMLOCK, VirtualKeyShort.PRINT
         };
 
+        [DllImport("user32.dll")]
+        private static extern uint MapVirtualKey(uint uCode, uint uMapType);
+
+        [DllImport("user32.dll")]
+        private static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] Input.WinApi.Input[] pInputs, int cbSize);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern bool PostMessage(IntPtr hWnd, uint msg, uint wParam, int lParam); // sends a message asynchronously.
         /// <summary>
         /// Presses a key.
         /// </summary>
@@ -49,11 +57,11 @@ namespace Blish_HUD.Input.Keyboard
         {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
-                WinApi.Input[] nInputs;
+                Input.WinApi.Input[] nInputs;
                 if (ExtendedKeys.Contains(key)) {
                     nInputs = new[]
                     {
-                        new WinApi.Input
+                        new Input.WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
@@ -66,14 +74,14 @@ namespace Blish_HUD.Input.Keyboard
                                 }
                             }
                         },
-                        new WinApi.Input
+                        new Input.WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
                             {
                                 ki = new KeybdInput
                                 {
-                                    wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                    wScan = (ScanCodeShort)MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
                                     wVk = key,
                                     dwFlags = KeyEventF.EXTENDEDKEY
                                 }
@@ -83,32 +91,32 @@ namespace Blish_HUD.Input.Keyboard
                 } else {
                     nInputs = new[]
                     {
-                        new WinApi.Input
+                        new Input.WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
                             {
                                 ki = new KeybdInput
                                 {
-                                    wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                    wScan = (ScanCodeShort)MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
                                     wVk = key
                                 }
                             }
                         }
                     };
                 }
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
+                SendInput((uint)nInputs.Length, nInputs, Input.WinApi.Input.Size);
             }
             else
             {
                 uint vkCode = (uint)key;
                 ExtraKeyInfo lParam = new ExtraKeyInfo {
-                    scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
+                    scanCode = (char)MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
 
                 if (ExtendedKeys.Contains(key))
                     lParam.extendedKey = 1;
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
+                PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
 
@@ -121,11 +129,11 @@ namespace Blish_HUD.Input.Keyboard
         {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
-                WinApi.Input[] nInputs;
+                Input.WinApi.Input[] nInputs;
                 if (ExtendedKeys.Contains(key)) {
                     nInputs = new[]
                     {
-                        new WinApi.Input
+                        new Input.WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
@@ -138,14 +146,14 @@ namespace Blish_HUD.Input.Keyboard
                                 }
                             }
                         },
-                        new WinApi.Input
+                        new Input.WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
                             {
                                 ki = new KeybdInput
                                 {
-                                    wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                    wScan = (ScanCodeShort)MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
                                     wVk = key,
                                     dwFlags = KeyEventF.EXTENDEDKEY | KeyEventF.KEYUP
                                 }
@@ -155,14 +163,14 @@ namespace Blish_HUD.Input.Keyboard
                 } else {
                     nInputs = new[]
                     {
-                        new WinApi.Input
+                        new Input.WinApi.Input
                         {
                             type = InputType.KEYBOARD,
                             U = new InputUnion
                             {
                                 ki = new KeybdInput
                                 {
-                                    wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                    wScan = (ScanCodeShort)MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
                                     wVk = key,
                                     dwFlags = KeyEventF.KEYUP 
                                 }
@@ -170,13 +178,13 @@ namespace Blish_HUD.Input.Keyboard
                         }
                     };
                 }
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
+                SendInput((uint)nInputs.Length, nInputs, Input.WinApi.Input.Size);
             }
             else
             {
                 uint vkCode = (uint)key;
                 ExtraKeyInfo lParam = new ExtraKeyInfo {
-                    scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
+                    scanCode = (char)MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
                     repeatCount = 1,
                     prevKeyState = 1,
                     transitionState = 1
@@ -184,7 +192,7 @@ namespace Blish_HUD.Input.Keyboard
               
                 if (ExtendedKeys.Contains(key))
                     lParam.extendedKey = 1;
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
+                PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
         }
 

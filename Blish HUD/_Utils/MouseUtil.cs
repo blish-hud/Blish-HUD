@@ -3,46 +3,45 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using Blish_HUD.Input.WinApi;
-namespace Blish_HUD.Input.Mouse
+namespace Blish_HUD
 {
-    public enum MouseButton
+    public static class MouseUtil
     {
-        LEFT,
-        RIGHT,
-        MIDDLE,
-        XBUTTON
-    }
+        public enum MouseButton {
+            LEFT,
+            RIGHT,
+            MIDDLE,
+            XBUTTON
+        }
 
-    [Flags]
-    internal enum MouseEventF : uint {
-        ABSOLUTE        = 0x8000,
-        HWHEEL          = 0x01000,
-        MOVE            = 0x0001,
-        MOVE_NOCOALESCE = 0x2000,
-        LEFTDOWN        = 0x0002,
-        LEFTUP          = 0x0004,
-        RIGHTDOWN       = 0x0008,
-        RIGHTUP         = 0x0010,
-        MIDDLEDOWN      = 0x0020,
-        MIDDLEUP        = 0x0040,
-        VIRTUALDESK     = 0x4000,
-        WHEEL           = 0x0800,
-        XDOWN           = 0x0080,
-        XUP             = 0x0100
-    }
+        [Flags]
+        internal enum MouseEventF : uint {
+            ABSOLUTE        = 0x8000,
+            HWHEEL          = 0x01000,
+            MOVE            = 0x0001,
+            MOVE_NOCOALESCE = 0x2000,
+            LEFTDOWN        = 0x0002,
+            LEFTUP          = 0x0004,
+            RIGHTDOWN       = 0x0008,
+            RIGHTUP         = 0x0010,
+            MIDDLEDOWN      = 0x0020,
+            MIDDLEUP        = 0x0040,
+            VIRTUALDESK     = 0x4000,
+            WHEEL           = 0x0800,
+            XDOWN           = 0x0080,
+            XUP             = 0x0100
+        }
 
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct MouseInput {
-        internal int         dx;
-        internal int         dy;
-        internal int         mouseData;
-        internal MouseEventF dwFlags;
-        internal uint        time;
-        internal UIntPtr     dwExtraInfo;
-    }
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct MouseInput {
+            internal int         dx;
+            internal int         dy;
+            internal int         mouseData;
+            internal MouseEventF dwFlags;
+            internal uint        time;
+            internal UIntPtr     dwExtraInfo;
+        }
 
-    public static class Mouse
-    {
         private const uint WM_MOUSEWHEEL = 0x020A;
         private const uint WM_MOUSEHWHEEL = 0x020E;
         private const int WHEEL_DELTA = 120;
@@ -97,6 +96,31 @@ namespace Blish_HUD.Input.Mouse
         };
 
         /// <summary>
+        /// Struct representing a point.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT {
+            public int X;
+            public int Y;
+
+            public static implicit operator Point(POINT point) {
+                return new Point(point.X, point.Y);
+            }
+        }
+
+        [DllImport("user32.Dll", SetLastError = true)]
+        private static extern long SetCursorPos(int x, int y);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] Input.WinApi.Input[] pInputs, int cbSize);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern bool PostMessage(IntPtr hWnd, uint msg, uint wParam, int lParam); // sends a message asynchronously.
+
+        /// <summary>
         /// Presses a mouse button.
         /// </summary>
         /// <param name="button">The mouse button to press.</param>
@@ -115,7 +139,7 @@ namespace Blish_HUD.Input.Mouse
             {
                 var nInputs = new[]
                 {
-                    new WinApi.Input
+                    new Input.WinApi.Input
                     {
                         type = InputType.MOUSE,
                         U = new InputUnion
@@ -131,13 +155,13 @@ namespace Blish_HUD.Input.Mouse
                         }
                     }
                 };
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
+                SendInput((uint)nInputs.Length, nInputs, Input.WinApi.Input.Size);
             }
             else
             {
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDOWN[button], wParam, lParam);
+                PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDOWN[button], wParam, lParam);
             }
         }
 
@@ -160,7 +184,7 @@ namespace Blish_HUD.Input.Mouse
             {
                 var nInputs = new[]
                 {
-                    new WinApi.Input
+                    new Input.WinApi.Input
                     {
                         type = InputType.MOUSE,
                         U = new InputUnion
@@ -176,13 +200,13 @@ namespace Blish_HUD.Input.Mouse
                         }
                     }
                 };
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
+                SendInput((uint)nInputs.Length, nInputs, Input.WinApi.Input.Size);
             }
             else
             {
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONUP[button], wParam, lParam);
+                PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONUP[button], wParam, lParam);
             }
         }
 
@@ -209,7 +233,7 @@ namespace Blish_HUD.Input.Mouse
             {
                 var nInputs = new[]
                 {
-                    new WinApi.Input
+                    new Input.WinApi.Input
                     {
                         type = InputType.MOUSE,
                         U = new InputUnion
@@ -225,13 +249,13 @@ namespace Blish_HUD.Input.Mouse
                         }
                     }
                 };
-                PInvoke.SendInput((uint)nInputs.Length, nInputs, WinApi.Input.Size);
+                SendInput((uint)nInputs.Length, nInputs, Input.WinApi.Input.Size);
             }
             else
             {
                 uint wParam = (uint)(0 | wheelDistance << 16);
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, horizontalWheel ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL, wParam, lParam);
+                PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, horizontalWheel ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL, wParam, lParam);
             }
         }
 
@@ -245,12 +269,12 @@ namespace Blish_HUD.Input.Mouse
         {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
-                PInvoke.SetCursorPos(xPos, yPos);
+                SetCursorPos(xPos, yPos);
             }
             else
             {
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_MOUSEMOVE, 0, lParam);
+                PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_MOUSEMOVE, 0, lParam);
             }
         }
 
@@ -260,7 +284,7 @@ namespace Blish_HUD.Input.Mouse
         public static Point GetPosition()
         {
             POINT lpPoint;
-            PInvoke.GetCursorPos(out lpPoint);
+            GetCursorPos(out lpPoint);
             return lpPoint;
         }
 
@@ -304,7 +328,7 @@ namespace Blish_HUD.Input.Mouse
                 }
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDBLCLK[button], wParam, lParam);
+                PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDBLCLK[button], wParam, lParam);
             }
         }
     }

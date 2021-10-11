@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Blish_HUD.GameIntegration;
-using Blish_HUD.Input.Keyboard;
-using Blish_HUD.Input.Mouse;
 using Blish_HUD.Input.WinApi;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
@@ -165,11 +163,11 @@ namespace Blish_HUD {
                                        else
                                            Task.Run(() => {
                                                Focus();
-                                               Keyboard.Press(VirtualKeyShort.LCONTROL, true);
-                                               Keyboard.Stroke(VirtualKeyShort.KEY_V, true);
+                                               KeyboardUtil.Press(VirtualKeyShort.LCONTROL, true);
+                                               KeyboardUtil.Stroke(VirtualKeyShort.KEY_V, true);
                                                Thread.Sleep(50);
-                                               Keyboard.Release(VirtualKeyShort.LCONTROL, true);
-                                               Keyboard.Stroke(VirtualKeyShort.RETURN);
+                                               KeyboardUtil.Release(VirtualKeyShort.LCONTROL, true);
+                                               KeyboardUtil.Stroke(VirtualKeyShort.RETURN);
                                            }).ContinueWith(result => {
                                                if (result.IsFaulted) {
                                                    Logger.Warn(result.Exception, "Failed to send message {message}", message);
@@ -192,10 +190,10 @@ namespace Blish_HUD {
                                        else
                                            Task.Run(() => {
                                                Focus();
-                                               Keyboard.Press(VirtualKeyShort.LCONTROL, true);
-                                               Keyboard.Stroke(VirtualKeyShort.KEY_V, true);
+                                               KeyboardUtil.Press(VirtualKeyShort.LCONTROL, true);
+                                               KeyboardUtil.Stroke(VirtualKeyShort.KEY_V, true);
                                                Thread.Sleep(50);
-                                               Keyboard.Release(VirtualKeyShort.LCONTROL, true);
+                                               KeyboardUtil.Release(VirtualKeyShort.LCONTROL, true);
                                            }).ContinueWith(result => {
                                                if (result.IsFaulted) {
                                                    Logger.Warn(result.Exception, "Failed to paste {text}", text);
@@ -211,11 +209,11 @@ namespace Blish_HUD {
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
                 await Task.Run(() => {
                     Focus();
-                    Keyboard.Press(VirtualKeyShort.LCONTROL, true);
-                    Keyboard.Stroke(VirtualKeyShort.KEY_A, true);
-                    Keyboard.Stroke(VirtualKeyShort.KEY_C, true);
+                    KeyboardUtil.Press(VirtualKeyShort.LCONTROL, true);
+                    KeyboardUtil.Stroke(VirtualKeyShort.KEY_A, true);
+                    KeyboardUtil.Stroke(VirtualKeyShort.KEY_C, true);
                     Thread.Sleep(50);
-                    Keyboard.Release(VirtualKeyShort.LCONTROL, true);
+                    KeyboardUtil.Release(VirtualKeyShort.LCONTROL, true);
                     Unfocus();
                 });
                 string inputText = await ClipboardUtil.WindowsClipboardService.GetTextAsync()
@@ -232,22 +230,22 @@ namespace Blish_HUD {
                 if (IsBusy()) return;
                 Task.Run(() => {
                     Focus();
-                    Keyboard.Press(VirtualKeyShort.LCONTROL, true);
-                    Keyboard.Stroke(VirtualKeyShort.KEY_A, true);
+                    KeyboardUtil.Press(VirtualKeyShort.LCONTROL, true);
+                    KeyboardUtil.Stroke(VirtualKeyShort.KEY_A, true);
                     Thread.Sleep(50);
-                    Keyboard.Release(VirtualKeyShort.LCONTROL, true);
-                    Keyboard.Stroke(VirtualKeyShort.BACK);
+                    KeyboardUtil.Release(VirtualKeyShort.LCONTROL, true);
+                    KeyboardUtil.Stroke(VirtualKeyShort.BACK);
                     Unfocus();
                 });
             }
 
             private void Focus() {
                 Unfocus();
-                Keyboard.Stroke(VirtualKeyShort.RETURN);
+                KeyboardUtil.Stroke(VirtualKeyShort.RETURN);
             }
 
             private void Unfocus() {
-                Mouse.Click(MouseButton.LEFT, Graphics.GraphicsDevice.Viewport.Width / 2, 0);
+                MouseUtil.Click(MouseUtil.MouseButton.LEFT, Graphics.GraphicsDevice.Viewport.Width / 2, 0);
             }
 
             private bool IsTextValid(string text) {

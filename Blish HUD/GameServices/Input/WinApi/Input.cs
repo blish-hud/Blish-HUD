@@ -1,6 +1,4 @@
 using System.Runtime.InteropServices;
-using Blish_HUD.Input.Mouse;
-
 namespace Blish_HUD.Input.WinApi {
     [StructLayout(LayoutKind.Sequential)]
     internal struct Input
@@ -19,9 +17,9 @@ namespace Blish_HUD.Input.WinApi {
     [StructLayout(LayoutKind.Explicit)]
     internal struct InputUnion {
         [FieldOffset(0)]
-        internal MouseInput mi;
+        internal MouseUtil.MouseInput mi;
         [FieldOffset(0)]
-        internal Keyboard.Keyboard.KeybdInput ki;
+        internal KeyboardUtil.KeybdInput ki;
         [FieldOffset(0)]
         internal HardwareInput hi;
     }
