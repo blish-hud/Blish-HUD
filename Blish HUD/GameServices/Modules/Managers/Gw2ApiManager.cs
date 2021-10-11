@@ -63,6 +63,7 @@ namespace Blish_HUD.Modules.Managers {
                 Logger.Warn(ex, "Failed to get privileged subtoken for module.");
             }
 
+            _activePermissions.Clear();
             if (_connection.SetApiKey(responseToken) && _subtokenHandler.CanReadToken(responseToken)) {
                 try {
                     var jwtToken = _subtokenHandler.ReadJwtToken(responseToken);
