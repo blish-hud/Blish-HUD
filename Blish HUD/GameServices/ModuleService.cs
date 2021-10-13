@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
@@ -10,6 +11,7 @@ using Blish_HUD.Modules;
 using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
@@ -237,8 +239,52 @@ namespace Blish_HUD {
             Overlay.SettingsTab.RegisterSettingMenu(_rootModuleSettingsMenuItem, HandleModuleSettingMenu, int.MaxValue - 10);
         }
 
+        // TODO: Split out repo handling into a service module once the old, tightly coupled main Blish HUD window UI code has been replaced.
+
+        private MenuItem _repoMenuItem;
+        private PublicPkgRepoProvider _defaultRepoProvider;
+
         private void RegisterRepoManagementInSettings() {
-            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection, Content.GetTexture("156764-noarrow")), m => new ModuleRepoView(new PublicPkgRepoProvider()), int.MaxValue - 11);
+            _repoMenuItem        = new MenuItem(Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection, Content.GetTexture("156764-noarrow"));
+            _defaultRepoProvider = new PublicPkgRepoProvider();
+
+            Overlay.SettingsTab.RegisterSettingMenu(_repoMenuItem, GetRepoView, int.MaxValue - 11);
+
+            _defaultRepoProvider.Load().ContinueWith(RepoResultsLoaded);
+        }
+
+        private View GetRepoView(MenuItem repoMenuItem) {
+            _repoMenuItem.Icon             = Content.GetTexture("156764-noarrow");
+            _repoMenuItem.Text             = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection;
+            _repoMenuItem.BasicTooltipText = null;
+
+            return new ModuleRepoView(_defaultRepoProvider);
+        }
+
+        private string GetUpgradePathStringFromRepoPkgGroup(IGrouping<string, PkgManifest> pkgGroup) {
+            var latest = pkgGroup.Last();
+            var current = this.Modules.FirstOrDefault(module => string.Equals(module.Manifest.Namespace, latest.Namespace, StringComparison.OrdinalIgnoreCase));
+
+            if (current != null) {
+                return $"{latest.Name} v{current.Manifest.Version} -> v{latest.Version}";
+            }
+
+            // Shouldn't be possible.
+            return $"{latest.Name} v{latest.Version}";
+        }
+
+        private void RepoResultsLoaded(Task<bool> repoLoadedTask) {
+            if (repoLoadedTask.Result) {
+                var pendingUpdates = _defaultRepoProvider.GetPkgManifests(new Func<PkgManifest, bool>[] { StaticPkgRepoProvider.FilterShowOnlySupportedVersion, StaticPkgRepoProvider.FilterShowOnlyUpdates })
+                                                         .GroupBy(pkgManfiest => pkgManfiest.Namespace)
+                                                         .ToArray();
+
+                if (pendingUpdates.Any()) {
+                    _repoMenuItem.Text             = $"{Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection} ({Strings.GameServices.ModulesService.PkgManagement_Update.ToQuantity(pendingUpdates.Length)})";
+                    _repoMenuItem.Icon             = Content.GetTexture("156764-update");
+                    _repoMenuItem.BasicTooltipText = $"{Strings.GameServices.ModulesService.PkgManagement_Update.Pluralize()}:\n\n{string.Join("\n", pendingUpdates.Select(GetUpgradePathStringFromRepoPkgGroup))}";
+                }
+            }
         }
 
         private View HandleModuleSettingMenu(MenuItem menuItem) {

@@ -36,42 +36,52 @@ namespace Blish_HUD.Modules.UI.Presenters {
             _existingModule = GameService.Module.RegisterPackedModule(modulePath);
         }
 
-        private async Task InstallPackage() {
+        private async Task<bool> InstallPackage() {
             Logger.Debug("Install package action.");
 
             this.View.PackageActionText = Strings.GameServices.ModulesService.PkgInstall_Progress_Installing;
 
+            bool failed = true;
+
             if (_selectedVersion is PkgManifestV1 pkgv1) {
-                byte[] downloadedModule = await pkgv1.Location.GetBytesAsync();
+                try {
+                    byte[] downloadedModule = await pkgv1.Location.GetBytesAsync();
 
-                string moduleName = $"{_selectedVersion.Namespace}_{_selectedVersion.Version}.bhm";
+                    string moduleName = $"{_selectedVersion.Namespace}_{_selectedVersion.Version}.bhm";
 
-                using var dataSha256 = System.Security.Cryptography.SHA256.Create();
-                byte[] rawChecksum = dataSha256.ComputeHash(downloadedModule, 0, downloadedModule.Length);
+                    using var dataSha256 = System.Security.Cryptography.SHA256.Create();
+                    byte[] rawChecksum = dataSha256.ComputeHash(downloadedModule, 0, downloadedModule.Length);
 
-                string checksum = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
+                    string checksum = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
 
-                if (string.Equals(_selectedVersion.Hash, checksum, StringComparison.InvariantCultureIgnoreCase)) {
-                    Logger.Info($"{moduleName} matched expected checksum '{_selectedVersion.Hash}'.");
+                    if (string.Equals(_selectedVersion.Hash, checksum, StringComparison.InvariantCultureIgnoreCase)) {
+                        Logger.Info($"{moduleName} matched expected checksum '{_selectedVersion.Hash}'.");
 
-                    string fullPath = $@"{GameService.Module.ModulesDirectory}\{moduleName}";
+                        string fullPath = $@"{GameService.Module.ModulesDirectory}\{moduleName}";
 
-                    if (!File.Exists(fullPath)) {
-                        File.WriteAllBytes(fullPath, downloadedModule);
+                        if (!File.Exists(fullPath)) {
+                            File.WriteAllBytes(fullPath, downloadedModule);
+                        } else {
+                            Logger.Warn($"Module already exists at path '{fullPath}'.");
+                            return false;
+                        }
+
+                        Logger.Info($"Module saved to '{fullPath}'.");
+
+                        FinalizeInstalledPackage(fullPath);
+
+                        failed = false;
                     } else {
-                        Logger.Warn($"Module already exists at path '{fullPath}'.");
-                        return;
+                        Logger.Warn($"{moduleName} (with checksum '{checksum}') failed to match expected checksum '{_selectedVersion.Hash}'.  The module can not be trusted.  The publisher should be contacted immediately!");
                     }
-
-                    Logger.Info($"Module saved to '{fullPath}'.");
-
-                    FinalizeInstalledPackage(fullPath);
-                } else {
-                    Logger.Warn($"{moduleName} (with checksum '{checksum}') failed to match expected checksum '{_selectedVersion.Hash}'.  The module can not be trusted.  The publisher should be contacted immediately!");
+                } catch (Exception ex) {
+                    Logger.Error(ex, "Failed to install module.");
                 }
             }
 
             SetUi();
+
+            return !failed;
         }
 
         private async Task ReplacePackage() {
