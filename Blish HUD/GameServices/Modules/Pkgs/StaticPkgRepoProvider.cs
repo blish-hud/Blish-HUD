@@ -26,12 +26,16 @@ namespace Blish_HUD.Modules.Pkgs {
             this.PkgUrl = pkgUrl;
         }
 
-        public async Task<bool> Load(IProgress<string> progress) {
+        public async Task<bool> Load(IProgress<string> progress = null) {
             if (!_pkgCache.ContainsKey(this.PkgUrl)) {
-                _pkgCache[this.PkgUrl] = await LoadRepo(progress);
-            }
+                var repoResults = await LoadRepo(progress ?? new Progress<string>(Logger.Info));
 
-            return true;
+                if (repoResults.Length > 0) {
+                    _pkgCache[this.PkgUrl] = repoResults;
+                }
+            }
+            
+            return _pkgCache.ContainsKey(this.PkgUrl);
         }
 
         protected virtual async Task<PkgManifest[]> LoadRepo(IProgress<string> progress = null) {
@@ -61,8 +65,15 @@ namespace Blish_HUD.Modules.Pkgs {
             }
         }
 
-        public virtual IEnumerable<PkgManifest> GetPkgManifests() {
-            return _pkgCache[this.PkgUrl].Where(pkg => _activeFilters.All(filter => filter(pkg)));
+        public IEnumerable<PkgManifest> GetPkgManifests() {
+            return GetPkgManifests(_activeFilters);
+        }
+
+        public virtual IEnumerable<PkgManifest> GetPkgManifests(IEnumerable<Func<PkgManifest, bool>> filters) {
+            return !filters.Any()
+                       ? _pkgCache[this.PkgUrl]
+                       : _pkgCache[this.PkgUrl].Where(pkg => filters.All(filter => filter(pkg)));
+
         }
 
         public virtual IEnumerable<(string OptionName, Action<bool> OptionAction, bool IsToggle, bool IsChecked)> GetExtraOptions() {
@@ -84,24 +95,24 @@ namespace Blish_HUD.Modules.Pkgs {
             }
         }
 
-        protected static bool FilterShowOnlySupportedVersion(PkgManifest pkgManifest) {
+         public static bool FilterShowOnlySupportedVersion(PkgManifest pkgManifest) {
             var blishHudDependency = pkgManifest.Dependencies.Find(d => d.IsBlishHud);
 
             return blishHudDependency                                    != null
                 && blishHudDependency.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available;
         }
 
-        protected static bool FilterShowOnlyUpdates(PkgManifest pkgManifest) {
+         public static bool FilterShowOnlyUpdates(PkgManifest pkgManifest) {
             return GameService.Module.Modules.Any(m =>
                                                       string.Equals(m.Manifest.Namespace, pkgManifest.Namespace, StringComparison.OrdinalIgnoreCase)
                                                    && m.Manifest.Version < pkgManifest.Version);
         }
 
-        protected static bool FilterShowOnlyInstalled(PkgManifest pkgManifest) {
+         public static bool FilterShowOnlyInstalled(PkgManifest pkgManifest) {
             return GameService.Module.Modules.Any(m => string.Equals(m.Manifest.Namespace, pkgManifest.Namespace, StringComparison.OrdinalIgnoreCase));
         }
 
-        protected static bool FilterShowOnlyNotInstalled(PkgManifest pkgManifest) {
+         public static bool FilterShowOnlyNotInstalled(PkgManifest pkgManifest) {
             return !FilterShowOnlyInstalled(pkgManifest);
         }
 
