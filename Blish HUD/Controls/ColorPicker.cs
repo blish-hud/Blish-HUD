@@ -61,6 +61,7 @@ namespace Blish_HUD.Controls {
         }
 
         public ColorPicker() : base() {
+            this.ShowTint = true;
             this.Colors                   =  new ObservableCollection<Gw2Sharp.WebApi.V2.Models.Color>();
             this.Colors.CollectionChanged += ColorsOnCollectionChanged;
 
@@ -130,11 +131,6 @@ namespace Blish_HUD.Controls {
             colorsPerRow = (this.Width - 10) / (this.ColorBoxSize.X + COLOR_PADDING);
 
             this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, (this.Width - 10) - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
-        }
-
-        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
-            // Draw background
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.5f);
         }
 
     }
