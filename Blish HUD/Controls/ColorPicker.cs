@@ -133,11 +133,6 @@ namespace Blish_HUD.Controls {
             this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, (this.Width - 10) - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
         }
 
-        //public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
-        //    // Draw background
-        //    spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.5f);
-        //}
-
     }
 
 }
