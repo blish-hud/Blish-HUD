@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
@@ -8,10 +9,13 @@ using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings;
+using Flurl.Http;
 using Humanizer;
 
 namespace Blish_HUD.Modules {
     public class ModulePkgRepoHandler : ServiceModule<ModuleService> {
+
+        private static Logger Logger = Logger.GetLogger<ModulePkgRepoHandler>();
 
         // TODO: ModuleRepos should be made to handle multiple repos - not just our public one
 
@@ -60,16 +64,6 @@ namespace Blish_HUD.Modules {
             RegisterRepoManagementInSettingsUi();
         }
 
-        private bool GetUpdateIsNotAcknowledged(PkgManifest modulePkg) {
-            if (_acknowledgedUpdates.TryGetSetting(modulePkg.Namespace, out var setting)) {
-                if (setting is SettingEntry<string> acknowledgedModuleUpdate) {
-                    return modulePkg.Version > new SemVer.Version(acknowledgedModuleUpdate.Value, true);
-                }
-            }
-
-            return true;
-        }
-
         private void DefineModuleRepoSettings(SettingCollection settingCollection) {
             _defaultRepoUrlSetting = settingCollection.DefineSetting(DEFAULT_REPOURL_SETTING, DEFAULT_BHUDPKGS_REPOURL);
 
@@ -83,6 +77,24 @@ namespace Blish_HUD.Modules {
 
             // TODO: Check all repos
             _defaultRepoProvider.Load(null).ContinueWith(RepoResultsLoaded);
+        }
+
+        private View GetRepoView(MenuItem repoMenuItem) {
+            AcknowlegePendingModuleUpdates();
+
+            return new ModuleRepoView(_defaultRepoProvider);
+        }
+
+        #region Module Update Indicators
+
+        private bool GetUpdateIsNotAcknowledged(PkgManifest modulePkg) {
+            if (_acknowledgedUpdates.TryGetSetting(modulePkg.Namespace, out var setting)) {
+                if (setting is SettingEntry<string> acknowledgedModuleUpdate) {
+                    return modulePkg.Version > new SemVer.Version(acknowledgedModuleUpdate.Value, true);
+                }
+            }
+
+            return true;
         }
 
         private void RefreshUpdateIndicatorStates() {
@@ -122,12 +134,6 @@ namespace Blish_HUD.Modules {
             RefreshUpdateIndicatorStates();
         }
 
-        private View GetRepoView(MenuItem repoMenuItem) {
-            AcknowlegePendingModuleUpdates();
-
-            return new ModuleRepoView(_defaultRepoProvider);
-        }
-
         private void RepoResultsLoaded(Task<bool> repoLoadedTask) {
             if (repoLoadedTask.Result) {
                 _pendingUpdates = _defaultRepoProvider.GetPkgManifests(new Func<PkgManifest, bool>[] { StaticPkgRepoProvider.FilterShowOnlySupportedVersion, StaticPkgRepoProvider.FilterShowOnlyUpdates })
@@ -139,7 +145,7 @@ namespace Blish_HUD.Modules {
         }
 
         private string GetUpgradePathStringFromRepoPkgGroup(IGrouping<string, PkgManifest> pkgGroup) {
-            var latest  = pkgGroup.Last();
+            var latest = pkgGroup.Last();
             var current = _service.Modules.FirstOrDefault(module => string.Equals(module.Manifest.Namespace, latest.Namespace, StringComparison.OrdinalIgnoreCase));
 
             if (current != null) {
@@ -149,6 +155,104 @@ namespace Blish_HUD.Modules {
             // Shouldn't be possible.
             return $"{latest.Name} v{latest.Version}";
         }
+
+        #endregion
+
+        #region Module Install/Replace/Remove from PkgManifest
+
+        private ModuleManager FinalizeInstalledPackage(ModuleManager existingModule, string newModulePath) {
+            existingModule?.DeleteModule();
+
+            return GameService.Module.RegisterPackedModule(newModulePath);
+        }
+
+        public async Task<(ModuleManager NewModule, bool Success, string Error)> ReplacePackage(PkgManifest pkgManifest, ModuleManager existingModule, IProgress<string> progress = null) {
+            Logger.Info($"Package replacement initiated for {existingModule.Manifest.GetDetailedName()}.");
+
+            bool wasEnabled = existingModule.Enabled;
+
+            if (wasEnabled) {
+                //this.View.PackageActionText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageStatus_DisablingModule;
+                progress?.Report(Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageStatus_DisablingModule);
+                existingModule.Disable();
+            }
+
+            //this.View.PackageActionText = Strings.GameServices.ModulesService.PkgInstall_Progress_Upgrading;
+            progress?.Report(Strings.GameServices.ModulesService.PkgInstall_Progress_Upgrading);
+
+            string moduleName = Path.GetFileName(existingModule.DataReader.PhysicalPath);
+
+            if (moduleName == null || !moduleName.EndsWith(".bhm", StringComparison.InvariantCultureIgnoreCase)) {
+                // Module might be a directory one - not supported
+                Logger.Warn($"'{existingModule.DataReader.PhysicalPath}' could not be updated.  Module type may not support updates.");
+
+                // TODO: Localize error 'Module type not supported.' response
+                return (null, false, "Module type not supported.");
+            }
+
+            var installResult = await InstallPackage(pkgManifest, existingModule, progress);
+
+            if (wasEnabled && existingModule != null) {
+                // Ensure that module is set to enabled for when Blish HUD restarts
+                GameService.Module.ModuleStates.Value[existingModule.Manifest.Namespace].Enabled = true;
+                GameService.Settings.Save();
+            }
+
+            return installResult;
+        }
+
+        public async Task<(ModuleManager NewModule, bool Success, string Error)> InstallPackage(PkgManifest pkgManifest, ModuleManager existingModule = null, IProgress<string> progress = null) {
+            Logger.Debug("Install package action.");
+
+            //this.View.PackageActionText = Strings.GameServices.ModulesService.PkgInstall_Progress_Installing;
+            progress?.Report(Strings.GameServices.ModulesService.PkgInstall_Progress_Installing);
+
+            if (pkgManifest is PkgManifestV1 pkgv1) {
+                try {
+                    byte[] downloadedModule = await pkgv1.Location.GetBytesAsync();
+
+                    string moduleName = $"{pkgManifest.Namespace}_{pkgManifest.Version}.bhm";
+
+                    using var dataSha256 = System.Security.Cryptography.SHA256.Create();
+                    byte[] rawChecksum = dataSha256.ComputeHash(downloadedModule, 0, downloadedModule.Length);
+
+                    string checksum = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
+
+                    if (string.Equals(pkgManifest.Hash, checksum, StringComparison.InvariantCultureIgnoreCase)) {
+                        Logger.Info($"{moduleName} matched expected checksum '{pkgManifest.Hash}'.");
+
+                        string fullPath = $@"{GameService.Module.ModulesDirectory}\{moduleName}";
+
+                        if (!File.Exists(fullPath)) {
+                            File.WriteAllBytes(fullPath, downloadedModule);
+                        } else {
+                            Logger.Warn($"Module already exists at path '{fullPath}'.");
+                            // TODO: Localize error 'Module already exists at the path {0}.' response
+                            return (null, false, $"Module already exists at the path {fullPath}.");
+                        }
+
+                        Logger.Info($"Module saved to '{fullPath}'.");
+
+                        return (FinalizeInstalledPackage(existingModule, fullPath), true, string.Empty);
+                    } else {
+                        Logger.Warn($"{moduleName} (with checksum '{checksum}') failed to match expected checksum '{pkgManifest.Hash}'.  The module can not be trusted.  The publisher should be contacted immediately!");
+
+                        // TODO: Revise and localize error for this response.
+                        return (null, false, "Checksum failed for module!");
+                    }
+                } catch (Exception ex) {
+                    Logger.Error(ex, "Failed to install module.");
+
+                    // TODO: Revise and localize error for this response.
+                    return (null, false, $"Module failed to install {ex}");
+                }
+            }
+
+            // TODO: Revise and localize error for this response.
+            return (null, false, "Module was not installed - PkgManifest may be incorrect.");
+        }
+
+        #endregion
 
     }
 }

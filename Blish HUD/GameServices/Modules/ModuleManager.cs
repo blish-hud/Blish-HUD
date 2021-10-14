@@ -119,6 +119,12 @@ namespace Blish_HUD.Modules {
             GameService.Settings.Save();
         }
 
+        public void DeleteModule() {
+            Disable();
+            GameService.Module.UnregisterModule(this);
+            this.DataReader.DeleteRoot();
+        }
+
         private Assembly LoadPackagedAssembly(string assemblyPath) {
             string symbolsPath = assemblyPath.Replace(".dll", ".pdb");
 
