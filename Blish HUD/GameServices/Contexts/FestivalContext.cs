@@ -134,7 +134,7 @@ namespace Blish_HUD.Contexts {
         private string _fault;
 
         public FestivalContext() {
-            GameService.GameIntegration.Gw2Proc.Gw2Started += GameIntegrationOnGw2Started;
+            GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
             GameService.Gw2WebApi.FinishedLoading          += Gw2WebApiOnFinishedLoading;
         }
 

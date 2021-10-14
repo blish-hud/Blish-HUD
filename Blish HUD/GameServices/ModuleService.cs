@@ -7,7 +7,6 @@ using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
-using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
@@ -32,6 +31,11 @@ namespace Blish_HUD {
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleRegistered;
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleUnregistered;
 
+        /// <summary>
+        /// Access to repo management and state.
+        /// </summary>
+        public ModulePkgRepoHandler ModulePkgRepoHandler { get; private set; }
+
         private SettingCollection _moduleSettings;
 
         internal string ModulesDirectory => DirectoryUtil.RegisterDirectory(MODULES_DIRECTORY);
@@ -43,7 +47,11 @@ namespace Blish_HUD {
 
         private readonly List<ModuleManager>          _modules = new List<ModuleManager>();
         public           IReadOnlyList<ModuleManager> Modules => _modules.ToList();
-        
+
+        internal ModuleService() {
+            SetServiceModules(this.ModulePkgRepoHandler = new ModulePkgRepoHandler(this));
+        }
+
         protected override void Initialize() {
             _moduleSettings = Settings.RegisterRootSettingCollection(MODULE_SETTINGS);
 
@@ -205,8 +213,6 @@ namespace Blish_HUD {
             foreach (string moduleArchivePath in Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
                 RegisterPackedModule(moduleArchivePath);
             }
-
-            RegisterRepoManagementInSettings();
         }
 
         private          MenuItem                            _rootModuleSettingsMenuItem;
@@ -235,10 +241,6 @@ namespace Blish_HUD {
             _rootModuleSettingsMenuItem = new MenuItem(Strings.GameServices.ModulesService.ManageModulesSection, Content.GetTexture("156764-noarrow"));
             
             Overlay.SettingsTab.RegisterSettingMenu(_rootModuleSettingsMenuItem, HandleModuleSettingMenu, int.MaxValue - 10);
-        }
-
-        private void RegisterRepoManagementInSettings() {
-            Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection, Content.GetTexture("156764-noarrow")), m => new ModuleRepoView(new PublicPkgRepoProvider()), int.MaxValue - 11);
         }
 
         private View HandleModuleSettingMenu(MenuItem menuItem) {

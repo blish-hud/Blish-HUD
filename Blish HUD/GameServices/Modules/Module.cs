@@ -78,7 +78,7 @@ namespace Blish_HUD.Modules {
 
         [ImportingConstructor]
         protected Module([Import("ModuleParameters")] ModuleParameters moduleParameters) {
-            ModuleParameters = moduleParameters;
+            this.ModuleParameters = moduleParameters;
         }
 
         #region Module Method Interface
@@ -92,7 +92,12 @@ namespace Blish_HUD.Modules {
         public void DoLoad() {
             this.RunState = ModuleRunState.Loading;
 
-            _loadTask = Task.Run(LoadAsync);
+            _loadTask = Task.Run(InternalLoadAsync);
+        }
+
+        private async Task InternalLoadAsync() {
+            await this.ModuleParameters.LoadAsync();
+            await LoadAsync();
         }
 
         private void CheckForLoaded() {

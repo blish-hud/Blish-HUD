@@ -117,61 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Setting_StayInTray_Description" xml:space="preserve">
-    <value>Aktiviert, wird Blish HUD beim Schließen von GW2 automatisch minimiert und läuft weiter, bis GW2 erneut gestartet wird.
-Sie können auch das Symbol für Blish HUD in der Taskleiste verwenden, um Guild Wars 2 zu starten.</value>
+  <data name="GraphicsSettingsSection" xml:space="preserve">
+    <value>Grafikoptionen</value>
   </data>
-  <data name="AboutLoveMessage" xml:space="preserve">
-    <value>Entwickelt und gebaut mit all der Liebe in Tyria von
-dem Blish HUD-Team mit Hilfe von vielen anderen!</value>
+  <data name="Setting_FramerateLimiter_Locked_Description" xml:space="preserve">
+    <value>(Deaktiviert, da Blish HUD mit --maxfps gestartet wurde)</value>
   </data>
-  <data name="HomeTab" xml:space="preserve">
-    <value>Startseite</value>
+  <data name="Setting_FramerateLimiter_DisplayName" xml:space="preserve">
+    <value>FPS-Limitierung</value>
   </data>
-  <data name="AboutSection" xml:space="preserve">
-    <value>Über</value>
+  <data name="Setting_FramerateLimiter_Description" xml:space="preserve">
+    <value>Diese Methode bestimmte die Bildrate mit der Blish HUD ausgeführt wird.</value>
   </data>
-  <data name="Setting_AppCulture_DisplayName" xml:space="preserve">
-    <value>App &amp; API-Sprache</value>
+  <data name="Setting_Vsync_DisplayName" xml:space="preserve">
+    <value>Vertikale Synchronisierung</value>
   </data>
-  <data name="Setting_AppCulture_Description" xml:space="preserve">
-    <value>Legt die Sprache fest, die bei der Anzeige von Blish-HUD-Text und bei Anfragen an die GW2-Web-API verwendet wird.</value>
+  <data name="Setting_Vsync_Description" xml:space="preserve">
+    <value>Passt die Bildfrequenz von Blish HUD an die Bildwiederholungsrate des Monitors an. Hilft Artefakte aufzulösen, kann aber zu künstlich niedriger Bildwiederholungsrate führen.</value>
   </data>
-  <data name="Setting_StayInTray_DisplayName" xml:space="preserve">
-    <value>In die Symbolleiste minimieren, wenn Guild Wars 2 geschlossen wird.</value>
+  <data name="Setting_SmoothCharacterPosition_DisplayName" xml:space="preserve">
+    <value>Weiche Charakterposition</value>
   </data>
-  <data name="Setting_ShowInTaskbar_DisplayName" xml:space="preserve">
-    <value>In Taskleiste anzeigen</value>
-  </data>
-  <data name="OverlaySettingsSection" xml:space="preserve">
-    <value>Overlay-Einstellungen</value>
-  </data>
-  <data name="Setting_ShowInTaskbar_Description" xml:space="preserve">
-    <value>Aktiviert, wird Blish HUD in der Taskleiste angezeigt während es läuft.</value>
-  </data>
-  <data name="AboutAnetNotice" xml:space="preserve">
-    <value>©2010-{0} ArenaNet, LLC. Alle Rechte vorbehalten. NCSOFT, das ineinandergreifende NC-Logo,
-ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North,
-Guild Wars 2, Heart of Thorns und alle zugehörigen Logos und Designs sind Warenzeichen oder
-eingetragene Warenzeichen der NCSOFT Corporation. Alle anderen Warenzeichen sind das Eigentum
-ihrer jeweiligen Besitzer.</value>
-  </data>
-  <data name="Setting_AudioDevice_Description" xml:space="preserve">
-    <value>Bestimmt das Audioausgabegerät welches von Blish HUD verwendet wird. Das Ausgabegerät passt sich an das gewählte Audiogerät von GW2 an.</value>
-  </data>
-  <data name="Setting_AudioDevice_DisplayName" xml:space="preserve">
-    <value>Audiogerät</value>
-  </data>
-  <data name="Setting_UseGameVolume_Description" xml:space="preserve">
-    <value>Wenn aktiviert, wird Blish HUD die Lautstärke an die des Spiels anpassen.</value>
-  </data>
-  <data name="Setting_UseGameVolume_DisplayName" xml:space="preserve">
-    <value>Spiellautstärke verwenden</value>
-  </data>
-  <data name="Setting_Volume_Description" xml:space="preserve">
-    <value>Bestimmt die Lautstärke von Blish HUD. Wirkt sich nur aus, wenn 'Spiellautstärke verwenden' deaktiviert ist.</value>
-  </data>
-  <data name="Setting_Volume_DisplayName" xml:space="preserve">
-    <value>Lautstärke</value>
+  <data name="Setting_SmoothCharacterPosition_Description" xml:space="preserve">
+    <value>Wenn aktiviert, wird die Charakterposition reibungsloser aktualisiert, um zu verhindern, dass 3D-Elemente des Overlays herumspringen.</value>
   </data>
 </root>

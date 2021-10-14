@@ -19,7 +19,7 @@ namespace Blish_HUD {
         /// <summary>
         /// Contains information and references about the attached Guild Wars 2 process.
         /// </summary>
-        public Gw2ProcIntegration Gw2Proc { get; private set; }
+        public Gw2InstanceIntegration Gw2Instance { get; private set; }
 
         /// <summary>
         /// Contains information pulled from the attached Guild Wars 2's in-game graphics settings (via GSA API file).
@@ -46,7 +46,17 @@ namespace Blish_HUD {
         /// </summary>
         public WinFormsIntegration WinForms { get; private set; }
 
-        #region Obsolete Gw2Proc
+        #region Obsolete Gw2Instance
+
+        private void WireOldEvents() {
+#pragma warning disable 0612, 0618
+            this.Gw2Instance.Gw2Closed        += (sender, e) => this.Gw2Closed?.Invoke(sender, e);
+            this.Gw2Instance.Gw2Started       += (sender, e) => this.Gw2Started?.Invoke(sender, e);
+            this.Gw2Instance.Gw2AcquiredFocus += (sender, e) => this.Gw2AcquiredFocus?.Invoke(sender, e);
+            this.Gw2Instance.Gw2LostFocus     += (sender, e) => this.Gw2LostFocus?.Invoke(sender, e);
+            this.Gw2Instance.IsInGameChanged  += (sender, e) => this.IsInGameChanged?.Invoke(sender, e);
+#pragma warning restore 0612, 0618
+        }
 
         [Obsolete("Use GameIntegration.Gw2Proc.Gw2Closed instead.", true)]
         public event EventHandler<EventArgs> Gw2Closed;
@@ -67,32 +77,32 @@ namespace Blish_HUD {
         public IGameChat Chat { get; private set; }
 
         [Obsolete("Use GameIntegration.Gw2Proc.IsInGame instead.", true)]
-        public bool IsInGame => this.Gw2Proc.IsInGame;
+        public bool IsInGame => this.Gw2Instance.IsInGame;
 
         [Obsolete("Use GameIntegration.Gw2Proc.Gw2HasFocus instead.", true)]
-        public bool Gw2HasFocus => this.Gw2Proc.Gw2HasFocus;
+        public bool Gw2HasFocus => this.Gw2Instance.Gw2HasFocus;
 
         [Obsolete("Use GameIntegration.Gw2Proc.Gw2IsRunning instead.", true)]
-        public bool Gw2IsRunning => this.Gw2Proc.Gw2IsRunning;
+        public bool Gw2IsRunning => this.Gw2Instance.Gw2IsRunning;
 
         [Obsolete("Use GameIntegration.Gw2Proc.Gw2WindowHandle instead.", true)]
-        public IntPtr Gw2WindowHandle => Gw2Proc.Gw2WindowHandle;
+        public IntPtr Gw2WindowHandle => this.Gw2Instance.Gw2WindowHandle;
 
         [Obsolete("Use GameIntegration.Gw2Proc.Gw2ExecutablePath instead.", true)]
-        public string Gw2ExecutablePath => this.Gw2Proc.Gw2ExecutablePath;
+        public string Gw2ExecutablePath => this.Gw2Instance.Gw2ExecutablePath;
 
         [Obsolete("Use GameIntegration.Gw2Proc.Gw2Process instead.", true)]
-        public Process Gw2Process => Gw2Proc.Gw2Process;
+        public Process Gw2Process => this.Gw2Instance.Gw2Process;
 
         [Obsolete("Use GameIntegration.Gw2Proc.FocusGw2() instead.", true)]
-        public void FocusGw2() => this.Gw2Proc.FocusGw2();
+        public void FocusGw2() => this.Gw2Instance.FocusGw2();
 
         #endregion
 
         internal SettingCollection ServiceSettings { get; private set; }
 
         internal GameIntegrationService() {
-            SetServiceModules(this.Gw2Proc     = new Gw2ProcIntegration(this),
+            SetServiceModules(this.Gw2Instance = new Gw2InstanceIntegration(this),
                               this.GfxSettings = new GfxSettingsIntegration(this),
                               this.ClientType  = new ClientTypeIntegration(this),
                               this.Audio       = new AudioIntegration(this),
@@ -110,6 +120,8 @@ namespace Blish_HUD {
             BlishHud.Instance.Form.Shown += delegate {
                 WindowUtil.SetupOverlay(BlishHud.Instance.FormHandle);
             };
+
+            WireOldEvents();
         }
 
         protected override void Unload() { /* NOOP */ }
@@ -242,7 +254,7 @@ namespace Blish_HUD {
                 // More checks? (Symbols: https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset)
             }
             private bool IsBusy() {
-                return !GameIntegration.Gw2Proc.Gw2IsRunning || !GameIntegration.Gw2Proc.Gw2HasFocus || !GameIntegration.Gw2Proc.IsInGame;
+                return !GameIntegration.Gw2Instance.Gw2IsRunning || !GameIntegration.Gw2Instance.Gw2HasFocus || !GameIntegration.Gw2Instance.IsInGame;
             }
         }
         #endregion

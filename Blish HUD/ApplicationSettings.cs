@@ -46,8 +46,6 @@ namespace Blish_HUD {
          * r, ref       - The path to the ref.dat file.
          * s, settings  - The path where Blish HUD will save settings and other files.
          * w, window    - The name of the window to overlay.
-         *
-         * restartskipmutex - Forces Blish HUD to allow multiple instances.  Used internally to prevent race condition issues when Blish HUD is restarted.
          */
 
         #region Game Integration
@@ -164,16 +162,6 @@ namespace Blish_HUD {
         #endregion
 
         #region Internal
-        
-        public const string OPTION_RESTARTSKIPMUTEX = "restartskipmutex";
-        /// <summary>
-        /// Forces Blish HUD to allow multiple instances.  Used internally to prevent race condition issues when Blish HUD is restarted.
-        /// </summary>
-        [
-            Option(OPTION_RESTARTSKIPMUTEX),
-            Help("Forces Blish HUD to allow multiple instances.  Used internally to prevent race condition issues when Blish HUD is restarted.")
-        ]
-        public bool RestartSkipMutex { get; private set; }
 
         public const string OPTION_MAINPROCESSID = "mainprocessid";
         /// <summary>

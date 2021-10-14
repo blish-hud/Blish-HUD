@@ -24,7 +24,8 @@
             };
         }
 
-        public override int GetHashCode() => this.Value.GetHashCode();
+        public override int  GetHashCode()      => this.Value.GetHashCode();
+        public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
         public static implicit operator string(ShadowsSetting shadowsSetting) => shadowsSetting.Value;
         public static implicit operator ShadowsSetting(string value)          => new ShadowsSetting(value);

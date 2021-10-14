@@ -14,6 +14,14 @@ namespace Blish_HUD.Controls.Intern
         private const uint MAPVK_VSC_TO_VK_EX = 0x03;
         private const uint MAPVK_VK_TO_VSC_EX = 0x04;
 
+        private static List<VirtualKeyShort> ExtendedKeys = new List<VirtualKeyShort> {
+            VirtualKeyShort.INSERT,  VirtualKeyShort.HOME,   VirtualKeyShort.NEXT, 
+            VirtualKeyShort.DELETE,  VirtualKeyShort.END,    VirtualKeyShort.PRIOR,
+            VirtualKeyShort.RMENU,   VirtualKeyShort.RSHIFT, VirtualKeyShort.RCONTROL,
+            VirtualKeyShort.UP,      VirtualKeyShort.DOWN,   VirtualKeyShort.LEFT,     VirtualKeyShort.RIGHT,
+            VirtualKeyShort.NUMLOCK, VirtualKeyShort.PRINT,  VirtualKeyShort.DIVIDE
+        };
+
         /// <summary>
         /// Presses a key.
         /// </summary>
@@ -21,32 +29,68 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void Press(VirtualKeyShort key, bool sendToSystem = false)
         {
-            if (!GameService.GameIntegration.Gw2Proc.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
-                var nInputs = new[]
-                {
-                    new Extern.Input
+                Extern.Input[] nInputs;
+                if (ExtendedKeys.Contains(key)) {
+                    nInputs = new[]
                     {
-                        type = InputType.KEYBOARD,
-                        U = new InputUnion
+                        new Extern.Input
                         {
-                            ki = new KeybdInput
+                            type = InputType.KEYBOARD,
+                            U = new InputUnion
                             {
-                                wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
-                                wVk = key
+                                ki = new KeybdInput
+                                {
+                                    wScan = ScanCodeShort.EXTENDEDKEY,
+                                    wVk = 0,
+                                    dwFlags = 0
+                                }
+                            }
+                        },
+                        new Extern.Input
+                        {
+                            type = InputType.KEYBOARD,
+                            U = new InputUnion
+                            {
+                                ki = new KeybdInput
+                                {
+                                    wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                    wVk = key,
+                                    dwFlags = KeyEventF.EXTENDEDKEY
+                                }
                             }
                         }
-                    }
-                };
+                    };
+                } else {
+                    nInputs = new[]
+                    {
+                        new Extern.Input
+                        {
+                            type = InputType.KEYBOARD,
+                            U = new InputUnion
+                            {
+                                ki = new KeybdInput
+                                {
+                                    wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                    wVk = key
+                                }
+                            }
+                        }
+                    };
+                }
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             }
             else
             {
                 uint vkCode = (uint)key;
-                ExtraKeyInfo lParam = new ExtraKeyInfo(){
+                ExtraKeyInfo lParam = new ExtraKeyInfo() {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Proc.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
+
+                if (ExtendedKeys.Contains(key))
+                    lParam.extendedKey = 1;
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
         /// <summary>
@@ -56,37 +100,72 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void Release(VirtualKeyShort key, bool sendToSystem = false)
         {
-            if (!GameService.GameIntegration.Gw2Proc.Gw2IsRunning || sendToSystem)
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
             {
-                var nInputs = new[]
-                {
-                    new Extern.Input
+                Extern.Input[] nInputs;
+                if (ExtendedKeys.Contains(key)) {
+                    nInputs = new[]
                     {
-                        type = InputType.KEYBOARD,
-                        U = new InputUnion
+                        new Extern.Input
                         {
-                            ki = new KeybdInput
+                            type = InputType.KEYBOARD,
+                            U = new InputUnion
                             {
-                                wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
-                                wVk = key,
-                                dwFlags = KeyEventF.KEYUP
+                                ki = new KeybdInput
+                                {
+                                    wScan = ScanCodeShort.EXTENDEDKEY,
+                                    wVk = 0,
+                                    dwFlags = 0
+                                }
+                            }
+                        },
+                        new Extern.Input
+                        {
+                            type = InputType.KEYBOARD,
+                            U = new InputUnion
+                            {
+                                ki = new KeybdInput
+                                {
+                                    wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                    wVk = key,
+                                    dwFlags = KeyEventF.EXTENDEDKEY | KeyEventF.KEYUP
+                                }
                             }
                         }
-                    }
-                };
+                    };
+                } else {
+                    nInputs = new[]
+                    {
+                        new Extern.Input
+                        {
+                            type = InputType.KEYBOARD,
+                            U = new InputUnion
+                            {
+                                ki = new KeybdInput
+                                {
+                                    wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
+                                    wVk = key,
+                                    dwFlags = KeyEventF.KEYUP 
+                                }
+                            }
+                        }
+                    };
+                }
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             }
             else
             {
                 uint vkCode = (uint)key;
-                ExtraKeyInfo lParam = new ExtraKeyInfo
-                {
+                ExtraKeyInfo lParam = new ExtraKeyInfo() {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
                     repeatCount = 1,
                     prevKeyState = 1,
                     transitionState = 1
                 };
-                PInvoke.PostMessage(GameService.GameIntegration.Gw2Proc.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
+              
+                if (ExtendedKeys.Contains(key))
+                    lParam.extendedKey = 1;
+                PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
         }
         /// <summary>

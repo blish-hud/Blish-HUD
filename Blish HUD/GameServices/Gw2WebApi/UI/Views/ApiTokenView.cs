@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
@@ -18,6 +19,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             {"22", ("Germany", GameService.Content.GetTexture(@"common/784342"))},
             {"23", ("Spain", GameService.Content.GetTexture(@"common/784344"))}
         };
+
+        public event EventHandler<EventArgs> DeleteClicked;
 
         private Label _accountNameLbl;
         private Label _tokenKeyLbl;
@@ -184,10 +187,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _deleteBttn.Click += DeleteRegisteredToken;
         }
 
-        private void DeleteRegisteredToken(object sender, MouseEventArgs e) {
-            GameService.Gw2WebApi.UnregisterKey(_tokenInfo.Id);
-
+        public void RemoveTokenView() {
             this.ViewTarget.Dispose();
+        }
+
+        private void DeleteRegisteredToken(object sender, MouseEventArgs e) {
+            this.DeleteClicked?.Invoke(this, EventArgs.Empty);
         }
 
     }

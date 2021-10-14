@@ -12,14 +12,13 @@ using Microsoft.Win32;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameIntegration {
-    public class Gw2ProcIntegration : ServiceModule<GameIntegrationService> {
+    public class Gw2InstanceIntegration : ServiceModule<GameIntegrationService> {
 
-        private static readonly Logger Logger = Logger.GetLogger<Gw2ProcIntegration>();
+        private static readonly Logger Logger = Logger.GetLogger<Gw2InstanceIntegration>();
 
         private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
-        private const string GW2_GAMEWINDOW_NAME   = "ArenaNet_Dx_Window_Class";
         private const string GW2_PATCHWINDOW_CLASS = "ArenaNet";
 
         private const string APPDATA_ENVKEY = "appdata";
@@ -120,6 +119,15 @@ namespace Blish_HUD.GameIntegration {
             private set => PropertyUtil.SetProperty(ref _appDataPath, value);
         }
 
+        private string _commandLine;
+        /// <summary>
+        /// The full command line of the current Guild Wars 2 process.
+        /// </summary>
+        public string CommandLine {
+            get => _commandLine;
+            private set => PropertyUtil.SetProperty(ref _commandLine, value);
+        }
+
         // Settings
         private SettingEntry<string> _gw2ExecutablePath;
 
@@ -127,10 +135,10 @@ namespace Blish_HUD.GameIntegration {
 
         private bool _exitLocked = false;
 
-        public Gw2ProcIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+        public Gw2InstanceIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
-            DefineSettings(_service.ServiceSettings.AddSubCollection(nameof(Gw2ProcIntegration)));
+            DefineSettings(_service.ServiceSettings.AddSubCollection(nameof(Gw2InstanceIntegration)));
 
             GameService.Gw2Mumble.Info.IsGameFocusedChanged += OnGameFocusChanged;
 
@@ -160,29 +168,43 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void HandleProcessUpdate(Process newProcess) {
-            if (newProcess == null || _gw2Process.MainWindowHandle == IntPtr.Zero) {
+            if (newProcess == null || _gw2Process.HasExited || _gw2Process.MainWindowHandle == IntPtr.Zero) {
                 BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = false; }));
 
                 _gw2Process = null;
+                this.Gw2IsRunning = false;
             } else {
                 if (_gw2Process.MainModule != null) {
                     _gw2ExecutablePath.Value = _gw2Process.MainModule.FileName;
                 }
 
-                var envs = newProcess.ReadEnvironmentVariables();
-
-                if (envs.ContainsKey(APPDATA_ENVKEY)) {
-                    this.AppDataPath = envs[APPDATA_ENVKEY];
+                try {
+                    this.CommandLine = newProcess.GetCommandLine();
+                } catch (Win32Exception e) {
+                    this.CommandLine = string.Empty;
+                    Logger.Warn(e, "A Win32Exception was encountered while trying to retrieve the process command line.");
                 }
+
+                try {
+                    var envs = newProcess.ReadEnvironmentVariables();
+
+                    if (envs.ContainsKey(APPDATA_ENVKEY)) {
+                        this.AppDataPath = envs[APPDATA_ENVKEY];
+                    }
+                } catch (EndOfStreamException) {
+                    // See: https://github.com/gapotchenko/Gapotchenko.FX/issues/2
+                    Logger.Warn("Failed to auto-detect Guild Wars 2 environment variables.  Restart Guild Wars 2 to try again.");
+                } catch (NullReferenceException e) {
+                    Logger.Warn(e, "Failed to grab Guild Wars 2 env variable.  It is likely exiting.");
+                }
+
+                // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
+                // window is the game window name (so we know we are passed the login screen)
+                string windowClass = WindowUtil.GetClassNameOfWindow(_gw2Process.MainWindowHandle);
+
+                this.Gw2IsRunning = windowClass == ApplicationSettings.Instance.WindowName
+                                 || windowClass != GW2_PATCHWINDOW_CLASS;
             }
-
-            // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
-            // window is the game window name (so we know we are passed the login screen)
-            string windowClass = WindowUtil.GetClassNameOfWindow(this.Gw2Process.MainWindowHandle);
-
-            this.Gw2IsRunning = _gw2Process != null
-                             && windowClass == ApplicationSettings.Instance.WindowName
-                             || windowClass != GW2_PATCHWINDOW_CLASS;
         }
 
         private void OnGameFocusChanged(object sender, ValueEventArgs<bool> e) {
@@ -194,9 +216,16 @@ namespace Blish_HUD.GameIntegration {
         private void TryAttachToGw2() {
             // Get process from Mumble if it is defined
             // otherwise just get the first instance running
-            this.Gw2Process = GetMumbleSpecifiedGw2Process()
-                           ?? GetDefaultGw2ProcessById()
-                           ?? GetDefaultGw2ProcessByName();
+            if (ApplicationSettings.Instance.MumbleMapName != null) {
+                // User-set mumble link name - so don't fallback.
+                this.Gw2Process = GetMumbleSpecifiedGw2Process();
+            } else {
+                // No user-set mumble link name - so fallback,
+                // starting with default mumble data if found
+                this.Gw2Process = GetMumbleSpecifiedGw2Process()
+                               ?? GetDefaultGw2ProcessById()
+                               ?? GetDefaultGw2ProcessByName();
+            }
 
             if (this.Gw2IsRunning) {
                 try {
@@ -310,7 +339,9 @@ namespace Blish_HUD.GameIntegration {
                         break;
                 }
 
-                BlishHud.Instance.Form.Visible = !updateResult.Minimized;
+                if (BlishHud.Instance.Form.Visible != !updateResult.Minimized) {
+                    BlishHud.Instance.Form.Visible = !updateResult.Minimized;
+                }
             } else {
                 TryAttachToGw2();
             }

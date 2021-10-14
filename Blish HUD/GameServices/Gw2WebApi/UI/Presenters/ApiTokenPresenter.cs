@@ -20,6 +20,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
 
         public ApiTokenPresenter(ApiTokenView view, string apiKey) : base(view, apiKey) {
             _loadCancel = new CancellationTokenSource();
+
+            this.View.DeleteClicked += TokenDeleteClicked;
         }
 
         protected override async Task<bool> Load(IProgress<string> progress) {
@@ -52,6 +54,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
             }
 
             return true;
+        }
+
+        private async void TokenDeleteClicked(object sender, EventArgs e) {
+            await GameService.Gw2WebApi.UnregisterKey(this.Model);
+
+            this.View.RemoveTokenView();
         }
 
         private bool UpdateFromRequestTaskResult<T>(Task<T> infoTask, ref T field) {
@@ -87,6 +95,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
 
         protected override void Unload() {
             _loadCancel.Cancel();
+
+            this.View.DeleteClicked -= TokenDeleteClicked;
 
             base.Unload();
         }

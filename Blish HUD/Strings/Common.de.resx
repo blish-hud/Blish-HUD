@@ -135,4 +135,16 @@
   <data name="Action_Restart" xml:space="preserve">
     <value>Neustart {0}</value>
   </data>
+  <data name="Action_Clear" xml:space="preserve">
+    <value>Leeren</value>
+  </data>
+  <data name="BlishHUD" xml:space="preserve">
+    <value>Blish HUD</value>
+  </data>
+  <data name="Instructions" xml:space="preserve">
+    <value>Anleitung</value>
+  </data>
+  <data name="PlaceholderSearch" xml:space="preserve">
+    <value>Suche...</value>
+  </data>
 </root>
