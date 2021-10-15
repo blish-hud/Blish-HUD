@@ -236,4 +236,7 @@ Download some modules and place them in the modules folder.</value>
   <data name="PkgManagement_ModulesNeedRestart" xml:space="preserve">
     <value>Blish HUD requires a restart before some modules can be re-enabled.</value>
   </data>
+  <data name="ModuleOption_DeleteModule" xml:space="preserve">
+    <value>Delete Module</value>
+  </data>
 </root>

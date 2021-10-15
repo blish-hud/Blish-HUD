@@ -172,12 +172,10 @@ namespace Blish_HUD.Modules {
             bool wasEnabled = existingModule.Enabled;
 
             if (wasEnabled) {
-                //this.View.PackageActionText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageStatus_DisablingModule;
                 progress?.Report(Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageStatus_DisablingModule);
                 existingModule.Disable();
             }
 
-            //this.View.PackageActionText = Strings.GameServices.ModulesService.PkgInstall_Progress_Upgrading;
             progress?.Report(Strings.GameServices.ModulesService.PkgInstall_Progress_Upgrading);
 
             string moduleName = Path.GetFileName(existingModule.DataReader.PhysicalPath);
@@ -204,7 +202,6 @@ namespace Blish_HUD.Modules {
         public async Task<(ModuleManager NewModule, bool Success, string Error)> InstallPackage(PkgManifest pkgManifest, ModuleManager existingModule = null, IProgress<string> progress = null) {
             Logger.Debug("Install package action.");
 
-            //this.View.PackageActionText = Strings.GameServices.ModulesService.PkgInstall_Progress_Installing;
             progress?.Report(Strings.GameServices.ModulesService.PkgInstall_Progress_Installing);
 
             if (pkgManifest is PkgManifestV1 pkgv1) {

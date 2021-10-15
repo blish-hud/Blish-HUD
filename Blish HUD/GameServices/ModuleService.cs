@@ -231,7 +231,15 @@ namespace Blish_HUD {
             foreach (KeyValuePair<MenuItem, ModuleManager> moduleMenuPair in _moduleMenus) {
                 if (moduleMenuPair.Value == moduleManager) {
                     _moduleMenus.Remove(moduleMenuPair.Key);
+
+                    MenuItem toSelect = moduleMenuPair.Key.Selected
+                        ? _moduleMenus.FirstOrDefault().Key ?? _rootModuleSettingsMenuItem
+                        : null;
+
                     moduleMenuPair.Key.Parent = null;
+
+                    toSelect?.Select();
+
                     break;
                 }
             }
