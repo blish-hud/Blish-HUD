@@ -191,6 +191,8 @@ namespace Blish_HUD.Controls {
         public void Select() {
             if (this.Selected) return;
 
+            _selectedMenuItem = this;
+
             if (!_children.IsEmpty)
                 throw new InvalidOperationException("MenuItems with sub-MenuItems can not be selected directly.");
 

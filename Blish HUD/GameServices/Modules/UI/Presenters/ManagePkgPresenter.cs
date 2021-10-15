@@ -15,7 +15,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private ModuleManager _existingModule;
 
-        private Func<Task> _packageAction;
+        private Func<PkgManifest, ModuleManager, IProgress<string>, Task<(ModuleManager NewModule, bool Success, string Error)>> _packageAction;
 
         private PkgManifest _selectedVersion;
 
@@ -25,93 +25,6 @@ namespace Blish_HUD.Modules.UI.Presenters {
             _existingModule = GameService.Module.Modules.FirstOrDefault(m => m.Manifest.Namespace == this.Model.Key);
 
             return base.Load(progress);
-        }
-
-        private void FinalizeInstalledPackage(string modulePath) {
-            if (_existingModule != null) {
-                _existingModule.DataReader.DeleteRoot();
-                _existingModule.Dispose();
-            }
-
-            _existingModule = GameService.Module.RegisterPackedModule(modulePath);
-        }
-
-        private async Task<bool> InstallPackage() {
-            Logger.Debug("Install package action.");
-
-            this.View.PackageActionText = Strings.GameServices.ModulesService.PkgInstall_Progress_Installing;
-
-            bool failed = true;
-
-            if (_selectedVersion is PkgManifestV1 pkgv1) {
-                try {
-                    byte[] downloadedModule = await pkgv1.Location.GetBytesAsync();
-
-                    string moduleName = $"{_selectedVersion.Namespace}_{_selectedVersion.Version}.bhm";
-
-                    using var dataSha256 = System.Security.Cryptography.SHA256.Create();
-                    byte[] rawChecksum = dataSha256.ComputeHash(downloadedModule, 0, downloadedModule.Length);
-
-                    string checksum = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
-
-                    if (string.Equals(_selectedVersion.Hash, checksum, StringComparison.InvariantCultureIgnoreCase)) {
-                        Logger.Info($"{moduleName} matched expected checksum '{_selectedVersion.Hash}'.");
-
-                        string fullPath = $@"{GameService.Module.ModulesDirectory}\{moduleName}";
-
-                        if (!File.Exists(fullPath)) {
-                            File.WriteAllBytes(fullPath, downloadedModule);
-                        } else {
-                            Logger.Warn($"Module already exists at path '{fullPath}'.");
-                            return false;
-                        }
-
-                        Logger.Info($"Module saved to '{fullPath}'.");
-
-                        FinalizeInstalledPackage(fullPath);
-
-                        failed = false;
-                    } else {
-                        Logger.Warn($"{moduleName} (with checksum '{checksum}') failed to match expected checksum '{_selectedVersion.Hash}'.  The module can not be trusted.  The publisher should be contacted immediately!");
-                    }
-                } catch (Exception ex) {
-                    Logger.Error(ex, "Failed to install module.");
-                }
-            }
-
-            SetUi();
-
-            return !failed;
-        }
-
-        private async Task ReplacePackage() {
-            Logger.Info($"Package replacement initiated for {_existingModule.Manifest.GetDetailedName()}.");
-
-            bool wasEnabled = _existingModule.Enabled;
-
-            if (wasEnabled) {
-                this.View.PackageActionText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageStatus_DisablingModule;
-                _existingModule.Disable();
-            }
-
-            this.View.PackageActionText = Strings.GameServices.ModulesService.PkgInstall_Progress_Upgrading;
-
-            string moduleName = Path.GetFileName(_existingModule.DataReader.PhysicalPath);
-
-            if (moduleName == null || !moduleName.EndsWith(".bhm", StringComparison.InvariantCultureIgnoreCase)) {
-                // Module might be a directory one - not supported
-                Logger.Warn($"'{_existingModule.DataReader.PhysicalPath}' could not be updated.  Module type may not support updates.");
-
-                return;
-            }
-
-            await InstallPackage();
-
-            if (wasEnabled && _existingModule != null) {
-                // Ensure that module is set to enabled for when Blish HUD restarts
-                GameService.Module.ModuleStates.Value[_existingModule.Manifest.Namespace].Enabled = true;
-                GameService.Settings.Save();
-            }
         }
 
         private Version GetDefaultVersion() {
@@ -144,21 +57,21 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.View.PackageActionEnabled                = _packageAction != null;
         }
 
-        private (Func<Task> Action, string ActionText) GetPackageAction() {
+        private (Func<PkgManifest, ModuleManager, IProgress<string>, Task<(ModuleManager NewModule, bool Success, string Error)>> Action, string ActionText) GetPackageAction() {
             if (_existingModule != null) {
                 if (_existingModule.Manifest.Version < _selectedVersion.Version) {
                     // A newer version of the module is selected
-                    return (ReplacePackage, Strings.GameServices.ModulesService.PkgManagement_Update);
+                    return (GameService.Module.ModulePkgRepoHandler.ReplacePackage, Strings.GameServices.ModulesService.PkgManagement_Update);
                 } else if (_existingModule.Manifest.Version > _selectedVersion.Version) {
                     // An older version of the module is selected
-                    return (ReplacePackage, Strings.GameServices.ModulesService.PkgManagement_Downgrade);
+                    return (GameService.Module.ModulePkgRepoHandler.ReplacePackage, Strings.GameServices.ModulesService.PkgManagement_Downgrade);
                 }
 
                 // The selected version is the current version
                 return (null, Strings.GameServices.ModulesService.PkgManagement_CurrentVersion);
             } else {
                 // We don't have this module at all
-                return (InstallPackage, Strings.GameServices.ModulesService.PkgManagement_Install);
+                return (GameService.Module.ModulePkgRepoHandler.InstallPackage, Strings.GameServices.ModulesService.PkgManagement_Install);
             }
         }
 
@@ -187,10 +100,22 @@ namespace Blish_HUD.Modules.UI.Presenters {
             SetActiveVersion(e.Value);
         }
 
-        private void OnActionClicked(object sender, EventArgs e) {
+        private void SetActionStatus(string status) {
+            this.View.PackageActionText = status;
+        }
+
+        private async void OnActionClicked(object sender, EventArgs e) {
             this.View.PackageActionEnabled = false;
 
-            _packageAction?.Invoke();
+            var (newModule, installSuccess, installError) = await _packageAction?.Invoke(_selectedVersion, _existingModule, new Progress<string>(SetActionStatus));
+
+            if (installSuccess) {
+                _existingModule = newModule;
+            } else {
+                // TODO: Better inform the user about what failed about the install
+            }
+
+            SetUi();
         }
 
     }

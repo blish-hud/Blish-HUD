@@ -4,7 +4,6 @@ using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules.UI.Presenters;
-using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 using Version = SemVer.Version;
 
@@ -162,7 +161,7 @@ namespace Blish_HUD.Modules.UI.Views {
             };
 
             _moduleAssemblyDirtiedWarning = new Label() {
-                Text           = "Blish HUD must be restarted before this module can be re-enabled.",
+                Text           = Strings.GameServices.ModulesService.PkgManagement_ModulesNeedRestart,
                 AutoSizeWidth  = true,
                 AutoSizeHeight = true,
                 Right          = buildPanel.Width - 12,
