@@ -33,6 +33,8 @@ namespace Blish_HUD.Modules.Managers {
 
         public event EventHandler<ValueEventArgs<IEnumerable<TokenPermission>>> SubtokenUpdated;
 
+        public bool HasSubtoken => _connection.HasApiKey();
+
         public IGw2WebApiClient Gw2ApiClient => _connection.Client;
 
         public List<TokenPermission> Permissions => _permissions.ToList();
