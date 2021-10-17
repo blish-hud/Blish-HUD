@@ -320,6 +320,7 @@ namespace Blish_HUD.Modules.UI.Views {
             };
 
             _settingView = new ViewContainer() {
+                Size             = settingPanelRoot.ContentRegion.Size,
                 CanScroll        = true,
                 HeightSizingMode = SizingMode.Fill,
                 WidthSizingMode  = SizingMode.Fill,
