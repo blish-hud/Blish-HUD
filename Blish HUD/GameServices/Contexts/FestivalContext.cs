@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Gw2Sharp.WebApi.Exceptions;
 
@@ -18,7 +17,7 @@ namespace Blish_HUD.Contexts {
         /// <summary>
         /// A Guild Wars 2 festival identified by the <see cref="FestivalContext"/>.
         /// </summary>
-        public struct Festival {
+        public readonly struct Festival {
 
             private static FestivalContext _context;
 
@@ -43,7 +42,7 @@ namespace Blish_HUD.Contexts {
             public string DisplayName => _displayName;
 
             public Festival(string name, string displayName) {
-                _name        = name;
+                _name = name;
                 _displayName = displayName;
 
                 _festivalLookup.Add(name, this);
@@ -54,9 +53,7 @@ namespace Blish_HUD.Contexts {
             /// </summary>
             /// <returns><c>true</c> if the festival is active.</returns>
             public bool IsActive() {
-                if (_context == null) {
-                    _context = GameService.Contexts.GetContext<FestivalContext>();
-                }
+                _context ??= GameService.Contexts.GetContext<FestivalContext>();
 
                 // _context can still be null if it has not registered with the ContextService yet
                 return _context?.FestivalIsActive(this) ?? false;
@@ -127,37 +124,16 @@ namespace Blish_HUD.Contexts {
             {233, Festival.DragonBash}
         };
 
-        private CancellationTokenSource _contextLoadCancellationTokenSource;
-
         private List<Festival> _activeFestivals = new List<Festival>();
 
         private string _fault;
 
         public FestivalContext() {
-            GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
-            GameService.Gw2WebApi.FinishedLoading          += Gw2WebApiOnFinishedLoading;
+            GameService.Gw2WebApi.FinishedLoading += Gw2WebApiOnFinishedLoading;
         }
 
-        /// <inheritdoc />
-        protected override void Load() {
-            _contextLoadCancellationTokenSource?.Dispose();
-            _contextLoadCancellationTokenSource = new CancellationTokenSource();
-        }
-
-        /// <inheritdoc />
-        protected override void Unload() {
-            _contextLoadCancellationTokenSource.Cancel();
-        }
-
-        private void Gw2WebApiOnFinishedLoading(object sender, EventArgs e) {
-            GetFestivalsFromGw2Api(_contextLoadCancellationTokenSource.Token).ContinueWith((festivals) => SetFestivals(festivals.Result));
-        }
-
-        private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
-            // Unload without DoUnload to avoid expiring the context
-            this.Unload();
-
-            this.DoLoad();
+        private async void Gw2WebApiOnFinishedLoading(object sender, EventArgs e) {
+            SetFestivals(await GetFestivalsFromGw2Api());
         }
 
         private void SetFestivals(IEnumerable<Festival> festivals) {
@@ -170,16 +146,16 @@ namespace Blish_HUD.Contexts {
             this.ConfirmReady();
         }
 
-        private async Task<IEnumerable<Festival>> GetFestivalsFromGw2Api(CancellationToken cancellationToken) {
+        private async Task<IEnumerable<Festival>> GetFestivalsFromGw2Api() {
             _fault = null;
 
             try {
-                var dailyAchievementCategories = await GameService.Gw2WebApi.AnonymousConnection.Client.V2.Achievements.Groups.GetAsync(Guid.Parse(DAILY_GROUP_ID), cancellationToken);
+                var dailyAchievementCategories = await GameService.Gw2WebApi.AnonymousConnection.Client.V2.Achievements.Groups.GetAsync(Guid.Parse(DAILY_GROUP_ID));
 
                 return dailyAchievementCategories.Categories.Where(category => _knownFestivalCategories.ContainsKey(category)).Select(category => _knownFestivalCategories[category]);
             } catch (RequestCanceledException) {
                 Logger.Debug("Festival request was cancelled early.");
-            }  catch (Exception ex) {
+            } catch (Exception ex) {
                 _fault = $"Failed to query Guild Wars 2 API: {ex.Message}";
 
                 Logger.Warn(ex, "Failed to query Guild Wars 2 API.");
