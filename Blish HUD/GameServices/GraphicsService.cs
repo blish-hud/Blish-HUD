@@ -221,7 +221,7 @@ namespace Blish_HUD {
 
         private void DefineSettings(SettingCollection settings) {
             _frameLimiterSetting = settings.DefineSetting("FramerateLimiter",
-                                                          FramerateMethod.SyncWithGame,
+                                                          FramerateMethod.LockedTo90Fps,
                                                           () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
                                                           () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
 
