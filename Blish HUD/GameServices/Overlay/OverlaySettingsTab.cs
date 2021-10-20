@@ -11,11 +11,11 @@ namespace Blish_HUD.Overlay {
 
         public event EventHandler<EventArgs> RegistrarListChanged;
 
-        private readonly List<(MenuItem MenuItem, Func<MenuItem, View> ViewFunc, int Index)> _registeredMenuItems = new List<(MenuItem MenuItem, Func<MenuItem, View> ViewFunc, int Index)>();
+        private readonly List<(MenuItem MenuItem, Func<MenuItem, IView> ViewFunc, int Index)> _registeredMenuItems = new List<(MenuItem MenuItem, Func<MenuItem, IView> ViewFunc, int Index)>();
 
         public OverlaySettingsTab(OverlayService service) : base(service) { }
 
-        public View GetMenuItemView(MenuItem selectedMenuItem) {
+        public IView GetMenuItemView(MenuItem selectedMenuItem) {
             foreach (var (menuItem, viewFunc, _) in _registeredMenuItems) {
                 if (menuItem == selectedMenuItem || menuItem.GetDescendants().Contains(selectedMenuItem)) {
                     return viewFunc(selectedMenuItem);
@@ -27,7 +27,7 @@ namespace Blish_HUD.Overlay {
 
         public IEnumerable<MenuItem> GetSettingMenus() => _registeredMenuItems.OrderBy(mi => mi.Index).Select(mi => mi.MenuItem);
 
-        public void RegisterSettingMenu(MenuItem menuItem, Func<MenuItem, View> viewFunc, int index = 0) {
+        public void RegisterSettingMenu(MenuItem menuItem, Func<MenuItem, IView> viewFunc, int index = 0) {
             _registeredMenuItems.Add((menuItem, viewFunc, index));
 
             this.RegistrarListChanged?.Invoke(this, EventArgs.Empty);

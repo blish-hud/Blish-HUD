@@ -21,6 +21,11 @@ namespace Blish_HUD.GameIntegration {
 
         public event EventHandler<EventArgs> GfxSettingsReloaded;
 
+        /// <summary>
+        /// Indicates that we've successfully read and parsed the contents of the GFXSettings.Gw2-64.exe.xml file.
+        /// </summary>
+        public bool IsAvailable { get; private set; }
+
         public FrameLimitSetting? FrameLimit => GetStringEnumSetting(FrameLimitSetting.FromString);
 
         public ShadowsSetting? Shadows => GetStringEnumSetting(ShadowsSetting.FromString);
@@ -130,12 +135,13 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void EnableWatchDir() {
-            _fileSystemWatcher                       = new FileSystemWatcher();
-            _fileSystemWatcher.Path                  = Path.Combine(_service.Gw2Instance.AppDataPath, GFXSETTINGS_PATH);
-            _fileSystemWatcher.NotifyFilter          = NotifyFilters.LastWrite;
-            _fileSystemWatcher.Filter                = GFXSETTINGS_NAME;
-            _fileSystemWatcher.EnableRaisingEvents   = true;
-            _fileSystemWatcher.IncludeSubdirectories = false;
+            _fileSystemWatcher = new FileSystemWatcher {
+                Path                  = Path.Combine(_service.Gw2Instance.AppDataPath, GFXSETTINGS_PATH),
+                NotifyFilter          = NotifyFilters.LastWrite,
+                Filter                = GFXSETTINGS_NAME,
+                EnableRaisingEvents   = true,
+                IncludeSubdirectories = false
+            };
 
             _fileSystemWatcher.Changed += GfxSettingsFileChanged;
         }
@@ -201,6 +207,8 @@ namespace Blish_HUD.GameIntegration {
 
                             Logger.Trace($"Loaded {settingName} = {settingValue} from GSA.");
 
+                            this.IsAvailable = true;
+
                             GfxSettingsReloaded?.Invoke(this, EventArgs.Empty);
                         }
                     }
@@ -229,7 +237,7 @@ namespace Blish_HUD.GameIntegration {
 
         public override void Unload() {
             _service.Gw2Instance.Gw2Started -= Gw2Proc_Gw2Started;
-            _fileSystemWatcher.Changed  -= GfxSettingsFileChanged;
+            _fileSystemWatcher.Changed      -= GfxSettingsFileChanged;
 
             _fileSystemWatcher.Dispose();
         }
