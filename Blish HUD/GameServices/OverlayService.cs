@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
-using Blish_HUD.Modules.Pkgs;
-using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
