@@ -5,13 +5,14 @@ using Gw2Sharp;
 using Microsoft.Xna.Framework;
 using Gw2Sharp.Mumble;
 using System.Text.RegularExpressions;
+
 namespace Blish_HUD {
 
     public class Gw2MumbleService : GameService {
 
         private const string DEFAULT_MUMBLEMAPNAME = "MumbleLink";
 
-        private static readonly Regex MUMBLE_LINK_REGEX = new Regex("^.+-mumble\\s+?\"(.+?)\".*$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex MUMBLE_LINK_REGEX = new Regex("^.+-mumble\\s+?\"?([^\" ]*)\"?.*$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private readonly TimeSpan _syncDelay = TimeSpan.FromMilliseconds(3);
 
@@ -19,6 +20,8 @@ namespace Blish_HUD {
 
         /// <inheritdoc cref="Gw2MumbleClient"/>
         public IGw2MumbleClient RawClient { get; private set; }
+
+        public string CurrentMumbleMapName { get; private set; } = DEFAULT_MUMBLEMAPNAME;
 
         #region Categorized Mumble Data
 
@@ -61,7 +64,7 @@ namespace Blish_HUD {
 
         internal Gw2MumbleService() {
             _gw2Client = new Gw2Client();
-            this.RawClient = GetRawClient();
+            RefreshClient();
 
             this.Info            = new Info(this);
             this.PlayerCharacter = new PlayerCharacter(this);
@@ -77,6 +80,10 @@ namespace Blish_HUD {
         }
 
         private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
+            RefreshClient();
+        }
+
+        internal void RefreshClient() {
             this.RawClient = GetRawClient();
         }
 
@@ -114,8 +121,12 @@ namespace Blish_HUD {
         }
 
         private IGw2MumbleClient GetRawClient() {
-            string linkName = GetLinkName();
-            return _gw2Client.Mumble[linkName];
+            this.CurrentMumbleMapName = GetLinkName();
+            
+            var client = _gw2Client.Mumble[this.CurrentMumbleMapName];
+            client.Update(); // We update once to at least indicate that it's alive.
+
+            return client;
         }
 
         private string GetLinkName() {

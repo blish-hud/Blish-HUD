@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -256,6 +255,8 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private Process GetMumbleSpecifiedGw2Process() {
+            GameService.Gw2Mumble.RefreshClient();
+
             if (GameService.Gw2Mumble.IsAvailable) {
                 return GetGw2ProcessByPID((int)GameService.Gw2Mumble.Info.ProcessId, "Mumble reported PID");
             }
