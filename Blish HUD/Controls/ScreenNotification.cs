@@ -75,10 +75,10 @@ namespace Blish_HUD.Controls {
             _icon     = icon;
             _duration = duration;
 
-            this.Opacity = 0f;
-            this.Size = new Point(NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
-            this.ZIndex = Screen.TOOLTIP_BASEZINDEX;
-            this.Location = new Point(Graphics.WindowWidth / 2 - this.Size.X / 2, Graphics.WindowHeight / 4 - this.Size.Y / 2);
+            this.Opacity  = 0f;
+            this.Size     = new Point(NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
+            this.ZIndex   = Screen.TOOLTIP_BASEZINDEX;
+            this.Location = new Point(Graphics.SpriteScreen.Width / 2 - this.Size.X / 2, Graphics.SpriteScreen.Width / 4 - this.Size.Y / 2);
 
             _targetTop = this.Top;
         }
