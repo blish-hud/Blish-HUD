@@ -18,35 +18,19 @@ namespace Blish_HUD.Controls {
 
         private const string WINDOW_SETTINGS = "WindowSettings";
 
-        private static readonly Texture2D _textureTitleBarLeft;
-        private static readonly Texture2D _textureTitleBarRight;
-        private static readonly Texture2D _textureTitleBarLeftActive;
-        private static readonly Texture2D _textureTitleBarRightActive;
+        private static readonly Texture2D _textureTitleBarLeft        = Content.GetTexture("titlebar-inactive");
+        private static readonly Texture2D _textureTitleBarRight       = Content.GetTexture("window-topright");
+        private static readonly Texture2D _textureTitleBarLeftActive  = Content.GetTexture("titlebar-active");
+        private static readonly Texture2D _textureTitleBarRightActive = Content.GetTexture("window-topright-active");
 
-        private static readonly Texture2D _textureExitButton;
-        private static readonly Texture2D _textureExitButtonActive;
+        private static readonly Texture2D _textureExitButton       = Content.GetTexture("button-exit");
+        private static readonly Texture2D _textureExitButtonActive = Content.GetTexture("button-exit-active");
 
-        private static readonly Texture2D _textureWindowCorner;
-        private static readonly Texture2D _textureWindowResizableCorner;
-        private static readonly Texture2D _textureWindowResizableCornerActive;
+        private static readonly Texture2D _textureWindowCorner                = Content.GetTexture(@"controls/window/156008");
+        private static readonly Texture2D _textureWindowResizableCorner       = Content.GetTexture(@"controls/window/156009");
+        private static readonly Texture2D _textureWindowResizableCornerActive = Content.GetTexture(@"controls/window/156010");
 
-        private static readonly SettingCollection _windowSettings;
-
-        static WindowBase() {
-            _textureTitleBarLeft        = Content.GetTexture("titlebar-inactive");
-            _textureTitleBarRight       = Content.GetTexture("window-topright");
-            _textureTitleBarLeftActive  = Content.GetTexture("titlebar-active");
-            _textureTitleBarRightActive = Content.GetTexture("window-topright-active");
-
-            _textureExitButton       = Content.GetTexture("button-exit");
-            _textureExitButtonActive = Content.GetTexture("button-exit-active");
-
-            _textureWindowCorner                = Content.GetTexture(@"controls/window/156008");
-            _textureWindowResizableCorner       = Content.GetTexture(@"controls/window/156009");
-            _textureWindowResizableCornerActive = Content.GetTexture(@"controls/window/156010");
-
-            _windowSettings = GameService.Settings.Settings.AddSubCollection(WINDOW_SETTINGS);
-        }
+        private static readonly SettingCollection _windowSettings = GameService.Settings.Settings.AddSubCollection(WINDOW_SETTINGS);
 
         #endregion
 
