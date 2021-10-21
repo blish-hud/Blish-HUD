@@ -21,11 +21,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureArrow;
-
-        static MenuItem() {
-            _textureArrow = Content.GetTexture("156057");
-        }
+        private static readonly Texture2D _textureArrow = Content.GetTexture("156057");
 
         #endregion
 
