@@ -56,7 +56,7 @@ namespace Blish_HUD.Overlay.UI.Views {
             var version = new Label() {
                 AutoSizeHeight = true,
                 AutoSizeWidth  = true,
-                Text           = $"Blish HUD v{Program.OverlayVersion}",
+                Text           = $"Blish HUD v{Program.OverlayVersion.BaseAndPrerelease()}",
                 Font           = GameService.Content.DefaultFont14,
                 StrokeText     = true,
                 ClipsBounds    = false,
