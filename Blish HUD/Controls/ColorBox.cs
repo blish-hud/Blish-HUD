@@ -54,38 +54,24 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private static readonly TextureRegion2D[] _possibleDrawVariations;
-        private static readonly TextureRegion2D   _spriteDyeChannel;
-        private static readonly TextureRegion2D   _spriteDyeChannelX2;
-        private static readonly TextureRegion2D   _spriteDyeChannelX2Vertical;
-        private static readonly TextureRegion2D   _spriteDyeChannelX4;
-        private static readonly TextureRegion2D   _spriteHighlight;
-        private static readonly TextureRegion2D   _spriteHover;
+        // Sprites used on the dye selection panel in game
+        private static readonly TextureRegion2D[] _possibleDrawVariations = new TextureRegion2D[] {
+            Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_ONE_NAME), Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_TWO_NAME),
+            Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_THREE_NAME), Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_FOUR_NAME),
+        };
 
-        static ColorBox() {
+        // Sprite when square with > 24 size, sprite used in the dye channel of armor in game
+        private static readonly TextureRegion2D _spriteDyeChannel           = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_NAME);
 
-            // Load static sprite regions
+        // Sprite when rectangle with more width than height, texture used in the dye channel of armor, appears when 1 < channels < 4
+        private static readonly TextureRegion2D _spriteDyeChannelX2         = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X2_NAME);
+        private static readonly TextureRegion2D _spriteDyeChannelX2Vertical = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X2_VERTICAL_NAME);
 
-            // Sprites used on the dye selection panel in game
-            _possibleDrawVariations = new TextureRegion2D[] {
-                Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_ONE_NAME), Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_TWO_NAME),
-                Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_THREE_NAME), Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_VERSION_FOUR_NAME),
-            };
-            // Sprite when square with > 24 size, sprite used in the dye channel of armor in game
-            _spriteDyeChannel = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_NAME);
-
-            // Sprite when rectangle with more width than height, texture used in the dye channel of armor, appears when 1 < channels < 4
-            _spriteDyeChannelX2 = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X2_NAME);
-            _spriteDyeChannelX2Vertical = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X2_VERTICAL_NAME);
-
-            // Sprite for when both width and height > 64, texture used in the dye channel of armor, for 1 channel armor
-            _spriteDyeChannelX4 = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X4_NAME);
-
-            _spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion(HIGHLIGHT_NAME);
-            _spriteHover = Resources.Control.TextureAtlasControl.GetRegion(HOVER_NAME);
-        }
-
-
+        // Sprite for when both width and height > 64, texture used in the dye channel of armor, for 1 channel armor
+        private static readonly TextureRegion2D _spriteDyeChannelX4         = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X4_NAME);
+        private static readonly TextureRegion2D _spriteHighlight            = Resources.Control.TextureAtlasControl.GetRegion(HIGHLIGHT_NAME);
+        private static readonly TextureRegion2D _spriteHover                = Resources.Control.TextureAtlasControl.GetRegion(HOVER_NAME);
+        
         public ColorBox() : base() {
             Size = new Point(DEFAULT_COLOR_SIZE);
 
