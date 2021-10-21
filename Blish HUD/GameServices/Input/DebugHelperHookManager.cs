@@ -10,12 +10,12 @@ namespace Blish_HUD.Input {
 
         private static readonly Logger Logger = Logger.GetLogger<DebugHelperHookManager>();
 
-        private IMouseHookManager    mouseHookManager;
-        private IKeyboardHookManager keyboardHookManager;
-        private Process              process;
-        private IMessageService      debugHelperMessageService;
-        private Timer                pingTimer;
-        private bool                 isHookEnabled = false;
+        private IMouseHookManager    _mouseHookManager;
+        private IKeyboardHookManager _keyboardHookManager;
+        private Process              _process;
+        private IMessageService      _debugHelperMessageService;
+        private Timer                _pingTimer;
+        private bool                 _isHookEnabled = false;
 
         public void Load() {
             Logger.Debug("Loading DebugHelper input hooks");
@@ -23,7 +23,7 @@ namespace Blish_HUD.Input {
             using var currentProcess = Process.GetCurrentProcess();
             var processFileName = currentProcess.MainModule.FileName;
 
-            process = new Process {
+            _process = new Process {
                 StartInfo = new ProcessStartInfo(processFileName, $"--mainprocessid {currentProcess.Id}") {
                     RedirectStandardInput  = true,
                     RedirectStandardOutput = true,
@@ -31,63 +31,63 @@ namespace Blish_HUD.Input {
                     CreateNoWindow         = true
                 }
             };
-            process.Exited += Process_Exited;
+            _process.Exited += Process_Exited;
 
-            Logger.Debug("Starting subprocess: \"{FileName}\" {Arguments}", process.StartInfo.FileName, process.StartInfo.Arguments);
-            process.Start();
+            Logger.Debug("Starting subprocess: \"{FileName}\" {Arguments}", _process.StartInfo.FileName, _process.StartInfo.Arguments);
+            _process.Start();
 
-            debugHelperMessageService = new StreamMessageService(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
-            debugHelperMessageService.Start();
+            _debugHelperMessageService = new StreamMessageService(_process.StandardOutput.BaseStream, _process.StandardInput.BaseStream);
+            _debugHelperMessageService.Start();
 
-            pingTimer         =  new Timer(10) { AutoReset = true };
-            pingTimer.Elapsed += (s, e) => debugHelperMessageService.Send(new PingMessage());
-            pingTimer.Start();
+            _pingTimer         =  new Timer(10) { AutoReset = true };
+            _pingTimer.Elapsed += (s, e) => _debugHelperMessageService.Send(new PingMessage());
+            _pingTimer.Start();
 
-            mouseHookManager    = new DebugHelperMouseHookManager(debugHelperMessageService);
-            keyboardHookManager = new DebugHelperKeyboardHookManager(debugHelperMessageService);
+            _mouseHookManager    = new DebugHelperMouseHookManager(_debugHelperMessageService);
+            _keyboardHookManager = new DebugHelperKeyboardHookManager(_debugHelperMessageService);
         }
 
         private void Process_Exited(object sender, EventArgs e) {
-            Logger.Debug("Subprocess with id {ProcessId} has exited with exit code {ExitCode}", process.Id, process.ExitCode);
+            Logger.Debug("Subprocess with id {ProcessId} has exited with exit code {ExitCode}", _process.Id, _process.ExitCode);
         }
 
         public void Unload() {
             Logger.Debug("Unloading DebugHelper input hooks");
-            debugHelperMessageService.Stop();
-            pingTimer.Stop();
-            Logger.Debug("Killing subprocess with id {ProcessId}", process.Id);
-            if (!process.HasExited) process.Kill();
-            debugHelperMessageService = null;
-            process                   = null;
+            _debugHelperMessageService.Stop();
+            _pingTimer.Stop();
+            Logger.Debug("Killing subprocess with id {ProcessId}", _process.Id);
+            if (!_process.HasExited) _process.Kill();
+            _debugHelperMessageService = null;
+            _process                   = null;
         }
 
         public bool EnableHook() {
-            if (isHookEnabled) return false;
+            if (_isHookEnabled) return false;
 
             Logger.Debug("Enabling DebugHelper input hooks");
 
-            isHookEnabled = mouseHookManager.EnableHook() && keyboardHookManager.EnableHook();
-            return isHookEnabled;
+            _isHookEnabled = _mouseHookManager.EnableHook() && _keyboardHookManager.EnableHook();
+            return _isHookEnabled;
         }
 
         public void DisableHook() {
-            if (!isHookEnabled) return;
+            if (!_isHookEnabled) return;
 
             Logger.Debug("Disabling DebugHelper input hooks");
 
-            mouseHookManager.DisableHook();
-            keyboardHookManager.DisableHook();
+            _mouseHookManager.DisableHook();
+            _keyboardHookManager.DisableHook();
 
-            isHookEnabled = false;
+            _isHookEnabled = false;
         }
 
-        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.RegisterHandler(handleMouseInputCallback); }
+        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { _mouseHookManager.RegisterHandler(handleMouseInputCallback); }
 
-        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.UnregisterHandler(handleMouseInputCallback); }
+        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { _mouseHookManager.UnregisterHandler(handleMouseInputCallback); }
 
-        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.RegisterHandler(handleKeyboardInputCallback); }
+        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { _keyboardHookManager.RegisterHandler(handleKeyboardInputCallback); }
 
-        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback); }
+        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { _keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback); }
 
         #region IDisposable Support
 
@@ -97,8 +97,8 @@ namespace Blish_HUD.Input {
             if (!isDisposed) {
                 if (isDisposing) {
                     Unload();
-                    process?.Dispose();
-                    pingTimer?.Dispose();
+                    _process?.Dispose();
+                    _pingTimer?.Dispose();
                 }
 
                 isDisposed = true;
