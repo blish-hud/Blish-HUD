@@ -16,26 +16,15 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly SynchronizedCollection<ScreenNotification> _activeScreenNotifications;
+        private static readonly SynchronizedCollection<ScreenNotification> _activeScreenNotifications = new SynchronizedCollection<ScreenNotification>();
 
-        private static readonly BitmapFont _fontMenomonia36Regular;
+        private static readonly BitmapFont _fontMenomonia36Regular = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular);
 
-        private static readonly Texture2D _textureGrayBackground;
-        private static readonly Texture2D _textureBlueBackground;
-        private static readonly Texture2D _textureGreenBackground;
-        private static readonly Texture2D _textureRedBackground;
-
-        static ScreenNotification() {
-            _activeScreenNotifications = new SynchronizedCollection<ScreenNotification>();
-
-            _fontMenomonia36Regular = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular);
-
-            _textureGrayBackground  = Content.GetTexture(@"controls/notification/notification-gray");
-            _textureBlueBackground  = Content.GetTexture(@"controls/notification/notification-blue");
-            _textureGreenBackground = Content.GetTexture(@"controls/notification/notification-green");
-            _textureRedBackground   = Content.GetTexture(@"controls/notification/notification-red");
-        }
-
+        private static readonly Texture2D _textureGrayBackground  = Content.GetTexture(@"controls/notification/notification-gray");
+        private static readonly Texture2D _textureBlueBackground  = Content.GetTexture(@"controls/notification/notification-blue");
+        private static readonly Texture2D _textureGreenBackground = Content.GetTexture(@"controls/notification/notification-green");
+        private static readonly Texture2D _textureRedBackground   = Content.GetTexture(@"controls/notification/notification-red");
+        
         #endregion
 
         public enum NotificationType {
