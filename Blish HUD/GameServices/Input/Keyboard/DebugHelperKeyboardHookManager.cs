@@ -7,8 +7,6 @@ namespace Blish_HUD.Input {
 
     internal class DebugHelperKeyboardHookManager : DebugHelperInputHookManager<HandleKeyboardInputDelegate, KeyboardEventMessage>, IKeyboardHookManager {
 
-        private static readonly Logger Logger = Logger.GetLogger<DebugHelperKeyboardHookManager>();
-
         public DebugHelperKeyboardHookManager(IMessageService debugHelperMessageService) : base(debugHelperMessageService) { }
 
         protected override void HookCallback(KeyboardEventMessage message) {
