@@ -9,14 +9,14 @@ namespace Blish_HUD.Controls {
     public class StandardWindow : WindowBase2 {
 
         public StandardWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) {
-            this.ConstructWindow(background, windowRegion, contentRegion);
+            ConstructWindow(background, windowRegion, contentRegion);
         }
 
         /// <summary>
         /// Shows the window with the provided view.
         /// </summary>
         public void Show(IView view) {
-            this.ShowView(view);
+            ShowView(view);
             base.Show();
         }
 
