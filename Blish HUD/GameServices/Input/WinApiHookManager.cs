@@ -20,9 +20,9 @@ namespace Blish_HUD.Input {
             keyboardHookManager = new WinApiKeyboardHookManager();
         }
 
-        public void Load() { }
+        public void Load() { /* NOOP */ }
 
-        public void Unload() { DisableHook(); }
+        public void Unload() => DisableHook();
 
         public bool EnableHook() {
             if (thread != null) return false;
