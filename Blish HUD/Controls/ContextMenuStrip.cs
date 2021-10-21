@@ -26,13 +26,11 @@ namespace Blish_HUD.Controls {
 
         private static readonly List<WeakReference<ContextMenuStrip>> _contextMenuStrips = new List<WeakReference<ContextMenuStrip>>();
 
-        private static readonly Texture2D _textureMenuEdge;
+        private static readonly Texture2D _textureMenuEdge = Content.GetTexture("scrollbar-track");
 
         private static double _lastOpenTime;
 
         static ContextMenuStrip() {
-            _textureMenuEdge = Content.GetTexture("scrollbar-track");
-
             Input.Mouse.LeftMouseButtonPressed += HandleMouseButtonPressed;
             Input.Mouse.RightMouseButtonPressed += HandleMouseButtonPressed;
         }
