@@ -106,7 +106,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private ContextMenuStripItem BuildClearSettingsMenuItem() {
             var clearSettings = new ContextMenuStripItem() {Text = Strings.GameServices.ModulesService.ModuleOption_ClearSettings };
 
-            clearSettings.BasicTooltipText = (clearSettings.Enabled = !this.Model.Enabled) == true
+            clearSettings.BasicTooltipText = (clearSettings.Enabled = !this.Model.Enabled)
                                                  ? Strings.GameServices.ModulesService.ModuleOption_ClearSettings_DescriptionEnabled
                                                  : Strings.GameServices.ModulesService.ModuleOption_ClearSettings_DescriptionDisabled;
 
