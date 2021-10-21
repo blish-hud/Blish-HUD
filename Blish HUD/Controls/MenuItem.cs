@@ -75,7 +75,7 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _menuDepth, value);
         }
 
-        protected string _text = "";
+        protected string _text;
         public string Text {
             get => _text;
             set => SetProperty(ref _text, value);
