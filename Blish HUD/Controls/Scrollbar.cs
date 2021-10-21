@@ -152,7 +152,7 @@ namespace Blish_HUD.Controls {
                 ctrl = ctrl.Parent;
             }
 
-            if (e.MouseState.ScrollWheelValue == 0) return;
+            if (GameService.Input.Mouse.State.ScrollWheelValue == 0) return;
 
             float normalScroll = Math.Sign(GameService.Input.Mouse.State.ScrollWheelValue);
             ScrollAnimated((int)normalScroll * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
