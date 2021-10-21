@@ -245,10 +245,8 @@ namespace Blish_HUD.Controls {
             if (this.Visible) return;
 
             // Restore position from previous session
-            if (this.SavesPosition && this.Id != null) {
-                if (_windowSettings.TryGetSetting(this.Id, out var windowPosition)) {
-                    this.Location = (windowPosition as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
-                }
+            if (this.SavesPosition && this.Id != null && _windowSettings.TryGetSetting(this.Id, out var windowPosition)) {
+                this.Location = (windowPosition as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
             }
 
             // Ensure that the window is actually on the screen (accounts for screen size changes, etc.)
