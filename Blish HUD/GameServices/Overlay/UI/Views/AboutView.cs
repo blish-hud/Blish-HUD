@@ -86,8 +86,8 @@ namespace Blish_HUD.Overlay.UI.Views {
                                                                                                                    : string.Format(Strings.GameServices.OverlayService.ConnectionStatus_Mumble_Disconnected, GameService.Gw2Mumble.CurrentMumbleMapName))));
 
             arcdpsBridgeConnection.Show(new ConnectionStatusView().WithPresenter(new ConnectionStatusPresenter(() => Strings.GameServices.OverlayService.ConnectionStatus_ArcDPSBridge_Name,
-                                                                                                               () => !GameService.ArcDps.HudIsActive,
-                                                                                                               () => !GameService.ArcDps.HudIsActive
+                                                                                                               () => GameService.ArcDps.HudIsActive,
+                                                                                                               () => GameService.ArcDps.HudIsActive 
                                                                                                                          ? Strings.GameServices.OverlayService.ConnectionStatus_ArcDPSBridge_Connected
                                                                                                                          : Strings.GameServices.OverlayService.ConnectionStatus_ArcDPSBridge_Disconnected)));
         }
