@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -21,6 +22,10 @@ namespace Blish_HUD {
         public static SemVer.Version OverlayVersion { get; } = new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
 
         private static string[] StartupArgs;
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetDllDirectory(string lpPathName);
 
         public static bool RestartOnExit {
             get;
@@ -40,11 +45,28 @@ namespace Blish_HUD {
             }
         }
 
+        private static void HandleArcDps11Contingency() {
+            if (File.Exists("d3d11.dll")) {
+                MessageBox.Show("There is a custom 'd3dll.dll' (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please move Blish HUD to a different folder.",
+                                "Blish HUD Can't Run!",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
+        }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         private static void Main(string[] args) {
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
+
+            if (!SetDllDirectory("")) {
+                MessageBox.Show(Marshal.GetLastWin32Error().ToString());
+            }
+
+            HandleArcDps11Contingency();
+
             StartupArgs = args;
             var settings = Cli.Parse<ApplicationSettings>(args);
 
@@ -55,8 +77,6 @@ namespace Blish_HUD {
             }
 
             if (settings.CliExitEarly) return;
-
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
 
             EnableLogging();
 
