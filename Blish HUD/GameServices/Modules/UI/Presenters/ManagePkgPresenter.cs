@@ -1,11 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Views;
-using Flurl.Http;
 using Version = SemVer.Version;
 
 namespace Blish_HUD.Modules.UI.Presenters {
