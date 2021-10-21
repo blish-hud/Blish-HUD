@@ -10,9 +10,9 @@ namespace Blish_HUD.Input {
 
         private readonly IMouseHookManager    mouseHookManager;
         private readonly IKeyboardHookManager keyboardHookManager;
-        private          bool                 stopRequested = false;
+        private readonly AutoResetEvent       inputHookEvent = new AutoResetEvent(false);
+        private          bool                 stopRequested  = false;
         private          Thread               thread;
-        private          AutoResetEvent       inputHookEvent  = new AutoResetEvent(false);
         private          bool                 inputSuccessful = false;
 
         public WinApiHookManager() {
