@@ -49,7 +49,7 @@ namespace Blish_HUD.Input {
                 return "";
             }
 
-            int result = ToUnicode(vkCode, scanCode, keyState, output, (int)5, (uint)0);
+            int result = ToUnicode(vkCode, scanCode, keyState, output, 5, 0);
 
             switch (result) {
                 case -1:
