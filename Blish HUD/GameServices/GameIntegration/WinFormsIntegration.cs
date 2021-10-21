@@ -22,7 +22,9 @@ namespace Blish_HUD.GameIntegration {
         /// </summary>
         public ContextMenuStrip TrayIconMenu { get; private set; }
 
-        public WinFormsIntegration(GameIntegrationService service) : base(service) {
+        public WinFormsIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+
+        public override void Load() {
             WrapMainForm();
             BuildTrayIcon();
         }
