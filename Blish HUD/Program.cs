@@ -23,10 +23,6 @@ namespace Blish_HUD {
 
         private static string[] StartupArgs;
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetDllDirectory(string lpPathName);
-
         public static bool RestartOnExit {
             get;
             set;
@@ -61,10 +57,7 @@ namespace Blish_HUD {
         private static void Main(string[] args) {
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
 
-            if (!SetDllDirectory("")) {
-                MessageBox.Show(Marshal.GetLastWin32Error().ToString());
-            }
-
+            // TODO: Get SetDllDirectory("") working so that we can protect ourselves from this
             HandleArcDps11Contingency();
 
             StartupArgs = args;
