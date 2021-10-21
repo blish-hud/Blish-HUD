@@ -31,23 +31,14 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _texturePanelHeader;
-        private static readonly Texture2D _texturePanelHeaderActive;
+        private static readonly Texture2D _texturePanelHeader       = Content.GetTexture("controls/panel/1032325");
+        private static readonly Texture2D _texturePanelHeaderActive = Content.GetTexture("controls/panel/1032324");
 
-        private static readonly Texture2D _textureCornerAccent;
-        private static readonly Texture2D _textureLeftSideAccent;
 
-        private static readonly Texture2D _textureAccordionArrow;
+        private static readonly Texture2D _textureCornerAccent   = Content.GetTexture("controls/panel/1002144");
+        private static readonly Texture2D _textureLeftSideAccent = Content.GetTexture("605025");
 
-        static Panel() {
-            _texturePanelHeader       = Content.GetTexture("controls/panel/1032325");
-            _texturePanelHeaderActive = Content.GetTexture("controls/panel/1032324");
-
-            _textureCornerAccent   = Content.GetTexture("controls/panel/1002144");
-            _textureLeftSideAccent = Content.GetTexture("605025");
-
-            _textureAccordionArrow = Content.GetTexture("controls/panel/155953");
-        }
+        private static readonly Texture2D _textureAccordionArrow = Content.GetTexture("controls/panel/155953");
 
         #endregion
 
