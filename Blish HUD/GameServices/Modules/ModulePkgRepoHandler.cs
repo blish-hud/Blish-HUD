@@ -188,7 +188,7 @@ namespace Blish_HUD.Modules {
 
             var installResult = await InstallPackage(pkgManifest, existingModule, progress);
 
-            if (wasEnabled && existingModule != null) {
+            if (wasEnabled) {
                 // Ensure that module is set to enabled for when Blish HUD restarts
                 GameService.Module.ModuleStates.Value[existingModule.Manifest.Namespace].Enabled = true;
                 GameService.Settings.Save();
