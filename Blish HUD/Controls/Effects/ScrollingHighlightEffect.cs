@@ -41,14 +41,10 @@ namespace Blish_HUD.Controls.Effects {
             }
         }
 
-        private float _duration = DEFAULT_ANIMATION_DURATION;
         /// <summary>
         /// The duration of the wipe effect when the mouse enters the control.
         /// </summary>
-        public float Duration {
-            get => _duration;
-            set => _duration = value;
-        }
+        public float Duration { get; set; } = DEFAULT_ANIMATION_DURATION;
 
         private bool _forceActive;
         /// <summary>
@@ -104,7 +100,7 @@ namespace Blish_HUD.Controls.Effects {
                                      .Tweener
                                      .Tween(this,
                                             new { ScrollRoller = 1f },
-                                            _duration);
+                                            this.Duration);
 
             _mouseOver = true;
         }
