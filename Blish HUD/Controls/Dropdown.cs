@@ -165,18 +165,11 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureInputBox;
+        private static readonly Texture2D _textureInputBox = Content.GetTexture("input-box");
 
-        private static readonly TextureRegion2D _textureArrow;
-        private static readonly TextureRegion2D _textureArrowActive;
-
-        static Dropdown() {
-            _textureInputBox = Content.GetTexture("input-box");
-
-            _textureArrow       = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow");
-            _textureArrowActive = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow-active");
-        }
-
+        private static readonly TextureRegion2D _textureArrow       = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow");
+        private static readonly TextureRegion2D _textureArrowActive = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow-active");
+        
         #endregion
 
         #region Events
