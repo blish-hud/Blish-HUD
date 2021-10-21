@@ -8,7 +8,7 @@ namespace Blish_HUD {
 
         public static unsafe byte[] GetBytes(this string str) {
             if (str == null) throw new ArgumentNullException(nameof(str));
-            if (str.Length == 0) return new byte[0];
+            if (str.Length == 0) return Array.Empty<byte>();
 
             fixed (char* p = str) {
                 return new Span<byte>(p, str.Length * _charSize).ToArray();
@@ -29,7 +29,6 @@ namespace Blish_HUD {
         public static string GetMD5Hash(this string str) {
             // Use input string to calculate MD5 hash
             using (var md5 = System.Security.Cryptography.MD5.Create()) {
-                //byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(str);
                 byte[] inputBytes = str.GetBytes();
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
 

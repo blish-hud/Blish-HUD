@@ -75,7 +75,7 @@ namespace Blish_HUD.Gw2WebApi {
                 this.Tokens = Math.Min(this.Tokens - this.RefillAmount, -1);
 
                 if (remainingAttempts > 0) {
-                    return await ConsumeCompliant<T>(updateFunc, --remainingAttempts);
+                    return await ConsumeCompliant<T>(updateFunc, remainingAttempts - 1);
                 }
 
                 // Too many attempts

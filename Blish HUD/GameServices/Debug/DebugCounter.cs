@@ -13,8 +13,7 @@ namespace Blish_HUD.Debug {
         private static readonly Stopwatch _sharedStopwatch;
 
         static DebugCounter() {
-            _sharedStopwatch = new Stopwatch();
-            _sharedStopwatch.Start();
+            _sharedStopwatch = Stopwatch.StartNew();
         }
 
         #endregion

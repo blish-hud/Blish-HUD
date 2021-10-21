@@ -14,8 +14,6 @@ namespace Blish_HUD {
 
         private static readonly Regex MUMBLE_LINK_REGEX = new Regex("^.+-mumble\\s+?\"?([^\" ]*)\"?.*$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        private readonly TimeSpan _syncDelay = TimeSpan.FromMilliseconds(3);
-
         private readonly IGw2Client _gw2Client;
 
         /// <inheritdoc cref="Gw2MumbleClient"/>

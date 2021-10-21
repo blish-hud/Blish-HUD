@@ -67,18 +67,11 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureFillCrest;
-        private static readonly Texture2D _textureVignette;
-        private static readonly Texture2D _textureCornerButton;
-        private static readonly Texture2D _textureBottomSectionSeparator;
-
-        static DetailsButton() {
-            _textureFillCrest              = Content.GetTexture(@"controls/detailsbutton/605004");
-            _textureVignette               = Content.GetTexture(@"controls/detailsbutton/605003");
-            _textureCornerButton           = Content.GetTexture(@"controls/detailsbutton/605011");
-            _textureBottomSectionSeparator = Content.GetTexture(@"157218");
-        }
-
+        private static readonly Texture2D _textureFillCrest              = Content.GetTexture(@"controls/detailsbutton/605004");
+        private static readonly Texture2D _textureVignette               = Content.GetTexture(@"controls/detailsbutton/605003");
+        private static readonly Texture2D _textureCornerButton           = Content.GetTexture(@"controls/detailsbutton/605011");
+        private static readonly Texture2D _textureBottomSectionSeparator = Content.GetTexture(@"157218");
+        
         #endregion
 
         private DetailsDisplayMode   _displayMode = DetailsDisplayMode.Standard;

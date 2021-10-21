@@ -88,10 +88,8 @@ namespace Blish_HUD.Modules {
         #region Module Update Indicators
 
         private bool GetUpdateIsNotAcknowledged(PkgManifest modulePkg) {
-            if (_acknowledgedUpdates.TryGetSetting(modulePkg.Namespace, out var setting)) {
-                if (setting is SettingEntry<string> acknowledgedModuleUpdate) {
-                    return modulePkg.Version > new SemVer.Version(acknowledgedModuleUpdate.Value, true);
-                }
+            if (_acknowledgedUpdates.TryGetSetting(modulePkg.Namespace, out var setting) && setting is SettingEntry<string> acknowledgedModuleUpdate) {
+                return modulePkg.Version > new SemVer.Version(acknowledgedModuleUpdate.Value, true);
             }
 
             return true;
@@ -190,7 +188,7 @@ namespace Blish_HUD.Modules {
 
             var installResult = await InstallPackage(pkgManifest, existingModule, progress);
 
-            if (wasEnabled && existingModule != null) {
+            if (wasEnabled) {
                 // Ensure that module is set to enabled for when Blish HUD restarts
                 GameService.Module.ModuleStates.Value[existingModule.Manifest.Namespace].Enabled = true;
                 GameService.Settings.Save();

@@ -6,7 +6,22 @@ using Blish_HUD.GameServices;
 namespace Blish_HUD {
     public abstract class GameService {
 
-        private static readonly GameService[] _allServices;
+        private static readonly GameService[] _allServices = new GameService[] {
+            Debug           = new DebugService(),
+            Input           = new InputService(),
+            Settings        = new SettingsService(),
+            Content         = new ContentService(),
+            Gw2Mumble       = new Gw2MumbleService(),
+            Gw2WebApi       = new Gw2WebApiService(),
+            Animation       = new AnimationService(),
+            Graphics        = new GraphicsService(),
+            Overlay         = new OverlayService(),
+            GameIntegration = new GameIntegrationService(),
+            ArcDps          = new ArcDpsService(),
+            Contexts        = new ContextsService(),
+            Module          = new ModuleService()
+        };
+
         public static IReadOnlyList<GameService> All => _allServices;
 
         public event EventHandler<EventArgs> FinishedLoading;
@@ -82,26 +97,6 @@ namespace Blish_HUD {
         public static readonly ModuleService          Module;
 
         #endregion
-
-        static GameService() {
-            // Init game services
-            _allServices = new GameService[] {
-                Debug           = new DebugService(),
-                Input           = new InputService(),
-                Settings        = new SettingsService(),
-                Content         = new ContentService(),
-                Gw2Mumble       = new Gw2MumbleService(),
-                Gw2WebApi       = new Gw2WebApiService(),
-                Animation       = new AnimationService(),
-                Graphics        = new GraphicsService(),
-                Overlay         = new OverlayService(),
-                GameIntegration = new GameIntegrationService(),
-                ArcDps          = new ArcDpsService(),
-                Contexts        = new ContextsService(),
-                Module          = new ModuleService()
-            };
-
-        }
 
     }
 }

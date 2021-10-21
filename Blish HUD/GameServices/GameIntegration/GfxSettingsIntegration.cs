@@ -222,7 +222,7 @@ namespace Blish_HUD.GameIntegration {
                     // GW2 is likely still locking the file and should be done very soon.
                     Logger.Debug("Failed to read GSA file.  Trying again...");
                     await Task.Delay(100);
-                    await LoadGfxSettings(--remainingAttempts);
+                    await LoadGfxSettings(remainingAttempts - 1);
                 } else {
                     Logger.Warn(ex, $"Failed to parse GfxSettings after {FILELOCKED_ATTEMPTS} attempts.");
                 }

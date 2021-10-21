@@ -24,17 +24,10 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureDefaultBackround;
-        private static readonly Texture2D _textureSplitLine;
-        private static readonly Texture2D _textureBlackFade;
-        private static readonly Texture2D _textureTabActive;
-
-        static TabbedWindow() {
-            _textureDefaultBackround = Content.GetTexture("controls/window/502049");
-            _textureSplitLine        = Content.GetTexture("605024");
-            _textureBlackFade        = Content.GetTexture("fade-down-46");
-            _textureTabActive        = Content.GetTexture("window-tab-active");
-        }
+        private static readonly Texture2D _textureDefaultBackround = Content.GetTexture("controls/window/502049");
+        private static readonly Texture2D _textureSplitLine        = Content.GetTexture("605024");
+        private static readonly Texture2D _textureBlackFade        = Content.GetTexture("fade-down-46");
+        private static readonly Texture2D _textureTabActive        = Content.GetTexture("window-tab-active");
 
         #endregion
 

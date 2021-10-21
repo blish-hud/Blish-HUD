@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -21,18 +20,9 @@ namespace Blish_HUD {
 
         #region Load Static
 
-        private static readonly ConcurrentDictionary<string, SoundEffect> _loadedSoundEffects;
-        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts;
-        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures;
-        private static readonly ConcurrentDictionary<string, Stream>      _loadedFiles;
-
-        static ContentService() {
-            _loadedSoundEffects = new ConcurrentDictionary<string, SoundEffect>();
-            _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
-            _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
-            _loadedFiles        = new ConcurrentDictionary<string, Stream>();
-        }
-
+        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
+        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
+        
         #endregion
 
         public static class Colors {
@@ -106,7 +96,7 @@ namespace Blish_HUD {
             Italic
         }
 
-        public Microsoft.Xna.Framework.Content.ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
+        public ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
 
         protected override void Initialize() { /* NOOP */ }
 
@@ -233,12 +223,13 @@ namespace Blish_HUD {
 
         private const string RENDERSERVICE_REQUESTURL = "https://render.guildwars2.com/file/";
 
+        private static readonly Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
+
         /// <summary>
         /// Retreives a texture from the Guild Wars 2 Render Service.
         /// </summary>
         /// <param name="signature">The SHA1 signature of the requested texture.</param>
         /// <param name="fileId">The file id of the requested texture.</param>
-        /// <param name="size">Specifies the size of the texture requested - only some render service hosts will utilize this setting.</param>
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
         public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
@@ -270,8 +261,6 @@ namespace Blish_HUD {
 
             return returnedTexture;
         }
-
-        private static readonly Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
 
         /// <summary>
         /// Retreives a texture from the Guild Wars 2 Render Service.
@@ -311,8 +300,6 @@ namespace Blish_HUD {
         protected override void Unload() {
             _loadedTextures.Clear();
             _loadedBitmapFonts.Clear();
-            _loadedSoundEffects.Clear();
-            _loadedFiles.Clear();
         }
 
         protected override void Update(GameTime gameTime) { /* NOOP */ }

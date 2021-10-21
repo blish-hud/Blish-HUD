@@ -8,11 +8,7 @@ namespace Blish_HUD {
 
         #region Load Static
 
-        private static readonly Texture2D _loadingSpinnerTexture;
-
-        static LoadingSpinnerUtil() {
-            _loadingSpinnerTexture = GameService.Content.GetTexture("spinner-atlas");
-        }
+        private static readonly Texture2D _loadingSpinnerTexture = GameService.Content.GetTexture("spinner-atlas");
 
         #endregion
 
