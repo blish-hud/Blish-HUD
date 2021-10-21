@@ -64,7 +64,7 @@ namespace Blish_HUD.Input {
                     // for reference see https://gist.github.com/Ciantic/471698
                     if (_lastVirtKeyCode != 0 && _lastIsDead) {
                         var temp = new StringBuilder(5);
-                        ToUnicode(_lastVirtKeyCode, _lastScanCode, _lastKeyState, temp, (int)5, (uint)0);
+                        ToUnicode(_lastVirtKeyCode, _lastScanCode, _lastKeyState, temp, 5, 0);
                     }
 
                     _lastIsDead = true;
