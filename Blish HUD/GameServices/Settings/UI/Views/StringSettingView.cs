@@ -45,8 +45,8 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         private void StringTextboxOnInputFocusChanged(object sender, ValueEventArgs<bool> e) {
-            if (e.Value == false) {
-                this.OnValueChanged(new ValueEventArgs<string>(_stringTextbox.Text));
+            if (!e.Value) {
+                OnValueChanged(new ValueEventArgs<string>(_stringTextbox.Text));
             }
         }
 
