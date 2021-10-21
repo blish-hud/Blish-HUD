@@ -77,9 +77,9 @@ namespace Blish_HUD {
         public static readonly OverlayService         Overlay;
         public static readonly InputService           Input;
         public static readonly GameIntegrationService GameIntegration;
-        public static readonly ModuleService          Module;
         public static readonly ArcDpsService          ArcDps;
         public static readonly ContextsService        Contexts;
+        public static readonly ModuleService          Module;
 
         #endregion
 
@@ -96,9 +96,9 @@ namespace Blish_HUD {
                 Graphics        = new GraphicsService(),
                 Overlay         = new OverlayService(),
                 GameIntegration = new GameIntegrationService(),
-                Module          = new ModuleService(),
                 ArcDps          = new ArcDpsService(),
-                Contexts        = new ContextsService()
+                Contexts        = new ContextsService(),
+                Module          = new ModuleService()
             };
 
         }

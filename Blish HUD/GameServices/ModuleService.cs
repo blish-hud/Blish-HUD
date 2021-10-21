@@ -74,11 +74,8 @@ namespace Blish_HUD {
                 manifestContents = manifestReader.ReadToEnd();
             }
             var moduleManifest = JsonConvert.DeserializeObject<Manifest>(manifestContents);
-            bool enableModule = false;
 
-            if (_moduleStates.Value.ContainsKey(moduleManifest.Namespace)) {
-                enableModule = _moduleStates.Value[moduleManifest.Namespace].Enabled;
-            } else {
+            if (!_moduleStates.Value.ContainsKey(moduleManifest.Namespace)) {
                 _moduleStates.Value.Add(moduleManifest.Namespace, new ModuleState());
             }
 
@@ -90,7 +87,7 @@ namespace Blish_HUD {
 
             this.ModuleRegistered?.Invoke(this, new ValueEventArgs<ModuleManager>(moduleManager));
 
-            if (enableModule) {
+            if (moduleManifest.EnabledWithoutGW2 && _moduleStates.Value[moduleManifest.Namespace].Enabled) {
                 moduleManager.TryEnable();
             }
 
@@ -213,6 +210,20 @@ namespace Blish_HUD {
             foreach (string moduleArchivePath in Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
                 RegisterPackedModule(moduleArchivePath);
             }
+
+            if (GameService.GameIntegration.Gw2Instance.Gw2IsRunning) {
+                Gw2Instance_Gw2Started(null, null);
+            } else {
+                GameService.GameIntegration.Gw2Instance.Gw2Started += Gw2Instance_Gw2Started;
+            }
+        }
+
+        private void Gw2Instance_Gw2Started(object sender, EventArgs e) {
+            foreach (var module in _modules) {
+                if (module.State.Enabled) {
+                    module.TryEnable();
+                }
+            }
         }
 
         private          MenuItem                            _rootModuleSettingsMenuItem;
@@ -263,7 +274,8 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             foreach (var module in _modules) {
-                if (module.Enabled) {
+                // Only update enabled modules if we are in game or if the module specifies it can run without Guild Wars 2
+                if (module.Enabled && (GameIntegration.Gw2Instance.Gw2IsRunning || module.Manifest.EnabledWithoutGW2)) {
                     GameService.Debug.StartTimeFunc(module.Manifest.Name);
                     try {
                         module.ModuleInstance.DoUpdate(gameTime);
@@ -281,6 +293,8 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
+            GameService.GameIntegration.Gw2Instance.Gw2Started -= Gw2Instance_Gw2Started;
+
             foreach (var module in _modules) {
                 if (module.Enabled) {
                     try {
