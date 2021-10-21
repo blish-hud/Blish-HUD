@@ -63,7 +63,6 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _message, value);
         }
         
-        private Glide.Tween _animFadeLifecycle;
         private int _targetTop = 0;
 
         private Rectangle _layoutMessageBounds;
