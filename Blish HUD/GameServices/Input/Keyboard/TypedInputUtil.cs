@@ -57,7 +57,7 @@ namespace Blish_HUD.Input {
 
                     // clear buffer because it will otherwise crash `public Rectangle AbsoluteBounds` in Control.cs
                     // see also: http://archives.miloush.net/michkap/archive/2005/01/19/355870.html
-                    while (ToUnicode(vkCode, scanCode, keyState, output, (int)5, (uint)0) < 0) { }
+                    while (ToUnicode(vkCode, scanCode, keyState, output, 5, 0) < 0) { /* SPIN */ }
 
                     // reinject last key because apparently when calling functions related to keyboard inputs
                     // messes up their internal states everywhere. :rolleyes:
