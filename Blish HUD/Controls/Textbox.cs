@@ -13,11 +13,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureTextbox;
-
-        static TextBox() {
-            _textureTextbox = Content.GetTexture("textbox");
-        }
+        private static readonly Texture2D _textureTextbox = Content.GetTexture("textbox");
 
         #endregion
 
