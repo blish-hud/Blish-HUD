@@ -21,18 +21,11 @@ namespace Blish_HUD {
 
         #region Load Static
 
-        private static readonly ConcurrentDictionary<string, SoundEffect> _loadedSoundEffects;
-        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts;
-        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures;
-        private static readonly ConcurrentDictionary<string, Stream>      _loadedFiles;
-
-        static ContentService() {
-            _loadedSoundEffects = new ConcurrentDictionary<string, SoundEffect>();
-            _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
-            _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
-            _loadedFiles        = new ConcurrentDictionary<string, Stream>();
-        }
-
+        private static readonly ConcurrentDictionary<string, SoundEffect> _loadedSoundEffects = new ConcurrentDictionary<string, SoundEffect>();
+        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
+        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
+        private static readonly ConcurrentDictionary<string, Stream>      _loadedFiles        = new ConcurrentDictionary<string, Stream>();
+        
         #endregion
 
         public static class Colors {
