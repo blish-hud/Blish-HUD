@@ -11,8 +11,6 @@ using Version = SemVer.Version;
 namespace Blish_HUD.Modules.UI.Presenters {
     public class ManagePkgPresenter : Presenter<ManagePkgView, IGrouping<string, PkgManifest>> {
 
-        private static readonly Logger Logger = Logger.GetLogger<ManagePkgPresenter>();
-
         private ModuleManager _existingModule;
 
         private Func<PkgManifest, ModuleManager, IProgress<string>, Task<(ModuleManager NewModule, bool Success, string Error)>> _packageAction;
