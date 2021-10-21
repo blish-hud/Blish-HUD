@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -21,10 +20,8 @@ namespace Blish_HUD {
 
         #region Load Static
 
-        private static readonly ConcurrentDictionary<string, SoundEffect> _loadedSoundEffects = new ConcurrentDictionary<string, SoundEffect>();
         private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
         private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
-        private static readonly ConcurrentDictionary<string, Stream>      _loadedFiles        = new ConcurrentDictionary<string, Stream>();
         
         #endregion
 
@@ -99,7 +96,7 @@ namespace Blish_HUD {
             Italic
         }
 
-        public Microsoft.Xna.Framework.Content.ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
+        public ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
 
         protected override void Initialize() { /* NOOP */ }
 
@@ -304,8 +301,6 @@ namespace Blish_HUD {
         protected override void Unload() {
             _loadedTextures.Clear();
             _loadedBitmapFonts.Clear();
-            _loadedSoundEffects.Clear();
-            _loadedFiles.Clear();
         }
 
         protected override void Update(GameTime gameTime) { /* NOOP */ }
