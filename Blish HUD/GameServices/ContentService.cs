@@ -223,12 +223,13 @@ namespace Blish_HUD {
 
         private const string RENDERSERVICE_REQUESTURL = "https://render.guildwars2.com/file/";
 
+        private static readonly Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
+
         /// <summary>
         /// Retreives a texture from the Guild Wars 2 Render Service.
         /// </summary>
         /// <param name="signature">The SHA1 signature of the requested texture.</param>
         /// <param name="fileId">The file id of the requested texture.</param>
-        /// <param name="size">Specifies the size of the texture requested - only some render service hosts will utilize this setting.</param>
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
         public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
@@ -260,8 +261,6 @@ namespace Blish_HUD {
 
             return returnedTexture;
         }
-
-        private static readonly Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
 
         /// <summary>
         /// Retreives a texture from the Guild Wars 2 Render Service.
