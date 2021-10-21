@@ -88,10 +88,8 @@ namespace Blish_HUD.Modules {
         #region Module Update Indicators
 
         private bool GetUpdateIsNotAcknowledged(PkgManifest modulePkg) {
-            if (_acknowledgedUpdates.TryGetSetting(modulePkg.Namespace, out var setting)) {
-                if (setting is SettingEntry<string> acknowledgedModuleUpdate) {
-                    return modulePkg.Version > new SemVer.Version(acknowledgedModuleUpdate.Value, true);
-                }
+            if (_acknowledgedUpdates.TryGetSetting(modulePkg.Namespace, out var setting) && setting is SettingEntry<string> acknowledgedModuleUpdate) {
+                return modulePkg.Version > new SemVer.Version(acknowledgedModuleUpdate.Value, true);
             }
 
             return true;
