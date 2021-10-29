@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -168,7 +167,7 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void HandleProcessUpdate(Process newProcess) {
-            if (newProcess == null || _gw2Process.MainWindowHandle == IntPtr.Zero) {
+            if (newProcess == null || _gw2Process.HasExited || _gw2Process.MainWindowHandle == IntPtr.Zero) {
                 BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = false; }));
 
                 _gw2Process = null;
@@ -197,8 +196,6 @@ namespace Blish_HUD.GameIntegration {
                 } catch (NullReferenceException e) {
                     Logger.Warn(e, "Failed to grab Guild Wars 2 env variable.  It is likely exiting.");
                 }
-
-
 
                 // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
                 // window is the game window name (so we know we are passed the login screen)
@@ -258,6 +255,8 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private Process GetMumbleSpecifiedGw2Process() {
+            GameService.Gw2Mumble.RefreshClient();
+
             if (GameService.Gw2Mumble.IsAvailable) {
                 return GetGw2ProcessByPID((int)GameService.Gw2Mumble.Info.ProcessId, "Mumble reported PID");
             }
@@ -341,7 +340,9 @@ namespace Blish_HUD.GameIntegration {
                         break;
                 }
 
-                BlishHud.Instance.Form.Visible = !updateResult.Minimized;
+                if (BlishHud.Instance.Form.Visible != !updateResult.Minimized) {
+                    BlishHud.Instance.Form.Visible = !updateResult.Minimized;
+                }
             } else {
                 TryAttachToGw2();
             }

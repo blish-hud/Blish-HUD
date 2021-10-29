@@ -1,6 +1,7 @@
 ﻿using Blish_HUD.Graphics.UI;
 using System;
 using Blish_HUD.Controls;
+using Blish_HUD.Overlay.UI.Presenters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -55,7 +56,7 @@ namespace Blish_HUD.Overlay.UI.Views {
             var version = new Label() {
                 AutoSizeHeight = true,
                 AutoSizeWidth  = true,
-                Text           = $"Blish HUD v{Program.OverlayVersion}",
+                Text           = $"Blish HUD v{Program.OverlayVersion.BaseAndPrerelease()}",
                 Font           = GameService.Content.DefaultFont14,
                 StrokeText     = true,
                 ClipsBounds    = false,
@@ -63,6 +64,32 @@ namespace Blish_HUD.Overlay.UI.Views {
             };
 
             version.Location = new Point(buildPanel.Width - version.Width + 8, buildPanel.Height - version.Height);
+
+            var mumbleConnection = new ViewContainer() {
+                Size   = new Point(128, 20),
+                Left   = 8,
+                Bottom = version.Bottom,
+                Parent = buildPanel
+            };
+
+            var arcdpsBridgeConnection = new ViewContainer() {
+                Size   = new Point(128, 20),
+                Bottom = version.Bottom,
+                Left   = mumbleConnection.Right,
+                Parent = buildPanel
+            };
+
+            mumbleConnection.Show(new ConnectionStatusView().WithPresenter(new ConnectionStatusPresenter(() => Strings.GameServices.OverlayService.ConnectionStatus_Mumble_Name,
+                                                                                                         () => GameService.Gw2Mumble.IsAvailable,
+                                                                                                         () => GameService.Gw2Mumble.IsAvailable
+                                                                                                                   ? string.Format(Strings.GameServices.OverlayService.ConnectionStatus_Mumble_Connected, GameService.Gw2Mumble.CurrentMumbleMapName)
+                                                                                                                   : string.Format(Strings.GameServices.OverlayService.ConnectionStatus_Mumble_Disconnected, GameService.Gw2Mumble.CurrentMumbleMapName))));
+
+            arcdpsBridgeConnection.Show(new ConnectionStatusView().WithPresenter(new ConnectionStatusPresenter(() => Strings.GameServices.OverlayService.ConnectionStatus_ArcDPSBridge_Name,
+                                                                                                               () => GameService.ArcDps.HudIsActive,
+                                                                                                               () => GameService.ArcDps.HudIsActive 
+                                                                                                                         ? Strings.GameServices.OverlayService.ConnectionStatus_ArcDPSBridge_Connected
+                                                                                                                         : Strings.GameServices.OverlayService.ConnectionStatus_ArcDPSBridge_Disconnected)));
         }
 
     }

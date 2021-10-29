@@ -11,11 +11,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureMenuItemFade;
-
-        static Menu() {
-            _textureMenuItemFade = Content.GetTexture("156044");
-        }
+        private static readonly Texture2D _textureMenuItemFade = Content.GetTexture("156044");
 
         #endregion
 

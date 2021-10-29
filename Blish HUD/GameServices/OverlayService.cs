@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
-using Blish_HUD.Modules.Pkgs;
-using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Overlay;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
@@ -150,20 +145,7 @@ namespace Blish_HUD {
         public void Restart() {
             if (!this.BeginExit(0)) return;
 
-            // REF: https://referencesource.microsoft.com/#System.Windows.Forms/winforms/Managed/System/WinForms/Application.cs,1447
-
-            var arguments = Environment.GetCommandLineArgs()
-                                                      .Skip(1)
-                                                      .Where(arg => !string.Equals(arg, $"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}", StringComparison.OrdinalIgnoreCase))
-                                                      .Append($"--{ApplicationSettings.OPTION_RESTARTSKIPMUTEX}")
-                                                      .Select(arg => $"\"{arg}\"");
-
-            var currentStartInfo = Process.GetCurrentProcess().StartInfo;
-            currentStartInfo.FileName  = Application.ExecutablePath;
-            currentStartInfo.Arguments = string.Join(" ", arguments);
-
-            Process.Start(currentStartInfo);
-
+            Program.RestartOnExit = true;
             ActiveBlishHud.Exit();
         }
 

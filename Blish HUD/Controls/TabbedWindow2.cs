@@ -16,11 +16,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureTabActive;
-
-        static TabbedWindow2() {
-            _textureTabActive = Content.GetTexture("window-tab-active");
-        }
+        private static readonly Texture2D _textureTabActive = Content.GetTexture("window-tab-active");
 
         #endregion
 

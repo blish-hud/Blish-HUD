@@ -13,11 +13,7 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureWindowTexture;
-
-        static KeybindingAssignmentWindow() {
-            _textureWindowTexture = Content.GetTexture("hotkey-window");
-        }
+        private static readonly Texture2D _textureWindowTexture = Content.GetTexture("hotkey-window");
 
         #endregion
 

@@ -52,7 +52,7 @@ namespace Blish_HUD.Settings.UI.Views {
             };
         }
 
-        public void SetSettingView(View view) {
+        public void SetSettingView(IView view) {
             _settingViewContainer.Show(view);
         }
 

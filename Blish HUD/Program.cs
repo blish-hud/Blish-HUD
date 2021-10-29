@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -20,6 +21,13 @@ namespace Blish_HUD {
 
         public static SemVer.Version OverlayVersion { get; } = new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
 
+        private static string[] StartupArgs;
+
+        public static bool RestartOnExit {
+            get;
+            set;
+        } = false;
+
         private static void EnableLogging() {
             // Make sure logging and logging services are available as soon as possible
             DebugService.InitDebug();
@@ -33,13 +41,26 @@ namespace Blish_HUD {
             }
         }
 
-        private static Mutex _singleInstanceMutex;
+        private static void HandleArcDps11Contingency() {
+            if (File.Exists("d3d11.dll")) {
+                MessageBox.Show("There is a custom 'd3dll.dll' (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please move Blish HUD to a different folder.",
+                                "Blish HUD Can't Run!",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
+        }
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         private static void Main(string[] args) {
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
+
+            // TODO: Get SetDllDirectory("") working so that we can protect ourselves from this
+            HandleArcDps11Contingency();
+
+            StartupArgs = args;
             var settings = Cli.Parse<ApplicationSettings>(args);
 
             if (settings.MainProcessId.HasValue) {
@@ -50,32 +71,47 @@ namespace Blish_HUD {
 
             if (settings.CliExitEarly) return;
 
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
-
             EnableLogging();
 
             Logger.Debug("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
 
-            if (!ApplicationSettings.Instance.RestartSkipMutex) {
-                // Single instance handling
-                _singleInstanceMutex = new Mutex(true, ApplicationSettings.Instance.MumbleMapName != null
-                                                           ? $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}"
-                                                           : $"{APP_GUID}");
+            string mutexName = string.IsNullOrEmpty(ApplicationSettings.Instance.MumbleMapName) ? $"{APP_GUID}" : $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}";
+            using (Mutex singleInstanceMutex = new Mutex(true, mutexName, out bool ownsMutex)) {
+                try {
+                    if (!ownsMutex) {
+                        // we don't own the mutex - try to acquire.
+                        try {
+                            if (!(ownsMutex = singleInstanceMutex.WaitOne(TimeSpan.Zero, true))) {
+                                Logger.Warn("Blish HUD is already running!");
+                                return;
+                            }
+                        } catch (AbandonedMutexException ex) {
+                            // log exception, but mutex still acquired
+                            Logger.Warn(ex, "Caught AbandonedMutexException, previous Blish HUD instance terminated non-gracefully.");
+                        }
+                    }
 
-                if (!_singleInstanceMutex.WaitOne(TimeSpan.Zero, true)) {
-                    Logger.Warn("Blish HUD is already running!");
-                    return;
+                    using (var game = new BlishHud()) {
+                        game.Run();
+                    }
+
+                } finally {
+                    if (ownsMutex) {
+                        // only release if we acquired ownership
+                        // .Dispose() only closes the wait handle 
+                        // and doesn't release the mutex - this can
+                        // cause AbandonedMutexException next run
+                        singleInstanceMutex.ReleaseMutex();
+                    }
+
+                    if (RestartOnExit) {
+                        var currentStartInfo = Process.GetCurrentProcess().StartInfo;
+                        currentStartInfo.FileName = Application.ExecutablePath;
+                        currentStartInfo.Arguments = string.Join(" ", StartupArgs);
+
+                        Process.Start(currentStartInfo);
+                    }
                 }
-            } else {
-                Logger.Info("Skipping mutex for requested restart.");
-            }
-
-            using (var game = new BlishHud()) {
-                game.Run();
-            }
-
-            if (!ApplicationSettings.Instance.RestartSkipMutex) {
-                _singleInstanceMutex.ReleaseMutex();
             }
         }
 

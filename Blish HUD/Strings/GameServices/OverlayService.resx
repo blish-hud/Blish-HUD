@@ -156,4 +156,27 @@ trademarks are the property of their respective owners.</value>
   <data name="Setting_AudioDevice_Description" xml:space="preserve">
     <value>This determines the Audio output device used by Blish HUD. The Gw2OutputDevice adjusts itself to whatever GW2 is using.</value>
   </data>
+  <data name="ConnectionStatus_Mumble_Name" xml:space="preserve">
+    <value>MumbleLink</value>
+  </data>
+  <data name="ConnectionStatus_Mumble_Disconnected" xml:space="preserve">
+    <value>Unable to connect to MumbleLink with name '{0}'.
+
+Check what launch arguments were used
+to launch both Guild Wars 2 and Blish HUD.</value>
+  </data>
+  <data name="ConnectionStatus_Mumble_Connected" xml:space="preserve">
+    <value>Connected to MumbleLink with name '{0}'.</value>
+  </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Name" xml:space="preserve">
+    <value>ArcDPS Bridge</value>
+  </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Connected" xml:space="preserve">
+    <value>Connected to ArcDPS via bridge plugin.</value>
+  </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Disconnected" xml:space="preserve">
+    <value>No connection received from bridge.
+
+It might not be installed.</value>
+  </data>
 </root>

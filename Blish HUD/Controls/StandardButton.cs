@@ -23,13 +23,8 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureButtonIdle;
-        private static readonly Texture2D _textureButtonBorder;
-        
-        static StandardButton() {
-            _textureButtonIdle   = Content.GetTexture(@"common/button-states");
-            _textureButtonBorder = Content.GetTexture("button-border");
-        }
+        private static readonly Texture2D _textureButtonIdle   = Content.GetTexture(@"common/button-states");
+        private static readonly Texture2D _textureButtonBorder = Content.GetTexture("button-border");
 
         #endregion
 

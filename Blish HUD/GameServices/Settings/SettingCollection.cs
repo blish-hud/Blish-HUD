@@ -168,6 +168,12 @@ namespace Blish_HUD.Settings {
             return settingEntry != null;
         }
 
+        public bool TryGetSetting<T>(string entryKey, out SettingEntry<T> settingEntry) {
+            settingEntry = this[entryKey] as SettingEntry<T>;
+
+            return settingEntry != null;
+        }
+
         private void Load() {
             if (_entryTokens == null) return;
 

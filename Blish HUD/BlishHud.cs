@@ -111,6 +111,7 @@ namespace Blish_HUD {
                 // If gw2 isn't open so only run the essentials
                 GameService.Debug.DoUpdate(gameTime);
                 GameService.GameIntegration.DoUpdate(gameTime);
+                GameService.Module.DoUpdate(gameTime);
 
                 for (int i = 0; i < 200; i++) { // Wait ~10 seconds between checks
                     if (GameService.GameIntegration.Gw2Instance.Gw2IsRunning || GameService.Overlay.Exiting) break;
