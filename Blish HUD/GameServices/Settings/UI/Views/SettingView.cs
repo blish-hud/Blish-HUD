@@ -8,11 +8,9 @@ namespace Blish_HUD.Settings.UI.Views {
 
         [Obsolete("Use SettingViewFactory / SettingViewFactorySelector instead.")]
         public static IView FromType(SettingEntry setting, int definedWidth) {
-            if (_typeLookup.TryGetValue(setting.SettingType, out Func<SettingEntry, int, IView> typeView)) {
-                if (setting is SettingEntry<SettingCollection> settingCollection && !settingCollection.Value.RenderInUi) {
-                    Logger.Debug($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because {nameof(SettingCollection.RenderInUi)} was false.");
-                    return null;
-                }
+            if (setting is SettingEntry<SettingCollection> settingCollection && !settingCollection.Value.RenderInUi) {
+                Logger.Debug($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because {nameof(SettingCollection.RenderInUi)} was false.");
+                return null;
             }
 
             ISettingViewFactory viewFactory = SettingViewFactorySelector.Default.GetFactoryForType(setting.SettingType);
