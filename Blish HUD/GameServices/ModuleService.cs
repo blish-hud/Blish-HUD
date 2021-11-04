@@ -73,7 +73,22 @@ namespace Blish_HUD {
             using (var manifestReader = new StreamReader(moduleReader.GetFileStream(MODULE_MANIFESTNAME))) {
                 manifestContents = manifestReader.ReadToEnd();
             }
-            var moduleManifest = JsonConvert.DeserializeObject<Manifest>(manifestContents);
+
+            Manifest moduleManifest = null;
+
+            try {
+                moduleManifest = JsonConvert.DeserializeObject<Manifest>(manifestContents);
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to read module manifest.  It appears to be malformed.  The module at path {modulePath} will not be loaded.", moduleReader.GetPathRepresentation());
+                return null;
+            }
+
+            if (_modules.Any(module => string.Equals(moduleManifest.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase))) {
+                Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} will not be loaded.  Please remove the duplicate module.",
+                            moduleManifest.Namespace,
+                            moduleReader.GetPathRepresentation());
+                return null;
+            }
 
             if (!_moduleStates.Value.ContainsKey(moduleManifest.Namespace)) {
                 _moduleStates.Value.Add(moduleManifest.Namespace, new ModuleState());
