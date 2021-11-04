@@ -58,43 +58,43 @@ namespace Blish_HUD {
 #pragma warning restore 0612, 0618
         }
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2Closed instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2Closed (0.11.0+) instead.")]
         public event EventHandler<EventArgs> Gw2Closed;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2Started instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2Started (0.11.0+) instead.")]
         public event EventHandler<EventArgs> Gw2Started;
 
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2AcquiredFocus instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2AcquiredFocus (0.11.0+) instead.")]
         public event EventHandler<EventArgs> Gw2AcquiredFocus;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2LostFocus instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2LostFocus (0.11.0+) instead.")]
         public event EventHandler<EventArgs> Gw2LostFocus;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.IsInGameChanged instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.IsInGameChanged (0.11.0+) instead.")]
         public event EventHandler<ValueEventArgs<bool>> IsInGameChanged;
         
         public IGameChat Chat { get; private set; }
 
-        [Obsolete("Use GameIntegration.Gw2Proc.IsInGame instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.IsInGame (0.11.0+) instead.")]
         public bool IsInGame => this.Gw2Instance.IsInGame;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2HasFocus instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2HasFocus (0.11.0+) instead.")]
         public bool Gw2HasFocus => this.Gw2Instance.Gw2HasFocus;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2IsRunning instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2IsRunning (0.11.0+) instead.")]
         public bool Gw2IsRunning => this.Gw2Instance.Gw2IsRunning;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2WindowHandle instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2WindowHandle (0.11.0+) instead.")]
         public IntPtr Gw2WindowHandle => this.Gw2Instance.Gw2WindowHandle;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2ExecutablePath instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2ExecutablePath (0.11.0+) instead.")]
         public string Gw2ExecutablePath => this.Gw2Instance.Gw2ExecutablePath;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.Gw2Process instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.Gw2Process (0.11.0+) instead.")]
         public Process Gw2Process => this.Gw2Instance.Gw2Process;
 
-        [Obsolete("Use GameIntegration.Gw2Proc.FocusGw2() instead.", true)]
+        [Obsolete("Use GameIntegration.Gw2Proc.FocusGw2() (0.11.0+) instead.")]
         public void FocusGw2() => this.Gw2Instance.FocusGw2();
 
         #endregion

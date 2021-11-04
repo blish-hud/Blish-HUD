@@ -81,10 +81,10 @@ namespace Blish_HUD.Modules.Managers {
             }
         }
 
-        [Obsolete("HavePermission is deprecated, please use HasPermission instead.", true)]
+        [Obsolete("HavePermission is deprecated, please use HasPermission (0.11.1+) instead.")]
         public bool HavePermission(TokenPermission permission) => HasPermission(permission);
 
-        [Obsolete("HavePermissions is deprecated, please use HasPermissions instead.", true)]
+        [Obsolete("HavePermissions is deprecated, please use HasPermissions (0.11.1+) instead.")]
         public bool HavePermissions(IEnumerable<TokenPermission> permissions) => HasPermissions(permissions);
 
         public bool HasPermissions(IEnumerable<TokenPermission> permissions) {
