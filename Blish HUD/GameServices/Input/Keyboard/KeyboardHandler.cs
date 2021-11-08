@@ -146,7 +146,7 @@ namespace Blish_HUD.Input {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
             // Handle the escape key, which should close the active window or top level context menu (if any)
-            if (key == Keys.Escape) {
+            if (key == Keys.Escape && GameService.Overlay.CloseWindowOnEscape.Value) {
                 var activeContextMenu = GameService.Graphics.SpriteScreen.Children
                    .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
 
