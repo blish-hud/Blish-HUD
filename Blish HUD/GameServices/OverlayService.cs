@@ -46,6 +46,7 @@ namespace Blish_HUD {
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
+        public bool InterfaceHidden = false;
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
@@ -100,6 +101,9 @@ namespace Blish_HUD {
 
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
+
+            this.HideAllInterface.Value.Enabled = true;
+            this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
 
             ApplyInitialSettings();
         }
