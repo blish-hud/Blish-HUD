@@ -211,6 +211,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnTextInput(string value) {
+            // Skip all character input if interface is flagged as hidden
             if (GameService.Overlay.InterfaceHidden) return;
 
             foreach (char c in value) {
@@ -491,6 +492,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
+            // Skip all modifier handling if interface is flagged as hidden
             if (GameService.Overlay.InterfaceHidden) return;
 
             // Remove keyup event early to prevent executing special actions twice
