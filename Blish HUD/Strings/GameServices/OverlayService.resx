@@ -176,7 +176,6 @@ trademarks are the property of their respective owners.</value>
   <data name="Setting_AudioDevice_Description" xml:space="preserve">
     <value>This determines the Audio output device used by Blish HUD. The Gw2OutputDevice adjusts itself to whatever GW2 is using.</value>
   </data>
-<<<<<<< HEAD
   <data name="Setting_CloseWindowOnEscape_Description" xml:space="preserve">
     <value>Closes Blish windows when focused and escape key is pressed</value>
   </data>
@@ -188,7 +187,7 @@ trademarks are the property of their respective owners.</value>
   </data>
   <data name="Setting_HideInterfaceKeybind_DisplayName" xml:space="preserve">
     <value>Hide interface</value>
-=======
+  </data>
   <data name="ConnectionStatus_Mumble_Name" xml:space="preserve">
     <value>MumbleLink</value>
   </data>
@@ -211,6 +210,5 @@ to launch both Guild Wars 2 and Blish HUD.</value>
     <value>No connection received from bridge.
 
 It might not be installed.</value>
->>>>>>> ade117fa797d8fc5b26ef1e1163ac725123a31fc
   </data>
 </root>

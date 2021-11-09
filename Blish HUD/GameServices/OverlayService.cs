@@ -4,12 +4,7 @@ using System.Globalization;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
-<<<<<<< HEAD
 using Blish_HUD.Input;
-using Blish_HUD.Modules.Pkgs;
-using Blish_HUD.Modules.UI.Views;
-=======
->>>>>>> ade117fa797d8fc5b26ef1e1163ac725123a31fc
 using Blish_HUD.Overlay;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
