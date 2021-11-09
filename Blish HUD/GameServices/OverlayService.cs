@@ -4,12 +4,14 @@ using System.Globalization;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Input;
 using Blish_HUD.Overlay;
 using Blish_HUD.Overlay.UI.Views;
 using Blish_HUD.Settings;
 using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
 using MenuItem = Blish_HUD.Controls.MenuItem;
 
@@ -36,6 +38,7 @@ namespace Blish_HUD {
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
+        public SettingEntry<KeyBinding> OpenBlishWindow { get; private set; }
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
@@ -82,6 +85,10 @@ namespace Blish_HUD {
             this.UserLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
             this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description);
             this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
+            this.OpenBlishWindow = settings.DefineSetting(nameof(this.OpenBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_OpenBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_OpenBlishWindowKeybind_Description);
+
+            this.OpenBlishWindow.Value.Enabled = true;
+            this.OpenBlishWindow.Value.Activated += delegate { this.BlishHudWindow.ToggleWindow(); };
 
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);
