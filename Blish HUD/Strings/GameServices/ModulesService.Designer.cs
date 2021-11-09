@@ -295,6 +295,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete Module.
+        /// </summary>
+        internal static string ModuleOption_DeleteModule {
+            get {
+                return ResourceManager.GetString("ModuleOption_DeleteModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open &apos;{0}&apos; Directory.
         /// </summary>
         internal static string ModuleOption_OpenDir {

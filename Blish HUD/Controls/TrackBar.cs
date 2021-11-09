@@ -13,13 +13,8 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D       _textureTrack;
-        private static readonly TextureRegion2D _textureNub;
-
-        static TrackBar() {
-            _textureTrack = Content.GetTexture("controls/trackbar/154968");
-            _textureNub   = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-nub");
-        }
+        private static readonly Texture2D       _textureTrack = Content.GetTexture("controls/trackbar/154968");
+        private static readonly TextureRegion2D _textureNub   = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-nub");
 
         #endregion
 

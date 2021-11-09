@@ -87,51 +87,65 @@ namespace Blish_HUD {
                                                                 int.MaxValue - 11);
         }
 
-        private void UpdateBaseConnection(string apiKey) {
+        private async Task UpdateBaseConnection(string apiKey) {
             if (_privilegedConnection.SetApiKey(apiKey)) {
-                Modules.Managers.Gw2ApiManager.RenewAllSubtokens();
+                await Modules.Managers.Gw2ApiManager.RenewAllSubtokens();
             }
         }
 
-        private void UpdateActiveApiKey() {
+        private async Task UpdateActiveApiKey() {
             if (_characterRepository.TryGetValue(Gw2Mumble.PlayerCharacter.Name, out string charApiKey)) {
-                UpdateBaseConnection(charApiKey);
+                await UpdateBaseConnection(charApiKey);
                 Logger.Debug($"Associated key {charApiKey} with user {Gw2Mumble.PlayerCharacter.Name}.");
             } else {
-                UpdateBaseConnection(string.Empty);
-                Logger.Info("Could not find registered API key associated with character {characterName}", Gw2Mumble.PlayerCharacter.Name);
+                if (!string.IsNullOrWhiteSpace(Gw2Mumble.PlayerCharacter.Name)) {
+                    // We skip the message if no user is defined yet.
+                    Logger.Info("Could not find registered API key associated with character {characterName}", Gw2Mumble.PlayerCharacter.Name);
+                }
+
+                await UpdateBaseConnection(string.Empty);
             }
         }
 
-        private void PlayerCharacterOnNameChanged(object sender, ValueEventArgs<string> e) {
+        private async void PlayerCharacterOnNameChanged(object sender, ValueEventArgs<string> e) {
             if (!_characterRepository.ContainsKey(e.Value)) {
                 // We don't currently have an API key associated to this character so we double-check the characters on each key
-                RefreshRegisteredKeys();
+                await RefreshRegisteredKeys ();
             } else {
-                UpdateActiveApiKey();
+                await UpdateActiveApiKey();
             }
         }
 
-        private void RefreshRegisteredKeys() {
+        private async Task RefreshRegisteredKeys() {
+            _characterRepository.Clear();
+
             foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
-                UpdateCharacterList(key);
+                await UpdateCharacterList(key);
             }
+
+            await UpdateActiveApiKey();
         }
 
         #region API Management
 
-        public void RegisterKey(string name, string apiKey) {
+        public async Task RegisterKey(string name, string apiKey) {
             SettingEntry<string> registeredKey = _apiKeyRepository.DefineSetting(name, "");
 
             registeredKey.Value = apiKey;
 
-            UpdateCharacterList(registeredKey);
+            await UpdateCharacterList(registeredKey);
+            await UpdateActiveApiKey();
         }
 
-        public void UnregisterKey(string apiKey) {
+        public async Task UnregisterKey(string apiKey) {
             foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
                 if (string.Equals(apiKey, key.Value, StringComparison.InvariantCultureIgnoreCase) || key.Value.StartsWith(apiKey, StringComparison.InvariantCultureIgnoreCase)) {
                     _apiKeyRepository.UndefineSetting(key.EntryKey);
+
+                    await RefreshRegisteredKeys();
+
+                    await UpdateActiveApiKey();
+
                     break;
                 }
             }
@@ -141,20 +155,18 @@ namespace Blish_HUD {
             return _apiKeyRepository.Cast<SettingEntry<string>>().Select((setting) => setting.Value).ToArray();
         }
 
-        private void UpdateCharacterList(SettingEntry<string> definedKey) {
-            GetCharacters(GetConnection(definedKey.Value)).ContinueWith((charactersResponse) => {
-                if (charactersResponse.Exception == null && charactersResponse.Result != null) {
-                    foreach (string characterId in charactersResponse.Result) {
-                        _characterRepository.AddOrUpdate(characterId, definedKey.Value, (k, o) => definedKey.Value);
-                    }
+        private async Task UpdateCharacterList(SettingEntry<string> definedKey) {
+            try {
+                List<string> characters = await GetCharacters(GetConnection(definedKey.Value));
 
-                    Logger.Info("Associated API key {keyName} with characters: {charactersList}", definedKey.EntryKey, string.Join(", ", charactersResponse.Result));
-                } else {
-                    Logger.Warn(charactersResponse.Exception, "Failed to get list of associated characters for API key {keyName}.", definedKey.EntryKey);
+                foreach (string characterId in characters) {
+                    _characterRepository.AddOrUpdate(characterId, definedKey.Value, (k, o) => definedKey.Value);
                 }
 
-                UpdateActiveApiKey();
-            });
+                Logger.Info("Associated API key {keyName} with characters: {charactersList}", definedKey.EntryKey, string.Join(", ", characters));
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to get list of associated characters for API key {keyName}.", definedKey.EntryKey);
+            }
         }
 
         private async Task<List<string>> GetCharacters(ManagedConnection connection) {
@@ -166,10 +178,16 @@ namespace Blish_HUD {
         }
 
         public async Task<string> RequestSubtoken(ManagedConnection connection, IEnumerable<TokenPermission> permissions, int days) {
+            var tokenPermissions = permissions as TokenPermission[] ?? permissions.ToArray();
+
+            if (!tokenPermissions.Any() || string.IsNullOrEmpty(connection.Connection.AccessToken)) {
+                return string.Empty;
+            }
+
             try {
                 return (await connection.Client
                                         .V2.CreateSubtoken
-                                        .WithPermissions(permissions)
+                                        .WithPermissions(tokenPermissions)
                                         .Expires(DateTime.UtcNow.AddDays(days))
                                         .GetAsync()).Subtoken;
             } catch (InvalidAccessTokenException ex) {
@@ -178,7 +196,7 @@ namespace Blish_HUD {
                 Logger.Warn(ex, "The provided API token could not be used to request a subtoken.");
             }
 
-            return "";
+            return string.Empty;
         }
 
         #endregion

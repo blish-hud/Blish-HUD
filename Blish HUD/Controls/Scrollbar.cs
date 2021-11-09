@@ -20,24 +20,14 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly TextureRegion2D _textureTrack;
-        private static readonly TextureRegion2D _textureUpArrow;
-        private static readonly TextureRegion2D _textureDownArrow;
-        private static readonly TextureRegion2D _textureBar;
-        private static readonly TextureRegion2D _textureThumb;
-        private static readonly TextureRegion2D _textureTopCap;
-        private static readonly TextureRegion2D _textureBottomCap;
-
-        static Scrollbar() {
-            _textureTrack     = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-track");
-            _textureUpArrow   = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-arrow-up");
-            _textureDownArrow = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-arrow-down");
-            _textureBar       = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-bar-active");
-            _textureThumb     = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-thumb");
-            _textureTopCap    = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-cap-top");
-            _textureBottomCap = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-cap-bottom");
-        }
-
+        private static readonly TextureRegion2D _textureTrack     = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-track");
+        private static readonly TextureRegion2D _textureUpArrow   = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-arrow-up");
+        private static readonly TextureRegion2D _textureDownArrow = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-arrow-down");
+        private static readonly TextureRegion2D _textureBar       = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-bar-active");
+        private static readonly TextureRegion2D _textureThumb     = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-thumb");
+        private static readonly TextureRegion2D _textureTopCap    = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-cap-top");
+        private static readonly TextureRegion2D _textureBottomCap = Resources.Control.TextureAtlasControl.GetRegion("scrollbar/sb-cap-bottom");
+        
         #endregion
 
         private enum ClickFocus {
@@ -162,7 +152,7 @@ namespace Blish_HUD.Controls {
                 ctrl = ctrl.Parent;
             }
 
-            if (e.MouseState.ScrollWheelValue == 0) return;
+            if (GameService.Input.Mouse.State.ScrollWheelValue == 0) return;
 
             float normalScroll = Math.Sign(GameService.Input.Mouse.State.ScrollWheelValue);
             ScrollAnimated((int)normalScroll * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);

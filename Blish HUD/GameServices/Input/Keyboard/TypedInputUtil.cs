@@ -49,7 +49,7 @@ namespace Blish_HUD.Input {
                 return "";
             }
 
-            int result = ToUnicode(vkCode, scanCode, keyState, output, (int)5, (uint)0);
+            int result = ToUnicode(vkCode, scanCode, keyState, output, 5, 0);
 
             switch (result) {
                 case -1:
@@ -57,14 +57,14 @@ namespace Blish_HUD.Input {
 
                     // clear buffer because it will otherwise crash `public Rectangle AbsoluteBounds` in Control.cs
                     // see also: http://archives.miloush.net/michkap/archive/2005/01/19/355870.html
-                    while (ToUnicode(vkCode, scanCode, keyState, output, (int)5, (uint)0) < 0) { }
+                    while (ToUnicode(vkCode, scanCode, keyState, output, 5, 0) < 0) { /* SPIN */ }
 
                     // reinject last key because apparently when calling functions related to keyboard inputs
                     // messes up their internal states everywhere. :rolleyes:
                     // for reference see https://gist.github.com/Ciantic/471698
                     if (_lastVirtKeyCode != 0 && _lastIsDead) {
                         var temp = new StringBuilder(5);
-                        ToUnicode(_lastVirtKeyCode, _lastScanCode, _lastKeyState, temp, (int)5, (uint)0);
+                        ToUnicode(_lastVirtKeyCode, _lastScanCode, _lastKeyState, temp, 5, 0);
                     }
 
                     _lastIsDead = true;

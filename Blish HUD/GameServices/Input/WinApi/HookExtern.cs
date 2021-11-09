@@ -7,13 +7,13 @@ namespace Blish_HUD.Input.WinApi {
 
         public delegate int HookCallbackDelegate(int nCode, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr SetWindowsHookEx(HookType idHook, HookCallbackDelegate lpfn, IntPtr hMod, uint dwThreadId);
 
         [DllImport("user32.dll")]
         public static extern int CallNextHookEx(HookType idHook, int nCode, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool UnhookWindowsHookEx(IntPtr hook);
 

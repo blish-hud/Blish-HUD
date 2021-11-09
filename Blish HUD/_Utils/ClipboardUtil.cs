@@ -8,11 +8,7 @@ namespace Blish_HUD {
     /// </summary>
     public static class ClipboardUtil {
 
-        private static readonly WindowsClipboardService _clipboardService;
-
-        static ClipboardUtil() {
-            _clipboardService = new WindowsClipboardService(TimeSpan.FromMilliseconds(20));
-        }
+        private static readonly WindowsClipboardService _clipboardService = new WindowsClipboardService(TimeSpan.FromMilliseconds(20));
 
         /// <summary>
         /// A shared <see cref="WindowsClipboardService"/>

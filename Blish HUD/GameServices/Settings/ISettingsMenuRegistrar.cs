@@ -20,7 +20,7 @@ namespace Blish_HUD.Settings {
         /// <summary>
         /// Gets the view associated with a menu item.
         /// </summary>
-        View GetMenuItemView(MenuItem selectedMenuItem);
+        IView GetMenuItemView(MenuItem selectedMenuItem);
 
     }
 

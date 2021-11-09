@@ -92,6 +92,65 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connected to ArcDPS via bridge plugin..
+        /// </summary>
+        internal static string ConnectionStatus_ArcDPSBridge_Connected {
+            get {
+                return ResourceManager.GetString("ConnectionStatus_ArcDPSBridge_Connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No connection received from bridge.
+        ///
+        ///It might not be installed..
+        /// </summary>
+        internal static string ConnectionStatus_ArcDPSBridge_Disconnected {
+            get {
+                return ResourceManager.GetString("ConnectionStatus_ArcDPSBridge_Disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ArcDPS Bridge.
+        /// </summary>
+        internal static string ConnectionStatus_ArcDPSBridge_Name {
+            get {
+                return ResourceManager.GetString("ConnectionStatus_ArcDPSBridge_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connected to MumbleLink with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string ConnectionStatus_Mumble_Connected {
+            get {
+                return ResourceManager.GetString("ConnectionStatus_Mumble_Connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to connect to MumbleLink with name &apos;{0}&apos;.
+        ///
+        ///Check what launch arguments were used
+        ///to launch both Guild Wars 2 and Blish HUD..
+        /// </summary>
+        internal static string ConnectionStatus_Mumble_Disconnected {
+            get {
+                return ResourceManager.GetString("ConnectionStatus_Mumble_Disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MumbleLink.
+        /// </summary>
+        internal static string ConnectionStatus_Mumble_Name {
+            get {
+                return ResourceManager.GetString("ConnectionStatus_Mumble_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         internal static string HomeTab {

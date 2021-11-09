@@ -6,7 +6,22 @@ using Blish_HUD.GameServices;
 namespace Blish_HUD {
     public abstract class GameService {
 
-        private static readonly GameService[] _allServices;
+        private static readonly GameService[] _allServices = new GameService[] {
+            Debug           = new DebugService(),
+            Input           = new InputService(),
+            Settings        = new SettingsService(),
+            Content         = new ContentService(),
+            Gw2Mumble       = new Gw2MumbleService(),
+            Gw2WebApi       = new Gw2WebApiService(),
+            Animation       = new AnimationService(),
+            Graphics        = new GraphicsService(),
+            Overlay         = new OverlayService(),
+            GameIntegration = new GameIntegrationService(),
+            ArcDps          = new ArcDpsService(),
+            Contexts        = new ContextsService(),
+            Module          = new ModuleService()
+        };
+
         public static IReadOnlyList<GameService> All => _allServices;
 
         public event EventHandler<EventArgs> FinishedLoading;
@@ -77,31 +92,11 @@ namespace Blish_HUD {
         public static readonly OverlayService         Overlay;
         public static readonly InputService           Input;
         public static readonly GameIntegrationService GameIntegration;
-        public static readonly ModuleService          Module;
         public static readonly ArcDpsService          ArcDps;
         public static readonly ContextsService        Contexts;
+        public static readonly ModuleService          Module;
 
         #endregion
-
-        static GameService() {
-            // Init game services
-            _allServices = new GameService[] {
-                Debug           = new DebugService(),
-                Input           = new InputService(),
-                Settings        = new SettingsService(),
-                Content         = new ContentService(),
-                Gw2Mumble       = new Gw2MumbleService(),
-                Gw2WebApi       = new Gw2WebApiService(),
-                Animation       = new AnimationService(),
-                Graphics        = new GraphicsService(),
-                Overlay         = new OverlayService(),
-                GameIntegration = new GameIntegrationService(),
-                Module          = new ModuleService(),
-                ArcDps          = new ArcDpsService(),
-                Contexts        = new ContextsService()
-            };
-
-        }
 
     }
 }

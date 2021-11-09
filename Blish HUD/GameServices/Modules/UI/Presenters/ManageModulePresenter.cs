@@ -7,7 +7,6 @@ using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules.UI.Views;
-using Blish_HUD.Settings.UI.Views;
 using Humanizer;
 
 namespace Blish_HUD.Modules.UI.Presenters {
@@ -89,8 +88,19 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             settingMenu.AddMenuItem(BuildClearSettingsMenuItem());
             settingMenu.AddMenuItems(BuildOpenDirsMenuItem());
+            settingMenu.AddMenuItem(BuildDeleteModuleMenuItem());
 
             this.View.SettingMenu = settingMenu;
+        }
+
+        private ContextMenuStripItem BuildDeleteModuleMenuItem() {
+            var deleteModule = new ContextMenuStripItem() { Text = Strings.GameServices.ModulesService.ModuleOption_DeleteModule };
+
+            deleteModule.Click += delegate {
+                this.Model.DeleteModule();
+            };
+
+            return deleteModule;
         }
 
         private ContextMenuStripItem BuildClearSettingsMenuItem() {

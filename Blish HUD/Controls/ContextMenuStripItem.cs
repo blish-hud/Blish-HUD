@@ -16,13 +16,8 @@ namespace Blish_HUD.Controls {
 
         #region Load Static
 
-        private static readonly Texture2D _textureBullet;
-        private static readonly Texture2D _textureArrow;
-
-        static ContextMenuStripItem() {
-            _textureBullet = Content.GetTexture("155038");
-            _textureArrow  = Content.GetTexture("context-menu-strip-submenu");
-        }
+        private static readonly Texture2D _textureBullet = Content.GetTexture("155038");
+        private static readonly Texture2D _textureArrow  = Content.GetTexture("context-menu-strip-submenu");
 
         #endregion
 

@@ -19,11 +19,9 @@ namespace Blish_HUD.Settings.UI.Views {
 
         public static IView FromType(SettingEntry setting, int definedWidth) {
             if (_typeLookup.TryGetValue(setting.SettingType, out Func<SettingEntry, int, IView> typeView)) {
-                if (setting is SettingEntry<SettingCollection> settingCollection) {
-                    if (!settingCollection.Value.RenderInUi) {
-                        Logger.Debug($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because {nameof(SettingCollection.RenderInUi)} was false.");
-                        return null;
-                    }
+                if (setting is SettingEntry<SettingCollection> settingCollection && !settingCollection.Value.RenderInUi) {
+                    Logger.Debug($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because {nameof(SettingCollection.RenderInUi)} was false.");
+                    return null;
                 }
 
                 return typeView(setting, definedWidth);

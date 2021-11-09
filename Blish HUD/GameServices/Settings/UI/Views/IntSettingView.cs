@@ -1,4 +1,6 @@
-﻿namespace Blish_HUD.Settings.UI.Views {
+﻿using System;
+
+namespace Blish_HUD.Settings.UI.Views {
     public class IntSettingView : NumericSettingView<int> {
 
         public IntSettingView(SettingEntry<int> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
@@ -25,6 +27,10 @@
         }
 
         protected override void RefreshValue(int value) {
+            // Prevent us clamping the setting value before compliance is applied
+            _valueTrackBar.MinValue = Math.Min(_valueTrackBar.MinValue, value);
+            _valueTrackBar.MaxValue = Math.Max(_valueTrackBar.MaxValue, value);
+
             _valueTrackBar.Value = value;
         }
 

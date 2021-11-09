@@ -91,6 +91,8 @@ namespace Blish_HUD.Input {
         }
 
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
+            if (GameService.Gw2Mumble.UI.IsTextInputFocused) return;
+
             if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys && pressedKeys.Contains(this.PrimaryKey)) {
                 Fire();
             } else if (_isTriggering) {
