@@ -211,6 +211,8 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnTextInput(string value) {
+            if (GameService.Overlay.InterfaceHidden) return;
+
             foreach (char c in value) {
                 if (_font.GetCharacterRegion(c) == null) continue;
 
@@ -489,6 +491,8 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
+            if (GameService.Overlay.InterfaceHidden) return;
+
             // Remove keyup event early to prevent executing special actions twice
             if (e.EventType == KeyboardEventType.KeyUp) {
                 _keyRepeatStates.Remove(e.Key);
