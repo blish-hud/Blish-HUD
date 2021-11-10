@@ -85,7 +85,7 @@ namespace Blish_HUD {
             this.UserLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
             this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description);
             this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
-            this.OpenBlishWindow = settings.DefineSetting(nameof(this.OpenBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_OpenBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_OpenBlishWindowKeybind_Description);
+            this.OpenBlishWindow = settings.DefineSetting(nameof(this.OpenBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
             this.OpenBlishWindow.Value.Enabled = true;
             this.OpenBlishWindow.Value.Activated += delegate { this.BlishHudWindow.ToggleWindow(); };

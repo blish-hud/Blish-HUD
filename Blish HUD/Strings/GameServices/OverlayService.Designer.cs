@@ -205,24 +205,6 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Set keybind to open the main window of Blish HUD.
-        /// </summary>
-        internal static string Setting_OpenBlishWindowKeybind_Description {
-            get {
-                return ResourceManager.GetString("Setting_OpenBlishWindowKeybind_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Open Blish HUD.
-        /// </summary>
-        internal static string Setting_OpenBlishWindowKeybind_DisplayName {
-            get {
-                return ResourceManager.GetString("Setting_OpenBlishWindowKeybind_DisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to When enabled, Blish HUD will be shown in the taskbar while running..
         /// </summary>
         internal static string Setting_ShowInTaskbar_Description {
@@ -256,6 +238,24 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string Setting_StayInTray_DisplayName {
             get {
                 return ResourceManager.GetString("Setting_StayInTray_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set keybind to open the main window of Blish HUD.
+        /// </summary>
+        internal static string Setting_ToggleBlishWindowKeybind_Description {
+            get {
+                return ResourceManager.GetString("Setting_ToggleBlishWindowKeybind_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Blish HUD Window.
+        /// </summary>
+        internal static string Setting_ToggleBlishWindowKeybind_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_ToggleBlishWindowKeybind_DisplayName", resourceCulture);
             }
         }
         
