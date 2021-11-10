@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Blish_HUD.Settings.UI.Views;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -48,6 +49,9 @@ namespace Blish_HUD.Settings {
             }
 
         }
+
+        [JsonIgnore]
+        public ISettingViewFactory ViewFactory { get; set; }
 
         [JsonIgnore]
         public Func<string> GetDescriptionFunc { get; set; } = () => null;

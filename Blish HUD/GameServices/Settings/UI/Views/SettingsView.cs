@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Settings.UI.Views {
     public class SettingsView : SettingView<SettingCollection> {
+        private static readonly Logger Logger = Logger.GetLogger(typeof(SettingsView));
 
         private FlowPanel _settingFlowPanel;
 
@@ -51,9 +52,21 @@ namespace Blish_HUD.Settings.UI.Views {
             };
 
             foreach (var setting in _settings.Where(s => s.SessionDefined)) {
-                IView settingView;
+                if (setting is SettingEntry<SettingCollection> settingCollection) {
+                    if (!settingCollection.Value.RenderInUi) {
+                        Logger.Debug($"{nameof(SettingCollection)} {setting.EntryKey} was skipped because {nameof(SettingCollection.RenderInUi)} was false.");
+                        continue;
+                    }
+                }
 
-                if ((settingView = SettingView.FromType(setting, _settingFlowPanel.Width)) != null) {
+                ISettingViewFactory viewFactory = setting.ViewFactory;
+                if (viewFactory == null) {
+                    viewFactory = _settings.ViewFactorySelector.GetFactoryForType(setting.SettingType);
+                }
+
+                IView settingView = viewFactory?.CreateView(setting, _settingFlowPanel.Width);
+
+                if (settingView != null) {
                     _lastSettingContainer = new ViewContainer() {
                         WidthSizingMode   = SizingMode.Fill,
                         HeightSizingMode  = SizingMode.AutoSize,
@@ -65,6 +78,8 @@ namespace Blish_HUD.Settings.UI.Views {
                     if (settingView is SettingsView subSettingsView) {
                         subSettingsView.LockBounds = false;
                     }
+                } else {
+                    Logger.Debug($"Setting {setting.DisplayName} [{setting.EntryKey}] of type '{setting.SettingType.FullName}' does not have a renderer available.");
                 }
             }
 
