@@ -242,7 +242,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Set keybind to open the main window of Blish HUD.
+        ///   Looks up a localized string similar to Set keybind to toggle the main window of Blish HUD.
         /// </summary>
         internal static string Setting_ToggleBlishWindowKeybind_Description {
             get {
@@ -251,7 +251,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Toggle Blish HUD Window.
+        ///   Looks up a localized string similar to Toggle Blish HUD window.
         /// </summary>
         internal static string Setting_ToggleBlishWindowKeybind_DisplayName {
             get {
