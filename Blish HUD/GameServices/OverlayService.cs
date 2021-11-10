@@ -39,6 +39,7 @@ namespace Blish_HUD {
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
+        public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
         public bool InterfaceHidden = false;
@@ -90,6 +91,10 @@ namespace Blish_HUD {
             this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
             this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape", true,                   () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName, () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
             this.HideAllInterface = settings.DefineSetting(nameof(this.HideAllInterface), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H),                        () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
+            this.ToggleBlishWindow = settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
+
+            this.ToggleBlishWindow.Value.Enabled = true;
+            this.ToggleBlishWindow.Value.Activated += delegate { this.BlishHudWindow.ToggleWindow(); };
 
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);

@@ -278,6 +278,24 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set keybind to toggle the main window of Blish HUD.
+        /// </summary>
+        internal static string Setting_ToggleBlishWindowKeybind_Description {
+            get {
+                return ResourceManager.GetString("Setting_ToggleBlishWindowKeybind_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Blish HUD window.
+        /// </summary>
+        internal static string Setting_ToggleBlishWindowKeybind_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_ToggleBlishWindowKeybind_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When enabled, Blish HUD will adjust it&apos;s volume to the game audio..
         /// </summary>
         internal static string Setting_UseGameVolume_Description {

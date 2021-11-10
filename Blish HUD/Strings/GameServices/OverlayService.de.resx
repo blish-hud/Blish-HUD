@@ -174,4 +174,10 @@ ihrer jeweiligen Besitzer.</value>
   <data name="Setting_Volume_DisplayName" xml:space="preserve">
     <value>Lautstärke</value>
   </data>
+  <data name="Setting_ToggleBlishWindowKeybind_Description" xml:space="preserve">
+    <value>Hotkey zum ein- und ausblenden vom Blish HUD Hauptfenster</value>
+  </data>
+  <data name="Setting_ToggleBlishWindowKeybind_DisplayName" xml:space="preserve">
+    <value>Blish HUD ein- und ausblenden</value>
+  </data>
 </root>

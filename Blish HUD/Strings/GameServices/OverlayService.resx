@@ -211,4 +211,10 @@ to launch both Guild Wars 2 and Blish HUD.</value>
 
 It might not be installed.</value>
   </data>
+  <data name="Setting_ToggleBlishWindowKeybind_Description" xml:space="preserve">
+    <value>Set keybind to toggle the main window of Blish HUD</value>
+  </data>
+  <data name="Setting_ToggleBlishWindowKeybind_DisplayName" xml:space="preserve">
+    <value>Toggle Blish HUD window</value>
+  </data>
 </root>
