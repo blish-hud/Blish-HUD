@@ -210,8 +210,6 @@ namespace Blish_HUD.Input {
                 _stagedKeyBindingLock.ExitReadLock();
             }
 
-            // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
-
             return false;
         }
 
