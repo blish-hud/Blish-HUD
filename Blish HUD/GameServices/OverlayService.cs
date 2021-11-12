@@ -87,8 +87,9 @@ namespace Blish_HUD {
             this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
             this.OpenBlishWindow = settings.DefineSetting(nameof(this.OpenBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
-            this.OpenBlishWindow.Value.Enabled = true;
-            this.OpenBlishWindow.Value.Activated += delegate { this.BlishHudWindow.ToggleWindow(); };
+            this.OpenBlishWindow.Value.BlockSequenceFromGw2 =  true;
+            this.OpenBlishWindow.Value.Enabled              =  true;
+            this.OpenBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
 
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);

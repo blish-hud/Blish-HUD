@@ -102,16 +102,19 @@ namespace Blish_HUD.Input {
             if (GameService.Gw2Mumble.UI.IsTextInputFocused) return;
 
             if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys) {
-                if (pressedKeys.Contains(this.PrimaryKey)) {
-                    Fire();
-                } else if (this.BlockSequenceFromGw2) {
+                if (this.BlockSequenceFromGw2) {
                     GameService.Input.Keyboard.StageKeyBinding(this);
                 }
-            } else if ((this.ModifierKeys & activeModifiers) != this.ModifierKeys) {
+
+                if (pressedKeys.Contains(this.PrimaryKey)) {
+                    Fire();
+                    return;
+                }
+            } else {
                 GameService.Input.Keyboard.UnstageKeyBinding(this);
-            } else if (_isTriggering) {
-                StopFiring();
             }
+
+            StopFiring();
         }
 
         /// <summary>
