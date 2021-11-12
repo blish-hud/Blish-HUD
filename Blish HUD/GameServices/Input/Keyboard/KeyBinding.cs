@@ -45,9 +45,11 @@ namespace Blish_HUD.Input {
             set {
                 if (_enabled != value) {
                     if (value) {
+                        KeyboardOnKeyStateChanged(null, null);
                         GameService.Input.Keyboard.KeyStateChanged += KeyboardOnKeyStateChanged;
                     } else {
                         GameService.Input.Keyboard.KeyStateChanged -= KeyboardOnKeyStateChanged;
+                        GameService.Input.Keyboard.UnstageKeyBinding(this);
                     }
 
                     _enabled = value;
@@ -56,6 +58,12 @@ namespace Blish_HUD.Input {
                 }
             }
         }
+
+        /// <summary>
+        /// If <c>true</c>, the <see cref="PrimaryKey"/> is not send to the game when it is
+        /// the final key pressed in the keybinding sequence.
+        /// </summary>
+        public bool BlocksInput { get; set; } = false;
 
         private bool _isTriggering;
 
@@ -93,8 +101,14 @@ namespace Blish_HUD.Input {
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
             if (GameService.Gw2Mumble.UI.IsTextInputFocused) return;
 
-            if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys && pressedKeys.Contains(this.PrimaryKey)) {
-                Fire();
+            if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys) {
+                if (pressedKeys.Contains(this.PrimaryKey)) {
+                    Fire();
+                } else if (this.BlocksInput) {
+                    GameService.Input.Keyboard.StageKeyBinding(this);
+                }
+            } else if ((this.ModifierKeys & activeModifiers) != this.ModifierKeys) {
+                GameService.Input.Keyboard.UnstageKeyBinding(this);
             } else if (_isTriggering) {
                 StopFiring();
             }

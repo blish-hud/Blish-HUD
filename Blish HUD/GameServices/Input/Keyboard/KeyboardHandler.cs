@@ -9,6 +9,8 @@ namespace Blish_HUD.Input {
 
     public class KeyboardHandler : IInputHandler {
 
+        private static readonly Logger Logger = Logger.GetLogger<KeyboardHandler>();
+
         #region Event Handling
 
         /// <summary>
@@ -142,6 +144,26 @@ namespace Blish_HUD.Input {
             return true;
         }
 
+        private readonly HashSet<KeyBinding> _stagedKeyBindings = new HashSet<KeyBinding>();
+
+        internal void StageKeyBinding(KeyBinding keyBinding) {
+            lock (_stagedKeyBindings) {
+                if (!_stagedKeyBindings.Contains(keyBinding)) {
+                    Logger.Debug("Staging keybind {keybind}.", keyBinding.GetBindingDisplayText());
+                    _stagedKeyBindings.Add(keyBinding);
+                }
+            }
+        }
+
+        internal void UnstageKeyBinding(KeyBinding keyBinding) {
+            lock (_stagedKeyBindings) {
+                if (_stagedKeyBindings.Contains(keyBinding)) {
+                    Logger.Debug("Unstaging keybind {keybind}.", keyBinding.GetBindingDisplayText());
+                    _stagedKeyBindings.Remove(keyBinding);
+                }
+            }
+        }
+
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
@@ -170,6 +192,14 @@ namespace Blish_HUD.Input {
                 string chars = TypedInputUtil.VkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
                 _textInputDelegate?.BeginInvoke(chars, EndTextInputAsyncInvoke, null);
                 return ShouldBlockKeyEvent(key);
+            }
+
+            lock (_stagedKeyBindings) {
+                foreach (var keyBinding in _stagedKeyBindings) {
+                    if (keyBinding.PrimaryKey == key) {
+                        return true;
+                    }
+                }
             }
 
             // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
