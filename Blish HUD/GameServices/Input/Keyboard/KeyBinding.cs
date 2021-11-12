@@ -63,7 +63,7 @@ namespace Blish_HUD.Input {
         /// If <c>true</c>, the <see cref="PrimaryKey"/> is not send to the game when it is
         /// the final key pressed in the keybinding sequence.
         /// </summary>
-        public bool BlocksInput { get; set; } = false;
+        public bool BlockSequenceFromGw2 { get; set; } = false;
 
         private bool _isTriggering;
 
@@ -104,7 +104,7 @@ namespace Blish_HUD.Input {
             if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys) {
                 if (pressedKeys.Contains(this.PrimaryKey)) {
                     Fire();
-                } else if (this.BlocksInput) {
+                } else if (this.BlockSequenceFromGw2) {
                     GameService.Input.Keyboard.StageKeyBinding(this);
                 }
             } else if ((this.ModifierKeys & activeModifiers) != this.ModifierKeys) {
