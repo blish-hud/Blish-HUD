@@ -104,7 +104,7 @@ namespace Blish_HUD {
             OptionParameter(OPTION_STARTGW2, 'g'),
             Help("Allows you to launch Guild Wars 2 with Blish HUD (0 = don't start, 1 = start gw2, 2 = start gw2 autologin).")
         ]
-        public int StartGw2 { get; private set; } = -1;
+        public int StartGw2 { get; private set; }
 
         public const string OPTION_USERSETTINGSPATH = "settings";
         /// <summary>
