@@ -44,8 +44,6 @@ namespace Blish_HUD.Input {
             get => _enabled;
             set {
                 if (_enabled != value) {
-                    if (this.PrimaryKey == Keys.None && value) return;
-
                     if (value) {
                         GameService.Input.Keyboard.KeyStateChanged += KeyboardOnKeyStateChanged;
                     } else {
@@ -71,6 +69,8 @@ namespace Blish_HUD.Input {
         }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
+            if (this.PrimaryKey == Keys.None) return;
+
             CheckTrigger(GameService.Input.Keyboard.ActiveModifiers, GameService.Input.Keyboard.KeysDown);
         }
 
