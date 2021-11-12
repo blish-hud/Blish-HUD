@@ -60,7 +60,7 @@ namespace Blish_HUD.Input {
         }
 
         /// <summary>
-        /// If <c>true</c>, the <see cref="PrimaryKey"/> is not send to the game when it is
+        /// If <c>true</c>, the <see cref="PrimaryKey"/> is not sent to the game when it is
         /// the final key pressed in the keybinding sequence.
         /// </summary>
         public bool BlockSequenceFromGw2 { get; set; } = false;
