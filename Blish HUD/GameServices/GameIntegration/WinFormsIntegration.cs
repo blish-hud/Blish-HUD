@@ -27,6 +27,7 @@ namespace Blish_HUD.GameIntegration {
         public override void Load() {
             WrapMainForm();
             BuildTrayIcon();
+            AutoLaunchGame();
         }
 
         private void WrapMainForm() {
@@ -80,6 +81,12 @@ namespace Blish_HUD.GameIntegration {
         private void TrayIconMenuOnOpening(object sender, CancelEventArgs e) {
             _launchGw2Tsi.Enabled = _launchGw2AutoTsi.Enabled = !_service.Gw2Instance.Gw2IsRunning
                                                              && File.Exists(_service.Gw2Instance.Gw2ExecutablePath);
+        }
+
+        private void AutoLaunchGame() {
+            if (ApplicationSettings.Instance.StartGw2 > 0) {
+                LaunchGw2(ApplicationSettings.Instance.StartGw2 > 1);
+            }
         }
 
         private void LaunchGw2(bool autologin = false) {
