@@ -80,6 +80,8 @@ namespace Blish_HUD.Input {
         
         private Action<string> _textInputDelegate;
 
+        private readonly HashSet<KeyBinding> _stagedKeyBindings = new HashSet<KeyBinding>();
+
         internal KeyboardHandler() { }
 
         public void Update() {
@@ -143,8 +145,6 @@ namespace Blish_HUD.Input {
 
             return true;
         }
-
-        private readonly HashSet<KeyBinding> _stagedKeyBindings = new HashSet<KeyBinding>();
 
         internal void StageKeyBinding(KeyBinding keyBinding) {
             lock (_stagedKeyBindings) {
