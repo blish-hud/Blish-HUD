@@ -93,8 +93,9 @@ namespace Blish_HUD.Input {
                     if (_keysDown.Contains(keyboardEvent.Key)) continue;
 
                     _keysDown.Add(keyboardEvent.Key);
-                } else
+                } else {
                     _keysDown.Remove(keyboardEvent.Key);
+                }
 
                 UpdateStates();
 
@@ -201,6 +202,7 @@ namespace Blish_HUD.Input {
             if (_stagedKeyBindingLock.TryEnterReadLock(0)) {
                 foreach (var keyBinding in _stagedKeyBindings) {
                     if (keyBinding.PrimaryKey == key) {
+                        _stagedKeyBindingLock.ExitReadLock();
                         return true;
                     }
                 }
