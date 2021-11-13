@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,7 +31,7 @@ namespace Blish_HUD.Settings {
                 if (value.Loaded) {
                     entryArray = new JArray();
 
-                    foreach (var entryObject in value._entries.Where(e => !e.IsNull).Select(entry => JObject.FromObject(entry, serializer))) {
+                    foreach (var entryObject in value._allEntries.Where(e => !e.IsNull).Select(entry => JObject.FromObject(entry, serializer))) {
                         entryArray.Add(entryObject);
                     }
                 }
@@ -65,35 +66,41 @@ namespace Blish_HUD.Settings {
 
         private JToken _entryTokens;
 
-        private readonly bool _lazyLoaded;
-        private List<SettingEntry> _entries;
+        private readonly ReaderWriterLockSlim _entryLock = new ReaderWriterLockSlim();
 
-        public bool LazyLoaded => _lazyLoaded;
+        private readonly List<SettingEntry> _definedEntries = new List<SettingEntry>();
+        private          List<SettingEntry> _allEntries;
+
+        public bool LazyLoaded { get; }
 
         public IReadOnlyList<SettingEntry> Entries {
             get {
                 if (!this.Loaded) Load();
 
-                return _entries.AsReadOnly();
+                _entryLock.EnterReadLock();
+                var combinedEntries = _definedEntries.Concat(_allEntries).ToList().AsReadOnly();
+                _entryLock.ExitReadLock();
+
+                return combinedEntries;
             }
         }
 
-        public bool Loaded => _entries != null;
+        public bool Loaded => _allEntries != null;
 
         public bool RenderInUi { get; set; }
 
         public SettingCollection(bool lazy = false) {
-            _lazyLoaded  = lazy;
+            this.LazyLoaded  = lazy;
             _entryTokens = null;
 
-            _entries = new List<SettingEntry>();
+            _allEntries = new List<SettingEntry>();
         }
 
         public SettingCollection(bool lazy, JToken entryTokens) {
-            _lazyLoaded  = lazy;
+            this.LazyLoaded  = lazy;
             _entryTokens = entryTokens;
 
-            if (!_lazyLoaded) {
+            if (!this.LazyLoaded) {
                 Load();
             }
         }
@@ -103,12 +110,16 @@ namespace Blish_HUD.Settings {
             // will load if we haven't already since it references this.Entries instead of _entries
             if (!(this[entryKey] is SettingEntry<TEntry> definedEntry)) {
                 definedEntry = SettingEntry<TEntry>.InitSetting(entryKey, defaultValue);
-                _entries.Add(definedEntry);
             }
 
             definedEntry.GetDisplayNameFunc = displayNameFunc ?? (() => null);
             definedEntry.GetDescriptionFunc = descriptionFunc ?? (() => null);
             definedEntry.SessionDefined     = true;
+
+            _entryLock.EnterWriteLock();
+            _allEntries.Remove(definedEntry);
+            _definedEntries.Add(definedEntry);
+            _entryLock.ExitWriteLock();
 
             return definedEntry;
         }
@@ -119,8 +130,13 @@ namespace Blish_HUD.Settings {
         }
 
         public void UndefineSetting(string entryKey) {
-            if (this[entryKey] != null) {
-                _entries.Remove(this[entryKey]);
+            var entryToRemove = this[entryKey];
+
+            if (entryToRemove != null) {
+                _entryLock.EnterWriteLock();
+                _allEntries.Remove(entryToRemove);
+                _definedEntries.Remove(entryToRemove);
+                _entryLock.ExitWriteLock();
             }
         }
 
@@ -151,14 +167,24 @@ namespace Blish_HUD.Settings {
         private void Load() {
             if (_entryTokens == null) return;
 
-            _entries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings).Where((se) => se != null).ToList();
+            _entryLock.EnterWriteLock();
+            _allEntries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings).Where((se) => se != null).ToList();
+            _entryLock.ExitWriteLock();
 
             _entryTokens = null;
         }
 
         public SettingEntry this[int index] => this.Entries[index];
 
-        public SettingEntry this[string entryKey] => this.Entries.FirstOrDefault(se => string.Equals(se.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase));
+        public SettingEntry this[string entryKey] => GetSettingByName(this.Entries, entryKey);
+
+        private SettingEntry GetSettingByName(IEnumerable<SettingEntry> entries, string entryKey) {
+            _entryLock.EnterReadLock();
+            var resultingEntry = entries.FirstOrDefault(se => string.Equals(se.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase));
+            _entryLock.ExitReadLock();
+
+            return resultingEntry;
+        }
 
         #region IEnumerable
 
