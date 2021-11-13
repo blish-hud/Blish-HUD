@@ -359,7 +359,9 @@ namespace Blish_HUD.GameIntegration {
 
             Logger.Info("Guild Wars 2 application has exited!");
 
-            if (!GameService.Overlay.StayInTray.Value) {
+            // We close the game if we are not configured to stay in the tray OR if we launched GW2 with
+            // command line (we don't want to relaunch the game with a restart).  Otherwise, we restart.
+            if (!GameService.Overlay.StayInTray.Value || ApplicationSettings.Instance.StartGw2 > 0) {
                 GameService.Overlay.Exit();
             } else {
                 GameService.Overlay.Restart();

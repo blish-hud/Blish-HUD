@@ -31,7 +31,7 @@ namespace Blish_HUD.Settings {
                 if (value.Loaded) {
                     entryArray = new JArray();
 
-                    foreach (var entryObject in value._allEntries.Where(e => !e.IsNull).Select(entry => JObject.FromObject(entry, serializer))) {
+                    foreach (var entryObject in value.Entries.Where(e => !e.IsNull).Select(entry => JObject.FromObject(entry, serializer))) {
                         entryArray.Add(entryObject);
                     }
                 }
@@ -69,7 +69,7 @@ namespace Blish_HUD.Settings {
         private readonly ReaderWriterLockSlim _entryLock = new ReaderWriterLockSlim();
 
         private readonly List<SettingEntry> _definedEntries = new List<SettingEntry>();
-        private          List<SettingEntry> _allEntries;
+        private          List<SettingEntry> _undefinedEntries;
 
         public bool LazyLoaded { get; }
 
@@ -78,14 +78,14 @@ namespace Blish_HUD.Settings {
                 if (!this.Loaded) Load();
 
                 _entryLock.EnterReadLock();
-                var combinedEntries = _definedEntries.Concat(_allEntries).ToList().AsReadOnly();
+                var combinedEntries = _definedEntries.Concat(_undefinedEntries).ToList().AsReadOnly();
                 _entryLock.ExitReadLock();
 
                 return combinedEntries;
             }
         }
 
-        public bool Loaded => _allEntries != null;
+        public bool Loaded => _undefinedEntries != null;
 
         public bool RenderInUi { get; set; }
 
@@ -93,7 +93,7 @@ namespace Blish_HUD.Settings {
             this.LazyLoaded  = lazy;
             _entryTokens = null;
 
-            _allEntries = new List<SettingEntry>();
+            _undefinedEntries = new List<SettingEntry>();
         }
 
         public SettingCollection(bool lazy, JToken entryTokens) {
@@ -117,7 +117,7 @@ namespace Blish_HUD.Settings {
             definedEntry.SessionDefined     = true;
 
             _entryLock.EnterWriteLock();
-            _allEntries.Remove(definedEntry);
+            _undefinedEntries.Remove(definedEntry);
             _definedEntries.Add(definedEntry);
             _entryLock.ExitWriteLock();
 
@@ -134,7 +134,7 @@ namespace Blish_HUD.Settings {
 
             if (entryToRemove != null) {
                 _entryLock.EnterWriteLock();
-                _allEntries.Remove(entryToRemove);
+                _undefinedEntries.Remove(entryToRemove);
                 _definedEntries.Remove(entryToRemove);
                 _entryLock.ExitWriteLock();
             }
@@ -168,7 +168,7 @@ namespace Blish_HUD.Settings {
             if (_entryTokens == null) return;
 
             _entryLock.EnterWriteLock();
-            _allEntries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings).Where((se) => se != null).ToList();
+            _undefinedEntries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings).Where((se) => se != null).ToList();
             _entryLock.ExitWriteLock();
 
             _entryTokens = null;
