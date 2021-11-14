@@ -211,9 +211,6 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnTextInput(string value) {
-            // Loose focus interface is hidden
-            if (GameService.Overlay.InterfaceHidden) this.Focused = false;
-
             foreach (char c in value) {
                 if (_font.GetCharacterRegion(c) == null) continue;
 
@@ -492,8 +489,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
-            // Loose focus interface is hidden
-            if (GameService.Overlay.InterfaceHidden) this.Focused = false;
+            if (GameService.Overlay.InterfaceHidden) return;
 
             // Remove keyup event early to prevent executing special actions twice
             if (e.EventType == KeyboardEventType.KeyUp) {
