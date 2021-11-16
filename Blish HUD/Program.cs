@@ -21,12 +21,9 @@ namespace Blish_HUD {
 
         public static SemVer.Version OverlayVersion { get; } = new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
 
-        private static string[] StartupArgs;
+        internal static bool RestartOnExit { get; set; } = false;
 
-        public static bool RestartOnExit {
-            get;
-            set;
-        } = false;
+        private static string[] _startupArgs;
 
         private static void EnableLogging() {
             // Make sure logging and logging services are available as soon as possible
@@ -60,7 +57,7 @@ namespace Blish_HUD {
             // TODO: Get SetDllDirectory("") working so that we can protect ourselves from this
             HandleArcDps11Contingency();
 
-            StartupArgs = args;
+            _startupArgs = args;
             var settings = Cli.Parse<ApplicationSettings>(args);
 
             if (settings.MainProcessId.HasValue) {
@@ -107,7 +104,7 @@ namespace Blish_HUD {
                     if (RestartOnExit) {
                         var currentStartInfo = Process.GetCurrentProcess().StartInfo;
                         currentStartInfo.FileName = Application.ExecutablePath;
-                        currentStartInfo.Arguments = string.Join(" ", StartupArgs);
+                        currentStartInfo.Arguments = string.Join(" ", _startupArgs);
 
                         Process.Start(currentStartInfo);
                     }

@@ -11,7 +11,6 @@ using Blish_HUD.Gw2Mumble;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
 using NLog;
 using NLog.Config;
