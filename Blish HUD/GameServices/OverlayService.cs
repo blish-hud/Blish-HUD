@@ -87,14 +87,20 @@ namespace Blish_HUD {
 
         private void DefineSettings(SettingCollection settings) {
             this.UserLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
-            this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description);
+            this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
             this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
             this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape", true,                   () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName, () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
             this.HideAllInterface = settings.DefineSetting(nameof(this.HideAllInterface), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H),                        () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
             this.ToggleBlishWindow = settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
-            this.ToggleBlishWindow.Value.Enabled = true;
-            this.ToggleBlishWindow.Value.Activated += delegate { this.BlishHudWindow.ToggleWindow(); };
+            this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
+            this.ToggleBlishWindow.Value.Enabled              =  true;
+            this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
+
+            // Lock 'StayInTray' if we launched Guild Wars 2 with a launch argument.
+            if (ApplicationSettings.Instance.StartGw2 > 0) {
+                this.StayInTray.SetDisabled();
+            }
 
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);

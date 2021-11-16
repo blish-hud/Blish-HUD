@@ -9,6 +9,8 @@ using Blish_HUD.Properties;
 namespace Blish_HUD.GameIntegration {
     public class WinFormsIntegration : ServiceModule<GameIntegrationService> {
 
+        private static readonly Logger Logger = Logger.GetLogger<WinFormsIntegration>();
+
         private Form _formWrapper;
 
         private NotifyIcon _trayIcon;
@@ -27,6 +29,7 @@ namespace Blish_HUD.GameIntegration {
         public override void Load() {
             WrapMainForm();
             BuildTrayIcon();
+            AutoLaunchGame();
         }
 
         private void WrapMainForm() {
@@ -82,6 +85,12 @@ namespace Blish_HUD.GameIntegration {
                                                              && File.Exists(_service.Gw2Instance.Gw2ExecutablePath);
         }
 
+        private void AutoLaunchGame() {
+            if (ApplicationSettings.Instance.StartGw2 > 0) {
+                LaunchGw2(ApplicationSettings.Instance.StartGw2 > 1);
+            }
+        }
+
         private void LaunchGw2(bool autologin = false) {
             var args = new List<string>();
 
@@ -103,7 +112,11 @@ namespace Blish_HUD.GameIntegration {
                     }
                 };
 
+                Logger.Info("Blish HUD starting Guild Wars 2 with args '{gw2Args}'", string.Join(" ", args));
+
                 gw2Proc.Start();
+            } else {
+                Logger.Warn("Blish HUD failed to launch Guild Wars 2.  The path we have is null or does not exist.  Try again after the game has been successfully detected by Blish HUD.");
             }
         }
 
