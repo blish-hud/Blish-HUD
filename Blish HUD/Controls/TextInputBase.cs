@@ -489,6 +489,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
+            // TODO: move this to KeyboardHandler or similar
             if (GameService.Overlay.InterfaceHidden) return;
 
             // Remove keyup event early to prevent executing special actions twice
