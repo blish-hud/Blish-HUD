@@ -44,12 +44,12 @@ namespace Blish_HUD.Input {
             get => _enabled;
             set {
                 if (_enabled != value) {
-                    if (this.PrimaryKey == Keys.None && value) return;
-
                     if (value) {
+                        KeyboardOnKeyStateChanged(null, null);
                         GameService.Input.Keyboard.KeyStateChanged += KeyboardOnKeyStateChanged;
                     } else {
                         GameService.Input.Keyboard.KeyStateChanged -= KeyboardOnKeyStateChanged;
+                        GameService.Input.Keyboard.UnstageKeyBinding(this);
                     }
 
                     _enabled = value;
@@ -58,6 +58,12 @@ namespace Blish_HUD.Input {
                 }
             }
         }
+
+        /// <summary>
+        /// If <c>true</c>, the <see cref="PrimaryKey"/> is not sent to the game when it is
+        /// the final key pressed in the keybinding sequence.
+        /// </summary>
+        public bool BlockSequenceFromGw2 { get; set; } = false;
 
         private bool _isTriggering;
 
@@ -71,6 +77,8 @@ namespace Blish_HUD.Input {
         }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
+            if (this.PrimaryKey == Keys.None) return;
+
             CheckTrigger(GameService.Input.Keyboard.ActiveModifiers, GameService.Input.Keyboard.KeysDown);
         }
 
@@ -93,11 +101,20 @@ namespace Blish_HUD.Input {
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
             if (GameService.Gw2Mumble.UI.IsTextInputFocused) return;
 
-            if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys && pressedKeys.Contains(this.PrimaryKey)) {
-                Fire();
-            } else if (_isTriggering) {
-                StopFiring();
+            if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys) {
+                if (this.BlockSequenceFromGw2) {
+                    GameService.Input.Keyboard.StageKeyBinding(this);
+                }
+
+                if (pressedKeys.Contains(this.PrimaryKey)) {
+                    Fire();
+                    return;
+                }
+            } else {
+                GameService.Input.Keyboard.UnstageKeyBinding(this);
             }
+
+            StopFiring();
         }
 
         /// <summary>

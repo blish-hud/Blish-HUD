@@ -2,12 +2,15 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Input {
 
     public class KeyboardHandler : IInputHandler {
+
+        private static readonly Logger Logger = Logger.GetLogger<KeyboardHandler>();
 
         #region Event Handling
 
@@ -78,6 +81,9 @@ namespace Blish_HUD.Input {
         
         private Action<string> _textInputDelegate;
 
+        private readonly ReaderWriterLockSlim _stagedKeyBindingLock = new ReaderWriterLockSlim();
+        private readonly HashSet<KeyBinding>  _stagedKeyBindings    = new HashSet<KeyBinding>();
+
         internal KeyboardHandler() { }
 
         public void Update() {
@@ -87,8 +93,9 @@ namespace Blish_HUD.Input {
                     if (_keysDown.Contains(keyboardEvent.Key)) continue;
 
                     _keysDown.Add(keyboardEvent.Key);
-                } else
+                } else {
                     _keysDown.Remove(keyboardEvent.Key);
+                }
 
                 UpdateStates();
 
@@ -142,6 +149,24 @@ namespace Blish_HUD.Input {
             return true;
         }
 
+        internal void StageKeyBinding(KeyBinding keyBinding) {
+            _stagedKeyBindingLock.EnterWriteLock();
+            if (!_stagedKeyBindings.Contains(keyBinding)) {
+                Logger.Debug("Staging keybind {keybind}.", keyBinding.GetBindingDisplayText());
+                _stagedKeyBindings.Add(keyBinding);
+            }
+            _stagedKeyBindingLock.ExitWriteLock();
+        }
+
+        internal void UnstageKeyBinding(KeyBinding keyBinding) {
+            _stagedKeyBindingLock.EnterWriteLock();
+            if (_stagedKeyBindings.Contains(keyBinding)) {
+                Logger.Debug("Unstaging keybind {keybind}.", keyBinding.GetBindingDisplayText());
+                _stagedKeyBindings.Remove(keyBinding);
+            }
+            _stagedKeyBindingLock.ExitWriteLock();
+        }
+
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
@@ -174,7 +199,18 @@ namespace Blish_HUD.Input {
                 return ShouldBlockKeyEvent(key);
             }
 
-            // TODO: Implement blocking based on the key that is pressed (for example: Key binding blocking the last pressed key)
+            // We don't want to risk holding up the api response.  Better to
+            // accidentally send a key to the game than to lag the users input.
+            if (_stagedKeyBindingLock.TryEnterReadLock(0)) {
+                foreach (var keyBinding in _stagedKeyBindings) {
+                    if (keyBinding.PrimaryKey == key) {
+                        _stagedKeyBindingLock.ExitReadLock();
+                        return true;
+                    }
+                }
+
+                _stagedKeyBindingLock.ExitReadLock();
+            }
 
             return false;
         }

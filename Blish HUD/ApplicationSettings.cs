@@ -46,6 +46,7 @@ namespace Blish_HUD {
          * r, ref       - The path to the ref.dat file.
          * s, settings  - The path where Blish HUD will save settings and other files.
          * w, window    - The name of the window to overlay.
+         * g, startgw2  - The start mode for Gw2 (0 = don't start, 1 = start gw2, 2 = start gw2 autologin).
          */
 
         #region Game Integration
@@ -93,6 +94,17 @@ namespace Blish_HUD {
         #endregion
 
         #region Utility
+
+        public const string OPTION_STARTGW2 = "startgw2";
+        /// <summary>
+        /// If we should launch Gw2 as part of Blish HUD launching.
+        /// 0 = no, 1 = yes, and 2 = yes with autologin.
+        /// </summary>
+        [
+            OptionParameter(OPTION_STARTGW2, 'g'),
+            Help("Allows you to launch Guild Wars 2 with Blish HUD (0 = don't start, 1 = start gw2, 2 = start gw2 autologin).")
+        ]
+        public int StartGw2 { get; private set; }
 
         public const string OPTION_USERSETTINGSPATH = "settings";
         /// <summary>
