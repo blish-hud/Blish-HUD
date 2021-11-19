@@ -16,6 +16,10 @@ namespace Blish_HUD.Debug {
 
             _contingency.Add(key);
 
+            // Disable hooks and hide the UI, just in case.
+            GameService.Input?.DisableHooks();
+            BlishHud.Instance.Form.Hide();
+
             var notifDiag = new TaskDialog() {
                 WindowTitle      = title,
                 MainIcon         = TaskDialogIcon.Warning,
@@ -55,6 +59,13 @@ namespace Blish_HUD.Debug {
                               Strings.GameServices.Debug.ContingencyMessages.MissingRef_Title,
                               Strings.GameServices.Debug.ContingencyMessages.MissingRef_Description,
                               "https://link.blishhud.com/missingref");
+        }
+
+        public static void NotifyFileSaveAccessDenied(string path, string actionDescription) {
+            NotifyContingency(nameof(NotifyFileSaveAccessDenied),
+                              Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Title,
+                              string.Format(Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Description, path, actionDescription),
+                              "https://link.blishhud.com/filesaveaccessdenied");
         }
 
     }

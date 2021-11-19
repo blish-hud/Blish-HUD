@@ -120,4 +120,12 @@ Relaunch Blish HUD as an administrator or relaunch Guild Wars 2 without admin.</
   <data name="MissingRef_Description" xml:space="preserve">
     <value>Blish HUD was unable to find the ref.dat file. When you download Blish HUD, be sure to extract all files from the zip and ensure they are within the same directory as Blish HUD.exe.</value>
   </data>
+  <data name="FileSaveAccessDenied_Title" xml:space="preserve">
+    <value>Blish HUD Was Blocked From Saving Data!</value>
+  </data>
+  <data name="FileSaveAccessDenied_Description" xml:space="preserve">
+    <value>Blish HUD was actively blocked saving to '{0}' {1}.
+
+This is typically due to an anti-virus blocking us or Window's Controlled Folder Access. Ensure that Blish HUD is explicitly marked as allowed by your anti-virus.</value>
+  </data>
 </root>

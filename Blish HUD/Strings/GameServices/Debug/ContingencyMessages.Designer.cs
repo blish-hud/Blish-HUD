@@ -79,6 +79,26 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Blish HUD was actively blocked saving to &apos;{0}&apos; {1}.
+        ///
+        ///This is typically due to an anti-virus blocking us or Window&apos;s Controlled Folder Access. Ensure that Blish HUD is explicitly marked as allowed by your anti-virus..
+        /// </summary>
+        internal static string FileSaveAccessDenied_Description {
+            get {
+                return ResourceManager.GetString("FileSaveAccessDenied_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blish HUD Was Blocked From Saving Data!.
+        /// </summary>
+        internal static string FileSaveAccessDenied_Title {
+            get {
+                return ResourceManager.GetString("FileSaveAccessDenied_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Check our &lt;a href=&quot;{0}&quot;&gt;troubleshooting guide&lt;/a&gt; for this issue or join our &lt;a href=&quot;{1}&quot;&gt;Discord 💢help channel&lt;/a&gt;..
         /// </summary>
         internal static string GenericUrl_Footer {
