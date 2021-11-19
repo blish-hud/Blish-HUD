@@ -176,6 +176,18 @@ trademarks are the property of their respective owners.</value>
   <data name="Setting_AudioDevice_Description" xml:space="preserve">
     <value>This determines the Audio output device used by Blish HUD. The Gw2OutputDevice adjusts itself to whatever GW2 is using.</value>
   </data>
+  <data name="Setting_CloseWindowOnEscape_Description" xml:space="preserve">
+    <value>Closes Blish windows when focused and escape key is pressed</value>
+  </data>
+  <data name="Setting_CloseWindowOnEscape_DisplayName" xml:space="preserve">
+    <value>Close Window on Escape</value>
+  </data>
+  <data name="Setting_HideInterfaceKeybind_Description" xml:space="preserve">
+    <value>Hide all of Blish interface for marvelous screenshots</value>
+  </data>
+  <data name="Setting_HideInterfaceKeybind_DisplayName" xml:space="preserve">
+    <value>Hide interface</value>
+  </data>
   <data name="ConnectionStatus_Mumble_Name" xml:space="preserve">
     <value>MumbleLink</value>
   </data>

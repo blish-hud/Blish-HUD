@@ -13,6 +13,7 @@ using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MenuItem = Blish_HUD.Controls.MenuItem;
 
 namespace Blish_HUD {
@@ -38,7 +39,10 @@ namespace Blish_HUD {
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
-        public SettingEntry<KeyBinding> OpenBlishWindow { get; private set; }
+        public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
+        public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
+        public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
+        public bool InterfaceHidden = false;
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
@@ -85,11 +89,13 @@ namespace Blish_HUD {
             this.UserLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
             this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
             this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
-            this.OpenBlishWindow = settings.DefineSetting(nameof(this.OpenBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
+            this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape", true,                   () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName, () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
+            this.HideAllInterface = settings.DefineSetting(nameof(this.HideAllInterface), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H),                        () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
+            this.ToggleBlishWindow = settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
-            this.OpenBlishWindow.Value.BlockSequenceFromGw2 =  true;
-            this.OpenBlishWindow.Value.Enabled              =  true;
-            this.OpenBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
+            this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
+            this.ToggleBlishWindow.Value.Enabled              =  true;
+            this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
 
             // Lock 'StayInTray' if we launched Guild Wars 2 with a launch argument.
             if (ApplicationSettings.Instance.StartGw2 > 0) {
@@ -101,6 +107,9 @@ namespace Blish_HUD {
 
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
+
+            this.HideAllInterface.Value.Enabled = true;
+            this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
 
             ApplyInitialSettings();
         }
