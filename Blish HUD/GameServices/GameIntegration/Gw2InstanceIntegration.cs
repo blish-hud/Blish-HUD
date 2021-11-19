@@ -213,7 +213,7 @@ namespace Blish_HUD.GameIntegration {
                 this.Gw2IsRunning = windowClass == ApplicationSettings.Instance.WindowName
                                  || windowClass != GW2_PATCHWINDOW_CLASS;
 
-                if (GameService.Overlay.ShowInTaskbar.Value && !_inTaskbar) {
+                if (GameService.Overlay.ShowInTaskbar.Value) {
                     WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, true);
                 }
             }
