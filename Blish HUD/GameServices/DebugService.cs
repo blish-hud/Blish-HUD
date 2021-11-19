@@ -6,8 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Blish_HUD.Debug;
-using Blish_HUD.Graphics;
-using Blish_HUD.Gw2Mumble;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -70,12 +68,10 @@ namespace Blish_HUD {
 
             _logConfiguration.AddTarget(asyncLogFile);
 
-            _logConfiguration.AddRule(
-                                      ApplicationSettings.Instance.DebugEnabled
+            _logConfiguration.AddRule(ApplicationSettings.Instance.DebugEnabled
                                           ? LogLevel.Debug
                                           : LogLevel.Info,
-                                      LogLevel.Fatal, asyncLogFile
-                                     );
+                                      LogLevel.Fatal, asyncLogFile);
 
             if (ApplicationSettings.Instance.DebugEnabled) {
                 AddDebugTarget(_logConfiguration);

@@ -41,11 +41,16 @@ namespace Blish_HUD.GameIntegration {
         #endregion
 
         private Process _gw2Process;
-        public  Process Gw2Process {
+        public Process Gw2Process {
             get => _gw2Process;
             set {
                 if (PropertyUtil.SetProperty(ref _gw2Process, value)) {
-                    HandleProcessUpdate(value);
+                    try {
+                        HandleProcessUpdate(value);
+                    } catch (Win32Exception) {
+                        Debug.Contingency.NotifyWin32AccessDenied();
+                        _gw2Process = null;
+                    }
                 }
             }
         }

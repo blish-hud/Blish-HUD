@@ -98,7 +98,12 @@ namespace Blish_HUD {
 
         public ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
 
-        protected override void Initialize() { /* NOOP */ }
+        protected override void Initialize() {
+            // Typically occurs when Blish HUD is extracted without its dependencies.
+            if (!File.Exists(ApplicationSettings.Instance.RefPath)) {
+                Blish_HUD.Debug.Contingency.NotifyMissingRef();
+            }
+        }
 
         protected override void Load() {
             Textures.Load();

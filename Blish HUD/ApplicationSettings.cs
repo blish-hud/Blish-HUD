@@ -121,10 +121,10 @@ namespace Blish_HUD {
         /// The path to the ref.dat file.
         /// </summary>
         [
-            OptionParameter("ref", 'r'),
+            OptionParameter(OPTION_REFPATH, 'r'),
             Help("The path to the ref.dat file.")
         ]
-        public string RefPath { get; private set; }
+        public string RefPath { get; private set; } = "ref.dat";
 
         public const string OPTION_TARGETFRAMERATE = "maxfps";
         /// <summary>

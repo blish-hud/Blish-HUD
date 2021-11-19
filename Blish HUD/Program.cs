@@ -39,11 +39,10 @@ namespace Blish_HUD {
         }
 
         private static void HandleArcDps11Contingency() {
+            // Typically occurs when ArcDps is placed in the same directory as Blish HUD
+            // and causes Blish HUD to crash almost immediately due to an access violation.
             if (File.Exists("d3d11.dll")) {
-                MessageBox.Show("There is a custom 'd3dll.dll' (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please move Blish HUD to a different folder.",
-                                "Blish HUD Can't Run!",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
+                Debug.Contingency.NotifyArcDpsSameDir();
             }
         }
 
@@ -70,8 +69,8 @@ namespace Blish_HUD {
 
             EnableLogging();
 
-            Logger.Debug("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
-
+            Logger.Info("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
+            
             string mutexName = string.IsNullOrEmpty(ApplicationSettings.Instance.MumbleMapName) ? $"{APP_GUID}" : $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}";
             using (Mutex singleInstanceMutex = new Mutex(true, mutexName, out bool ownsMutex)) {
                 try {
