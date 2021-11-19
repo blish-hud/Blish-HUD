@@ -138,7 +138,6 @@ namespace Blish_HUD.GameIntegration {
         private readonly string[] _processNames = { "Gw2-64", "Gw2", "KZW" };
 
         private bool _exitLocked = false;
-        private bool _inTaskbar = false;
 
         public Gw2InstanceIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
 
@@ -181,7 +180,6 @@ namespace Blish_HUD.GameIntegration {
 
                 if (GameService.Overlay.ShowInTaskbar.Value) {
                     WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, false);
-                    this._inTaskbar = false;
                 }
             } else {
                 if (_gw2Process.MainModule != null) {
@@ -217,7 +215,6 @@ namespace Blish_HUD.GameIntegration {
 
                 if (GameService.Overlay.ShowInTaskbar.Value && !_inTaskbar) {
                     WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, true);
-                    this._inTaskbar = true;
                 }
             }
         }
@@ -351,6 +348,9 @@ namespace Blish_HUD.GameIntegration {
                             case -1:
                             default:
                                 this.Gw2Process = null;
+                                if (GameService.Overlay.ShowInTaskbar.Value) {
+                                    WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, false);
+                                }
                                 break;
                         }
                         break;

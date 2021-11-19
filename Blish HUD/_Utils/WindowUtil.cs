@@ -138,7 +138,7 @@ namespace Blish_HUD {
             SetWindowLong(winHandle, GWL_STYLE, CS_HREDRAW | CS_VREDRAW);
 
             // Let Gw2InstanceIntegration sync behavior with game runtime
-            //SetWindowParam(winHandle, GameService.Overlay.ShowInTaskbar.Value);
+            SetShowInTaskbar(winHandle, false);
 
             SetLayeredWindowAttributes(winHandle, 0, 0,   1);
             SetLayeredWindowAttributes(winHandle, 0, 255, 2);
