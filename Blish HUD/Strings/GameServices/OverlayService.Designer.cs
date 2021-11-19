@@ -205,6 +205,42 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Closes Blish windows when focused and escape key is pressed.
+        /// </summary>
+        internal static string Setting_CloseWindowOnEscape_Description {
+            get {
+                return ResourceManager.GetString("Setting_CloseWindowOnEscape_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close Window on Escape.
+        /// </summary>
+        internal static string Setting_CloseWindowOnEscape_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_CloseWindowOnEscape_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide all of Blish interface for marvelous screenshots.
+        /// </summary>
+        internal static string Setting_HideInterfaceKeybind_Description {
+            get {
+                return ResourceManager.GetString("Setting_HideInterfaceKeybind_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide interface.
+        /// </summary>
+        internal static string Setting_HideInterfaceKeybind_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_HideInterfaceKeybind_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When enabled, Blish HUD will be shown in the taskbar while running..
         /// </summary>
         internal static string Setting_ShowInTaskbar_Description {
@@ -238,6 +274,24 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string Setting_StayInTray_DisplayName {
             get {
                 return ResourceManager.GetString("Setting_StayInTray_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set keybind to toggle the main window of Blish HUD.
+        /// </summary>
+        internal static string Setting_ToggleBlishWindowKeybind_Description {
+            get {
+                return ResourceManager.GetString("Setting_ToggleBlishWindowKeybind_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Blish HUD window.
+        /// </summary>
+        internal static string Setting_ToggleBlishWindowKeybind_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_ToggleBlishWindowKeybind_DisplayName", resourceCulture);
             }
         }
         

@@ -103,7 +103,7 @@ namespace Blish_HUD.Input {
         }
 
         public void Update() {
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || !GameService.GameIntegration.Gw2Instance.Gw2HasFocus) {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || !GameService.GameIntegration.Gw2Instance.Gw2HasFocus || GameService.Overlay.InterfaceHidden) {
                 _hudFocused = false;
                 return;
             }

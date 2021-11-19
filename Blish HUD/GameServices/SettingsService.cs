@@ -103,6 +103,8 @@ namespace Blish_HUD {
                 using (var settingsWriter = new StreamWriter(_settingsPath, false)) {
                     settingsWriter.Write(rawSettings);
                 }
+            } catch (System.UnauthorizedAccessException) {
+                Blish_HUD.Debug.Contingency.NotifyFileSaveAccessDenied(_settingsPath, "to save your settings");
             } catch (Exception ex) {
                 Logger.Warn(ex, "Failed to save settings.");
                 return;

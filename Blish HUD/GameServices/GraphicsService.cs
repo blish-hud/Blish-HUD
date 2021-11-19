@@ -296,6 +296,9 @@ namespace Blish_HUD {
         internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
             this.GraphicsDevice.Clear(Color.Transparent);
 
+            // Skip rendering all elements when hotkey is pressed
+            if (GameService.Overlay.InterfaceHidden) return;
+
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game and map is closed
             if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
