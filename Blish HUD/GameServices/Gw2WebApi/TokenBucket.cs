@@ -80,6 +80,16 @@ namespace Blish_HUD.Gw2WebApi {
 
                 // Too many attempts
                 throw;
+            } catch (RequestException ex) {
+                var baseEx = ex.GetBaseException();
+
+                switch (baseEx.HResult) {
+                    case -2147467259: // An attempt was made to access a socket in a way forbidden by its access permissions.
+                        Debug.Contingency.NotifyHttpAccessDenied("to the Guild Wars 2 API");
+                        break;
+                }
+
+                throw;
             }
         }
 

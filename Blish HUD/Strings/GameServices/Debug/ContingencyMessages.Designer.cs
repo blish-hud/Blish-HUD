@@ -108,6 +108,26 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Something explicitly blocked us from making a web request {0}.
+        ///
+        ///If you have an anti-virus or third party firewall utility, please ensure that Blish HUD is manually excluded in its filters..
+        /// </summary>
+        internal static string HttpAccessDenied_Description {
+            get {
+                return ResourceManager.GetString("HttpAccessDenied_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Web access blocked!.
+        /// </summary>
+        internal static string HttpAccessDenied_Title {
+            get {
+                return ResourceManager.GetString("HttpAccessDenied_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Blish HUD was unable to find the ref.dat file. When you download Blish HUD, be sure to extract all files from the zip and ensure they are within the same directory as Blish HUD.exe..
         /// </summary>
         internal static string MissingRef_Description {

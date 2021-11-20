@@ -128,4 +128,12 @@ Relaunch Blish HUD as an administrator or relaunch Guild Wars 2 without admin.</
 
 This is typically due to an anti-virus blocking us or Window's Controlled Folder Access. Ensure that Blish HUD is explicitly marked as allowed by your anti-virus.</value>
   </data>
+  <data name="HttpAccessDenied_Title" xml:space="preserve">
+    <value>Web access blocked!</value>
+  </data>
+  <data name="HttpAccessDenied_Description" xml:space="preserve">
+    <value>Something explicitly blocked us from making a web request {0}.
+
+If you have an anti-virus or third party firewall utility, please ensure that Blish HUD is manually excluded in its filters.</value>
+  </data>
 </root>
