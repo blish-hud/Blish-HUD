@@ -1,6 +1,7 @@
 ﻿using Ookii.Dialogs.WinForms;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace Blish_HUD.Debug {
     public static class Contingency {
@@ -18,7 +19,12 @@ namespace Blish_HUD.Debug {
 
             // Disable hooks and hide the UI, just in case.
             GameService.Input?.DisableHooks();
-            BlishHud.Instance.Form.Hide();
+
+            if (BlishHud.Instance.Form.InvokeRequired) {
+                BlishHud.Instance.Form.Invoke((MethodInvoker)(() => BlishHud.Instance.Form.Hide()));
+            } else {
+                BlishHud.Instance.Form.Hide();
+            }
 
             var notifDiag = new TaskDialog() {
                 WindowTitle      = title,
@@ -66,6 +72,13 @@ namespace Blish_HUD.Debug {
                               Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Title,
                               string.Format(Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Description, path, actionDescription),
                               "https://link.blishhud.com/filesaveaccessdenied");
+        }
+
+        public static void NotifyHttpAccessDenied(string actionDescription) {
+            NotifyContingency(nameof(NotifyHttpAccessDenied),
+                              Strings.GameServices.Debug.ContingencyMessages.HttpAccessDenied_Title,
+                              string.Format(Strings.GameServices.Debug.ContingencyMessages.HttpAccessDenied_Description, actionDescription),
+                              "https://link.blishhud.com/httpaccessdenied");
         }
 
     }
