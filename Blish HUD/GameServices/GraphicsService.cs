@@ -97,6 +97,23 @@ namespace Blish_HUD {
         }
 
         public float GetScaleRatio(UiSize currScale) {
+            if (this.UIScalingMethod != ManualUISize.SyncWithGame) {
+                switch (this.UIScalingMethod) {
+                    case ManualUISize.Small:
+                        currScale = UiSize.Small;
+                        break;
+                    case ManualUISize.Normal:
+                        currScale = UiSize.Normal;
+                        break;
+                    case ManualUISize.Large:
+                        currScale = UiSize.Large;
+                        break;
+                    case ManualUISize.Larger:
+                        currScale = UiSize.Larger;
+                        break;
+                }
+            }
+
             switch (currScale) {
                 case UiSize.Small:
                     return 0.810f;
@@ -150,6 +167,7 @@ namespace Blish_HUD {
         private SettingEntry<bool>            _enableVsyncSetting;
         private SettingEntry<bool>            _smoothCharacterPositionSetting;
         private SettingEntry<DpiMethod>       _dpiScalingMethodSetting;
+        private SettingEntry<ManualUISize>   _UISizeSetting;
 
         public FramerateMethod FrameLimiter {
             get => ApplicationSettings.Instance.TargetFramerate > 0
@@ -167,10 +185,14 @@ namespace Blish_HUD {
             get => _smoothCharacterPositionSetting.Value;
             set => _smoothCharacterPositionSetting.Value = value;
         }
-        
+
         public DpiMethod DpiScalingMethod {
             get => _dpiScalingMethodSetting.Value;
             set => _dpiScalingMethodSetting.Value = value;
+        }
+        public ManualUISize UIScalingMethod {
+            get => _UISizeSetting.Value;
+            set => _UISizeSetting.Value = value;
         }
 
         public Point Resolution {
@@ -239,6 +261,11 @@ namespace Blish_HUD {
                                                         DpiMethod.SyncWithGame,
                                                         () => Strings.GameServices.GraphicsService.Setting_DPIScaling_DisplayName,
                                                         () => Strings.GameServices.GraphicsService.Setting_DPIScaling_Description);
+
+            _UISizeSetting = settings.DefineSetting(nameof(UIScalingMethod),
+                                                        ManualUISize.SyncWithGame,
+                                                        () => Strings.GameServices.GraphicsService.Setting_UIScaling_DisplayName,
+                                                        () => Strings.GameServices.GraphicsService.Setting_UIScaling_Description);
 
 
 
