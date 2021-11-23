@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Blish_HUD.Content;
 using Blish_HUD.Input;
+using Blish_HUD.Graphics;
 
 namespace Blish_HUD.Controls {
     public class CornerIcon : Control {
@@ -178,6 +179,17 @@ namespace Blish_HUD.Controls {
         // TODO: Use a shader to replace "HoverIcon"
         /// <inheritdoc />
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            switch (GameService.Overlay.DynamicHUDMenuBar, GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                case (DynamicHUDMethod.NeverShow, true):
+                    return;
+                case (DynamicHUDMethod.NeverShow, false):
+                    return;
+                case (DynamicHUDMethod.ShowPeaceful, true):
+                    return;
+                case (DynamicHUDMethod.ShowInCombat, false):
+                    return;
+            };
+
             if (_icon == null) return;
 
             if (this.MouseOver && this.RelativeMousePosition.Y <= _standardIconBounds.Bottom) {
