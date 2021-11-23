@@ -217,12 +217,6 @@ It might not be installed.</value>
   <data name="Setting_ToggleBlishWindowKeybind_DisplayName" xml:space="preserve">
     <value>Toggle Blish HUD window</value>
   </data>
-  <data name="Setting_DynamicHUDMainWindow_Description" xml:space="preserve">
-    <value>Controls visibility of the Main window of Blish HUD.</value>
-  </data>
-  <data name="Setting_DynamicHUDMainWindow_DisplayName" xml:space="preserve">
-    <value>Dynamic HUD Main Window</value>
-  </data>
   <data name="Setting_DynamicHUDMenuBar_Description" xml:space="preserve">
     <value>Controls visibility of the Menu bar located in the upper-left of the screen.</value>
   </data>

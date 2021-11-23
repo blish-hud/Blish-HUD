@@ -223,24 +223,6 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Controls visibility of the Main window of Blish HUD..
-        /// </summary>
-        internal static string Setting_DynamicHUDMainWindow_Description {
-            get {
-                return ResourceManager.GetString("Setting_DynamicHUDMainWindow_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Dynamic HUD Main Window.
-        /// </summary>
-        internal static string Setting_DynamicHUDMainWindow_DisplayName {
-            get {
-                return ResourceManager.GetString("Setting_DynamicHUDMainWindow_DisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Controls visibility of the Menu bar located in the upper-left of the screen..
         /// </summary>
         internal static string Setting_DynamicHUDMenuBar_Description {
