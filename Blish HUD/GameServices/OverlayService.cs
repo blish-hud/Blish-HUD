@@ -40,14 +40,24 @@ namespace Blish_HUD {
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
-        private SettingEntry<DynamicHUDMethod> DynamicHUDMenuBar;
-        private SettingEntry<DynamicHUDMethod> DynamicHUDMainWindow;
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
         public bool InterfaceHidden = false;
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
+
+
+        private SettingEntry<DynamicHUDMethod> _dynamicHUDMenuBar;
+        private SettingEntry<DynamicHUDMethod> _dynamicHUDMainWindow;
+        public DynamicHUDMethod DynamicHUDMenuBar {
+            get => _dynamicHUDMenuBar.Value;
+            set => _dynamicHUDMenuBar.Value = value;
+        }
+        public DynamicHUDMethod DynamicHUDMainWindow {
+            get => _dynamicHUDMainWindow.Value;
+            set => _dynamicHUDMainWindow.Value = value;
+        }
 
         public OverlaySettingsTab SettingsTab { get; private set; }
 
@@ -93,11 +103,11 @@ namespace Blish_HUD {
             this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
             this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
             this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape", true,                   () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName, () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
-            this.DynamicHUDMenuBar = settings.DefineSetting("DynamicHUDMenuBar",
+            this._dynamicHUDMenuBar = settings.DefineSetting("DynamicHUDMenuBar",
                                                         DynamicHUDMethod.AlwaysShow,
                                                         () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,
                                                         () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
-            this.DynamicHUDMainWindow = settings.DefineSetting("DynamicHUDMainWindow",
+            this._dynamicHUDMainWindow = settings.DefineSetting("DynamicHUDMainWindow",
                                                         DynamicHUDMethod.AlwaysShow,
                                                         () => Strings.GameServices.OverlayService.Setting_DynamicHUDMainWindow_DisplayName,
                                                         () => Strings.GameServices.OverlayService.Setting_DynamicHUDMainWindow_Description);
@@ -283,6 +293,28 @@ namespace Blish_HUD {
                            + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
 
                 CornerIcon.LeftOffset = offset * 36;
+            }
+
+            foreach (var control in this.BlishMenuIcon.Parent.Children) {
+                if(control.GetType() == typeof(CornerIcon)) {
+                    switch (GameService.Overlay.DynamicHUDMenuBar, GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                        case (DynamicHUDMethod.NeverShow, true):
+                            control.Hide();
+                            break;
+                        case (DynamicHUDMethod.NeverShow, false):
+                            control.Hide();
+                            break;
+                        case (DynamicHUDMethod.ShowPeaceful, true):
+                            control.Hide();
+                            break;
+                        case (DynamicHUDMethod.ShowInCombat, false):
+                            control.Hide();
+                            break;
+                        default:
+                            control.Show();
+                            break;
+                    };
+                }
             }
         }
 
