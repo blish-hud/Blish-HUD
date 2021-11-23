@@ -188,7 +188,7 @@ namespace Blish_HUD.Controls {
                     return;
                 case (DynamicHUDMethod.ShowInCombat, false):
                     return;
-            };
+            }
 
             if (_icon == null) return;
 
