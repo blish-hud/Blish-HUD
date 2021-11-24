@@ -54,7 +54,7 @@ namespace Blish_HUD.Controls {
                         if (this.DynamicHide) this.Visible = true;
                     }).OnComplete(() => {
                         if (!this.DynamicHide) this.Visible = false;
-                    }); ;
+                    });
                 }
             }
         }
