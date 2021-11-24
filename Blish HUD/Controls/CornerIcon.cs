@@ -27,7 +27,7 @@ namespace Blish_HUD.Controls {
 
         private const int   ICON_POSITION = 10;
         private const int   ICON_SIZE     = 32;
-        private const float ICON_TRANS    = 0.45f;
+        private const float ICON_TRANS    = 0.6f;
         
         private float _hoverTrans = ICON_TRANS;
         public float HoverTrans {
@@ -50,7 +50,11 @@ namespace Blish_HUD.Controls {
             get => _dynamicHide;
             set {
                 if (SetProperty(ref _dynamicHide, value)) {
-                    Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f));
+                    Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f)).OnBegin(() => {
+                        if (this.DynamicHide) this.Visible = true;
+                    }).OnComplete(() => {
+                        if (!this.DynamicHide) this.Visible = false;
+                    }); ;
                 }
             }
         }
@@ -197,7 +201,7 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc />
         protected override void OnMouseMoved(MouseEventArgs e) {
-            if (_isLoading && _mouseOver && this.RelativeMousePosition.Y >= _standardIconBounds.Bottom) {
+            if (_isLoading && _mouseOver && this.RelativeMousePosition.Y >= _standardIconBounds.Bottom && !_dynamicHide) {
                 this.BasicTooltipText = _loadingMessage;
             } else if (this.Tooltip == null) {
                 this.BasicTooltipText = _iconName;
