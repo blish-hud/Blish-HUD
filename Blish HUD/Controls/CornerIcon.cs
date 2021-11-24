@@ -27,7 +27,7 @@ namespace Blish_HUD.Controls {
 
         private const int   ICON_POSITION = 10;
         private const int   ICON_SIZE     = 32;
-        private const float ICON_TRANS    = 0.4f;
+        private const float ICON_TRANS    = 0.45f;
         
         private float _hoverTrans = ICON_TRANS;
         public float HoverTrans {
@@ -40,7 +40,17 @@ namespace Blish_HUD.Controls {
             get => _mouseInHouse;
             set {
                 if (SetProperty(ref _mouseInHouse, value)) {
-                    Animation.Tweener.Tween(this, new {HoverTrans = (this.MouseInHouse ? 1f : ICON_TRANS)}, 0.45f);
+                    Animation.Tweener.Tween(this, new { HoverTrans = (this.MouseInHouse ? 1f : ICON_TRANS) }, 0.45f);
+                }
+            }
+        }
+
+        private bool _dynamicHide = false;
+        public bool DynamicHide {
+            get => _dynamicHide;
+            set {
+                if (SetProperty(ref _dynamicHide, value)) {
+                    Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f));
                 }
             }
         }
@@ -105,12 +115,12 @@ namespace Blish_HUD.Controls {
             _standardIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
 
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
-
+            
             GameService.Input.Mouse.MouseMoved += (sender, e) => {
                 var scaledMousePos = Input.Mouse.State.Position.ScaleToUi();
-                if (scaledMousePos.Y < BlishHud.Instance.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
+                if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count - 1) + LeftOffset) {
                     foreach (var cornerIcon in CornerIcons) {
-                        cornerIcon.MouseInHouse = scaledMousePos.X < cornerIcon.Left || cornerIcon.MouseOver;
+                        cornerIcon.MouseInHouse = true;
                     }
 
                     return;
@@ -118,6 +128,27 @@ namespace Blish_HUD.Controls {
 
                 foreach (var cornerIcon in CornerIcons) {
                     cornerIcon.MouseInHouse = false;
+                }
+            };
+            
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += (sender, e) => {
+                var visibility = false;
+                switch (GameService.Overlay.DynamicHUDMenuBar, GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                    case (DynamicHUDMethod.NeverShow, true):
+                        break;
+                    case (DynamicHUDMethod.NeverShow, false):
+                        break;
+                    case (DynamicHUDMethod.ShowPeaceful, true):
+                        break;
+                    case (DynamicHUDMethod.ShowInCombat, false):
+                        break;
+                    default:
+                        visibility = true;
+                        break;
+                }
+
+                foreach (var cornerIcon in CornerIcons) {
+                    cornerIcon.DynamicHide = visibility;
                 }
             };
         }
@@ -135,6 +166,7 @@ namespace Blish_HUD.Controls {
         public CornerIcon() {
             this.Parent = Graphics.SpriteScreen;
             this.Size   = new Point(ICON_SIZE, ICON_SIZE);
+            this.DynamicHide = true;
 
             CornerIcons.Add(this);
         }
@@ -179,17 +211,6 @@ namespace Blish_HUD.Controls {
         // TODO: Use a shader to replace "HoverIcon"
         /// <inheritdoc />
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            switch (GameService.Overlay.DynamicHUDMenuBar, GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
-                case (DynamicHUDMethod.NeverShow, true):
-                    return;
-                case (DynamicHUDMethod.NeverShow, false):
-                    return;
-                case (DynamicHUDMethod.ShowPeaceful, true):
-                    return;
-                case (DynamicHUDMethod.ShowInCombat, false):
-                    return;
-            }
-
             if (_icon == null) return;
 
             if (this.MouseOver && this.RelativeMousePosition.Y <= _standardIconBounds.Bottom) {
