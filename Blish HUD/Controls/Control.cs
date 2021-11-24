@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
@@ -827,6 +829,15 @@ namespace Blish_HUD.Controls {
                 }
 
                 _disposedValue = true;
+            }
+        }
+
+        public IEnumerable<Control> GetAncestors() {
+            var current = this.Parent;
+
+            while (current != null) {
+                yield return current;
+                current = current.Parent;
             }
         }
 

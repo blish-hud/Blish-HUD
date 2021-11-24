@@ -33,7 +33,7 @@ namespace Blish_HUD.Input {
         /// </summary>
         public Control ActiveControl {
             get => _activeControl;
-            private set {
+            set {
                 _hudFocused    = value != null;
                 _activeControl = value;
 

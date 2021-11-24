@@ -87,6 +87,14 @@ namespace Blish_HUD.Input {
         internal KeyboardHandler() { }
 
         public void Update() {
+            if (GameService.Input.Mouse.ActiveControl != null) {
+                foreach (var ancestor in GameService.Input.Mouse.ActiveControl.GetAncestors()) {
+                    if (ancestor.Visible == false) {
+                        GameService.Input.Mouse.ActiveControl = null;
+                    }
+                }
+            }
+
             while (_inputBuffer.TryDequeue(out KeyboardEventArgs keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
                     // Avoid firing on held keys
