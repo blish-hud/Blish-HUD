@@ -3,6 +3,7 @@ using EntryPoint;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -46,6 +47,14 @@ namespace Blish_HUD {
             }
         }
 
+        private static void HandleMinTls12Contingency() {
+            // Typically occurs on Windows 7 where Tls 1.2 has not been configured as the default.
+            // https://link.blishhud.com/tls12issue
+            if (!ServicePointManager.SecurityProtocol.HasFlag(SecurityProtocolType.Tls12)) {
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+            }
+        }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -55,6 +64,7 @@ namespace Blish_HUD {
 
             // TODO: Get SetDllDirectory("") working so that we can protect ourselves from this
             HandleArcDps11Contingency();
+            HandleMinTls12Contingency();
 
             _startupArgs = args;
             var settings = Cli.Parse<ApplicationSettings>(args);
