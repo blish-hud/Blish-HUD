@@ -114,6 +114,8 @@ namespace Blish_HUD {
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);
 
+            _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
+
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
 
