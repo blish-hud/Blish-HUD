@@ -134,27 +134,8 @@ namespace Blish_HUD.Controls {
                     cornerIcon.MouseInHouse = false;
                 }
             };
-            
-            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += (sender, e) => {
-                var visibility = false;
-                switch (GameService.Overlay.DynamicHUDMenuBar, GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
-                    case (DynamicHUDMethod.NeverShow, true):
-                        break;
-                    case (DynamicHUDMethod.NeverShow, false):
-                        break;
-                    case (DynamicHUDMethod.ShowPeaceful, true):
-                        break;
-                    case (DynamicHUDMethod.ShowInCombat, false):
-                        break;
-                    default:
-                        visibility = true;
-                        break;
-                }
 
-                foreach (var cornerIcon in CornerIcons) {
-                    cornerIcon.DynamicHide = visibility;
-                }
-            };
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += delegate { UpdateCornerIconDynamicHUDState(); };
         }
 
         private static void UpdateCornerIconPositions() {
@@ -164,6 +145,18 @@ namespace Blish_HUD.Controls {
 
             for (int i = 0; i < CornerIcons.Count; i++) {
                 sortedIcons[i].Location = new Point(ICON_SIZE * i + horizontalOffset, 0);
+            }
+        }
+
+        public static void UpdateCornerIconDynamicHUDState() {
+            if (GameService.Overlay.DynamicHUDMenuBar == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                foreach (var cornerIcon in CornerIcons) {
+                    cornerIcon.DynamicHide = false;
+                }
+            } else {
+                foreach (var cornerIcon in CornerIcons) {
+                    cornerIcon.DynamicHide = true;
+                }
             }
         }
 
