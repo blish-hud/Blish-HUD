@@ -17,6 +17,7 @@ namespace Blish_HUD.GameIntegration {
 
         private ToolStripItem _launchGw2Tsi;
         private ToolStripItem _launchGw2AutoTsi;
+        private ToolStripItem _openBlishSettingsFolder;
         private ToolStripItem _exitTsi;
 
         /// <summary>
@@ -70,6 +71,14 @@ namespace Blish_HUD.GameIntegration {
                 if (!_service.Gw2Instance.Gw2IsRunning) {
                     LaunchGw2(true);
                 }
+            };
+
+            this.TrayIconMenu.Items.Add(new ToolStripSeparator());
+
+            _openBlishSettingsFolder = this.TrayIconMenu.Items.Add(Strings.GameServices.GameIntegrationService.TrayIcon_OpenSettingsFolder);
+
+            _openBlishSettingsFolder.Click += delegate {
+                Process.Start(DirectoryUtil.BasePath);
             };
 
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
