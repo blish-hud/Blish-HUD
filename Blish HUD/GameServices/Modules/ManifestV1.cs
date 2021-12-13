@@ -1,8 +1,10 @@
-﻿namespace Blish_HUD.Modules {
+﻿using Newtonsoft.Json;
+
+namespace Blish_HUD.Modules {
 
     public class ManifestV1 : Manifest {
 
-        /// <inheritdoc />
+        [JsonProperty("manifest_version")]
         public override SupportedModuleManifestVersion ManifestVersion => SupportedModuleManifestVersion.V1;
 
     }
