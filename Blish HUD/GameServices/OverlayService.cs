@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
@@ -44,6 +45,7 @@ namespace Blish_HUD {
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
         public bool InterfaceHidden = false;
+        public SettingEntry<bool> EnableDebugLogging { get; private set; }
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
@@ -101,6 +103,7 @@ namespace Blish_HUD {
             _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",            DynamicHUDMethod.AlwaysShow,                                    () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
             this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),  new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H), () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,     () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
             this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
+            this.EnableDebugLogging =  settings.DefineSetting("EnableDebugLogging",           false,                                                          () => Strings.GameServices.OverlayService.Setting_DebugLogging_DisplayName,             () => Strings.GameServices.OverlayService.Setting_DebugLogging_Description);
 
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
@@ -121,6 +124,15 @@ namespace Blish_HUD {
 
             this.HideAllInterface.Value.Enabled = true;
             this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
+
+            this.EnableDebugLogging.SettingChanged += delegate {
+                if(this.EnableDebugLogging.Value) {
+                    File.Create(DirectoryUtil.BasePath + "\\EnableDebugLogging").Dispose();
+                }
+                else {
+                    File.Delete(DirectoryUtil.BasePath + "\\EnableDebugLogging");
+                }
+            };
 
             ApplyInitialSettings();
         }

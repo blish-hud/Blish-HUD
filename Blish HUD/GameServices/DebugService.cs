@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -70,7 +70,8 @@ namespace Blish_HUD {
 
             _logConfiguration.AddRule(ApplicationSettings.Instance.DebugEnabled
                                           ? LogLevel.Debug
-                                          : LogLevel.Info,
+                                          : File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging")
+                                          ? LogLevel.Debug : LogLevel.Info,
                                       LogLevel.Fatal, asyncLogFile);
 
             if (ApplicationSettings.Instance.DebugEnabled) {
