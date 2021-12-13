@@ -14,6 +14,7 @@ using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using NLog;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MenuItem = Blish_HUD.Controls.MenuItem;
@@ -103,7 +104,7 @@ namespace Blish_HUD {
             _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",            DynamicHUDMethod.AlwaysShow,                                    () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
             this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),  new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H), () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,     () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
             this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
-            this.EnableDebugLogging =  settings.DefineSetting("EnableDebugLogging",           false,                                                          () => Strings.GameServices.OverlayService.Setting_DebugLogging_DisplayName,             () => Strings.GameServices.OverlayService.Setting_DebugLogging_Description);
+            this.EnableDebugLogging =  settings.DefineSetting("EnableDebugLogging",           File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"),   () => Strings.GameServices.OverlayService.Setting_DebugLogging_DisplayName,             () => Strings.GameServices.OverlayService.Setting_DebugLogging_Description);
 
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
@@ -127,9 +128,11 @@ namespace Blish_HUD {
 
             this.EnableDebugLogging.SettingChanged += delegate {
                 if(this.EnableDebugLogging.Value) {
+                    DebugService.UpdateLogLevel(LogLevel.Debug);
                     File.Create(DirectoryUtil.BasePath + "\\EnableDebugLogging").Dispose();
                 }
                 else {
+                    DebugService.UpdateLogLevel(LogLevel.Info);
                     File.Delete(DirectoryUtil.BasePath + "\\EnableDebugLogging");
                 }
             };

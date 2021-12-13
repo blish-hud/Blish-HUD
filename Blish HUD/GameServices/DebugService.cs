@@ -105,6 +105,16 @@ namespace Blish_HUD {
             _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, logDebug);
         }
 
+        public static void UpdateLogLevel(LogLevel newLogLevel) {
+            foreach(var rule in LogManager.Configuration.LoggingRules) {
+                foreach(var target in rule.Targets) {
+                    rule.SetLoggingLevels(newLogLevel, LogLevel.Fatal);
+                }
+            }
+
+            LogManager.ReconfigExistingLoggers();
+        }
+
         private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
             Input.DisableHooks();
 
