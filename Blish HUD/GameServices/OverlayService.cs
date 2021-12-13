@@ -81,9 +81,7 @@ namespace Blish_HUD {
 
             PrepareSettingsTab();
 
-            if(File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging")) {
-                this.EnableDebugLogging.Value = true;
-            }
+            this.EnableDebugLogging.Value = File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging");
         }
 
         private void PrepareSettingsTab() {
@@ -130,16 +128,7 @@ namespace Blish_HUD {
             this.HideAllInterface.Value.Enabled = true;
             this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
 
-            this.EnableDebugLogging.SettingChanged += delegate {
-                if(this.EnableDebugLogging.Value) {
-                    DebugService.UpdateLogLevel(LogLevel.Debug);
-                    File.Create(DirectoryUtil.BasePath + "\\EnableDebugLogging").Dispose();
-                }
-                else {
-                    DebugService.UpdateLogLevel(LogLevel.Info);
-                    File.Delete(DirectoryUtil.BasePath + "\\EnableDebugLogging");
-                }
-            };
+            this.EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
 
             ApplyInitialSettings();
         }
@@ -159,6 +148,18 @@ namespace Blish_HUD {
             CultureInfo.CurrentUICulture              = culture;
 
             this.UserLocaleChanged?.Invoke(this, new ValueEventArgs<CultureInfo>(culture));
+        }
+
+        private void EnableDebugLoggingOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
+            if (e.NewValue) {
+                Logger.Info("User activated debug logging");
+                DebugService.UpdateLogLevel(LogLevel.Debug);
+                File.Create(DirectoryUtil.BasePath + "\\EnableDebugLogging").Dispose();
+            } else {
+                Logger.Info("User deactivated debug logging");
+                DebugService.UpdateLogLevel(LogLevel.Info);
+                File.Delete(DirectoryUtil.BasePath + "\\EnableDebugLogging");
+            }
         }
 
         /// <summary>
