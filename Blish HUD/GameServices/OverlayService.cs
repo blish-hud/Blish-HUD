@@ -80,6 +80,10 @@ namespace Blish_HUD {
             DefineSettings(this.OverlaySettings);
 
             PrepareSettingsTab();
+
+            if(File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging")) {
+                this.EnableDebugLogging.Value = true;
+            }
         }
 
         private void PrepareSettingsTab() {
