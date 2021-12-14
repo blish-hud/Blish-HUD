@@ -70,7 +70,6 @@ namespace Blish_HUD.Controls {
         }
 
         private bool _dragging   = false;
-        private int  _dragOffset = 0;
 
         public TrackBar() {
             this.Size = new Point(256, 16);
@@ -87,14 +86,12 @@ namespace Blish_HUD.Controls {
 
             if (_layoutNubBounds.Contains(this.RelativeMousePosition)) {
                 _dragging   = true;
-                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X + BUMPER_WIDTH;
             }
         }
 
         public override void DoUpdate(GameTime gameTime) {
             if (_dragging) {
-                var relMousePos = this.RelativeMousePosition - new Point(_dragOffset, 0);
-                float rawValue = (relMousePos.X / (float)(this.Width - BUMPER_WIDTH * 2 - _textureNub.Width)) * (this.MaxValue - this.MinValue);
+                float rawValue = (this.RelativeMousePosition.X - BUMPER_WIDTH * 2) / (float)(this.Width - BUMPER_WIDTH * 2 - _textureNub.Width) * (this.MaxValue - this.MinValue) + this.MinValue;
 
                 this.Value = this.SmallStep && GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
                                  ? rawValue
