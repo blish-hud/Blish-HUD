@@ -80,6 +80,16 @@ namespace Blish_HUD {
             LogManager.Configuration = _logConfiguration;
 
             Logger = Logger.GetLogger<DebugService>();
+
+            // Cleanup old logfiles since nLog logrotate can't handle timestamps in filenames
+            DirectoryInfo di = new DirectoryInfo(logPath);
+            var logsToBeDeleted = (from log in di.GetFiles("blishhud.*.log", SearchOption.TopDirectoryOnly)
+                                   orderby log.LastWriteTime descending, log.Name descending
+                                   select log).Skip(MAX_LOG_SESSIONS).ToArray();
+            foreach (var log in logsToBeDeleted) {
+                Logger.Debug("Logile cleanup: " + log);
+                File.Delete(log.FullName);
+            }
         }
 
         public static void TargetDebug(string time, string level, string logger, string message) {
