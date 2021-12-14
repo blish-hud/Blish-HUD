@@ -50,6 +50,7 @@ namespace Blish_HUD {
                 ArchiveFileKind   = FilePathKind.Absolute,
                 FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.log"),
                 MaxArchiveFiles   = MAX_LOG_SESSIONS,
+                ArchiveAboveSize  = MAX_LOG_SIZE,
                 EnableFileDelete  = true,
                 CreateDirs        = true,
                 Encoding          = Encoding.UTF8,
