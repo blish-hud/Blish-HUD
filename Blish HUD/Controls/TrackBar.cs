@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
@@ -90,12 +91,17 @@ namespace Blish_HUD.Controls {
         }
 
         public override void DoUpdate(GameTime gameTime) {
+            List<float> tenIncrements = new List<float>();
+            for (int i = 0; i < 11; i++) {
+                tenIncrements.Add((float)(this.MaxValue - this.MinValue) * 0.1f * i + (float)this.MinValue);
+            }
+
             if (_dragging) {
                 float rawValue = (this.RelativeMousePosition.X - BUMPER_WIDTH * 2) / (float)(this.Width - BUMPER_WIDTH * 2 - _textureNub.Width) * (this.MaxValue - this.MinValue) + this.MinValue;
 
-                this.Value = this.SmallStep && GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
-                                 ? rawValue
-                                 : (float) Math.Round(rawValue, 0);
+                this.Value = GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
+                                 ? SmallStep ? rawValue : (float)Math.Round(rawValue, 0)
+                                 : tenIncrements.Aggregate((x, y) => Math.Abs(x - rawValue) < Math.Abs(y - rawValue) ? x : y);
             }
         }
 
