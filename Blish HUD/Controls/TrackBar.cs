@@ -74,6 +74,7 @@ namespace Blish_HUD.Controls {
         }
 
         private bool _dragging   = false;
+        private int  _dragOffset = 0;
 
         public TrackBar() {
             this.Size = new Point(256, 16);
@@ -90,6 +91,7 @@ namespace Blish_HUD.Controls {
 
             if (_layoutNubBounds.Contains(this.RelativeMousePosition)) {
                 _dragging   = true;
+                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X + BUMPER_WIDTH;
             }
         }
 
