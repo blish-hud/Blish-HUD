@@ -89,15 +89,15 @@ namespace Blish_HUD.Controls {
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
 
-            if (_layoutNubBounds.Contains(this.RelativeMousePosition)) {
+            if (_layoutNubBounds.Contains(this.RelativeMousePosition) && !_dragging) {
                 _dragging   = true;
-                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X;
+                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X - BUMPER_WIDTH / 2;
             }
         }
 
         public override void DoUpdate(GameTime gameTime) {
             if (_dragging) {
-                float rawValue = (this.RelativeMousePosition.X - BUMPER_WIDTH) / (float)(this.Width - BUMPER_WIDTH - _textureNub.Width) * (this.MaxValue - this.MinValue) + this.MinValue;
+                float rawValue = (this.RelativeMousePosition.X - BUMPER_WIDTH - _dragOffset) / (float)(this.Width - BUMPER_WIDTH - _textureNub.Width) * (this.MaxValue - this.MinValue) + this.MinValue;
 
                 this.Value = GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
                                  ? SmallStep ? rawValue : (float)Math.Round(rawValue, 0)
