@@ -11,6 +11,7 @@ namespace Blish_HUD.Controls {
     public class TrackBar : Control {
         
         private const int BUMPER_WIDTH = 4;
+        private List<float> tenIncrements = new List<float>();
 
         #region Load Static
 
@@ -32,6 +33,7 @@ namespace Blish_HUD.Controls {
                 if (SetProperty(ref _maxValue, value, true)) {
                     this.Value = _value;
                 }
+                MinMaxChanged();
             }
         }
 
@@ -46,6 +48,7 @@ namespace Blish_HUD.Controls {
                 if (SetProperty(ref _minValue, value, true)) {
                     this.Value = _value;
                 }
+                MinMaxChanged();
             }
         }
 
@@ -91,17 +94,19 @@ namespace Blish_HUD.Controls {
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            List<float> tenIncrements = new List<float>();
-            for (int i = 0; i < 11; i++) {
-                tenIncrements.Add((float)(this.MaxValue - this.MinValue) * 0.1f * i + (float)this.MinValue);
-            }
-
             if (_dragging) {
                 float rawValue = (this.RelativeMousePosition.X - BUMPER_WIDTH * 2) / (float)(this.Width - BUMPER_WIDTH * 2 - _textureNub.Width) * (this.MaxValue - this.MinValue) + this.MinValue;
 
                 this.Value = GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
                                  ? SmallStep ? rawValue : (float)Math.Round(rawValue, 0)
                                  : tenIncrements.Aggregate((x, y) => Math.Abs(x - rawValue) < Math.Abs(y - rawValue) ? x : y);
+            }
+        }
+
+        private void MinMaxChanged() {
+            tenIncrements.Clear();
+            for (int i = 0; i < 11; i++) {
+                tenIncrements.Add((float)(this.MaxValue - this.MinValue) * 0.1f * i + (float)this.MinValue);
             }
         }
 
