@@ -54,7 +54,7 @@ namespace Blish_HUD.Controls {
         }
 
         public KeybindingAssigner(KeyBinding keyBinding) {
-            this.KeyBinding = keyBinding;
+            this.KeyBinding = keyBinding ?? new KeyBinding();
 
             // Configure LabelBase
             _font       = Content.DefaultFont14;

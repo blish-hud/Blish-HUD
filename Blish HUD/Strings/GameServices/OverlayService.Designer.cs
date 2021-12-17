@@ -223,6 +223,24 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Controls visibility of the Menu bar located in the upper-left of the screen..
+        /// </summary>
+        internal static string Setting_DynamicHUDMenuBar_Description {
+            get {
+                return ResourceManager.GetString("Setting_DynamicHUDMenuBar_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dynamic HUD Menu Bar.
+        /// </summary>
+        internal static string Setting_DynamicHUDMenuBar_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_DynamicHUDMenuBar_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hide all of Blish interface for marvelous screenshots.
         /// </summary>
         internal static string Setting_HideInterfaceKeybind_Description {

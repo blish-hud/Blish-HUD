@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Blish_HUD.Content;
 using Blish_HUD.Input;
+using Blish_HUD.Graphics;
 
 namespace Blish_HUD.Controls {
     public class CornerIcon : Control {
@@ -26,7 +27,7 @@ namespace Blish_HUD.Controls {
 
         private const int   ICON_POSITION = 10;
         private const int   ICON_SIZE     = 32;
-        private const float ICON_TRANS    = 0.4f;
+        private const float ICON_TRANS    = 0.6f;
         
         private float _hoverTrans = ICON_TRANS;
         public float HoverTrans {
@@ -39,7 +40,21 @@ namespace Blish_HUD.Controls {
             get => _mouseInHouse;
             set {
                 if (SetProperty(ref _mouseInHouse, value)) {
-                    Animation.Tweener.Tween(this, new {HoverTrans = (this.MouseInHouse ? 1f : ICON_TRANS)}, 0.45f);
+                    Animation.Tweener.Tween(this, new { HoverTrans = (this.MouseInHouse ? 1f : ICON_TRANS) }, 0.45f);
+                }
+            }
+        }
+
+        private bool _dynamicHide = false;
+        public bool DynamicHide {
+            get => _dynamicHide;
+            set {
+                if (SetProperty(ref _dynamicHide, value)) {
+                    Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f)).OnBegin(() => {
+                        if (this.DynamicHide) this.Visible = true;
+                    }).OnComplete(() => {
+                        if (!this.DynamicHide) this.Visible = false;
+                    });
                 }
             }
         }
@@ -104,12 +119,12 @@ namespace Blish_HUD.Controls {
             _standardIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
 
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
-
+            
             GameService.Input.Mouse.MouseMoved += (sender, e) => {
                 var scaledMousePos = Input.Mouse.State.Position.ScaleToUi();
-                if (scaledMousePos.Y < BlishHud.Instance.Form.Top + ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count) + LeftOffset) {
+                if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count - 1) + LeftOffset) {
                     foreach (var cornerIcon in CornerIcons) {
-                        cornerIcon.MouseInHouse = scaledMousePos.X < cornerIcon.Left || cornerIcon.MouseOver;
+                        cornerIcon.MouseInHouse = true;
                     }
 
                     return;
@@ -119,6 +134,8 @@ namespace Blish_HUD.Controls {
                     cornerIcon.MouseInHouse = false;
                 }
             };
+
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += delegate { UpdateCornerIconDynamicHUDState(); };
         }
 
         private static void UpdateCornerIconPositions() {
@@ -131,9 +148,22 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public static void UpdateCornerIconDynamicHUDState() {
+            if (GameService.Overlay.DynamicHUDMenuBar == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                foreach (var cornerIcon in CornerIcons) {
+                    cornerIcon.DynamicHide = false;
+                }
+            } else {
+                foreach (var cornerIcon in CornerIcons) {
+                    cornerIcon.DynamicHide = true;
+                }
+            }
+        }
+
         public CornerIcon() {
             this.Parent = Graphics.SpriteScreen;
             this.Size   = new Point(ICON_SIZE, ICON_SIZE);
+            this.DynamicHide = true;
 
             CornerIcons.Add(this);
         }
@@ -168,8 +198,6 @@ namespace Blish_HUD.Controls {
                 this.BasicTooltipText = _loadingMessage;
             } else if (this.Tooltip == null) {
                 this.BasicTooltipText = _iconName;
-            } else {
-                this.BasicTooltipText = null;
             }
 
             base.OnMouseMoved(e);

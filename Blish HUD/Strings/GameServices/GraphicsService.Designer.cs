@@ -133,6 +133,25 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Determines the scaling of the UI. Either sync with game or set manually.
+        ///NOTE: &apos;Automatic&apos; will only update while logged in with a character.
+        /// </summary>
+        internal static string Setting_UIScaling_Description {
+            get {
+                return ResourceManager.GetString("Setting_UIScaling_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interface Size.
+        /// </summary>
+        internal static string Setting_UIScaling_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_UIScaling_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enabling Vsync limits the frame rate of Blish HUD to the monitor refresh rate to prevent screen tearing..
         /// </summary>
         internal static string Setting_Vsync_Description {

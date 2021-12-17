@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
+using Blish_HUD.Graphics;
 using Blish_HUD.Input;
 using Blish_HUD.Overlay;
 using Blish_HUD.Overlay.UI.Views;
@@ -46,6 +47,13 @@ namespace Blish_HUD {
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
+
+        private SettingEntry<DynamicHUDMethod> _dynamicHUDMenuBar;
+        public DynamicHUDMethod DynamicHUDMenuBar {
+            get => _dynamicHUDMenuBar.Value;
+            set => _dynamicHUDMenuBar.Value = value;
+        }
+
         public OverlaySettingsTab SettingsTab { get; private set; }
 
         /// <summary>
@@ -86,12 +94,13 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            this.UserLocale    = settings.DefineSetting("AppCulture",    GetGw2LocaleFromCurrentUICulture(), () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,    () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
-            this.StayInTray    = settings.DefineSetting("StayInTray",    true,                               () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,    () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
-            this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar", false,                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName, () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
-            this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape", true,                   () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName, () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
-            this.HideAllInterface = settings.DefineSetting(nameof(this.HideAllInterface), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H),                        () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
-            this.ToggleBlishWindow = settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
+            this.UserLocale    =       settings.DefineSetting("AppCulture",                   GetGw2LocaleFromCurrentUICulture(),                             () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,               () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
+            this.StayInTray    =       settings.DefineSetting("StayInTray",                   true,                                                           () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,               () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
+            this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",                false,                                                          () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName,            () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
+            this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape",          true,                                                           () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName,      () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
+            _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",            DynamicHUDMethod.AlwaysShow,                                    () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
+            this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),  new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H), () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,     () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
+            this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
@@ -104,6 +113,8 @@ namespace Blish_HUD {
 
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);
+
+            _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
 
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
@@ -268,7 +279,7 @@ namespace Blish_HUD {
             HandleEnqueuedUpdates(gameTime);
 
             if (GameIntegration.Gw2Instance.IsInGame) {
-                int offset = /* Offset +1 if Chinese client */ (GameService.GameIntegration.ClientType.ClientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
+                int offset = /* Offset +1 if Chinese client */ (GameIntegration.ClientType.ClientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
                            + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
 
                 CornerIcon.LeftOffset = offset * 36;
