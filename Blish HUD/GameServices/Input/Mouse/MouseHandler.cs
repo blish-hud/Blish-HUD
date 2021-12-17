@@ -33,7 +33,7 @@ namespace Blish_HUD.Input {
         /// </summary>
         public Control ActiveControl {
             get => _activeControl;
-            set {
+            private set {
                 _hudFocused    = value != null;
                 _activeControl = value;
 
@@ -147,6 +147,10 @@ namespace Blish_HUD.Input {
 
         public void OnDisable() {
             /* NOOP */
+        }
+
+        public void UnsetActiveControl() {
+            this.ActiveControl = null;
         }
 
         #region Events

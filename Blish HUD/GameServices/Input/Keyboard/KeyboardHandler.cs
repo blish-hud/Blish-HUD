@@ -90,7 +90,7 @@ namespace Blish_HUD.Input {
             if (GameService.Input.Mouse.ActiveControl != null) {
                 foreach (var ancestor in GameService.Input.Mouse.ActiveControl.GetAncestors()) {
                     if (ancestor.Visible == false) {
-                        GameService.Input.Mouse.ActiveControl = null;
+                        GameService.Input.Mouse.UnsetActiveControl();
                     }
                 }
             }
