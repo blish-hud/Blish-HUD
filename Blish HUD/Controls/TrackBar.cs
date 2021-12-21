@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
@@ -10,6 +11,7 @@ namespace Blish_HUD.Controls {
     public class TrackBar : Control {
         
         private const int BUMPER_WIDTH = 4;
+        private List<float> tenIncrements = new List<float>();
 
         #region Load Static
 
@@ -31,6 +33,7 @@ namespace Blish_HUD.Controls {
                 if (SetProperty(ref _maxValue, value, true)) {
                     this.Value = _value;
                 }
+                MinMaxChanged();
             }
         }
 
@@ -45,6 +48,7 @@ namespace Blish_HUD.Controls {
                 if (SetProperty(ref _minValue, value, true)) {
                     this.Value = _value;
                 }
+                MinMaxChanged();
             }
         }
 
@@ -85,20 +89,26 @@ namespace Blish_HUD.Controls {
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
 
-            if (_layoutNubBounds.Contains(this.RelativeMousePosition)) {
+            if (_layoutNubBounds.Contains(this.RelativeMousePosition) && !_dragging) {
                 _dragging   = true;
-                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X + BUMPER_WIDTH;
+                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X - BUMPER_WIDTH / 2;
             }
         }
 
         public override void DoUpdate(GameTime gameTime) {
             if (_dragging) {
-                var relMousePos = this.RelativeMousePosition - new Point(_dragOffset, 0);
-                float rawValue = (relMousePos.X / (float)(this.Width - BUMPER_WIDTH * 2 - _textureNub.Width)) * (this.MaxValue - this.MinValue);
+                float rawValue = (this.RelativeMousePosition.X - BUMPER_WIDTH - _dragOffset) / (float)(this.Width - BUMPER_WIDTH - _textureNub.Width) * (this.MaxValue - this.MinValue) + this.MinValue;
 
-                this.Value = this.SmallStep && GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
-                                 ? rawValue
-                                 : (float) Math.Round(rawValue, 0);
+                this.Value = GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
+                                 ? SmallStep ? rawValue : (float)Math.Round(rawValue, 0)
+                                 : tenIncrements.Aggregate((x, y) => Math.Abs(x - rawValue) < Math.Abs(y - rawValue) ? x : y);
+            }
+        }
+
+        private void MinMaxChanged() {
+            tenIncrements.Clear();
+            for (int i = 0; i < 11; i++) {
+                tenIncrements.Add((float)(this.MaxValue - this.MinValue) * 0.1f * i + (float)this.MinValue);
             }
         }
 
