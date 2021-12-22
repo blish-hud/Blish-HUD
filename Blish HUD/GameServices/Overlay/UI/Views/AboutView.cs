@@ -9,6 +9,14 @@ namespace Blish_HUD.Overlay.UI.Views {
     public class AboutView : View {
 
         protected override void Build(Container buildPanel) {
+            var upgradeViewPanel = new ViewContainer() {
+                Location = new Point(8,                     8),
+                Size     = new Point(buildPanel.Width - 16, buildPanel.Height - 220 - 32),
+                Parent   = buildPanel
+            };
+
+            upgradeViewPanel.Show(new CoreUpdateView());
+
             _ = new Image(GameService.Content.GetTexture("1025164")) {
                 SpriteEffects = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically,
                 Location      = new Point(buildPanel.Width - 969, buildPanel.Height - 220),
@@ -54,13 +62,14 @@ namespace Blish_HUD.Overlay.UI.Views {
             };
 
             var version = new Label() {
-                AutoSizeHeight = true,
-                AutoSizeWidth  = true,
-                Text           = $"Blish HUD v{Program.OverlayVersion.BaseAndPrerelease()}",
-                Font           = GameService.Content.DefaultFont14,
-                StrokeText     = true,
-                ClipsBounds    = false,
-                Parent         = buildPanel
+                AutoSizeHeight   = true,
+                AutoSizeWidth    = true,
+                Text             = $"{Strings.Common.BlishHUD} v{Program.OverlayVersion.BaseAndPrerelease()}",
+                BasicTooltipText = $"v{Program.OverlayVersion}",
+                Font             = GameService.Content.DefaultFont14,
+                StrokeText       = true,
+                ClipsBounds      = false,
+                Parent           = buildPanel
             };
 
             version.Location = new Point(buildPanel.Width - version.Width + 8, buildPanel.Height - version.Height);
