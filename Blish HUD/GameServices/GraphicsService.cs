@@ -198,17 +198,19 @@ namespace Blish_HUD {
         public Point Resolution {
             get => new Point(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth, BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
             set {
-                try {
-                    BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
-                    BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
+                if (!this.Resolution.Equals(value)) {
+                    try {
+                        BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
+                        BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
 
-                    BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
+                        BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
 
-                    // Exception would be from the code above, but don't update our
-                    // scaling if there is an exception
-                    ScreenSizeUpdated(value);
-                } catch (SharpDX.SharpDXException sdxe) {
-                    // If device lost, we should hopefully handle in device lost event below
+                        // Exception would be from the code above, but don't update our
+                        // scaling if there is an exception
+                        ScreenSizeUpdated(value);
+                    } catch (SharpDX.SharpDXException sdxe) {
+                        // If device lost, we should hopefully handle in device lost event below
+                    }
                 }
             }
         }
