@@ -9,14 +9,6 @@ namespace Blish_HUD.Overlay.UI.Views {
     public class AboutView : View {
 
         protected override void Build(Container buildPanel) {
-            var upgradeViewPanel = new ViewContainer() {
-                Location = new Point(8,                     8),
-                Size     = new Point(buildPanel.Width - 16, buildPanel.Height - 220 - 32),
-                Parent   = buildPanel
-            };
-
-            upgradeViewPanel.Show(new CoreUpdateView());
-
             _ = new Image(GameService.Content.GetTexture("1025164")) {
                 SpriteEffects = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically,
                 Location      = new Point(buildPanel.Width - 969, buildPanel.Height - 220),

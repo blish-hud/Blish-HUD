@@ -4,8 +4,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Blish_HUD.Controls;
 using Flurl.Http;
+using Humanizer;
 
 namespace Blish_HUD.Overlay.SelfUpdater {
     internal static class SelfUpdateUtil {
@@ -16,11 +16,13 @@ namespace Blish_HUD.Overlay.SelfUpdater {
         private const string FILE_EXE       = "Blish HUD.exe";
         private const string FILE_EXEBACKUP = FILE_EXE + "__bak";
 
-        public static void TryHandleUpdate() {
+        private const int RESTART_DELAY = 3;
+
+        public static (bool UpdateRelevant, bool Succeeded) TryHandleUpdate() {
             string unpackPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), FILE_UNPACKZIP);
 
             if (!File.Exists(unpackPath)) {
-                return;
+                return (false, false);
             }
 
             // Try to make sure parent process has closed so none of the
@@ -29,10 +31,14 @@ namespace Blish_HUD.Overlay.SelfUpdater {
 
             try {
                 HandleUpdate(unpackPath);
+            } catch (UnauthorizedAccessException) {
+                Debug.Contingency.NotifyFileSaveAccessDenied(unpackPath, Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Action_ToUpdate);
             } catch (Exception ex) {
-                MessageBox.Show($"Failed to complete update!\r\n\r\n{ex.Message}", "", MessageBoxButtons.OK);
-                // TODO: Bubble up to exit Blish HUD immediately.
+                Debug.Contingency.NotifyCoreUpdateFailed(Program.OverlayVersion, ex);
+                return (true, false);
             }
+
+            return (true, true);
         }
 
         private static void HandleUpdate(string unpackPath) {
@@ -78,27 +84,36 @@ namespace Blish_HUD.Overlay.SelfUpdater {
             File.Delete(unpackPath);
         }
 
-        public static async Task BeginUpdate(CoreVersionManifest coreVersionManifest) {
-            Logger.Info($"Downloading version v{coreVersionManifest.Version}...");
+        public static async Task BeginUpdate(CoreVersionManifest coreVersionManifest, IProgress<string> progress = null) {
+            // Download the archive
+            Logger.Info($"Downloading version v{coreVersionManifest.Version} from {coreVersionManifest.Url}...");
+            progress?.Report(string.Format(coreVersionManifest.IsPrerelease 
+                                               ? Strings.GameServices.OverlayService.SelfUpdate_Progress_DownloadingPrereleaseArchive
+                                               : Strings.GameServices.OverlayService.SelfUpdate_Progress_DownloadingReleaseArchive,
+                                           coreVersionManifest.Version));
             string unpackDestination = await coreVersionManifest.Url.DownloadFileAsync(Path.GetDirectoryName(Application.ExecutablePath), FILE_UNPACKZIP);
             Logger.Info($"Finished downloading {unpackDestination}.");
 
+            // Verify the checksum
+            progress?.Report(Strings.GameServices.OverlayService.SelfUpdate_Progress_VerifyingChecksum);
             using var dataSha256  = System.Security.Cryptography.SHA256.Create();
             using var unpackFile  = File.OpenRead(unpackDestination);
             byte[]    rawChecksum = dataSha256.ComputeHash(unpackFile);
             string    checksum    = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
 
-            if (string.Equals(coreVersionManifest.Checksum, checksum, StringComparison.InvariantCultureIgnoreCase)) {
-                ScreenNotification.ShowNotification("Update failed!  Download was invalid (checksum failed).  Blish HUD will restart.  No changes were made.", ScreenNotification.NotificationType.Error, null, 12);
+            if (!string.Equals(coreVersionManifest.Checksum, checksum, StringComparison.InvariantCultureIgnoreCase)) {
+                // Checksum does not match!  Reverting back and notifying the user.
+                Logger.Warn("Got {actualChecksum} instead of the expected {expectedChecksum} as the checksum!  Aborting!", checksum, coreVersionManifest.Checksum);
+
                 unpackFile.Dispose();
                 File.Delete(unpackDestination);
 
-                await Task.Delay(TimeSpan.FromSeconds(12));
-
-                GameService.Overlay.Restart();
-                return;
+                throw new Exception("Update failed!\nDownload was invalid (checksum failed).\nNo changes were made.");
             } else {
                 Logger.Info($"Found the expected checksum '{coreVersionManifest.Checksum}'.");
+
+                // Extract out the EXE and then restart.
+                progress?.Report("Extracting new executable...");
 
                 string currentPath = Path.GetDirectoryName(Application.ExecutablePath);
                 string currentName = Path.GetFileName(Application.ExecutablePath);
@@ -115,6 +130,15 @@ namespace Blish_HUD.Overlay.SelfUpdater {
                 unpacker.Entries.First(entry => entry.Name == FILE_EXE).ExtractToFile(Path.Combine(currentPath, currentName));
 
                 unpackFile.Dispose();
+
+                if (progress != null) {
+                    for (int i = RESTART_DELAY; i > 0; i--) {
+                        progress.Report(string.Format(Strings.GameServices.OverlayService.SelfUpdate_Progress_RestartingIn, TimeSpan.FromSeconds(i).Humanize()));
+                        await Task.Delay(1000);
+                    }
+
+                    progress.Report(Strings.GameServices.OverlayService.SelfUpdate_Progress_Restarting);
+                }
 
                 GameService.Overlay.Restart();
             }

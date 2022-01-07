@@ -79,6 +79,53 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Update to v{0} of Blish HUD failed.  The error was:
+        ///
+        ///{1}.
+        /// </summary>
+        internal static string CoreUpdateFailed_Description {
+            get {
+                return ResourceManager.GetString("CoreUpdateFailed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update Failed!.
+        /// </summary>
+        internal static string CoreUpdateFailed_Title {
+            get {
+                return ResourceManager.GetString("CoreUpdateFailed_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to to load your settings.
+        /// </summary>
+        internal static string FileSaveAccessDenied_Action_ToLoadSettings {
+            get {
+                return ResourceManager.GetString("FileSaveAccessDenied_Action_ToLoadSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to to save your settings.
+        /// </summary>
+        internal static string FileSaveAccessDenied_Action_ToSaveSettings {
+            get {
+                return ResourceManager.GetString("FileSaveAccessDenied_Action_ToSaveSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to to update Blish HUD.
+        /// </summary>
+        internal static string FileSaveAccessDenied_Action_ToUpdate {
+            get {
+                return ResourceManager.GetString("FileSaveAccessDenied_Action_ToUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Blish HUD was actively blocked saving to &apos;{0}&apos; {1}.
         ///
         ///This is typically due to an anti-virus blocking us or Window&apos;s Controlled Folder Access. Ensure that Blish HUD is explicitly marked as allowed by your anti-virus..

@@ -586,19 +586,7 @@ namespace Blish_HUD.Controls {
         private void ActivateContextMenuStrip(object sender, MouseEventArgs e) {
             if (this.Menu == null || !this.Enabled) return;
 
-            /* We're going to assume nobody has a display so small that the ContextMenuStrip
-               just can't fit in any direction */
-            int topPos = Input.Mouse.Position.Y + this.Menu.Height > Graphics.SpriteScreen.Height
-                             ? -this.Menu.Height
-                             : 0;
-
-            int leftPos = Input.Mouse.Position.X + this.Menu.Width < Graphics.SpriteScreen.Width
-                              ? 0
-                              : -this.Menu.Width;
-
-            this.Menu.Location = Input.Mouse.Position + new Point(leftPos, topPos);
-
-            this.Menu.Visible = true;
+            this.Menu.Show(Input.Mouse.Position);
         }
         
         /// <summary>
