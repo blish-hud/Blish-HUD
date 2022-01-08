@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace Blish_HUD.Overlay.SelfUpdater {
         private const string FILE_EXE       = "Blish HUD.exe";
         private const string FILE_EXEBACKUP = FILE_EXE + "__bak";
 
-        private const int RESTART_DELAY = 3;
+        private const int RESTART_DELAY       = 3;
+        private const int SINGLEPROCESS_DELAY = 10;
 
         // Files no longer used by Blish HUD which can be removed.
         private static readonly string[] _obsoleteFiles = new[] {
-            "Blish HUD.DebugHelper.exe", "Blish HUD.pdb"
+            "Blish HUD.DebugHelper.exe", // Input helper is essentially embedded now.
+            "Blish HUD.pdb"              // Symbols are now embedded in the EXE.
         };
 
         public static (bool UpdateRelevant, bool Succeeded) TryHandleUpdate() {
@@ -30,9 +33,11 @@ namespace Blish_HUD.Overlay.SelfUpdater {
                 return (false, false);
             }
 
-            // Try to make sure parent process has closed so none of the
-            // files are still locked - there are better ways to do this
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
+            // Try to make sure we're the only Blish HUD instance running.
+            if (!TryWaitForProcessLocks()) {
+                Debug.Contingency.NotifyCoreUpdateFailed(Program.OverlayVersion, Strings.GameServices.Debug.ContingencyMessages.CoreUpdateFailed_Description_Timeout);
+                return (true, false);
+            }
 
             try {
                 HandleUpdate(unpackPath);
@@ -97,6 +102,22 @@ namespace Blish_HUD.Overlay.SelfUpdater {
             unpackStream.Dispose();
 
             File.Delete(unpackPath);
+        }
+
+        private static bool TryWaitForProcessLocks() {
+            bool timedout = true;
+            for (int i = SINGLEPROCESS_DELAY; i > 0; i--) {
+                Process[] instances = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(FILE_EXE));
+
+                if (instances.Length == 1) {
+                    timedout = false;
+                    continue;
+                }
+
+                System.Threading.Thread.Sleep(1000);
+            }
+
+            return !timedout;
         }
 
         public static async Task BeginUpdate(CoreVersionManifest coreVersionManifest, IProgress<string> progress = null) {

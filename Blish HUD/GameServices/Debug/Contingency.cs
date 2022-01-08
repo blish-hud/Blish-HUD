@@ -97,9 +97,13 @@ namespace Blish_HUD.Debug {
         }
 
         public static void NotifyCoreUpdateFailed(SemVer.Version version, Exception failureException) {
+            NotifyCoreUpdateFailed(version, failureException.Message);
+        }
+
+        public static void NotifyCoreUpdateFailed(SemVer.Version version, string message) {
             NotifyContingency(nameof(NotifyCoreUpdateFailed),
                               Strings.GameServices.Debug.ContingencyMessages.CoreUpdateFailed_Title,
-                              string.Format(Strings.GameServices.Debug.ContingencyMessages.CoreUpdateFailed_Description, version, failureException.Message),
+                              string.Format(Strings.GameServices.Debug.ContingencyMessages.CoreUpdateFailed_Description, version, message),
                               "https://link.blishhud.com/coreupdatefailed");
         }
 

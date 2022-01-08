@@ -153,4 +153,7 @@ If you have an anti-virus or third party firewall utility, please ensure that Bl
   <data name="FileSaveAccessDenied_Action_ToSaveSettings" xml:space="preserve">
     <value>to save your settings</value>
   </data>
+  <data name="CoreUpdateFailed_Description_Timeout" xml:space="preserve">
+    <value>There are other instances of Blish HUD running.  Please close the other instances first and then run Blish HUD again to complete the update.</value>
+  </data>
 </root>

@@ -90,6 +90,15 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are other instances of Blish HUD running.  Please close the other instances first and then run Blish HUD again to complete the update..
+        /// </summary>
+        internal static string CoreUpdateFailed_Description_Timeout {
+            get {
+                return ResourceManager.GetString("CoreUpdateFailed_Description_Timeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update Failed!.
         /// </summary>
         internal static string CoreUpdateFailed_Title {
