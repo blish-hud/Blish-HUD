@@ -34,6 +34,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
             } catch (UnauthorizedAccessException) {
                 Debug.Contingency.NotifyFileSaveAccessDenied(unpackPath, Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Action_ToUpdate);
             } catch (Exception ex) {
+                // Implement retry button.
                 Debug.Contingency.NotifyCoreUpdateFailed(Program.OverlayVersion, ex);
                 return (true, false);
             }

@@ -140,7 +140,7 @@ If you have an anti-virus or third party firewall utility, please ensure that Bl
     <value>Update Failed!</value>
   </data>
   <data name="CoreUpdateFailed_Description" xml:space="preserve">
-    <value>Update to v{0} of Blish HUD failed.  The error was:
+    <value>Update to v{0} of Blish HUD failed.  Relaunch Blish HUD to try again.  The error was:
 
 {1}</value>
   </data>
