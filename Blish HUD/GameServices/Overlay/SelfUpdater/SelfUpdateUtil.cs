@@ -18,6 +18,11 @@ namespace Blish_HUD.Overlay.SelfUpdater {
 
         private const int RESTART_DELAY = 3;
 
+        // Files no longer used by Blish HUD which can be removed.
+        private static readonly string[] _obsoleteFiles = new[] {
+            "Blish HUD.DebugHelper.exe", "Blish HUD.pdb"
+        };
+
         public static (bool UpdateRelevant, bool Succeeded) TryHandleUpdate() {
             string unpackPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), FILE_UNPACKZIP);
 
@@ -43,6 +48,15 @@ namespace Blish_HUD.Overlay.SelfUpdater {
         }
 
         private static void HandleUpdate(string unpackPath) {
+            // Remove any old files from old versions
+            foreach (string fileName in _obsoleteFiles) {
+                string fullFilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), fileName);
+
+                if (File.Exists(fullFilePath)) {
+                    File.Delete(fullFilePath);
+                }
+            }
+
             var unpackStream = File.OpenRead(unpackPath);
             var unpacker     = new ZipArchive(unpackStream);
 
