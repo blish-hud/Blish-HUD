@@ -381,7 +381,6 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        // TODO: Allow controls to skip clipping via a "ClipsBounds" setting
         public bool ClipsBounds { get; set; } = true;
 
         private ControlEffect _effectBehind;
@@ -777,7 +776,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, drawBounds, _backgroundColor);
 
             if (!this.ClipsBounds) {
-                Graphics.GraphicsDevice.ScissorRectangle = Graphics.SpriteScreen.LocalBounds;
+                Graphics.GraphicsDevice.ScissorRectangle = Graphics.SpriteScreen.LocalBounds.ScaleBy(Graphics.UIScaleMultiplier);
             }
 
             // Draw control
