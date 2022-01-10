@@ -403,6 +403,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _effectInFront, value);
         }
 
+        public virtual void UnsetFocus() { }
+
         /// <summary>
         /// The bounds of the control, relative to the parent control.
         /// </summary>

@@ -488,6 +488,10 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
+        public override void UnsetFocus() {
+            this.Focused = false;
+        }
+
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
             // TODO: move this to KeyboardHandler or similar
             if (GameService.Overlay.InterfaceHidden) return;
@@ -509,6 +513,9 @@ namespace Blish_HUD.Controls {
 
             // Skip key repeated execution for these
             switch (e.Key) {
+                case Keys.Escape:
+                    Focused = false;
+                    return;
                 case Keys.Insert:
                     _insertMode = !_insertMode;
                     return;
