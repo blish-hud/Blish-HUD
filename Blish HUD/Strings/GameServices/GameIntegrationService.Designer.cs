@@ -77,5 +77,14 @@ namespace Blish_HUD.Strings.GameServices {
                 return ResourceManager.GetString("TrayIcon_LaunchGuildWars2", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open settings folder.
+        /// </summary>
+        internal static string TrayIcon_OpenSettingsFolder {
+            get {
+                return ResourceManager.GetString("TrayIcon_OpenSettingsFolder", resourceCulture);
+            }
+        }
     }
 }

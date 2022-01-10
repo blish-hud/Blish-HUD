@@ -118,6 +118,7 @@ namespace Blish_HUD.Settings {
 
             _entryLock.EnterWriteLock();
             _undefinedEntries.Remove(definedEntry);
+            _definedEntries.Remove(definedEntry);
             _definedEntries.Add(definedEntry);
             _entryLock.ExitWriteLock();
 

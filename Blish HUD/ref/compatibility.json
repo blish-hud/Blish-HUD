@@ -1,0 +1,3 @@
+{
+  "Taimi.UndaDaSea_BlishHUD": "<2.0.0" // Audio dependency changes break UndaDaSea in early versions.
+}

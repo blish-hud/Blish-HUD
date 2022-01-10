@@ -12,9 +12,16 @@ namespace Blish_HUD.Modules {
         private const string BLISHHUD_DEPENDENCY_NAME = "bh.blishhud";
 
         internal class VersionDependenciesConverter : JsonConverter<List<ModuleDependency>> {
-            
+
             public override void WriteJson(JsonWriter writer, List<ModuleDependency> value, JsonSerializer serializer) {
-                writer.WriteValue(value.ToString());
+                writer.WriteStartObject();
+
+                foreach (var dependency in value) {
+                    writer.WritePropertyName(dependency.Namespace);
+                    writer.WriteValue(dependency.VersionRange.ToString());
+                }
+
+                writer.WriteEndObject();
             }
 
             public override List<ModuleDependency> ReadJson(JsonReader reader, Type objectType, List<ModuleDependency> existingValue, bool hasExistingValue, JsonSerializer serializer) {

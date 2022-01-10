@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Blish_HUD {
 
@@ -49,24 +45,36 @@ namespace Blish_HUD {
                                         ADDON_DIR);
             }
 
-            Directory.CreateDirectory(BasePath);
+            CreateDir(BasePath);
 
             ScreensPath = ApplicationSettings.Instance.UserSettingsPath
                        ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                  Environment.SpecialFolderOption.DoNotVerify), 
                                        SCREENS_DIR);
 
-            Directory.CreateDirectory(ScreensPath);
+            CreateDir(ScreensPath);
 
             MusicPath = ApplicationSettings.Instance.UserSettingsPath
                      ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                Environment.SpecialFolderOption.DoNotVerify), 
                                      MUSIC_DIR);
 
-            Directory.CreateDirectory(MusicPath);
+            CreateDir(MusicPath);
         }
 
-        public static string RegisterDirectory(string directory) => Directory.CreateDirectory(Path.Combine(BasePath, directory)).FullName;
+        private static string CreateDir(string dirPath) {
+            try {
+                return Directory.CreateDirectory(dirPath).FullName;
+            } catch (UnauthorizedAccessException) {
+                Debug.Contingency.NotifyFileSaveAccessDenied(dirPath, string.Empty);
+            }
+
+            return null;
+        }
+
+        public static string RegisterDirectory(string directory) {
+            return CreateDir(Path.Combine(BasePath, directory));
+        }
 
     }
 

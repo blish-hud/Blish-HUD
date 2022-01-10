@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
@@ -28,8 +29,12 @@ namespace Blish_HUD {
         private const string MODULE_EXTENSION    = ".bhm";
         private const string MODULE_MANIFESTNAME = "manifest.json";
 
+        private const string MODULE_COMPATIBILITYLIST = "compatibility.json";
+
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleRegistered;
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleUnregistered;
+
+        private List<ModuleDependency> _incompatibleModules = new List<ModuleDependency>(0);
 
         /// <summary>
         /// Access to repo management and state.
@@ -83,9 +88,18 @@ namespace Blish_HUD {
                 return null;
             }
 
+            // Avoid loading the same module multiple times (we just load the first one that we found).
             if (_modules.Any(module => string.Equals(moduleManifest.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase))) {
                 Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} will not be loaded.  Please remove the duplicate module.",
                             moduleManifest.Namespace,
+                            moduleReader.GetPathRepresentation());
+                return null;
+            }
+
+            // Avoid loading modules in the compatibility listing.
+            if (_incompatibleModules.Any(compatibilityListing => string.Equals(moduleManifest.Namespace, compatibilityListing.Namespace, StringComparison.OrdinalIgnoreCase) && compatibilityListing.VersionRange.IsSatisfied(moduleManifest.Version))) {
+                Logger.Warn("The module {module} is not compatible with this version of Blish HUD so it will not be loaded.  Please remove the module or update to a compatible version if one is available.",
+                            moduleManifest.GetDetailedName(),
                             moduleReader.GetPathRepresentation());
                 return null;
             }
@@ -136,10 +150,34 @@ namespace Blish_HUD {
             }
         }
 
-        private void UnpackInternalModules() {
-            var internalModulesReader = new ZipArchiveReader("ref.dat");
+        private void LoadCompatibility(IDataReader datReader) {
+            if (datReader.FileExists(MODULE_COMPATIBILITYLIST)) {
+                try {
+                    var    compatibilityStream = datReader.GetFileStream(MODULE_COMPATIBILITYLIST).ReplaceWithMemoryStream();
+                    string compatibilityRaw    = Encoding.UTF8.GetString(compatibilityStream.GetBuffer(), 0, (int)compatibilityStream.Length);
+                    _incompatibleModules = JsonConvert.DeserializeObject<List<ModuleDependency>>(compatibilityRaw, new ModuleDependency.VersionDependenciesConverter());
+                } catch (Exception ex) {
+                    Logger.Warn(ex, "Failed to load {compatibilityFile} from the ref.dat.", MODULE_COMPATIBILITYLIST);
+                }
+            }
+        }
 
-            internalModulesReader.LoadOnFileType(ExtractPackagedModule, MODULE_EXTENSION);
+        private void HandleFirstVersionLaunch(IDataReader datReader) {
+            string baseVersionString = Program.OverlayVersion.BaseVersion().ToString();
+            if (!_exportedOnVersions.Value.Contains(baseVersionString) || ApplicationSettings.Instance.DebugEnabled) {
+                datReader.LoadOnFileType(ExtractPackagedModule, MODULE_EXTENSION);
+
+                if (!_exportedOnVersions.Value.Contains(baseVersionString)) {
+                    _exportedOnVersions.Value.Add(baseVersionString);
+                }
+            }
+        }
+
+        private void HandleRefLoading() {
+            var datReader = new ZipArchiveReader("ref.dat");
+
+            HandleFirstVersionLaunch(datReader);
+            LoadCompatibility(datReader);
         }
         
         /// <summary>
@@ -215,12 +253,7 @@ namespace Blish_HUD {
                 debugModule?.TryEnable();
             }
 
-            // Get the base version string and see if we've exported the modules for this version yet
-            string baseVersionString = Program.OverlayVersion.BaseVersion().ToString();
-            if (!_exportedOnVersions.Value.Contains(baseVersionString)) {
-                UnpackInternalModules();
-                _exportedOnVersions.Value.Add(baseVersionString);
-            }
+            HandleRefLoading();
 
             foreach (string moduleArchivePath in Directory.GetFiles(this.ModulesDirectory, $"*{MODULE_EXTENSION}", SearchOption.AllDirectories)) {
                 RegisterPackedModule(moduleArchivePath);
