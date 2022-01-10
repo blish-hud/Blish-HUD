@@ -87,15 +87,14 @@ namespace Blish_HUD.Input {
         internal KeyboardHandler() { }
 
         public void Update() {
-            /*
             if (GameService.Input.Mouse.ActiveControl != null) {
                 foreach (var ancestor in GameService.Input.Mouse.ActiveControl.GetAncestors()) {
                     if (ancestor.Visible == false) {
+                        GameService.Input.Mouse.ActiveControl.UnsetFocus();
                         GameService.Input.Mouse.UnsetActiveControl();
                     }
                 }
             }
-            */
 
             while (_inputBuffer.TryDequeue(out KeyboardEventArgs keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
@@ -178,15 +177,6 @@ namespace Blish_HUD.Input {
         }
 
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
-            if (GameService.Input.Mouse.ActiveControl != null) {
-                foreach (var ancestor in GameService.Input.Mouse.ActiveControl.GetAncestors()) {
-                    if (ancestor.Visible == false) {
-                        GameService.Input.Mouse.ActiveControl.UnsetFocus();
-                        GameService.Input.Mouse.UnsetActiveControl();
-                    }
-                }
-            }
-
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
             if (GameService.Overlay.InterfaceHidden) return false;
@@ -196,9 +186,11 @@ namespace Blish_HUD.Input {
                 var activeContextMenu = GameService.Graphics.SpriteScreen.Children
                    .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
 
-                if(GameService.Input.Mouse.ActiveControl.GetType() == typeof(TextInputBase)) {
-                    //GameService.Input.Mouse.ActiveControl.UnsetFocus();
-                    return true;
+                if (GameService.Input.Mouse.ActiveControl != null) {
+                    if (GameService.Input.Mouse.ActiveControl.GetType() == typeof(TextInputBase)) {
+                        //GameService.Input.Mouse.ActiveControl.UnsetFocus();
+                        return true;
+                    }
                 }
 
                 if (activeContextMenu != null) { 
