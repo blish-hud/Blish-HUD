@@ -492,6 +492,15 @@ namespace Blish_HUD.Controls {
             // TODO: move this to KeyboardHandler or similar
             if (GameService.Overlay.InterfaceHidden) return;
 
+            // Loose focus as soon as an acestor is hidden
+            // TODO: this is still a keypress too late
+            foreach (var ancestor in GetAncestors()) {
+                if (ancestor.Visible == false) {
+                    this.Focused = false;
+                    return;
+                }
+            }
+
             // Remove keyup event early to prevent executing special actions twice
             if (e.EventType == KeyboardEventType.KeyUp) {
                 _keyRepeatStates.Remove(e.Key);
