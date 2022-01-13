@@ -25,13 +25,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private Version GetDefaultVersion() {
             // It seems to be a better user experience to always default to the latest for
-            // those that want to quickly update, so we will comment this out for now.
-            //if (_existingModule != null) {
-            //    if (this.Model.Any(m => m.Version == _existingModule.Manifest.Version)) {
-            //        return _existingModule.Manifest.Version;
-            //    }
-            //}
-
+            // those that want to quickly update.
             return this.Model.Max(m => m.Version);
         }
 
