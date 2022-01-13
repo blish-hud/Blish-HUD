@@ -9,7 +9,7 @@ namespace Blish_HUD.DebugHelper.Native {
         public int   mouseData;
         public int   flags;
         public int   time;
-        public int   extraInfo;
+        public long  extraInfo;
 
     }
 
