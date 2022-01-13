@@ -68,6 +68,11 @@ namespace Blish_HUD {
             _exportedOnVersions = settings.DefineSetting(EXPORTED_VERSION_SETTING,  new List<string>());
         }
 
+        internal bool ModuleIsExplicitlyIncompatible(ModuleManager moduleManager) {
+            return _incompatibleModules.Any(compatibilityListing => string.Equals(moduleManager.Manifest.Namespace, compatibilityListing.Namespace, StringComparison.OrdinalIgnoreCase)
+                                                                 && compatibilityListing.VersionRange.IsSatisfied(moduleManager.Manifest.Version.BaseVersion()));
+        }
+
         public ModuleManager RegisterModule(IDataReader moduleReader) {
             if (!moduleReader.FileExists(MODULE_MANIFESTNAME)) {
                 Logger.Warn("Attempted to load an invalid module {modulePath}: {manifestName} is missing.", moduleReader.GetPathRepresentation(), MODULE_MANIFESTNAME);
@@ -90,16 +95,8 @@ namespace Blish_HUD {
 
             // Avoid loading the same module multiple times (we just load the first one that we found).
             if (_modules.Any(module => string.Equals(moduleManifest.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase))) {
-                Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} will not be loaded.  Please remove the duplicate module.",
+                Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} will not be loaded.  Please remove any duplicate module(s).",
                             moduleManifest.Namespace,
-                            moduleReader.GetPathRepresentation());
-                return null;
-            }
-
-            // Avoid loading modules in the compatibility listing.
-            if (_incompatibleModules.Any(compatibilityListing => string.Equals(moduleManifest.Namespace, compatibilityListing.Namespace, StringComparison.OrdinalIgnoreCase) && compatibilityListing.VersionRange.IsSatisfied(moduleManifest.Version))) {
-                Logger.Warn("The module {module} is not compatible with this version of Blish HUD so it will not be loaded.  Please remove the module or update to a compatible version if one is available.",
-                            moduleManifest.GetDetailedName(),
                             moduleReader.GetPathRepresentation());
                 return null;
             }
@@ -108,9 +105,16 @@ namespace Blish_HUD {
                 _moduleStates.Value.Add(moduleManifest.Namespace, new ModuleState());
             }
 
-            var moduleManager  = new ModuleManager(moduleManifest,
-                                                   _moduleStates.Value[moduleManifest.Namespace],
-                                                   moduleReader);
+            var moduleManager = new ModuleManager(moduleManifest,
+                                                  _moduleStates.Value[moduleManifest.Namespace],
+                                                  moduleReader);
+
+            // Avoid loading modules in the compatibility listing.
+            if (ModuleIsExplicitlyIncompatible(moduleManager)) {
+                Logger.Warn("The module {module} is not compatible with this version of Blish HUD so it will not allow you to enable it.  Please remove the module or update to a compatible version if one is available.",
+                            moduleManifest.GetDetailedName(),
+                            moduleReader.GetPathRepresentation());
+            }
 
             _modules.Add(moduleManager);
 
