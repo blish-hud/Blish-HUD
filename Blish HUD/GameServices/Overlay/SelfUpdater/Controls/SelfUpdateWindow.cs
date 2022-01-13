@@ -51,7 +51,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
                 Parent              = this
             };
 
-            var titleLabel = new Label() {
+            _ = new Label() {
                 Width               = this.ContentRegion.Width,
                 AutoSizeHeight      = true,
                 Height              = 82,
