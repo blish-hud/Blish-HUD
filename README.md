@@ -3,12 +3,16 @@
 [![Discord](https://img.shields.io/discord/531175899588984842.svg?logo=discord&logoColor=%237289DA)](https://discord.gg/FYKN3qh)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?branch=dev&project=blish-hud_Blish-HUD&metric=alert_status)](https://sonarcloud.io/dashboard?id=blish-hud_Blish-HUD&branch=dev)
 
-Visit our site: https://blishhud.com
+**Visit our site:** https://blishhud.com
+
+## Check our Setup Guide
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/iLYYumF2SCY/0.jpg)](https://www.youtube.com/watch?v=iLYYumF2SCY)
 
 ## Download Blish HUD
 
-You can download Blish HUD from:
-- Our [#💾blish_releases](https://discord.gg/2HKg78n) channel in Discord (which includes the latest modules).
+You can download Blish HUD:
+- Using the [direct download (v0.11.2)](https://github.com/blish-hud/Blish-HUD/releases/download/v0.11.2/Blish.HUD.0.11.2.zip) link.
 - From our [Releases](https://github.com/blish-hud/Blish-HUD/releases) page here on GitHub.
 
 ### Need Help?
@@ -17,10 +21,16 @@ Visit our [#💢help](https://discord.gg/qJdUhdG) channel in Discord.
 
 ## Links of Interest
 
-- [Mini Wiki](https://github.com/blish-hud/Blish-HUD/wiki) - a mix of a few developer and end user resources.
-- [Arcdps BHUD Integration](https://github.com/blish-hud/arcdps-bhud) - a plugin that uses the Arcdps Combat API and exposes some of the data to Blish HUD for compatible modules.
-- [Community Module Pack](https://github.com/blish-hud/Community-Module-Pack) - the source for the Community Modules 
-*(For module downloads, we recommend downloading from the [#💾blish_releases](https://discord.gg/2HKg78n) channel in Discord)*.
+### Blish HUD Resources
+
+- [BlishHUD.com](https://blishhud.com/) - Our website.
+- [Blish HUD FAQ](https://blishhud.com/docs/user/faq) - Frequently asked questions.
+- [Troubleshooting Guide](https://blishhud.com/docs/user/troubleshooting/) - Our troubleshooting guide.
+- [Arcdps Blish HUD Integration](https://github.com/blish-hud/arcdps-bhud) - a plugin that uses the Arcdps Combat API and exposes some of the data to Blish HUD for compatible modules.
+
+### Marker Pack Support
+- [Pathing Module Setup Guide](https://blishhud.com/docs/markers/) - Video and written guide for using the pathing module for TacO marker packs.
+- [Marker Pack Development](https://blishhud.com/docs/markers/development/attributes) - Details on the marker pack format along with attribute support.
 
 ## For Developers
 
@@ -44,6 +54,7 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 ### Module Development
 
 - [Visual Studio 2019 Module Template](https://github.com/blish-hud/Module-Template)
+- [Module Documentation](https://blishhud.com/docs/dev/)
 - [Example Module](https://github.com/blish-hud/Example-Blish-HUD-Module/blob/master/README.md)
 
 ### Thanks
