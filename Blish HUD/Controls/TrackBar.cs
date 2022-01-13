@@ -109,7 +109,7 @@ namespace Blish_HUD.Controls {
         private void MinMaxChanged() {
             tenIncrements.Clear();
             for (int i = 0; i < 11; i++) {
-                tenIncrements.Add((float)(this.MaxValue - this.MinValue) * 0.1f * i + (float)this.MinValue);
+                tenIncrements.Add((this.MaxValue - this.MinValue) * 0.1f * i + this.MinValue);
             }
         }
 
