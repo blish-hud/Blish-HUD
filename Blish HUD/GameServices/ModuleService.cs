@@ -117,7 +117,6 @@ namespace Blish_HUD {
                                                   _moduleStates.Value[moduleManifest.Namespace],
                                                   moduleReader);
 
-            // Avoid loading modules in the compatibility listing.
             if (ModuleIsExplicitlyIncompatible(moduleManager)) {
                 Logger.Warn("The module {module} is not compatible with this version of Blish HUD so it will not allow you to enable it.  Please remove the module or update to a compatible version if one is available.",
                             moduleManifest.GetDetailedName(),
