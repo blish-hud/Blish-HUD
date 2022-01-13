@@ -7,7 +7,7 @@
 
 ## Check our Setup Guide
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/iLYYumF2SCY/0.jpg)](https://www.youtube.com/watch?v=iLYYumF2SCY)
+[![Blish HUD Setup Video](https://img.youtube.com/vi/iLYYumF2SCY/0.jpg)](https://www.youtube.com/watch?v=iLYYumF2SCY)
 
 ## Download Blish HUD
 
