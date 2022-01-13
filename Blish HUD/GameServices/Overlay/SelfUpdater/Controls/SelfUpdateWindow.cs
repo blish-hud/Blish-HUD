@@ -97,7 +97,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             }
 
             void CreateBodyLabel(StringBuilder text) {
-                if (!(text.Length > 0))
+                if (string.IsNullOrEmpty(text.ToString()))
                     return;
 
                 _ = new Label() {
