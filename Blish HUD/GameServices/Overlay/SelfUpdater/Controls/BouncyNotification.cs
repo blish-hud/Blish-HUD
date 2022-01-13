@@ -51,7 +51,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             DoWiggle();
         }
 
-        private async Task DoWiggle() {
+        private async void DoWiggle() {
             _nonOpp = !_nonOpp;
             _wiggleDirection = 1;
             await Task.Delay(TimeSpan.FromSeconds(BOUNCE_DELAY));

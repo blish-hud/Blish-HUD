@@ -141,7 +141,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
                 // Checksum does not match!  Reverting back and notifying the user.
                 Logger.Warn("Got {actualChecksum} instead of the expected {expectedChecksum} as the checksum!  Aborting!", checksum, coreVersionManifest.Checksum);
 
-                unpackFile.Dispose();
+                unpackFile.Close();
                 File.Delete(unpackDestination);
 
                 throw new Exception("Update failed!\nDownload was invalid (checksum failed).\nNo changes were made.");
@@ -165,7 +165,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
                 var unpacker = new ZipArchive(unpackFile);
                 unpacker.Entries.First(entry => entry.Name == FILE_EXE).ExtractToFile(Path.Combine(currentPath, currentName));
 
-                unpackFile.Dispose();
+                unpackFile.Close();
 
                 if (progress != null) {
                     for (int i = RESTART_DELAY; i > 0; i--) {
