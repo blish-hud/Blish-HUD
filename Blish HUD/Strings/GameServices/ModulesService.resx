@@ -239,4 +239,7 @@ Download some modules and place them in the modules folder.</value>
   <data name="ModuleOption_DeleteModule" xml:space="preserve">
     <value>Delete Module</value>
   </data>
+  <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
+    <value>Module Version Is Too Old</value>
+  </data>
 </root>
