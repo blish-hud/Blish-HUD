@@ -93,12 +93,20 @@ namespace Blish_HUD {
                 return null;
             }
 
-            // Avoid loading the same module multiple times (we just load the first one that we found).
-            if (_modules.Any(module => string.Equals(moduleManifest.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase))) {
-                Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} will not be loaded.  Please remove any duplicate module(s).",
+            // Avoid loading the same module multiple times (ensure we load the highest version).
+            var existingModule = _modules.FirstOrDefault(module => string.Equals(moduleManifest.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase));
+            if (existingModule != null) {
+                Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} is a duplicate of this module.  Please remove any duplicate module(s).",
                             moduleManifest.Namespace,
                             moduleReader.GetPathRepresentation());
-                return null;
+
+                if (existingModule.Manifest.Version > moduleManifest.Version) {
+                    // We're loading a duplicate - exit early
+                    return null;
+                } else {
+                    // This version is newer than the existing one, so replace it
+                    UnregisterModule(existingModule);
+                }
             }
 
             if (!_moduleStates.Value.ContainsKey(moduleManifest.Namespace)) {
