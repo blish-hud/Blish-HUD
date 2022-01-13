@@ -11,7 +11,8 @@ namespace Blish_HUD.Controls {
     public class TrackBar : Control {
         
         private const int BUMPER_WIDTH = 4;
-        private List<float> tenIncrements = new List<float>();
+
+        private readonly List<float> tenIncrements = new List<float>();
 
         #region Load Static
 
