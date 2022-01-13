@@ -106,6 +106,33 @@ namespace Blish_HUD.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Retry.
+        /// </summary>
+        internal static string Action_Retry {
+            get {
+                return ResourceManager.GetString("Action_Retry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        internal static string Action_Update {
+            get {
+                return ResourceManager.GetString("Action_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update Later.
+        /// </summary>
+        internal static string Action_UpdateLater {
+            get {
+                return ResourceManager.GetString("Action_UpdateLater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Blish HUD.
         /// </summary>
         internal static string BlishHUD {

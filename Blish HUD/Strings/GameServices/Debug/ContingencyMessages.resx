@@ -136,4 +136,24 @@ This is typically due to an anti-virus blocking us or Window's Controlled Folder
 
 If you have an anti-virus or third party firewall utility, please ensure that Blish HUD is manually excluded in its filters.</value>
   </data>
+  <data name="CoreUpdateFailed_Title" xml:space="preserve">
+    <value>Update Failed!</value>
+  </data>
+  <data name="CoreUpdateFailed_Description" xml:space="preserve">
+    <value>Update to v{0} of Blish HUD failed.  Relaunch Blish HUD to try again.  The error was:
+
+{1}</value>
+  </data>
+  <data name="FileSaveAccessDenied_Action_ToUpdate" xml:space="preserve">
+    <value>to update Blish HUD</value>
+  </data>
+  <data name="FileSaveAccessDenied_Action_ToLoadSettings" xml:space="preserve">
+    <value>to load your settings</value>
+  </data>
+  <data name="FileSaveAccessDenied_Action_ToSaveSettings" xml:space="preserve">
+    <value>to save your settings</value>
+  </data>
+  <data name="CoreUpdateFailed_Description_Timeout" xml:space="preserve">
+    <value>There are other instances of Blish HUD running.  Please close the other instances first and then run Blish HUD again to complete the update.</value>
+  </data>
 </root>

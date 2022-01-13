@@ -14,7 +14,7 @@ namespace Glide
 
 #region Callbacks
 		private Func<float, float> ease;
-        private Action begin, update, complete;
+        private Action begin, update, complete, repeat;
 #endregion
 
 #region Timing
@@ -112,7 +112,7 @@ namespace Glide
 				
 				if (time == 0 && timesRepeated == 0 && begin != null)
 					begin();
-				
+
 				time += elapsed;
 				float setTimeTo = time;
 				float t = time / Duration;
@@ -126,8 +126,11 @@ namespace Glide
 						Delay = repeatDelay;
 						timesRepeated++;
 						
-						if (repeatCount > 0)
-							--repeatCount;
+						if (repeatCount > 0) {
+                            --repeatCount;
+                            repeat?.Invoke();
+                        }
+							
 						
 						if (repeatCount < 0)
 							doComplete = true;
@@ -230,6 +233,12 @@ namespace Glide
 			else complete += callback;
 			return this;
 		}
+
+        public Tween OnRepeat(Action callback) {
+            if (repeat == null) repeat = callback;
+            else repeat += callback;
+            return this;
+        }
 		
 		/// <summary>
 		/// Set a function to call as the tween updates. Can be called multiple times for compound callbacks.
