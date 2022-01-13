@@ -36,7 +36,7 @@ namespace Blish_HUD.Input {
 
         internal int Time { get; }
 
-        internal int Extra { get; }
+        internal long Extra { get; }
 
         internal int WheelDelta {
             get {
@@ -52,10 +52,10 @@ namespace Blish_HUD.Input {
 
         internal MouseEventArgs(MouseEventType eventType, MouseLLHookStruct details) : this(
                                                                                             eventType, details.Point.X, details.Point.Y, details.MouseData, details.Flags,
-                                                                                            details.Time, (int)details.Extra
+                                                                                            details.Time, (long)details.Extra
                                                                                            ) { }
 
-        internal MouseEventArgs(MouseEventType eventType, int pointX, int pointY, int mouseData, int flags, int time, int extraInfo) : this(eventType) {
+        internal MouseEventArgs(MouseEventType eventType, int pointX, int pointY, int mouseData, int flags, int time, long extraInfo) : this(eventType) {
             this.PointX    = pointX;
             this.PointY    = pointY;
             this.MouseData = mouseData;
