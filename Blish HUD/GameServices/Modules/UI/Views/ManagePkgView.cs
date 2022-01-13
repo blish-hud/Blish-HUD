@@ -67,7 +67,12 @@ namespace Blish_HUD.Modules.UI.Views {
 
         public string ModuleDescription {
             get => _descLabel?.Text ?? throw new ViewNotBuiltException();
-            set => (_descLabel ?? throw new ViewNotBuiltException()).Text = value;
+            set {
+                if (_descLabel == null) throw new ViewNotBuiltException();
+
+                _descLabel.Text             = value;
+                _descLabel.BasicTooltipText = value;
+            }
         }
 
         private IEnumerable<Version> _moduleVersions;
