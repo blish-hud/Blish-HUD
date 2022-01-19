@@ -145,6 +145,24 @@ namespace Blish_HUD.Controls {
             ActiveControlChanged?.Invoke(null, e);
         }
 
+        public static event EventHandler<ControlActivatedEventArgs> FocusedControlChanged;
+
+        private static Control _focusedControl;
+        public static Control FocusedControl {
+            get => _activeControl;
+            set {
+                if (_activeControl == value) return;
+
+                _activeControl = value;
+
+                OnFocusedControlChanged(new ControlActivatedEventArgs(_focusedControl));
+            }
+        }
+
+        private static void OnFocusedControlChanged(ControlActivatedEventArgs e) {
+            ActiveControlChanged?.Invoke(null, e);
+        }
+
         #endregion
 
         #region Control Events
@@ -404,6 +422,8 @@ namespace Blish_HUD.Controls {
         }
 
         public virtual void UnsetFocus() { }
+
+        public virtual bool GetFocusState() { return false; }
 
         /// <summary>
         /// The bounds of the control, relative to the parent control.

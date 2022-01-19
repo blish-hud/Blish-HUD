@@ -144,6 +144,7 @@ namespace Blish_HUD.Controls {
             set {
                 if (SetProperty(ref _focused, value)) {
                     OnInputFocusChanged(new ValueEventArgs<bool>(value));
+                    GameService.Input.Keyboard.FocusedControl = this;
                 }
             }
         }
@@ -492,6 +493,10 @@ namespace Blish_HUD.Controls {
             this.Focused = false;
         }
 
+        public override bool GetFocusState() {
+            return Focused;
+        }
+
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
             // TODO: move this to KeyboardHandler or similar
             if (GameService.Overlay.InterfaceHidden) return;
@@ -500,7 +505,7 @@ namespace Blish_HUD.Controls {
             // TODO: this is still a keypress too late
             foreach (var ancestor in GetAncestors()) {
                 if (ancestor.Visible == false) {
-                    this.Focused = false;
+                    UnsetFocus();
                     return;
                 }
             }
@@ -514,7 +519,7 @@ namespace Blish_HUD.Controls {
             // Skip key repeated execution for these
             switch (e.Key) {
                 case Keys.Escape:
-                    Focused = false;
+                    UnsetFocus();
                     return;
                 case Keys.Insert:
                     _insertMode = !_insertMode;

@@ -54,6 +54,17 @@ namespace Blish_HUD.Input {
         /// </summary>
         public ModifierKeys ActiveModifiers { get; private set; }
 
+        public Control FocusedControl {
+            get => _focusedControl;
+            set {
+                _focusedControl = value;
+
+                Control.FocusedControl = value;
+            }
+        }
+
+        private Control _focusedControl;
+
         private readonly ConcurrentQueue<KeyboardEventArgs> _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
 
         private readonly List<Keys> _keysDown = new List<Keys>();
@@ -92,6 +103,14 @@ namespace Blish_HUD.Input {
                     if (ancestor.Visible == false) {
                         GameService.Input.Mouse.ActiveControl.UnsetFocus();
                         GameService.Input.Mouse.UnsetActiveControl();
+                    }
+                }
+            }
+
+            if (FocusedControl != null) {
+                foreach (var ancestor in FocusedControl.GetAncestors()) {
+                    if (ancestor.Visible == false) {
+                        FocusedControl.UnsetFocus();
                     }
                 }
             }
