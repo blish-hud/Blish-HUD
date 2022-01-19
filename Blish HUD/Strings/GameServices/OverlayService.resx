@@ -259,10 +259,4 @@ It might not be installed.</value>
   <data name="SelfUpdate_Progress_Restarting" xml:space="preserve">
     <value>Restarting...</value>
   </data>
-  <data name="Setting_DebugLogging_Description" xml:space="preserve">
-    <value>If enabled Blish HUD will create more verbose logfiles</value>
-  </data>
-  <data name="Setting_DebugLogging_DisplayName" xml:space="preserve">
-    <value>Enable Debug Logging</value>
-  </data>
 </root>

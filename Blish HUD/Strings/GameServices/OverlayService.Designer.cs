@@ -331,24 +331,6 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled Blish HUD will create more verbose logfiles.
-        /// </summary>
-        internal static string Setting_DebugLogging_Description {
-            get {
-                return ResourceManager.GetString("Setting_DebugLogging_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enable Debug Logging.
-        /// </summary>
-        internal static string Setting_DebugLogging_DisplayName {
-            get {
-                return ResourceManager.GetString("Setting_DebugLogging_DisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Controls visibility of the Menu bar located in the upper-left of the screen..
         /// </summary>
         internal static string Setting_DynamicHUDMenuBar_Description {

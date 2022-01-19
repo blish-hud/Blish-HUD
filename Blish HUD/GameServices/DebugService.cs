@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Blish_HUD.Debug;
+using Blish_HUD.Settings;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,6 +19,12 @@ using NLog.Targets.Wrappers;
 namespace Blish_HUD {
 
     public class DebugService : GameService {
+
+        private const string DEBUG_SETTINGS = "DebugConfiguration";
+
+        internal SettingCollection _debugSettings;
+        public SettingCollection DebugSettings => _debugSettings;
+        public SettingEntry<bool> EnableDebugLogging { get; private set; }
 
         #region Logging
 
@@ -191,6 +198,12 @@ namespace Blish_HUD {
         #region Service Implementation
 
         protected override void Initialize() {
+            _debugSettings = Settings.RegisterRootSettingCollection(DEBUG_SETTINGS);
+
+            DefineSettings(_debugSettings);
+
+            this.EnableDebugLogging.Value = File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging");
+
             this.FrameCounter = new DynamicallySmoothedValue<float>(FRAME_DURATION_SAMPLES);
 
             if (!ApplicationSettings.Instance.DebugEnabled) {
@@ -218,6 +231,24 @@ namespace Blish_HUD {
 
         protected override void Unload() {
             /* NOOP */
+        }
+
+        private void DefineSettings(SettingCollection settings) {
+            this.EnableDebugLogging = settings.DefineSetting("EnableDebugLogging", File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"), () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName, () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
+
+            this.EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
+        }
+
+        private void EnableDebugLoggingOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
+            if (e.NewValue) {
+                Logger.Info("User activated debug logging");
+                UpdateLogLevel(LogLevel.Debug);
+                File.Create(DirectoryUtil.BasePath + "\\EnableDebugLogging").Dispose();
+            } else {
+                Logger.Info("User deactivated debug logging");
+                UpdateLogLevel(LogLevel.Info);
+                File.Delete(DirectoryUtil.BasePath + "\\EnableDebugLogging");
+            }
         }
 
         #endregion

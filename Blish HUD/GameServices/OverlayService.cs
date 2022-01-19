@@ -52,7 +52,6 @@ namespace Blish_HUD {
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
         public bool InterfaceHidden = false;
-        public SettingEntry<bool> EnableDebugLogging { get; private set; }
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
@@ -90,8 +89,6 @@ namespace Blish_HUD {
             DefineSettings(this.OverlaySettings);
 
             PrepareSettingsTab();
-
-            this.EnableDebugLogging.Value = File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging");
         }
 
         private void PrepareSettingsTab() {
@@ -116,7 +113,6 @@ namespace Blish_HUD {
             _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",            DynamicHUDMethod.AlwaysShow,                                    () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
             this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),  new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H), () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,     () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
             this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
-            this.EnableDebugLogging =  settings.DefineSetting("EnableDebugLogging",           File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"),   () => Strings.GameServices.OverlayService.Setting_DebugLogging_DisplayName,             () => Strings.GameServices.OverlayService.Setting_DebugLogging_Description);
 
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
@@ -138,8 +134,6 @@ namespace Blish_HUD {
             this.HideAllInterface.Value.Enabled = true;
             this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
 
-            this.EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
-
             ApplyInitialSettings();
         }
 
@@ -158,18 +152,6 @@ namespace Blish_HUD {
             CultureInfo.CurrentUICulture              = culture;
 
             this.UserLocaleChanged?.Invoke(this, new ValueEventArgs<CultureInfo>(culture));
-        }
-
-        private void EnableDebugLoggingOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
-            if (e.NewValue) {
-                Logger.Info("User activated debug logging");
-                DebugService.UpdateLogLevel(LogLevel.Debug);
-                File.Create(DirectoryUtil.BasePath + "\\EnableDebugLogging").Dispose();
-            } else {
-                Logger.Info("User deactivated debug logging");
-                DebugService.UpdateLogLevel(LogLevel.Info);
-                File.Delete(DirectoryUtil.BasePath + "\\EnableDebugLogging");
-            }
         }
 
         /// <summary>
