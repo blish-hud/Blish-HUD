@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -182,7 +182,7 @@ namespace Blish_HUD.Input {
             if (GameService.Overlay.InterfaceHidden) return false;
 
             // Handle the escape key, which should close the active window or top level context menu (if any)
-            if (key == Keys.Escape && GameService.Overlay.CloseWindowOnEscape.Value) {
+            if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown && GameService.Overlay.CloseWindowOnEscape.Value) {
                 var activeContextMenu = GameService.Graphics.SpriteScreen.Children
                    .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
 
