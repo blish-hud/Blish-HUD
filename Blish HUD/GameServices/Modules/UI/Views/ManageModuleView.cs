@@ -148,6 +148,11 @@ namespace Blish_HUD.Modules.UI.Views {
             }
         }
 
+        public void SetCustomState(string status, Color color) {
+            UpdateModuleRunState(status, color);
+            UpdateHeaderLayout();
+        }
+
         protected override void Build(Container buildPanel) {
             // Header
 

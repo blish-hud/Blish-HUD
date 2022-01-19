@@ -223,6 +223,42 @@ It might not be installed.</value>
   <data name="Setting_DynamicHUDMenuBar_DisplayName" xml:space="preserve">
     <value>Dynamic HUD Menu Bar</value>
   </data>
+  <data name="SelfUpdate_NewUpdateAvailable" xml:space="preserve">
+    <value>New Release Available</value>
+  </data>
+  <data name="SelfUpdate_ChangesInVersion" xml:space="preserve">
+    <value>Changes in v{0}</value>
+  </data>
+  <data name="SelfUpdate_UpdateToReleaseMenuStripText" xml:space="preserve">
+    <value>Update to Release v{0}</value>
+  </data>
+  <data name="SelfUpdate_UpdateToPrereleaseMenuStripText" xml:space="preserve">
+    <value>Update to Prerelease v{0}</value>
+  </data>
+  <data name="SelfUpdate_NoPendingUpdates" xml:space="preserve">
+    <value>No Pending Updates</value>
+  </data>
+  <data name="SelfUpdate_Progress_DownloadingReleaseArchive" xml:space="preserve">
+    <value>Downloading release v{0}...</value>
+  </data>
+  <data name="SelfUpdate_Progress_VerifyingChecksum" xml:space="preserve">
+    <value>Verifying checksum...</value>
+  </data>
+  <data name="SelfUpdate_Progress_ExtractingExecutable" xml:space="preserve">
+    <value>Extracting new executable...</value>
+  </data>
+  <data name="SelfUpdate_Progress_DownloadingPrereleaseArchive" xml:space="preserve">
+    <value>Downloading prerelease v{0}...</value>
+  </data>
+  <data name="SelfUpdate_PendingUpdatesQueryFailed" xml:space="preserve">
+    <value>Failed to Check for Updates</value>
+  </data>
+  <data name="SelfUpdate_Progress_RestartingIn" xml:space="preserve">
+    <value>Restarting in {0}...</value>
+  </data>
+  <data name="SelfUpdate_Progress_Restarting" xml:space="preserve">
+    <value>Restarting...</value>
+  </data>
   <data name="Setting_DebugLogging_Description" xml:space="preserve">
     <value>If enabled Blish HUD will create more verbose logfiles</value>
   </data>

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
+using System.Linq;
 using System.Threading;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
@@ -31,9 +32,13 @@ namespace Blish_HUD {
 
         public event EventHandler<ValueEventArgs<CultureInfo>> UserLocaleChanged;
 
+        /// <summary>
+        /// Details and processing for automatic self updates.
+        /// </summary>
+        internal OverlayUpdateHandler OverlayUpdateHandler { get; private set; }
+
         public TabbedWindow     BlishHudWindow   { get; private set; }
         public CornerIcon       BlishMenuIcon    { get; private set; }
-        public ContextMenuStrip BlishContextMenu { get; private set; }
         
         public  GameTime CurrentGameTime { get; private set; } = new GameTime(TimeSpan.Zero, TimeSpan.Zero);
 
@@ -65,6 +70,10 @@ namespace Blish_HUD {
         public bool Exiting { get; private set; }
 
         private readonly object _exitLock = new object();
+
+        internal OverlayService() {
+            SetServiceModules(this.OverlayUpdateHandler = new OverlayUpdateHandler(this));
+        }
 
         /// <summary>
         /// Allows you to enqueue a call that will occur during the next time the update loop executes.
@@ -261,18 +270,32 @@ namespace Blish_HUD {
 
         private void BuildCornerIcon() {
             this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Strings.Common.BlishHUD) {
-                Menu     = new ContextMenuStrip(),
                 Priority = int.MaxValue,
                 Parent   = Graphics.SpriteScreen,
             };
 
-            this.BlishContextMenu                                                                                          =  this.BlishMenuIcon.Menu;
-            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD)).Click += delegate { Restart(); };
-            this.BlishContextMenu.AddMenuItem(string.Format(Strings.Common.Action_Exit,    Strings.Common.BlishHUD)).Click += delegate { Exit(); };
+            this.BlishMenuIcon.Menu = new ContextMenuStrip(GetOverlayContextMenuItems);
 
             this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
                 this.BlishHudWindow.ToggleWindow();
             };
+        }
+
+        private IEnumerable<ContextMenuStripItem> GetOverlayContextMenuItems() {
+            return new [] {
+                this.OverlayUpdateHandler.GetContextMenuItems(),
+                GetBaseContextMenuItems()
+            }.SelectMany(menus => menus);
+        }
+
+        private IEnumerable<ContextMenuStripItem> GetBaseContextMenuItems() {
+            var restartMenu = new ContextMenuStripItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD));
+            var exitMenu    = new ContextMenuStripItem(string.Format(Strings.Common.Action_Exit, Strings.Common.BlishHUD));
+            restartMenu.Click += delegate { Restart(); };
+            exitMenu.Click    += delegate { Exit(); };
+
+            yield return restartMenu;
+            yield return exitMenu;
         }
 
         private void BuildSettingTab() {

@@ -169,6 +169,114 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Changes in v{0}.
+        /// </summary>
+        internal static string SelfUpdate_ChangesInVersion {
+            get {
+                return ResourceManager.GetString("SelfUpdate_ChangesInVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Release Available.
+        /// </summary>
+        internal static string SelfUpdate_NewUpdateAvailable {
+            get {
+                return ResourceManager.GetString("SelfUpdate_NewUpdateAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Pending Updates.
+        /// </summary>
+        internal static string SelfUpdate_NoPendingUpdates {
+            get {
+                return ResourceManager.GetString("SelfUpdate_NoPendingUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to Check for Updates.
+        /// </summary>
+        internal static string SelfUpdate_PendingUpdatesQueryFailed {
+            get {
+                return ResourceManager.GetString("SelfUpdate_PendingUpdatesQueryFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading prerelease v{0}....
+        /// </summary>
+        internal static string SelfUpdate_Progress_DownloadingPrereleaseArchive {
+            get {
+                return ResourceManager.GetString("SelfUpdate_Progress_DownloadingPrereleaseArchive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading release v{0}....
+        /// </summary>
+        internal static string SelfUpdate_Progress_DownloadingReleaseArchive {
+            get {
+                return ResourceManager.GetString("SelfUpdate_Progress_DownloadingReleaseArchive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracting new executable....
+        /// </summary>
+        internal static string SelfUpdate_Progress_ExtractingExecutable {
+            get {
+                return ResourceManager.GetString("SelfUpdate_Progress_ExtractingExecutable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restarting....
+        /// </summary>
+        internal static string SelfUpdate_Progress_Restarting {
+            get {
+                return ResourceManager.GetString("SelfUpdate_Progress_Restarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restarting in {0}....
+        /// </summary>
+        internal static string SelfUpdate_Progress_RestartingIn {
+            get {
+                return ResourceManager.GetString("SelfUpdate_Progress_RestartingIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verifying checksum....
+        /// </summary>
+        internal static string SelfUpdate_Progress_VerifyingChecksum {
+            get {
+                return ResourceManager.GetString("SelfUpdate_Progress_VerifyingChecksum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update to Prerelease v{0}.
+        /// </summary>
+        internal static string SelfUpdate_UpdateToPrereleaseMenuStripText {
+            get {
+                return ResourceManager.GetString("SelfUpdate_UpdateToPrereleaseMenuStripText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update to Release v{0}.
+        /// </summary>
+        internal static string SelfUpdate_UpdateToReleaseMenuStripText {
+            get {
+                return ResourceManager.GetString("SelfUpdate_UpdateToReleaseMenuStripText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Determines the language used when displaying Blish HUD text and when requests are made to the GW2 web API..
         /// </summary>
         internal static string Setting_AppCulture_Description {

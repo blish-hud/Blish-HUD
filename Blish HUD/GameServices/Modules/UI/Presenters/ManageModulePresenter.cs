@@ -134,9 +134,13 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void DisplayStateDetails() {
-            this.View.ModuleState = Model.ModuleInstance?.RunState ?? ModuleRunState.Unloaded;
+            if (!GameService.Module.ModuleIsExplicitlyIncompatible(this.Model)) {
+                this.View.ModuleState = Model.ModuleInstance?.RunState ?? ModuleRunState.Unloaded;
 
-            GameService.Settings.Save();
+                GameService.Settings.Save();
+            } else {
+                this.View.SetCustomState(Strings.GameServices.ModulesService.ModuleState_Custom_ExplicitlyIncompatible, Control.StandardColors.Yellow);
+            }
 
             DisplaySettingsView(this.View.ModuleState == ModuleRunState.Loaded);
         }
@@ -214,7 +218,11 @@ namespace Blish_HUD.Modules.UI.Presenters {
             // Can't enable if already enabled
             if (this.Model.Enabled) return false;
 
-            // can't enable if model assembly is dirty
+            // Can't enable if the module is on the explicit
+            // "incompatible" list.
+            if (GameService.Module.ModuleIsExplicitlyIncompatible(this.Model)) return false;
+
+            // Can't enable if module's assembly is dirty
             // (i.e. previous version of it has been loaded)
             if (this.Model.IsModuleAssemblyStateDirty) return false;
 

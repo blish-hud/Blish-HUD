@@ -1,6 +1,8 @@
-﻿using Ookii.Dialogs.WinForms;
+﻿using System;
+using Ookii.Dialogs.WinForms;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Blish_HUD.Debug {
@@ -10,7 +12,7 @@ namespace Blish_HUD.Debug {
 
         private static readonly HashSet<string> _contingency = new HashSet<string>();
 
-        private static void NotifyContingency(string key, string title, string description, string url) {
+        private static void NotifyContingency(string key, string title, string description, string url, params (TaskDialogButton Button, Func<Task> OnClick)[] extraActions) {
             if (_contingency.Contains(key)) {
                 return;
             }
@@ -38,6 +40,18 @@ namespace Blish_HUD.Debug {
             notifDiag.HyperlinkClicked += NotifDiag_HyperlinkClicked;
 
             notifDiag.Buttons.Add(new TaskDialogButton(ButtonType.Ok));
+
+            foreach (var actions in extraActions) {
+                notifDiag.Buttons.Add(actions.Button);
+            }
+
+            notifDiag.ButtonClicked += async (sender, e) => {
+                foreach (var action in extraActions) {
+                    if (e.Item == action.Button) {
+                        await action.OnClick.Invoke();
+                    }
+                }
+            };
 
             notifDiag.ShowDialog();
         }
@@ -67,7 +81,8 @@ namespace Blish_HUD.Debug {
                               "https://link.blishhud.com/missingref");
         }
 
-        public static void NotifyFileSaveAccessDenied(string path, string actionDescription) {
+        public static void NotifyFileSaveAccessDenied(string path, string actionDescription, bool promptPortableMode = false) {
+            // TODO: If promptPortabelMode is true, add a new button to the diag that allows the user to enable portable mode as a work around.
             NotifyContingency(nameof(NotifyFileSaveAccessDenied),
                               Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Title,
                               string.Format(Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Description, path, actionDescription),
@@ -79,6 +94,17 @@ namespace Blish_HUD.Debug {
                               Strings.GameServices.Debug.ContingencyMessages.HttpAccessDenied_Title,
                               string.Format(Strings.GameServices.Debug.ContingencyMessages.HttpAccessDenied_Description, actionDescription),
                               "https://link.blishhud.com/httpaccessdenied");
+        }
+
+        public static void NotifyCoreUpdateFailed(SemVer.Version version, Exception failureException) {
+            NotifyCoreUpdateFailed(version, failureException.Message);
+        }
+
+        public static void NotifyCoreUpdateFailed(SemVer.Version version, string message) {
+            NotifyContingency(nameof(NotifyCoreUpdateFailed),
+                              Strings.GameServices.Debug.ContingencyMessages.CoreUpdateFailed_Title,
+                              string.Format(Strings.GameServices.Debug.ContingencyMessages.CoreUpdateFailed_Description, version, message),
+                              "https://link.blishhud.com/coreupdatefailed");
         }
 
     }

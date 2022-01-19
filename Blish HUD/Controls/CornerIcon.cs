@@ -31,7 +31,7 @@ namespace Blish_HUD.Controls {
         
         private float _hoverTrans = ICON_TRANS;
         public float HoverTrans {
-            get => _hoverTrans;
+            get => this.Enabled ? _hoverTrans : ICON_TRANS;
             set => SetProperty(ref _hoverTrans, value);
         }
 
@@ -122,7 +122,7 @@ namespace Blish_HUD.Controls {
             
             GameService.Input.Mouse.MouseMoved += (sender, e) => {
                 var scaledMousePos = Input.Mouse.State.Position.ScaleToUi();
-                if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < ICON_SIZE * (ICON_POSITION + CornerIcons.Count - 1) + LeftOffset) {
+                if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < ICON_SIZE * ICON_POSITION + LeftOffset) {
                     foreach (var cornerIcon in CornerIcons) {
                         cornerIcon.MouseInHouse = true;
                     }
@@ -208,10 +208,10 @@ namespace Blish_HUD.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_icon == null) return;
 
-            if (this.MouseOver && this.RelativeMousePosition.Y <= _standardIconBounds.Bottom) {
+            if (this.MouseOver && this.RelativeMousePosition.Y <= _standardIconBounds.Bottom && this.Enabled) {
                 spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _standardIconBounds);
             } else {
-                spriteBatch.DrawOnCtrl(this, _icon, _standardIconBounds, Color.White * _hoverTrans);
+                spriteBatch.DrawOnCtrl(this, _icon, _standardIconBounds, Color.White * this.HoverTrans);
             }
 
             if (_isLoading) {

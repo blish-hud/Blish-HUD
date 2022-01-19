@@ -128,7 +128,7 @@ namespace Blish_HUD {
             try {
                 const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
                 var          filePath                    = soundName + SOUND_EFFECT_FILE_EXTENSION;
-            
+
                 if (_audioDataReader.FileExists(filePath)) {
                     SoundEffect.FromStream(_audioDataReader.GetFileStream(filePath)).Play(GameService.GameIntegration.Audio.Volume, 0, 0);
                 }
@@ -138,7 +138,7 @@ namespace Blish_HUD {
                 _playRemainingAttempts--;
                 Logger.Warn(ex, "Failed to play sound effect.");
             }
-}
+        }
 
         private static string RefPath => ApplicationSettings.Instance.RefPath ?? REF_FILE;
 
@@ -249,19 +249,23 @@ namespace Blish_HUD {
                                            return;
                                        }
 
-                                       try {
-                                           var textureData = textureDataResponse.Result;
+                                       // Ensure that the texture is loaded on the correct thread.
+                                       Graphics.QueueMainThreadRender((_) => {
+                                              try {
+                                                  var textureData = textureDataResponse.Result;
 
-                                           using (var textureStream = new MemoryStream(textureData)) {
-                                               var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
+                                                  using (var textureStream = new MemoryStream(textureData)) {
+                                                      var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
 
-                                               returnedTexture.SwapTexture(loadedTexture);
-                                           }
-                                       } catch (Exception ex) {
-                                           Logger.Warn(ex, $"Render service texture {requestUrl} failed to load.");
+                                                      returnedTexture.SwapTexture(loadedTexture);
+                                                  }
+                                              } catch (Exception ex) {
+                                                  Logger.Warn(ex, $"Render service texture {requestUrl} failed to load.");
 
-                                           returnedTexture.SwapTexture(Textures.Error);
-                                       }
+                                                  returnedTexture.SwapTexture(Textures.Error);
+                                              }
+                                       });
+                                       
                                    });
 
             return returnedTexture;
