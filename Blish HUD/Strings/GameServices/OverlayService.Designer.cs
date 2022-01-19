@@ -340,7 +340,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable debug logging.
+        ///   Looks up a localized string similar to Enable Debug Logging.
         /// </summary>
         internal static string Setting_DebugLogging_DisplayName {
             get {
