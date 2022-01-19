@@ -240,9 +240,21 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            EnableDebugLogging = settings.DefineSetting("EnableDebugLogging", File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"), () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName, () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
-            EnableFPSDisplay = settings.DefineSetting("EnableFPSDisplay", false, () => Strings.GameServices.DebugService.Setting_FPSDisplay_DisplayName, () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description);
-            EnableAdditionalDebugDisplay = settings.DefineSetting("EnableAdditionalDebugDisplay", false, () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName, () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_Description);
+            EnableDebugLogging =           settings.DefineSetting("EnableDebugLogging", 
+                                                                  File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"),
+                                                                  () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName,
+                                                                  () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
+
+            EnableFPSDisplay =             settings.DefineSetting("EnableFPSDisplay",
+                                                                  false,
+                                                                  () => Strings.GameServices.DebugService.Setting_FPSDisplay_DisplayName,
+                                                                  () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description);
+
+            EnableAdditionalDebugDisplay = settings.DefineSetting("EnableAdditionalDebugDisplay",
+                                                                  false,
+                                                                  () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName,
+                                                                  () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_Description);
+
 
             EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
         }
