@@ -200,29 +200,31 @@ namespace Blish_HUD.Input {
 
             if (GameService.Overlay.InterfaceHidden) return false;
 
-            // Handle the escape key, which should close the active window or top level context menu (if any)
-            if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown && GameService.Overlay.CloseWindowOnEscape.Value) {
-                var activeContextMenu = GameService.Graphics.SpriteScreen.Children
-                   .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
-
-                if (GameService.Input.Mouse.ActiveControl != null) {
-                    if (GameService.Input.Mouse.ActiveControl.GetType() == typeof(TextInputBase)) {
-                        //GameService.Input.Mouse.ActiveControl.UnsetFocus();
-                        return true;
-                    }
+            // Handle the escape key
+            if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown) {
+                // Loose focus on input fields
+                if (FocusedControl != null) {
+                    FocusedControl.UnsetFocus();
+                    return true;
                 }
 
-                if (activeContextMenu != null) { 
-                    // If we found an active context menu item, close it
-                    activeContextMenu.Hide();
-                    return true;
-                } else {
-                    // If we found an active window, close it
-                    var activeWindow = WindowBase2.ActiveWindow;
+                // Close the active window or top level context menu (if any) if enabled in settings
+                if (GameService.Overlay.CloseWindowOnEscape.Value) {
+                    var activeContextMenu = GameService.Graphics.SpriteScreen.Children
+                       .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
 
-                    if (activeWindow != null && activeWindow.CanClose) {
-                        activeWindow.Hide();
+                    if (activeContextMenu != null) {
+                        // If we found an active context menu item, close it
+                        activeContextMenu.Hide();
                         return true;
+                    } else {
+                        // If we found an active window, close it
+                        var activeWindow = WindowBase2.ActiveWindow;
+
+                        if (activeWindow != null && activeWindow.CanClose) {
+                            activeWindow.Hide();
+                            return true;
+                        }
                     }
                 }
             }

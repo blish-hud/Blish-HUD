@@ -421,7 +421,9 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _effectInFront, value);
         }
 
-        public virtual void UnsetFocus() { }
+        public virtual void UnsetFocus() {
+            FocusedControl = null;
+        }
 
         public virtual bool GetFocusState() { return false; }
 

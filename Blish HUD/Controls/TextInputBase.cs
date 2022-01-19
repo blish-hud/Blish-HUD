@@ -491,6 +491,7 @@ namespace Blish_HUD.Controls {
 
         public override void UnsetFocus() {
             this.Focused = false;
+            GameService.Input.Keyboard.FocusedControl = null;
         }
 
         public override bool GetFocusState() {
