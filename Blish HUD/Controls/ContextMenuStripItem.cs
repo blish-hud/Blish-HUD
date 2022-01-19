@@ -58,6 +58,10 @@ namespace Blish_HUD.Controls {
             this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
         }
 
+        public ContextMenuStripItem(string itemText) : this() {
+            this.Text = itemText;
+        }
+
         public override void RecalculateLayout() {
             var textSize = GameService.Content.DefaultFont14.MeasureString(_text);
             int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;

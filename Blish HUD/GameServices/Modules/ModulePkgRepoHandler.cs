@@ -15,7 +15,7 @@ using Humanizer;
 namespace Blish_HUD.Modules {
     public class ModulePkgRepoHandler : ServiceModule<ModuleService> {
 
-        private static Logger Logger = Logger.GetLogger<ModulePkgRepoHandler>();
+        private static readonly Logger Logger = Logger.GetLogger<ModulePkgRepoHandler>();
 
         // TODO: ModuleRepos should be made to handle multiple repos - not just our public one
 
@@ -80,7 +80,7 @@ namespace Blish_HUD.Modules {
         }
 
         private View GetRepoView(MenuItem repoMenuItem) {
-            AcknowlegePendingModuleUpdates();
+            AcknowledgePendingModuleUpdates();
 
             return new ModuleRepoView(_defaultRepoProvider);
         }
@@ -119,14 +119,14 @@ namespace Blish_HUD.Modules {
             }
         }
 
-        private void AcknowlegePendingModuleUpdates() {
+        private void AcknowledgePendingModuleUpdates() {
             // Mark all updates as acknowledged
-            foreach (var unacknowlegedModuleUpdate in this.UnacknowledgedUpdates) {
-                if (!_acknowledgedUpdates.TryGetSetting<string>(unacknowlegedModuleUpdate.Namespace, out SettingEntry<string> acknowledgementEntry)) {
-                    acknowledgementEntry = _acknowledgedUpdates.DefineSetting(unacknowlegedModuleUpdate.Namespace, "0.0.0");
+            foreach (var unacknowledgedModuleUpdate in this.UnacknowledgedUpdates) {
+                if (!_acknowledgedUpdates.TryGetSetting<string>(unacknowledgedModuleUpdate.Namespace, out SettingEntry<string> acknowledgementEntry)) {
+                    acknowledgementEntry = _acknowledgedUpdates.DefineSetting(unacknowledgedModuleUpdate.Namespace, "0.0.0");
                 }
 
-                acknowledgementEntry.Value = unacknowlegedModuleUpdate.Version.ToString();
+                acknowledgementEntry.Value = unacknowledgedModuleUpdate.Version.ToString();
             }
 
             RefreshUpdateIndicatorStates();

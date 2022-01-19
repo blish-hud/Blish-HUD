@@ -68,6 +68,8 @@ namespace Blish_HUD.Controls {
 
         private (Point Position, int DownOffset, int UpOffset) _targetOffset;
 
+        protected Func<IEnumerable<ContextMenuStripItem>> GetItemsDelegate { get; private set; }
+
         public ContextMenuStrip() {
             this.Visible = false;
             this.Width = CONTROL_WIDTH;
@@ -76,9 +78,17 @@ namespace Blish_HUD.Controls {
             RegisterContextMenuStrip(this);
         }
 
+        public ContextMenuStrip(Func<IEnumerable<ContextMenuStripItem>> getItemsDelegate) : this() {
+            this.GetItemsDelegate = getItemsDelegate;
+        }
+
         protected override void OnShown(EventArgs e) {
             // Keep track of when we opened for debounce
             _lastOpenTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
+
+            if (this.GetItemsDelegate != null) {
+                AddMenuItems(this.GetItemsDelegate());
+            }
 
             this.Parent = GameService.Graphics.SpriteScreen;
 
@@ -91,9 +101,12 @@ namespace Blish_HUD.Controls {
             base.OnShown(e);
         }
 
-        /// <inheritdoc />
         protected override void OnHidden(EventArgs e) {
             this.Parent = null;
+
+            if (this.GetItemsDelegate != null) {
+                ClearChildren();
+            }
 
             base.OnHidden(e);
         }

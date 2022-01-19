@@ -132,4 +132,13 @@
     <value>Search...</value>
     <comment>Shown in search boxes as a placeholder</comment>
   </data>
+  <data name="Action_Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Action_UpdateLater" xml:space="preserve">
+    <value>Update Later</value>
+  </data>
+  <data name="Action_Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
 </root>

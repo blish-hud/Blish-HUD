@@ -64,7 +64,10 @@ namespace Blish_HUD.Modules {
         }
 
         public bool TryEnable() {
-            if (this.Enabled || this.IsModuleAssemblyStateDirty) return false;
+            if (this.Enabled                                             // We're already enabled.
+             || this.IsModuleAssemblyStateDirty                          // User updated the module after the old assembly had already been enabled.
+             || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
+                return false;
 
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 

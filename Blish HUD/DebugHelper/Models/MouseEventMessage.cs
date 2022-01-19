@@ -17,7 +17,7 @@ namespace Blish_HUD.DebugHelper.Models {
 
         [ProtoMember(106)] public int Time { get; set; }
 
-        [ProtoMember(107)] public int ExtraInfo { get; set; }
+        [ProtoMember(107)] public long ExtraInfo { get; set; }
 
     }
 

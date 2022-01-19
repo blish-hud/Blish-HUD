@@ -191,18 +191,20 @@ namespace Blish_HUD {
 
             var textPos = new Vector2(xPos, yPos);
 
+            float absoluteOpacity = ctrl.AbsoluteOpacity();
+
             if (stroke) {
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(0, -strokeDistance), Color.Black * ctrl.AbsoluteOpacity());
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance, -strokeDistance), Color.Black * ctrl.AbsoluteOpacity());
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance, 0), Color.Black * ctrl.AbsoluteOpacity());
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance, strokeDistance), Color.Black * ctrl.AbsoluteOpacity());
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(0, strokeDistance), Color.Black * ctrl.AbsoluteOpacity());
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, strokeDistance), Color.Black * ctrl.AbsoluteOpacity());
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, 0), Color.Black * ctrl.AbsoluteOpacity());
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, -strokeDistance), Color.Black * ctrl.AbsoluteOpacity());
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               -strokeDistance), Color.Black * absoluteOpacity);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  -strokeDistance), Color.Black * absoluteOpacity);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  0),               Color.Black * absoluteOpacity);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  strokeDistance),  Color.Black * absoluteOpacity);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               strokeDistance),  Color.Black * absoluteOpacity);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, strokeDistance),  Color.Black * absoluteOpacity);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, 0),               Color.Black * absoluteOpacity);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, -strokeDistance), Color.Black * absoluteOpacity);
             }
 
-            spriteBatch.DrawString(font, text, textPos, color * ctrl.AbsoluteOpacity());
+            spriteBatch.DrawString(font, text, textPos, color * absoluteOpacity);
         }
 
     }

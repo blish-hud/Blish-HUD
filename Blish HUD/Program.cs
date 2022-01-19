@@ -40,6 +40,7 @@ namespace Blish_HUD {
         }
 
         private static void HandleArcDps11Contingency() {
+            // TODO: Get SetDllDirectory("") working so that we can protect ourselves from this!
             // Typically occurs when ArcDps is placed in the same directory as Blish HUD
             // and causes Blish HUD to crash almost immediately due to an access violation.
             if (File.Exists("d3d11.dll")) {
@@ -62,7 +63,6 @@ namespace Blish_HUD {
         private static void Main(string[] args) {
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
 
-            // TODO: Get SetDllDirectory("") working so that we can protect ourselves from this
             HandleArcDps11Contingency();
             HandleMinTls12Contingency();
 
@@ -72,6 +72,13 @@ namespace Blish_HUD {
             if (settings.MainProcessId.HasValue) {
                 // The only current subprocess is our DebugHelper
                 RunDebugHelper(settings.MainProcessId.Value);
+                return;
+            }
+
+            // Check to see if we're currently mid-upgrade
+            var attemptUpdate = Overlay.SelfUpdater.SelfUpdateUtil.TryHandleUpdate();
+            if (attemptUpdate.UpdateRelevant && !attemptUpdate.Succeeded) {
+                // Update was detected, but was not successful.  We exit out now.
                 return;
             }
 
@@ -112,7 +119,7 @@ namespace Blish_HUD {
 
                     if (RestartOnExit) {
                         var currentStartInfo = Process.GetCurrentProcess().StartInfo;
-                        currentStartInfo.FileName = Application.ExecutablePath;
+                        currentStartInfo.FileName  = Application.ExecutablePath;
                         currentStartInfo.Arguments = string.Join(" ", _startupArgs);
 
                         Process.Start(currentStartInfo);
