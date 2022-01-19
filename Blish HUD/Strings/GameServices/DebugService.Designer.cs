@@ -70,6 +70,24 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If enabled additional debug information will be displayed.
+        /// </summary>
+        internal static string Setting_AdditionalDebugDisplay_Description {
+            get {
+                return ResourceManager.GetString("Setting_AdditionalDebugDisplay_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Additional Debug Settings.
+        /// </summary>
+        internal static string Setting_AdditionalDebugDisplay_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_AdditionalDebugDisplay_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If enabled Blish HUD will create more verbose logfiles.
         /// </summary>
         internal static string Setting_DebugLogging_Description {

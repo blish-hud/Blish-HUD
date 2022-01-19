@@ -26,6 +26,7 @@ namespace Blish_HUD {
         public SettingCollection DebugSettings => _debugSettings;
         public SettingEntry<bool> EnableDebugLogging { get; private set; }
         public SettingEntry<bool> EnableFPSDisplay { get; private set; }
+        public SettingEntry<bool> EnableAdditionalDebugDisplay { get; private set; }
 
         #region Logging
 
@@ -185,7 +186,7 @@ namespace Blish_HUD {
                 spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.Value, 0)}", new Vector2(debugLeft, 25), Color.Red);
             }
 
-            if (ApplicationSettings.Instance.DebugEnabled) {
+            if (EnableAdditionalDebugDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
                 int i = 0;
 
                 foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
@@ -241,6 +242,7 @@ namespace Blish_HUD {
         private void DefineSettings(SettingCollection settings) {
             EnableDebugLogging = settings.DefineSetting("EnableDebugLogging", File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"), () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName, () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
             EnableFPSDisplay = settings.DefineSetting("EnableFPSDisplay", false, () => Strings.GameServices.DebugService.Setting_FPSDisplay_DisplayName, () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description);
+            EnableAdditionalDebugDisplay = settings.DefineSetting("EnableAdditionalDebugDisplay", false, () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName, () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_Description);
 
             EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
         }
