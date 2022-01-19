@@ -86,5 +86,23 @@ namespace Blish_HUD.Strings.GameServices {
                 return ResourceManager.GetString("Setting_DebugLogging_DisplayName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled Blish HUD will show how many FPS are currently rendered by the overlay.
+        /// </summary>
+        internal static string Setting_FPSDisplay_Description {
+            get {
+                return ResourceManager.GetString("Setting_FPSDisplay_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Blish Rendering FPS.
+        /// </summary>
+        internal static string Setting_FPSDisplay_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_FPSDisplay_DisplayName", resourceCulture);
+            }
+        }
     }
 }

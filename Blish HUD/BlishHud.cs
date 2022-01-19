@@ -156,13 +156,9 @@ namespace Blish_HUD {
 
             GameService.Graphics.Render(gameTime, _basicSpriteBatch);
 
-            if (ApplicationSettings.Instance.DebugEnabled) {
-                _basicSpriteBatch.Begin();
-
-                GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
-
-                _basicSpriteBatch.End();
-            }
+            _basicSpriteBatch.Begin();
+            GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
+            _basicSpriteBatch.End();
             
             base.Draw(gameTime);
         }

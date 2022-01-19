@@ -25,6 +25,7 @@ namespace Blish_HUD {
         internal SettingCollection _debugSettings;
         public SettingCollection DebugSettings => _debugSettings;
         public SettingEntry<bool> EnableDebugLogging { get; private set; }
+        public SettingEntry<bool> EnableFPSDisplay { get; private set; }
 
         #region Logging
 
@@ -180,16 +181,20 @@ namespace Blish_HUD {
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
 
-            spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.Value, 0)}", new Vector2(debugLeft, 25), Color.Red);
-
-            int i = 0;
-
-            foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
-                spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + i++ * 25), Color.Orange);
+            if (EnableFPSDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
+                spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.Value, 0)}", new Vector2(debugLeft, 25), Color.Red);
             }
 
-            foreach (Func<GameTime, string> func in this.OverlayTexts.Values) {
-                spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + i++ * 25), Color.Yellow);
+            if (ApplicationSettings.Instance.DebugEnabled) {
+                int i = 0;
+
+                foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
+                    spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + i++ * 25), Color.Orange);
+                }
+
+                foreach (Func<GameTime, string> func in this.OverlayTexts.Values) {
+                    spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + i++ * 25), Color.Yellow);
+                }
             }
         }
 
@@ -234,9 +239,10 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            this.EnableDebugLogging = settings.DefineSetting("EnableDebugLogging", File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"), () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName, () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
+            EnableDebugLogging = settings.DefineSetting("EnableDebugLogging", File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"), () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName, () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
+            EnableFPSDisplay = settings.DefineSetting("EnableFPSDisplay", false, () => Strings.GameServices.DebugService.Setting_FPSDisplay_DisplayName, () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description);
 
-            this.EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
+            EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
         }
 
         private void EnableDebugLoggingOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
