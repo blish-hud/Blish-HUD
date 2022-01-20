@@ -115,7 +115,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show Blish Rendering FPS.
+        ///   Looks up a localized string similar to Show Blish HUD FPS.
         /// </summary>
         internal static string Setting_FPSDisplay_DisplayName {
             get {

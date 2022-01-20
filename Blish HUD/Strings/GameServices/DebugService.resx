@@ -136,6 +136,6 @@
     <value>If enabled Blish HUD will show how many FPS are currently rendered by the overlay</value>
   </data>
   <data name="Setting_FPSDisplay_DisplayName" xml:space="preserve">
-    <value>Show Blish Rendering FPS</value>
+    <value>Show Blish HUD FPS</value>
   </data>
 </root>
