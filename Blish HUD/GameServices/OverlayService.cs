@@ -137,6 +137,8 @@ namespace Blish_HUD {
 
         private void ApplyInitialSettings() {
             UserLocaleOnSettingChanged(this.UserLocale, new ValueChangedEventArgs<Locale>(GetGw2LocaleFromCurrentUICulture(), this.UserLocale.Value));
+
+            GameIntegration.WinForms.SetShowInTaskbar(GameIntegration.Gw2Instance.Gw2IsRunning && this.ShowInTaskbar.Value);
         }
 
         private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
