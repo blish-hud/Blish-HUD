@@ -135,8 +135,15 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void EnableWatchDir() {
+            string gw2AppDataPath = Path.Combine(_service.Gw2Instance.AppDataPath, GFXSETTINGS_PATH);
+
+            if (!Directory.Exists(gw2AppDataPath)) {
+                Logger.Warn("Guild Wars 2 AppData path '{appDataPath}' does not appear to exist so GfxSettings will not be loaded.", gw2AppDataPath);
+                return;
+            }
+
             _fileSystemWatcher = new FileSystemWatcher {
-                Path                  = Path.Combine(_service.Gw2Instance.AppDataPath, GFXSETTINGS_PATH),
+                Path                  = gw2AppDataPath,
                 NotifyFilter          = NotifyFilters.LastWrite,
                 Filter                = GFXSETTINGS_NAME,
                 EnableRaisingEvents   = true,
@@ -191,7 +198,6 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private async Task LoadGfxSettings(int remainingAttempts) {
-
             try {
                 if (TryGetGfxSettingsFileStream(out var gfxSettingsFileStream)) {
                     using (var gfxSettingsXmlReader = XmlReader.Create(gfxSettingsFileStream, new XmlReaderSettings { Async = true })) {
@@ -237,9 +243,11 @@ namespace Blish_HUD.GameIntegration {
 
         public override void Unload() {
             _service.Gw2Instance.Gw2Started -= Gw2Proc_Gw2Started;
-            _fileSystemWatcher.Changed      -= GfxSettingsFileChanged;
 
-            _fileSystemWatcher.Dispose();
+            if (_fileSystemWatcher != null) {
+                _fileSystemWatcher.Changed -= GfxSettingsFileChanged;
+                _fileSystemWatcher.Dispose();
+            }
         }
     }
 }
