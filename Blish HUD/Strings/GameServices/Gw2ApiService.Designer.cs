@@ -193,6 +193,51 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account Details.
+        /// </summary>
+        internal static string TokenLoading_AccountDetails {
+            get {
+                return ResourceManager.GetString("TokenLoading_AccountDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Characters.
+        /// </summary>
+        internal static string TokenLoading_Characters {
+            get {
+                return ResourceManager.GetString("TokenLoading_Characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handling response from API....
+        /// </summary>
+        internal static string TokenLoading_HandlingResponse {
+            get {
+                return ResourceManager.GetString("TokenLoading_HandlingResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading {0}....
+        /// </summary>
+        internal static string TokenLoading_Status {
+            get {
+                return ResourceManager.GetString("TokenLoading_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Token Info.
+        /// </summary>
+        internal static string TokenLoading_TokenInfo {
+            get {
+                return ResourceManager.GetString("TokenLoading_TokenInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your account display name, ID, home world, and list of guilds..
         /// </summary>
         internal static string TokenPermissionDescription_Account {
@@ -279,6 +324,51 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string TokenPermissionDescription_Wallet {
             get {
                 return ResourceManager.GetString("TokenPermissionDescription_Wallet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Europe.
+        /// </summary>
+        internal static string TokenRegion_Europe {
+            get {
+                return ResourceManager.GetString("TokenRegion_Europe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to France.
+        /// </summary>
+        internal static string TokenRegion_France {
+            get {
+                return ResourceManager.GetString("TokenRegion_France", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Germany.
+        /// </summary>
+        internal static string TokenRegion_Germany {
+            get {
+                return ResourceManager.GetString("TokenRegion_Germany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to US / North America.
+        /// </summary>
+        internal static string TokenRegion_NorthAmerica {
+            get {
+                return ResourceManager.GetString("TokenRegion_NorthAmerica", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spain.
+        /// </summary>
+        internal static string TokenRegion_Spain {
+            get {
+                return ResourceManager.GetString("TokenRegion_Spain", resourceCulture);
             }
         }
         
