@@ -182,7 +182,7 @@
   </data>
   <data name="CreateTokenInstructions_Warning" xml:space="preserve">
     <value>Vous pouvez enregistrer une clé sans toutes les permissions,
-mais certaines fonctions et modules risquent de ne
+mais certaines fonctionnalitées et modules risquent de ne
 pas fonctionner correctement.
 
 Au minimum, les permissions "account" et "characters"
@@ -206,7 +206,7 @@ et appuyez sur le bouton
     <value>Copiez la nouvelle clé.</value>
   </data>
   <data name="CreateTokenInstructions_Step5" xml:space="preserve">
-    <value>Collez la clé dane le champ ci-dessus
+    <value>Collez la clé dans le champ ci-dessus
 et appuyez sur "Enregistrer".</value>
   </data>
   <data name="ManageApiKeysSection" xml:space="preserve">
