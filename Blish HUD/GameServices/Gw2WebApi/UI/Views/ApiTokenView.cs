@@ -13,11 +13,11 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
     public class ApiTokenView : View {
 
         private readonly Dictionary<string, (string Region, Texture2D Flag)> _worldRegionFlags = new Dictionary<string, (string Region, Texture2D Flag)>() {
-            {"10", ("US / North America", GameService.Content.GetTexture(@"common/784343"))},
-            {"20", ("Europe", GameService.Content.GetTexture(@"common/784346"))},
-            {"21", ("France", GameService.Content.GetTexture(@"common/784345"))},
-            {"22", ("Germany", GameService.Content.GetTexture(@"common/784342"))},
-            {"23", ("Spain", GameService.Content.GetTexture(@"common/784344"))}
+            { "10", (Strings.GameServices.Gw2ApiService.TokenRegion_NorthAmerica, GameService.Content.GetTexture(@"common/784343")) },
+            { "20", (Strings.GameServices.Gw2ApiService.TokenRegion_Europe, GameService.Content.GetTexture(@"common/784346")) },
+            { "21", (Strings.GameServices.Gw2ApiService.TokenRegion_France, GameService.Content.GetTexture(@"common/784345")) },
+            { "22", (Strings.GameServices.Gw2ApiService.TokenRegion_Germany, GameService.Content.GetTexture(@"common/784342")) },
+            { "23", (Strings.GameServices.Gw2ApiService.TokenRegion_Spain, GameService.Content.GetTexture(@"common/784344")) }
         };
 
         public event EventHandler<EventArgs> DeleteClicked;

@@ -33,18 +33,18 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
                 var characterInfoTask = tokenClient.Characters.IdsAsync(_loadCancel.Token);
 
                 var loadTasks = new Dictionary<Task, string>() {
-                    {tokenInfoTask, "Token Info"},
-                    {accountInfoTask, "Account Details"},
-                    {characterInfoTask, "Characters"}
+                    { tokenInfoTask, Strings.GameServices.Gw2ApiService.TokenLoading_TokenInfo },
+                    { accountInfoTask, Strings.GameServices.Gw2ApiService.TokenLoading_AccountDetails },
+                    { characterInfoTask, Strings.GameServices.Gw2ApiService.TokenLoading_Characters }
                 };
 
                 while (loadTasks.Count > 0) {
-                    progress.Report($"Loading {string.Join(", ", loadTasks.Values)}...");
+                    progress.Report(string.Format(Strings.GameServices.Gw2ApiService.TokenLoading_Status, string.Join(", ", loadTasks.Values)));
                     var completed = await Task.WhenAny(loadTasks.Keys);
                     loadTasks.Remove(completed);
                 }
 
-                progress.Report("Handling response from API...");
+                progress.Report(Strings.GameServices.Gw2ApiService.TokenLoading_HandlingResponse);
 
                 return UpdateFromRequestTaskResult(tokenInfoTask,     ref _tokenInfo)
                     && UpdateFromRequestTaskResult(accountInfoTask,   ref _accountInfo)
