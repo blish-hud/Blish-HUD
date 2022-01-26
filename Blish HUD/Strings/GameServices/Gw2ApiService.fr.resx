@@ -181,15 +181,16 @@
     <value>Permissions requises manquantes</value>
   </data>
   <data name="CreateTokenInstructions_Warning" xml:space="preserve">
-    <value>Vous pouvez enregistrer une clé sans toutes les permissions,
-mais certaines fonctionnalitées et modules risquent de ne
-pas fonctionner correctement.
+    <value>Vous pouvez enregistrer une clé sans toutes les
+permissions, mais certaines fonctionnalitées et
+modules risquent de ne pas fonctionner correctement.
 
 Au minimum, les permissions "account" et "characters"
 sont requises.</value>
   </data>
   <data name="CreateTokenInstructions_Step1" xml:space="preserve">
-    <value>Accédez à la page officielle des applications.</value>
+    <value>Accédez à la page officielle des
+applications.</value>
   </data>
   <data name="Link_ManageApplications" xml:space="preserve">
     <value>Gérer les applications</value>
