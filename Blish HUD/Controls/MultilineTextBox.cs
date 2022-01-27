@@ -8,13 +8,13 @@ namespace Blish_HUD.Controls {
         private const int TEXT_TOPPADDING  = 7;
         private const int TEXT_LEFTPADDING = 10;
 
-        private Color _textBackgroundColor = Color.Black;
-        public Color TextBackgroundColor {
-            get => _textBackgroundColor;
+        private bool _hideBackground;
+        public bool HideBackground {
+            get => _hideBackground;
             set {
-                if (_textBackgroundColor.Equals(value)) return;
-                _textBackgroundColor = value;
-                OnPropertyChanged(nameof(TextBackgroundColor));
+                if (_hideBackground == value) return;
+                _hideBackground = value;
+                OnPropertyChanged(nameof(HideBackground));
             }
         }
 
@@ -203,24 +203,26 @@ namespace Blish_HUD.Controls {
         protected override void UpdateScrolling() { /* NOOP */ }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            // Background tint
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 1, bounds.Width - 2, bounds.Height - 2), TextBackgroundColor * 0.5f);
+            if (!HideBackground) {
+                // Background tint
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 1, bounds.Width - 2, bounds.Height - 2), Color.Black * 0.5f);
 
-            // Top
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 0, bounds.Width - 2, 2), TextBackgroundColor * 0.3f);
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 0, bounds.Width - 2, 1), TextBackgroundColor * 0.2f);
+                // Top
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 0, bounds.Width - 2, 2), Color.Black * 0.3f);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 0, bounds.Width - 2, 1), Color.Black * 0.2f);
 
-            // Left
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 1, 2, bounds.Height - 2), TextBackgroundColor * 0.3f);
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 1, 1, bounds.Height - 2), TextBackgroundColor * 0.2f);
+                // Left
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 1, 2, bounds.Height - 2), Color.Black * 0.3f);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 1, 1, bounds.Height - 2), Color.Black * 0.2f);
 
-            // Bottom
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, bounds.Height - 2, bounds.Width - 2, 2), TextBackgroundColor * 0.3f);
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, bounds.Height - 2, bounds.Width - 2, 1), TextBackgroundColor * 0.2f);
+                // Bottom
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, bounds.Height - 2, bounds.Width - 2, 2), Color.Black * 0.3f);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, bounds.Height - 2, bounds.Width - 2, 1), Color.Black * 0.2f);
 
-            // Right
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(bounds.Width - 2, 1, 2, bounds.Height - 2), TextBackgroundColor * 0.3f);
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(bounds.Width - 2, 1, 1, bounds.Height - 2), TextBackgroundColor * 0.2f);
+                // Right
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(bounds.Width - 2, 1, 2, bounds.Height - 2), Color.Black * 0.3f);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(bounds.Width - 2, 1, 1, bounds.Height - 2), Color.Black * 0.2f);
+            }
 
             PaintText(spriteBatch, _textRegion);
             
