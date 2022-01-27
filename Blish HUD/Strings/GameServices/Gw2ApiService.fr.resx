@@ -216,4 +216,34 @@ et appuyez sur "Enregistrer".</value>
   <data name="TokenStatus_FailedToLoad" xml:space="preserve">
     <value>Echec du chargement de la clé.</value>
   </data>
+  <data name="TokenLoading_AccountDetails" xml:space="preserve">
+    <value>Détails du compte</value>
+  </data>
+  <data name="TokenLoading_Characters" xml:space="preserve">
+    <value>Personnages</value>
+  </data>
+  <data name="TokenLoading_HandlingResponse" xml:space="preserve">
+    <value>Traitement de la réponse de l'API...</value>
+  </data>
+  <data name="TokenLoading_Status" xml:space="preserve">
+    <value>Chargement {0}...</value>
+  </data>
+  <data name="TokenLoading_TokenInfo" xml:space="preserve">
+    <value>Info du jeton</value>
+  </data>
+  <data name="TokenRegion_Europe" xml:space="preserve">
+    <value>Europe</value>
+  </data>
+  <data name="TokenRegion_France" xml:space="preserve">
+    <value>France</value>
+  </data>
+  <data name="TokenRegion_Germany" xml:space="preserve">
+    <value>Allemagne</value>
+  </data>
+  <data name="TokenRegion_NorthAmerica" xml:space="preserve">
+    <value>EU / Amérique du Nord</value>
+  </data>
+  <data name="TokenRegion_Spain" xml:space="preserve">
+    <value>Espagne</value>
+  </data>
 </root>
