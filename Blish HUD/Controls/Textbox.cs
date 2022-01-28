@@ -26,6 +26,12 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<EventArgs> EnterPressed;
 
+        private bool _hideBackground;
+        public bool HideBackground {
+            get => _hideBackground;
+            set => SetProperty(ref _hideBackground, value);
+        }
+
         protected virtual void OnEnterPressed(EventArgs e) {
             this.Focused = false;
 
@@ -129,14 +135,20 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureTextbox,
-                                   new Rectangle(Point.Zero, _size - new Point(5, 0)),
-                                   new Rectangle(0, 0, Math.Min(_textureTextbox.Width - 5, _size.X - 5), _textureTextbox.Height));
+            if (!this.HideBackground) {
+                spriteBatch.DrawOnCtrl(
+                                       this,
+                                       _textureTextbox,
+                                       new Rectangle(Point.Zero, _size - new Point(5, 0)),
+                                       new Rectangle(0,          0, Math.Min(_textureTextbox.Width - 5, _size.X - 5), _textureTextbox.Height)
+                                      );
 
-            spriteBatch.DrawOnCtrl(this, _textureTextbox,
-                                   new Rectangle(_size.X - 5, 0, 5, _size.Y),
-                                   new Rectangle(_textureTextbox.Width - 5, 0, 5, _textureTextbox.Height));
+                spriteBatch.DrawOnCtrl(
+                                       this, _textureTextbox,
+                                       new Rectangle(_size.X               - 5, 0, 5, _size.Y),
+                                       new Rectangle(_textureTextbox.Width - 5, 0, 5, _textureTextbox.Height)
+                                      );
+            }
 
             PaintText(spriteBatch, _textRegion);
 
