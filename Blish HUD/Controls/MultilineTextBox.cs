@@ -11,11 +11,7 @@ namespace Blish_HUD.Controls {
         private bool _hideBackground;
         public bool HideBackground {
             get => _hideBackground;
-            set {
-                if (_hideBackground == value) return;
-                _hideBackground = value;
-                OnPropertyChanged(nameof(HideBackground));
-            }
+            set => SetProperty(ref _hideBackground, value);
         }
 
         public MultilineTextBox() {
@@ -203,7 +199,7 @@ namespace Blish_HUD.Controls {
         protected override void UpdateScrolling() { /* NOOP */ }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (!HideBackground) {
+            if (!this.HideBackground) {
                 // Background tint
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(1, 1, bounds.Width - 2, bounds.Height - 2), Color.Black * 0.5f);
 

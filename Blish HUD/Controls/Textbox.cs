@@ -29,11 +29,7 @@ namespace Blish_HUD.Controls {
         private bool _hideBackground;
         public bool HideBackground {
             get => _hideBackground;
-            set {
-                if (_hideBackground == value) return;
-                _hideBackground = value;
-                OnPropertyChanged(nameof(HideBackground));
-            }
+            set => SetProperty(ref _hideBackground, value);
         }
 
         protected virtual void OnEnterPressed(EventArgs e) {
@@ -139,7 +135,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (!HideBackground) {
+            if (!this.HideBackground) {
                 spriteBatch.DrawOnCtrl(
                                        this,
                                        _textureTextbox,
