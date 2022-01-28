@@ -88,6 +88,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (Disabled because Blish HUD was started with --debug specified).
+        /// </summary>
+        internal static string Setting_Debug_Locked_Description {
+            get {
+                return ResourceManager.GetString("Setting_Debug_Locked_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If enabled Blish HUD will create more verbose logfiles.
         /// </summary>
         internal static string Setting_DebugLogging_Description {

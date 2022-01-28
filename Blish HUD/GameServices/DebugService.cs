@@ -257,6 +257,19 @@ namespace Blish_HUD {
 
 
             EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
+
+
+            if (ApplicationSettings.Instance.DebugEnabled) {
+                // Disable all debug setting and update description - user has manually specified --debug as launch arg
+                EnableDebugLogging.SetDisabled();
+                EnableDebugLogging.GetDescriptionFunc =           () => Strings.GameServices.DebugService.Setting_DebugLogging_Description +           "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+
+                EnableFPSDisplay.SetDisabled();
+                EnableFPSDisplay.GetDescriptionFunc =             () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description +             "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+
+                EnableAdditionalDebugDisplay.SetDisabled();
+                EnableAdditionalDebugDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+            }
         }
 
         private void EnableDebugLoggingOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
