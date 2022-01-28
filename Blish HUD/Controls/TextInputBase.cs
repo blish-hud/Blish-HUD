@@ -80,6 +80,16 @@ namespace Blish_HUD.Controls {
             InputFocusChanged?.Invoke(this, e);
         }
 
+        protected HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
+
+        /// <summary>
+        /// Gets or sets the horizontal alignment of the input.
+        /// </summary>
+        public HorizontalAlignment HorizontalAlignment {
+            get => _horizontalAlignment;
+            set => SetProperty(ref _horizontalAlignment, value);
+        }
+
         protected string _text = string.Empty;
 
         /// <summary>
@@ -729,11 +739,11 @@ namespace Blish_HUD.Controls {
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion) {
             // Draw the placeholder text
             if (!_focused && _text.Length == 0) {
-                spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, textRegion, Color.LightGray, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
+                spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, textRegion, Color.LightGray, false, false, 0, this.HorizontalAlignment, VerticalAlignment.Top);
             }
 
             // Draw the text
-            spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, _foreColor, false, false, 0, HorizontalAlignment.Left, VerticalAlignment.Top);
+            spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, _foreColor, false, false, 0, this.HorizontalAlignment, VerticalAlignment.Top);
         }
 
         protected void PaintHighlight(SpriteBatch spriteBatch, Rectangle highlightRegion) {

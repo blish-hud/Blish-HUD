@@ -100,6 +100,17 @@ namespace Blish_HUD.Controls {
             float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
             float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
 
+            switch (this.HorizontalAlignment)
+            {
+                case HorizontalAlignment.Center:
+                    highlightLeftOffset += (this.Width - highlightWidth) / 2f - TEXT_HORIZONTALPADDING;
+                    break;
+                case HorizontalAlignment.Right:
+                    highlightLeftOffset += this.Width - highlightWidth - TEXT_HORIZONTALPADDING * 2;
+                    break;
+                default: break;
+            }
+
             return new Rectangle(_textRegion.Left + (int)highlightLeftOffset - 1,
                                  _textRegion.Y,
                                  (int)highlightWidth,
@@ -108,6 +119,16 @@ namespace Blish_HUD.Controls {
 
         private Rectangle CalculateCursorRegion() {
             float textOffset = MeasureStringWidth(_text.Substring(0, _cursorIndex));
+
+            switch (this.HorizontalAlignment) {
+                case HorizontalAlignment.Center:
+                    textOffset += (this.Width - MeasureStringWidth(_text)) / 2f - TEXT_HORIZONTALPADDING;
+                    break;
+                case HorizontalAlignment.Right:
+                    textOffset += this.Width - MeasureStringWidth(_text) - TEXT_HORIZONTALPADDING * 2;
+                    break;
+                default: break;
+            }
 
             return new Rectangle(_textRegion.X + (int)textOffset - 2,
                                  _textRegion.Y + 2,
