@@ -60,8 +60,9 @@ namespace Blish_HUD {
             Form       = Control.FromHandle(FormHandle).FindForm();
 
             // Avoid the flash the window shows when the application launches
-            Form.Size     = new Size(1, 1);
-            Form.Location = new System.Drawing.Point(-Form.Width * 2, -Form.Height * 2);
+            // Must be the same color as the device clear color but without alpha transparency
+            Form.BackColor       = System.Drawing.Color.Black;
+            Form.TransparencyKey = System.Drawing.Color.Black;
 
             this.Window.IsBorderless = true;
             this.Window.AllowAltF4   = false;
