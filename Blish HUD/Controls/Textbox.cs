@@ -26,6 +26,12 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<EventArgs> EnterPressed;
 
+        private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
+        public HorizontalAlignment HorizontalAlignment {
+            get => _horizontalAlignment;
+            set => SetProperty(ref _horizontalAlignment, value);
+        }
+
         private bool _hideBackground;
         public bool HideBackground {
             get => _hideBackground;
