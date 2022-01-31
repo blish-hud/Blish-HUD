@@ -177,7 +177,7 @@ namespace Blish_HUD.Controls {
                                       );
             }
 
-            PaintText(spriteBatch, _textRegion);
+            PaintText(spriteBatch, _textRegion, this.HorizontalAlignment);
 
             if (_highlightRegion.IsEmpty) {
                 PaintCursor(spriteBatch, _cursorRegion);
