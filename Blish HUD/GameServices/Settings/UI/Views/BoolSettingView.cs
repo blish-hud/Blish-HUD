@@ -55,7 +55,9 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void Unload() {
-            _boolCheckbox.CheckedChanged -= BoolCheckboxOnCheckedChanged;
+            if (_boolCheckbox != null) {
+                _boolCheckbox.CheckedChanged -= BoolCheckboxOnCheckedChanged;
+            }
         }
 
     }
