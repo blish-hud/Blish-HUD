@@ -12,7 +12,7 @@ namespace Blish_HUD.Common.Gw2 {
         /// General context-sensitive interact prompt.
         /// Used for interacting with the environment, including Talk, Loot, Revive, etc.
         /// </summary>
-        public static readonly KeyBinding Interact = new KeyBinding(Keys.F) { Enabled = true };
+        public static readonly KeyBinding Interact = GameService.Overlay.InteractKey.Value;
 
     }
 }

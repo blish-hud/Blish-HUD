@@ -46,6 +46,7 @@ namespace Blish_HUD {
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
+        public SettingEntry<KeyBinding> InteractKey { get; private set; }
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
@@ -109,6 +110,7 @@ namespace Blish_HUD {
             this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",                false,                                                          () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName,            () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
             this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape",          true,                                                           () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName,      () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
             _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",            DynamicHUDMethod.AlwaysShow,                                    () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
+            this.InteractKey =         settings.DefineSetting(nameof(this.InteractKey),       new KeyBinding(Keys.F),                                         () => Strings.GameServices.OverlayService.Setting_InteractKey_DisplayName,              () => Strings.GameServices.OverlayService.Setting_InteractKey_Description);
             this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),  new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H), () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,     () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
             this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
@@ -128,6 +130,8 @@ namespace Blish_HUD {
 
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
+
+            this.InteractKey.Value.Enabled = true;
 
             this.HideAllInterface.Value.Enabled = true;
             this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
