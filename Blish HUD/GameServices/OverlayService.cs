@@ -26,6 +26,7 @@ namespace Blish_HUD {
         private static readonly Logger Logger = Logger.GetLogger<OverlayService>();
 
         private const string APPLICATION_SETTINGS = "OverlayConfiguration";
+        private const string DYNAMICHUD_SETTINGS = "DynamicHUDConfiguration";
 
         internal const int FORCE_EXIT_TIMEOUT = 4000;
 
@@ -42,6 +43,7 @@ namespace Blish_HUD {
         public  GameTime CurrentGameTime { get; private set; } = new GameTime(TimeSpan.Zero, TimeSpan.Zero);
 
         internal SettingCollection OverlaySettings { get; private set; }
+        internal SettingCollection DynamicHUDSettings { get; private set; }
 
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
@@ -82,9 +84,13 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            this.OverlaySettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
+            this.OverlaySettings    = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
+            this.DynamicHUDSettings = Settings.RegisterRootSettingCollection(DYNAMICHUD_SETTINGS);
 
             DefineSettings(this.OverlaySettings);
+            DefineDynamicHUDSettings(this.DynamicHUDSettings);
+
+            ApplyInitialSettings();
 
             PrepareSettingsTab();
         }
@@ -108,7 +114,6 @@ namespace Blish_HUD {
             this.StayInTray    =       settings.DefineSetting("StayInTray",                   true,                                                           () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,               () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
             this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",                false,                                                          () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName,            () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
             this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape",          true,                                                           () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName,      () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
-            _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",            DynamicHUDMethod.AlwaysShow,                                    () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
             this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),  new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H), () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,     () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
             this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
@@ -124,15 +129,17 @@ namespace Blish_HUD {
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);
 
-            _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
-
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
 
             this.HideAllInterface.Value.Enabled = true;
             this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
+        }
 
-            ApplyInitialSettings();
+        private void DefineDynamicHUDSettings(SettingCollection settings) {
+            _dynamicHUDMenuBar = settings.DefineSetting("DynamicHUDMenuBar", DynamicHUDMethod.AlwaysShow, () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName, () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
+
+            _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
         }
 
         private void ApplyInitialSettings() {

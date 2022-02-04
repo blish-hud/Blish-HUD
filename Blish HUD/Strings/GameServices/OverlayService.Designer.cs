@@ -160,6 +160,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dynamic HUD.
+        /// </summary>
+        internal static string OverlayDynamicHUDSection {
+            get {
+                return ResourceManager.GetString("OverlayDynamicHUDSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Overlay Settings.
         /// </summary>
         internal static string OverlaySettingsSection {
@@ -340,7 +349,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dynamic HUD Menu Bar.
+        ///   Looks up a localized string similar to Menu Bar.
         /// </summary>
         internal static string Setting_DynamicHUDMenuBar_DisplayName {
             get {

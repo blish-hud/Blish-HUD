@@ -221,7 +221,7 @@ It might not be installed.</value>
     <value>Controls visibility of the Menu bar located in the upper-left of the screen.</value>
   </data>
   <data name="Setting_DynamicHUDMenuBar_DisplayName" xml:space="preserve">
-    <value>Dynamic HUD Menu Bar</value>
+    <value>Menu Bar</value>
   </data>
   <data name="SelfUpdate_NewUpdateAvailable" xml:space="preserve">
     <value>New Release Available</value>
@@ -258,5 +258,8 @@ It might not be installed.</value>
   </data>
   <data name="SelfUpdate_Progress_Restarting" xml:space="preserve">
     <value>Restarting...</value>
+  </data>
+  <data name="OverlayDynamicHUDSection" xml:space="preserve">
+    <value>Dynamic HUD</value>
   </data>
 </root>
