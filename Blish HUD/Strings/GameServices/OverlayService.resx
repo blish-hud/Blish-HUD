@@ -262,4 +262,16 @@ It might not be installed.</value>
   <data name="OverlayDynamicHUDSection" xml:space="preserve">
     <value>Dynamic HUD</value>
   </data>
+  <data name="Setting_DynamicHUDLoading_Description" xml:space="preserve">
+    <value>Controls visibility during cut scenes and loading screens.</value>
+  </data>
+  <data name="Setting_DynamicHUDLoading_DisplayName" xml:space="preserve">
+    <value>Cut Scene / Loading Screen</value>
+  </data>
+  <data name="Setting_DynamicHUDWindows_Description" xml:space="preserve">
+    <value>Controls visibility of the windows.</value>
+  </data>
+  <data name="Setting_DynamicHUDWindows_DisplayName" xml:space="preserve">
+    <value>Windows</value>
+  </data>
 </root>

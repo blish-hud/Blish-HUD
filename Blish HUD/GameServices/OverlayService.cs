@@ -61,6 +61,16 @@ namespace Blish_HUD {
             get => _dynamicHUDMenuBar.Value;
             set => _dynamicHUDMenuBar.Value = value;
         }
+        private SettingEntry<DynamicHUDMethod> _dynamicHUDWindows;
+        public DynamicHUDMethod DynamicHUDWindows {
+            get => _dynamicHUDWindows.Value;
+            set => _dynamicHUDWindows.Value = value;
+        }
+        private SettingEntry<DynamicHUDMethod> _dynamicHUDLoading;
+        public DynamicHUDMethod DynamicHUDLoading {
+            get => _dynamicHUDLoading.Value;
+            set => _dynamicHUDLoading.Value = value;
+        }
 
         public OverlaySettingsTab SettingsTab { get; private set; }
 
@@ -138,8 +148,12 @@ namespace Blish_HUD {
 
         private void DefineDynamicHUDSettings(SettingCollection settings) {
             _dynamicHUDMenuBar = settings.DefineSetting("DynamicHUDMenuBar", DynamicHUDMethod.AlwaysShow, () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName, () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
+            _dynamicHUDWindows = settings.DefineSetting("DynamicHUDWindows", DynamicHUDMethod.AlwaysShow, () => Strings.GameServices.OverlayService.Setting_DynamicHUDWindows_DisplayName, () => Strings.GameServices.OverlayService.Setting_DynamicHUDWindows_Description);
+            _dynamicHUDLoading = settings.DefineSetting("DynamicHUDLoading", DynamicHUDMethod.AlwaysShow, () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_DisplayName, () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_Description);
 
             _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
+            _dynamicHUDWindows.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
+            _dynamicHUDLoading.SetExcluded(DynamicHUDMethod.ShowPeaceful, DynamicHUDMethod.ShowInCombat);
         }
 
         private void ApplyInitialSettings() {
