@@ -112,17 +112,17 @@ namespace Glide
 				
 				if (time == 0 && timesRepeated == 0 && begin != null)
 					begin();
-
-				time += elapsed;
-				float setTimeTo = time;
-				float t = time / Duration;
+                
 				bool doComplete = false;
-				
+                
+                float t;
+                time += elapsed;
 				if (time >= Duration)
 				{
+                    t = 1f;
 					if (repeatCount != 0)
 					{
-						setTimeTo = 0;
+						time = 0;
 						Delay = repeatDelay;
 						timesRepeated++;
 						
@@ -138,11 +138,14 @@ namespace Glide
 					else
 					{
 						time = Duration;
-						t = 1;
 	                    Remover.Remove(this);
 	                    doComplete = true;
 					}
 				}
+                else
+                {
+                    t = time / Duration;
+                }
 				
 				if (ease != null)
 					t = ease(t);
