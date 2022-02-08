@@ -149,6 +149,10 @@ namespace Blish_HUD.Input {
             /* NOOP */
         }
 
+        public void UnsetActiveControl() {
+            this.ActiveControl = null;
+        }
+
         #region Events
 
         public event EventHandler<MouseEventArgs> MouseMoved;

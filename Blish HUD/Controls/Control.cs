@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
@@ -140,6 +142,24 @@ namespace Blish_HUD.Controls {
         }
 
         private static void OnActiveControlChanged(ControlActivatedEventArgs e) {
+            ActiveControlChanged?.Invoke(null, e);
+        }
+
+        public static event EventHandler<ControlActivatedEventArgs> FocusedControlChanged;
+
+        private static Control _focusedControl;
+        public static Control FocusedControl {
+            get => _activeControl;
+            set {
+                if (_activeControl == value) return;
+
+                _activeControl = value;
+
+                OnFocusedControlChanged(new ControlActivatedEventArgs(_focusedControl));
+            }
+        }
+
+        private static void OnFocusedControlChanged(ControlActivatedEventArgs e) {
             ActiveControlChanged?.Invoke(null, e);
         }
 
@@ -400,6 +420,12 @@ namespace Blish_HUD.Controls {
             get => _effectInFront;
             set => SetProperty(ref _effectInFront, value);
         }
+
+        public virtual void UnsetFocus() {
+            FocusedControl = null;
+        }
+
+        public virtual bool GetFocusState() { return false; }
 
         /// <summary>
         /// The bounds of the control, relative to the parent control.
@@ -814,6 +840,15 @@ namespace Blish_HUD.Controls {
                 }
 
                 _disposedValue = true;
+            }
+        }
+
+        public IEnumerable<Control> GetAncestors() {
+            var current = this.Parent;
+
+            while (current != null) {
+                yield return current;
+                current = current.Parent;
             }
         }
 

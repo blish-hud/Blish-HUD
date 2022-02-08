@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +54,17 @@ namespace Blish_HUD.Input {
         /// </summary>
         public ModifierKeys ActiveModifiers { get; private set; }
 
+        public Control FocusedControl {
+            get => _focusedControl;
+            set {
+                _focusedControl = value;
+
+                Control.FocusedControl = value;
+            }
+        }
+
+        private Control _focusedControl;
+
         private readonly ConcurrentQueue<KeyboardEventArgs> _inputBuffer = new ConcurrentQueue<KeyboardEventArgs>();
 
         private readonly List<Keys> _keysDown = new List<Keys>();
@@ -87,6 +98,23 @@ namespace Blish_HUD.Input {
         internal KeyboardHandler() { }
 
         public void Update() {
+            if (GameService.Input.Mouse.ActiveControl != null) {
+                foreach (var ancestor in GameService.Input.Mouse.ActiveControl.GetAncestors()) {
+                    if (ancestor.Visible == false) {
+                        GameService.Input.Mouse.ActiveControl.UnsetFocus();
+                        GameService.Input.Mouse.UnsetActiveControl();
+                    }
+                }
+            }
+
+            if (FocusedControl != null) {
+                foreach (var ancestor in FocusedControl.GetAncestors()) {
+                    if (ancestor.Visible == false) {
+                        FocusedControl.UnsetFocus();
+                    }
+                }
+            }
+
             while (_inputBuffer.TryDequeue(out KeyboardEventArgs keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
                     // Avoid firing on held keys
@@ -172,22 +200,31 @@ namespace Blish_HUD.Input {
 
             if (GameService.Overlay.InterfaceHidden) return false;
 
-            // Handle the escape key, which should close the active window or top level context menu (if any)
-            if (key == Keys.Escape && GameService.Overlay.CloseWindowOnEscape.Value) {
-                var activeContextMenu = GameService.Graphics.SpriteScreen.Children
-                   .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
-
-                if (activeContextMenu != null) { 
-                    // If we found an active context menu item, close it
-                    activeContextMenu.Hide();
+            // Handle the escape key
+            if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown) {
+                // Loose focus on input fields
+                if (FocusedControl != null) {
+                    FocusedControl.UnsetFocus();
                     return true;
-                } else {
-                    // If we found an active window, close it
-                    var activeWindow = WindowBase2.ActiveWindow;
+                }
 
-                    if (activeWindow != null && activeWindow.CanClose) {
-                        activeWindow.Hide();
+                // Close the active window or top level context menu (if any) if enabled in settings
+                if (GameService.Overlay.CloseWindowOnEscape.Value) {
+                    var activeContextMenu = GameService.Graphics.SpriteScreen.Children
+                       .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
+
+                    if (activeContextMenu != null) {
+                        // If we found an active context menu item, close it
+                        activeContextMenu.Hide();
                         return true;
+                    } else {
+                        // If we found an active window, close it
+                        var activeWindow = WindowBase2.ActiveWindow;
+
+                        if (activeWindow != null && activeWindow.CanClose) {
+                            activeWindow.Hide();
+                            return true;
+                        }
                     }
                 }
             }
