@@ -132,6 +132,11 @@ namespace Blish_HUD {
                                                               () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
 
+            this.InteractKey =         settings.DefineSetting(nameof(this.InteractKey),
+                                                              new KeyBinding(Keys.F),
+                                                              () => Strings.GameServices.OverlayService.Setting_InteractKey_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_InteractKey_Description);
+
             this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),
                                                               new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H),
                                                               () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,
