@@ -193,4 +193,34 @@ press "Register".</value>
   <data name="TokenStatus_FailedToLoad" xml:space="preserve">
     <value>Failed to load token.</value>
   </data>
+  <data name="TokenRegion_NorthAmerica" xml:space="preserve">
+    <value>US / North America</value>
+  </data>
+  <data name="TokenRegion_Europe" xml:space="preserve">
+    <value>Europe</value>
+  </data>
+  <data name="TokenRegion_France" xml:space="preserve">
+    <value>France</value>
+  </data>
+  <data name="TokenRegion_Germany" xml:space="preserve">
+    <value>Germany</value>
+  </data>
+  <data name="TokenRegion_Spain" xml:space="preserve">
+    <value>Spain</value>
+  </data>
+  <data name="TokenLoading_TokenInfo" xml:space="preserve">
+    <value>Token Info</value>
+  </data>
+  <data name="TokenLoading_AccountDetails" xml:space="preserve">
+    <value>Account Details</value>
+  </data>
+  <data name="TokenLoading_Characters" xml:space="preserve">
+    <value>Characters</value>
+  </data>
+  <data name="TokenLoading_Status" xml:space="preserve">
+    <value>Loading {0}...</value>
+  </data>
+  <data name="TokenLoading_HandlingResponse" xml:space="preserve">
+    <value>Handling response from API...</value>
+  </data>
 </root>

@@ -1,8 +1,10 @@
 ﻿using Blish_HUD.DebugHelper.Services;
 using EntryPoint;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -23,8 +25,6 @@ namespace Blish_HUD {
         public static SemVer.Version OverlayVersion { get; } = new SemVer.Version(typeof(BlishHud).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion, true);
 
         internal static bool RestartOnExit { get; set; } = false;
-
-        private static string[] _startupArgs;
 
         private static void EnableLogging() {
             // Make sure logging and logging services are available as soon as possible
@@ -66,7 +66,6 @@ namespace Blish_HUD {
             HandleArcDps11Contingency();
             HandleMinTls12Contingency();
 
-            _startupArgs = args;
             var settings = Cli.Parse<ApplicationSettings>(args);
 
             if (settings.MainProcessId.HasValue) {
@@ -118,9 +117,12 @@ namespace Blish_HUD {
                     }
 
                     if (RestartOnExit) {
+                        // REF: https://referencesource.microsoft.com/#System.Windows.Forms/winforms/Managed/System/WinForms/Application.cs,1447
+                        var arguments = Environment.GetCommandLineArgs().Skip(1).Select(arg => $"\"{arg}\"");
+
                         var currentStartInfo = Process.GetCurrentProcess().StartInfo;
                         currentStartInfo.FileName  = Application.ExecutablePath;
-                        currentStartInfo.Arguments = string.Join(" ", _startupArgs);
+                        currentStartInfo.Arguments = string.Join(" ", arguments);
 
                         Process.Start(currentStartInfo);
                     }

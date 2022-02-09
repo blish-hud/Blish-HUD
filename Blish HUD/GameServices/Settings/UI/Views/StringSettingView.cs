@@ -77,7 +77,9 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void Unload() {
-            _stringTextbox.InputFocusChanged -= StringTextboxOnInputFocusChanged;
+            if (_stringTextbox != null) {
+                _stringTextbox.InputFocusChanged -= StringTextboxOnInputFocusChanged;
+            }
         }
 
     }

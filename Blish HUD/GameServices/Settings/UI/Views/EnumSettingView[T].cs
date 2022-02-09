@@ -100,7 +100,9 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void Unload() {
-            _enumDropdown.ValueChanged -= EnumDropdownOnValueChanged;
+            if (_enumDropdown != null) {
+                _enumDropdown.ValueChanged -= EnumDropdownOnValueChanged;
+            }
         }
 
     }

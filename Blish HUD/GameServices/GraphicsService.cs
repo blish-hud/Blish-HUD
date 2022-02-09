@@ -254,6 +254,16 @@ namespace Blish_HUD {
                                                                      () => Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_Vsync_Description);
 
+            if (_frameLimiterSetting.Value == FramerateMethod.SyncWithGame || _frameLimiterSetting.Value == FramerateMethod.Custom) {
+                // SyncWithGame is no longer supported.  It causes more problems than it solves.
+                // We revert to the default settings for both the framerate limiter and vsync.
+
+                // Likewise, Custom framerates are only possible via launch option currently.
+                // Old versions could enable it, so this fixes that.
+                _frameLimiterSetting.Value = FramerateMethod.LockedTo90Fps;
+                _enableVsyncSetting.Value  = true;
+            }
+
             _smoothCharacterPositionSetting = settings.DefineSetting("EnableCharacterPositionBuffer",
                                                                      true,
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
@@ -276,7 +286,7 @@ namespace Blish_HUD {
             EnableVsyncChanged(_enableVsyncSetting, new ValueChangedEventArgs<bool>(_enableVsyncSetting.Value, _enableVsyncSetting.Value));
             FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
 
-            _frameLimiterSetting.SetExcluded(FramerateMethod.Custom);
+            _frameLimiterSetting.SetExcluded(FramerateMethod.Custom, FramerateMethod.SyncWithGame);
 
             if (ApplicationSettings.Instance.TargetFramerate > 0) {
                 // Disable frame limiter setting and update description - user has manually specified via launch arg

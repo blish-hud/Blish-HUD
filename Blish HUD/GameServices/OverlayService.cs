@@ -48,6 +48,7 @@ namespace Blish_HUD {
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
+        internal SettingEntry<KeyBinding> InteractKey { get; private set; }
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
@@ -159,6 +160,8 @@ namespace Blish_HUD {
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
 
+            this.InteractKey.Value.Enabled = true;
+
             this.HideAllInterface.Value.Enabled = true;
             this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
 
@@ -167,6 +170,8 @@ namespace Blish_HUD {
 
         private void ApplyInitialSettings() {
             UserLocaleOnSettingChanged(this.UserLocale, new ValueChangedEventArgs<Locale>(GetGw2LocaleFromCurrentUICulture(), this.UserLocale.Value));
+
+            GameIntegration.WinForms.SetShowInTaskbar(GameIntegration.Gw2Instance.Gw2IsRunning && this.ShowInTaskbar.Value);
         }
 
         private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {

@@ -155,4 +155,106 @@ Guild Wars: Factions, Guild Wars: Nightfall, Guild Wars: Eye of the North, Guild
 Thorns et tous les logos et visuels associés sont des marques ou des marques déposées de NCSOFT
 Corporation. Toutes les autres marques déposées sont la propriété de leurs propriétaires respectifs.</value>
   </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Connected" xml:space="preserve">
+    <value>Connecté à ArcDPS via le plugin bridge.</value>
+  </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Disconnected" xml:space="preserve">
+    <value>Aucune connection reçu de bridge.
+
+Il n'est peut-être pas installé.</value>
+  </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Name" xml:space="preserve">
+    <value>ArcDPS Bridge</value>
+  </data>
+  <data name="ConnectionStatus_Mumble_Connected" xml:space="preserve">
+    <value>Connecté à MumbleLink avec le nom '{0}'.</value>
+  </data>
+  <data name="ConnectionStatus_Mumble_Disconnected" xml:space="preserve">
+    <value>Impossible de se connecter à MumbleLink avec le nom '{0}'.
+
+Vérifiez que les arguments de lancements 
+ont été utilisés pour lancer à la fois 
+Guild Wars 2 et Blish HUD.</value>
+  </data>
+  <data name="ConnectionStatus_Mumble_Name" xml:space="preserve">
+    <value>MumbleLink</value>
+  </data>
+  <data name="SelfUpdate_ChangesInVersion" xml:space="preserve">
+    <value>Changements de la v[0}</value>
+  </data>
+  <data name="SelfUpdate_NewUpdateAvailable" xml:space="preserve">
+    <value>Nouvelle version disponible</value>
+  </data>
+  <data name="SelfUpdate_NoPendingUpdates" xml:space="preserve">
+    <value>Pas de mise à jour en attente</value>
+  </data>
+  <data name="SelfUpdate_PendingUpdatesQueryFailed" xml:space="preserve">
+    <value>Echec de la vérification des mises à jour</value>
+  </data>
+  <data name="SelfUpdate_Progress_DownloadingPrereleaseArchive" xml:space="preserve">
+    <value>Téléchargement de la prérelease v{0}...</value>
+  </data>
+  <data name="SelfUpdate_Progress_DownloadingReleaseArchive" xml:space="preserve">
+    <value>Téléchargement de la version v{0}...</value>
+  </data>
+  <data name="SelfUpdate_Progress_ExtractingExecutable" xml:space="preserve">
+    <value>Extraction de l'executable...</value>
+  </data>
+  <data name="SelfUpdate_Progress_Restarting" xml:space="preserve">
+    <value>Redémarrage...</value>
+  </data>
+  <data name="SelfUpdate_Progress_RestartingIn" xml:space="preserve">
+    <value>Redémarrage dans [0}...</value>
+  </data>
+  <data name="SelfUpdate_Progress_VerifyingChecksum" xml:space="preserve">
+    <value>Vérification de la somme de contrôle...</value>
+  </data>
+  <data name="SelfUpdate_UpdateToPrereleaseMenuStripText" xml:space="preserve">
+    <value>Mettre à jour vers la prérelease v{0}</value>
+  </data>
+  <data name="SelfUpdate_UpdateToReleaseMenuStripText" xml:space="preserve">
+    <value>Mettre à jour vers la version v{0}</value>
+  </data>
+  <data name="Setting_AudioDevice_Description" xml:space="preserve">
+    <value>Détermine la sortie audio utilisée par Blish HUD. Gw2OutputDevice s'ajuste lui même à ce que GW2 utilise.</value>
+  </data>
+  <data name="Setting_AudioDevice_DisplayName" xml:space="preserve">
+    <value>Système de sortie audio</value>
+  </data>
+  <data name="Setting_CloseWindowOnEscape_Description" xml:space="preserve">
+    <value>Ferme la fenêtre Blish lors d'un appui sur la touche echap alors que celle-ci est ciblée.</value>
+  </data>
+  <data name="Setting_CloseWindowOnEscape_DisplayName" xml:space="preserve">
+    <value>Fermer la fenêtre sur Echap</value>
+  </data>
+  <data name="Setting_DynamicHUDMenuBar_Description" xml:space="preserve">
+    <value>Contrôle la visibilité du menu situé en haut à gauche de l'écran.</value>
+  </data>
+  <data name="Setting_DynamicHUDMenuBar_DisplayName" xml:space="preserve">
+    <value>Menu HUD dynamique</value>
+  </data>
+  <data name="Setting_HideInterfaceKeybind_Description" xml:space="preserve">
+    <value>Cache toute l'interface Blish pour de merveilleuses captures d'écrans</value>
+  </data>
+  <data name="Setting_HideInterfaceKeybind_DisplayName" xml:space="preserve">
+    <value>Cacher l'interface</value>
+  </data>
+  <data name="Setting_ToggleBlishWindowKeybind_Description" xml:space="preserve">
+    <value>Définir la touche à appuyer pour activer la fenêtre principale de Blish HUD</value>
+  </data>
+  <data name="Setting_ToggleBlishWindowKeybind_DisplayName" xml:space="preserve">
+    <value>Activer la fenêtre Blish HUD</value>
+  </data>
+  <data name="Setting_UseGameVolume_Description" xml:space="preserve">
+    <value>Lorsque cette option est activée, Blish HUD ajuste son volume au volume du jeu.</value>
+  </data>
+  <data name="Setting_UseGameVolume_DisplayName" xml:space="preserve">
+    <value>Utiliser le volume du jeu</value>
+  </data>
+  <data name="Setting_Volume_Description" xml:space="preserve">
+    <value>Détermine le volume de Blish HUD. N'a d'effet que lorsque 'Utiliser le volume du jeu' est désactivé.</value>
+  </data>
+  <data name="Setting_Volume_DisplayName" xml:space="preserve">
+    <value>Volume</value>
+  </data>
 </root>

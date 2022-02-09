@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Blish_HUD.Contexts;
 using Microsoft.Xna.Framework;
-using SharpDX.WIC;
 
 namespace Blish_HUD {
     public class ContextsService : GameService {
@@ -76,13 +74,32 @@ namespace Blish_HUD {
         /// <typeparam name="TContext">The type of the <see cref="Context"/> to retrieve.</typeparam>
         /// <returns>
         /// The registered <see cref="Context"/> of type <c>TContext</c> or
-        /// <c>null</c> if not <see cref="Context"/> of that type is
+        /// <c>null</c> if no <see cref="Context"/> of that type is
         /// currently registered.
         /// </returns>
         public TContext GetContext<TContext>() where TContext : Context {
             if (!_registeredContexts.ContainsKey(typeof(TContext))) return null;
 
             return _registeredContexts[typeof(TContext)] as TContext;
+        }
+
+        /// <summary>
+        /// Gets a registered <see cref="Context"/> by interface or base class.
+        /// </summary>
+        /// <typeparam name="TBase">The type the <see cref="Context"/> implements.</typeparam>
+        /// <returns>
+        ///The registered <see cref="Context"/> that implments <c>TBase</c> or
+        /// <c>null</c> if no <see cref="Context"/> that implements that type is
+        /// currently registered.
+        /// </returns>
+        public TBase GetContextImplementing<TBase>() {
+            foreach (var context in _registeredContexts) {
+                if (context.Value is TBase baseContext) {
+                    return baseContext;
+                }
+            }
+
+            return default;
         }
 
         /// <inheritdoc />

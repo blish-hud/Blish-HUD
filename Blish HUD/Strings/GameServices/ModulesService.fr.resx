@@ -202,7 +202,7 @@
     <value>Nécessite {0}</value>
   </data>
   <data name="ModuleSettings_ShownWhenEnabled" xml:space="preserve">
-    <value>Les paramètres appareîtront quand le module sera activé</value>
+    <value>Les paramètres apparaîtront quand le module sera activé</value>
   </data>
   <data name="ModuleOption_ClearSettings" xml:space="preserve">
     <value>Effacer les paramètres</value>
@@ -222,5 +222,44 @@ Téléchargez des modules et placez-les dans le dossier modules.</value>
   </data>
   <data name="NoModules_OpenFolder" xml:space="preserve">
     <value>Ouvrir le dossier des modules</value>
+  </data>
+  <data name="ModuleOption_DeleteModule" xml:space="preserve">
+    <value>Supprimer le module</value>
+  </data>
+  <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
+    <value>La version du module est trop ancienne</value>
+  </data>
+  <data name="PkgInstall_Progress_Installing" xml:space="preserve">
+    <value>Installation...</value>
+  </data>
+  <data name="PkgInstall_Progress_Upgrading" xml:space="preserve">
+    <value>Mise à jour...</value>
+  </data>
+  <data name="PkgManagement_CurrentVersion" xml:space="preserve">
+    <value>Version actuelle</value>
+  </data>
+  <data name="PkgManagement_Downgrade" xml:space="preserve">
+    <value>Dégrader</value>
+  </data>
+  <data name="PkgManagement_Install" xml:space="preserve">
+    <value>Installer</value>
+  </data>
+  <data name="PkgManagement_ModulesNeedRestart" xml:space="preserve">
+    <value>Blish HUD nécessite un redémarrage avant que certains modules puissent être ré-activés.</value>
+  </data>
+  <data name="PkgManagement_Progress_CheckingRepository" xml:space="preserve">
+    <value>Vérification du dépot...</value>
+  </data>
+  <data name="PkgManagement_Progress_FailedToGetReleases" xml:space="preserve">
+    <value>Echec de la récupération de la source du dépot de paquets.</value>
+  </data>
+  <data name="PkgManagement_Progress_FailedToReadOrParseRepoManifest" xml:space="preserve">
+    <value>Echec de la récupération ou de l'analyse du dernier manifest du dépôt.</value>
+  </data>
+  <data name="PkgManagement_Progress_GettingModuleList" xml:space="preserve">
+    <value>Récupération de la liste des modules...</value>
+  </data>
+  <data name="PkgManagement_Update" xml:space="preserve">
+    <value>Mise à jour</value>
   </data>
 </root>

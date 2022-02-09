@@ -168,7 +168,14 @@ namespace Blish_HUD.GameIntegration {
 
             _gw2AudioDevices.Clear();
             foreach (var device in _deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active)) {
-                var sessionEnumerator = device.AudioSessionManager.Sessions;
+                SessionCollection sessionEnumerator = null;
+
+                try {
+                    sessionEnumerator = device.AudioSessionManager.Sessions;
+                } catch (COMException ex) when ((uint)ex.HResult == 0x88890008) {
+                    // Skip this audio device.  Something about it is unsupported.
+                    continue;
+                }
 
                 bool shouldDispose = true;
                 for (int i = 0; i < sessionEnumerator.Count; i++) {

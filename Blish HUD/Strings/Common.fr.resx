@@ -144,4 +144,16 @@
   <data name="Action_Restart" xml:space="preserve">
     <value>Redémarrer {0}</value>
   </data>
+  <data name="Action_Retry" xml:space="preserve">
+    <value>Réessayer</value>
+  </data>
+  <data name="Action_Update" xml:space="preserve">
+    <value>Mettre à jour</value>
+  </data>
+  <data name="Action_UpdateLater" xml:space="preserve">
+    <value>Mettre à jour plus tard</value>
+  </data>
+  <data name="PlaceholderSearch" xml:space="preserve">
+    <value>Rechercher...</value>
+  </data>
 </root>

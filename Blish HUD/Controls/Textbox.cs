@@ -26,6 +26,18 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<EventArgs> EnterPressed;
 
+        private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
+        public HorizontalAlignment HorizontalAlignment {
+            get => _horizontalAlignment;
+            set => SetProperty(ref _horizontalAlignment, value);
+        }
+
+        private bool _hideBackground;
+        public bool HideBackground {
+            get => _hideBackground;
+            set => SetProperty(ref _hideBackground, value);
+        }
+
         protected virtual void OnEnterPressed(EventArgs e) {
             this.Focused = false;
 
@@ -94,6 +106,17 @@ namespace Blish_HUD.Controls {
             float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
             float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
 
+            switch (this.HorizontalAlignment)
+            {
+                case HorizontalAlignment.Center:
+                    highlightLeftOffset += (this.Width - highlightWidth) / 2f - TEXT_HORIZONTALPADDING;
+                    break;
+                case HorizontalAlignment.Right:
+                    highlightLeftOffset += this.Width - highlightWidth - TEXT_HORIZONTALPADDING * 2;
+                    break;
+                default: break;
+            }
+
             return new Rectangle(_textRegion.Left + (int)highlightLeftOffset - 1,
                                  _textRegion.Y,
                                  (int)highlightWidth,
@@ -102,6 +125,16 @@ namespace Blish_HUD.Controls {
 
         private Rectangle CalculateCursorRegion() {
             float textOffset = MeasureStringWidth(_text.Substring(0, _cursorIndex));
+
+            switch (this.HorizontalAlignment) {
+                case HorizontalAlignment.Center:
+                    textOffset += (this.Width - MeasureStringWidth(_text)) / 2f - TEXT_HORIZONTALPADDING;
+                    break;
+                case HorizontalAlignment.Right:
+                    textOffset += this.Width - MeasureStringWidth(_text) - TEXT_HORIZONTALPADDING * 2;
+                    break;
+                default: break;
+            }
 
             return new Rectangle(_textRegion.X + (int)textOffset - 2,
                                  _textRegion.Y + 2,
@@ -129,16 +162,22 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureTextbox,
-                                   new Rectangle(Point.Zero, _size - new Point(5, 0)),
-                                   new Rectangle(0, 0, Math.Min(_textureTextbox.Width - 5, _size.X - 5), _textureTextbox.Height));
+            if (!this.HideBackground) {
+                spriteBatch.DrawOnCtrl(
+                                       this,
+                                       _textureTextbox,
+                                       new Rectangle(Point.Zero, _size - new Point(5, 0)),
+                                       new Rectangle(0,          0, Math.Min(_textureTextbox.Width - 5, _size.X - 5), _textureTextbox.Height)
+                                      );
 
-            spriteBatch.DrawOnCtrl(this, _textureTextbox,
-                                   new Rectangle(_size.X - 5, 0, 5, _size.Y),
-                                   new Rectangle(_textureTextbox.Width - 5, 0, 5, _textureTextbox.Height));
+                spriteBatch.DrawOnCtrl(
+                                       this, _textureTextbox,
+                                       new Rectangle(_size.X               - 5, 0, 5, _size.Y),
+                                       new Rectangle(_textureTextbox.Width - 5, 0, 5, _textureTextbox.Height)
+                                      );
+            }
 
-            PaintText(spriteBatch, _textRegion);
+            PaintText(spriteBatch, _textRegion, this.HorizontalAlignment);
 
             if (_highlightRegion.IsEmpty) {
                 PaintCursor(spriteBatch, _cursorRegion);
