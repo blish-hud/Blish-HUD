@@ -367,6 +367,25 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Used for interacting with the environment.
+        ///For the best experience set this to the same key as in the game..
+        /// </summary>
+        internal static string Setting_InteractKey_Description {
+            get {
+                return ResourceManager.GetString("Setting_InteractKey_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interact.
+        /// </summary>
+        internal static string Setting_InteractKey_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_InteractKey_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When enabled, Blish HUD will be shown in the taskbar while running..
         /// </summary>
         internal static string Setting_ShowInTaskbar_Description {
