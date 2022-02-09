@@ -339,7 +339,7 @@ namespace Blish_HUD {
                     try {
                         module.ModuleInstance.DoUpdate(gameTime);
                     } catch (Exception ex) {
-                        Logger.Error(ex, "Module {module} threw an exception while updating.", module.Manifest.GetDetailedName());
+                        Logger.GetLogger(module.GetType()).Error(ex, "Module {module} threw an exception while updating.", module.Manifest.GetDetailedName());
 
                         if (ApplicationSettings.Instance.DebugEnabled) {
                             // To assist in debugging modules
@@ -360,7 +360,7 @@ namespace Blish_HUD {
                         Logger.Info("Unloading module {module}.", module.Manifest.GetDetailedName());
                         module.ModuleInstance.Dispose();
                     } catch (Exception ex) {
-                        Logger.Error(ex, "Module '{module} threw an exception while unloading.", module.Manifest.GetDetailedName());
+                        Logger.GetLogger(module.GetType()).Error(ex, "Module '{module} threw an exception while unloading.", module.Manifest.GetDetailedName());
 
                         if (ApplicationSettings.Instance.DebugEnabled) {
                             // To assist in debugging modules
