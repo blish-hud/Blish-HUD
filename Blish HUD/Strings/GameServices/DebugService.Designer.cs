@@ -79,7 +79,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show Additional Debug Settings.
+        ///   Looks up a localized string similar to Show Additional Debug Data.
         /// </summary>
         internal static string Setting_AdditionalDebugDisplay_DisplayName {
             get {

@@ -124,7 +124,7 @@
     <value>If enabled additional debug information will be displayed</value>
   </data>
   <data name="Setting_AdditionalDebugDisplay_DisplayName" xml:space="preserve">
-    <value>Show Additional Debug Settings</value>
+    <value>Show Additional Debug Data</value>
   </data>
   <data name="Setting_DebugLogging_Description" xml:space="preserve">
     <value>If enabled Blish HUD will create more verbose logfiles</value>
