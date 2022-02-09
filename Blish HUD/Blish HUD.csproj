@@ -105,6 +105,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ContextsService.resx</DependentUpon>
     </Compile>
+    <Compile Update="Strings\GameServices\DebugService.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DebugService.resx</DependentUpon>
+    </Compile>
     <Compile Update="Strings\GameServices\Debug\ContingencyMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -176,6 +181,10 @@
     <EmbeddedResource Update="Strings\GameServices\Contexts\Festivals.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Festivals.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Strings\GameServices\DebugService.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DebugService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Strings\GameServices\Debug\ContingencyMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>

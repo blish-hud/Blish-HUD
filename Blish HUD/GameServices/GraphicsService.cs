@@ -244,15 +244,15 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _frameLimiterSetting = settings.DefineSetting("FramerateLimiter",
-                                                          FramerateMethod.LockedTo90Fps,
-                                                          () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
-                                                          () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
+            _frameLimiterSetting =            settings.DefineSetting("FramerateLimiter",
+                                                                     FramerateMethod.LockedTo90Fps,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
 
-            _enableVsyncSetting = settings.DefineSetting("EnableVsync",
-                                                         true,
-                                                         () => Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName,
-                                                         () => Strings.GameServices.GraphicsService.Setting_Vsync_Description);
+            _enableVsyncSetting =             settings.DefineSetting("EnableVsync",
+                                                                     true,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_Vsync_Description);
 
             if (_frameLimiterSetting.Value == FramerateMethod.SyncWithGame || _frameLimiterSetting.Value == FramerateMethod.Custom) {
                 // SyncWithGame is no longer supported.  It causes more problems than it solves.
@@ -269,16 +269,15 @@ namespace Blish_HUD {
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
 
-            _dpiScalingMethodSetting = settings.DefineSetting(nameof(DpiScalingMethod),
-                                                        DpiMethod.SyncWithGame,
-                                                        () => Strings.GameServices.GraphicsService.Setting_DPIScaling_DisplayName,
-                                                        () => Strings.GameServices.GraphicsService.Setting_DPIScaling_Description);
+            _dpiScalingMethodSetting =        settings.DefineSetting(nameof(DpiScalingMethod),
+                                                                     DpiMethod.SyncWithGame,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_DPIScaling_DisplayName,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_DPIScaling_Description);
 
-            _UISizeSetting = settings.DefineSetting(nameof(UIScalingMethod),
-                                                        ManualUISize.SyncWithGame,
-                                                        () => Strings.GameServices.GraphicsService.Setting_UIScaling_DisplayName,
-                                                        () => Strings.GameServices.GraphicsService.Setting_UIScaling_Description);
-
+            _UISizeSetting =                  settings.DefineSetting(nameof(UIScalingMethod),
+                                                                     ManualUISize.SyncWithGame,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_UIScaling_DisplayName,
+                                                                     () => Strings.GameServices.GraphicsService.Setting_UIScaling_Description);
 
 
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
