@@ -180,4 +180,83 @@ ihrer jeweiligen Besitzer.</value>
   <data name="Setting_ToggleBlishWindowKeybind_DisplayName" xml:space="preserve">
     <value>Blish HUD ein- und ausblenden</value>
   </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Connected" xml:space="preserve">
+    <value>Mit ArcDPS Plugin verbunden.</value>
+  </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Disconnected" xml:space="preserve">
+    <value>Keine Verbindung mit ArcDPS Plugin möglich.</value>
+  </data>
+  <data name="ConnectionStatus_ArcDPSBridge_Name" xml:space="preserve">
+    <value>ArcDPS Bridge</value>
+  </data>
+  <data name="ConnectionStatus_Mumble_Connected" xml:space="preserve">
+    <value>Mit MumbleLink verbunden unter '{0}'.</value>
+  </data>
+  <data name="ConnectionStatus_Mumble_Disconnected" xml:space="preserve">
+    <value>Keine Verbindung mit MumbleLink unter '{0}' möglich.</value>
+  </data>
+  <data name="ConnectionStatus_Mumble_Name" xml:space="preserve">
+    <value>MumbleLink</value>
+  </data>
+  <data name="SelfUpdate_ChangesInVersion" xml:space="preserve">
+    <value>Änderungen in v{0}</value>
+  </data>
+  <data name="SelfUpdate_NewUpdateAvailable" xml:space="preserve">
+    <value>Neue Version verfügbar</value>
+  </data>
+  <data name="SelfUpdate_NoPendingUpdates" xml:space="preserve">
+    <value>Keine Aktualisierungen ausstehend</value>
+  </data>
+  <data name="SelfUpdate_PendingUpdatesQueryFailed" xml:space="preserve">
+    <value>Konnte keine Verbindung mit dem Update Server herstellen</value>
+  </data>
+  <data name="SelfUpdate_Progress_DownloadingPrereleaseArchive" xml:space="preserve">
+    <value>Downloade Vorschauversion v{0}...</value>
+  </data>
+  <data name="SelfUpdate_Progress_DownloadingReleaseArchive" xml:space="preserve">
+    <value>Downloade Version v{0}...</value>
+  </data>
+  <data name="SelfUpdate_Progress_ExtractingExecutable" xml:space="preserve">
+    <value>Entpacke neues Programm...</value>
+  </data>
+  <data name="SelfUpdate_Progress_Restarting" xml:space="preserve">
+    <value>Starte neu...</value>
+  </data>
+  <data name="SelfUpdate_Progress_RestartingIn" xml:space="preserve">
+    <value>Starte neu in {0}...</value>
+  </data>
+  <data name="SelfUpdate_Progress_VerifyingChecksum" xml:space="preserve">
+    <value>Kontrolle der Prüfsumme...</value>
+  </data>
+  <data name="SelfUpdate_UpdateToPrereleaseMenuStripText" xml:space="preserve">
+    <value>Update auf Vorschauversion v{0}</value>
+  </data>
+  <data name="SelfUpdate_UpdateToReleaseMenuStripText" xml:space="preserve">
+    <value>Update auf Version v{0}</value>
+  </data>
+  <data name="Setting_CloseWindowOnEscape_Description" xml:space="preserve">
+    <value>Schließt Blish HUD Fenster mit der Escape Taste</value>
+  </data>
+  <data name="Setting_CloseWindowOnEscape_DisplayName" xml:space="preserve">
+    <value>Fenster mit Escape schließen</value>
+  </data>
+  <data name="Setting_DynamicHUDMenuBar_Description" xml:space="preserve">
+    <value>Ändert die Sichtbarkeit des Menübands oben links</value>
+  </data>
+  <data name="Setting_DynamicHUDMenuBar_DisplayName" xml:space="preserve">
+    <value>Dynamisches HUD Menüband</value>
+  </data>
+  <data name="Setting_HideInterfaceKeybind_Description" xml:space="preserve">
+    <value>Versteckt das gesamte Interface von Blish HUD für perfekte Bildschirmfotos</value>
+  </data>
+  <data name="Setting_HideInterfaceKeybind_DisplayName" xml:space="preserve">
+    <value>Interface verstecken</value>
+  </data>
+  <data name="Setting_InteractKey_Description" xml:space="preserve">
+    <value>Taste zum Interagieren mit der Spielwelt.
+Für die beste Erfahrung auf die selbe Taste wie im Spiel setzen.</value>
+  </data>
+  <data name="Setting_InteractKey_DisplayName" xml:space="preserve">
+    <value>Interagieren</value>
+  </data>
 </root>
