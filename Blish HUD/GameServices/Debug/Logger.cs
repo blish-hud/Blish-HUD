@@ -1,16 +1,23 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using NLog;
 
 namespace Blish_HUD {
     public class Logger {
 
+        #region Static
+
+        private static readonly ConcurrentDictionary<Type, Logger> _loggers = new ConcurrentDictionary<Type, Logger>();
+
         public static Logger GetLogger(Type type) {
-            return new Logger(type);
+            return _loggers.GetOrAdd(type, (t) => new Logger(t));
         }
 
         public static Logger GetLogger<T>() {
-            return new Logger(typeof(T));
+            return _loggers.GetOrAdd(typeof(T), (t) => new Logger(t));
         }
+
+        #endregion
 
         private readonly NLog.Logger _internalLogger;
 
