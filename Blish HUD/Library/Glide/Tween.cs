@@ -112,35 +112,33 @@ namespace Glide
                 
                 if (time == 0 && timesRepeated == 0 && begin != null)
                     begin();
-
+                
+                bool doReverse = false;
                 bool doComplete = false;
-
+                
                 float t;
                 time += elapsed;
                 if (time >= Duration)
                 {
-                    t = 1;
                     if (repeatCount != 0)
                     {
-                        time = 0;
+                        time -= Duration;
                         Delay = repeatDelay;
                         timesRepeated++;
-                        
-                        if (repeatCount > 0) {
+                        if (repeatCount > 0)
                             --repeatCount;
-                            repeat?.Invoke();
-                        }
-                            
-                        
+                        repeat?.Invoke();
+                        doReverse = true;
                         if (repeatCount < 0)
                             doComplete = true;
                     }
                     else
                     {
                         time = Duration;
-                        Remover.Remove(this);
                         doComplete = true;
+                        Remover.Remove(this);
                     }
+                    t = 1;
                 }
                 else
                 {
@@ -157,9 +155,8 @@ namespace Glide
                         vars[i].Value = lerpers[i].Interpolate(t, vars[i].Value, behavior);
                 }
                 
-                //	If the timer is zero here, we just restarted.
                 //	If reflect mode is on, flip start to end
-                if (time == 0 && (behavior & MemberLerper.Behavior.Reflect) == MemberLerper.Behavior.Reflect)
+                if (doReverse && (behavior & MemberLerper.Behavior.Reflect) == MemberLerper.Behavior.Reflect)
                     Reverse();
                 
                 if (update != null)
