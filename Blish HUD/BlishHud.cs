@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -40,6 +39,11 @@ namespace Blish_HUD {
         public BlishHud() {
             BlishHud.Instance = this;
 
+            FormHandle = this.Window.Handle;
+            Form = Control.FromHandle(FormHandle).FindForm();
+
+            Form.ShowInTaskbar = true;
+
             this.ActiveGraphicsDeviceManager = new GraphicsDeviceManager(this);
             this.ActiveGraphicsDeviceManager.PreparingDeviceSettings += delegate(object sender, PreparingDeviceSettingsEventArgs args) {
                 args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 4;
@@ -56,16 +60,16 @@ namespace Blish_HUD {
         }
         
         protected override void Initialize() {
-            FormHandle = this.Window.Handle;
-            Form       = Control.FromHandle(FormHandle).FindForm();
+            this.Window.IsBorderless    = true;
+            this.Window.AllowAltF4      = false;
+            this.Form.TransparencyKey   = System.Drawing.Color.Empty;
+            this.Form.BackColor         = System.Drawing.Color.Black;
+            this.Form.AllowTransparency = true;
+            this.Form.TopMost           = true;
+            this.InactiveSleepTime      = TimeSpan.Zero;
 
-            // Avoid the flash the window shows when the application launches
-            Form.BackColor = System.Drawing.Color.Black;
-            Form.Location  = new System.Drawing.Point(-Form.Width * 2, -Form.Height * 2);
-
-            this.Window.IsBorderless = true;
-            this.Window.AllowAltF4   = false;
-            this.InactiveSleepTime   = TimeSpan.Zero;
+            WindowUtil.SetNoActivate(FormHandle, true);
+            WindowUtil.SetTransparentLayered(FormHandle);
 
             // Initialize all game services
             foreach (var service in GameService.All) {

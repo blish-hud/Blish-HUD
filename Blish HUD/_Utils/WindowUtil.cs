@@ -19,6 +19,7 @@ namespace Blish_HUD {
         private const uint WS_EX_CONTROLPARENT = 0x00010000;
         private const uint WS_EX_APPWINDOW     = 0x00040000;
         private const uint WS_EX_LAYERED       = 0x00080000;
+        private const uint WS_EX_NOACTIVATE    = 0x08000000;
 
         private const int GWL_STYLE   = -16;
         private const int GWL_EXSTYLE = -20;
@@ -29,11 +30,15 @@ namespace Blish_HUD {
         private const uint CS_VREDRAW = 0x0001;
         private const uint CS_HREDRAW = 0x0002;
 
+        private const uint LWA_ALPHA    = 0x0002;
+        private const uint LWA_COLORKEY = 0x0001;
+
         private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
 
         private const uint SWP_NOSIZE         = 0x0001;
         private const uint SWP_NOMOVE         = 0x0002;
+        private const uint SWP_NOACTIVATE     = 0x0010;
 
         private const int MINIMIZED_POS = -32000;
 
@@ -59,10 +64,10 @@ namespace Blish_HUD {
         private static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
-        private static extern IntPtr GetWindowLongPtr32(IntPtr hWnd, int nIndex);
+        private static extern uint GetWindowLongPtr32(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
-        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+        private static extern uint GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
@@ -71,10 +76,10 @@ namespace Blish_HUD {
         private static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
-        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, uint dwNewLong);
+        private static extern uint SetWindowLong32(IntPtr hWnd, int nIndex, uint dwNewLong);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
-        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
+        private static extern uint SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
 
         [DllImport("user32.dll")]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
@@ -109,18 +114,18 @@ namespace Blish_HUD {
 
         internal static void SetForegroundWindowEx(IntPtr handle) => SetForegroundWindow(handle);
 
-        private static IntPtr GetWindowLong(IntPtr hWnd, int nIndex) => IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLongPtr32(hWnd, nIndex);
+        private static uint GetWindowLong(IntPtr hWnd, int nIndex) => IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLongPtr32(hWnd, nIndex);
 
-        private static int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong) => IntPtr.Size != 8 ? SetWindowLong32(hWnd, nIndex, dwNewLong) : (int) SetWindowLongPtr64(hWnd, nIndex, new UIntPtr(dwNewLong));
+        private static uint SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong) => IntPtr.Size != 8 ? SetWindowLong32(hWnd, nIndex, dwNewLong) : SetWindowLongPtr64(hWnd, nIndex, new UIntPtr(dwNewLong));
 
-        private static void SetWindowParam(IntPtr winHandle, bool showInTaskbar = false) {
-            uint windowParam = WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_CONTROLPARENT | WS_EX_LAYERED;
+        internal static void SetShowInTaskbar(IntPtr winHandle, bool showInTaskbar) {
+            uint windowParam = GetWindowLong(winHandle, GWL_EXSTYLE);
 
             if (showInTaskbar) {
                 ShowWindow(winHandle, SW_HIDE);
                 windowParam |= WS_EX_APPWINDOW;
             } else {
-                windowParam |= WS_EX_TOOLWINDOW;
+                windowParam &= ~WS_EX_APPWINDOW;
             }
 
             SetWindowLong(winHandle, GWL_EXSTYLE, windowParam);
@@ -130,18 +135,20 @@ namespace Blish_HUD {
             }
         }
 
-        internal static void SetShowInTaskbar(IntPtr winHandle, bool showInTaskbar) {
-            SetWindowParam(winHandle, showInTaskbar);
+        internal static void SetTransparentLayered(IntPtr winHandle) {
+            SetWindowLong(winHandle, GWL_EXSTYLE, GetWindowLong(winHandle, GWL_EXSTYLE) | WS_EX_TRANSPARENT | WS_EX_LAYERED);
         }
 
-        internal static void SetupOverlay(IntPtr winHandle) {
-            SetWindowLong(winHandle, GWL_STYLE, CS_HREDRAW | CS_VREDRAW);
+        internal static void SetNoActivate(IntPtr winHandle, bool noActivate) {
+            uint windowParam = GetWindowLong(winHandle, GWL_EXSTYLE);
 
-            // Let Gw2InstanceIntegration sync behavior with game runtime
-            SetShowInTaskbar(winHandle, false);
+            if (noActivate) {
+                windowParam |= WS_EX_NOACTIVATE;
+            } else {
+                windowParam &= ~WS_EX_NOACTIVATE;
+            }
 
-            SetLayeredWindowAttributes(winHandle, 0, 0,   1);
-            SetLayeredWindowAttributes(winHandle, 0, 255, 2);
+            SetWindowLong(winHandle, GWL_EXSTYLE, windowParam);
         }
 
         public enum OverlayUpdateResponse {
@@ -180,24 +187,38 @@ namespace Blish_HUD {
             var activeWindowHandle = GetForegroundWindow();
             GameService.Debug.StopTimeFunc("GetForegroundWindow");
 
-            // If Guild Wars 2 is not the focused application, set Blish HUD to
-            // be above Guild Wars 2, but below the next application's window in z-order
             if (activeWindowHandle != gw2WindowHandle && Form.ActiveForm == null) {
                 if (wasOnTop) {
                     Logger.Debug("GW2 is no longer the active window.");
 
-                    var nextHandle = GetWindow(gw2WindowHandle, GW.HWNDPREV);
-                    if (nextHandle != IntPtr.Zero && nextHandle != winHandle) {
-                        SetWindowPos(winHandle, nextHandle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-                    }
+                    LostFocusProc(winHandle, gw2WindowHandle, wasOnTop, clientRect, screenPoint);
                 }
+
                 return (OverlayUpdateResponse.WithoutFocus, screenPoint.X == MINIMIZED_POS, 0);
             }
 
+            UpdateProc(winHandle, gw2WindowHandle, wasOnTop, clientRect, screenPoint);
+
             if (!wasOnTop) {
                 Logger.Debug("GW2 is now the active window - reactivating the overlay.");
+
+                SetTransparentLayered(winHandle);
+                SetLayeredWindowAttributes(winHandle, 0, 255, LWA_ALPHA);
             }
 
+            return (OverlayUpdateResponse.WithFocus, screenPoint.X == MINIMIZED_POS, 0);
+        }
+
+        private static void LostFocusProc(IntPtr winHandle, IntPtr gw2WindowHandle, bool wasOnTop, RECT clientRect, System.Drawing.Point screenPoint) {
+            // If Guild Wars 2 is not the focused application, set Blish HUD to
+            // be above Guild Wars 2, but below the next application's window in z-order
+            var nextHandle = GetWindow(gw2WindowHandle, GW.HWNDPREV);
+            if (nextHandle != IntPtr.Zero && nextHandle != winHandle) {
+                SetWindowPos(winHandle, nextHandle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            }
+        }
+
+        private static void UpdateProc(IntPtr winHandle, IntPtr gw2WindowHandle, bool wasOnTop, RECT clientRect, System.Drawing.Point screenPoint) {
             if (clientRect.Left + screenPoint.X != pos.X || clientRect.Top + screenPoint.Y != pos.Y || clientRect.Right - clientRect.Left != pos.Width || clientRect.Bottom - clientRect.Top != pos.Height || wasOnTop == false) {
                 pos = new Rectangle(
                     clientRect.Left + screenPoint.X,
@@ -222,8 +243,6 @@ namespace Blish_HUD {
 
                 DwmExtendFrameIntoClientArea(winHandle, ref marg);
             }
-
-            return (OverlayUpdateResponse.WithFocus, screenPoint.X == MINIMIZED_POS, 0);
         }
 
         internal static string GetClassNameOfWindow(IntPtr hwnd) {
