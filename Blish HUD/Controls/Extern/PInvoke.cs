@@ -18,6 +18,26 @@ namespace Blish_HUD.Controls.Extern
             return new Point(point.X, point.Y);
         }
     }
+
+    public enum CURSORFLAGS : int
+    {
+        CURSOR_HIDING = 0x0,
+        CURSOR_SHOWING = 0x1,
+        CURSOR_SUPPRESSED = 0x2
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CURSORINFO
+    {
+        /// <summary>
+        /// The caller must set this to Marshal.SizeOf(typeof(CURSORINFO))
+        /// </summary>
+        public int cbSize;
+        public CURSORFLAGS flags;
+        public IntPtr hCursor;
+        public POINT ptScreenPos;
+    }
+
     internal static class PInvoke
     {
         [DllImport("user32.dll")]
@@ -58,5 +78,17 @@ namespace Blish_HUD.Controls.Extern
 
         [DllImport("user32.dll")]
         internal static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorInfo(ref CURSORINFO pci);
+
+        internal static CURSORINFO GetCursorInfo()
+        {
+            var pci = new CURSORINFO {
+                cbSize = Marshal.SizeOf(typeof(CURSORINFO))
+            };
+            GetCursorInfo(ref pci);
+            return pci;
+        }
     }
 }

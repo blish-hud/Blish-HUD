@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Blish_HUD.Controls;
+using Blish_HUD.Controls.Extern;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Control = Blish_HUD.Controls.Control;
@@ -103,7 +104,11 @@ namespace Blish_HUD.Input {
         }
 
         public void Update() {
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || !GameService.GameIntegration.Gw2Instance.Gw2HasFocus || GameService.Overlay.InterfaceHidden) {
+            var cursorInfo = PInvoke.GetCursorInfo();
+
+            var isMouseVisible = cursorInfo.flags == CURSORFLAGS.CURSOR_SHOWING;
+
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || !GameService.GameIntegration.Gw2Instance.Gw2HasFocus || GameService.Overlay.InterfaceHidden || !isMouseVisible) {
                 _hudFocused = false;
                 return;
             }
