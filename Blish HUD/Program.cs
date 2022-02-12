@@ -26,6 +26,14 @@ namespace Blish_HUD {
 
         internal static bool RestartOnExit { get; set; } = false;
 
+        [ThreadStatic]
+        private static readonly bool _isMainThread = true;
+
+        /// <summary>
+        /// Indicates if the current thread is the main thread.
+        /// </summary>
+        public static bool IsMainThread => _isMainThread;
+
         private static void EnableLogging() {
             // Make sure logging and logging services are available as soon as possible
             DebugService.InitDebug();

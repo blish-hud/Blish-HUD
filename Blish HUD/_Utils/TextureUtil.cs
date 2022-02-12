@@ -1,9 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD {
     public static class TextureUtil {
+
+        private static readonly Logger Logger = Logger.GetLogger(typeof(TextureUtil));
 
         /// <summary>
         /// Creates a Texture2D from a stream, supports formats bmp, gif, jpg, png, tif and dds.
@@ -12,20 +15,36 @@ namespace Blish_HUD {
         /// </summary>
         /// <remarks>https://community.monogame.net/t/texture2d-fromstream-in-3-7/10973/9</remarks>
 		public static Texture2D FromStreamPremultiplied(GraphicsDevice graphics, Stream stream) {
-            var texture = Texture2D.FromStream(graphics, stream);
+            Texture2D texture = null;
 
-            Color[] data = new Color[texture.Width * texture.Height];
-            texture.GetData(data);
+            try {
+                texture = Texture2D.FromStream(graphics, stream);
 
-            for (int i = 0; i < data.Length; ++i) {
-                byte a = data[i].A;
+                Color[] data = new Color[texture.Width * texture.Height];
+                texture.GetData(data);
 
-                data[i].R = ApplyAlpha(data[i].R, a);
-                data[i].G = ApplyAlpha(data[i].G, a);
-                data[i].B = ApplyAlpha(data[i].B, a);
+                for (int i = 0; i < data.Length; ++i) {
+                    byte a = data[i].A;
+
+                    data[i].R = ApplyAlpha(data[i].R, a);
+                    data[i].G = ApplyAlpha(data[i].G, a);
+                    data[i].B = ApplyAlpha(data[i].B, a);
+                }
+
+                texture.SetData(data);
+            } catch (SharpDX.SharpDXException ex) {
+                switch (ex.HResult) {
+                    case -2005270523:
+                        // HRESULT: [0x887A0005], Module: [SharpDX.DXGI], ApiCode: [DXGI_ERROR_DEVICE_REMOVED/DeviceRemoved]
+                        // The GPU device instance has been suspended. Use GetDeviceRemovedReason to determine the appropriate action.
+                        if (!Program.IsMainThread) {
+                            Logger.Error(ex, "Something attempted to create a texture off of the main thread.");
+                        }
+
+                        texture = ContentService.Textures.Error;
+                        break;
+                }
             }
-
-            texture.SetData(data);
 
             return texture;
         }
