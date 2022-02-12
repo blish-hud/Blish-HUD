@@ -37,16 +37,20 @@ namespace Blish_HUD {
                     case -2005270523:
                         // HRESULT: [0x887A0005], Module: [SharpDX.DXGI], ApiCode: [DXGI_ERROR_DEVICE_REMOVED/DeviceRemoved]
                         // The GPU device instance has been suspended. Use GetDeviceRemovedReason to determine the appropriate action.
-                        if (!Program.IsMainThread) {
-                            Logger.Error(ex, "Something attempted to create a texture off of the main thread.");
-                        }
-
-                        texture = ContentService.Textures.Error;
                         break;
                 }
+            } catch (AccessViolationException) {
+                // Not sure how this happens.
             }
 
-            return texture;
+            if (!Program.IsMainThread) {
+                Logger.Debug("Something attempted to create a texture off of the main thread - this is dangerous and should be resolved as it will eventually throw an exception for something.");
+                #if DEBUG && THROWONBADTEXTURE
+                throw new InvalidOperationException("A texture was made outside of the main thread.  Textures should be created on the main thread only.");
+                #endif
+            }
+
+            return texture ?? ContentService.Textures.Error;
         }
 
         private static byte ApplyAlpha(byte color, byte alpha) {

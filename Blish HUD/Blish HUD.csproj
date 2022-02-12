@@ -49,7 +49,7 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>DEBUG;NOMOUSEHOOK;NOKEYBOARDHOOK</DefineConstants>
+    <DefineConstants>DEBUG;NOMOUSEHOOK;NOKEYBOARDHOOK;THROWONBADTEXTURE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
