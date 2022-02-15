@@ -19,7 +19,7 @@ namespace Blish_HUD.Controls {
 
         private static Thickness _contentEdgeBuffer;
 
-        private static List<Tooltip> _allTooltips;
+        private static ControlCollection<Tooltip> _allTooltips;
 
         private static Texture2D _textureTooltip;
 
@@ -28,7 +28,7 @@ namespace Blish_HUD.Controls {
 
             _textureTooltip = Content.GetTexture("tooltip");
 
-            _allTooltips = new List<Tooltip>();
+            _allTooltips = new ControlCollection<Tooltip>();
 
             ActiveControlChanged   += ControlOnActiveControlChanged;
             Input.Mouse.MouseMoved += HandleMouseMoved;
