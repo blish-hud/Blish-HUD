@@ -156,4 +156,12 @@ If you have an anti-virus or third party firewall utility, please ensure that Bl
   <data name="CoreUpdateFailed_Description_Timeout" xml:space="preserve">
     <value>There are other instances of Blish HUD running.  Please close the other instances first and then run Blish HUD again to complete the update.</value>
   </data>
+  <data name="CfaBlocking_Title" xml:space="preserve">
+    <value>Blish HUD Blocked!</value>
+  </data>
+  <data name="CfaBlocking_Description" xml:space="preserve">
+    <value>Blish HUD was actively blocked saving to '{0}' by what appears to Window's Controlled Folder Access feature.
+
+Please explicitly allow Blish HUD in your "Controlled Folder Access" settings or review the troubleshooting guide linked below.</value>
+  </data>
 </root>
