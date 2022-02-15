@@ -19,13 +19,12 @@ namespace Blish_HUD.Debug {
 
             _contingency.Add(key);
 
-            // Disable hooks and hide the UI, just in case.
-            GameService.Input?.DisableHooks();
-
-            if (BlishHud.Instance.Form.InvokeRequired) {
-                BlishHud.Instance.Form.Invoke((MethodInvoker)(() => BlishHud.Instance.Form.Hide()));
-            } else {
-                BlishHud.Instance.Form.Hide();
+            if (BlishHud.Instance != null) {
+                if (BlishHud.Instance.Form.InvokeRequired) {
+                    BlishHud.Instance.Form.Invoke((MethodInvoker)(() => BlishHud.Instance.Form.Hide()));
+                } else {
+                    BlishHud.Instance.Form.Hide();
+                }
             }
 
             var notifDiag = new TaskDialog() {
@@ -79,6 +78,13 @@ namespace Blish_HUD.Debug {
                               Strings.GameServices.Debug.ContingencyMessages.MissingRef_Title,
                               Strings.GameServices.Debug.ContingencyMessages.MissingRef_Description,
                               "https://link.blishhud.com/missingref");
+        }
+
+        internal static void NotifyCfaBlocking(string path) {
+            NotifyContingency(nameof(NotifyCfaBlocking),
+                              Strings.GameServices.Debug.ContingencyMessages.CfaBlocking_Title,
+                              string.Format(Strings.GameServices.Debug.ContingencyMessages.CfaBlocking_Description, path),
+                              "https://link.blishhud.com/cfablocking");
         }
 
         public static void NotifyFileSaveAccessDenied(string path, string actionDescription, bool promptPortableMode = false) {
