@@ -41,9 +41,6 @@ namespace Blish_HUD.Controls.Extern
         internal delegate void SendAsyncProc(IntPtr hWnd, uint uMsg, uint dwData, int lResult);
 
         [DllImport("user32.dll")]
-        internal static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
-
-        [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool SetForegroundWindow(IntPtr hWnd);
 
