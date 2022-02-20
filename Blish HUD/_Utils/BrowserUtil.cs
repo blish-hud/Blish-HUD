@@ -13,7 +13,6 @@ namespace Blish_HUD._Utils {
         /// Opens the specified URL in the default web browser.
         /// </summary>
         /// <param name="url">Website URL to open in the default browser.</param>
-        /// <returns><see langword="True"/> if the default browser was opened; Otherwise <see langword="false"/>.</returns>
         /// <remarks>Local files are not allowed.</remarks>
         public static async void OpenInDefaultBrowser(string url) {
             if (Uri.TryCreate(url, UriKind.Absolute, out var uri)) {
