@@ -10,20 +10,108 @@ using System.Threading.Tasks;
 namespace Blish_HUD._Utils {
     public class BrowserUtil {
         /// <summary>
-        /// Opens url in the default web browser.
+        /// Opens the specified URL in the default web browser.
         /// </summary>
         /// <param name="url">Website URL to open in the default browser.</param>
         /// <returns><see langword="True"/> if the default browser was opened; Otherwise <see langword="false"/>.</returns>
         /// <remarks>Local files are not allowed.</remarks>
-        public static async Task<bool> OpenInDefaultBrowser(string url) {
+        public static async void OpenInDefaultBrowser(string url) {
             if (Uri.TryCreate(url, UriKind.Absolute, out var uri)) {
                 if (uri.IsFile)
-                    return false;
+                    return;
             }
 
             // Trim any surrounding quotes and spaces.
             url = url.Trim().Trim('"').Trim();
 
+            var command = GetDefaultBrowserCommand(url);
+
+            // Default browser not found.
+            if (string.IsNullOrEmpty(command)) {
+                Process.Start(url); // Fallback for prefixes eg. "discord://https://"
+                return;
+            }
+
+            var args = CommandLineToArgs(command);
+            var exe = args[0];
+            var argString = string.Join(" ", args.Skip(1).Select(s => s.Equals("%1") ? s.Replace("%1", url) : s));
+
+            // Run the process.
+            var psi = new ProcessStartInfo(exe, argString) {
+                WorkingDirectory = Path.GetDirectoryName(exe) ?? Directory.GetCurrentDirectory()
+            };
+            Process.Start(psi);
+
+            var title = await TryFetchWebPageTitle(url);
+            await Task.Delay(200).ContinueWith(t => {
+                var proc = GetProcessWithWindowByName(Path.GetFileNameWithoutExtension(psi.FileName), title);
+                ForceForegroundWindow(proc?.MainWindowHandle ?? IntPtr.Zero);
+            });
+        }
+
+        /// <summary>
+        /// Gets a process with a window handle that matches the given name and window title.
+        /// </summary>
+        private static Process GetProcessWithWindowByName(string name, string windowTitle = null) {
+            var processes = Process.GetProcessesByName(name).Where(p => !p.MainWindowHandle.Equals(IntPtr.Zero)).ToList();
+            if (processes.Count == 0)
+                return null;
+            return windowTitle != null ? processes.FirstOrDefault(p => p.MainWindowTitle.Contains(windowTitle)) ?? processes[0] : processes[0];
+        }
+
+        /// <summary>
+        /// Gets the value of the title annotation from the given web page.
+        /// </summary>
+        private static async Task<string> TryFetchWebPageTitle(string url) {
+            var request = WebRequest.Create(url);
+            request.UseDefaultCredentials = true;
+
+            return await request.GetResponseAsync().ContinueWith(async t => {
+                if (t.IsFaulted) return string.Empty;
+                var response = t.Result;
+                if (response.Headers.AllKeys.Contains("Content-Type") && response.Headers["Content-Type"].StartsWith("text/html")) {
+                    WebClient web = new WebClient {
+                        UseDefaultCredentials = true
+                    };
+                    var page = await web.DownloadStringTaskAsync(url).ContinueWith(t => t.IsFaulted ? string.Empty : t.Result);
+                    return new Regex(@"(?<=<title.*>)([\s\S]*)(?=</title>)", RegexOptions.IgnoreCase).Match(page).Value.Trim();
+                }
+                return string.Empty;
+            }).Unwrap();
+        }
+
+        /// <summary>
+        /// Forces the given window into foreground.
+        /// </summary>
+        private static void ForceForegroundWindow(IntPtr hWnd) {
+            if (hWnd == null || hWnd.Equals(IntPtr.Zero)) return;
+
+            uint foreThread = GetWindowThreadProcessId(GetForegroundWindow(), IntPtr.Zero);
+
+            uint appThread = GetCurrentThreadId();
+
+            if (foreThread != appThread) {
+                AttachThreadInput(foreThread, appThread, true); // Disguise as being part of the foreground window.
+
+                BringWindowToTop(hWnd); // We are in a position to demand things now.
+
+                ShowWindow(hWnd, SW_SHOW);
+
+                AttachThreadInput(foreThread, appThread, false);
+            } else {
+                BringWindowToTop(hWnd);
+
+                ShowWindow(hWnd, SW_SHOW);
+            }
+
+            SendMessage(hWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+        }
+
+
+        /// <summary>
+        /// Queries the registry for the default open browser command for the specified URL in priority order.
+        /// </summary>
+        private static string GetDefaultBrowserCommand(string url) {
             string protocol = Uri.UriSchemeHttp;
 
             // Correct the protocol to that in the actual url
@@ -33,154 +121,54 @@ namespace Blish_HUD._Utils {
                     protocol = url.Substring(0, schemeEnd).ToLowerInvariant();
             }
 
-            object fetchedVal;
-            string defBrowser = null;
+            object userProtocol;
 
             // Look up user choice translation of protocol to program id
             using (RegistryKey userDefBrowserKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\" + protocol + @"\UserChoice"))
-                if (userDefBrowserKey != null && (fetchedVal = userDefBrowserKey.GetValue("Progid")) != null)
-                    // Programs are looked up the same way as protocols in the later code, so we just overwrite the protocol variable.
-                    protocol = fetchedVal as string;
+                if (userDefBrowserKey == null || (userProtocol = userDefBrowserKey.GetValue("Progid")) == null)
+                    return string.Empty;
 
-            // Look up protocol (or programId from UserChoice) in the registry, in priority order.
+            object command;
+
             // Current User registry
-            using (RegistryKey defBrowserKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Classes\" + protocol + @"\shell\open\command"))
-                if (defBrowserKey != null && (fetchedVal = defBrowserKey.GetValue(null)) != null)
-                    defBrowser = fetchedVal as string;
+            using (RegistryKey defBrowserKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Classes\" + userProtocol + @"\shell\open\command"))
+                if (defBrowserKey != null && (command = defBrowserKey.GetValue(null)) != null)
+                    return (string)command;
 
             // Local Machine registry
-            if (defBrowser == null)
-                using (RegistryKey defBrowserKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\" + protocol + @"\shell\open\command"))
-                    if (defBrowserKey != null && (fetchedVal = defBrowserKey.GetValue(null)) != null)
-                        defBrowser = fetchedVal as string;
+            using (RegistryKey defBrowserKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\" + userProtocol + @"\shell\open\command"))
+                if (defBrowserKey != null && (command = defBrowserKey.GetValue(null)) != null)
+                    return (string)command;
 
             // Root registry
-            if (defBrowser == null)
-                using (RegistryKey defBrowserKey = Registry.ClassesRoot.OpenSubKey(protocol + @"\shell\open\command"))
-                    if (defBrowserKey != null && (fetchedVal = defBrowserKey.GetValue(null)) != null)
-                        defBrowser = fetchedVal as string;
+            using (RegistryKey defBrowserKey = Registry.ClassesRoot.OpenSubKey(userProtocol + @"\shell\open\command"))
+                if (defBrowserKey != null && (command = defBrowserKey.GetValue(null)) != null)
+                    return (string)command;
 
-            // Default browser not found.
-            if (string.IsNullOrEmpty(defBrowser))
-                return false;
-
-            string defBrowserProcess;
-
-            #region Process Value of Key "..\shell\open\command"
-            // Preprocess registered ..\shell\open\command.
-            bool hasArg = false;
-            if (defBrowser.Contains("%1")) {
-                // If url in the command line is surrounded by quotes, ignore those.
-                if (defBrowser.Contains("\"%1\""))
-                    defBrowser = defBrowser.Replace("\"%1\"", url);
-                else
-                    defBrowser = defBrowser.Replace("%1", url);
-                hasArg = true;
-            }
-            int spIndex;
-
-            // Fetch executable.
-            if (defBrowser[0] == '"')
-                defBrowserProcess = defBrowser.Substring(0, defBrowser.IndexOf('"', 1) + 2).Trim();
-            else if ((spIndex = defBrowser.IndexOf(" ", StringComparison.Ordinal)) > -1)
-                defBrowserProcess = defBrowser.Substring(0, spIndex).Trim();
-            else
-                defBrowserProcess = defBrowser;
-
-            // Fetch arguments.
-            string defBrowserArgs = defBrowser.Substring(defBrowserProcess.Length).TrimStart();
-
-            if (!hasArg) {
-                if (defBrowserArgs.Length > 0)
-                    defBrowserArgs += " ";
-                defBrowserArgs += url;
-            }
-
-            // Postprocess
-            defBrowserProcess = defBrowserProcess.Trim('"');
-            #endregion
-
-            return await Task.Run(async () => {
-                // Run the process.
-                ProcessStartInfo psi = new ProcessStartInfo(defBrowserProcess, defBrowserArgs);
-                psi.WorkingDirectory = Path.GetDirectoryName(defBrowserProcess);
-                Process.Start(psi);
-
-                // Bring browser to foreground.
-                var title = await TryFetchWebPageTitle(url);
-                await Task.Delay(200).ContinueWith(t => {
-                    var proc = GetProcessByName(Path.GetFileNameWithoutExtension(psi.FileName), title);
-                    ForceForegroundWindow(proc != null ? proc.MainWindowHandle : IntPtr.Zero);
-                });
-
-                return true;
-            });
+            return string.Empty;
         }
 
-        private static Process GetProcessByName(string name, string windowTitle = null) {
-            var processes = Process.GetProcessesByName(name);
-            if (processes.Length == 0)
-                return null;
-            else
-                return windowTitle != null ? processes.FirstOrDefault(p => p.MainWindowTitle.ToLowerInvariant().Contains(windowTitle.ToLowerInvariant())) : processes[0];
-        }
-
-        private static async Task<string> TryFetchWebPageTitle(string url) {
-            // Create a request to the url
-            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-
-            // If the request wasn't an HTTP request (like a file), ignore it
-            if (request == null) return string.Empty;
-
-            // Use the user's credentials
-            request.UseDefaultCredentials = true;
-
-            // Obtain a response from the server, if there was an error, return nothing
-
-            return await request.GetResponseAsync().ContinueWith(t => {
-                if (t.IsFaulted) return string.Empty;
-
-                var response = t.Result;
-
-                string regex = @"(?<=<title.*>)([\s\S]*)(?=</title>)";
-
-                // If the correct HTML header exists for HTML text, continue
-                if (response.Headers.AllKeys.Contains("Content-Type") && response.Headers["Content-Type"].StartsWith("text/html")) {
-                    // Download the page
-                    WebClient web = new WebClient();
-                    web.UseDefaultCredentials = true;
-                    string page = web.DownloadString(url);
-                    // Extract the title
-                    Regex ex = new Regex(regex, RegexOptions.IgnoreCase);
-                    return ex.Match(page).Value.Trim();
+        /// <summary>
+        /// Splits the given command string into its arguments.
+        /// </summary>
+        private static string[] CommandLineToArgs(string commandLine) {
+            var argsPtr = CommandLineToArgvW(commandLine, out var count);
+            if (argsPtr == IntPtr.Zero)
+                return Array.Empty<string>();
+            try {
+                var args = new string[count];
+                for (var i = 0; i < args.Length; i++) {
+                    var p = Marshal.ReadIntPtr(argsPtr, i * IntPtr.Size);
+                    args[i] = Marshal.PtrToStringUni(p);
                 }
-                return string.Empty;
-            });
-        }
-
-        private static void ForceForegroundWindow(IntPtr hWnd) {
-
-            if (hWnd == null || hWnd.Equals(IntPtr.Zero)) return;
-
-            uint foreThread = GetWindowThreadProcessId(GetForegroundWindow(), IntPtr.Zero);
-
-            uint appThread = GetCurrentThreadId();
-
-            if (foreThread != appThread) {
-                AttachThreadInput(foreThread, appThread, true); // Make sure we are taken serious.
-
-                BringWindowToTop(hWnd); // We are in a position to demand things now.
-
-                ShowWindow(hWnd, SW_SHOW);
-
-                AttachThreadInput(foreThread, appThread, false); // Relax again.
-            } else {
-                BringWindowToTop(hWnd);
-
-                ShowWindow(hWnd, SW_SHOW);
+                return args;
+            } finally {
+                Marshal.FreeHGlobal(argsPtr);
             }
-            //SendMessage(hWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0); // We could play around with the sizing of the window here.
         }
+
+        [DllImport("shell32.dll", SetLastError = true)]
+        private static extern IntPtr CommandLineToArgvW([MarshalAs(UnmanagedType.LPWStr)] string lpCmdLine, out int pNumArgs);
 
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
@@ -196,9 +184,6 @@ namespace Blish_HUD._Utils {
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool BringWindowToTop(IntPtr hWnd);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool BringWindowToTop(HandleRef hWnd);
 
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, uint nCmdShow);
@@ -220,6 +205,11 @@ namespace Blish_HUD._Utils {
         /// </summary
         /// <see cref="https://docs.microsoft.com/en-us/windows/win32/menurc/wm-syscommand"/>
         private const int SC_MAXIMIZE = 0xF030;
+        /// <summary>
+        /// Minimizes the window.
+        /// </summary>
+        /// <see cref="https://docs.microsoft.com/en-us/windows/win32/menurc/wm-syscommand"/>
+        private const int SC_MINIMIZE = 0xF020;
         /// <summary>
         /// Activates the window and displays it in its current size and position.
         /// </summary>
