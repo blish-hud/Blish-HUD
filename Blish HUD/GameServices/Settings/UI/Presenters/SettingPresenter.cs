@@ -25,8 +25,16 @@ namespace Blish_HUD.Settings.UI.Presenters {
         private void ViewOnValueChanged(object sender, ValueEventArgs<TSetting> e) {
             if (!_changeReady) return;
 
-            this.Model.Value = e.Value;
+            if (this.View.ValidationFunc != null) {
+                var validationResult = this.View.ValidationFunc(e.Value);
 
+                if (!validationResult.Valid) {
+                    this.View.Value = this.Model.Value;
+                    return;
+                }
+            }
+
+            this.Model.Value = e.Value;
             GameService.Settings.Save();
         }
 
