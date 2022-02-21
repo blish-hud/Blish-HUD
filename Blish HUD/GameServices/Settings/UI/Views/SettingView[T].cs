@@ -16,6 +16,8 @@ namespace Blish_HUD.Settings.UI.Views {
         private string   _description;
         private TSetting _value;
 
+        public Func<TSetting, SettingValidationResult> ValidationFunc { get; set; }
+
         public string DisplayName {
             get => _displayName;
             set {
@@ -38,11 +40,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         public TSetting Value {
             get => _value;
-            set {
-                if (Equals(_value, value)) return;
-
-                RefreshValue(_value = value);
-            }
+            set => RefreshValue(_value = value);
         }
 
         protected SettingView(SettingEntry<TSetting> setting, int definedWidth) {
@@ -69,7 +67,11 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         public void HandleBaseComplianceRequisite(IComplianceRequisite complianceRequisite) {
-            /* Currently none - NOOP */
+            switch (complianceRequisite) {
+                case SettingValidationComplianceRequisite<TSetting> validationRequisite:
+                    this.ValidationFunc = validationRequisite.ValidationFunc;
+                    break;
+            }
         }
 
         private void Refresh() {
