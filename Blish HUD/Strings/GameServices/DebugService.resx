@@ -117,132 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="TokenPermissionDescription_Account" xml:space="preserve">
-    <value>Dein Anzeigename, ID, Heimatwelt und die Liste der Gilden in denen du Mitglied bist.</value>
+  <data name="DebugSettingsSection" xml:space="preserve">
+    <value>Debug Settings</value>
   </data>
-  <data name="TokenPermissionDescription_Inventories" xml:space="preserve">
-    <value>Deine Bank, Materiallager, freigeschaltete Rezepte und Charakterinventare.</value>
+  <data name="Setting_AdditionalDebugDisplay_Description" xml:space="preserve">
+    <value>If enabled additional debug information will be displayed</value>
   </data>
-  <data name="TokenPermissionDescription_Characters" xml:space="preserve">
-    <value>Grundlegende Informationen über deine Charaktere.</value>
+  <data name="Setting_AdditionalDebugDisplay_DisplayName" xml:space="preserve">
+    <value>Show Additional Debug Data</value>
   </data>
-  <data name="TokenPermissionDescription_Tradingpost" xml:space="preserve">
-    <value>Deine Schwarzlöwen-Transaktionen.</value>
+  <data name="Setting_DebugLogging_Description" xml:space="preserve">
+    <value>If enabled Blish HUD will create more verbose logfiles</value>
   </data>
-  <data name="TokenPermissionDescription_Wallet" xml:space="preserve">
-    <value>Dein Geld- und Schlüsselbeutel.</value>
+  <data name="Setting_DebugLogging_DisplayName" xml:space="preserve">
+    <value>Enable Debug Logging</value>
   </data>
-  <data name="TokenPermissionDescription_Unlocks" xml:space="preserve">
-    <value>Der freigeschaltete Teil deiner Garderobe — Farben, Minis und Todesstöße, etc.— Sowie derzeitig ausgesrüstete Skins.</value>
+  <data name="Setting_Debug_Locked_Description" xml:space="preserve">
+    <value>(Disabled because Blish HUD was started with --debug specified)</value>
   </data>
-  <data name="TokenPermissionDescription_Pvp" xml:space="preserve">
-    <value>Deine Statistiken im PvP, Spielverlauf, Belohnungspfadfortschritt und Details benutzerdefinierter Arenen.</value>
+  <data name="Setting_FPSDisplay_Description" xml:space="preserve">
+    <value>If enabled Blish HUD will show how many FPS are currently rendered by the overlay</value>
   </data>
-  <data name="TokenPermissionDescription_Builds" xml:space="preserve">
-    <value>Deine dezeit ausgewählten Spezialisierungen, Eigenschaften, Fähigkeiten und Ausrüstung in jedem Spielmodus.</value>
-  </data>
-  <data name="TokenPermissionDescription_Progression" xml:space="preserve">
-    <value>Deine Errungenschaften, der Freischaltsstatus von Verliesen, die Verteilung deiner Beherrschungspunkte und dein allgemeiner Fortschritt in der offenen Welt.</value>
-  </data>
-  <data name="TokenPermissionDescription_Guilds" xml:space="preserve">
-    <value>Gildenroster, Verlauf, und die Nachricht des Tages von allen Gilden in denen du Mitglied bist.</value>
-  </data>
-  <data name="ManageApiKeysSection" xml:space="preserve">
-    <value>API-Schlüssel verwalten</value>
-  </data>
-  <data name="ManageApiKeys_Title" xml:space="preserve">
-    <value>API-Schlüssel registrieren</value>
-  </data>
-  <data name="AccountInfo_Character" xml:space="preserve">
-    <value>Charakter</value>
-  </data>
-  <data name="AccountInfo_Commander" xml:space="preserve">
-    <value>Kommandeur</value>
-  </data>
-  <data name="CreateTokenInstructions_Step1" xml:space="preserve">
-    <value>Navigiere zur offiziellen Anwendungsseite.</value>
-  </data>
-  <data name="CreateTokenInstructions_Step2" xml:space="preserve">
-    <value>Drücke "Neuer Schlüssel".</value>
-  </data>
-  <data name="CreateTokenInstructions_Step3" xml:space="preserve">
-    <value>Wähle alle Berechtigungen aus und
-drücke auf
-"API-SCHLÜSSEL ERSTELLEN".</value>
-  </data>
-  <data name="CreateTokenInstructions_Step4" xml:space="preserve">
-    <value>Kopiere den neuen Schlüssel.</value>
-  </data>
-  <data name="CreateTokenInstructions_Step5" xml:space="preserve">
-    <value>Füge den Schlüssel in das Feld oben ein
-und drücke "Registrieren".</value>
-  </data>
-  <data name="CreateTokenInstructions_Warning" xml:space="preserve">
-    <value>Es kann ein Schlüssel mit weniger Berechtigungen
-registriert werden, jedoch könnten manche Features
-und Module nicht ordnungsgemäß funktionieren.
-
-Es sind mindestens die Berechtigungen "account" und
-"characters" erforderlich.</value>
-  </data>
-  <data name="Link_ManageApplications" xml:space="preserve">
-    <value>Anwendungen</value>
-  </data>
-  <data name="ManageApiKeys_DeleteToken" xml:space="preserve">
-    <value>Schlüssel löschen</value>
-  </data>
-  <data name="ManageApiKeys_Register" xml:space="preserve">
-    <value>Registrieren</value>
-  </data>
-  <data name="Token_NoName" xml:space="preserve">
-    <value>(Kein Name)</value>
-  </data>
-  <data name="TokenStatus_AccountFailed" xml:space="preserve">
-    <value>Anfrage von Accountdetails fehlgeschlagen</value>
-  </data>
-  <data name="TokenStatus_FailedToLoad" xml:space="preserve">
-    <value>Laden von Schlüssel fehlgeschlagen.</value>
-  </data>
-  <data name="TokenStatus_InvalidToken" xml:space="preserve">
-    <value>Ungültiger Schlüssel</value>
-  </data>
-  <data name="TokenStatus_MissingMinPermission" xml:space="preserve">
-    <value>Erforderliche Berechtigungen fehlen</value>
-  </data>
-  <data name="TokenStatus_PartialPermission" xml:space="preserve">
-    <value>Schlüssel fehlen Berechtigungen</value>
-  </data>
-  <data name="TokenStatus_ValidToken" xml:space="preserve">
-    <value>{0} ({1}) - Gültiger Schlüssel</value>
-  </data>
-  <data name="TokenLoading_AccountDetails" xml:space="preserve">
-    <value>Account Details</value>
-  </data>
-  <data name="TokenLoading_Characters" xml:space="preserve">
-    <value>Charaktere</value>
-  </data>
-  <data name="TokenLoading_HandlingResponse" xml:space="preserve">
-    <value>Verarbeite Antwort der API...</value>
-  </data>
-  <data name="TokenLoading_Status" xml:space="preserve">
-    <value>Lade {0}...</value>
-  </data>
-  <data name="TokenLoading_TokenInfo" xml:space="preserve">
-    <value>Schlüssel Info</value>
-  </data>
-  <data name="TokenRegion_Europe" xml:space="preserve">
-    <value>Europa</value>
-  </data>
-  <data name="TokenRegion_France" xml:space="preserve">
-    <value>Frankreich</value>
-  </data>
-  <data name="TokenRegion_Germany" xml:space="preserve">
-    <value>Deutschland</value>
-  </data>
-  <data name="TokenRegion_NorthAmerica" xml:space="preserve">
-    <value>USA / Nord Amerika</value>
-  </data>
-  <data name="TokenRegion_Spain" xml:space="preserve">
-    <value>Spanien</value>
+  <data name="Setting_FPSDisplay_DisplayName" xml:space="preserve">
+    <value>Show Blish HUD FPS</value>
   </data>
 </root>

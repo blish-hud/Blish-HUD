@@ -126,11 +126,11 @@
   <data name="Action_Exit" xml:space="preserve">
     <value>Verlassen {0}</value>
   </data>
-  <data name="Options" xml:space="preserve">
-    <value>Optionen</value>
+  <data name="Action_UpdateLater" xml:space="preserve">
+    <value>Später aktualisieren</value>
   </data>
-  <data name="Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
+  <data name="Instructions" xml:space="preserve">
+    <value>Anleitung</value>
   </data>
   <data name="Action_Restart" xml:space="preserve">
     <value>Neustart {0}</value>
@@ -138,13 +138,22 @@
   <data name="Action_Clear" xml:space="preserve">
     <value>Leeren</value>
   </data>
+  <data name="Action_Retry" xml:space="preserve">
+    <value>Erneut versuchen</value>
+  </data>
+  <data name="Action_Update" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
   <data name="BlishHUD" xml:space="preserve">
     <value>Blish HUD</value>
   </data>
-  <data name="Instructions" xml:space="preserve">
-    <value>Anleitung</value>
+  <data name="Options" xml:space="preserve">
+    <value>Optionen</value>
   </data>
   <data name="PlaceholderSearch" xml:space="preserve">
     <value>Suche...</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unbekannt</value>
   </data>
 </root>

@@ -123,4 +123,7 @@
   <data name="TrayIcon_LaunchGuildWars2" xml:space="preserve">
     <value>Starte Guild Wars 2</value>
   </data>
+  <data name="TrayIcon_OpenSettingsFolder" xml:space="preserve">
+    <value>Öffne Einstellungsverzeichnis</value>
+  </data>
 </root>

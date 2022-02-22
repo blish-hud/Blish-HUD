@@ -37,6 +37,13 @@ namespace Blish_HUD.Settings {
             SetComplianceRequisite(setting, new SettingDisabledComplianceRequisite(disabled));
         }
 
+        /// <summary>
+        /// Sets the validation function used to indicate if the value is valid for the setting when changed via the UI.
+        /// </summary>
+        public static void SetValidation<T>(this SettingEntry<T> setting, Func<T, SettingValidationResult> validationFunc) {
+            SetComplianceRequisite(setting, new SettingValidationComplianceRequisite<T>(validationFunc));
+        }
+
         #endregion
 
         #region INT COMPLIANCE

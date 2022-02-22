@@ -7,9 +7,9 @@ namespace Blish_HUD {
     public abstract class GameService {
 
         private static readonly GameService[] _allServices = new GameService[] {
+            Settings        = new SettingsService(),
             Debug           = new DebugService(),
             Input           = new InputService(),
-            Settings        = new SettingsService(),
             Content         = new ContentService(),
             Gw2Mumble       = new Gw2MumbleService(),
             Gw2WebApi       = new Gw2WebApiService(),

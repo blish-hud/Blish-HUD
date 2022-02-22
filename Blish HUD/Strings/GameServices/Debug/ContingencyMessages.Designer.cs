@@ -79,6 +79,26 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Blish HUD was actively blocked saving to &apos;{0}&apos; by what appears to Window&apos;s Controlled Folder Access feature.
+        ///
+        ///Please explicitly allow Blish HUD in your &quot;Controlled Folder Access&quot; settings or review the troubleshooting guide linked below..
+        /// </summary>
+        internal static string CfaBlocking_Description {
+            get {
+                return ResourceManager.GetString("CfaBlocking_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blish HUD Blocked!.
+        /// </summary>
+        internal static string CfaBlocking_Title {
+            get {
+                return ResourceManager.GetString("CfaBlocking_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update to v{0} of Blish HUD failed.  Relaunch Blish HUD to try again.  The error was:
         ///
         ///{1}.

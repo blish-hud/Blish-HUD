@@ -259,6 +259,13 @@ It might not be installed.</value>
   <data name="SelfUpdate_Progress_Restarting" xml:space="preserve">
     <value>Restarting...</value>
   </data>
+  <data name="Setting_InteractKey_Description" xml:space="preserve">
+    <value>Used for interacting with the environment.
+For the best experience set this to the same key as in the game.</value>
+  </data>
+  <data name="Setting_InteractKey_DisplayName" xml:space="preserve">
+    <value>Interact</value>
+  </data>
   <data name="OverlayDynamicHUDSection" xml:space="preserve">
     <value>Dynamic HUD</value>
   </data>

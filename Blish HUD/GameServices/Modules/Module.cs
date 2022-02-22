@@ -107,7 +107,7 @@ namespace Blish_HUD.Modules {
                     OnModuleException(loadError);
 
                     if (!loadError.Observed && _loadTask.Exception != null) {
-                        Logger.Error(_loadTask.Exception, "Module {module} had an unhandled exception while loading.", ModuleParameters.Manifest.GetDetailedName());
+                        Logger.GetLogger(GetType()).Error(_loadTask.Exception, "Module {module} had an unhandled exception while loading.", ModuleParameters.Manifest.GetDetailedName());
 
                         if (ApplicationSettings.Instance.DebugEnabled) {
                             throw _loadTask.Exception;

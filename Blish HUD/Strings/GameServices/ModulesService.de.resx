@@ -189,4 +189,77 @@
   <data name="ModuleManagement_ViewModuleLogs" xml:space="preserve">
     <value>Öffne Modulprotokoll</value>
   </data>
+  <data name="ApiPermission_NoPermissionsRequested" xml:space="preserve">
+    <value>Keine Berechtigungen angefordert</value>
+  </data>
+  <data name="Dependency_NoDependencies" xml:space="preserve">
+    <value>Keine Abhängigkeiten</value>
+  </data>
+  <data name="Dependency_RequiresVersion" xml:space="preserve">
+    <value>Benötigt {0}</value>
+  </data>
+  <data name="ModuleManagement_ModuleSettings" xml:space="preserve">
+    <value>Moduleinstellungen</value>
+  </data>
+  <data name="ModuleOption_ClearSettings" xml:space="preserve">
+    <value>Einstellungen löschen</value>
+  </data>
+  <data name="ModuleOption_ClearSettings_DescriptionDisabled" xml:space="preserve">
+    <value>Einstellungen können nicht gelöscht werden wärend das Modul aktiv ist.</value>
+  </data>
+  <data name="ModuleOption_ClearSettings_DescriptionEnabled" xml:space="preserve">
+    <value>Einstellungen des Moduls zurücksetzen.</value>
+  </data>
+  <data name="ModuleOption_DeleteModule" xml:space="preserve">
+    <value>Modul löschen</value>
+  </data>
+  <data name="ModuleOption_OpenDir" xml:space="preserve">
+    <value>'{0}' Verzeichnis öffnen</value>
+  </data>
+  <data name="ModuleSettings_ShownWhenEnabled" xml:space="preserve">
+    <value>Einstellungen werden angezeigt sobald das Modul aktiviert ist</value>
+  </data>
+  <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
+    <value>Modul Version ist zu alt</value>
+  </data>
+  <data name="NoModules_Info" xml:space="preserve">
+    <value>Du hast aktuell keine Module.
+Lade einige herunter und platziere sie im Modulverzeichnis.</value>
+  </data>
+  <data name="NoModules_OpenFolder" xml:space="preserve">
+    <value>Modulverzeichnis öffnen</value>
+  </data>
+  <data name="PkgInstall_Progress_Installing" xml:space="preserve">
+    <value>Installiere...</value>
+  </data>
+  <data name="PkgInstall_Progress_Upgrading" xml:space="preserve">
+    <value>Aktualisiere...</value>
+  </data>
+  <data name="PkgManagement_CurrentVersion" xml:space="preserve">
+    <value>Aktuelle Version</value>
+  </data>
+  <data name="PkgManagement_Downgrade" xml:space="preserve">
+    <value>Downgrade</value>
+  </data>
+  <data name="PkgManagement_Install" xml:space="preserve">
+    <value>Installieren</value>
+  </data>
+  <data name="PkgManagement_ModulesNeedRestart" xml:space="preserve">
+    <value>Blich HUD muss neugestartet werden bevor eine Module geladen werden können.</value>
+  </data>
+  <data name="PkgManagement_Progress_CheckingRepository" xml:space="preserve">
+    <value>Überprüfe Modulquelle...</value>
+  </data>
+  <data name="PkgManagement_Progress_FailedToGetReleases" xml:space="preserve">
+    <value>Konnte nicht aus der Modulquelle lesen.</value>
+  </data>
+  <data name="PkgManagement_Progress_FailedToReadOrParseRepoManifest" xml:space="preserve">
+    <value>Konnte Manifest nicht herunterladen oder lesen.</value>
+  </data>
+  <data name="PkgManagement_Progress_GettingModuleList" xml:space="preserve">
+    <value>Lade Modulliste...</value>
+  </data>
+  <data name="PkgManagement_Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
 </root>

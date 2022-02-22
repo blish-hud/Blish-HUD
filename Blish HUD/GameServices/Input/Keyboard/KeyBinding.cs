@@ -63,9 +63,16 @@ namespace Blish_HUD.Input {
         /// If <c>true</c>, the <see cref="PrimaryKey"/> is not sent to the game when it is
         /// the final key pressed in the keybinding sequence.
         /// </summary>
+        [JsonIgnore]
         public bool BlockSequenceFromGw2 { get; set; } = false;
-
-        private bool _isTriggering;
+        
+        /// <summary>
+        /// Indicates if the <see cref="KeyBinding"/> is actively triggered.
+        /// If triggered with <see cref="ManuallyTrigger"/>(), this
+        /// will report <c>true</c> for only a single frame.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsTriggering { get; private set; }
 
         public KeyBinding() { /* NOOP */ }
 
@@ -87,15 +94,15 @@ namespace Blish_HUD.Input {
         }
 
         private void Fire() {
-            if (_isTriggering) return;
+            if (this.IsTriggering) return;
 
-            _isTriggering = true;
+            this.IsTriggering = true;
 
             ManuallyTrigger();
         }
 
         private void StopFiring() {
-            _isTriggering = false;
+            this.IsTriggering = false;
         }
 
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {

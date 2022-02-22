@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Blish_HUD.Contexts;
@@ -15,6 +16,7 @@ using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using NLog;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MenuItem = Blish_HUD.Controls.MenuItem;
@@ -48,6 +50,7 @@ namespace Blish_HUD {
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
+        internal SettingEntry<KeyBinding> InteractKey { get; private set; }
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
@@ -120,12 +123,46 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            this.UserLocale    =       settings.DefineSetting("AppCulture",                   GetGw2LocaleFromCurrentUICulture(),                             () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,               () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
-            this.StayInTray    =       settings.DefineSetting("StayInTray",                   true,                                                           () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,               () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
-            this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",                false,                                                          () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName,            () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
-            this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape",          true,                                                           () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName,      () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
-            this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),  new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H), () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,     () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
-            this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow), new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B), () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName, () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
+            this.UserLocale    =       settings.DefineSetting("AppCulture",
+                                                              GetGw2LocaleFromCurrentUICulture(),
+                                                              () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
+
+            this.StayInTray    =       settings.DefineSetting("StayInTray",
+                                                              true,
+                                                              () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
+
+            this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",
+                                                              false,
+                                                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
+
+            this.CloseWindowOnEscape = settings.DefineSetting("CloseWindowOnEscape",
+                                                              true,
+                                                              () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
+
+            _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",
+                                                              DynamicHUDMethod.AlwaysShow,
+                                                              () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
+
+            this.InteractKey =         settings.DefineSetting(nameof(this.InteractKey),
+                                                              new KeyBinding(Keys.F),
+                                                              () => Strings.GameServices.OverlayService.Setting_InteractKey_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_InteractKey_Description);
+
+            this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),
+                                                              new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H),
+                                                              () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
+
+            this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow),
+                                                              new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B),
+                                                              () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName,
+                                                              () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
+            
 
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
@@ -141,6 +178,8 @@ namespace Blish_HUD {
 
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
+
+            this.InteractKey.Value.Enabled = true;
 
             this.HideAllInterface.Value.Enabled = true;
             this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };

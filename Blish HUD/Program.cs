@@ -26,6 +26,14 @@ namespace Blish_HUD {
 
         internal static bool RestartOnExit { get; set; } = false;
 
+        [ThreadStatic]
+        private static readonly bool _isMainThread = true;
+
+        /// <summary>
+        /// Indicates if the current thread is the main thread.
+        /// </summary>
+        public static bool IsMainThread => _isMainThread;
+
         private static void EnableLogging() {
             // Make sure logging and logging services are available as soon as possible
             DebugService.InitDebug();
@@ -39,32 +47,12 @@ namespace Blish_HUD {
             }
         }
 
-        private static void HandleArcDps11Contingency() {
-            // TODO: Get SetDllDirectory("") working so that we can protect ourselves from this!
-            // Typically occurs when ArcDps is placed in the same directory as Blish HUD
-            // and causes Blish HUD to crash almost immediately due to an access violation.
-            if (File.Exists("d3d11.dll")) {
-                Debug.Contingency.NotifyArcDpsSameDir();
-            }
-        }
-
-        private static void HandleMinTls12Contingency() {
-            // Typically occurs on Windows 7 where Tls 1.2 has not been configured as the default.
-            // https://link.blishhud.com/tls12issue
-            if (!ServicePointManager.SecurityProtocol.HasFlag(SecurityProtocolType.Tls12)) {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
-            }
-        }
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         private static void Main(string[] args) {
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
-
-            HandleArcDps11Contingency();
-            HandleMinTls12Contingency();
 
             var settings = Cli.Parse<ApplicationSettings>(args);
 
@@ -73,6 +61,8 @@ namespace Blish_HUD {
                 RunDebugHelper(settings.MainProcessId.Value);
                 return;
             }
+
+            Debug.ContingencyChecks.RunAll();
 
             // Check to see if we're currently mid-upgrade
             var attemptUpdate = Overlay.SelfUpdater.SelfUpdateUtil.TryHandleUpdate();
@@ -106,7 +96,6 @@ namespace Blish_HUD {
                     using (var game = new BlishHud()) {
                         game.Run();
                     }
-
                 } finally {
                     if (ownsMutex) {
                         // only release if we acquired ownership

@@ -337,9 +337,9 @@ namespace Blish_HUD.GameIntegration {
                     case WindowUtil.OverlayUpdateResponse.Errored:
                         switch (updateResult.ErrorCode) {
                             case 1400:
-                                this.Gw2Process.Refresh();
-
-                                if (this.Gw2Process.MainWindowHandle == IntPtr.Zero) {
+                                this.Gw2Process?.Refresh();
+                                
+                                if (this.Gw2Process == null || this.Gw2Process.MainWindowHandle == IntPtr.Zero) {
                                     // Guild Wars 2 most likely closed
                                     goto case -1;
                                 }

@@ -144,6 +144,7 @@ namespace Blish_HUD.Controls {
             set {
                 if (SetProperty(ref _focused, value)) {
                     OnInputFocusChanged(new ValueEventArgs<bool>(value));
+                    GameService.Input.Keyboard.FocusedControl = this;
                 }
             }
         }
@@ -488,9 +489,27 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
+        public override void UnsetFocus() {
+            this.Focused = false;
+            GameService.Input.Keyboard.FocusedControl = null;
+        }
+
+        public override bool GetFocusState() {
+            return Focused;
+        }
+
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
             // TODO: move this to KeyboardHandler or similar
             if (GameService.Overlay.InterfaceHidden) return;
+
+            // Loose focus as soon as an acestor is hidden
+            // TODO: this is still a keypress too late
+            foreach (var ancestor in GetAncestors()) {
+                if (ancestor.Visible == false) {
+                    UnsetFocus();
+                    return;
+                }
+            }
 
             // Remove keyup event early to prevent executing special actions twice
             if (e.EventType == KeyboardEventType.KeyUp) {
@@ -500,6 +519,9 @@ namespace Blish_HUD.Controls {
 
             // Skip key repeated execution for these
             switch (e.Key) {
+                case Keys.Escape:
+                    UnsetFocus();
+                    return;
                 case Keys.Insert:
                     _insertMode = !_insertMode;
                     return;

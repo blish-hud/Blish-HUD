@@ -202,6 +202,11 @@ namespace Blish_HUD {
         #endregion
 
         public ManagedConnection GetConnection(string accessToken) {
+            // Avoid caching connections without an API key
+            if (string.IsNullOrWhiteSpace(accessToken)) {
+                return new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache);
+            }
+
             return _cachedConnections.GetOrAdd(accessToken, (token) => new ManagedConnection(token, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache));
         }
 
