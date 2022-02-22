@@ -143,11 +143,6 @@ namespace Blish_HUD {
                                                               () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
 
-            _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",
-                                                              DynamicHUDMethod.AlwaysShow,
-                                                              () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,
-                                                              () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
-
             this.InteractKey =         settings.DefineSetting(nameof(this.InteractKey),
                                                               new KeyBinding(Keys.F),
                                                               () => Strings.GameServices.OverlayService.Setting_InteractKey_DisplayName,
@@ -186,9 +181,20 @@ namespace Blish_HUD {
         }
 
         private void DefineDynamicHUDSettings(SettingCollection settings) {
-            _dynamicHUDMenuBar = settings.DefineSetting("DynamicHUDMenuBar", DynamicHUDMethod.AlwaysShow, () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName, () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
-            _dynamicHUDWindows = settings.DefineSetting("DynamicHUDWindows", DynamicHUDMethod.AlwaysShow, () => Strings.GameServices.OverlayService.Setting_DynamicHUDWindows_DisplayName, () => Strings.GameServices.OverlayService.Setting_DynamicHUDWindows_Description);
-            _dynamicHUDLoading = settings.DefineSetting("DynamicHUDLoading", DynamicHUDMethod.AlwaysShow, () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_DisplayName, () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_Description);
+            _dynamicHUDMenuBar = settings.DefineSetting("DynamicHUDMenuBar",
+                                                        DynamicHUDMethod.AlwaysShow,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
+
+            _dynamicHUDWindows = settings.DefineSetting("DynamicHUDWindows",
+                                                        DynamicHUDMethod.AlwaysShow,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDWindows_DisplayName,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDWindows_Description);
+
+            _dynamicHUDLoading = settings.DefineSetting("DynamicHUDLoading",
+                                                        DynamicHUDMethod.AlwaysShow,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_DisplayName,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_Description);
 
             _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
             _dynamicHUDWindows.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
@@ -253,6 +259,7 @@ namespace Blish_HUD {
             Program.RestartOnExit = true;
             ActiveBlishHud.Exit();
         }
+
 
         private CultureInfo GetCultureFromGw2Locale(Locale locale) {
             switch (locale) {

@@ -10,6 +10,7 @@ namespace Blish_HUD.Overlay.UI.Views {
                 WidthSizingMode  = SizingMode.Fill,
                 HeightSizingMode = SizingMode.Fill,
                 FlowDirection    = ControlFlowDirection.SingleTopToBottom,
+                CanScroll        = true,
                 Parent           = buildPanel
             };
 
