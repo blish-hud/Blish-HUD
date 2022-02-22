@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Blish_HUD.Graphics;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
@@ -109,6 +110,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _id, value);
         }
 
+        private bool _savedVisibility = false;
+
         protected bool StandardWindow = false;
 
         private Panel _activePanel;
@@ -183,6 +186,8 @@ namespace Blish_HUD.Controls {
 
             Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseRelease;
 
+            GameService.GameIntegration.Gw2Instance.IsInGameChanged += delegate { UpdateWindowsBaseDynamicHUDLoadingState(this); };
+
             _animFade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
             _animFade.Pause();
 
@@ -190,6 +195,15 @@ namespace Blish_HUD.Controls {
                 _animFade.Pause();
                 if (_opacity <= 0) this.Visible = false;
             });
+        }
+
+        public static void UpdateWindowsBaseDynamicHUDLoadingState(WindowBase wb) {
+            if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
+                wb._savedVisibility = wb.Visible;
+                if (wb._savedVisibility) wb.Hide();
+            } else {
+                if (wb._savedVisibility) wb.Show();
+            }
         }
 
         protected virtual void ConstructWindow(Texture2D background, Vector2 backgroundOrigin, Rectangle? windowBackgroundBounds = null, Thickness outerPadding = default, int titleBarHeight = 0, bool standardWindow = true) {
