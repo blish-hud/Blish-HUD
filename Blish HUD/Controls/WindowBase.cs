@@ -186,7 +186,8 @@ namespace Blish_HUD.Controls {
 
             Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseRelease;
 
-            GameService.GameIntegration.Gw2Instance.IsInGameChanged += delegate { UpdateWindowsBaseDynamicHUDLoadingState(this); };
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += delegate { UpdateWindowBaseDynamicHUDCombatState(this); };
+            GameService.GameIntegration.Gw2Instance.IsInGameChanged += delegate { UpdateWindowBaseDynamicHUDLoadingState(this); };
 
             _animFade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
             _animFade.Pause();
@@ -197,7 +198,16 @@ namespace Blish_HUD.Controls {
             });
         }
 
-        public static void UpdateWindowsBaseDynamicHUDLoadingState(WindowBase wb) {
+        public static void UpdateWindowBaseDynamicHUDCombatState(WindowBase wb) {
+            if (GameService.Overlay.DynamicHUDWindows == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                wb._savedVisibility = wb.Visible;
+                if (wb._savedVisibility) wb.Hide();
+            } else {
+                if (wb._savedVisibility) wb.Show();
+            }
+        }
+
+        public static void UpdateWindowBaseDynamicHUDLoadingState(WindowBase wb) {
             if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
                 wb._savedVisibility = wb.Visible;
                 if (wb._savedVisibility) wb.Hide();
