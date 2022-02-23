@@ -12,7 +12,7 @@
 ## Download Blish HUD
 
 You can download Blish HUD:
-- Using the [direct download (v0.11.2)](https://github.com/blish-hud/Blish-HUD/releases/download/v0.11.2/Blish.HUD.0.11.2.zip) link.
+- Using the [direct download (v0.11.4)](https://github.com/blish-hud/Blish-HUD/releases/download/v0.11.4/Blish.HUD.0.11.4.zip) link.
 - From our [Releases](https://github.com/blish-hud/Blish-HUD/releases) page here on GitHub.
 
 ### Need Help?
