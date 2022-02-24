@@ -43,12 +43,25 @@ namespace Blish_HUD.Input {
             }
         }
 
+        private bool _cursorIsVisible = true;
+
         /// <summary>
         /// Indicates if the hardware mouse is currently visible.  When <c>false</c>,
         /// this typically indicates that the user is rotating their camera or in action
         /// camera mode.
         /// </summary>
-        public bool CursorIsVisible { get; private set; }
+        public bool CursorIsVisible {
+            get => _cursorIsVisible;
+            set {
+                if (_cursorIsVisible == value) return;
+
+                if (!value) {
+                    this.ActiveControl = null;
+                }
+
+                _cursorIsVisible = value;
+            }
+        }
 
         private bool           _hudFocused;
         private MouseEventArgs _mouseEvent;

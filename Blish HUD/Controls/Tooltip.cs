@@ -35,7 +35,7 @@ namespace Blish_HUD.Controls {
         }
 
         private static void HandleMouseMoved(object sender, MouseEventArgs e) {
-            if (ActiveControl?.Tooltip != null) {
+            if (ActiveControl?.Tooltip != null && GameService.Input.Mouse.CursorIsVisible) {
                 ActiveControl.Tooltip.CurrentControl = ActiveControl;
                 UpdateTooltipPosition(ActiveControl.Tooltip);
 
