@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Blish_HUD.Controls;
-using Blish_HUD.Controls.Extern;
+using Blish_HUD.Input.WinApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Control = Blish_HUD.Controls.Control;
@@ -13,24 +13,25 @@ namespace Blish_HUD.Input {
         private static readonly Logger Logger = Logger.GetLogger<MouseHandler>();
 
         /// <summary>
-        ///     The current position of the mouse relative to the application.
+        /// The current position of the mouse relative to the application.
         /// </summary>
         public Point Position => this.State.Position;
 
         public Point PositionRaw { get; private set; }
 
         /// <summary>
-        ///     The current state of the mouse.
+        /// The current state of the mouse.
         /// </summary>
         public MouseState State { get; private set; }
 
         /// <summary>
-        ///     Indicates if the camera is being dragged.
+        /// Indicates if the camera is being dragged.
         /// </summary>
         public bool CameraDragging { get; private set; }
 
+        private Control _activeControl;
         /// <summary>
-        ///     The <see cref="Controls.Control" /> that the mouse last moved over.
+        /// The <see cref="Controls.Control" /> that the mouse last moved over.
         /// </summary>
         public Control ActiveControl {
             get => _activeControl;
@@ -42,10 +43,14 @@ namespace Blish_HUD.Input {
             }
         }
 
-        private Control _activeControl;
+        /// <summary>
+        /// Indicates if the hardware mouse is currently visible.  When <c>false</c>,
+        /// this typically indicates that the user is rotating their camera or in action
+        /// camera mode.
+        /// </summary>
+        public bool CursorIsVisible { get; private set; }
 
-        private bool _hudFocused;
-
+        private bool           _hudFocused;
         private MouseEventArgs _mouseEvent;
 
         internal MouseHandler() { }
@@ -69,7 +74,7 @@ namespace Blish_HUD.Input {
                 };
             }
 
-            if (this.CameraDragging) return false;
+            if (this.CameraDragging || !this.CursorIsVisible) return false;
             
             _mouseEvent = mouseEventArgs;
 
@@ -104,11 +109,10 @@ namespace Blish_HUD.Input {
         }
 
         public void Update() {
-            var cursorInfo = PInvoke.GetCursorInfo();
+            // We check if not hidden because we should act normally if cursor is just surpressed (e.g. from touch or pen input)
+            this.CursorIsVisible = CursorExtern.GetCursorInfo().Flags != CursorFlags.CursorHiding;
 
-            var isMouseVisible = cursorInfo.flags == CURSORFLAGS.CURSOR_SHOWING;
-
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || !GameService.GameIntegration.Gw2Instance.Gw2HasFocus || GameService.Overlay.InterfaceHidden || !isMouseVisible) {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || !GameService.GameIntegration.Gw2Instance.Gw2HasFocus || GameService.Overlay.InterfaceHidden) {
                 _hudFocused = false;
                 return;
             }
@@ -132,13 +136,16 @@ namespace Blish_HUD.Input {
 
             // Handle mouse moved
             if (prevMouseState.Position != this.State.Position) {
-                this.ActiveControl = GameService.Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseMoved, this.State);
+                if (this.CursorIsVisible) {
+                    this.ActiveControl = GameService.Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseMoved, this.State);
+                }
+
                 this.MouseMoved?.Invoke(this, new MouseEventArgs(MouseEventType.MouseMoved));
             }
 
             // Handle mouse events blocked by the mouse hook
             if (_mouseEvent != null) {
-                if (HandleHookedMouseEvent(_mouseEvent)) {
+                if (HandleHookedMouseEvent(_mouseEvent) && this.CursorIsVisible) {
                     GameService.Graphics.SpriteScreen.TriggerMouseInput(_mouseEvent.EventType, this.State);
                 }
 
