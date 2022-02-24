@@ -22,11 +22,11 @@ namespace Glide
         private float Delay, repeatDelay;
         private float Duration;
 
-        private float time;
+        private float Time, time;
 #endregion
 		
-		private bool firstUpdate;
-        private int repeatCount, timesRepeated;
+		private bool initialized, running;
+        private int repeatCount;
         private MemberLerper.Behavior behavior;
         
         private List<MemberAccessor> vars;
@@ -39,12 +39,12 @@ namespace Glide
 		/// <summary>
 		/// The time remaining before the tween ends or repeats.
 		/// </summary>
-        public float TimeRemaining { get { return Duration - time; } }
+        public float TimeRemaining { get { return Duration - Time; } }
         
         /// <summary>
         /// A value between 0 and 1, where 0 means the tween has not been started and 1 means that it has completed.
         /// </summary>
-        public float Completion { get { var c = time / Duration; return c < 0 ? 0 : (c > 1 ? 1 : c); } }
+        public float Completion { get { var c = Time / Duration; return c < 0 ? 0 : (c > 1 ? 1 : c); } }
         
         /// <summary>
         /// Whether the tween is currently looping.
@@ -64,8 +64,6 @@ namespace Glide
             Parent = parent;
             Remover = parent;
             
-			firstUpdate = true;
-			
 			varHash = new Dictionary<string, int>();
 			vars = new List<MemberAccessor>();
 			lerpers = new List<MemberLerper>();
@@ -85,89 +83,87 @@ namespace Glide
 			lerpers.Add(lerper);
 		}
 		
-        private void Update(float elapsed)
-		{
-        	if (firstUpdate)
-        	{
-        		firstUpdate = false;
-        		
-				var i = vars.Count;
-				while (i --> 0)
-				{
-					if (lerpers[i] != null)
-						lerpers[i].Initialize(start[i], end[i], behavior);
-				}
-        	}
-        	else
-        	{
-				if (this.Paused)
-					return;
-				
-				if (Delay > 0)
-				{
-					Delay -= elapsed;
-					if (Delay > 0)
-						return;
-				}
-				
-				if (time == 0 && timesRepeated == 0 && begin != null)
-					begin();
+        private void Update(float elapsed) {
+            int i = 0;
+            bool doReverse = false;
+            bool doComplete = false;
 
-				time += elapsed;
-				float setTimeTo = time;
-				float t = time / Duration;
-				bool doComplete = false;
-				
-				if (time >= Duration)
-				{
-					if (repeatCount != 0)
-					{
-						setTimeTo = 0;
-						Delay = repeatDelay;
-						timesRepeated++;
-						
-						if (repeatCount > 0) {
-                            --repeatCount;
-                            repeat?.Invoke();
-                        }
-							
-						
-						if (repeatCount < 0)
-							doComplete = true;
-					}
-					else
-					{
-						time = Duration;
-						t = 1;
-	                    Remover.Remove(this);
-	                    doComplete = true;
-					}
-				}
-				
-				if (ease != null)
-					t = ease(t);
-				
-				int i = vars.Count;
-				while (i --> 0)
-				{
-					if (vars[i] != null)
-						vars[i].Value = lerpers[i].Interpolate(t, vars[i].Value, behavior);
-				}
-				
-				time = setTimeTo;
-				
-				//	If the timer is zero here, we just restarted.
-				//	If reflect mode is on, flip start to end
-				if (time == 0 && (behavior & MemberLerper.Behavior.Reflect) == MemberLerper.Behavior.Reflect)
-					Reverse();
-				
-				if (update != null)
-					update();
-				
-				if (doComplete && complete != null)
-					complete();
-        	}
-		}
+            if (!initialized) {
+                i = vars.Count;
+                while (i-- > 0) {
+                    if (lerpers[i] != null) {
+                        lerpers[i].Initialize(start[i], end[i], behavior);
+                    }
+                }
+                initialized = true;
+            }
+
+            if (this.Paused) {
+                return;
+            }
+
+            if (Delay > 0) {
+                Delay -= elapsed;
+                if (Delay > 0) {
+                    return;
+                }
+            }
+
+            if (!running && begin != null) {
+                begin();
+            }
+
+            if (running) {
+                time += elapsed;
+            } else {
+                running = true;
+            }
+
+            Time = Math.Min(time, Duration);
+
+            if (time >= Duration) {
+                time -= Duration;
+                if (repeatCount != 0) {
+                    repeat?.Invoke();
+                    Delay = repeatDelay;
+                    doReverse = true;
+                }
+                if (repeatCount <= 0) {
+                    doComplete = true;
+                }
+                if (repeatCount == 0) {
+                    Remover.Remove(this);
+                }
+                if (repeatCount > 0) {
+                    repeatCount--;
+                }
+            }
+
+            float t = Completion;
+            if (ease != null) {
+                t = Math.Min(Math.Max(ease(t), 0), 1);
+            }
+
+            i = vars.Count;
+            while (i-- > 0) {
+                if (vars[i] != null) {
+                    vars[i].Value = lerpers[i].Interpolate(t, vars[i].Value, behavior);
+                }
+            }
+
+            // If we just restarted and reflect mode is on, flip start to end
+            if (doReverse && (behavior & MemberLerper.Behavior.Reflect) == MemberLerper.Behavior.Reflect) {
+                Reverse();
+            }
+
+            if (update != null) {
+                update();
+            }
+
+            if (doComplete && complete != null) {
+                complete();
+            }
+        }
 		
 #region Behavior
 		/// <summary>
@@ -369,7 +365,7 @@ namespace Glide
 		/// </summary>
 		public void CancelAndComplete()
 		{
-			time = Duration;
+			time = Time = Duration;
 			update = null;
             Remover.Remove(this);
 		}
