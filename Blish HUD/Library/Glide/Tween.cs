@@ -44,7 +44,7 @@ namespace Glide
         /// <summary>
         /// A value between 0 and 1, where 0 means the tween has not been started and 1 means that it has completed.
         /// </summary>
-        public float Completion { get { var c = Time / Duration; return c < 0 ? 0 : (c > 1 ? 1 : c); } }
+        public float Completion { get { return Duration > 0 ? Math.Min(Math.Max(Time / Duration, 0), 1) : 1; } }
         
         /// <summary>
         /// Whether the tween is currently looping.
@@ -114,7 +114,7 @@ namespace Glide
             }
 
             if (running) {
-                time += elapsed;
+                if (Duration > 0) time += elapsed;
             } else {
                 running = true;
             }
