@@ -310,10 +310,10 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
                 } catch (AuthorizationRequiredException) {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_AccountFailed);
-                } catch (UnexpectedStatusException) {
-                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.Common.Unknown);
                 } catch (RequestCanceledException) {
                     // NOOP keep existing status to avoid walking over the call that cancelled us
+                } catch (Exception) {
+                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.Common.Unknown);
                 }
             } else {
                 SetTokenStatus(ApiTokenStatusType.Neutral);
