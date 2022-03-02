@@ -70,6 +70,7 @@ namespace Blish_HUD {
 
             WindowUtil.SetNoActivate(FormHandle, true);
             WindowUtil.SetTransparentLayered(FormHandle);
+            WindowUtil.ExtendFrameAcrossEntireWindow(FormHandle);
 
             // Initialize all game services
             foreach (var service in GameService.All) {

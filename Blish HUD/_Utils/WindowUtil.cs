@@ -40,6 +40,11 @@ namespace Blish_HUD {
         private const uint SWP_NOMOVE         = 0x0002;
         private const uint SWP_NOACTIVATE     = 0x0010;
 
+        private const uint RDW_INVALIDATE  = 0x001;
+        private const uint RDW_ERASE       = 0x004;
+        private const uint RDW_ALLCHILDREN = 0x080;
+        private const uint RDW_FRAME       = 0x400;
+
         private const int MINIMIZED_POS = -32000;
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -80,6 +85,9 @@ namespace Blish_HUD {
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
         private static extern uint SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
+
+        [DllImport("user32.dll")]
+        private static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, uint flags); 
 
         [DllImport("user32.dll")]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
@@ -137,6 +145,21 @@ namespace Blish_HUD {
 
         internal static void SetTransparentLayered(IntPtr winHandle) {
             SetWindowLong(winHandle, GWL_EXSTYLE, GetWindowLong(winHandle, GWL_EXSTYLE) | WS_EX_TRANSPARENT | WS_EX_LAYERED);
+        }
+
+        internal static void InvalidateWindow(IntPtr winHandle) {
+            RedrawWindow(winHandle, IntPtr.Zero, IntPtr.Zero, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_FRAME);
+        }
+
+        internal static void ExtendFrameAcrossEntireWindow(IntPtr winHandle) {
+            var marg = new Margins {
+                    cxLeftWidth    = -1,
+                    cyTopHeight    = -1,
+                    cxRightWidth   = -1,
+                    cyBottomHeight = -1
+            };
+
+            DwmExtendFrameIntoClientArea(winHandle, ref marg);
         }
 
         internal static void SetNoActivate(IntPtr winHandle, bool noActivate) {
@@ -204,6 +227,7 @@ namespace Blish_HUD {
 
                 SetTransparentLayered(winHandle);
                 SetLayeredWindowAttributes(winHandle, 0, 255, LWA_ALPHA);
+                InvalidateWindow(winHandle);
             }
 
             return (OverlayUpdateResponse.WithFocus, screenPoint.X == MINIMIZED_POS, 0);

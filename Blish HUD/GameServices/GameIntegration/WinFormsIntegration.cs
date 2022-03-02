@@ -35,9 +35,12 @@ namespace Blish_HUD.GameIntegration {
 
         private void WrapMainForm() {
             _formWrapper = new Form();
+            var visible = BlishHud.Instance.Form.Visible;
             BlishHud.Instance.Form.Hide();
             BlishHud.Instance.Form.Show(_formWrapper);
-            BlishHud.Instance.Form.Visible = false;
+            if (!visible) {
+                BlishHud.Instance.Form.Hide();
+            }
         }
 
         public void SetShowInTaskbar(bool showInTaskbar) {
