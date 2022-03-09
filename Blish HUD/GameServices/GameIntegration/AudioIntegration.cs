@@ -176,7 +176,13 @@ namespace Blish_HUD.GameIntegration {
                     // Skip this audio device.  Something about it is unsupported.
                     continue;
                 } catch (COMException ex) when ((uint)ex.HResult == 0x80040154) {
+                    // Skip this audio device.  Something about it is unsupported.
                     continue;
+                } catch (COMException ex) when ((uint)ex.HResult == 0x80070490) {
+                    // Skip this audio device.  Something about it is unsupported.
+                    continue;
+                } catch (Exception) {
+                    continue; 
                 }
 
                 bool shouldDispose = true;
