@@ -64,7 +64,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             bool s = true;
 
-            foreach (var pkgManifest in this.Model.GetPkgManifests().GroupBy(m => m.Namespace)) {
+            foreach (var pkgManifest in this.Model.GetPkgManifests().GroupBy(m => m.Namespace).OrderBy(pkg => pkg.First().Name)) {
                 var nPanel = new ViewContainer {
                     Size     = new Point(this.View.RepoFlowPanel.Width - 25, 64),
                     ShowTint = (s = !s),
