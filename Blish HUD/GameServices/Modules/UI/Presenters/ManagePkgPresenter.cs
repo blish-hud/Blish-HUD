@@ -40,6 +40,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.View.ModuleNamespace   = _selectedVersion.Namespace;
             this.View.ModuleContributor = _selectedVersion.Contributors[0];
             this.View.SelectedVersion   = _selectedVersion.Version;
+            this.View.IsPreviewVersion  = _selectedVersion.IsPreview;
 
             if (_selectedVersion is PkgManifestV1 pkgv1) {
                 this.View.ModuleDescription = pkgv1.Description;

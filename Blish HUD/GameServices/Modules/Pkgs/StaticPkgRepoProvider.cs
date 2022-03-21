@@ -12,7 +12,8 @@ namespace Blish_HUD.Modules.Pkgs {
 
         private static readonly Logger Logger = Logger.GetLogger<StaticPkgRepoProvider>();
         
-        private const string ASSET_PACKAGE_NAME  = "/packages.gz";
+        private const string ASSET_PACKAGE_NAME        = "/packages.gz";
+        private const string PREVIEWASSET_PACKAGE_NAME = "/preview-packages.gz";
 
         private static readonly Dictionary<string, PkgManifest[]> _pkgCache = new Dictionary<string, PkgManifest[]>();
 
@@ -28,22 +29,34 @@ namespace Blish_HUD.Modules.Pkgs {
 
         public async Task<bool> Load(IProgress<string> progress = null) {
             if (!_pkgCache.ContainsKey(this.PkgUrl)) {
-                var repoResults = await LoadRepo(progress ?? new Progress<string>(Logger.Info));
+                progress ??= new Progress<string>(Logger.Info);
 
-                if (repoResults.Length > 0) {
-                    _pkgCache[this.PkgUrl] = repoResults;
+                var repoResults = new List<PkgManifest>();
+
+                repoResults.AddRange(await LoadRepo(progress));
+                repoResults.AddRange(await LoadRepo(progress, true));
+
+                if (repoResults.Count > 0) {
+                    _pkgCache[this.PkgUrl] = repoResults.ToArray();
                 }
             }
             
             return _pkgCache.ContainsKey(this.PkgUrl);
         }
 
-        protected virtual async Task<PkgManifest[]> LoadRepo(IProgress<string> progress = null) {
+        protected virtual async Task<PkgManifest[]> LoadRepo(IProgress<string> progress = null, bool preview = false) {
             progress?.Report(Strings.GameServices.ModulesService.PkgManagement_Progress_GettingModuleList);
-            var manifests = await LoadPkgManifests(Flurl.Url.Combine(this.PkgUrl, ASSET_PACKAGE_NAME));
+            var manifests = await LoadPkgManifests(Flurl.Url.Combine(this.PkgUrl, preview ? PREVIEWASSET_PACKAGE_NAME : ASSET_PACKAGE_NAME));
+
+            if (preview) {
+                foreach (var manifest in manifests.PkgManifests) {
+                    manifest.IsPreview = true;
+                }
+            }
 
             if (manifests.Exception != null) {
                 progress?.Report($"{Strings.GameServices.ModulesService.PkgManagement_Progress_FailedToReadOrParseRepoManifest}\r\n{manifests.Exception.Message}");
+                return Array.Empty<PkgManifest>();
             }
 
             return manifests.PkgManifests;

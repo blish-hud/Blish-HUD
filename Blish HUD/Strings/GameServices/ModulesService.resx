@@ -242,4 +242,7 @@ Download some modules and place them in the modules folder.</value>
   <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
     <value>Module Version Is Too Old</value>
   </data>
+  <data name="PkgManagement_IsPreview" xml:space="preserve">
+    <value>Preview Release</value>
+  </data>
 </root>

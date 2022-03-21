@@ -38,9 +38,17 @@ namespace Blish_HUD.Modules.UI.Views {
             get => _nameLabel?.Text ?? throw new ViewNotBuiltException();
             set {
                 (_nameLabel ?? throw new ViewNotBuiltException()).Text = value;
-                _nameLabel.Visible                                     = true;
-                _authLabel.Left                                        = _nameLabel.Right + 10;
+
+                _nameLabel.Visible = true;
+                //_authLabel.Left                                        = _nameLabel.Right  + 10;
+                _previewLabel.Left = _nameLabel.Right + 10;
+                _previewLabel.Top  = _nameLabel.Top   + 2;
             }
+        }
+
+        public bool IsPreviewVersion {
+            get => _previewLabel?.Visible ?? throw new ViewNotBuiltException();
+            set => (_previewLabel ?? throw new ViewNotBuiltException()).Visible = value;
         }
 
         public string ModuleNamespace {
@@ -70,8 +78,8 @@ namespace Blish_HUD.Modules.UI.Views {
             set {
                 if (_descLabel == null) throw new ViewNotBuiltException();
 
-                _descLabel.Text             = value;
-                _descLabel.BasicTooltipText = value;
+                _descLabel.Text           = value;
+                _descLabel.AutoSizeHeight = true;
             }
         }
 
@@ -140,6 +148,7 @@ namespace Blish_HUD.Modules.UI.Views {
         }
 
         private Label          _nameLabel;
+        private Label          _previewLabel;
         private Label          _authLabel;
         private Label          _descLabel;
         private Image          _statusImage;
@@ -159,6 +168,17 @@ namespace Blish_HUD.Modules.UI.Views {
                 AutoSizeHeight = true,
                 Font           = GameService.Content.DefaultFont18,
                 Location       = new Point(5, 5),
+                Visible        = false,
+                Parent         = buildPanel
+            };
+
+            _previewLabel = new Label() {
+                Text           = Strings.GameServices.ModulesService.PkgManagement_IsPreview,
+                TextColor      = Color.Orange,
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                Font           = GameService.Content.DefaultFont14,
+                Location       = new Point(_nameLabel.Right + 4, 8),
                 Visible        = false,
                 Parent         = buildPanel
             };
@@ -191,14 +211,14 @@ namespace Blish_HUD.Modules.UI.Views {
 
             _actionButton = new StandardButton() {
                 Width  = 132,
-                Right  = buildPanel.Width  - 3,
-                Bottom = buildPanel.Height - 3,
+                Right  = buildPanel.Width        - 3,
+                Top    = _versionDropdown.Bottom + 3,
                 Parent = buildPanel
             };
 
             _descLabel = new Label() {
                 WrapText          = true,
-                Font              = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic),
+                Font              = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Regular),
                 Location          = new Point(_nameLabel.Left, _nameLabel.Bottom + 4),
                 Size              = new Point(_actionButton.Left                 - _nameLabel.Left * 2, buildPanel.Height - _nameLabel.Bottom - 8),
                 Parent            = buildPanel,
