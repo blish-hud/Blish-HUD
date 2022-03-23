@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blish_HUD.Graphics;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
@@ -188,6 +189,8 @@ namespace Blish_HUD.Controls {
 
         private readonly Glide.Tween _animFade;
 
+        private bool _savedVisibility = false;
+
         protected WindowBase2() {
             WindowBase2.RegisterWindow(this);
 
@@ -200,6 +203,9 @@ namespace Blish_HUD.Controls {
 
             GameService.Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseRelease;
 
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += delegate { UpdateWindowBaseDynamicHUDCombatState(this); };
+            GameService.GameIntegration.Gw2Instance.IsInGameChanged += delegate { UpdateWindowBaseDynamicHUDLoadingState(this); };
+
             // TODO: Use window mask when fading windows in and out instead of this lame opacity transition
             _animFade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
             _animFade.Pause();
@@ -208,6 +214,24 @@ namespace Blish_HUD.Controls {
                 _animFade.Pause();
                 if (_opacity <= 0) this.Visible = false;
             });
+        }
+
+        public static void UpdateWindowBaseDynamicHUDCombatState(WindowBase2 wb) {
+            if (GameService.Overlay.DynamicHUDWindows == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                wb._savedVisibility = wb.Visible;
+                if (wb._savedVisibility) wb.Hide();
+            } else {
+                if (wb._savedVisibility) wb.Show();
+            }
+        }
+
+        public static void UpdateWindowBaseDynamicHUDLoadingState(WindowBase2 wb) {
+            if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
+                wb._savedVisibility = wb.Visible;
+                if (wb._savedVisibility) wb.Hide();
+            } else {
+                if (wb._savedVisibility) wb.Show();
+            }
         }
 
         public override void UpdateContainer(GameTime gameTime) {
