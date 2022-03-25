@@ -727,6 +727,7 @@ namespace Blish_HUD.Controls {
 
         private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
             this.Focused = _mouseOver && _enabled;
+            _cursorDragging = false;
         }
 
         public abstract int GetCursorIndexFromPosition(int x, int y);
