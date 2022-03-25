@@ -742,14 +742,20 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
+            base.OnLeftMouseButtonPressed(e);
+
+            this.Focused = true;
+
+            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition));
+        }
+
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 
             this.Focused = true;
 
-            int newIndex = GetCursorIndexFromPosition(this.RelativeMousePosition);
-            HandleMouseUpdatedCursorIndex(newIndex);
-            if (e.IsDoubleClick) HandleMouseDoubleClick(newIndex);
+            if (e.IsDoubleClick) HandleMouseDoubleClick(GetCursorIndexFromPosition(this.RelativeMousePosition));
         }
 
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left) {
