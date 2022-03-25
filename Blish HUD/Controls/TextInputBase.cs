@@ -198,6 +198,7 @@ namespace Blish_HUD.Controls {
         protected bool _multiline;
         protected bool _caretVisible;
         protected bool _cursorMoved;
+        protected bool _cursorDragging;
 
         private TimeSpan _lastInvalidate;
         private bool     _insertMode;
@@ -744,12 +745,24 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        protected void HandleMouseSelectionDrag(int newIndex) {
+            this.SelectionStart = Math.Min(_cursorIndex, newIndex);
+            this.SelectionEnd = Math.Max(_cursorIndex, newIndex);
+        }
+
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
 
             this.Focused = true;
+            _cursorDragging = true;
 
             HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition));
+        }
+
+        protected override void OnMouseMoved(MouseEventArgs e) {
+            base.OnMouseMoved(e);
+
+            if (_cursorDragging) HandleMouseSelectionDrag(GetCursorIndexFromPosition(this.RelativeMousePosition));
         }
 
         protected override void OnClick(MouseEventArgs e) {
