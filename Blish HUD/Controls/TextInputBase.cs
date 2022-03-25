@@ -730,13 +730,15 @@ namespace Blish_HUD.Controls {
 
         public int GetCursorIndexFromPosition(Point position) => GetCursorIndexFromPosition(position.X, position.Y);
 
-        protected void HandleMouseUpdatedCursorIndex(int newIndex, bool isDoubleClick) {
-            if (_cursorIndex == newIndex && isDoubleClick) {
+        protected void HandleMouseUpdatedCursorIndex(int newIndex) {
+            UserSetCursorIndex(newIndex);
+            UpdateSelectionIfShiftDown();
+        }
+
+        protected void HandleMouseDoubleClick(int newIndex) {
+            if (_cursorIndex == newIndex) {
                 this.SelectionStart = GetClosestLeftWordBoundary(newIndex);
-                this.SelectionEnd   = GetClosestRightWordBoundary(newIndex);
-            } else {
-                UserSetCursorIndex(newIndex);
-                UpdateSelectionIfShiftDown();
+                this.SelectionEnd = GetClosestRightWordBoundary(newIndex);
             }
         }
 
@@ -745,7 +747,9 @@ namespace Blish_HUD.Controls {
 
             this.Focused = true;
 
-            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition), e.IsDoubleClick);
+            int newIndex = GetCursorIndexFromPosition(this.RelativeMousePosition);
+            HandleMouseUpdatedCursorIndex(newIndex);
+            if (e.IsDoubleClick) HandleMouseDoubleClick(newIndex);
         }
 
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left) {
