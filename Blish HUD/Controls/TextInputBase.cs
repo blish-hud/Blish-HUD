@@ -709,11 +709,13 @@ namespace Blish_HUD.Controls {
 
         private void UpdateFocusState(bool focused) {
             if (focused) {
+                Input.Mouse.LeftMouseButtonPressed  += OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
                 Input.Keyboard.KeyStateChanged      += OnGlobalKeyboardKeyStateChanged;
 
                 GameService.Input.Keyboard.SetTextInputListner(OnTextInput);
             } else {
+                Input.Mouse.LeftMouseButtonPressed  -= OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseLeftMouseButtonReleased;
                 Input.Keyboard.KeyStateChanged      -= OnGlobalKeyboardKeyStateChanged;
 
@@ -725,8 +727,11 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
+        private void OnGlobalMouseLeftMouseButtonPressed(object sender, MouseEventArgs e) {
             this.Focused = _mouseOver && _enabled;
+        }
+
+        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
             _cursorDragging = false;
         }
 
