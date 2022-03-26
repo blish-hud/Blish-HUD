@@ -314,15 +314,13 @@ namespace Blish_HUD.Controls {
         private void DeleteSelection() {
             if (_selectionStart == _selectionEnd) return;
 
-            if (_selectionStart < _selectionEnd) {
-                Delete(_selectionStart, _selectionEnd - _selectionStart);
-                _selectionEnd = _selectionStart;
-            } else {
-                Delete(_selectionEnd, _selectionStart - _selectionEnd);
-                _selectionStart = _selectionEnd;
-            }
+            int deleteStart = Math.Min(_selectionStart, _selectionEnd);
+            int deleteLength = Math.Max(_selectionStart, _selectionEnd) - deleteStart;
 
-            UserSetCursorIndex(_selectionStart);
+            Delete(deleteStart, deleteLength);
+
+            UserSetCursorIndex(deleteStart);
+            ResetSelection();
         }
 
         private bool Paste(string value) {
