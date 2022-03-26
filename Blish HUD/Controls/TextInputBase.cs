@@ -752,8 +752,8 @@ namespace Blish_HUD.Controls {
         }
 
         protected void HandleMouseSelectionDrag(int newIndex) {
-            this.SelectionStart = Math.Min(_cursorIndex, newIndex);
-            this.SelectionEnd = Math.Max(_cursorIndex, newIndex);
+            UserSetCursorIndex(newIndex);
+            this.SelectionEnd = newIndex;
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
