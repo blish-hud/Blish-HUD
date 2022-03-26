@@ -170,7 +170,6 @@ namespace Blish_HUD.Controls {
         }
 
         protected int _cursorIndex;
-        protected int _prevCursorIndex;
 
         /// <summary>
         /// Gets or sets the current index of the cursor within the text.
@@ -178,7 +177,6 @@ namespace Blish_HUD.Controls {
         public int CursorIndex {
             get => _cursorIndex;
             set {
-                _prevCursorIndex = _cursorIndex;
                 if (SetProperty(ref _cursorIndex, value, true)) {
                     OnCursorIndexChanged(new ValueEventArgs<int>(value));
                 }
@@ -744,8 +742,8 @@ namespace Blish_HUD.Controls {
             UpdateSelectionIfShiftDown();
         }
 
-        protected void HandleMouseDoubleClick() {
-            if (_cursorIndex == _prevCursorIndex) {
+        protected void HandleMouseDoubleClick(int newIndex) {
+            if (newIndex == _cursorIndex) {
                 this.SelectionStart = GetClosestLeftWordBoundary(_cursorIndex);
                 this.SelectionEnd = GetClosestRightWordBoundary(_cursorIndex);
             }
@@ -776,7 +774,7 @@ namespace Blish_HUD.Controls {
 
             this.Focused = true;
 
-            if (e.IsDoubleClick) HandleMouseDoubleClick();
+            if (e.IsDoubleClick) HandleMouseDoubleClick(GetCursorIndexFromPosition(this.RelativeMousePosition));
         }
 
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left) {
