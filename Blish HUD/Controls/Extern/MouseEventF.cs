@@ -2,6 +2,7 @@ using System;
 
 namespace Blish_HUD.Controls.Extern
 {
+    [Obsolete("MouseEventF is obsolete.", true)]
     [Flags]
     internal enum MouseEventF : uint
     {

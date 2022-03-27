@@ -1,5 +1,8 @@
+using System;
+
 namespace Blish_HUD.Controls.Extern
 {
+    [Obsolete("ScanCodeShort is obsolete.", true)]
     internal enum ScanCodeShort : short
     {
         LBUTTON = 0,

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Controls.Extern
 {
+    [Obsolete("POINT is obsolete.", true)]
     /// <summary>
     /// Struct representing a point.
     /// </summary>
@@ -16,7 +17,7 @@ namespace Blish_HUD.Controls.Extern
             return new Point(point.X, point.Y);
         }
     }
-
+    [Obsolete("PInvoke is obsolete.", true)]
     internal static class PInvoke {
         [DllImport("user32.dll")]
         internal static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] Input[] pInputs, int cbSize);

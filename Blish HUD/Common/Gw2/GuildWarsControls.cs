@@ -1,10 +1,5 @@
-﻿using System;
-
-namespace Blish_HUD.Controls.Intern
-{
-    [Obsolete("Controls.Intern.GuildWarsControls is obsolete. Please use Common.Gw2.GuildWarsControls instead.", true)]
-    public enum GuildWarsControls
-    {
+﻿namespace Blish_HUD.Common.Gw2 {
+    public enum GuildWarsControls {
         None,
         SwapWeapons,
         WeaponSkill1,
