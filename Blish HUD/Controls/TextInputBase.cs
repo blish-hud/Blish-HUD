@@ -170,6 +170,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected int _cursorIndex;
+        protected int _prevCursorIndex;
 
         /// <summary>
         /// Gets or sets the current index of the cursor within the text.
@@ -177,6 +178,7 @@ namespace Blish_HUD.Controls {
         public int CursorIndex {
             get => _cursorIndex;
             set {
+                _prevCursorIndex = _cursorIndex;
                 if (SetProperty(ref _cursorIndex, value, true)) {
                     OnCursorIndexChanged(new ValueEventArgs<int>(value));
                 }
@@ -196,6 +198,7 @@ namespace Blish_HUD.Controls {
         protected bool _multiline;
         protected bool _caretVisible;
         protected bool _cursorMoved;
+        protected bool _cursorDragging;
 
         private TimeSpan _lastInvalidate;
         private bool     _insertMode;
@@ -311,15 +314,13 @@ namespace Blish_HUD.Controls {
         private void DeleteSelection() {
             if (_selectionStart == _selectionEnd) return;
 
-            if (_selectionStart < _selectionEnd) {
-                Delete(_selectionStart, _selectionEnd - _selectionStart);
-                _selectionEnd = _selectionStart;
-            } else {
-                Delete(_selectionEnd, _selectionStart - _selectionEnd);
-                _selectionStart = _selectionEnd;
-            }
+            int deleteStart = Math.Min(_selectionStart, _selectionEnd);
+            int deleteLength = Math.Max(_selectionStart, _selectionEnd) - deleteStart;
 
-            UserSetCursorIndex(_selectionStart);
+            Delete(deleteStart, deleteLength);
+
+            UserSetCursorIndex(deleteStart);
+            ResetSelection();
         }
 
         private bool Paste(string value) {
@@ -706,11 +707,13 @@ namespace Blish_HUD.Controls {
 
         private void UpdateFocusState(bool focused) {
             if (focused) {
+                Input.Mouse.LeftMouseButtonPressed  += OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
                 Input.Keyboard.KeyStateChanged      += OnGlobalKeyboardKeyStateChanged;
 
                 GameService.Input.Keyboard.SetTextInputListner(OnTextInput);
             } else {
+                Input.Mouse.LeftMouseButtonPressed  -= OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseLeftMouseButtonReleased;
                 Input.Keyboard.KeyStateChanged      -= OnGlobalKeyboardKeyStateChanged;
 
@@ -722,22 +725,48 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
+        private void OnGlobalMouseLeftMouseButtonPressed(object sender, MouseEventArgs e) {
             this.Focused = _mouseOver && _enabled;
+        }
+
+        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
+            _cursorDragging = false;
         }
 
         public abstract int GetCursorIndexFromPosition(int x, int y);
 
         public int GetCursorIndexFromPosition(Point position) => GetCursorIndexFromPosition(position.X, position.Y);
 
-        protected void HandleMouseUpdatedCursorIndex(int newIndex, bool isDoubleClick) {
-            if (_cursorIndex == newIndex && isDoubleClick) {
-                this.SelectionStart = GetClosestLeftWordBoundary(newIndex);
-                this.SelectionEnd   = GetClosestRightWordBoundary(newIndex);
-            } else {
-                UserSetCursorIndex(newIndex);
-                UpdateSelectionIfShiftDown();
+        protected void HandleMouseUpdatedCursorIndex(int newIndex) {
+            UserSetCursorIndex(newIndex);
+            UpdateSelectionIfShiftDown();
+        }
+
+        protected void HandleMouseDoubleClick() {
+            if (_cursorIndex == _prevCursorIndex) {
+                this.SelectionStart = GetClosestLeftWordBoundary(_cursorIndex);
+                this.SelectionEnd = GetClosestRightWordBoundary(_cursorIndex);
             }
+        }
+
+        protected void HandleMouseSelectionDrag(int newIndex) {
+            UserSetCursorIndex(newIndex);
+            this.SelectionEnd = newIndex;
+        }
+
+        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
+            base.OnLeftMouseButtonPressed(e);
+
+            this.Focused = true;
+            _cursorDragging = true;
+
+            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition));
+        }
+
+        protected override void OnMouseMoved(MouseEventArgs e) {
+            base.OnMouseMoved(e);
+
+            if (_cursorDragging) HandleMouseSelectionDrag(GetCursorIndexFromPosition(this.RelativeMousePosition));
         }
 
         protected override void OnClick(MouseEventArgs e) {
@@ -745,7 +774,7 @@ namespace Blish_HUD.Controls {
 
             this.Focused = true;
 
-            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition), e.IsDoubleClick);
+            if (e.IsDoubleClick) HandleMouseDoubleClick();
         }
 
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left) {
