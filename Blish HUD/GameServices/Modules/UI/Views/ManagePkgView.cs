@@ -40,7 +40,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 (_nameLabel ?? throw new ViewNotBuiltException()).Text = value;
 
                 _nameLabel.Visible = true;
-                //_authLabel.Left                                        = _nameLabel.Right  + 10;
+                //_authLabel.Left  = _nameLabel.Right  + 10;
                 _previewLabel.Left = _nameLabel.Right + 10;
                 _previewLabel.Top  = _nameLabel.Top   + 2;
             }
@@ -78,8 +78,7 @@ namespace Blish_HUD.Modules.UI.Views {
             set {
                 if (_descLabel == null) throw new ViewNotBuiltException();
 
-                _descLabel.Text           = value;
-                _descLabel.AutoSizeHeight = true;
+                _descLabel.Text = value;
             }
         }
 
@@ -219,10 +218,11 @@ namespace Blish_HUD.Modules.UI.Views {
             _descLabel = new Label() {
                 WrapText          = true,
                 Font              = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Regular),
-                Location          = new Point(_nameLabel.Left, _nameLabel.Bottom + 4),
-                Size              = new Point(_actionButton.Left                 - _nameLabel.Left * 2, buildPanel.Height - _nameLabel.Bottom - 8),
+                Location          = new Point(_nameLabel.Left,                                    _nameLabel.Bottom + 4),
+                Size              = new Point(548 /* _actionButton.Left - _nameLabel.Left * 2 */, buildPanel.Height - _nameLabel.Bottom - 8),
                 Parent            = buildPanel,
-                VerticalAlignment = VerticalAlignment.Top
+                VerticalAlignment = VerticalAlignment.Top,
+                AutoSizeHeight    = true
             };
 
             _statusImage.Click            += StatusImageOnClick;
