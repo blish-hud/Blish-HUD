@@ -45,13 +45,17 @@ namespace Blish_HUD {
             public static Texture2D TransparentPixel { get; private set; }
 
             public static void Load() {
+                var graphicsDevice = Graphics.LendGraphicsDevice(true);
+
                 Error = Content.GetTexture(@"common\error");
 
-                Pixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
+                Pixel = new Texture2D(graphicsDevice, 1, 1);
                 Pixel.SetData(new[] { Color.White });
 
-                TransparentPixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
+                TransparentPixel = new Texture2D(graphicsDevice, 1, 1);
                 TransparentPixel.SetData(new[] { Color.Transparent });
+
+                Graphics.ReturnGraphicsDevice();
             }
         }
 
@@ -238,35 +242,27 @@ namespace Blish_HUD {
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
         public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
-            AsyncTexture2D returnedTexture = new AsyncTexture2D(Textures.TransparentPixel.Duplicate());
+            AsyncTexture2D returnedTexture = new AsyncTexture2D(Textures.TransparentPixel);
 
             string requestUrl = $"{RENDERSERVICE_REQUESTURL}{signature}/{fileId}.png";
 
             Gw2WebApi.AnonymousConnection.Client.Render.DownloadToByteArrayAsync(requestUrl)
                      .ContinueWith((textureDataResponse) => {
-                                       if (textureDataResponse.Exception != null) {
-                                           Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
-                                           return;
-                                       }
+                          var loadedTexture = Textures.Error;
 
-                                       // Ensure that the texture is loaded on the correct thread.
-                                       Graphics.QueueMainThreadRender((_) => {
-                                              try {
-                                                  var textureData = textureDataResponse.Result;
+                          if (textureDataResponse.Exception == null) {
+                              try {
+                                  using var textureStream = new MemoryStream(textureDataResponse.Result);
+                                  loadedTexture = TextureUtil.FromStreamPremultiplied(textureStream);
+                              } catch (Exception ex) {
+                                  Logger.Warn(ex, $"Render service texture {requestUrl} failed to load.");
+                              }
+                          } else {
+                              Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
+                          }
 
-                                                  using (var textureStream = new MemoryStream(textureData)) {
-                                                      var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
-
-                                                      returnedTexture.SwapTexture(loadedTexture);
-                                                  }
-                                              } catch (Exception ex) {
-                                                  Logger.Warn(ex, $"Render service texture {requestUrl} failed to load.");
-
-                                                  returnedTexture.SwapTexture(Textures.Error);
-                                              }
-                                       });
-                                       
-                                   });
+                          returnedTexture.SwapTexture(loadedTexture);
+                      });
 
             return returnedTexture;
         }

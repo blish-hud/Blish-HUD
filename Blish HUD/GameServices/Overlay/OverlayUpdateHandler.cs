@@ -19,20 +19,10 @@ namespace Blish_HUD.Overlay {
 
         private CoreVersionManifest[] _availableUpdates = Array.Empty<CoreVersionManifest>();
 
-        private SettingEntry<bool>           _prereleasesVisible;
         private SettingEntry<SemVer.Version> _lastAcknowledgedUpdate;
         private SettingEntry<bool>           _notifyOfNewReleases;
 
         private int _releaseLoadAttemptsRemaining = 3;
-
-        /// <summary>
-        /// If the user should be prompted about prerelease versions.
-        /// If <c>false</c>, only release versions will be taken into consideration for the user.
-        /// </summary>
-        public bool PrereleasesVisible {
-            get => _prereleasesVisible.Value;
-            set => _prereleasesVisible.Value = value;
-        }
 
         /// <summary>
         /// The last update <see cref="SemVer.Version"/> that was acknowledged by the user.
@@ -52,7 +42,7 @@ namespace Blish_HUD.Overlay {
         /// <summary>
         /// The highest version release.  Will include prereleases only if <see cref="PrereleasesVisible"/> is <c>true</c>.
         /// </summary>
-        public CoreVersionManifest LatestRelease => _availableUpdates.Where(manifest => manifest.IsPrerelease == this.PrereleasesVisible)
+        public CoreVersionManifest LatestRelease => _availableUpdates.Where(manifest => manifest.IsPrerelease == GameService.Overlay.ShowPreviews.Value)
                                                                      .OrderByDescending(manifest => manifest.Version)
                                                                      .FirstOrDefault();
 
@@ -64,7 +54,6 @@ namespace Blish_HUD.Overlay {
         }
 
         private void DefineOverlayUpdateSettings(SettingCollection settingCollection) {
-            _prereleasesVisible     = settingCollection.DefineSetting(nameof(PrereleasesVisible),           false);
             _lastAcknowledgedUpdate = settingCollection.DefineSetting(nameof(this.LastAcknowledgedRelease), new SemVer.Version("0.0.0"));
             _notifyOfNewReleases    = settingCollection.DefineSetting(nameof(this.NotifyOfNewRelease),      true);
         }

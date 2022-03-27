@@ -84,7 +84,7 @@ namespace Blish_HUD.Input {
         }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
-            if (this.PrimaryKey == Keys.None) return;
+            if (this.PrimaryKey == Keys.None || GameService.Input.Keyboard.TextFieldIsActive()) return;
 
             CheckTrigger(GameService.Input.Keyboard.ActiveModifiers, GameService.Input.Keyboard.KeysDown);
         }

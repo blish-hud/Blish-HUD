@@ -19,7 +19,7 @@ namespace Blish_HUD.Strings.GameServices {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class OverlayService {
@@ -445,6 +445,26 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string Setting_ShowInTaskbar_DisplayName {
             get {
                 return ResourceManager.GetString("Setting_ShowInTaskbar_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, prerelease versions of both modules and Blish HUD itself become available through the interface.
+        ///
+        ///WARNING: Prerelease modules or Blish HUD versions may be unstable.  By enabling this feature, you acknowledge that you&apos;d like to be a guinea pig.  Do not use prerelease modules / versions of Blish HUD unless you&apos;re willing to experience crashes, bugs, or other issues..
+        /// </summary>
+        internal static string Setting_ShowPreviews_Description {
+            get {
+                return ResourceManager.GetString("Setting_ShowPreviews_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview Releases.
+        /// </summary>
+        internal static string Setting_ShowPreviews_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_ShowPreviews_DisplayName", resourceCulture);
             }
         }
         

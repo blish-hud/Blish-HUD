@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Blish_HUD.Contexts;
@@ -16,7 +15,6 @@ using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using NLog;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MenuItem = Blish_HUD.Controls.MenuItem;
@@ -54,6 +52,8 @@ namespace Blish_HUD {
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
+        internal SettingEntry<bool> ShowPreviews { get; private set; }
+
         public bool InterfaceHidden = false;
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
@@ -157,7 +157,11 @@ namespace Blish_HUD {
                                                               new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B),
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
-            
+
+            this.ShowPreviews = settings.DefineSetting(nameof(this.ShowPreviews),
+                                                       false,
+                                                       () => Strings.GameServices.OverlayService.Setting_ShowPreviews_DisplayName,
+                                                       () => Strings.GameServices.OverlayService.Setting_ShowPreviews_Description);
 
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;

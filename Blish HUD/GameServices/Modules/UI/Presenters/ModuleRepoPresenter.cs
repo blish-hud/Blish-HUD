@@ -64,11 +64,16 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             bool s = true;
 
-            foreach (var pkgManifest in this.Model.GetPkgManifests().GroupBy(m => m.Namespace)) {
+            foreach (var pkgManifest in this.Model.GetPkgManifests()
+                                            .Where(m => GameService.Overlay.ShowPreviews.Value || !m.IsPreview)
+                                            .GroupBy(m => m.Namespace)
+                                            .OrderBy(pkg => pkg.First().Name)) {
                 var nPanel = new ViewContainer {
-                    Size     = new Point(this.View.RepoFlowPanel.Width - 25, 64),
-                    ShowTint = (s = !s),
-                    Parent   = this.View.RepoFlowPanel
+                    Size             = new Point(this.View.RepoFlowPanel.Width - 25, 64),
+                    ShowTint         = (s = !s),
+                    Parent           = this.View.RepoFlowPanel,
+                    HeightSizingMode = SizingMode.AutoSize,
+                    AutoSizePadding  = new Point(0, 5)
                 };
 
                 nPanel.Show(new ManagePkgView(pkgManifest));

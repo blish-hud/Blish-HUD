@@ -9,7 +9,21 @@ namespace Blish_HUD {
         private static readonly Logger Logger = Logger.GetLogger(typeof(TextureUtil));
 
         /// <summary>
-        /// Creates a Texture2D from a stream, supports formats bmp, gif, jpg, png, tif and dds.
+        /// Creates a Texture2D from a stream. Supports formats bmp, gif, jpg, png, tif, and dds.
+        /// The resulting texture has the alpha channel premultiplied to match the MonoGame 3.6
+        /// implementation.
+        /// </summary>
+        /// <remarks>https://community.monogame.net/t/texture2d-fromstream-in-3-7/10973/9</remarks>
+        public static Texture2D FromStreamPremultiplied(Stream stream) {
+            var texture = FromStreamPremultiplied(GameService.Graphics.LendGraphicsDevice(), stream);
+
+            GameService.Graphics.ReturnGraphicsDevice();
+
+            return texture;
+        }
+
+        /// <summary>
+        /// Creates a Texture2D from a stream. Supports formats bmp, gif, jpg, png, tif, and dds.
         /// The resulting texture has the alpha channel premultiplied to match the MonoGame 3.6
         /// implementation.
         /// </summary>
@@ -41,13 +55,6 @@ namespace Blish_HUD {
                 }
             } catch (AccessViolationException) {
                 // Not sure how this happens.
-            }
-
-            if (!Program.IsMainThread) {
-                Logger.Debug("Something attempted to create a texture off of the main thread - this is dangerous and should be resolved as it will eventually throw an exception for something.");
-                #if DEBUG && THROWONBADTEXTURE
-                throw new InvalidOperationException("A texture was made outside of the main thread.  Textures should be created on the main thread only.");
-                #endif
             }
 
             return texture ?? ContentService.Textures.Error;

@@ -147,6 +147,14 @@ namespace Blish_HUD.Input {
             foreach (Keys key in passingKeys) OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
         }
 
+        /// <summary>
+        /// Returns <c>true</c> if either an in-game Textbox or Blish HUD text field is active.
+        /// </summary>
+        public bool TextFieldIsActive() {
+            return (GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.UI.IsTextInputFocused)
+                || _textInputDelegate != null;
+        }
+
         public bool HandleInput(KeyboardEventArgs e) {
             if (_hookGeneralBlock) return true;
 
@@ -199,6 +207,8 @@ namespace Blish_HUD.Input {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
             if (GameService.Overlay.InterfaceHidden) return false;
+
+            if (GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.UI.IsTextInputFocused) return false;
 
             // Handle the escape key
             if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown) {

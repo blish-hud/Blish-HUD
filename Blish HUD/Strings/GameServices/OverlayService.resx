@@ -266,6 +266,14 @@ For the best experience set this to the same key as in the game.</value>
   <data name="Setting_InteractKey_DisplayName" xml:space="preserve">
     <value>Interact</value>
   </data>
+  <data name="Setting_ShowPreviews_DisplayName" xml:space="preserve">
+    <value>Preview Releases</value>
+  </data>
+  <data name="Setting_ShowPreviews_Description" xml:space="preserve">
+    <value>If enabled, prerelease versions of both modules and Blish HUD itself become available through the interface.
+
+WARNING: Prerelease modules or Blish HUD versions may be unstable.  By enabling this feature, you acknowledge that you'd like to be a guinea pig.  Do not use prerelease modules / versions of Blish HUD unless you're willing to experience crashes, bugs, or other issues.</value>
+  </data>
   <data name="OverlayDynamicHUDSection" xml:space="preserve">
     <value>Dynamic HUD</value>
   </data>
