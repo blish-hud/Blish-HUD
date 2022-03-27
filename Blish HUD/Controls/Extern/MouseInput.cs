@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Controls.Extern
 {
+    [Obsolete("MouseInput is obsolete.", true)]
     [StructLayout(LayoutKind.Sequential)]
     internal struct MouseInput
     {

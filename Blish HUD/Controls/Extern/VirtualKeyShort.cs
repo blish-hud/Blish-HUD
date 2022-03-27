@@ -1,5 +1,8 @@
+using System;
+
 namespace Blish_HUD.Controls.Extern
 {
+    [Obsolete("VirtualKeyShort is obsolete. Please use Keys instead.", true)]
     public enum VirtualKeyShort : short
     {
         ///<summary>

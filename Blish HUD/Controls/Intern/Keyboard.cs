@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Blish_HUD.Controls.Extern;
 namespace Blish_HUD.Controls.Intern
 {
+    [Obsolete("Keyboard is obsolete. Please use KeyboardUtil instead.", true)]
     public static class Keyboard
     {
         private const uint WM_KEYDOWN = 0x0100;
@@ -179,6 +180,7 @@ namespace Blish_HUD.Controls.Intern
             Release(key, sendToSystem);
         }
     }
+    [Obsolete("Controls.Intern.ExtraKeyInfo is obsolete. Please use ExtraKeyInfo instead.", true)]
     class ExtraKeyInfo
     {
         public ushort repeatCount;

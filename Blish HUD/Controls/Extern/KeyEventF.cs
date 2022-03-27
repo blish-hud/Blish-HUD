@@ -2,6 +2,7 @@ using System;
 
 namespace Blish_HUD.Controls.Extern
 {
+    [Obsolete("KeyEventF is obsolete.", true)]
     [Flags]
     internal enum KeyEventF : uint
     {

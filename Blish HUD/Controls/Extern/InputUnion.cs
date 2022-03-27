@@ -1,7 +1,9 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Controls.Extern
 {
+    [Obsolete("InputUnion is obsolete.", true)]
     [StructLayout(LayoutKind.Explicit)]
     internal struct InputUnion
     {
