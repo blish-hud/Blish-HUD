@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
 using Blish_HUD.Graphics;
@@ -13,6 +16,9 @@ namespace Blish_HUD {
     public class GraphicsService:GameService {
 
         private const string GRAPHICS_SETTINGS = "GraphicsConfiguration";
+
+        private const int TARGET_MAX_FRAMETIME = 14;
+        private const int MIN_QUEUED_RENDERS   = 1;
 
         #region Load Static
 
@@ -137,7 +143,7 @@ namespace Blish_HUD {
                     return dpi != 0
                                ? dpi / 96f
                                : 1f;
-                }
+            }
 
             return 1f;
         }
@@ -152,22 +158,21 @@ namespace Blish_HUD {
 
         public GraphicsDeviceManager GraphicsDeviceManager => BlishHud.Instance.ActiveGraphicsDeviceManager;
 
+        [Obsolete("To ensure exclusive use of the graphics device use GameService.Graphics.LendGraphicsDevice().", true)]
         public GraphicsDevice GraphicsDevice => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
 
-        public int WindowWidth => this.GraphicsDevice.Viewport.Width;
-        public int WindowHeight => this.GraphicsDevice.Viewport.Height;
+        public int WindowWidth  => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Width;
+        public int WindowHeight => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Height;
 
         public  float AspectRatio { get; private set; }
 
-        internal SettingCollection _graphicsSettings;
-
-        public SettingCollection GraphicsSettings => _graphicsSettings;
+        public SettingCollection GraphicsSettings { get; private set; }
 
         private SettingEntry<FramerateMethod> _frameLimiterSetting;
         private SettingEntry<bool>            _enableVsyncSetting;
         private SettingEntry<bool>            _smoothCharacterPositionSetting;
         private SettingEntry<DpiMethod>       _dpiScalingMethodSetting;
-        private SettingEntry<ManualUISize>   _UISizeSetting;
+        private SettingEntry<ManualUISize>    _UISizeSetting;
 
         public FramerateMethod FrameLimiter {
             get => ApplicationSettings.Instance.TargetFramerate > 0
@@ -202,7 +207,7 @@ namespace Blish_HUD {
                     try {
                         BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
                         BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
-
+                        
                         BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
 
                         // Exception would be from the code above, but don't update our
@@ -238,9 +243,9 @@ namespace Blish_HUD {
             // Might do better error handling later on
             ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { GameService.Overlay.Restart(); };
 
-            _graphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
+            this.GraphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
 
-            DefineSettings(_graphicsSettings);
+            DefineSettings(this.GraphicsSettings);
         }
 
         private void DefineSettings(SettingCollection settings) {
@@ -331,32 +336,105 @@ namespace Blish_HUD {
             }
         }
 
-        internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
-            this.GraphicsDevice.Clear(Color.Transparent);
+        private readonly object _lendLockLow    = new object();
+        private readonly object _lendLockNext   = new object();
+        private readonly object _lendLockDevice = new object();
 
-            // Skip rendering all elements when hotkey is pressed
+        private volatile bool _currentLenderHighPriority = false;
+
+        /// <summary>
+        /// Provides exclusive and locked access to the <see cref="GraphicsDevice"/>. This
+        /// method blocks until the device is available and will yield to higher priority
+        /// lend requests. Core lend requests receive priority over these requests.  Once
+        /// done with the <see cref="GraphicsDevice"/> unlock it with <see cref="ReturnGraphicsDevice"/>.
+        /// </summary>
+        /// <param name="highPriority">
+        /// If <c>true</c> then this thread will return as soon as the <see cref="GraphicsDevice"/>
+        /// becomes available - ahead of all low priority lend requests.
+        /// </param>
+        internal GraphicsDevice LendGraphicsDevice(bool highPriority) {
+            if (!highPriority) {
+                Monitor.Enter(_lendLockLow);
+            }
+
+            Monitor.Enter(_lendLockNext);
+            Monitor.Enter(_lendLockDevice);
+
+            _currentLenderHighPriority = highPriority;
+
+            Monitor.Exit(_lendLockNext);
+
+            return BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
+        }
+
+        /// <summary>
+        /// Provides exclusive and locked access to the <see cref="GraphicsDevice"/>. This
+        /// method blocks until the device is available and will yield to higher priority
+        /// lend requests. Core lend requests receive priority over these requests.  Once
+        /// done with the <see cref="GraphicsDevice"/> unlock it with <see cref="ReturnGraphicsDevice"/>.
+        /// </summary>
+        public GraphicsDevice LendGraphicsDevice() {
+            return LendGraphicsDevice(false);
+        }
+
+        /// <summary>
+        /// Unlocks access to the <see cref="GraphicsDevice"/>.  You must call this after <see cref="LendGraphicsDevice"/>.
+        /// </summary>
+        public void ReturnGraphicsDevice([CallerMemberName] string callerName = null) {
+            Monitor.Exit(_lendLockDevice);
+
+            if (!_currentLenderHighPriority) {
+                Monitor.Exit(_lendLockLow);
+            }
+        }
+
+        private static readonly Logger Logger = Logger.GetLogger<GraphicsService>();
+
+        private readonly Stopwatch _renderTimer = Stopwatch.StartNew();
+
+        internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
+            _renderTimer.Restart();
+
+            var graphicsDevice = this.LendGraphicsDevice(true);
+
+            if (_renderTimer.ElapsedMilliseconds > 1) {
+                Logger.Debug($"Render thread stalled for {_renderTimer.ElapsedMilliseconds} ms.");
+            }
+
+            graphicsDevice.Clear(Color.Transparent);
+
+            // Skip rendering all elements when UI is hidden
             if (GameService.Overlay.InterfaceHidden) return;
 
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game and map is closed
-            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
-                this.World.Render(this.GraphicsDevice);
+            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
+                this.World.Render(graphicsDevice);
+            }
             GameService.Debug.StopTimeFunc("3D objects");
 
             // Slightly better scaling (text is a bit more legible)
-            this.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             GameService.Debug.StartTimeFunc("UI Elements");
+
             if (this.SpriteScreen != null && this.SpriteScreen.Visible) {
                 this.SpriteScreen.Draw(spriteBatch, this.SpriteScreen.LocalBounds, this.SpriteScreen.LocalBounds);
             }
+
             GameService.Debug.StopTimeFunc("UI Elements");
 
             GameService.Debug.StartTimeFunc("Render Queue");
-            if (_queuedRenders.TryDequeue(out var renderCall)) {
-                renderCall.Invoke(this.GraphicsDevice);
+            for (int i = MIN_QUEUED_RENDERS; i > 0 && _queuedRenders.TryDequeue(out var renderCall); i--) {
+                renderCall.Invoke(graphicsDevice);
+
+                if (_renderTimer.ElapsedMilliseconds < TARGET_MAX_FRAMETIME) {
+                    i++;
+                }
             }
             GameService.Debug.StopTimeFunc("Render Queue");
+
+            ReturnGraphicsDevice();
         }
 
         protected override void Load() { /* NOOP */ }

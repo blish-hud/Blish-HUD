@@ -41,7 +41,7 @@ namespace Blish_HUD.Modules.Managers {
             using (var textureStream = _reader.GetFileStream(texturePath)) {
                 if (textureStream != null) {
                     Logger.Debug("Successfully loaded texture {dataReaderFilePath}.", _reader.GetPathRepresentation(texturePath));
-                    return TextureUtil.FromStreamPremultiplied(GameService.Graphics.GraphicsDevice, textureStream);
+                    return TextureUtil.FromStreamPremultiplied(textureStream);
                 }
             }
 
@@ -70,7 +70,10 @@ namespace Blish_HUD.Modules.Managers {
             long effectDataLength = _reader.GetFileBytes(effectPath, out byte[] effectData);
 
             if (effectDataLength > 0) {
-                return new Effect(GameService.Graphics.GraphicsDevice, effectData, 0, (int)effectDataLength);
+                var effect = new Effect(GameService.Graphics.LendGraphicsDevice(), effectData, 0, (int)effectDataLength);
+                GameService.Graphics.ReturnGraphicsDevice();
+
+                return effect;
             }
 
             return null;

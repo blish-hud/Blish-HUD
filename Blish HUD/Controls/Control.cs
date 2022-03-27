@@ -779,7 +779,7 @@ namespace Blish_HUD.Controls {
         public virtual void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor) {
             var controlScissor = Rectangle.Intersect(scissor, this.AbsoluteBounds.WithPadding(_padding)).ScaleBy(Graphics.UIScaleMultiplier);
 
-            Graphics.GraphicsDevice.ScissorRectangle = controlScissor;
+            spriteBatch.GraphicsDevice.ScissorRectangle = controlScissor;
 
             this.EffectBehind?.Draw(spriteBatch, drawBounds);
 
@@ -790,7 +790,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, drawBounds, _backgroundColor);
 
             if (!this.ClipsBounds) {
-                Graphics.GraphicsDevice.ScissorRectangle = Graphics.SpriteScreen.LocalBounds.ScaleBy(Graphics.UIScaleMultiplier);
+                spriteBatch.GraphicsDevice.ScissorRectangle = Graphics.SpriteScreen.LocalBounds.ScaleBy(Graphics.UIScaleMultiplier);
             }
 
             // Draw control

@@ -251,7 +251,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected sealed override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            var controlScissor = Graphics.GraphicsDevice.ScissorRectangle.ScaleBy(1 / Graphics.UIScaleMultiplier);
+            var controlScissor = spriteBatch.GraphicsDevice.ScissorRectangle.ScaleBy(1 / Graphics.UIScaleMultiplier);
 
             // Draw container background
             PaintBeforeChildren(spriteBatch, bounds);
@@ -261,7 +261,7 @@ namespace Blish_HUD.Controls {
             PaintChildren(spriteBatch, bounds, controlScissor);
 
             // Restore scissor
-            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.UIScaleMultiplier);
+            spriteBatch.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.UIScaleMultiplier);
 
             spriteBatch.Begin(this.SpriteBatchParameters);
 
