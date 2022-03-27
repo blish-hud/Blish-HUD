@@ -10,6 +10,7 @@ namespace Blish_HUD.Overlay.UI.Views {
                 WidthSizingMode  = SizingMode.Fill,
                 HeightSizingMode = SizingMode.Fill,
                 FlowDirection    = ControlFlowDirection.SingleTopToBottom,
+                CanScroll        = true,
                 Parent           = buildPanel
             };
 
@@ -28,6 +29,7 @@ namespace Blish_HUD.Overlay.UI.Views {
 
         private void BuildOverlaySettings(Panel rootPanel) {
             GetStandardPanel(rootPanel, Strings.GameServices.OverlayService.OverlaySettingsSection).Show(new SettingsView(GameService.Overlay.OverlaySettings));
+            GetStandardPanel(rootPanel, Strings.GameServices.OverlayService.OverlayDynamicHUDSection).Show(new SettingsView(GameService.Overlay.DynamicHUDSettings));
             GetStandardPanel(rootPanel, Strings.GameServices.GraphicsService.GraphicsSettingsSection).Show(new SettingsView(GameService.Graphics.GraphicsSettings));
             GetStandardPanel(rootPanel, Strings.GameServices.DebugService.DebugSettingsSection).Show(new SettingsView(GameService.Debug.DebugSettings));
         }

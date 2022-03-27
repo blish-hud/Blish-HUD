@@ -160,6 +160,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dynamic HUD.
+        /// </summary>
+        internal static string OverlayDynamicHUDSection {
+            get {
+                return ResourceManager.GetString("OverlayDynamicHUDSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Overlay Settings.
         /// </summary>
         internal static string OverlaySettingsSection {
@@ -331,6 +340,24 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Controls visibility during cut scenes and loading screens..
+        /// </summary>
+        internal static string Setting_DynamicHUDLoading_Description {
+            get {
+                return ResourceManager.GetString("Setting_DynamicHUDLoading_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cut Scene / Loading Screen.
+        /// </summary>
+        internal static string Setting_DynamicHUDLoading_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_DynamicHUDLoading_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Controls visibility of the Menu bar located in the upper-left of the screen..
         /// </summary>
         internal static string Setting_DynamicHUDMenuBar_Description {
@@ -340,11 +367,29 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dynamic HUD Menu Bar.
+        ///   Looks up a localized string similar to Menu Bar.
         /// </summary>
         internal static string Setting_DynamicHUDMenuBar_DisplayName {
             get {
                 return ResourceManager.GetString("Setting_DynamicHUDMenuBar_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Controls visibility of the windows..
+        /// </summary>
+        internal static string Setting_DynamicHUDWindows_Description {
+            get {
+                return ResourceManager.GetString("Setting_DynamicHUDWindows_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Windows.
+        /// </summary>
+        internal static string Setting_DynamicHUDWindows_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_DynamicHUDWindows_DisplayName", resourceCulture);
             }
         }
         
