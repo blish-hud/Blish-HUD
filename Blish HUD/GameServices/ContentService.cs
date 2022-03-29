@@ -45,17 +45,15 @@ namespace Blish_HUD {
             public static Texture2D TransparentPixel { get; private set; }
 
             public static void Load() {
-                var graphicsDevice = Graphics.LendGraphicsDevice(true);
+                using (var ctx = Graphics.LendGraphicsDeviceContext(true)) {
+                    Error = Content.GetTexture(@"common\error");
 
-                Error = Content.GetTexture(@"common\error");
+                    Pixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
+                    Pixel.SetData(new[] { Color.White });
 
-                Pixel = new Texture2D(graphicsDevice, 1, 1);
-                Pixel.SetData(new[] { Color.White });
-
-                TransparentPixel = new Texture2D(graphicsDevice, 1, 1);
-                TransparentPixel.SetData(new[] { Color.Transparent });
-
-                Graphics.ReturnGraphicsDevice();
+                    TransparentPixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
+                    TransparentPixel.SetData(new[] { Color.Transparent });
+                }
             }
         }
 
