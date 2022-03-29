@@ -1,7 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace Blish_HUD {
+namespace Blish_HUD.Graphics {
     public readonly ref struct GraphicsDeviceContext {
 
         private readonly GraphicsService _service;
