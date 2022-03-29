@@ -408,7 +408,7 @@ namespace Blish_HUD {
         /// <summary>
         /// Unlocks access to the <see cref="GraphicsDevice"/>.  You must call this after <see cref="LendGraphicsDevice"/>.
         /// </summary>
-        public void ReturnGraphicsDevice([CallerMemberName] string callerName = null) {
+        public void ReturnGraphicsDevice() {
             Monitor.Exit(_lendLockDevice);
 
             if (!_currentLenderHighPriority) {
