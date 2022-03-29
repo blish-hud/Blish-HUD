@@ -7,13 +7,15 @@ namespace Blish_HUD {
 
         /// <remarks>https://stackoverflow.com/a/16141281/595437</remarks>
         public static Texture2D GetRegion(this Texture2D texture2D, Rectangle region) {
-            Texture2D croppedTexture = new Texture2D(GameService.Graphics.LendGraphicsDevice(), region.Width, region.Height);
+            var croppedTexture = texture2D;
 
-            Color[] clrData = new Color[region.Width * region.Height];
-            texture2D.GetData(0, region, clrData, 0, region.Width * region.Height);
-            croppedTexture.SetData(clrData);
+            GameService.Graphics.LendGraphicsDevice(graphicsDevice => {
+                croppedTexture = new Texture2D(graphicsDevice, region.Width, region.Height);
 
-            GameService.Graphics.ReturnGraphicsDevice();
+                Color[] clrData = new Color[region.Width * region.Height];
+                texture2D.GetData(0, region, clrData, 0, region.Width * region.Height);
+                croppedTexture.SetData(clrData);
+            });
 
             return croppedTexture;
         }

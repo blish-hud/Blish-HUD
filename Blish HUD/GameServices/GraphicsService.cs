@@ -340,19 +340,17 @@ namespace Blish_HUD {
         private readonly object _lendLockNext   = new object();
         private readonly object _lendLockDevice = new object();
 
-        private volatile bool _currentLenderHighPriority = false;
-
         /// <summary>
         /// Provides exclusive and locked access to the <see cref="GraphicsDevice"/>. This
         /// method blocks until the device is available and will yield to higher priority
-        /// lend requests. Core lend requests receive priority over these requests.  Once
-        /// done with the <see cref="GraphicsDevice"/> unlock it with <see cref="ReturnGraphicsDevice"/>.
+        /// lend requests. Core lend requests receive priority over these requests.
         /// </summary>
+        /// <param name="graphicsDeviceFunc">A delegate which will receive the <see cref="GraphicsDevice"/>.</param>
         /// <param name="highPriority">
         /// If <c>true</c> then this thread will return as soon as the <see cref="GraphicsDevice"/>
         /// becomes available - ahead of all low priority lend requests.
         /// </param>
-        internal GraphicsDevice LendGraphicsDevice(bool highPriority) {
+        internal void LendGraphicsDevice(Action<GraphicsDevice> graphicsDeviceFunc, bool highPriority) {
             if (!highPriority) {
                 Monitor.Enter(_lendLockLow);
             }
@@ -360,43 +358,31 @@ namespace Blish_HUD {
             Monitor.Enter(_lendLockNext);
             Monitor.Enter(_lendLockDevice);
 
-            _currentLenderHighPriority = highPriority;
-
             Monitor.Exit(_lendLockNext);
 
-            return BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
+            graphicsDeviceFunc(BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice);
+
+            Monitor.Exit(_lendLockDevice);
+
+            if (!highPriority) {
+                Monitor.Exit(_lendLockLow);
+            }
         }
 
         /// <summary>
         /// Provides exclusive and locked access to the <see cref="GraphicsDevice"/>. This
         /// method blocks until the device is available and will yield to higher priority
-        /// lend requests. Core lend requests receive priority over these requests.  Once
-        /// done with the <see cref="GraphicsDevice"/> unlock it with <see cref="ReturnGraphicsDevice"/>.
+        /// lend requests. Core lend requests receive priority over these requests.
         /// </summary>
-        public GraphicsDevice LendGraphicsDevice() {
-            return LendGraphicsDevice(false);
-        }
-
-        /// <summary>
-        /// Unlocks access to the <see cref="GraphicsDevice"/>.  You must call this after <see cref="LendGraphicsDevice"/>.
-        /// </summary>
-        public void ReturnGraphicsDevice([CallerMemberName] string callerName = null) {
-            Monitor.Exit(_lendLockDevice);
-
-            if (!_currentLenderHighPriority) {
-                Monitor.Exit(_lendLockLow);
-            }
+        public void LendGraphicsDevice(Action<GraphicsDevice> graphicsDeviceFunc) {
+            LendGraphicsDevice(graphicsDeviceFunc, false);
         }
 
         private static readonly Logger Logger = Logger.GetLogger<GraphicsService>();
 
         private readonly Stopwatch _renderTimer = Stopwatch.StartNew();
 
-        internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
-            _renderTimer.Restart();
-
-            var graphicsDevice = this.LendGraphicsDevice(true);
-
+        private void LockedRender(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {
             if (_renderTimer.ElapsedMilliseconds > 1) {
                 Logger.Debug($"Render thread stalled for {_renderTimer.ElapsedMilliseconds} ms.");
             }
@@ -433,8 +419,12 @@ namespace Blish_HUD {
                 }
             }
             GameService.Debug.StopTimeFunc("Render Queue");
+        }
 
-            ReturnGraphicsDevice();
+        internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
+            _renderTimer.Restart();
+
+            this.LendGraphicsDevice((graphicsDevice) => LockedRender(gameTime, spriteBatch, graphicsDevice), true);
         }
 
         protected override void Load() { /* NOOP */ }

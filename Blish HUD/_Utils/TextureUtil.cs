@@ -15,9 +15,11 @@ namespace Blish_HUD {
         /// </summary>
         /// <remarks>https://community.monogame.net/t/texture2d-fromstream-in-3-7/10973/9</remarks>
         public static Texture2D FromStreamPremultiplied(Stream stream) {
-            var texture = FromStreamPremultiplied(GameService.Graphics.LendGraphicsDevice(), stream);
+            Texture2D texture = null;
 
-            GameService.Graphics.ReturnGraphicsDevice();
+            GameService.Graphics.LendGraphicsDevice((graphicsDevice) => {
+                texture = FromStreamPremultiplied(graphicsDevice, stream);
+            });
 
             return texture;
         }

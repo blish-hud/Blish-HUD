@@ -70,8 +70,11 @@ namespace Blish_HUD.Modules.Managers {
             long effectDataLength = _reader.GetFileBytes(effectPath, out byte[] effectData);
 
             if (effectDataLength > 0) {
-                var effect = new Effect(GameService.Graphics.LendGraphicsDevice(), effectData, 0, (int)effectDataLength);
-                GameService.Graphics.ReturnGraphicsDevice();
+                Effect effect = null;
+
+                GameService.Graphics.LendGraphicsDevice((graphicsDevice) => {
+                    effect = new Effect(graphicsDevice, effectData, 0, (int)effectDataLength);
+                });
 
                 return effect;
             }
