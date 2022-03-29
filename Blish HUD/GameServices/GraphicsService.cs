@@ -340,8 +340,6 @@ namespace Blish_HUD {
         private readonly object _lendLockNext   = new object();
         private readonly object _lendLockDevice = new object();
 
-        private volatile bool _currentLenderHighPriority = false;
-
         /// <summary>
         /// Provides exclusive and locked access to the <see cref="GraphicsDevice"/>. This
         /// method blocks until the device is available and will yield to higher priority
@@ -359,9 +357,6 @@ namespace Blish_HUD {
 
             Monitor.Enter(_lendLockNext);
             Monitor.Enter(_lendLockDevice);
-
-            _currentLenderHighPriority = highPriority;
-
             Monitor.Exit(_lendLockNext);
 
             return BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
@@ -373,7 +368,7 @@ namespace Blish_HUD {
         /// lend requests. Core lend requests receive priority over these requests.  Once
         /// done with the <see cref="GraphicsDevice"/> unlock it with <see cref="ReturnGraphicsDevice"/>.
         /// </summary>
-        public GraphicsDevice LendGraphicsDevice() {
+        internal GraphicsDevice LendGraphicsDevice() {
             return LendGraphicsDevice(false);
         }
 
@@ -408,10 +403,10 @@ namespace Blish_HUD {
         /// <summary>
         /// Unlocks access to the <see cref="GraphicsDevice"/>.  You must call this after <see cref="LendGraphicsDevice"/>.
         /// </summary>
-        public void ReturnGraphicsDevice() {
+        internal void ReturnGraphicsDevice(bool highPriority) {
             Monitor.Exit(_lendLockDevice);
 
-            if (!_currentLenderHighPriority) {
+            if (!highPriority) {
                 Monitor.Exit(_lendLockLow);
             }
         }
