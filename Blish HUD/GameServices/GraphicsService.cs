@@ -378,6 +378,34 @@ namespace Blish_HUD {
         }
 
         /// <summary>
+        /// Provides exclusive and locked access to the <see cref="GraphicsDeviceManager.GraphicsDevice"/>. This
+        /// method blocks until the device is available and will yield to higher priority
+        /// lend requests. Core lend requests receive priority over these requests.
+        /// The returned <see cref="GraphicsDeviceContext"/> should be disposed of either
+        /// via a <see langword="using"/> statement, or by calling
+        /// <see cref="GraphicsDeviceContext.Dispose"/> directly.
+        /// </summary>
+        public GraphicsDeviceContext LendGraphicsDeviceContext() {
+            return LendGraphicsDeviceContext(false);
+        }
+
+        /// <summary>
+        /// Provides exclusive and locked access to the <see cref="GraphicsDeviceManager.GraphicsDevice"/>. This
+        /// method blocks until the device is available and will yield to higher priority
+        /// lend requests. Core lend requests receive priority over these requests.
+        /// The returned <see cref="GraphicsDeviceContext"/> should be disposed of either
+        /// via a <see langword="using"/> statement, or by calling
+        /// <see cref="GraphicsDeviceContext.Dispose"/> directly.
+        /// </summary>
+        /// <param name="highPriority">
+        /// If <see langword="true"/> then this thread will return as soon as the <see cref="GraphicsDeviceContext.GraphicsDevice"/>
+        /// becomes available - ahead of all low priority lend requests.
+        /// </param>
+        public GraphicsDeviceContext LendGraphicsDeviceContext(bool highPriority) {
+            return new GraphicsDeviceContext(this, highPriority);
+        }
+
+        /// <summary>
         /// Unlocks access to the <see cref="GraphicsDevice"/>.  You must call this after <see cref="LendGraphicsDevice"/>.
         /// </summary>
         public void ReturnGraphicsDevice([CallerMemberName] string callerName = null) {
@@ -395,13 +423,13 @@ namespace Blish_HUD {
         internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
             _renderTimer.Restart();
 
-            var graphicsDevice = this.LendGraphicsDevice(true);
-
+            using GraphicsDeviceContext ctx = this.LendGraphicsDeviceContext(true);
+            
             if (_renderTimer.ElapsedMilliseconds > 1) {
                 Logger.Debug($"Render thread stalled for {_renderTimer.ElapsedMilliseconds} ms.");
             }
 
-            graphicsDevice.Clear(Color.Transparent);
+            ctx.GraphicsDevice.Clear(Color.Transparent);
 
             // Skip rendering all elements when UI is hidden
             if (GameService.Overlay.InterfaceHidden) return;
@@ -409,12 +437,12 @@ namespace Blish_HUD {
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game and map is closed
             if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
-                this.World.Render(graphicsDevice);
+                this.World.Render(ctx.GraphicsDevice);
             }
             GameService.Debug.StopTimeFunc("3D objects");
 
             // Slightly better scaling (text is a bit more legible)
-            graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            ctx.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             GameService.Debug.StartTimeFunc("UI Elements");
 
@@ -426,15 +454,13 @@ namespace Blish_HUD {
 
             GameService.Debug.StartTimeFunc("Render Queue");
             for (int i = MIN_QUEUED_RENDERS; i > 0 && _queuedRenders.TryDequeue(out var renderCall); i--) {
-                renderCall.Invoke(graphicsDevice);
+                renderCall.Invoke(ctx.GraphicsDevice);
 
                 if (_renderTimer.ElapsedMilliseconds < TARGET_MAX_FRAMETIME) {
                     i++;
                 }
             }
             GameService.Debug.StopTimeFunc("Render Queue");
-
-            ReturnGraphicsDevice();
         }
 
         protected override void Load() { /* NOOP */ }
