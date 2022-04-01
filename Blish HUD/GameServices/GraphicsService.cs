@@ -351,6 +351,8 @@ namespace Blish_HUD {
         /// becomes available - ahead of all low priority lend requests.
         /// </param>
         internal GraphicsDevice LendGraphicsDevice(bool highPriority) {
+            highPriority = highPriority || Program.IsMainThread;
+
             if (!highPriority) {
                 Monitor.Enter(_lendLockLow);
             }
@@ -396,7 +398,7 @@ namespace Blish_HUD {
         /// If <see langword="true"/> then this thread will return as soon as the <see cref="GraphicsDeviceContext.GraphicsDevice"/>
         /// becomes available - ahead of all low priority lend requests.
         /// </param>
-        public GraphicsDeviceContext LendGraphicsDeviceContext(bool highPriority) {
+        internal GraphicsDeviceContext LendGraphicsDeviceContext(bool highPriority) {
             return new GraphicsDeviceContext(this, highPriority);
         }
 

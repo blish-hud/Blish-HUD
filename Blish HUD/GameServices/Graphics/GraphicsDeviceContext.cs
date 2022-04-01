@@ -16,7 +16,7 @@ namespace Blish_HUD.Graphics {
         /// <param name="highPriority">A value indicating whether to acquire a high priority instance.</param>
         internal GraphicsDeviceContext(GraphicsService service, bool highPriority) {
             _service       = service;
-            _highPriority  = highPriority;
+            _highPriority  = highPriority || Program.IsMainThread;
             GraphicsDevice = _service.LendGraphicsDevice(highPriority);
         }
 
