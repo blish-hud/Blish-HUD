@@ -203,7 +203,7 @@ namespace Blish_HUD.Controls {
         private void ScrollAnimated(int pixels) {
             this.TargetScrollDistance = (_containerContentDiff * this.ScrollDistance + pixels) / _containerContentDiff;
             _targetScrollDistanceAnim = Animation.Tweener
-                     .Tween(this, new { ScrollDistance = this.TargetScrollDistance }, 0.35f, overwrite: true).Ease(Ease.QuadOut);
+                     .Tween(this, new { ScrollDistance = this.TargetScrollDistance }, 0f, overwrite: true).Ease(Ease.QuadOut);
         }
 
         protected override CaptureType CapturesInput() {
