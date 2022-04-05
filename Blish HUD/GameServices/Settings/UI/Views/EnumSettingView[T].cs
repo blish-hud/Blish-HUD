@@ -92,6 +92,7 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void RefreshDescription(string description) {
+            _displayNameLabel.BasicTooltipText = description;
             _enumDropdown.BasicTooltipText = description;
         }
 
