@@ -8,8 +8,8 @@ namespace Blish_HUD.Settings.UI.Views {
         
         private const int CONTROL_PADDING = 5;
 
-        private const int TRACKBAR_WIDTH  = 277;
-        private const int TRACKBAR_HEIGHT = 16;
+        private const int TRACKBAR_WIDTH  = 310;
+        private const int TRACKBAR_HEIGHT = 20;
         
         protected Label    _displayNameLabel;
         protected TrackBar _valueTrackBar;
@@ -41,6 +41,9 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected override void RefreshDisplayName(string displayName) {
             _displayNameLabel.Text = displayName;
+
+            if (_displayNameLabel.Width > 185)
+                _valueTrackBar.Left = _displayNameLabel.Width + CONTROL_PADDING;
 
             UpdateSizeAndLayout();
         }

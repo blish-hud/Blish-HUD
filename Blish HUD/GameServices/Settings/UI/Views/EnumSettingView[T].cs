@@ -13,7 +13,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private const int CONTROL_PADDING = 5;
 
-        private const int DROPDOWN_WIDTH  = 250;
+        private const int DROPDOWN_WIDTH  = 310;
         private const int DROPDOWN_HEIGHT = 27;
 
         private Label    _displayNameLabel;
