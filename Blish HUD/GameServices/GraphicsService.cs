@@ -11,6 +11,10 @@ using Blish_HUD.Settings;
 using Gw2Sharp.Mumble.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX;
+using Color = Microsoft.Xna.Framework.Color;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
     public class GraphicsService:GameService {
@@ -205,15 +209,16 @@ namespace Blish_HUD {
             set {
                 if (!this.Resolution.Equals(value)) {
                     try {
-                        BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
-                        BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
+                        using (var ctx = GameService.Graphics.LendGraphicsDeviceContext()) {
+                            BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
+                            BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
+                            BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
+                        }
                         
-                        BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
-
                         // Exception would be from the code above, but don't update our
                         // scaling if there is an exception
                         ScreenSizeUpdated(value);
-                    } catch (SharpDX.SharpDXException sdxe) {
+                    } catch (SharpDXException sdxe) {
                         // If device lost, we should hopefully handle in device lost event below
                     }
                 }
@@ -351,8 +356,6 @@ namespace Blish_HUD {
         /// becomes available - ahead of all low priority lend requests.
         /// </param>
         internal GraphicsDevice LendGraphicsDevice(bool highPriority) {
-            highPriority = highPriority || Program.IsMainThread;
-
             if (!highPriority) {
                 Monitor.Enter(_lendLockLow);
             }
@@ -375,7 +378,7 @@ namespace Blish_HUD {
         }
 
         /// <summary>
-        /// Provides exclusive and locked access to the <see cref="GraphicsDeviceManager.GraphicsDevice"/>. This
+        /// Provides exclusive and locked access to the <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/>. This
         /// method blocks until the device is available and will yield to higher priority
         /// lend requests. Core lend requests receive priority over these requests.
         /// The returned <see cref="GraphicsDeviceContext"/> should be disposed of either
@@ -387,7 +390,7 @@ namespace Blish_HUD {
         }
 
         /// <summary>
-        /// Provides exclusive and locked access to the <see cref="GraphicsDeviceManager.GraphicsDevice"/>. This
+        /// Provides exclusive and locked access to the <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/>. This
         /// method blocks until the device is available and will yield to higher priority
         /// lend requests. Core lend requests receive priority over these requests.
         /// The returned <see cref="GraphicsDeviceContext"/> should be disposed of either
@@ -420,7 +423,7 @@ namespace Blish_HUD {
         internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
             _renderTimer.Restart();
 
-            using GraphicsDeviceContext ctx = this.LendGraphicsDeviceContext(true);
+            using GraphicsDeviceContext ctx = this.LendGraphicsDeviceContext();
             
             if (_renderTimer.ElapsedMilliseconds > 1) {
                 Logger.Debug($"Render thread stalled for {_renderTimer.ElapsedMilliseconds} ms.");

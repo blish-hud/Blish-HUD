@@ -136,10 +136,13 @@ namespace Blish_HUD.Modules {
         }
 
         public void DoUpdate(GameTime gameTime) {
-            if (_runState == ModuleRunState.Loaded) {
-                Update(gameTime);
-            } else {
-                CheckForLoaded();
+            switch (_runState) {
+                case ModuleRunState.Loaded:
+                    Update(gameTime);
+                    break;
+                case ModuleRunState.Loading:
+                    CheckForLoaded();
+                    break;
             }
         }
 
