@@ -116,8 +116,8 @@ namespace Blish_HUD.Modules {
             try {
                 this.ModuleInstance?.Dispose();
             } catch (Exception ex) {
-                Logger.GetLogger(this.ModuleInstance != null ? this.ModuleInstance.GetType() : typeof(ModuleManager)).Error(ex, "Module {module} threw an exception while updating.", this.Manifest.GetDetailedName());
-
+                Logger.GetLogger(this.ModuleInstance != null ? this.ModuleInstance.GetType() : typeof(ModuleManager)).Error(ex, "Module {module} threw an exception while unloading.", this.Manifest.GetDetailedName());
+                
                 if (ApplicationSettings.Instance.DebugEnabled) {
                     // To assist in debugging modules
                     throw;
