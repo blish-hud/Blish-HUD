@@ -137,7 +137,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public Texture2D Emblem {
             get => _emblem;
-            set => SetProperty(ref _emblem, value);
+            set => SetProperty(ref _emblem, value, true);
         }
 
         private bool _topMost;
