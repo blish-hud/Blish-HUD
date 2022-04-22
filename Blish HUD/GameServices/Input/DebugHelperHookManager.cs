@@ -9,6 +9,7 @@ namespace Blish_HUD.Input {
     internal class DebugHelperHookManager : IHookManager {
 
         private static readonly Logger Logger = Logger.GetLogger<DebugHelperHookManager>();
+        private static readonly PingMessage PingMessage = new PingMessage();
 
         private IMouseHookManager    _mouseHookManager;
         private IKeyboardHookManager _keyboardHookManager;
@@ -40,7 +41,13 @@ namespace Blish_HUD.Input {
             _debugHelperMessageService.Start();
 
             _pingTimer         =  new Timer(10) { AutoReset = true };
-            _pingTimer.Elapsed += (s, e) => _debugHelperMessageService.Send(new PingMessage());
+            _pingTimer.Elapsed += (s, e) => {
+                try {
+                    _debugHelperMessageService.Send(PingMessage);
+                } catch (MissingMethodException) {
+                    // Unsure why this happens only once, but seems to be related to Fody
+                }
+            };
             _pingTimer.Start();
 
             _mouseHookManager    = new DebugHelperMouseHookManager(_debugHelperMessageService);
