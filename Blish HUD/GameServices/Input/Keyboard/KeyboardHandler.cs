@@ -174,8 +174,6 @@ namespace Blish_HUD.Input {
             this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
         }
 
-        private void EndTextInputAsyncInvoke(IAsyncResult asyncResult) { _textInputDelegate?.EndInvoke(asyncResult); }
-
         private bool ShouldBlockKeyEvent(Keys key) {
             // TODO: WIN key combinations should probably completely handled by the OS
 
