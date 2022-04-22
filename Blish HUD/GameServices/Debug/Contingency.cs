@@ -3,7 +3,6 @@ using Ookii.Dialogs.WinForms;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Blish_HUD.Debug {
     public static class Contingency {
@@ -21,7 +20,7 @@ namespace Blish_HUD.Debug {
 
             if (BlishHud.Instance != null) {
                 if (BlishHud.Instance.Form.InvokeRequired) {
-                    BlishHud.Instance.Form.Invoke((MethodInvoker)(() => BlishHud.Instance.Form.Hide()));
+                    BlishHud.Instance.Form.Invoke(new Action(() => BlishHud.Instance.Form.Hide()));
                 } else {
                     BlishHud.Instance.Form.Hide();
                 }

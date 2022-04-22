@@ -24,6 +24,11 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             Perfect
         }
 
+        private static readonly ProcessStartInfo ArenaNetApplicationsWebsiteProcessStartInfo = new ProcessStartInfo() {
+            FileName = "https://account.arena.net/applications",
+            UseShellExecute = true
+        };
+
         private static readonly Logger Logger = Logger.GetLogger<RegisterApiKeyView>();
 
         private const int MAX_KEYNAME_LENGTH = 14;
@@ -242,7 +247,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent         = buildPanel
             };
 
-            openAnetApplicationsBttn.Click += delegate { Process.Start("https://account.arena.net/applications"); };
+            openAnetApplicationsBttn.Click += delegate { Process.Start(ArenaNetApplicationsWebsiteProcessStartInfo); };
 
             ReloadApiKeys();
 

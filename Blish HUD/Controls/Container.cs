@@ -122,7 +122,7 @@ namespace Blish_HUD.Controls {
 
         public IEnumerable<Control> GetDescendants() {
             // Breadth-first unrolling without the inefficiency of recursion.
-            var remainingChildren = new Queue<Control>(this.Children);
+            var remainingChildren = new Queue<Control>(this.Children.ToArray());
 
             while (remainingChildren.Count > 0) {
                 var child = remainingChildren.Dequeue();
