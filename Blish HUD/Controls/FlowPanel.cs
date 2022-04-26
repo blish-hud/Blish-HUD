@@ -336,5 +336,14 @@ namespace Blish_HUD.Controls {
                     break;
             }
         }
+
+        protected override void DisposeControl() {
+            base.DisposeControl();
+
+            foreach (var control in _children) {
+                control.Resized -= ChangedChildOnResized;
+            }
+        }
+
     }
 }

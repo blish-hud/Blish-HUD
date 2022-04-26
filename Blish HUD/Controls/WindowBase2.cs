@@ -317,6 +317,11 @@ namespace Blish_HUD.Controls {
         }
 
         protected void ClearView() {
+            if (this.CurrentView != null) {
+                this.CurrentView.Loaded -= OnViewBuilt;
+                this.CurrentView.DoUnload();
+            }
+
             this.ClearChildren();
             this.ViewState = ViewState.None;
         }

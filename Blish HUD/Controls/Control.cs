@@ -825,10 +825,15 @@ namespace Blish_HUD.Controls {
                     this.MouseWheelScrolled       = null;
                     this.MouseEntered             = null;
                     this.MouseLeft                = null;
+                    this.Click                    = null;
 
-                    this.Resized  = null;
-                    this.Moved    = null;
-                    this.Disposed = null;
+                    this.Resized         = null;
+                    this.Moved           = null;
+                    this.Disposed        = null;
+                    this.PropertyChanged = null;
+
+                    this.Shown  = null;
+                    this.Hidden = null;
 
                     // Cancel any animations that were currently running on this object
                     Animation.Tweener.TargetCancel(this);

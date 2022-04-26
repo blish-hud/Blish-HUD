@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Adhesive;
+using System.ComponentModel;
 using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
@@ -260,8 +258,6 @@ namespace Blish_HUD.Controls {
                                                         ARROW_SIZE).OffsetBy(_layoutAccordionArrowOrigin.ToPoint());
         }
 
-        private List<Binding> _scrollbarBindings = new List<Adhesive.Binding>();
-
         private void UpdateScrollbar() {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
                to work correctly */
@@ -269,27 +265,47 @@ namespace Blish_HUD.Controls {
                 if (_panelScrollbar == null) 
                     _panelScrollbar = new Scrollbar(this);
 
-                // TODO: Switch to breaking these bindings once it is supported in Adhesive
-                _scrollbarBindings.ToList().ForEach((bind) => bind.Disable());
+                this.PropertyChanged -= UpdatePanelScrollbarOnOwnPropertyChanged;
+                this.PropertyChanged += UpdatePanelScrollbarOnOwnPropertyChanged;
 
-                _scrollbarBindings = new List<Binding> {
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Parent,  () => this.Parent,  applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Height,  () => this.Height,  (h) => this.ContentRegion.Height  - 20,                        applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Right,   () => this.Right,   (r) => r                          - _panelScrollbar.Width / 2, applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Top,     () => this.Top,     (t) => t + this.ContentRegion.Top + 10,                        applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Visible, () => this.Visible, applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex,  () => this.ZIndex,  (z) => z + 2, applyLeft: true)
-                };
+                _panelScrollbar.Parent  = this.Parent;
+                _panelScrollbar.Height  = this.ContentRegion.Height  - 20;
+                _panelScrollbar.Right   = this.Right                          - _panelScrollbar.Width / 2;
+                _panelScrollbar.Top     = this.Top + this.ContentRegion.Top + 10;
+                _panelScrollbar.Visible = this.Visible;
+                _panelScrollbar.ZIndex  = this.ZIndex + 2;
             } else {
-                // TODO: Switch to breaking these bindings once it is supported in Adhesive
-                _scrollbarBindings.ToList().ForEach((bind) => bind.Disable());
-                _scrollbarBindings.Clear();
-
+                this.PropertyChanged -= UpdatePanelScrollbarOnOwnPropertyChanged;
                 _panelScrollbar?.Dispose();
                 _panelScrollbar = null;
             }
         }
-        
+
+        // TODO Temporary solution to avoid memory leak due to Adhesive bindings before
+        // This will be replaced when the Scrollbar is converted to a stateless overlay
+        private void UpdatePanelScrollbarOnOwnPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+            switch (e.PropertyName) {
+                case "Parent":
+                    _panelScrollbar.Parent = this.Parent;
+                    break;
+                case "Height":
+                    _panelScrollbar.Height = this.ContentRegion.Height - 20;
+                    break;
+                case "Right":
+                    _panelScrollbar.Right = this.Right - _panelScrollbar.Width / 2;
+                    break;
+                case "Top":
+                    _panelScrollbar.Top = this.Top + this.ContentRegion.Top + 10;
+                    break;
+                case "Visible":
+                    _panelScrollbar.Visible = this.Visible;
+                    break;
+                case "ZIndex":
+                    _panelScrollbar.ZIndex = this.ZIndex + 2;
+                    break;
+            }
+        }
+
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_backgroundTexture != null) {
                 spriteBatch.DrawOnCtrl(this, _backgroundTexture, bounds);
@@ -375,6 +391,11 @@ namespace Blish_HUD.Controls {
 
         protected override void DisposeControl() {
             _panelScrollbar?.Dispose();
+            
+            foreach (var control in this._children) {
+                control.Resized -= UpdateContentRegionBounds;
+                control.Moved   -= UpdateContentRegionBounds;
+            }
 
             base.DisposeControl();
         }

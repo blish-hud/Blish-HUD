@@ -249,6 +249,11 @@ namespace Blish_HUD.Controls {
         protected override void DisposeControl() {
             this.CurrentView?.DoUnload();
 
+            foreach (var control in _children) {
+                control.Resized -= Invalidate;
+                control.Moved   -= Invalidate;
+            }
+
             base.DisposeControl();
         }
 
