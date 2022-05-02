@@ -76,5 +76,11 @@ namespace Blish_HUD.Settings.UI.Views {
             this.MenuItemSelected?.Invoke(this, e);
         }
 
+        protected override void Unload() {
+            base.Unload();
+            
+            _menuSettingsList.ItemSelected -= SettingsListMenuOnItemSelected;
+        }
+
     }
 }

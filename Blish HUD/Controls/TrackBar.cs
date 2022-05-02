@@ -134,5 +134,11 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this, _textureNub, _layoutNubBounds);
         }
 
+        protected override void DisposeControl() {
+            base.DisposeControl();
+            
+            Input.Mouse.LeftMouseButtonReleased -= InputOnLeftMouseButtonReleased;
+        }
+
     }
 }
