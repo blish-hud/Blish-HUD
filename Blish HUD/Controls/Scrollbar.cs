@@ -117,6 +117,7 @@ namespace Blish_HUD.Controls {
 
             this.Width = CONTROL_WIDTH;
 
+            Input.Mouse.LeftMouseButtonReleased += MouseOnLeftMouseButtonReleased;
             _associatedContainer.MouseWheelScrolled += HandleWheelScroll;
         }
 
@@ -125,6 +126,7 @@ namespace Blish_HUD.Controls {
         protected override void DisposeControl() {
             base.DisposeControl();
 
+            Input.Mouse.LeftMouseButtonReleased -= MouseOnLeftMouseButtonReleased;
             _associatedContainer.MouseWheelScrolled -= HandleWheelScroll;
         }
 
@@ -135,9 +137,7 @@ namespace Blish_HUD.Controls {
             _lastClickTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
         }
 
-        protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
-            base.OnLeftMouseButtonReleased(e);
-            
+        private void MouseOnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
             this.ScrollFocus = ClickFocus.None;
         }
 
