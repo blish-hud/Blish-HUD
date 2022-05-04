@@ -101,8 +101,14 @@ namespace Blish_HUD.Controls {
             // We'll bind the top of the control to the bottom of the last control we added
             var lastItem = _children.LastOrDefault();
             if (lastItem != null) {
-                Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
-                                                     () => lastItem.Bottom, applyLeft: true);
+                // Handler will be removed again when the underlying object is being disposed
+                lastItem.PropertyChanged += (_, args) => {
+                    if (args.PropertyName == "Bottom") {
+                        e.ChangedChild.Top = lastItem.Bottom;
+                    }
+                };
+                
+                e.ChangedChild.Top = lastItem.Bottom;
             }
 
             ShouldShift = e.ResultingChildren.Any(mi => {

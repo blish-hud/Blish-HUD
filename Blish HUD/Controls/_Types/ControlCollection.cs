@@ -59,7 +59,8 @@ namespace Blish_HUD.Controls {
         }
 
         public IEnumerator<T> GetEnumerator() {
-            _listLock.EnterReadLock();
+            if (!_listLock.IsReadLockHeld)
+                _listLock.EnterReadLock();
 
             return new ControlEnumerator<T>(_innerList.GetEnumerator(), _listLock);
         }
@@ -71,14 +72,16 @@ namespace Blish_HUD.Controls {
         public void Add(T item) {
             if (this.Contains(item) || item == null) return;
             
-            _listLock.EnterWriteLock();
+            if (!_listLock.IsWriteLockHeld)
+                _listLock.EnterWriteLock();
             _innerList.Add(item);
             this.IsEmpty = false;
             _listLock.ExitWriteLock();
         }
 
         public void AddRange(IEnumerable<T> items) {
-            _listLock.EnterWriteLock();
+            if (!_listLock.IsWriteLockHeld)
+                _listLock.EnterWriteLock();
             _innerList.AddRange(items);
             this.IsEmpty = !_innerList.Any();
             _listLock.ExitWriteLock();
@@ -87,7 +90,8 @@ namespace Blish_HUD.Controls {
         public void Clear() {
             T[] oldItems = this.ToArray();
 
-            _listLock.EnterWriteLock();
+            if (!_listLock.IsWriteLockHeld)
+                _listLock.EnterWriteLock();
             _innerList.Clear();
             this.IsEmpty = true;
             _listLock.ExitWriteLock();
@@ -98,7 +102,8 @@ namespace Blish_HUD.Controls {
         }
 
         public bool Contains(T item) {
-            _listLock.EnterReadLock();
+            if (!_listLock.IsReadLockHeld)
+                _listLock.EnterReadLock();
 
             try {
                 return _innerList.Contains(item);
@@ -116,7 +121,8 @@ namespace Blish_HUD.Controls {
         }
 
         public bool Remove(T item) {
-            _listLock.EnterWriteLock();
+            if (!_listLock.IsWriteLockHeld)
+                _listLock.EnterWriteLock();
 
             try {
                 return _innerList.Remove(item);
@@ -128,7 +134,8 @@ namespace Blish_HUD.Controls {
 
         public int Count {
             get {
-                _listLock.EnterReadLock();
+                if (!_listLock.IsReadLockHeld)
+                    _listLock.EnterReadLock();
 
                 try {
                     return _innerList.Count;
@@ -139,7 +146,8 @@ namespace Blish_HUD.Controls {
         }
 
         public List<T> ToList() {
-            _listLock.EnterReadLock();
+            if (!_listLock.IsReadLockHeld)
+                _listLock.EnterReadLock();
 
             try {
                 return new List<T>(_innerList);
@@ -149,7 +157,9 @@ namespace Blish_HUD.Controls {
         }
 
         public T[] ToArray() {
-            _listLock.EnterReadLock();
+            if (!_listLock.IsReadLockHeld)
+                _listLock.EnterReadLock();
+            
             var items = new T[_innerList.Count];
             _innerList.CopyTo(items, 0);
             _listLock.ExitReadLock();
@@ -158,7 +168,8 @@ namespace Blish_HUD.Controls {
         }
 
         public int IndexOf(T item) {
-            _listLock.EnterReadLock();
+            if (!_listLock.IsReadLockHeld)
+                _listLock.EnterReadLock();
 
             try {
                 return _innerList.Count;
@@ -168,20 +179,23 @@ namespace Blish_HUD.Controls {
         }
 
         public void Insert(int index, T item) {
-            _listLock.EnterWriteLock();
+            if (!_listLock.IsWriteLockHeld)
+                _listLock.EnterWriteLock();
             _innerList.Insert(index, item);
             _listLock.ExitWriteLock();
         }
 
         public void RemoveAt(int index) {
-            _listLock.EnterWriteLock();
+            if (!_listLock.IsWriteLockHeld)
+                _listLock.EnterWriteLock();
             _innerList.RemoveAt(index);
             _listLock.ExitWriteLock();
         }
 
         public T this[int index] {
             get {
-                _listLock.EnterReadLock();
+                if (!_listLock.IsReadLockHeld)
+                    _listLock.EnterReadLock();
 
                 try {
                     return _innerList[index];
@@ -190,7 +204,8 @@ namespace Blish_HUD.Controls {
                 }
             }
             set {
-                _listLock.EnterWriteLock();
+                if (!_listLock.IsWriteLockHeld)
+                    _listLock.EnterWriteLock();
                 _innerList[index] = value;
                 _listLock.ExitWriteLock();
             }

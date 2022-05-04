@@ -473,7 +473,7 @@ namespace Blish_HUD.Controls {
 
             value = ProcessText(value);
 
-            if (!SetProperty(ref _text, value)) return false;
+            if (!SetProperty(ref _text, value, false, nameof(Text))) return false;
 
             // TODO: Update formatted text?
 

@@ -12,6 +12,7 @@ using Blish_HUD.Controls.Effects;
 using Blish_HUD.Input;
 using Newtonsoft.Json;
 using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
+using System.Threading;
 
 namespace Blish_HUD.Controls {
 
@@ -192,7 +193,7 @@ namespace Blish_HUD.Controls {
 
         protected virtual void OnLeftMouseButtonReleased(MouseEventArgs e) {
             this.LeftMouseButtonReleased?.Invoke(this, e);
-            
+
             if (_enabled) {
                 // Distinguish click from double-click
                 if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastClickTime < SystemInformation.DoubleClickTime) {
@@ -342,7 +343,7 @@ namespace Blish_HUD.Controls {
         }
 
         #endregion
-        
+
         protected Point _size = new Point(40, 20);
         /// <summary>
         /// The size of the control.  Both the X and Y component must be greater than 0.
@@ -503,7 +504,7 @@ namespace Blish_HUD.Controls {
                     if (_tooltip.CurrentView is BasicTooltipView tooltipView && !string.IsNullOrWhiteSpace(value)) {
                         tooltipView.Text = value;
                         return;
-                    }    
+                    }
                 }
 
                 _tooltip?.Hide();
@@ -573,8 +574,12 @@ namespace Blish_HUD.Controls {
 
         #region Render Properties
 
-        private bool _layoutSuspended = false;
-
+        private int _layoutSuspendCount = 0;
+        [JsonIgnore]
+        internal bool IsLayoutSuspended {
+            get => Interlocked.CompareExchange(ref _layoutSuspendCount, 0, 0) != 0 || (Parent?.IsLayoutSuspended).GetValueOrDefault();
+        }
+        
         [JsonIgnore]
         internal LayoutState LayoutState { get; private set; } = LayoutState.SkipDraw;
 
@@ -624,11 +629,23 @@ namespace Blish_HUD.Controls {
         }
 
         /// <summary>
+        /// Prefer <see cref="SuspendLayoutContext"/> if possible, as this ensures
+        /// layout is resumed in all circumstances.
+        /// <br/>
         /// The layout of the <see cref="Control"/> will be suspended until
         /// <see cref="ResumeLayout"/> is called.
         /// </summary>
         public void SuspendLayout() {
-            _layoutSuspended = true;
+            Interlocked.Increment(ref _layoutSuspendCount);
+        }
+
+        /// <summary>
+        /// Suspends the layout of the <see cref="Control"/> until the context is
+        /// disposed (i.e. when exiting a <see langword="using"/> block) and ensures
+        /// correct resumption of layout in the event of exceptions.
+        /// </summary>
+        public IDisposable SuspendLayoutContext() {
+            return new SuspendLayoutScope(this);
         }
 
         /// <summary>
@@ -637,21 +654,22 @@ namespace Blish_HUD.Controls {
         /// </summary>
         /// <param name="forceRecalculate">If <c>true</c>, will force the layout to update now instead of on the next invalidation.</param>
         public void ResumeLayout(bool forceRecalculate = false) {
-            _layoutSuspended = false;
-
-            if (forceRecalculate) {
+            if (Interlocked.Decrement(ref _layoutSuspendCount) == 0 && forceRecalculate) {
                 UpdateLayout();
             }
         }
 
         private void UpdateLayout() {
-            if (this.LayoutState != LayoutState.Ready && !_layoutSuspended) {
-                SuspendLayout();
+            try {
+                if (Interlocked.Increment(ref this._layoutSuspendCount) == 1 &&
+                    !(Parent?.IsLayoutSuspended).GetValueOrDefault() &&
+                    this.LayoutState != LayoutState.Ready) {
 
-                RecalculateLayout();
-                this.LayoutState = LayoutState.Ready;
-
-                ResumeLayout();
+                    RecalculateLayout();
+                    this.LayoutState = LayoutState.Ready;
+                }
+            } finally {
+                Interlocked.Decrement(ref this._layoutSuspendCount);
             }
         }
 
@@ -825,10 +843,15 @@ namespace Blish_HUD.Controls {
                     this.MouseWheelScrolled       = null;
                     this.MouseEntered             = null;
                     this.MouseLeft                = null;
+                    this.Click                    = null;
 
-                    this.Resized  = null;
-                    this.Moved    = null;
-                    this.Disposed = null;
+                    this.Resized         = null;
+                    this.Moved           = null;
+                    this.Disposed        = null;
+                    this.PropertyChanged = null;
+
+                    this.Shown  = null;
+                    this.Hidden = null;
 
                     // Cancel any animations that were currently running on this object
                     Animation.Tweener.TargetCancel(this);
@@ -888,5 +911,19 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        #region Helper Classes
+        private readonly struct SuspendLayoutScope : IDisposable {
+            private readonly Control _owner;
+
+            public SuspendLayoutScope(Control owner) {
+                _owner = owner;
+                _owner.SuspendLayout();
+            }
+
+            public void Dispose() {
+                _owner.ResumeLayout();
+            }
+        }
+        #endregion
     }
 }

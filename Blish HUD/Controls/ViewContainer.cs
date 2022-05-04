@@ -60,7 +60,10 @@ namespace Blish_HUD.Controls {
         /// Clear the view from this container.
         /// </summary>
         public void Clear() {
-            this.CurrentView?.DoUnload();
+            if (this.CurrentView != null) {
+                this.CurrentView.Loaded -= BuildView;
+                this.CurrentView.DoUnload();
+            }
 
             // Reset panel defaults
             this.BackgroundColor   = Color.Transparent;
