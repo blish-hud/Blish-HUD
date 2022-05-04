@@ -148,7 +148,9 @@ namespace Blish_HUD.Controls {
             this.Visible = false;
 
             foreach (var cmsiChild in this.Children.Select(otherChild => otherChild as ContextMenuStripItem)) {
-                cmsiChild?.Submenu?.Hide();
+				if (cmsiChild is { Submenu: { MouseOver: false } }) {
+                    cmsiChild.Submenu.Hide();
+                }
             }
         }
 
