@@ -629,11 +629,22 @@ namespace Blish_HUD.Controls {
         }
 
         /// <summary>
+        /// Prefer <see cref="SuspendLayoutContext"/> if possible, as this ensures
+        /// layout is resumed in all circumstances.
+        /// <br/>
         /// The layout of the <see cref="Control"/> will be suspended until
         /// <see cref="ResumeLayout"/> is called.
         /// </summary>
-        public IDisposable SuspendLayout() {
+        public void SuspendLayout() {
             Interlocked.Increment(ref _layoutSuspendCount);
+        }
+
+        /// <summary>
+        /// Suspends the layout of the <see cref="Control"/> until the context is
+        /// disposed (i.e. when exiting a <see langword="using"/> block) and ensures
+        /// correct resumption of layout in the event of exceptions.
+        /// </summary>
+        public IDisposable SuspendLayoutContext() {
             return new SuspendLayoutScope(this);
         }
 
@@ -901,11 +912,12 @@ namespace Blish_HUD.Controls {
         #endregion
 
         #region Helper Classes
-        private struct SuspendLayoutScope : IDisposable {
+        private readonly struct SuspendLayoutScope : IDisposable {
             private readonly Control _owner;
 
             public SuspendLayoutScope(Control owner) {
                 _owner = owner;
+                _owner.SuspendLayout();
             }
 
             public void Dispose() {
