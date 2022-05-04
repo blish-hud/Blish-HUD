@@ -36,9 +36,9 @@ namespace Blish_HUD.Controls {
             TEnum IEnumerator<TEnum>.Current => _inner.Current;
 
             public void Dispose() {
-                _rwLock.ExitReadLock();
+                if (_rwLock.IsReadLockHeld)
+                    _rwLock.ExitReadLock();
             }
-
         }
 
         private readonly List<T>              _innerList;
@@ -159,12 +159,14 @@ namespace Blish_HUD.Controls {
         public T[] ToArray() {
             if (!_listLock.IsReadLockHeld)
                 _listLock.EnterReadLock();
-            
-            var items = new T[_innerList.Count];
-            _innerList.CopyTo(items, 0);
-            _listLock.ExitReadLock();
 
-            return items;
+            try {
+                var items = new T[_innerList.Count];
+                _innerList.CopyTo(items, 0);
+                return items;
+            } finally {
+                _listLock.ExitReadLock();
+            }
         }
 
         public int IndexOf(T item) {
