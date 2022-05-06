@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Blish_HUD.Controls;
+using Blish_HUD.GameServices.Gw2Auth.Models;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Gw2WebApi.UI.Presenters;
+using Blish_HUD.Input;
 using Gw2Sharp.WebApi.Exceptions;
 using Gw2Sharp.WebApi.V2.Models;
 using Humanizer;
@@ -54,6 +56,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private (TokenInfo TokenInfo, Account AccountInfo) _loadedDetails;
 
         private TextBox        _apiKeyTextBox;
+        private StandardButton _gw2AuthButton;
         private Image          _tokenStatusImg;
         private LoadingSpinner _loadingSpinner;
         private Label          _tokenStatusLbl;
@@ -65,7 +68,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private readonly Action<string> _tokenCheckDebounceWrapper;
 
         public RegisterApiKeyView() {
-            _tokenCheckDebounceWrapper = ((Action<string>)CheckToken).Debounce();
+            _tokenCheckDebounceWrapper  =  ((Action<string>)CheckToken).Debounce();
+            GameService.Gw2Auth.Success += OnGw2AuthSuccess;
         }
 
         protected override void Build(Container buildPanel) {
@@ -79,10 +83,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent         = buildPanel
             };
 
+            var orSebLblSize = GameService.Content.DefaultFont32.MeasureString("- or -");
+
             _apiKeyTextBox = new TextBox() {
                 Location = new Point(registerLbl.Left, registerLbl.Bottom + 10),
                 Font     = GameService.Content.DefaultFont16,
-                Width    = buildPanel.Width - 50,
+                Width    = (buildPanel.Width - 55 - (int)orSebLblSize.Width / 2) / 2,
                 Height   = 43,
                 Parent   = buildPanel
             };
@@ -111,6 +117,28 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent   = buildPanel
             };
 
+            var orSepLbl = new Label() {
+                Text = "- or -",
+                Font           = GameService.Content.DefaultFont32,
+                StrokeText     = true,
+                AutoSizeHeight = true,
+                AutoSizeWidth  = true,
+                Left           = _apiKeyTextBox.Right + 5,
+                Top            = _apiKeyTextBox.Top,
+                Parent         = buildPanel
+            };
+
+            _gw2AuthButton = new StandardButton() {
+                Text   = "Login with Gw2Auth",
+                Width  = _apiKeyTextBox.Width,
+                Height = _apiKeyTextBox.Height,
+                Left   = orSepLbl.Right + 5,
+                Top    = _apiKeyTextBox.Top,
+                Parent = buildPanel
+            };
+
+            _gw2AuthButton.Click += LoginWithGw2AuthBttnClicked;
+
             _loadingSpinner = new LoadingSpinner() {
                 Size     = _tokenStatusImg.Size,
                 Location = _tokenStatusImg.Location,
@@ -134,7 +162,6 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 ShowBorder          = true,
                 Parent              = buildPanel
             };
-
 
             clearKeyBttn.Click += delegate { ClearApiKey(); };
 
@@ -387,6 +414,19 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                                     || tokenStatusType == ApiTokenStatusType.Perfect;
 
             _tokenStatusImg.Show();
+        }
+
+        private void LoginWithGw2AuthBttnClicked(object o, MouseEventArgs e) {
+            GameService.Gw2Auth.Authorize();
+        }
+
+        private async void OnGw2AuthSuccess(object o, ValueEventArgs<IEnumerable<JwtSubtokenModel>> e) {
+            var jwtTokens = e.Value;
+            foreach (var token in jwtTokens.Where(token => !token.IsError())) {
+                await GameService.Gw2WebApi.RegisterKey(token.Name, token.Token);
+            }
+            if (_tokensList == null) return;
+            ReloadApiKeys();
         }
 
         public void ClearApiKey() {

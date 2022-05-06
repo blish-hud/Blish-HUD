@@ -13,6 +13,7 @@ namespace Blish_HUD {
             Content         = new ContentService(),
             Gw2Mumble       = new Gw2MumbleService(),
             Gw2WebApi       = new Gw2WebApiService(),
+            Gw2Auth         = new Gw2AuthService(),
             Animation       = new AnimationService(),
             Graphics        = new GraphicsService(),
             Overlay         = new OverlayService(),
@@ -87,6 +88,7 @@ namespace Blish_HUD {
         public static readonly ContentService         Content;
         public static readonly Gw2MumbleService       Gw2Mumble;
         public static readonly Gw2WebApiService       Gw2WebApi;
+        public static readonly Gw2AuthService         Gw2Auth;
         public static readonly AnimationService       Animation;
         public static readonly GraphicsService        Graphics;
         public static readonly OverlayService         Overlay;

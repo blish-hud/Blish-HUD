@@ -110,7 +110,7 @@ namespace Blish_HUD {
         private async void PlayerCharacterOnNameChanged(object sender, ValueEventArgs<string> e) {
             if (!_characterRepository.ContainsKey(e.Value)) {
                 // We don't currently have an API key associated to this character so we double-check the characters on each key
-                await RefreshRegisteredKeys ();
+                await RefreshRegisteredKeys();
             } else {
                 await UpdateActiveApiKey();
             }
