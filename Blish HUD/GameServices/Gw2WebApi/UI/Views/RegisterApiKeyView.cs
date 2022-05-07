@@ -130,6 +130,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             _gw2AuthButton = new StandardButton() {
                 Text   = "Login with Gw2Auth",
+                Icon   = GameService.Content.GetTexture("gw2auth_64x64"),
+                ResizeIcon = true,
                 Width  = _apiKeyTextBox.Width,
                 Height = _apiKeyTextBox.Height,
                 Left   = orSepLbl.Right + 5,

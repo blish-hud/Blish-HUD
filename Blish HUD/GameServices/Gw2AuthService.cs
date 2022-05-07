@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Blish_HUD.GameServices.Gw2Auth;
+using Blish_HUD.GameServices.Gw2Auth.Models;
+using Flurl;
+using Flurl.Http;
+using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Blish_HUD.GameServices.Gw2Auth;
-using Blish_HUD.GameServices.Gw2Auth.Models;
-using Flurl;
-using Flurl.Http;
-using Flurl.Http.Configuration;
-using Newtonsoft.Json;
 
 namespace Blish_HUD.GameServices {
     public class Gw2AuthService : GameService {
