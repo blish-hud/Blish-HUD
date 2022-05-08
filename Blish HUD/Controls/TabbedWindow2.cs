@@ -60,6 +60,13 @@ namespace Blish_HUD.Controls {
             this.ConstructWindow(background, windowRegion, contentRegion);
         }
 
+        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
+            this.Tabs        = new TabCollection(this);
+            this.ShowSideBar = true;
+
+            this.ConstructWindow(background, windowRegion, contentRegion, windowSize);
+        }
+
         protected override void OnClick(MouseEventArgs e) {
             if (this.HoveredTab is { Enabled: true }) {
                 this.SelectedTab = this.HoveredTab;

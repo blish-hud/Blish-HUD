@@ -12,6 +12,10 @@ namespace Blish_HUD.Controls {
             ConstructWindow(background, windowRegion, contentRegion);
         }
 
+        public StandardWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
+            ConstructWindow(background, windowRegion, contentRegion, windowSize);
+        }
+
         /// <summary>
         /// Shows the window with the provided view.
         /// </summary>
