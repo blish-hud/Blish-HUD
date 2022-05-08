@@ -1,5 +1,5 @@
 ﻿namespace Blish_HUD.GameServices.Gw2Auth.Models {
-    public class Gw2AuthConfig {
+    internal class Gw2AuthConfig {
 
         public string Gw2AuthClientId { get; set; } = "dae449fa-b333-4bea-9562-3f1bcd827af7";
 

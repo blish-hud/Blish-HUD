@@ -23,7 +23,7 @@ namespace Blish_HUD.GameServices.Gw2Auth.Models {
         public string Error { get; set; }
 
         /// <summary>
-        /// Only present if the scope <c>gw2auth:verified</c> was requested (and authorized)
+        /// Only present if the scope <c>gw2auth:verified</c> was requested (and authorized).
         /// </summary>
         [JsonProperty("verified")]
         public bool Verified { get; set; }

@@ -25,16 +25,13 @@ namespace Blish_HUD.GameServices {
         private string _gw2AuthJwks        = "/jwks";
         private string _gw2AuthRevoke      = "/revoke";
         private string _gw2AuthIntrospect  = "/introspect";
-        private string _subtokenClaimType  = "gw2:tokens";
 
         private Gw2AuthConfig           _config;
         private CallbackListener        _listener;
-        private JwtSecurityTokenHandler _tokenHandler;
 
         protected override void Initialize() {
             _config       = new Gw2AuthConfig();
             _listener     = new CallbackListener();
-            _tokenHandler = new JwtSecurityTokenHandler();
         }
 
         protected override void Load() {
@@ -67,9 +64,9 @@ namespace Blish_HUD.GameServices {
                 Logger.Info(response.ErrorDescription);
             }
             
-            // Here's where a backend would normally check for an active auth process that matches response.State
-            // and if the returned scope still matches the initial requested scope to counter manipulation.
-
+            // Here's where a backend would normally check for an active auth process that state matches response.State
+            // We would then compare the auth response against the saved auth process and check for modifications.
+            
             await Login(response.Code);
         }
 
@@ -89,36 +86,12 @@ namespace Blish_HUD.GameServices {
                 return;
             }
 
-            if (!this.TryGetSubTokens(userLogin.AccessToken, out var tokens)) {
+            if (!userLogin.TryGetSubTokens(out var tokens)) {
                 return;
             }
 
             Success?.Invoke(this, new ValueEventArgs<IEnumerable<JwtSubtokenModel>>(tokens));
-            Logger.Info($"Successfully authorized through GW2Auth. Expires {userLogin.ExpiresIn}");
-        }
-
-        private bool TryGetGuid(string jwt, out Guid id) {
-            var jwtToken = _tokenHandler.ReadJwtToken(jwt);
-            return Guid.TryParse(jwtToken.Subject, out id);
-        }
-
-        private bool TryGetSubTokens(string jwt, out IEnumerable<JwtSubtokenModel> tokens) {
-            var jwtToken = _tokenHandler.ReadJwtToken(jwt);
-
-            tokens = Enumerable.Empty<JwtSubtokenModel>();
-
-            var claim = jwtToken.Claims.FirstOrDefault(x => x.Type.Equals(_subtokenClaimType));
-            if (claim == null) {
-                return false;
-            }
-
-            var users = JsonConvert.DeserializeObject<Dictionary<string, JwtSubtokenModel>>(claim.Value);
-            if (users == null) {
-                return false;
-            }
-
-            tokens = users.Values;
-            return true;
+            Logger.Info($"Successfully authorized through GW2Auth.com. Expires {userLogin.ExpiresAt} (UTC)");
         }
 
         protected override void Update(GameTime gameTime) {
