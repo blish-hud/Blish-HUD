@@ -53,41 +53,47 @@ namespace Blish_HUD.Controls {
 
         #region Static Window Management
 
-        private static readonly List<IWindow> _windows = new List<IWindow>();
-
         /// <summary>
         /// Registers the window so that its zindex can be calculated against other windows.
         /// </summary>
+        [Obsolete("Windows no longer need to be registered or unregistered.", true)]
         public static void RegisterWindow(IWindow window) {
-            _windows.Add(window);
+            /* NOOP */
         }
 
         /// <summary>
         /// Unregisters the window so that its zindex is not longer calculated against other windows.
         /// </summary>
+        [Obsolete("Windows no longer need to be registered or unregistered.", true)]
         public static void UnregisterWindow(IWindow window) {
-            _windows.Remove(window);
+            /* NOOP */
+        }
+
+        public static IEnumerable<IWindow> GetWindows() {
+            return GameService.Graphics.SpriteScreen.GetChildrenOfType<IWindow>();
         }
 
         /// <summary>
         /// Returns the calculated zindex offset.  This should be added to the base zindex (typically <see cref="Screen.WINDOW_BASEZINDEX"/>) and returned as the zindex.
         /// </summary>
         public static int GetZIndex(IWindow thisWindow) {
-            if (!_windows.Contains(thisWindow)) {
-                throw new InvalidOperationException($"{nameof(thisWindow)} must be registered with {nameof(RegisterWindow)} before ZIndex can automatically be calculated.");
+            IWindow[] windows = GetWindows().ToArray();
+
+            if (!windows.Contains(thisWindow)) {
+                throw new InvalidOperationException($"{nameof(thisWindow)} must be a direct child of GameService.Graphics.SpriteScreen before ZIndex can automatically be calculated.");
             }
 
-            return Screen.WINDOW_BASEZINDEX + _windows.OrderBy(window => window.TopMost)
-                                                      .ThenBy(window => window.LastInteraction)
-                                                      .TakeWhile(window => window != thisWindow)
-                                                      .Count();
+            return Screen.WINDOW_BASEZINDEX + windows.OrderBy(window => window.TopMost)
+                                                     .ThenBy(window => window.LastInteraction)
+                                                     .TakeWhile(window => window != thisWindow)
+                                                     .Count();
         }
 
         /// <summary>
         /// Gets or sets the active window. Returns null if no window is visible.
         /// </summary>
         public static IWindow ActiveWindow {
-            get  => _windows.Where(w => w.Visible).OrderByDescending(GetZIndex).FirstOrDefault(); 
+            get  => GetWindows().Where(w => w.Visible).OrderByDescending(GetZIndex).FirstOrDefault(); 
             set => value.BringWindowToFront();
         }
 
@@ -123,7 +129,7 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _canClose, value);
         }
 
-        private bool _canResize = true;
+        private bool _canResize;
         /// <summary>
         /// Allows the window to be resized by dragging the bottom right corner.
         /// </summary>
@@ -204,8 +210,6 @@ namespace Blish_HUD.Controls {
         private bool _savedVisibility = false;
 
         protected WindowBase2() {
-            WindowBase2.RegisterWindow(this);
-
             this.Opacity = 0f;
             this.Visible = false;
 
@@ -696,8 +700,6 @@ namespace Blish_HUD.Controls {
                 this.CurrentView.Loaded -= OnViewBuilt;
                 this.CurrentView.DoUnload();
             }
-
-            WindowBase2.UnregisterWindow(this);
 
             GameService.Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseRelease;
 
