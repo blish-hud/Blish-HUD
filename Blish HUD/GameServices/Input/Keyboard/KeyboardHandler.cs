@@ -229,7 +229,7 @@ namespace Blish_HUD.Input {
                         // If we found an active window, close it
                         var activeWindow = WindowBase2.ActiveWindow;
 
-                        if (activeWindow != null && activeWindow.CanCloseWithEscape) {
+                        if (activeWindow != null && activeWindow.CanClose && activeWindow.CanCloseWithEscape) {
                             activeWindow.Hide();
                             return true;
                         }
