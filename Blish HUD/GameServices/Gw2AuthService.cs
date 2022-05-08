@@ -3,12 +3,9 @@ using Blish_HUD.GameServices.Gw2Auth.Models;
 using Flurl;
 using Flurl.Http;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -31,7 +28,7 @@ namespace Blish_HUD.GameServices {
 
         protected override void Initialize() {
             _config       = new Gw2AuthConfig();
-            _listener     = new CallbackListener();
+            _listener     = new CallbackListener(_config.DefaultRedirectUri);
         }
 
         protected override void Load() {
@@ -39,7 +36,7 @@ namespace Blish_HUD.GameServices {
         }
 
         protected override void Unload() {
-            /* NOOP */
+            _listener.Dispose();
         }
 
         public void Authorize(string displayName = "") {
