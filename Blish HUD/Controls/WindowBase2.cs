@@ -124,7 +124,7 @@ namespace Blish_HUD.Controls {
         private bool _canCloseWithEscape = true;
         public bool CanCloseWithEscape {
             get => _canCloseWithEscape;
-            set => SetProperty(ref _canCloseWithEscape, value, true);
+            set => SetProperty(ref _canCloseWithEscape, value);
         }
 
         private bool _canResize = false;
