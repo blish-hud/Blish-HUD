@@ -218,6 +218,7 @@ namespace Blish_HUD.Controls {
         public bool   TopMost              => true;
         public double LastInteraction      => double.MaxValue;
         public bool   CanClose             => false;
+        public bool   CanCloseWithEscape   => false;
         public void   BringWindowToFront() { /* NOOP */ }
 
     }
