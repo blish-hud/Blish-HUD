@@ -121,6 +121,12 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _canClose, value);
         }
 
+        private bool _canCloseWithEscape = true;
+        public bool CanCloseWithEscape {
+            get => _canCloseWithEscape;
+            set => SetProperty(ref _canCloseWithEscape, value, true);
+        }
+
         private bool _canResize = false;
         /// <summary>
         /// Allows the window to be resized by dragging the bottom right corner.
