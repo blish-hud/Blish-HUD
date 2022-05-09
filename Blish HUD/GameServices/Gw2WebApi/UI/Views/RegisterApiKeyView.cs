@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Blish_HUD.Controls;
-using Blish_HUD.GameServices.Gw2Auth.Models;
+﻿using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Gw2WebApi.UI.Presenters;
 using Blish_HUD.Input;
@@ -14,6 +7,12 @@ using Gw2Sharp.WebApi.V2.Models;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Blish_HUD.Gw2WebApi.UI.Views {
     public class RegisterApiKeyView : View {
@@ -69,7 +68,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         public RegisterApiKeyView() {
             _tokenCheckDebounceWrapper  =  ((Action<string>)CheckToken).Debounce();
-            GameService.Gw2WebApi.Gw2Auth.Success += OnGw2AuthSuccess;
+            GameService.Gw2WebApi.Gw2Auth.Login += OnGw2AuthLogin;
         }
 
         protected override void Build(Container buildPanel) {
@@ -422,11 +421,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             GameService.Gw2WebApi.Gw2Auth.Authorize();
         }
 
-        private async void OnGw2AuthSuccess(object o, ValueEventArgs<IEnumerable<JwtSubtokenModel>> e) {
-            var jwtTokens = e.Value;
-            foreach (var token in jwtTokens.Where(token => !token.IsError())) {
-                await GameService.Gw2WebApi.RegisterKey(token.Name, token.Token);
-            }
+        private void OnGw2AuthLogin(object o, EventArgs e) {
             if (_tokensList == null) return;
             ReloadApiKeys();
         }

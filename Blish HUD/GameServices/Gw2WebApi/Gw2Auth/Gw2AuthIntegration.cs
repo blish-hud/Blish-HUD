@@ -2,9 +2,10 @@
 using Blish_HUD.Gw2WebApi.Gw2Auth.Models;
 using Flurl;
 using Flurl.Http;
+using Gw2Sharp.WebApi.V2.Models;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2AuthIntegration>();
 
-        public event EventHandler<ValueEventArgs<IEnumerable<JwtSubtokenModel>>> Success;
+        public event EventHandler<EventArgs> Login;
 
         private string _gw2AuthBaseAddress = "https://gw2auth.com/oauth2";
         private string _gw2AuthAuthorize   = "/authorize";
@@ -62,10 +63,10 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
             // Here's where a backend would normally check for an active auth process that state matches response.State
             // We would then compare the auth response against the saved auth process and check for modifications.
             
-            await Login(response.Code);
+            await TryLogin(response.Code);
         }
 
-        private async Task Login(string authCode) {
+        private async Task TryLogin(string authCode) {
             var url = (_gw2AuthBaseAddress + _gw2AuthToken).SetQueryParams(
                                                                            $"grant_type={_config.GrantTypeAuthorization}",
                                                                            $"code={authCode}",
@@ -81,11 +82,20 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
                 return;
             }
 
+            // We require the "characters" scope.
+            if (userLogin.GetTokenPermissions().Intersect(new []{ TokenPermission.Account, TokenPermission.Characters }).Any()) {
+                return;
+            }
+
             if (!userLogin.TryGetSubTokens(out var tokens)) {
                 return;
             }
 
-            Success?.Invoke(this, new ValueEventArgs<IEnumerable<JwtSubtokenModel>>(tokens));
+            foreach (var token in tokens.Where(token => !token.IsError() && token.Verified)) {
+                await _service.RegisterKey(token.Name, token.Token);
+            }
+            
+            Login?.Invoke(this, EventArgs.Empty);
             Logger.Info($"Successfully authorized through GW2Auth.com. Expires {userLogin.ExpiresAt} (UTC)");
         }
     }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Blish_HUD.Controls;
 using Blish_HUD.GameServices;
 using Blish_HUD.Gw2WebApi;
+using Blish_HUD.Gw2WebApi.Gw2Auth;
 using Blish_HUD.Gw2WebApi.UI.Views;
 using Blish_HUD.Settings;
 using Gw2Sharp.WebApi.Exceptions;
