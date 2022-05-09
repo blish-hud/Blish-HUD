@@ -1,18 +1,17 @@
-﻿using Blish_HUD.GameServices.Gw2Auth;
-using Blish_HUD.GameServices.Gw2Auth.Models;
+﻿using Blish_HUD.GameServices;
+using Blish_HUD.Gw2WebApi.Gw2Auth.Models;
 using Flurl;
 using Flurl.Http;
-using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Blish_HUD.GameServices {
-    public class Gw2AuthService : GameService {
+namespace Blish_HUD.Gw2WebApi.Gw2Auth {
+    public class Gw2AuthIntegration : ServiceModule<Gw2WebApiService> {
 
-        private static readonly Logger Logger = Logger.GetLogger<Gw2AuthService>();
+        private static readonly Logger Logger = Logger.GetLogger<Gw2AuthIntegration>();
 
         public event EventHandler<ValueEventArgs<IEnumerable<JwtSubtokenModel>>> Success;
 
@@ -26,16 +25,15 @@ namespace Blish_HUD.GameServices {
         private Gw2AuthConfig           _config;
         private CallbackListener        _listener;
 
-        protected override void Initialize() {
-            _config       = new Gw2AuthConfig();
-            _listener     = new CallbackListener(_config.DefaultRedirectUri);
+        public Gw2AuthIntegration(Gw2WebApiService service) : base(service) {
+            _config = new Gw2AuthConfig();
         }
 
-        protected override void Load() {
-            /* NOOP */
+        public override void Load() {
+            _listener = new CallbackListener(_config.DefaultRedirectUri);
         }
 
-        protected override void Unload() {
+        public override void Unload() {
             _listener.Dispose();
         }
 
@@ -90,10 +88,5 @@ namespace Blish_HUD.GameServices {
             Success?.Invoke(this, new ValueEventArgs<IEnumerable<JwtSubtokenModel>>(tokens));
             Logger.Info($"Successfully authorized through GW2Auth.com. Expires {userLogin.ExpiresAt} (UTC)");
         }
-
-        protected override void Update(GameTime gameTime) {
-            /* NOOP */
-        }
-
     }
 }

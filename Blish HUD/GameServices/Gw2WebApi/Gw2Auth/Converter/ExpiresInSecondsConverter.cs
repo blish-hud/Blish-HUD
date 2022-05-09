@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace Blish_HUD.GameServices.Gw2Auth.Converter {
+namespace Blish_HUD.Gw2WebApi.Gw2Auth.Converter {
     internal class ExpiresInSecondsConverter : JsonConverter<DateTime> {
         public override void WriteJson(JsonWriter writer, DateTime value, JsonSerializer serializer) {
             writer.WriteValue((long)value.Subtract(DateTime.UtcNow).TotalSeconds);

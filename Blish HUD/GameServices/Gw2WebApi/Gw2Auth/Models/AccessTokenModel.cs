@@ -1,4 +1,4 @@
-﻿using Blish_HUD.GameServices.Gw2Auth.Converter;
+﻿using Blish_HUD.Gw2WebApi.Gw2Auth.Converter;
 using Gw2Sharp.WebApi.V2.Models;
 using Newtonsoft.Json;
 using System;
@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Blish_HUD.GameServices.Gw2Auth.Models {
+namespace Blish_HUD.Gw2WebApi.Gw2Auth.Models {
     public enum Gw2AuthAttribute {
         [EnumMember(Value = "Unknown")]
         Unknown,

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Blish_HUD.GameServices.Gw2Auth.Models {
+namespace Blish_HUD.Gw2WebApi.Gw2Auth.Models {
 
     public class JwtSubtokenModel {
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 
-namespace Blish_HUD.GameServices.Gw2Auth.Models {
+namespace Blish_HUD.Gw2WebApi.Gw2Auth.Models {
     internal class AuthResponseModel {
         /// <summary>
         /// A short-lived one time code which can be used to retrieve the initial Refresh- and Access-Token.
@@ -24,7 +24,7 @@ namespace Blish_HUD.GameServices.Gw2Auth.Models {
         /// <example>The user has denied your application access.</example>
         public string ErrorDescription { get; private set; }
 
-        public AuthResponseModel() { }
+        private AuthResponseModel() { }
 
         public bool IsSuccess() {
             return !string.IsNullOrEmpty(this.Code) && !string.IsNullOrEmpty(this.State);

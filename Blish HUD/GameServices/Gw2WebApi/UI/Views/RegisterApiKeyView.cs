@@ -69,7 +69,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         public RegisterApiKeyView() {
             _tokenCheckDebounceWrapper  =  ((Action<string>)CheckToken).Debounce();
-            GameService.Gw2Auth.Success += OnGw2AuthSuccess;
+            GameService.Gw2WebApi.Gw2Auth.Success += OnGw2AuthSuccess;
         }
 
         protected override void Build(Container buildPanel) {
@@ -419,7 +419,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         }
 
         private void LoginWithGw2AuthBttnClicked(object o, MouseEventArgs e) {
-            GameService.Gw2Auth.Authorize();
+            GameService.Gw2WebApi.Gw2Auth.Authorize();
         }
 
         private async void OnGw2AuthSuccess(object o, ValueEventArgs<IEnumerable<JwtSubtokenModel>> e) {

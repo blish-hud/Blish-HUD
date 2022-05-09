@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace Blish_HUD.GameServices.Gw2Auth {
+namespace Blish_HUD.Gw2WebApi.Gw2Auth {
     /// <summary>
     /// Encapsulates an HttpListener for handling start/stop listening with a given callback function.
     /// </summary>
