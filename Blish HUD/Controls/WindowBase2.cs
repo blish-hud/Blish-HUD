@@ -128,6 +128,12 @@ namespace Blish_HUD.Controls {
             get => _canClose;
             set => SetProperty(ref _canClose, value);
         }
+      
+        private bool _canCloseWithEscape = true;
+        public bool CanCloseWithEscape {
+            get => _canCloseWithEscape;
+            set => SetProperty(ref _canCloseWithEscape, value);
+        }
 
         private bool _canResize;
         /// <summary>
