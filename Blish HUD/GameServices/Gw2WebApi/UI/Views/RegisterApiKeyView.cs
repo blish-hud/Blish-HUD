@@ -68,7 +68,16 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         public RegisterApiKeyView() {
             _tokenCheckDebounceWrapper  =  ((Action<string>)CheckToken).Debounce();
+        }
+
+        protected override Task<bool> Load(IProgress<string> progress) {
             GameService.Gw2WebApi.Gw2Auth.Login += OnGw2AuthLogin;
+            return base.Load(progress);
+        }
+
+        protected override void Unload() {
+            GameService.Gw2WebApi.Gw2Auth.Login -= OnGw2AuthLogin;
+            base.Unload();
         }
 
         protected override void Build(Container buildPanel) {
@@ -422,7 +431,6 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         }
 
         private void OnGw2AuthLogin(object o, EventArgs e) {
-            if (_tokensList == null) return;
             ReloadApiKeys();
         }
 

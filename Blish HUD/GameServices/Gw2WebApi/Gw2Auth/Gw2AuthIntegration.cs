@@ -83,7 +83,7 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
             }
 
             // We require the "characters" scope.
-            if (userLogin.GetTokenPermissions().Intersect(new []{ TokenPermission.Account, TokenPermission.Characters }).Any()) {
+            if (userLogin.GetTokenPermissions().Intersect(new []{ TokenPermission.Account, TokenPermission.Characters }).Count() != 2) {
                 return;
             }
 
