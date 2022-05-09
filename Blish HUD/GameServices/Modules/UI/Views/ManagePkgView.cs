@@ -219,10 +219,10 @@ namespace Blish_HUD.Modules.UI.Views {
                 WrapText          = true,
                 Font              = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Regular),
                 Location          = new Point(_nameLabel.Left,                                    _nameLabel.Bottom + 4),
-                Size              = new Point(548 /* _actionButton.Left - _nameLabel.Left * 2 */, buildPanel.Height - _nameLabel.Bottom - 8),
+                AutoSizeHeight    = true,
+                Width             = 548,
                 Parent            = buildPanel,
                 VerticalAlignment = VerticalAlignment.Top,
-                AutoSizeHeight    = true
             };
 
             _statusImage.Click            += StatusImageOnClick;

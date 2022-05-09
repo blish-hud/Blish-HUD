@@ -136,6 +136,14 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public IEnumerable<T> GetChildrenOfType<T>() {
+            foreach (var child in this.Children.ToArray()) {
+                if (child is T tChild) {
+                    yield return tChild;
+                }
+            }
+        }
+
         public bool AddChild(Control child) {
             if (_children.Contains(child)) return true;
 

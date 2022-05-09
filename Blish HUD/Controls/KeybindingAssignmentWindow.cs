@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -74,8 +70,6 @@ namespace Blish_HUD.Controls {
         private string _assignmentDisplayString;
 
         public KeybindingAssignmentWindow(string assignmentName, ModifierKeys modifierKeys = ModifierKeys.None, Keys primaryKey = Keys.None) {
-            WindowBase2.RegisterWindow(this);
-
             _assignmentName = assignmentName;
             _modifierKeys   = modifierKeys;
             _primaryKey     = primaryKey;
@@ -208,7 +202,6 @@ namespace Blish_HUD.Controls {
             base.DisposeControl();
 
             GameService.Input.Keyboard.UnsetTextInputListner(BlockGameInput);
-            WindowBase2.UnregisterWindow(this);
 
             Input.Keyboard.KeyStateChanged -= KeyboardOnKeyStateChanged;
         }
