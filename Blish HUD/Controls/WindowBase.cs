@@ -319,6 +319,8 @@ namespace Blish_HUD.Controls {
 
         public bool CanClose => true;
 
+        public bool CanCloseWithEscape => true;
+
         #region Window Navigation
 
         private readonly LinkedList<Panel> _currentNav = new LinkedList<Panel>();
