@@ -757,10 +757,11 @@ namespace Blish_HUD.Controls {
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
 
-            this.Focused = true;
             _cursorDragging = true;
 
             HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition));
+
+            this.Focused = true;
         }
 
         protected override void OnMouseMoved(MouseEventArgs e) {
@@ -772,9 +773,9 @@ namespace Blish_HUD.Controls {
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 
-            this.Focused = true;
-
             if (e.IsDoubleClick) HandleMouseDoubleClick();
+
+            this.Focused = true;
         }
 
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left) {
