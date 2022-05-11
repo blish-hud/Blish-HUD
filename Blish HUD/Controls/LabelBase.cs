@@ -125,16 +125,18 @@ namespace Blish_HUD.Controls {
     }
 
     public class FormattedText : Control {
-        private List<(Rectangle Rectangle, FormattedTextPart Text, string StringText)> rectangles = new List<(Rectangle, FormattedTextPart, string)>();
+        private List<(RectangleWrapper Rectangle, FormattedTextPart Text, string StringText)> rectangles = new List<(RectangleWrapper, FormattedTextPart, string)>();
         private IEnumerable<FormattedTextPart> parts;
         private readonly bool wrapText;
         private readonly bool autoSizeWidth;
+        private readonly HorizontalAlignment horizontalAlignment;
         private FormattedTextPart hoveredTextPart;
 
-        public FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth) {
+        public FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth, HorizontalAlignment horizontalAlignment) {
             this.parts = parts;
             this.wrapText = wrapText;
             this.autoSizeWidth = autoSizeWidth;
+            this.horizontalAlignment = horizontalAlignment;
         }
 
         public override void RecalculateLayout() {
@@ -185,7 +187,7 @@ namespace Blish_HUD.Controls {
                     rectangle = this.HandleFirstTextPart(item, firstText);
                 }
 
-                rectangles.Add((rectangle, item, firstText));
+                rectangles.Add((new RectangleWrapper(rectangle), item, firstText));
 
                 for (int i = 1; i < splittedText.Count; i++) {
                     rectangle = this.HandleMultiLineText(item, splittedText[i]);
@@ -196,13 +198,43 @@ namespace Blish_HUD.Controls {
                         rectangle = this.HandleMultiLineText(item, splittedText[i]);
                     }
 
-                    rectangles.Add((rectangle, item, splittedText[i]));
+                    rectangles.Add((new RectangleWrapper(rectangle), item, splittedText[i]));
 
                 }
             }
 
             if (this.autoSizeWidth) {
-                this.Width = this.rectangles.Select(x => x.Rectangle.Width).Sum();
+                this.Width = this.rectangles.GroupBy(x => x.Rectangle.Y).Select(x => x.Select(y => y.Rectangle.Width).Sum()).Max();
+            }
+
+            this.HandleHorizontalAlignment();
+        }
+
+        private void HandleHorizontalAlignment() {
+
+            if (this.horizontalAlignment != HorizontalAlignment.Left) {
+                foreach (var item in this.rectangles.GroupBy(x => x.Rectangle.Y)) {
+                    if (horizontalAlignment == HorizontalAlignment.Center) {
+                        var combinedWidth = item.Sum(x => x.Rectangle.Width);
+                        var firstRectangleX = (this.Width / 2) - (combinedWidth / 2);
+
+                        var nextRectangleX = firstRectangleX;
+                        foreach (var rectangle in item) {
+                            rectangle.Rectangle.X = nextRectangleX;
+                            nextRectangleX = rectangle.Rectangle.X + rectangle.Rectangle.Width;
+                        }
+                    } else if (horizontalAlignment == HorizontalAlignment.Right) {
+                        var reversedOrder = item.Reverse().ToArray();
+                        var nextRectangleX = this.Width - reversedOrder.First().Rectangle.Width;
+                        for (int i = 0; i < reversedOrder.Length; i++) {
+                            reversedOrder[i].Rectangle.X = nextRectangleX;
+
+                            if (i != reversedOrder.Length - 1) {
+                                nextRectangleX = reversedOrder[i].Rectangle.X - reversedOrder[i + 1].Rectangle.Width;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -210,7 +242,7 @@ namespace Blish_HUD.Controls {
 
             var hoverSet = false;
             foreach (var rectangle in this.rectangles) {
-                var destinationRectangle = rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
+                var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
                 var mousePosition = GameService.Input.Mouse.Position;
                 if (rectangle.Text.Link != null && mousePosition.X > destinationRectangle.X && mousePosition.X < destinationRectangle.X + destinationRectangle.Width && mousePosition.Y > destinationRectangle.Y && mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
                     this.hoveredTextPart = rectangle.Text;
@@ -227,7 +259,7 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             foreach (var rectangle in this.rectangles) {
-                var destinationRectangle = rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
+                var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
                 var textColor = rectangle.Text.TextColor;
 
                 if (this.hoveredTextPart != null && rectangle.Text == this.hoveredTextPart) {
@@ -246,6 +278,50 @@ namespace Blish_HUD.Controls {
                 }
             }
         }
+
+        private class RectangleWrapper {
+            public Rectangle Rectangle { get; set; }
+
+            public int X {
+                get => this.Rectangle.X;
+                set {
+                    var rectangle = this.Rectangle;
+                    rectangle.X = value;
+                    this.Rectangle = rectangle;
+                }
+            }
+
+            public int Y {
+                get => this.Rectangle.Y;
+                set {
+                    var rectangle = this.Rectangle;
+                    rectangle.Y = value;
+                    this.Rectangle = rectangle;
+                }
+            }
+
+            public int Width {
+                get => this.Rectangle.Width;
+                set {
+                    var rectangle = this.Rectangle;
+                    rectangle.Width = value;
+                    this.Rectangle = rectangle;
+                }
+            }
+
+            public int Height {
+                get => this.Rectangle.Height;
+                set {
+                    var rectangle = this.Rectangle;
+                    rectangle.Height = value;
+                    this.Rectangle = rectangle;
+                }
+            }
+
+            public RectangleWrapper(Rectangle rectangle) {
+                this.Rectangle = rectangle;
+            }
+        }
     }
 
     public class FormattedTextBuilder {
@@ -253,6 +329,7 @@ namespace Blish_HUD.Controls {
         private bool wrapText;
         private int width;
         private bool autoSizeWidth;
+        private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left;
 
         public FormattedTextBuilder CreatePart(string text, Action<FormattedTextPartBuilder> creationFunc) {
             var builder = new FormattedTextPartBuilder(text);
@@ -278,8 +355,13 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedTextBuilder SetHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
+            this.horizontalAlignment = horizontalAlignment;
+            return this;
+        }
+
         public FormattedText Build()
-            => new FormattedText(this.parts, this.wrapText, this.autoSizeWidth) {
+            => new FormattedText(this.parts, this.wrapText, this.autoSizeWidth, this.horizontalAlignment) {
                 Width = this.width,
             };
     }
