@@ -130,13 +130,15 @@ namespace Blish_HUD.Controls {
         private readonly bool wrapText;
         private readonly bool autoSizeWidth;
         private readonly HorizontalAlignment horizontalAlignment;
+        private readonly VerticalAlignment verticalAlignment;
         private FormattedTextPart hoveredTextPart;
 
-        public FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth, HorizontalAlignment horizontalAlignment) {
+        public FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
             this.parts = parts;
             this.wrapText = wrapText;
             this.autoSizeWidth = autoSizeWidth;
             this.horizontalAlignment = horizontalAlignment;
+            this.verticalAlignment = verticalAlignment;
         }
 
         public override void RecalculateLayout() {
@@ -157,6 +159,7 @@ namespace Blish_HUD.Controls {
             if (rectangles.Count > 0) {
                 var lastRectangle = rectangles[rectangles.Count - 1];
                 rectangle.X = lastRectangle.Rectangle.X + lastRectangle.Rectangle.Width;
+                // TODO: Handle different FontSizes
                 rectangle.Y = lastRectangle.Rectangle.Y;
             }
 
@@ -172,6 +175,7 @@ namespace Blish_HUD.Controls {
                 lastYRectangle = possibleLastYRectangles.First();
             }
 
+            // TODO: Handle different FontSizes
             return new Rectangle(0, lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height, (int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height));
         }
 
@@ -208,10 +212,10 @@ namespace Blish_HUD.Controls {
             }
 
             this.HandleHorizontalAlignment();
+            this.HandleVerticalAlignment();
         }
 
         private void HandleHorizontalAlignment() {
-
             if (this.horizontalAlignment != HorizontalAlignment.Left) {
                 foreach (var item in this.rectangles.GroupBy(x => x.Rectangle.Y)) {
                     if (horizontalAlignment == HorizontalAlignment.Center) {
@@ -234,6 +238,34 @@ namespace Blish_HUD.Controls {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        private void HandleVerticalAlignment() {
+            if (this.verticalAlignment == VerticalAlignment.Middle) {
+                var yGroups = this.rectangles.GroupBy(x => x.Rectangle.Y).ToArray();
+                var combinedHeight = yGroups.Select(x => x.OrderByDescending(x => x.Rectangle.Height).First().Rectangle.Height).Sum();
+                var firstRectangleY = (this.Height / 2) - (combinedHeight / 2);
+                var nextRectangleY = firstRectangleY;
+                foreach (var item in yGroups) {
+                    foreach (var rectangle in item) {
+                        rectangle.Rectangle.Y = nextRectangleY;
+                    }
+                    var maxHeightInRow = item.Max(x => x.Rectangle.Height);
+                    nextRectangleY += maxHeightInRow;
+                }
+            } else if (this.verticalAlignment == VerticalAlignment.Bottom) {
+                // TODO: Maybe need to handle different FontSizes?
+                var yGroups = this.rectangles.GroupBy(x => x.Rectangle.Y).Reverse().ToArray();
+                var nextRectangleY = this.Height - yGroups.First().Max(x => x.Rectangle.Height);
+                foreach (var item in yGroups) {
+                    var maxHeightInRow = item.Max(x => x.Rectangle.Height);
+
+                    foreach (var rectangle in item) {
+                        rectangle.Rectangle.Y = nextRectangleY;
+                    }
+                    nextRectangleY -= maxHeightInRow;
                 }
             }
         }
@@ -330,6 +362,7 @@ namespace Blish_HUD.Controls {
         private int width;
         private bool autoSizeWidth;
         private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left;
+        private VerticalAlignment verticalAlignment = VerticalAlignment.Middle;
 
         public FormattedTextBuilder CreatePart(string text, Action<FormattedTextPartBuilder> creationFunc) {
             var builder = new FormattedTextPartBuilder(text);
@@ -360,8 +393,13 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedTextBuilder SetVerticalAlignment(VerticalAlignment verticalAlignment) {
+            this.verticalAlignment = verticalAlignment;
+            return this;
+        }
+
         public FormattedText Build()
-            => new FormattedText(this.parts, this.wrapText, this.autoSizeWidth, this.horizontalAlignment) {
+            => new FormattedText(this.parts, this.wrapText, this.autoSizeWidth, this.horizontalAlignment, this.verticalAlignment) {
                 Width = this.width,
             };
     }
