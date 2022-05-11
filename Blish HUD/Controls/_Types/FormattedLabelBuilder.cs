@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 
 namespace Blish_HUD.Controls {
-    public class FormattedTextBuilder {
-        private readonly List<FormattedTextPart> _parts = new List<FormattedTextPart>();
+    public class FormattedLabelBuilder {
+        private readonly List<FormattedLabelPart> _parts = new List<FormattedLabelPart>();
         private bool _wrapText;
         private int _width;
         private int _height;
@@ -12,54 +12,54 @@ namespace Blish_HUD.Controls {
         private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
         private VerticalAlignment _verticalAlignment = VerticalAlignment.Middle;
 
-        public FormattedTextBuilder CreatePart(string text, Action<FormattedTextPartBuilder> creationFunc) {
-            var builder = new FormattedTextPartBuilder(text);
+        public FormattedLabelBuilder CreatePart(string text, Action<FormattedLabelPartBuilder> creationFunc) {
+            var builder = new FormattedLabelPartBuilder(text);
             creationFunc?.Invoke(builder);
             _parts.Add(builder.Build());
             return this;
         }
 
-        public FormattedTextBuilder Wrap() {
+        public FormattedLabelBuilder Wrap() {
             _wrapText = true;
             return this;
         }
 
-        public FormattedTextBuilder SetWidth(int width) {
+        public FormattedLabelBuilder SetWidth(int width) {
             _autoSizeWidth = false;
             _width = width;
             return this;
         }
 
-        public FormattedTextBuilder SetHeight(int height) {
+        public FormattedLabelBuilder SetHeight(int height) {
             _autoSizeHeight = false;
             _height = height;
             return this;
         }
 
-        public FormattedTextBuilder AutoSizeWidth() {
+        public FormattedLabelBuilder AutoSizeWidth() {
             _width = default;
             _autoSizeWidth = true;
             return this;
         }
 
-        public FormattedTextBuilder AutoSizeHeight() {
+        public FormattedLabelBuilder AutoSizeHeight() {
             _height = default;
             _autoSizeHeight = true;
             return this;
         }
 
-        public FormattedTextBuilder SetHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
+        public FormattedLabelBuilder SetHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
             _horizontalAlignment = horizontalAlignment;
             return this;
         }
 
-        public FormattedTextBuilder SetVerticalAlignment(VerticalAlignment verticalAlignment) {
+        public FormattedLabelBuilder SetVerticalAlignment(VerticalAlignment verticalAlignment) {
             _verticalAlignment = verticalAlignment;
             return this;
         }
 
-        public FormattedText Build()
-            => new FormattedText(_parts, _wrapText, _autoSizeWidth, _autoSizeHeight, _horizontalAlignment, _verticalAlignment) {
+        public FormattedLabel Build()
+            => new FormattedLabel(_parts, _wrapText, _autoSizeWidth, _autoSizeHeight, _horizontalAlignment, _verticalAlignment) {
                 Width = _width,
                 Height = _height,
             };

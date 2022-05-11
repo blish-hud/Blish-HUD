@@ -8,17 +8,17 @@ using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    public class FormattedText : Control {
-        private readonly List<(RectangleWrapper Rectangle, FormattedTextPart Text, object ToDraw)> _rectangles = new List<(RectangleWrapper, FormattedTextPart, object)>();
-        private readonly IEnumerable<FormattedTextPart> _parts;
+    public class FormattedLabel : Control {
+        private readonly List<(RectangleWrapper Rectangle, FormattedLabelPart Text, object ToDraw)> _rectangles = new List<(RectangleWrapper, FormattedLabelPart, object)>();
+        private readonly IEnumerable<FormattedLabelPart> _parts;
         private readonly bool _wrapText;
         private readonly bool _autoSizeWidth;
         private readonly bool _autoSizeHeight;
         private readonly HorizontalAlignment _horizontalAlignment;
         private readonly VerticalAlignment _verticalAlignment;
-        private FormattedTextPart _hoveredTextPart;
+        private FormattedLabelPart _hoveredTextPart;
 
-        internal FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth, bool autoSizeHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+        internal FormattedLabel(IEnumerable<FormattedLabelPart> parts, bool wrapText, bool autoSizeWidth, bool autoSizeHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
             _parts = parts;
             _wrapText = wrapText;
             _autoSizeWidth = autoSizeWidth;
@@ -36,7 +36,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private Rectangle HandleFirstTextPart(FormattedTextPart item, string firstText) {
+        private Rectangle HandleFirstTextPart(FormattedLabelPart item, string firstText) {
             var textSize = item.Font.MeasureString(firstText);
 
             var rectangle = new Rectangle(0, 0, (int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height));
@@ -50,7 +50,7 @@ namespace Blish_HUD.Controls {
             return rectangle;
         }
 
-        private Rectangle HandleMultiLineText(FormattedTextPart item, string text) {
+        private Rectangle HandleMultiLineText(FormattedLabelPart item, string text) {
             var textSize = item.Font.MeasureString(text);
             var possibleLastYRectangles = _rectangles.OrderByDescending(x => x.Rectangle.Y).GroupBy(x => x.Rectangle.Y).First();
             var lastYRectangle = possibleLastYRectangles.FirstOrDefault(x => x.Rectangle.Height != default);

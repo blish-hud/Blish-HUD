@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-    public class FormattedTextPartBuilder {
+    public class FormattedLabelPartBuilder {
         private readonly string _text;
         private bool _isBold;
         private bool _isItalic;
@@ -16,69 +16,69 @@ namespace Blish_HUD.Controls {
         private Color _hoverColor = Color.LightBlue;
         private ContentService.FontSize _fontSize = ContentService.FontSize.Size18;
 
-        internal FormattedTextPartBuilder(string text) {
+        internal FormattedLabelPartBuilder(string text) {
             _text = text;
         }
 
-        public FormattedTextPartBuilder MakeBold() {
+        public FormattedLabelPartBuilder MakeBold() {
             _isItalic = false;
             _isBold = true;
             return this;
         }
 
-        public FormattedTextPartBuilder MakeItalic() {
+        public FormattedLabelPartBuilder MakeItalic() {
             _isBold = false;
             _isItalic = true;
             return this;
         }
 
-        public FormattedTextPartBuilder MakeStrikeThrough() {
+        public FormattedLabelPartBuilder MakeStrikeThrough() {
             _isStrikeThrough = true;
             return this;
         }
 
-        public FormattedTextPartBuilder MakeUnderlined() {
+        public FormattedLabelPartBuilder MakeUnderlined() {
             _isUnderlined = true;
             return this;
         }
 
-        public FormattedTextPartBuilder SetLink(Action onLink) {
+        public FormattedLabelPartBuilder SetLink(Action onLink) {
             _link = onLink;
             return this;
         }
 
-        public FormattedTextPartBuilder SetHyperLink(string link) {
+        public FormattedLabelPartBuilder SetHyperLink(string link) {
             _link = new Action(() => System.Diagnostics.Process.Start(link));
             return this;
         }
 
-        public FormattedTextPartBuilder SetPrefixImage(Texture2D prefixImage) {
+        public FormattedLabelPartBuilder SetPrefixImage(Texture2D prefixImage) {
             _prefixImage = prefixImage;
             return this;
         }
 
-        public FormattedTextPartBuilder SetSuffixImage(Texture2D suffixImage) {
+        public FormattedLabelPartBuilder SetSuffixImage(Texture2D suffixImage) {
             _suffixImage = suffixImage;
             return this;
         }
 
-        public FormattedTextPartBuilder SetTextColor(Color textColor) {
+        public FormattedLabelPartBuilder SetTextColor(Color textColor) {
             _textColor = textColor;
             return this;
         }
 
-        public FormattedTextPartBuilder SetHoverColor(Color hoverColor) {
+        public FormattedLabelPartBuilder SetHoverColor(Color hoverColor) {
             _hoverColor = hoverColor;
             return this;
         }
 
-        public FormattedTextPartBuilder SetFontSize(ContentService.FontSize fontSize) {
+        public FormattedLabelPartBuilder SetFontSize(ContentService.FontSize fontSize) {
             _fontSize = fontSize;
             return this;
         }
 
-        internal FormattedTextPart Build()
-            => new FormattedTextPart(
+        internal FormattedLabelPart Build()
+            => new FormattedLabelPart(
                 _isBold,
                 _isItalic,
                 _isStrikeThrough,

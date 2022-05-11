@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    internal class FormattedTextPart {
+    internal class FormattedLabelPart {
         public BitmapFont Font { get; }
 
         public bool IsBold { get; }
@@ -31,7 +31,7 @@ namespace Blish_HUD.Controls {
 
         public Color HoverColor { get; }
 
-        public FormattedTextPart(
+        public FormattedLabelPart(
             bool isBold,
             bool isItalic,
             bool isStrikeThrough,
