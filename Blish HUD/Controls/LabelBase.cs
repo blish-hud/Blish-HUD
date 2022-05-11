@@ -55,31 +55,7 @@ namespace Blish_HUD.Controls {
             }
 
             this.Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, style);
-
-            //this.Width = (int)Math.Ceiling(this.font.MeasureString(this.Text).Width);
         }
-
-        //protected override void OnMouseEntered(MouseEventArgs e) {
-        //    this.isHovered = true;
-        //}
-
-        //protected override void OnMouseLeft(MouseEventArgs e) {
-        //    this.isHovered = false;
-        //}
-
-        //protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-        //    if (this.PrefixImage != null) {
-        //        spriteBatch.DrawOnCtrl(this, this.PrefixImage, bounds);
-        //    }
-
-        //    var textColor = Color.White;
-
-        //    if (!string.IsNullOrEmpty(this.Link) && this.isHovered) {
-        //        textColor = Color.LightBlue;
-        //    }
-
-        //    spriteBatch.DrawStringOnCtrl(this, this.Text, this.font, bounds, textColor);
-        //}
     }
 
     public class FormattedTextPartBuilder {
@@ -146,47 +122,76 @@ namespace Blish_HUD.Controls {
     public class FormattedText : Control {
         private List<(Rectangle Rectangle, FormattedTextPart Text, string StringText)> rectangles = new List<(Rectangle, FormattedTextPart, string)>();
         private IEnumerable<FormattedTextPart> parts;
-
+        private readonly bool wrapText;
+        private readonly bool autoSizeWidth;
         private FormattedTextPart hoveredTextPart;
 
-        public FormattedText(IEnumerable<FormattedTextPart> parts) {
+        public FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth) {
             this.parts = parts;
+            this.wrapText = wrapText;
+            this.autoSizeWidth = autoSizeWidth;
+        }
 
+        public override void RecalculateLayout() {
             this.InitializeRectangles();
+        }
 
-            this.Width = this.rectangles.Select(x => x.Rectangle.Width).Sum();
+        private Rectangle HandleFirstTextPart(FormattedTextPart item, string firstText) {
+            var textSize = item.Font.MeasureString(firstText);
+
+            var rectangle = new Rectangle(0, 0, (int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height));
+
+            if (rectangles.Count > 0) {
+                var lastRectangle = rectangles[rectangles.Count - 1];
+                rectangle.X = lastRectangle.Rectangle.X + lastRectangle.Rectangle.Width;
+                rectangle.Y = lastRectangle.Rectangle.Y;
+            }
+
+            return rectangle;
+        }
+
+        private Rectangle HandleMultiLineText(FormattedTextPart item, string text) {
+            var textSize = item.Font.MeasureString(text);
+            var possibleLastYRectangles = rectangles.OrderByDescending(x => x.Rectangle.Y).GroupBy(x => x.Rectangle.Y).First();
+            var lastYRectangle = possibleLastYRectangles.FirstOrDefault(x => x.Rectangle.Height != default);
+
+            if (lastYRectangle == default) {
+                lastYRectangle = possibleLastYRectangles.First();
+            }
+
+            return new Rectangle(0, lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height, (int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height));
         }
 
         private void InitializeRectangles() {
+            this.rectangles.Clear();
             foreach (var item in parts) {
+                var splittedText = item.Text.Split(new[] { "\n" }, StringSplitOptions.None).ToList();
+                var firstText = splittedText[0];
+                var rectangle = this.HandleFirstTextPart(item, firstText);
 
-                var splittedText = item.Text.Split(new[] { "\n" }, StringSplitOptions.None);
-
-                var firstText = splittedText.First();
-                var textSize = item.Font.MeasureString(firstText);
-
-                var rectangle = new Rectangle(0, 0, (int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height));
-
-                if (rectangles.Count > 0) {
-                    var lastRectangle = rectangles[rectangles.Count - 1];
-                    rectangle.X = lastRectangle.Rectangle.X + lastRectangle.Rectangle.Width;
-                    rectangle.Y = lastRectangle.Rectangle.Y;
+                if (this.wrapText && rectangle.X + rectangle.Width > this.Width) {
+                    splittedText = DrawUtil.WrapText(item.Font, firstText, this.Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.None).Concat(splittedText.Skip(1)).ToList();
+                    rectangle = this.HandleFirstTextPart(item, firstText);
                 }
 
                 rectangles.Add((rectangle, item, firstText));
 
-                foreach (var splittedTextPart in splittedText.Skip(1)) {
-                    textSize = item.Font.MeasureString(splittedTextPart);
-                    var possibleLastYRectangles = rectangles.OrderByDescending(x => x.Rectangle.Y).GroupBy(x => x.Rectangle.Y).First();
-                    var lastYRectangle = possibleLastYRectangles.FirstOrDefault(x => x.Rectangle.Height != default);
+                for (int i = 1; i < splittedText.Count; i++) {
+                    rectangle = this.HandleMultiLineText(item, splittedText[i]);
+                    if (this.wrapText && rectangle.X + rectangle.Width > this.Width) {
+                        splittedText.InsertRange(i + 1, DrawUtil.WrapText(item.Font, splittedText[i], this.Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.None));
+                        splittedText.RemoveAt(i);
 
-                    if (lastYRectangle == default) {
-                        lastYRectangle = possibleLastYRectangles.First();
+                        rectangle = this.HandleMultiLineText(item, splittedText[i]);
                     }
 
-                    rectangles.Add((new Rectangle(0, lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height, (int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height)), item, splittedTextPart));
-                }
+                    rectangles.Add((rectangle, item, splittedText[i]));
 
+                }
+            }
+
+            if (this.autoSizeWidth) {
+                this.Width = this.rectangles.Select(x => x.Rectangle.Width).Sum();
             }
         }
 
@@ -219,7 +224,7 @@ namespace Blish_HUD.Controls {
                 }
 
                 spriteBatch.DrawString(rectangle.Text.Font, rectangle.StringText, new Vector2(destinationRectangle.X, destinationRectangle.Y), textColor);
-             
+
                 if (rectangle.Text.IsUnderlined) {
                     spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + destinationRectangle.Height), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + destinationRectangle.Height), textColor, thickness: 2);
                 }
@@ -234,6 +239,9 @@ namespace Blish_HUD.Controls {
 
     public class FormattedTextBuilder {
         private readonly List<FormattedTextPart> parts = new List<FormattedTextPart>();
+        private bool wrapText;
+        private int width;
+        private bool autoSizeWidth;
 
         public FormattedTextBuilder CreatePart(string text, Action<FormattedTextPartBuilder> creationFunc) {
             var builder = new FormattedTextPartBuilder(text);
@@ -242,8 +250,27 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedTextBuilder Wrap() {
+            this.wrapText = true;
+            return this;
+        }
+
+        public FormattedTextBuilder SetWidth(int width) {
+            this.autoSizeWidth = false;
+            this.width = width;
+            return this;
+        }
+
+        public FormattedTextBuilder AutoSizeWidth() {
+            this.width = default;
+            this.autoSizeWidth = true;
+            return this;
+        }
+
         public FormattedText Build()
-            => new FormattedText(this.parts);
+            => new FormattedText(this.parts, this.wrapText, this.autoSizeWidth) {
+                Width = this.width,
+            };
     }
 
     public abstract class LabelBase : Control {
