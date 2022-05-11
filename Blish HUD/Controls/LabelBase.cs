@@ -210,6 +210,10 @@ namespace Blish_HUD.Controls {
                 }
 
                 spriteBatch.DrawString(rectangle.Text.Font, rectangle.StringText, new Vector2(destinationRectangle.X, destinationRectangle.Y), textColor);
+             
+                if (rectangle.Text.IsUnderlined) {
+                    spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + destinationRectangle.Height), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + destinationRectangle.Height), textColor, thickness: 2);
+                }
             }
         }
     }
