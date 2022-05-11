@@ -74,9 +74,13 @@ namespace Blish_HUD.Controls {
                     }
 
                     if (_wrapText && imageRectangle.X + imageRectangle.Width > Width) {
-                        var lastRectangle = _rectangles[_rectangles.Count - 1];
+                        var possibleLastYRectangles = _rectangles.OrderByDescending(x => x.Rectangle.Y).GroupBy(x => x.Rectangle.Y).First();
+                        var lastYRectangle = possibleLastYRectangles.FirstOrDefault(x => x.Rectangle.Height != default);
+                        if (lastYRectangle == default) {
+                            lastYRectangle = possibleLastYRectangles.First();
+                        }
                         imageRectangle.X = 0;
-                        imageRectangle.Y = lastRectangle.Rectangle.Y + lastRectangle.Rectangle.Height;
+                        imageRectangle.Y = lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height;
                     }
 
                     _rectangles.Add((new RectangleWrapper(imageRectangle), item, item.PrefixImage));
@@ -113,9 +117,13 @@ namespace Blish_HUD.Controls {
                     }
 
                     if (_wrapText && imageRectangle.X + imageRectangle.Width > Width) {
-                        var lastRectangle = _rectangles[_rectangles.Count - 1];
+                        var possibleLastYRectangles = _rectangles.OrderByDescending(x => x.Rectangle.Y).GroupBy(x => x.Rectangle.Y).First();
+                        var lastYRectangle = possibleLastYRectangles.FirstOrDefault(x => x.Rectangle.Height != default);
+                        if (lastYRectangle == default) {
+                            lastYRectangle = possibleLastYRectangles.First();
+                        }
                         imageRectangle.X = 0;
-                        imageRectangle.Y = lastRectangle.Rectangle.Y + lastRectangle.Rectangle.Height;
+                        imageRectangle.Y = lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height;
                     }
 
                     _rectangles.Add((new RectangleWrapper(imageRectangle), item, item.SuffixImage));
