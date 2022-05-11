@@ -9,7 +9,7 @@ using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
 
-    public class FormattedTextPart {
+    internal class FormattedTextPart {
         public BitmapFont Font { get; }
 
         public bool IsBold { get; }
@@ -32,6 +32,8 @@ namespace Blish_HUD.Controls {
         
         public Color TextColor { get; }
 
+        public Color HoverColor { get; }
+
         public FormattedTextPart(
             bool isBold,
             bool isItalic,
@@ -41,6 +43,7 @@ namespace Blish_HUD.Controls {
             Action link,
             Texture2D prefixImage,
             Color textColor,
+            Color hoverColor,
             ContentService.FontSize fontSize,
             ContentService.FontFace fontFace) {
             this.IsBold = isBold;
@@ -50,6 +53,7 @@ namespace Blish_HUD.Controls {
             this.Text = text;
             this.Link = link;
             this.PrefixImage = prefixImage;
+            this.HoverColor = hoverColor;
             this.FontSize = fontSize;
             this.FontFace = fontFace;
             this.TextColor = textColor == default ? Color.White : textColor;
@@ -75,6 +79,7 @@ namespace Blish_HUD.Controls {
         private Action link;
         private Texture2D prefixImage;
         private Color textColor;
+        private Color hoverColor = Color.LightBlue;
         private ContentService.FontSize fontSize = ContentService.FontSize.Size18;
 
         public FormattedTextPartBuilder(string text) {
@@ -129,13 +134,18 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedTextPartBuilder SetHoverColor(Color hoverColor) {
+            this.hoverColor = hoverColor;
+            return this;
+        }
+
         public FormattedTextPartBuilder SetFontSize(ContentService.FontSize fontSize) {
             this.fontSize = fontSize;
             return this;
         }
 
-        public FormattedTextPart Build()
-            => new FormattedTextPart(this.isBold, this.isItalic, this.isStrikeThrough, this.isUnderlined, this.text, this.link, this.prefixImage, this.textColor, this.fontSize, ContentService.FontFace.Menomonia);
+        internal FormattedTextPart Build()
+            => new FormattedTextPart(this.isBold, this.isItalic, this.isStrikeThrough, this.isUnderlined, this.text, this.link, this.prefixImage, this.textColor, this.hoverColor, this.fontSize, ContentService.FontFace.Menomonia);
     }
 
     public class FormattedText : Control {
@@ -147,7 +157,7 @@ namespace Blish_HUD.Controls {
         private readonly VerticalAlignment verticalAlignment;
         private FormattedTextPart hoveredTextPart;
 
-        public FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+        internal FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
             this.parts = parts;
             this.wrapText = wrapText;
             this.autoSizeWidth = autoSizeWidth;
@@ -323,7 +333,7 @@ namespace Blish_HUD.Controls {
                 var textColor = rectangle.Text.TextColor;
 
                 if (this.hoveredTextPart != null && rectangle.Text == this.hoveredTextPart) {
-                    textColor = Color.LightBlue;
+                    textColor = rectangle.Text.HoverColor;
                 }
 
                 spriteBatch.DrawString(rectangle.Text.Font, rectangle.StringText, new Vector2(destinationRectangle.X, destinationRectangle.Y), textColor);
