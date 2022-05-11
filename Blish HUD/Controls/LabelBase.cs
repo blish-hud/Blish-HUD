@@ -22,7 +22,7 @@ namespace Blish_HUD.Controls {
 
         public string Text { get; }
 
-        public string Link { get; }
+        public Action Link { get; }
 
         public Texture2D PrefixImage { get; }
 
@@ -34,7 +34,7 @@ namespace Blish_HUD.Controls {
             bool isStrikeThrough,
             bool isUnderlined,
             string text,
-            string link,
+            Action link,
             Texture2D prefixImage,
             Color textColor) {
             this.IsBold = isBold;
@@ -64,7 +64,7 @@ namespace Blish_HUD.Controls {
         private bool isItalic;
         private bool isStrikeThrough;
         private bool isUnderlined;
-        private string link;
+        private Action link;
         private Texture2D prefixImage;
         private Color textColor;
 
@@ -100,8 +100,13 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
-        public FormattedTextPartBuilder SetLink(string link) {
-            this.link = link;
+        public FormattedTextPartBuilder SetLink(Action onLink) {
+            this.link = onLink;
+            return this;
+        }
+
+        public FormattedTextPartBuilder SetHyperLink(string link) {
+            this.link = new Action(() => System.Diagnostics.Process.Start(link));
             return this;
         }
 
@@ -138,7 +143,7 @@ namespace Blish_HUD.Controls {
 
         protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
             if (this.hoveredTextPart != null) {
-                System.Diagnostics.Process.Start(this.hoveredTextPart.Link);
+                this.hoveredTextPart.Link?.Invoke();
             }
         }
 
@@ -207,7 +212,7 @@ namespace Blish_HUD.Controls {
             foreach (var rectangle in this.rectangles) {
                 var destinationRectangle = rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
                 var mousePosition = GameService.Input.Mouse.Position;
-                if (!string.IsNullOrEmpty(rectangle.Text.Link) && mousePosition.X > destinationRectangle.X && mousePosition.X < destinationRectangle.X + destinationRectangle.Width && mousePosition.Y > destinationRectangle.Y && mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
+                if (rectangle.Text.Link != null && mousePosition.X > destinationRectangle.X && mousePosition.X < destinationRectangle.X + destinationRectangle.Width && mousePosition.Y > destinationRectangle.Y && mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
                     this.hoveredTextPart = rectangle.Text;
                     hoverSet = true;
                 }
