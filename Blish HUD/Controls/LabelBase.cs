@@ -173,7 +173,6 @@ namespace Blish_HUD.Controls {
             if (rectangles.Count > 0) {
                 var lastRectangle = rectangles[rectangles.Count - 1];
                 rectangle.X = lastRectangle.Rectangle.X + lastRectangle.Rectangle.Width;
-                // TODO: Handle different FontSizes
                 rectangle.Y = lastRectangle.Rectangle.Y;
             }
 
@@ -189,7 +188,6 @@ namespace Blish_HUD.Controls {
                 lastYRectangle = possibleLastYRectangles.First();
             }
 
-            // TODO: Handle different FontSizes
             return new Rectangle(0, lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height, (int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height));
         }
 
@@ -227,6 +225,9 @@ namespace Blish_HUD.Controls {
 
             this.HandleHorizontalAlignment();
             this.HandleVerticalAlignment();
+
+            // Needs to be done after vertical alignment bc it will change the height of the individual rectangles
+            // and therefor can't be recognized as one row anymore
             this.HandleFontSizeDifferences();
         }
 
@@ -238,7 +239,7 @@ namespace Blish_HUD.Controls {
 
                 foreach (var rectangle in item) {
                     var offset = item.Key + maxHeightInRow - rectangle.Rectangle.Y - rectangle.Rectangle.Height;
-                    rectangle.Rectangle.Y += offset;
+                    rectangle.Rectangle.Y += (int)Math.Floor(offset / 2.0);
                 }
             }
         }
@@ -284,7 +285,6 @@ namespace Blish_HUD.Controls {
                     nextRectangleY += maxHeightInRow;
                 }
             } else if (this.verticalAlignment == VerticalAlignment.Bottom) {
-                // TODO: Maybe need to handle different FontSizes?
                 var yGroups = this.rectangles.GroupBy(x => x.Rectangle.Y).Reverse().ToArray();
                 var nextRectangleY = this.Height - yGroups.First().Max(x => x.Rectangle.Height);
                 foreach (var item in yGroups) {
