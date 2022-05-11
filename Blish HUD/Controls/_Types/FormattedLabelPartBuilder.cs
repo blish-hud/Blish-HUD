@@ -12,6 +12,8 @@ namespace Blish_HUD.Controls {
         private Action _link;
         private Texture2D _prefixImage;
         private Texture2D _suffixImage;
+        private Point _prefixImageSize = new Point(32, 32);
+        private Point _suffixImageSize = new Point(32, 32);
         private Color _textColor;
         private Color _hoverColor = Color.LightBlue;
         private ContentService.FontSize _fontSize = ContentService.FontSize.Size18;
@@ -62,6 +64,16 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedLabelPartBuilder SetPrefixImageSize(Point imageSize) {
+            _prefixImageSize = imageSize;
+            return this;
+        }
+
+        public FormattedLabelPartBuilder SetSuffixImageSize(Point imageSize) {
+            _suffixImageSize = imageSize;
+            return this;
+        }
+
         public FormattedLabelPartBuilder SetTextColor(Color textColor) {
             _textColor = textColor;
             return this;
@@ -87,6 +99,8 @@ namespace Blish_HUD.Controls {
                 _link,
                 _prefixImage,
                 _suffixImage,
+                _prefixImageSize,
+                _suffixImageSize,
                 _textColor,
                 _hoverColor,
                 _fontSize,

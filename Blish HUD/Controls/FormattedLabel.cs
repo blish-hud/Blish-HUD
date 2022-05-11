@@ -66,7 +66,7 @@ namespace Blish_HUD.Controls {
             _rectangles.Clear();
             foreach (var item in _parts) {
                 if (item.PrefixImage != null) {
-                    var imageRectangle = new Rectangle(0, 0, 32, 32);
+                    var imageRectangle = new Rectangle(0, 0, item.PrefixImageSize.X, item.PrefixImageSize.Y);
                     if (_rectangles.Count > 0) {
                         var lastRectangle = _rectangles[_rectangles.Count - 1];
                         imageRectangle.X = lastRectangle.Rectangle.X + lastRectangle.Rectangle.Width;
@@ -105,7 +105,7 @@ namespace Blish_HUD.Controls {
                 }
 
                 if (item.SuffixImage != null) {
-                    var imageRectangle = new Rectangle(0, 0, 32, 32);
+                    var imageRectangle = new Rectangle(0, 0, item.SuffixImageSize.X, item.SuffixImageSize.Y);
                     if (_rectangles.Count > 0) {
                         var lastRectangle = _rectangles[_rectangles.Count - 1];
                         imageRectangle.X = lastRectangle.Rectangle.X + lastRectangle.Rectangle.Width;

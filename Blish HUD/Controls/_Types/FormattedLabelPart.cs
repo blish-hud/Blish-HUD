@@ -23,6 +23,10 @@ namespace Blish_HUD.Controls {
 
         public Texture2D SuffixImage { get; }
 
+        public Point PrefixImageSize { get; }
+
+        public Point SuffixImageSize { get; }
+
         public ContentService.FontSize FontSize { get; }
         
         public ContentService.FontFace FontFace { get; }
@@ -40,6 +44,8 @@ namespace Blish_HUD.Controls {
             Action link,
             Texture2D prefixImage,
             Texture2D suffixImage,
+            Point prefixImageSize,
+            Point suffixImageSize,
             Color textColor,
             Color hoverColor,
             ContentService.FontSize fontSize,
@@ -52,6 +58,8 @@ namespace Blish_HUD.Controls {
             Link = link;
             PrefixImage = prefixImage;
             SuffixImage = suffixImage;
+            PrefixImageSize = prefixImageSize;
+            SuffixImageSize = suffixImageSize;
             HoverColor = hoverColor;
             FontSize = fontSize;
             FontFace = fontFace;
