@@ -13,14 +13,16 @@ namespace Blish_HUD.Controls {
         private readonly IEnumerable<FormattedTextPart> _parts;
         private readonly bool _wrapText;
         private readonly bool _autoSizeWidth;
+        private readonly bool _autoSizeHeight;
         private readonly HorizontalAlignment _horizontalAlignment;
         private readonly VerticalAlignment _verticalAlignment;
         private FormattedTextPart _hoveredTextPart;
 
-        internal FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+        internal FormattedText(IEnumerable<FormattedTextPart> parts, bool wrapText, bool autoSizeWidth, bool autoSizeHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
             _parts = parts;
             _wrapText = wrapText;
             _autoSizeWidth = autoSizeWidth;
+            _autoSizeHeight = autoSizeHeight;
             _horizontalAlignment = horizontalAlignment;
             _verticalAlignment = verticalAlignment;
         }
@@ -90,6 +92,10 @@ namespace Blish_HUD.Controls {
 
             if (_autoSizeWidth) {
                 Width = _rectangles.GroupBy(x => x.Rectangle.Y).Select(x => x.Select(y => y.Rectangle.Width).Sum()).Max();
+            }
+
+            if (_autoSizeHeight) {
+                Height = _rectangles.GroupBy(x => x.Rectangle.Y).Select(x => x.Max(x => x.Rectangle.Height)).Sum();
             }
 
             HandleHorizontalAlignment();

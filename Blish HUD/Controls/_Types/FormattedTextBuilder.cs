@@ -6,6 +6,8 @@ namespace Blish_HUD.Controls {
         private readonly List<FormattedTextPart> _parts = new List<FormattedTextPart>();
         private bool _wrapText;
         private int _width;
+        private int _height;
+        private bool _autoSizeHeight;
         private bool _autoSizeWidth;
         private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
         private VerticalAlignment _verticalAlignment = VerticalAlignment.Middle;
@@ -28,9 +30,21 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedTextBuilder SetHeight(int height) {
+            _autoSizeHeight = false;
+            _height = height;
+            return this;
+        }
+
         public FormattedTextBuilder AutoSizeWidth() {
             _width = default;
             _autoSizeWidth = true;
+            return this;
+        }
+
+        public FormattedTextBuilder AutoSizeHeight() {
+            _height = default;
+            _autoSizeHeight = true;
             return this;
         }
 
@@ -45,8 +59,9 @@ namespace Blish_HUD.Controls {
         }
 
         public FormattedText Build()
-            => new FormattedText(_parts, _wrapText, _autoSizeWidth, _horizontalAlignment, _verticalAlignment) {
+            => new FormattedText(_parts, _wrapText, _autoSizeWidth, _autoSizeHeight, _horizontalAlignment, _verticalAlignment) {
                 Width = _width,
+                Height = _height,
             };
     }
 }
