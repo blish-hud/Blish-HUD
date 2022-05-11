@@ -25,7 +25,11 @@ namespace Blish_HUD.Controls {
         public Action Link { get; }
 
         public Texture2D PrefixImage { get; }
-
+        
+        public ContentService.FontSize FontSize { get; }
+        
+        public ContentService.FontFace FontFace { get; }
+        
         public Color TextColor { get; }
 
         public FormattedTextPart(
@@ -36,7 +40,9 @@ namespace Blish_HUD.Controls {
             string text,
             Action link,
             Texture2D prefixImage,
-            Color textColor) {
+            Color textColor,
+            ContentService.FontSize fontSize,
+            ContentService.FontFace fontFace) {
             this.IsBold = isBold;
             this.IsItalic = isItalic;
             this.IsStrikeThrough = isStrikeThrough;
@@ -44,6 +50,8 @@ namespace Blish_HUD.Controls {
             this.Text = text;
             this.Link = link;
             this.PrefixImage = prefixImage;
+            this.FontSize = fontSize;
+            this.FontFace = fontFace;
             this.TextColor = textColor == default ? Color.White : textColor;
 
             var style = ContentService.FontStyle.Regular;
@@ -54,7 +62,7 @@ namespace Blish_HUD.Controls {
                 style = ContentService.FontStyle.Bold;
             }
 
-            this.Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, style);
+            this.Font = GameService.Content.GetFont(this.FontFace, this.FontSize, style);
         }
     }
 
@@ -67,6 +75,7 @@ namespace Blish_HUD.Controls {
         private Action link;
         private Texture2D prefixImage;
         private Color textColor;
+        private ContentService.FontSize fontSize = ContentService.FontSize.Size18;
 
         public FormattedTextPartBuilder(string text) {
             this.text = text;
@@ -120,8 +129,13 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedTextPartBuilder SetFontSize(ContentService.FontSize fontSize) {
+            this.fontSize = fontSize;
+            return this;
+        }
+
         public FormattedTextPart Build()
-            => new FormattedTextPart(this.isBold, this.isItalic, this.isStrikeThrough, this.isUnderlined, this.text, this.link, this.prefixImage, this.textColor);
+            => new FormattedTextPart(this.isBold, this.isItalic, this.isStrikeThrough, this.isUnderlined, this.text, this.link, this.prefixImage, this.textColor, this.fontSize, ContentService.FontFace.Menomonia);
     }
 
     public class FormattedText : Control {
@@ -213,6 +227,20 @@ namespace Blish_HUD.Controls {
 
             this.HandleHorizontalAlignment();
             this.HandleVerticalAlignment();
+            this.HandleFontSizeDifferences();
+        }
+
+        private void HandleFontSizeDifferences() {
+            var rows = this.rectangles.GroupBy(x => x.Rectangle.Y).ToArray();
+
+            foreach (var item in rows) {
+                var maxHeightInRow = item.Max(x => x.Rectangle.Height);
+
+                foreach (var rectangle in item) {
+                    var offset = item.Key + maxHeightInRow - rectangle.Rectangle.Y - rectangle.Rectangle.Height;
+                    rectangle.Rectangle.Y += offset;
+                }
+            }
         }
 
         private void HandleHorizontalAlignment() {
