@@ -136,6 +136,12 @@ namespace Blish_HUD.Controls {
             this.InitializeRectangles();
         }
 
+        protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
+            if (this.hoveredTextPart != null) {
+                System.Diagnostics.Process.Start(this.hoveredTextPart.Link);
+            }
+        }
+
         private Rectangle HandleFirstTextPart(FormattedTextPart item, string firstText) {
             var textSize = item.Font.MeasureString(firstText);
 
