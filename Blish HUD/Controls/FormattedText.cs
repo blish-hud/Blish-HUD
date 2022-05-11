@@ -9,7 +9,7 @@ using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
     public class FormattedText : Control {
-        private readonly List<(RectangleWrapper Rectangle, FormattedTextPart Text, string StringText)> _rectangles = new List<(RectangleWrapper, FormattedTextPart, string)>();
+        private readonly List<(RectangleWrapper Rectangle, FormattedTextPart Text, object ToDraw)> _rectangles = new List<(RectangleWrapper, FormattedTextPart, object)>();
         private readonly IEnumerable<FormattedTextPart> _parts;
         private readonly bool _wrapText;
         private readonly bool _autoSizeWidth;
@@ -27,7 +27,7 @@ namespace Blish_HUD.Controls {
             _verticalAlignment = verticalAlignment;
         }
 
-        public override void RecalculateLayout() 
+        public override void RecalculateLayout()
             => InitializeRectangles();
 
         protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
@@ -65,6 +65,22 @@ namespace Blish_HUD.Controls {
         private void InitializeRectangles() {
             _rectangles.Clear();
             foreach (var item in _parts) {
+                if (item.PrefixImage != null) {
+                    var imageRectangle = new Rectangle(0, 0, 32, 32);
+                    if (_rectangles.Count > 0) {
+                        var lastRectangle = _rectangles[_rectangles.Count - 1];
+                        imageRectangle.X = lastRectangle.Rectangle.X + lastRectangle.Rectangle.Width;
+                        imageRectangle.Y = lastRectangle.Rectangle.Y;
+                    }
+
+                    if (_wrapText && imageRectangle.X + imageRectangle.Width > Width) {
+                        var lastRectangle = _rectangles[_rectangles.Count - 1];
+                        imageRectangle.X = 0;
+                        imageRectangle.Y = lastRectangle.Rectangle.Y + lastRectangle.Rectangle.Height;
+                    }
+
+                    _rectangles.Add((new RectangleWrapper(imageRectangle), item, item.PrefixImage));
+                }
                 var splittedText = item.Text.Split(new[] { "\n" }, StringSplitOptions.None).ToList();
                 var firstText = splittedText[0];
                 var rectangle = HandleFirstTextPart(item, firstText);
@@ -86,7 +102,23 @@ namespace Blish_HUD.Controls {
                     }
 
                     _rectangles.Add((new RectangleWrapper(rectangle), item, splittedText[i]));
+                }
 
+                if (item.SuffixImage != null) {
+                    var imageRectangle = new Rectangle(0, 0, 32, 32);
+                    if (_rectangles.Count > 0) {
+                        var lastRectangle = _rectangles[_rectangles.Count - 1];
+                        imageRectangle.X = lastRectangle.Rectangle.X + lastRectangle.Rectangle.Width;
+                        imageRectangle.Y = lastRectangle.Rectangle.Y;
+                    }
+
+                    if (_wrapText && imageRectangle.X + imageRectangle.Width > Width) {
+                        var lastRectangle = _rectangles[_rectangles.Count - 1];
+                        imageRectangle.X = 0;
+                        imageRectangle.Y = lastRectangle.Rectangle.Y + lastRectangle.Rectangle.Height;
+                    }
+
+                    _rectangles.Add((new RectangleWrapper(imageRectangle), item, item.SuffixImage));
                 }
             }
 
@@ -201,7 +233,11 @@ namespace Blish_HUD.Controls {
                     textColor = rectangle.Text.HoverColor;
                 }
 
-                spriteBatch.DrawString(rectangle.Text.Font, rectangle.StringText, new Vector2(destinationRectangle.X, destinationRectangle.Y), textColor);
+                if (rectangle.ToDraw is string stringText) {
+                    spriteBatch.DrawString(rectangle.Text.Font, stringText, new Vector2(destinationRectangle.X, destinationRectangle.Y), textColor);
+                } else if (rectangle.ToDraw is Texture2D texture) {
+                    spriteBatch.Draw(texture, destinationRectangle, Color.White);
+                }
 
                 if (rectangle.Text.IsUnderlined) {
                     spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + destinationRectangle.Height), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + destinationRectangle.Height), textColor, thickness: 2);

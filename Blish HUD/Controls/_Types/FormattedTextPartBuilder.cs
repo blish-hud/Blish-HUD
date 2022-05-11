@@ -11,6 +11,7 @@ namespace Blish_HUD.Controls {
         private bool _isUnderlined;
         private Action _link;
         private Texture2D _prefixImage;
+        private Texture2D _suffixImage;
         private Color _textColor;
         private Color _hoverColor = Color.LightBlue;
         private ContentService.FontSize _fontSize = ContentService.FontSize.Size18;
@@ -56,6 +57,11 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedTextPartBuilder SetSuffixImage(Texture2D suffixImage) {
+            _suffixImage = suffixImage;
+            return this;
+        }
+
         public FormattedTextPartBuilder SetTextColor(Color textColor) {
             _textColor = textColor;
             return this;
@@ -80,6 +86,7 @@ namespace Blish_HUD.Controls {
                 _text,
                 _link,
                 _prefixImage,
+                _suffixImage,
                 _textColor,
                 _hoverColor,
                 _fontSize,
