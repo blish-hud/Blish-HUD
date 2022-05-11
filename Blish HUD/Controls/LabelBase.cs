@@ -26,6 +26,8 @@ namespace Blish_HUD.Controls {
 
         public Texture2D PrefixImage { get; }
 
+        public Color TextColor { get; }
+
         public FormattedTextPart(
             bool isBold,
             bool isItalic,
@@ -33,7 +35,8 @@ namespace Blish_HUD.Controls {
             bool isUnderlined,
             string text,
             string link,
-            Texture2D prefixImage) {
+            Texture2D prefixImage,
+            Color textColor) {
             this.IsBold = isBold;
             this.IsItalic = isItalic;
             this.IsStrikeThrough = isStrikeThrough;
@@ -41,6 +44,7 @@ namespace Blish_HUD.Controls {
             this.Text = text;
             this.Link = link;
             this.PrefixImage = prefixImage;
+            this.TextColor = textColor == default ? Color.White : textColor;
 
             var style = ContentService.FontStyle.Regular;
 
@@ -86,6 +90,7 @@ namespace Blish_HUD.Controls {
         private bool isUnderlined;
         private string link;
         private Texture2D prefixImage;
+        private Color textColor;
 
         public FormattedTextPartBuilder(string text) {
             this.text = text;
@@ -129,8 +134,13 @@ namespace Blish_HUD.Controls {
             return this;
         }
 
+        public FormattedTextPartBuilder SetTextColor(Color textColor) {
+            this.textColor = textColor;
+            return this;
+        }
+
         public FormattedTextPart Build()
-            => new FormattedTextPart(this.isBold, this.isItalic, this.isStrikeThrough, this.isUnderlined, this.text, this.link, this.prefixImage);
+            => new FormattedTextPart(this.isBold, this.isItalic, this.isStrikeThrough, this.isUnderlined, this.text, this.link, this.prefixImage, this.textColor);
     }
 
     public class FormattedText : Control {
@@ -185,7 +195,6 @@ namespace Blish_HUD.Controls {
             var hoverSet = false;
             foreach (var rectangle in this.rectangles) {
                 var destinationRectangle = rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
-                var textColor = Color.White;
                 var mousePosition = GameService.Input.Mouse.Position;
                 if (!string.IsNullOrEmpty(rectangle.Text.Link) && mousePosition.X > destinationRectangle.X && mousePosition.X < destinationRectangle.X + destinationRectangle.Width && mousePosition.Y > destinationRectangle.Y && mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
                     this.hoveredTextPart = rectangle.Text;
@@ -203,7 +212,7 @@ namespace Blish_HUD.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             foreach (var rectangle in this.rectangles) {
                 var destinationRectangle = rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
-                var textColor = Color.White;
+                var textColor = rectangle.Text.TextColor;
 
                 if (this.hoveredTextPart != null && rectangle.Text == this.hoveredTextPart) {
                     textColor = Color.LightBlue;
