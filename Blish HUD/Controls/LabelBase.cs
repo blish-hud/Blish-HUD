@@ -173,7 +173,7 @@ namespace Blish_HUD.Controls {
                     if (lastYRectangle == default) {
                         lastYRectangle = possibleLastYRectangles.First();
                     }
-                    
+
                     rectangles.Add((new Rectangle(0, lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height, (int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height)), item, splittedTextPart));
                 }
 
@@ -213,6 +213,11 @@ namespace Blish_HUD.Controls {
              
                 if (rectangle.Text.IsUnderlined) {
                     spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + destinationRectangle.Height), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + destinationRectangle.Height), textColor, thickness: 2);
+                }
+
+                if (rectangle.Text.IsStrikeThrough) {
+                    // TODO: Still seemed not centered
+                    spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + (destinationRectangle.Height / 2)), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + (destinationRectangle.Height / 2)), textColor, thickness: 2);
                 }
             }
         }
