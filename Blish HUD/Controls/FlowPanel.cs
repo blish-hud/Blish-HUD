@@ -106,23 +106,33 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnChildAdded(ChildChangedEventArgs e) {
+            OnChildrenChanged(e.ResultingChildren);
             base.OnChildAdded(e);
 
             e.ChangedChild.Resized += ChangedChildOnResized;
         }
 
         protected override void OnChildRemoved(ChildChangedEventArgs e) {
+            OnChildrenChanged(e.ResultingChildren);
             base.OnChildRemoved(e);
 
             e.ChangedChild.Resized -= ChangedChildOnResized;
         }
 
         private void ChangedChildOnResized(object sender, ResizedEventArgs e) {
-            this.Invalidate();
+            OnChildrenChanged(_children.ToArray());
+        }
+
+        private void OnChildrenChanged(IEnumerable<Control> resultingChildren) {
+            if (this.IsLayoutSuspended) {
+                Invalidate();
+            } else {
+                ReflowChildLayout(resultingChildren);
+            }
         }
 
         public override void RecalculateLayout() {
-            ReflowChildLayout(_children);
+            ReflowChildLayout(_children.ToArray());
 
             base.RecalculateLayout();
         }
@@ -329,6 +339,8 @@ namespace Blish_HUD.Controls {
                     ReflowChildLayoutSingleBottomToTop(filteredChildren);
                     break;
             }
+
+            Logger.GetLogger(this.GetType()).Info("DID A REFLOW");
         }
 
         protected override void DisposeControl() {
