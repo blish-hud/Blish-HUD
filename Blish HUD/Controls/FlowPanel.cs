@@ -339,8 +339,6 @@ namespace Blish_HUD.Controls {
                     ReflowChildLayoutSingleBottomToTop(filteredChildren);
                     break;
             }
-
-            Logger.GetLogger(this.GetType()).Info("DID A REFLOW");
         }
 
         protected override void DisposeControl() {
