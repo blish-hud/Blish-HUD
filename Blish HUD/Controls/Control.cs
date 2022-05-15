@@ -914,14 +914,16 @@ namespace Blish_HUD.Controls {
         #region Helper Classes
         private readonly struct SuspendLayoutScope : IDisposable {
             private readonly Control _owner;
+            private readonly bool    _forceRecalculate;
 
-            public SuspendLayoutScope(Control owner) {
-                _owner = owner;
+            public SuspendLayoutScope(Control owner, bool forceRecalculate = false) {
+                _owner            = owner;
+                _forceRecalculate = forceRecalculate;
                 _owner.SuspendLayout();
             }
 
             public void Dispose() {
-                _owner.ResumeLayout();
+                _owner.ResumeLayout(_forceRecalculate);
             }
         }
         #endregion
