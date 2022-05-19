@@ -91,6 +91,7 @@ namespace Blish_HUD.Controls {
 
                 if (_wrapText && rectangle.X + rectangle.Width > Width) {
                     splittedText = DrawUtil.WrapText(item.Font, firstText, Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.None).Concat(splittedText.Skip(1)).ToList();
+                    firstText = splittedText[0];
                     rectangle = HandleFirstTextPart(item, firstText);
                 }
 
