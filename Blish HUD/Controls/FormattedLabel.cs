@@ -150,10 +150,10 @@ namespace Blish_HUD.Controls {
             var rows = _rectangles.GroupBy(x => x.Rectangle.Y).ToArray();
 
             foreach (var item in rows) {
-                var maxHeightInRow = item.Max(x => x.Rectangle.Height);
+                var maxHeightInRowRectangle = item.OrderByDescending(x => x.Rectangle.Height).First();
 
                 foreach (var rectangle in item) {
-                    var offset = item.Key + maxHeightInRow - rectangle.Rectangle.Y - rectangle.Rectangle.Height;
+                    var offset = maxHeightInRowRectangle.Rectangle.Height - rectangle.Rectangle.Height;
                     rectangle.Rectangle.Y += (int)Math.Floor(offset / 2.0);
                 }
             }
