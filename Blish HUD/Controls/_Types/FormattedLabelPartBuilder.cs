@@ -1,4 +1,5 @@
 ﻿using System;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -10,7 +11,6 @@ namespace Blish_HUD.Controls {
         private bool _isStrikeThrough;
         private bool _isUnderlined;
         private Action _link;
-        private Texture2D _prefixImage;
         private AsyncTexture2D _prefixImage;
         private AsyncTexture2D _suffixImage;
         private Point _prefixImageSize = new Point(32, 32);

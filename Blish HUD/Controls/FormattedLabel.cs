@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -245,8 +246,8 @@ namespace Blish_HUD.Controls {
                 }
 
                 if (rectangle.ToDraw is string stringText) {
-                    spriteBatch.DrawString(rectangle.Text.Font, stringText, new Vector2(destinationRectangle.X, destinationRectangle.Y), textColor);
-                } else if (rectangle.ToDraw is Texture2D texture) {
+                    spriteBatch.DrawString(rectangle.Text.Font, stringText, destinationRectangle.Location.ToVector2(), textColor);
+                } else if (rectangle.ToDraw is AsyncTexture2D texture) {
                     spriteBatch.Draw(texture, destinationRectangle, Color.White);
                 }
 
