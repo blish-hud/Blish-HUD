@@ -17,7 +17,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
 
         private const float BOUNCE_ROTATION = -MathHelper.PiOver4 / 4;
 
-        private readonly AsyncTexture2D _shineTexture = AsyncTexture2D.FromAssetId(965696);
+        private readonly Texture2D _shineTexture = GameService.Content.GetTexture("controls/bouncynotification/965696");
 
         private AsyncTexture2D _chestTexture;
         public AsyncTexture2D ChestTexture {
