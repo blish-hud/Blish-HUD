@@ -100,7 +100,7 @@ namespace Blish_HUD.Controls {
 
                 _rectangles.Add((new RectangleWrapper(rectangle), item, firstText));
 
-                for (int i = 1; i < splittedText.Count; i++) {
+                for (var i = wrapped ? 0 : 1; i < splittedText.Count; i++) {
                     rectangle = HandleMultiLineText(item, splittedText[i]);
                     if (_wrapText && rectangle.X + rectangle.Width > Width) {
                         splittedText.InsertRange(i + 1, DrawUtil.WrapText(item.Font, splittedText[i], Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
