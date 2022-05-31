@@ -275,6 +275,14 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        protected override void DisposeControl() {
+            foreach (var item in _parts) {
+                item.Dispose();
+            }
+
+            base.DisposeControl();
+        }
+
         private class RectangleWrapper {
             public Rectangle Rectangle { get; set; }
 

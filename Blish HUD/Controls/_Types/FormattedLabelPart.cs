@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
-    internal class FormattedLabelPart {
+    internal class FormattedLabelPart : IDisposable {
         public BitmapFont Font { get; }
 
         public bool IsBold { get; }
@@ -75,6 +75,11 @@ namespace Blish_HUD.Controls {
             }
 
             Font = GameService.Content.GetFont(FontFace, FontSize, style);
+        }
+
+        public void Dispose() {
+            PrefixImage?.Dispose();
+            SuffixImage?.Dispose();
         }
     }
 }
