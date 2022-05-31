@@ -44,7 +44,7 @@ namespace Blish_HUD.Content {
 
         private readonly string _assetCachePath;
 
-        public DatAssetCache(ContentService service) : base(service) {
+        internal DatAssetCache(ContentService service) : base(service) {
             _assetCachePath = DirectoryUtil.RegisterDirectory(DirectoryUtil.CachePath, ASSETCACHE_PATH);
 
             // We must load ASAP
@@ -172,14 +172,41 @@ namespace Blish_HUD.Content {
             return TextureUtil.FromStreamPremultiplied(new MemoryStream(rawAsset));
         }
 
-        private AsyncTexture2D LoadTexture(int assetId, TextureReference textureReference) {
+        /// <summary>
+        /// Returns the path of a cached asset texture based on its <paramref name="assetId"/>.
+        /// The path is returned regardless of if a cached copy of the texture actually exists.
+        /// Do not modify the texture at this path.  If you wish to read this file, ensure you
+        /// specify <see cref="FileShare.ReadWrite"/> to avoid conflicting with the caching mechanism.
+        /// </summary>
+        public string GetLocalTexturePath(int assetId) {
             string textureName  = $"{assetId}.png";
             string textureDir   = Path.Combine(_assetCachePath, $"{textureName[0]}");
             string localTexture = Path.Combine(textureDir,      textureName);
 
-            Directory.CreateDirectory(textureDir);
+            try {
+                Directory.CreateDirectory(textureDir);
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to create directory for texture with path {texturePath}.", localTexture);
+            }
 
+            return localTexture;
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> and assigns the local texture path to
+        /// <paramref name="texturePath"/> if the texture has been cached
+        /// locally or returns <c>false</c> if no texture is found locally.
+        /// </summary>
+        public bool TryGetLocalTexturePath(int assetId, out string texturePath) {
+            texturePath = GetLocalTexturePath(assetId);
+
+            return File.Exists(texturePath);
+        }
+
+        private AsyncTexture2D LoadTexture(int assetId, TextureReference textureReference) {
             var texture = new AsyncTexture2D(_transparentTextures[textureReference.SizeReference]);
+
+            bool locallyCached = TryGetLocalTexturePath(assetId, out string localTexture);
 
             async void HandleResponse(Task<Texture2D> textureResponse) {
                 var loadedTexture = ContentService.Textures.Error;
@@ -210,7 +237,7 @@ namespace Blish_HUD.Content {
                 texture.SwapTexture(loadedTexture);
             }
 
-            if (File.Exists(localTexture)) {
+            if (locallyCached) {
                 LoadTextureFromFileSystem(localTexture).ContinueWith(HandleResponse);
             } else {
                 LoadTextureFromServ(localTexture, assetId).ContinueWith(HandleResponse);
