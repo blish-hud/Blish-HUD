@@ -64,6 +64,11 @@ namespace Blish_HUD.Controls {
         }
 
         private void InitializeRectangles() {
+            // No need to initialize anything if there is no space
+            if (Width == 0) {
+                return;
+            }
+
             _rectangles.Clear();
             foreach (var item in _parts) {
                 if (item.PrefixImage != null) {
@@ -106,7 +111,15 @@ namespace Blish_HUD.Controls {
                         splittedText.InsertRange(i + 1, DrawUtil.WrapText(item.Font, splittedText[i], Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
                         splittedText.RemoveAt(i);
 
-                        rectangle = HandleMultiLineText(item, splittedText[i]);
+                        var newRectangle = HandleMultiLineText(item, splittedText[i]);
+
+                        if (newRectangle == rectangle) {
+                            // Nothing changed from previous iteration, therefor this loop would run infinitely. This means, the width is too small to even hold one of the words
+                            // Maybe throw an exception here?
+                            return;
+                        }
+
+                        rectangle = newRectangle;
                     }
 
                     _rectangles.Add((new RectangleWrapper(rectangle), item, splittedText[i]));
