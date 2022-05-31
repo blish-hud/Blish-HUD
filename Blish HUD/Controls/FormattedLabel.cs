@@ -18,6 +18,7 @@ namespace Blish_HUD.Controls {
         private readonly HorizontalAlignment _horizontalAlignment;
         private readonly VerticalAlignment _verticalAlignment;
         private FormattedLabelPart _hoveredTextPart;
+        private bool finishedInitialization = false;
 
         internal FormattedLabel(IEnumerable<FormattedLabelPart> parts, bool wrapText, bool autoSizeWidth, bool autoSizeHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
             _parts = parts;
@@ -69,6 +70,7 @@ namespace Blish_HUD.Controls {
                 return;
             }
 
+            finishedInitialization = false;
             _rectangles.Clear();
             foreach (var item in _parts) {
                 if (item.PrefixImage != null) {
@@ -161,6 +163,8 @@ namespace Blish_HUD.Controls {
             // Needs to be done after vertical alignment bc it will change the height of the individual rectangles
             // and therefor can't be recognized as one row anymore
             HandleFontSizeDifferences();
+
+            finishedInitialization = true;
         }
 
         private void HandleFontSizeDifferences() {
@@ -231,46 +235,49 @@ namespace Blish_HUD.Controls {
         }
 
         public override void DoUpdate(GameTime gameTime) {
-
-            var hoverSet = false;
-            foreach (var rectangle in _rectangles) {
-                var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(AbsoluteBounds);
-                var mousePosition = GameService.Input.Mouse.Position;
-                if (rectangle.Text.Link != null && mousePosition.X > destinationRectangle.X && mousePosition.X < destinationRectangle.X + destinationRectangle.Width && mousePosition.Y > destinationRectangle.Y && mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
-                    _hoveredTextPart = rectangle.Text;
-                    hoverSet = true;
+            if (finishedInitialization) {
+                var hoverSet = false;
+                foreach (var rectangle in _rectangles) {
+                    var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(AbsoluteBounds);
+                    var mousePosition = GameService.Input.Mouse.Position;
+                    if (rectangle.Text.Link != null && mousePosition.X > destinationRectangle.X && mousePosition.X < destinationRectangle.X + destinationRectangle.Width && mousePosition.Y > destinationRectangle.Y && mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
+                        _hoveredTextPart = rectangle.Text;
+                        hoverSet = true;
+                    }
                 }
-            }
 
-            if (!hoverSet) {
-                _hoveredTextPart = null;
-            }
+                if (!hoverSet) {
+                    _hoveredTextPart = null;
+                }
 
-            base.DoUpdate(gameTime);
+                base.DoUpdate(gameTime);
+            }
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            foreach (var rectangle in _rectangles) {
-                var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(AbsoluteBounds);
-                var textColor = rectangle.Text.TextColor;
+            if (finishedInitialization) {
+                foreach (var rectangle in _rectangles) {
+                    var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(AbsoluteBounds);
+                    var textColor = rectangle.Text.TextColor;
 
-                if (_hoveredTextPart != null && rectangle.Text == _hoveredTextPart) {
-                    textColor = rectangle.Text.HoverColor;
-                }
+                    if (_hoveredTextPart != null && rectangle.Text == _hoveredTextPart) {
+                        textColor = rectangle.Text.HoverColor;
+                    }
 
-                if (rectangle.ToDraw is string stringText) {
-                    spriteBatch.DrawString(rectangle.Text.Font, stringText, destinationRectangle.Location.ToVector2(), textColor);
-                } else if (rectangle.ToDraw is AsyncTexture2D texture) {
-                    spriteBatch.Draw(texture, destinationRectangle, Color.White);
-                }
+                    if (rectangle.ToDraw is string stringText) {
+                        spriteBatch.DrawString(rectangle.Text.Font, stringText, destinationRectangle.Location.ToVector2(), textColor);
+                    } else if (rectangle.ToDraw is AsyncTexture2D texture) {
+                        spriteBatch.Draw(texture, destinationRectangle, Color.White);
+                    }
 
-                if (rectangle.Text.IsUnderlined) {
-                    spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + destinationRectangle.Height), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + destinationRectangle.Height), textColor, thickness: 2);
-                }
+                    if (rectangle.Text.IsUnderlined) {
+                        spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + destinationRectangle.Height), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + destinationRectangle.Height), textColor, thickness: 2);
+                    }
 
-                if (rectangle.Text.IsStrikeThrough) {
-                    // TODO: Still seemed not centered
-                    spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + (destinationRectangle.Height / 2)), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + (destinationRectangle.Height / 2)), textColor, thickness: 2);
+                    if (rectangle.Text.IsStrikeThrough) {
+                        // TODO: Still seemed not centered
+                        spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + (destinationRectangle.Height / 2)), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + (destinationRectangle.Height / 2)), textColor, thickness: 2);
+                    }
                 }
             }
         }
