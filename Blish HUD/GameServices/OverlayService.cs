@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using Blish_HUD.Content;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics;
@@ -112,12 +113,12 @@ namespace Blish_HUD {
             this.SettingsTab = new OverlaySettingsTab(this);
 
             // About
-            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection, GameService.Content.GetTexture("440023")),
+            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection, AsyncTexture2D.FromAssetId(440023)),
                                                  (m) => new AboutView(),
                                                  int.MinValue);
 
             // Overlay Settings
-            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, GameService.Content.GetTexture("156736")),
+            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, AsyncTexture2D.FromAssetId(156736)),
                                                  (m) => new OverlaySettingsView(),
                                                  int.MaxValue - 12);
         }
@@ -354,7 +355,7 @@ namespace Blish_HUD {
 
         private void BuildSettingTab() {
             this.BlishHudWindow.AddTab(Strings.GameServices.SettingsService.SettingsTab,
-                                       Content.GetTexture("155052"),
+                                       AsyncTexture2D.FromAssetId(155052),
                                        () => new SettingsMenuView(this.SettingsTab),
                                        int.MaxValue - 10);
         }

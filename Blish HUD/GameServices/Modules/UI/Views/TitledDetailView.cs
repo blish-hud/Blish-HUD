@@ -1,4 +1,5 @@
-﻿using Blish_HUD.Controls;
+﻿using Blish_HUD.Content;
+using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
@@ -42,8 +43,8 @@ namespace Blish_HUD.Modules.UI.Views {
             _warningIcon = new GlowButton() {
                 Size        = new Point(32,  32),
                 Location    = new Point(-10, -15),
-                Icon       = GameService.Content.GetTexture("common/440023"),
-                ActiveIcon = GameService.Content.GetTexture("common/440024"),
+                Icon        = AsyncTexture2D.FromAssetId(440023),
+                ActiveIcon  = AsyncTexture2D.FromAssetId(440024),
                 Visible     = false,
                 ClipsBounds = false,
                 Parent      = buildPanel
@@ -51,8 +52,8 @@ namespace Blish_HUD.Modules.UI.Views {
 
             _menuButton = new GlowButton() {
                 Location         = new Point(buildPanel.ContentRegion.Width - 42, 3),
-                Icon             = GameService.Content.GetTexture("common/157109"),
-                ActiveIcon       = GameService.Content.GetTexture("common/157110"),
+                Icon             = AsyncTexture2D.FromAssetId(157109),
+                ActiveIcon       = AsyncTexture2D.FromAssetId(157110),
                 BasicTooltipText = Strings.Common.Options,
                 Visible          = false,
                 Parent           = buildPanel
@@ -70,12 +71,12 @@ namespace Blish_HUD.Modules.UI.Views {
         public void SetDetails(string status, DetailLevel level) {
             switch (level) {
                 case DetailLevel.Info:
-                    _warningIcon.Icon       = GameService.Content.GetTexture("common/440023");
-                    _warningIcon.ActiveIcon = GameService.Content.GetTexture("common/440024");
+                    _warningIcon.Icon       = AsyncTexture2D.FromAssetId(440023);
+                    _warningIcon.ActiveIcon = AsyncTexture2D.FromAssetId(440024);
                     break;
                 case DetailLevel.Warning:
-                    _warningIcon.Icon       = GameService.Content.GetTexture("common/482924");
-                    _warningIcon.ActiveIcon = GameService.Content.GetTexture("common/482925");
+                    _warningIcon.Icon       = AsyncTexture2D.FromAssetId(482924);
+                    _warningIcon.ActiveIcon = AsyncTexture2D.FromAssetId(482925);
                     break;
             }
 

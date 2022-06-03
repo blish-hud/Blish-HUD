@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
 
@@ -14,9 +14,10 @@ namespace Blish_HUD.Controls {
 
         private const int TEXT_LEFTPADDING = HORIZONTAL_PADDING + BULLET_SIZE + HORIZONTAL_PADDING;
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D _textureBullet = Content.GetTexture("155038");
+        private readonly AsyncTexture2D _textureBullet = AsyncTexture2D.FromAssetId(155038);
+
         private static readonly Texture2D _textureArrow  = Content.GetTexture("context-menu-strip-submenu");
 
         #endregion

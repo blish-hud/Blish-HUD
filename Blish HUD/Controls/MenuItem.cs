@@ -19,9 +19,9 @@ namespace Blish_HUD.Controls {
         
         private const int ARROW_SIZE = 16;
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D _textureArrow = Content.GetTexture("156057");
+        private readonly AsyncTexture2D _textureArrow = AsyncTexture2D.FromAssetId(156057);
 
         #endregion
 

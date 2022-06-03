@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,9 +10,9 @@ namespace Blish_HUD.Controls {
 
         private const int DEFAULT_ITEM_HEIGHT = 32;
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D _textureMenuItemFade = Content.GetTexture("156044");
+        private readonly AsyncTexture2D _textureMenuItemFade = AsyncTexture2D.FromAssetId(156044);
 
         #endregion
 
@@ -141,7 +142,7 @@ namespace Blish_HUD.Controls {
             // Draw items dark every other one
             for (int sec = 0; sec < _size.Y / MenuItemHeight; sec += 2) {
                 spriteBatch.DrawOnCtrl(this,
-                                       _textureMenuItemFade,
+                                       _textureMenuItemFade.Texture,
                                        new Rectangle(0,
                                                      MenuItemHeight * sec - VerticalScrollOffset,
                                                      _size.X,

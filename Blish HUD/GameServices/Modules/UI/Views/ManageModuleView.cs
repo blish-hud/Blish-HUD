@@ -176,7 +176,7 @@ namespace Blish_HUD.Modules.UI.Views {
             };
 
             _moduleHeaderLabel = new Image() {
-                Texture  = GameService.Content.GetTexture("358411"),
+                Texture  = AsyncTexture2D.FromAssetId(358411),
                 Location = new Point(0,   _moduleTextLabel.Bottom - 6),
                 Size     = new Point(875, 110),
                 Parent   = buildPanel
@@ -336,8 +336,8 @@ namespace Blish_HUD.Modules.UI.Views {
 
             _settingsButton = new GlowButton() {
                 Location         = new Point(_enableButton.Right + 12, _enableButton.Top),
-                Icon             = GameService.Content.GetTexture("common/157109"),
-                ActiveIcon       = GameService.Content.GetTexture("common/157110"),
+                Icon             = AsyncTexture2D.FromAssetId(157109),
+                ActiveIcon       = AsyncTexture2D.FromAssetId(157110),
                 Visible          = false,
                 BasicTooltipText = Strings.Common.Options,
                 Parent           = buildPanel

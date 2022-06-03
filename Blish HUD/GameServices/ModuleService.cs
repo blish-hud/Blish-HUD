@@ -185,7 +185,7 @@ namespace Blish_HUD {
         }
 
         private void HandleRefLoading() {
-            var datReader = new ZipArchiveReader("ref.dat");
+            var datReader = new ZipArchiveReader(ApplicationSettings.Instance.RefPath);
 
             HandleFirstVersionLaunch(datReader);
             LoadCompatibility(datReader);

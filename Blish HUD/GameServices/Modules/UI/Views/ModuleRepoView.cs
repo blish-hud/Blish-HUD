@@ -1,4 +1,5 @@
 ﻿using System;
+using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Graphics.UI.Exceptions;
@@ -37,8 +38,8 @@ namespace Blish_HUD.Modules.UI.Views {
 
             var settingsButton = new GlowButton {
                 Location         = new Point(_searchbox.Right + 4, _searchbox.Top),
-                Icon             = GameService.Content.GetTexture("common/157109"),
-                ActiveIcon       = GameService.Content.GetTexture("common/157110"),
+                Icon             = AsyncTexture2D.FromAssetId(157109),
+                ActiveIcon       = AsyncTexture2D.FromAssetId(157110),
                 Visible          = true,
                 BasicTooltipText = Strings.Common.Options,
                 Parent           = buildPanel
