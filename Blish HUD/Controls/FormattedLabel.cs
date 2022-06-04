@@ -235,12 +235,20 @@ namespace Blish_HUD.Controls {
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            if (finishedInitialization) {
+            var mousePosition = GameService.Input.Mouse.Position;
+            if (finishedInitialization && 
+                mousePosition.X > AbsoluteBounds.X && 
+                mousePosition.X < AbsoluteBounds.X + AbsoluteBounds.Width && 
+                mousePosition.Y > AbsoluteBounds.Y && 
+                mousePosition.Y < AbsoluteBounds.Y + AbsoluteBounds.Height) {
                 var hoverSet = false;
                 foreach (var rectangle in _rectangles) {
                     var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(AbsoluteBounds);
-                    var mousePosition = GameService.Input.Mouse.Position;
-                    if (rectangle.Text.Link != null && mousePosition.X > destinationRectangle.X && mousePosition.X < destinationRectangle.X + destinationRectangle.Width && mousePosition.Y > destinationRectangle.Y && mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
+                    if (rectangle.Text.Link != null && 
+                        mousePosition.X > destinationRectangle.X && 
+                        mousePosition.X < destinationRectangle.X + destinationRectangle.Width && 
+                        mousePosition.Y > destinationRectangle.Y && 
+                        mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
                         _hoveredTextPart = rectangle.Text;
                         hoverSet = true;
                     }
