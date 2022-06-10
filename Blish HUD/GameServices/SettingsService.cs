@@ -103,8 +103,15 @@ namespace Blish_HUD {
             string rawSettings = JsonConvert.SerializeObject(this.Settings, Formatting.Indented, JsonReaderSettings);
 
             try {
-                using (var settingsWriter = new StreamWriter(_settingsPath, false)) {
+                string tempSettingsPath = Path.GetTempFileName();
+                using (var settingsWriter = new StreamWriter(tempSettingsPath, false)) {
                     settingsWriter.Write(rawSettings);
+                }
+
+                if (File.Exists(_settingsPath)) {
+                    File.Replace(tempSettingsPath, _settingsPath, null);
+                } else {
+                    File.Move(tempSettingsPath, _settingsPath);
                 }
             } catch (UnauthorizedAccessException) {
                 Blish_HUD.Debug.Contingency.NotifyFileSaveAccessDenied(_settingsPath, Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Action_ToSaveSettings);
