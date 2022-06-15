@@ -20,8 +20,10 @@ namespace Blish_HUD.Modules {
         public event EventHandler<UnobservedTaskExceptionEventArgs> ModuleException;
 
         internal void OnModuleRunStateChanged(ModuleRunStateChangedEventArgs e) {
-            Logger.Debug("Module {moduleName} run state changed to {runState}", ModuleParameters.Manifest.GetDetailedName(), e.RunState);
-            this.ModuleRunStateChanged?.Invoke(this, e);
+            if (ModuleParameters != null) {
+                Logger.Debug("Module {moduleName} run state changed to {runState}", ModuleParameters.Manifest.GetDetailedName(), e.RunState);
+                this.ModuleRunStateChanged?.Invoke(this, e);
+            }
 
             if (e.RunState == ModuleRunState.Loaded) {
                 OnModuleLoaded(EventArgs.Empty);

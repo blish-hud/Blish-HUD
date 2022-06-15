@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Gw2Sharp.WebApi.Caching;
 using Gw2Sharp.WebApi.V2.Models;
 using System.Threading.Tasks;
+using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Gw2WebApi;
 using Blish_HUD.Gw2WebApi.UI.Views;
@@ -82,7 +83,7 @@ namespace Blish_HUD {
 
         private void RegisterApiInSettings() {
             // Manage API Keys
-            GameService.Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.Gw2ApiService.ManageApiKeysSection, GameService.Content.GetTexture("155048")),
+            GameService.Overlay.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.Gw2ApiService.ManageApiKeysSection, AsyncTexture2D.FromAssetId(155048)),
                                                                 (m) => new RegisterApiKeyView(),
                                                                 int.MaxValue - 11);
         }

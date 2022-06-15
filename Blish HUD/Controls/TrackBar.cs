@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,9 +15,10 @@ namespace Blish_HUD.Controls {
 
         private readonly List<float> tenIncrements = new List<float>();
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D       _textureTrack = Content.GetTexture("controls/trackbar/154968");
+        private readonly AsyncTexture2D _textureTrack = AsyncTexture2D.FromAssetId(154968);
+
         private static readonly TextureRegion2D _textureNub   = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-nub");
 
         #endregion

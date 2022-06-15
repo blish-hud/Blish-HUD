@@ -101,6 +101,12 @@ namespace Blish_HUD {
 
         public ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
 
+        public DatAssetCache DatAssetCache { get; private set; }
+
+        internal ContentService() {
+            SetServiceModules(this.DatAssetCache = new DatAssetCache(this));
+        }
+
         protected override void Initialize() {
             // Typically occurs when Blish HUD is extracted without its dependencies.
             if (!File.Exists(ApplicationSettings.Instance.RefPath)) {
@@ -241,29 +247,7 @@ namespace Blish_HUD {
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
         public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
-            AsyncTexture2D returnedTexture = new AsyncTexture2D(Textures.TransparentPixel);
-
-            string requestUrl = $"{RENDERSERVICE_REQUESTURL}{signature}/{fileId}.png";
-
-            Gw2WebApi.AnonymousConnection.Client.Render.DownloadToByteArrayAsync(requestUrl)
-                     .ContinueWith((textureDataResponse) => {
-                          var loadedTexture = Textures.Error;
-
-                          if (textureDataResponse.Exception == null) {
-                              try {
-                                  using var textureStream = new MemoryStream(textureDataResponse.Result);
-                                  loadedTexture = TextureUtil.FromStreamPremultiplied(textureStream);
-                              } catch (Exception ex) {
-                                  Logger.Warn(ex, $"Render service texture {requestUrl} failed to load.");
-                              }
-                          } else {
-                              Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
-                          }
-
-                          returnedTexture.SwapTexture(loadedTexture);
-                      });
-
-            return returnedTexture;
+            return this.DatAssetCache.GetTextureFromAssetId(int.Parse(fileId));
         }
 
         /// <summary>

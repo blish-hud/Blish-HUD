@@ -1,5 +1,6 @@
 ﻿using Blish_HUD.Graphics.UI;
 using System;
+using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Overlay.UI.Presenters;
 using Microsoft.Xna.Framework;
@@ -9,7 +10,7 @@ namespace Blish_HUD.Overlay.UI.Views {
     public class AboutView : View {
 
         protected override void Build(Container buildPanel) {
-            _ = new Image(GameService.Content.GetTexture("1025164")) {
+            _ = new Image(AsyncTexture2D.FromAssetId(1025164)) {
                 SpriteEffects = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically,
                 Location      = new Point(buildPanel.Width - 969, buildPanel.Height - 220),
                 ClipsBounds   = false,
@@ -36,7 +37,7 @@ namespace Blish_HUD.Overlay.UI.Views {
                 Parent = buildPanel
             };
 
-            var heart = new Image(GameService.Content.GetTexture("156127")) {
+            var heart = new Image(AsyncTexture2D.FromAssetId(156127)) {
                 Size = new Point(64, 64),
                 Location = new Point(0, lovePanel.Height / 2 - 32),
                 Parent = lovePanel

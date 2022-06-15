@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Blish_HUD.Content;
 using Blish_HUD.Graphics;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
@@ -27,9 +28,9 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureExitButton       = Content.GetTexture("button-exit");
         private static readonly Texture2D _textureExitButtonActive = Content.GetTexture("button-exit-active");
 
-        private static readonly Texture2D _textureWindowCorner                = Content.GetTexture(@"controls/window/156008");
-        private static readonly Texture2D _textureWindowResizableCorner       = Content.GetTexture(@"controls/window/156009");
-        private static readonly Texture2D _textureWindowResizableCornerActive = Content.GetTexture(@"controls/window/156010");
+        private readonly AsyncTexture2D _textureWindowCorner                = AsyncTexture2D.FromAssetId(156008);
+        private readonly AsyncTexture2D _textureWindowResizableCorner       = AsyncTexture2D.FromAssetId(156009);
+        private readonly AsyncTexture2D _textureWindowResizableCornerActive = AsyncTexture2D.FromAssetId(156010);
 
         private static readonly SettingCollection _windowSettings = GameService.Settings.Settings.AddSubCollection(WINDOW_SETTINGS);
 

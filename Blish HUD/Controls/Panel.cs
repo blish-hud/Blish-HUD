@@ -27,16 +27,15 @@ namespace Blish_HUD.Controls {
         private const int ARROW_SIZE       = 32;
         private const int MAX_ACCENT_WIDTH = 256;
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D _texturePanelHeader       = Content.GetTexture("controls/panel/1032325");
-        private static readonly Texture2D _texturePanelHeaderActive = Content.GetTexture("controls/panel/1032324");
+        private readonly AsyncTexture2D _texturePanelHeader       = AsyncTexture2D.FromAssetId(1032325);
+        private readonly AsyncTexture2D _texturePanelHeaderActive = AsyncTexture2D.FromAssetId(1032324);
 
+        private readonly AsyncTexture2D _textureCornerAccent   = AsyncTexture2D.FromAssetId(1002144);
+        private readonly AsyncTexture2D _textureLeftSideAccent = AsyncTexture2D.FromAssetId(605025);
 
-        private static readonly Texture2D _textureCornerAccent   = Content.GetTexture("controls/panel/1002144");
-        private static readonly Texture2D _textureLeftSideAccent = Content.GetTexture("605025");
-
-        private static readonly Texture2D _textureAccordionArrow = Content.GetTexture("controls/panel/155953");
+        private readonly AsyncTexture2D _textureAccordionArrow = AsyncTexture2D.FromAssetId(155953);
 
         #endregion
 
