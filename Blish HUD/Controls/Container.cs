@@ -238,15 +238,16 @@ namespace Blish_HUD.Controls {
             _contentBounds = ControlUtil.GetControlBounds(children);
 
             // Update our size based on the sizing mode
-            if (this.Parent != null) { 
+            var parent = this.Parent;
+            if (parent != null) { 
                 this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
                                                       this.Width,
-                                                      _contentBounds.X                            + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
-                                                      this.Parent.ContentRegion.Width - this.Left),
+                                                      _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
+                                                      parent.ContentRegion.Width - this.Left),
                                       GetUpdatedSizing(this.HeightSizingMode,
                                                       this.Height,
-                                                      _contentBounds.Y                 + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
-                                                      this.Parent.ContentRegion.Height - this.Top));
+                                                      _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
+                                                      parent.ContentRegion.Height - this.Top));
             }
 
             // Update our children

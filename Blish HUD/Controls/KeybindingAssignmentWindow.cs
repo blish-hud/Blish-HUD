@@ -172,8 +172,10 @@ namespace Blish_HUD.Controls {
         public override void RecalculateLayout() {
             base.RecalculateLayout();
 
-            if (this.Parent != null) {
-                _size = this.Parent.Size;
+            var parent = this.Parent;
+
+            if (parent != null) {
+                _size = parent.Size;
 
                 var distanceInwards = new Point(_size.X / 2 - _normalizedWindowRegion.Width  / 2,
                                                 _size.Y / 2 - _normalizedWindowRegion.Height / 2);
