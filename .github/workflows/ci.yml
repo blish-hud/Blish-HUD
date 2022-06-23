@@ -37,6 +37,10 @@ jobs:
         run: msbuild -t:restore
       - name: Run msbuild
         run: msbuild -p:Configuration=Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }}
+      - name: Delete documentation file before artifact
+        shell: powershell
+        run: |
+          remove-item "Blish HUD/bin/x64/Release/net472/Blish HUD.xml"
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
