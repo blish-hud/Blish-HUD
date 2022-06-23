@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Blish_HUD.Debug;
 using Blish_HUD.Settings;
@@ -89,8 +90,29 @@ namespace Blish_HUD {
             Logger = Logger.GetLogger<DebugService>();
         }
 
+        private static readonly object _debugLock = new object();
+
         public static void TargetDebug(string time, string level, string logger, string message) {
-            System.Diagnostics.Debug.WriteLine($"{time} | {level} | {logger} | {message}");
+            if (!Debugger.IsAttached) return;
+
+            const int INTERNAL_DEBUG_WRITESIZE = 4091;
+
+            lock (_debugLock) {
+                string outEntry = $"{time} | {level} | {logger} | {message}\r\n";
+
+                // Messages that are too large can cause issues for various debuggers
+                if (outEntry.Length >= INTERNAL_DEBUG_WRITESIZE) {
+                    int offset;
+
+                    for (offset = 0; offset < outEntry.Length - INTERNAL_DEBUG_WRITESIZE; offset += INTERNAL_DEBUG_WRITESIZE) {
+                        Debugger.Log(0, null, outEntry.Substring(offset, INTERNAL_DEBUG_WRITESIZE));
+                    }
+
+                    Debugger.Log(0, null, outEntry.Substring(offset));
+                } else {
+                    Debugger.Log(0, null, outEntry);
+                }
+            }
         }
 
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
