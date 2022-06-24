@@ -67,8 +67,10 @@ namespace Blish_HUD.Controls {
             var textSize = GameService.Content.DefaultFont14.MeasureString(_text);
             int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
 
-            if (this.Parent != null) {
-                this.Width = Math.Max(this.Parent.Width - 4, nWidth);
+            var parent = this.Parent;
+
+            if (parent != null) {
+                this.Width = Math.Max(parent.Width - 4, nWidth);
             } else {
                 this.Width = nWidth;
             }
@@ -78,7 +80,7 @@ namespace Blish_HUD.Controls {
             if (this.CanCheck) {
                 this.Checked = !this.Checked;
             } else {
-                this.Parent.Hide();
+                this.Parent?.Hide();
             }
 
             base.OnClick(e);

@@ -84,8 +84,11 @@ namespace Blish_HUD.Gw2WebApi {
                 var baseEx = ex.GetBaseException();
 
                 switch (baseEx.HResult) {
-                    case -2147467259: // An attempt was made to access a socket in a way forbidden by its access permissions.
-                        Debug.Contingency.NotifyHttpAccessDenied("to the Guild Wars 2 API");
+                    case -2147467259:
+                        if (baseEx.Message.Contains("forbidden by its access")) { // An attempt was made to access a socket in a way forbidden by its access permissions.
+                            // This will only work on Windows systems, but it's an ambiguous HResult and changing the UI language I think isn't worth it.
+                            Debug.Contingency.NotifyHttpAccessDenied("to the Guild Wars 2 API");
+                        }
                         break;
                 }
 
