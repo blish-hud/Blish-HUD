@@ -103,7 +103,7 @@ namespace Blish_HUD {
             string rawSettings = JsonConvert.SerializeObject(this.Settings, Formatting.Indented, JsonReaderSettings);
 
             try {
-                string tempSettingsPath = Path.GetTempFileName();
+                string tempSettingsPath = $"{_settingsPath}.new";
                 using (var settingsWriter = new StreamWriter(tempSettingsPath, false)) {
                     settingsWriter.Write(rawSettings);
                 }
