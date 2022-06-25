@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Blish_HUD._Utils;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Drawing;
@@ -37,6 +38,8 @@ namespace Blish_HUD {
         // Primarily used to draw debug text
         private SpriteBatch _basicSpriteBatch;
 
+        private ThreadMonitor _threadMonitor;
+
         public BlishHud() {
             BlishHud.Instance = this;
 
@@ -53,6 +56,8 @@ namespace Blish_HUD {
             this.Content.RootDirectory = "Content";
 
             this.IsMouseVisible = true;
+
+            _threadMonitor = new ThreadMonitor();
         }
         
         protected override void Initialize() {
@@ -87,6 +92,8 @@ namespace Blish_HUD {
         protected override void BeginRun() {
             base.BeginRun();
 
+            _threadMonitor.MonitorCurrentThread();
+
             Logger.Debug("Loading services.");
 
             // Let all of the game services have a chance to load
@@ -107,6 +114,8 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
+            _threadMonitor.Signal();
+
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) {
                 // If gw2 isn't open so only run the essentials
                 GameService.Debug.DoUpdate(gameTime);

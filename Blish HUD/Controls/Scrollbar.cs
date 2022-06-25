@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using Blish_HUD.Input;
 using Glide;
 using Microsoft.Xna.Framework;
@@ -231,6 +232,9 @@ namespace Blish_HUD.Controls {
                 HandleClickScroll(false);
 
             Invalidate();
+
+            // Big bad sleep
+            Thread.Sleep(20000);
         }
 
         public override void RecalculateLayout() {
