@@ -129,10 +129,14 @@ namespace Blish_HUD {
                                                               () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
 
-            this.StayInTray    =       settings.DefineSetting("StayInTray",
-                                                              true,
-                                                              () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,
-                                                              () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
+            this.StayInTray = settings.DefineSetting("StayInTray",
+                                                     true,
+                                                     () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,
+                                                     () => Strings.GameServices.OverlayService.Setting_StayInTray_Description
+                                                         + (ApplicationSettings.Instance.StartGw2  > 0
+                                                         || ApplicationSettings.Instance.ProcessId > 0
+                                                                ? Strings.GameServices.OverlayService.Setting_StayInTray_AppendDisabled
+                                                                : string.Empty));
 
             this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",
                                                               false,
@@ -169,7 +173,7 @@ namespace Blish_HUD {
             this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
 
             // Lock 'StayInTray' if we launched Guild Wars 2 with a launch argument.
-            if (ApplicationSettings.Instance.StartGw2 > 0) {
+            if (ApplicationSettings.Instance.StartGw2 > 0 || ApplicationSettings.Instance.ProcessId > 0) {
                 this.StayInTray.SetDisabled();
             }
 
