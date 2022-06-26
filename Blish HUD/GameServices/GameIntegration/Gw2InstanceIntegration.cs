@@ -204,6 +204,8 @@ namespace Blish_HUD.GameIntegration {
                     Logger.Warn("Failed to auto-detect Guild Wars 2 environment variables.  Restart Guild Wars 2 to try again.");
                 } catch (NullReferenceException e) {
                     Logger.Warn(e, "Failed to grab Guild Wars 2 env variable.  It is likely exiting.");
+                } catch (ArgumentException e) {
+                    Logger.Warn(e, "Failed to parse the Guild Wars 2 env variables.");
                 }
 
                 // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
