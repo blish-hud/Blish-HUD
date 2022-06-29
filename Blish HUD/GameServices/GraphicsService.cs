@@ -360,9 +360,13 @@ namespace Blish_HUD {
                 Monitor.Enter(_lendLockLow);
             }
 
-            Monitor.Enter(_lendLockNext);
-            Monitor.Enter(_lendLockDevice);
-            Monitor.Exit(_lendLockNext);
+            if (Monitor.IsEntered(_lendLockDevice)) {
+                Monitor.Enter(_lendLockDevice);
+            } else {
+                Monitor.Enter(_lendLockNext);
+                Monitor.Enter(_lendLockDevice);
+                Monitor.Exit(_lendLockNext);
+            }
 
             return BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
         }
