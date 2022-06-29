@@ -230,6 +230,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\nspector\nspector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AsyncClipboardService" Version="[1.7.1]" />
     <PackageReference Include="DynamicLanguageRuntime" Version="1.2.2" PrivateAssets="all" />
     <PackageReference Include="EntryPoint" Version="1.3.0" PrivateAssets="all" />
@@ -281,5 +285,15 @@
       <Content Update="$(ProjectDir)Content\bin\**" Pack="False" />
     </ItemGroup>
   </Target>
+    
+  <Target Name="CombineLicenses" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <LicenseFiles Include="..\LICENSE" Name="Blish HUD" />
+      <LicenseFiles Include="..\thirdparty\nvidiaProfileInspector\LICENSE" Name="nvidiaProfileInspector" />
 
+      <LicenseFileLines Include="%0d%0a%0d%0a%(LicenseFiles.Name)%0d%0a%0d%0a$([System.IO.File]::ReadAllText(%(LicenseFiles.Identity)))" />
+    </ItemGroup>
+      
+    <WriteLinesToFile File="$(BaseIntermediateOutputPath)\ThirdPartySoftware.txt" Lines="@(LicenseFileLines)" Overwrite="true" />
+  </Target>
 </Project>
