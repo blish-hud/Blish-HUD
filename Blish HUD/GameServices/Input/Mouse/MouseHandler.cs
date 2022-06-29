@@ -74,7 +74,9 @@ namespace Blish_HUD.Input {
                 return false;
             }
 
-            if (Form.ActiveForm != null && Form.ActiveForm.ClientRectangle.Contains(new System.Drawing.Point(mouseEventArgs.PointX, mouseEventArgs.PointY))) {
+            var activeForm = Form.ActiveForm;
+
+            if (activeForm != null && activeForm.ClientRectangle.Contains(new System.Drawing.Point(mouseEventArgs.PointX, mouseEventArgs.PointY))) {
                 // If another form is active (like Debug, Pathing editor, etc.) don't intercept
                 return false;
             }
