@@ -469,6 +469,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to  (Disabled because you launched Blish HUD with --startgw2, --pid, -g, or -P).
+        /// </summary>
+        internal static string Setting_StayInTray_AppendDisabled {
+            get {
+                return ResourceManager.GetString("Setting_StayInTray_AppendDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If true, Blish HUD will automatically minimize when GW2 closes and will continue running until GW2 is launched again.
         ///You can also use the Blish HUD icon in the tray to launch Guild Wars 2..
         /// </summary>
