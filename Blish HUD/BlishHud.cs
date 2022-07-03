@@ -39,6 +39,7 @@ namespace Blish_HUD {
         private SpriteBatch _basicSpriteBatch;
 
         private ThreadMonitor _threadMonitor;
+        private ProcessResourceMonitor _processMonitor;
 
         public BlishHud() {
             BlishHud.Instance = this;
@@ -58,6 +59,7 @@ namespace Blish_HUD {
             this.IsMouseVisible = true;
 
             _threadMonitor = new ThreadMonitor();
+            _processMonitor = new ProcessResourceMonitor();
         }
         
         protected override void Initialize() {
@@ -93,6 +95,8 @@ namespace Blish_HUD {
             base.BeginRun();
 
             _threadMonitor.MonitorCurrentThread();
+            _threadMonitor.StartMonitor();
+            _processMonitor.StartMonitor();
 
             Logger.Debug("Loading services.");
 
@@ -111,6 +115,9 @@ namespace Blish_HUD {
             foreach (var service in GameService.All) {
                 service.DoUnload();
             }
+
+            _threadMonitor.StopMonitor();
+            _processMonitor.StopMonitor();
         }
 
         protected override void Update(GameTime gameTime) {

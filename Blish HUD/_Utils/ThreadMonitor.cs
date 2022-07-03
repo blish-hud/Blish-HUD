@@ -9,20 +9,34 @@ using System.Threading.Tasks;
 
 namespace Blish_HUD._Utils {
     public class ThreadMonitor {
-
         private static readonly Logger Logger = Logger.GetLogger<ThreadMonitor>();
 
         private const int POLL_INTERVAL = 1000;
-        private const int THREAD_HANG_THRESHOLD = 10000;
+        private const int THREAD_HANG_THRESHOLD = 15000;
 
         private readonly object _watchedThreadsLock = new object();
         private Dictionary<int, int> _watchedThreads = new Dictionary<int, int>();
 
-        private Thread _monitorThread;
+        private CancellationTokenSource _monitorTaskCancellationSource = null;
 
         public ThreadMonitor() {
-            _monitorThread = new Thread(() => MonitorThread());
-            _monitorThread.Start();
+        }
+
+        public void StartMonitor() {
+            StopMonitor();
+            _monitorTaskCancellationSource = new CancellationTokenSource();
+
+            Task.Factory.StartNew(
+                () => MonitorThread(_monitorTaskCancellationSource.Token),
+                _monitorTaskCancellationSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+        }
+
+        public void StopMonitor() {
+            if (_monitorTaskCancellationSource != null && !_monitorTaskCancellationSource.IsCancellationRequested) {
+                _monitorTaskCancellationSource.Cancel();
+            }
         }
 
         public void MonitorCurrentThread() {
@@ -48,9 +62,11 @@ namespace Blish_HUD._Utils {
             }
         }
 
-        private void MonitorThread() {
+        private async Task MonitorThread(CancellationToken cancellationToken) {
+            await Task.Delay(POLL_INTERVAL, cancellationToken);
+
             List<int> badThreads = new List<int>();
-            while (true) {
+            while (!cancellationToken.IsCancellationRequested) {
                 Thread.Sleep(POLL_INTERVAL);
 
                 lock (_watchedThreadsLock) {
@@ -71,31 +87,15 @@ namespace Blish_HUD._Utils {
 
                 // Handle bad threads
                 if (badThreads.Count > 0) {
-                    CaptureStackTrace(badThreads);
+                    try {
+                        string stackTraces = DebugHelpers.CaptureProcessStackTrace();
+                        Logger.Error(stackTraces);
+                    } catch (Exception ex) {
+                        Logger.Error(ex, "Failed to capture stack traces");
+                    }
                     badThreads.Clear();
                 }
             }
-        }
-
-        private void CaptureStackTrace(List<int> threads) {
-            using (DataTarget dataTarget = DataTarget.CreateSnapshotAndAttach(Process.GetCurrentProcess().Id)) {
-                ClrInfo runtimeInfo = dataTarget.ClrVersions[0];
-                ClrRuntime runtime = runtimeInfo.CreateRuntime();
-
-                foreach (ClrThread thread in runtime.Threads) {
-                    if (!thread.IsAlive)
-                        continue;
-
-                    string output = $"Thread {thread.ManagedThreadId}:\n";
-
-                    foreach (ClrStackFrame frame in thread.EnumerateStackTrace()) {
-                        output += $"    {frame}\n";
-                    }
-
-                    Logger.Error(output);
-                }
-            }
-
         }
     }
 }
