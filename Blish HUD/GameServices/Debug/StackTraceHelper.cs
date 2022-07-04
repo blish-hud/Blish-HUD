@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blish_HUD._Utils {
-    public class DebugHelpers {
+namespace Blish_HUD.Debug {
+    public class StackTraceHelper {
         public static string CaptureProcessStackTrace() {
             StringBuilder output = new StringBuilder("Process Threads:\n");
 

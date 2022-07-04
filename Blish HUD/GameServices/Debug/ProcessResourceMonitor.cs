@@ -6,26 +6,17 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Blish_HUD._Utils {
+namespace Blish_HUD.Debug {
     public class ProcessResourceMonitor {
         private static readonly Logger Logger = Logger.GetLogger<ProcessResourceMonitor>();
 
         private const int POLL_INTERVAL = 3000;
         private const int HIGH_CPU_COUNT_THRESHOLD = 5;
-        private const double HIGH_CPU_THRESHOLD = 0.7;
-
-        private Thread _testThread;
+        private const double HIGH_CPU_THRESHOLD = 1.0;
 
         private CancellationTokenSource _monitorTaskCancellationSource = null;
 
         public ProcessResourceMonitor() {
-            _testThread = new Thread(() => TestThread());
-            _testThread.Start();
-        }
-
-        private void TestThread() {
-            Thread.Sleep(20 * 1000);
-            while (true) ;
         }
 
         public void StartMonitor() {
@@ -86,7 +77,7 @@ namespace Blish_HUD._Utils {
                     lastThreadCpuTimes.Clear();
 
                     try {
-                        string stackTraces = DebugHelpers.CaptureProcessStackTrace();
+                        string stackTraces = StackTraceHelper.CaptureProcessStackTrace();
                         threadOutput.AppendLine(stackTraces);
                     } catch (Exception ex) {
                         Logger.Error(ex, "Failed to capture stack traces");

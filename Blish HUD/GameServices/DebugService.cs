@@ -29,6 +29,9 @@ namespace Blish_HUD {
         public SettingEntry<bool> EnableFPSDisplay { get; private set; }
         public SettingEntry<bool> EnableAdditionalDebugDisplay { get; private set; }
 
+        private ThreadMonitor _threadMonitor;
+        private ProcessResourceMonitor _processMonitor;
+
         #region Logging
 
         private static Logger Logger;
@@ -236,6 +239,9 @@ namespace Blish_HUD {
 
             if (!ApplicationSettings.Instance.DebugEnabled) {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+            } else {
+                _threadMonitor = new ThreadMonitor();
+                _processMonitor = new ProcessResourceMonitor();
             }
         }
 
@@ -247,10 +253,21 @@ namespace Blish_HUD {
             this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("volume",      _ => "Average In-Game Volume: " + GameIntegration.Audio.Volume);
+
+            if (_threadMonitor != null) {
+                _threadMonitor.MonitorCurrentThread();
+                _threadMonitor.StartMonitor();
+            }
+
+            if (_processMonitor != null) {
+                _processMonitor.StartMonitor();
+            }
         }
 
         protected override void Update(GameTime gameTime) {
-            /* NOOP */
+            if (_threadMonitor != null) {
+                _threadMonitor.Signal();
+            }
         }
 
         internal void TickFrameCounter(float elapsedTime) {
@@ -258,7 +275,13 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
-            /* NOOP */
+            if (_threadMonitor != null) {
+                _threadMonitor.StopMonitor();
+            }
+
+            if (_processMonitor != null) {
+                _processMonitor.StopMonitor();
+            }
         }
 
         private void DefineSettings(SettingCollection settings) {

@@ -1,5 +1,4 @@
-﻿using Microsoft.Diagnostics.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Blish_HUD._Utils {
+namespace Blish_HUD.Debug {
     public class ThreadMonitor {
         private static readonly Logger Logger = Logger.GetLogger<ThreadMonitor>();
 
@@ -16,6 +15,7 @@ namespace Blish_HUD._Utils {
 
         private readonly object _watchedThreadsLock = new object();
         private Dictionary<int, int> _watchedThreads = new Dictionary<int, int>();
+        private List<int> _badThreads = new List<int>();
 
         private CancellationTokenSource _monitorTaskCancellationSource = null;
 
@@ -65,10 +65,10 @@ namespace Blish_HUD._Utils {
         private async Task MonitorThread(CancellationToken cancellationToken) {
             await Task.Delay(POLL_INTERVAL, cancellationToken);
 
-            List<int> badThreads = new List<int>();
             while (!cancellationToken.IsCancellationRequested) {
                 Thread.Sleep(POLL_INTERVAL);
 
+                bool badThreadFound = false;
                 lock (_watchedThreadsLock) {
                     var currentTicks = Environment.TickCount;
                     Logger.Debug($"Thread monitor polling at {currentTicks}");
@@ -76,24 +76,23 @@ namespace Blish_HUD._Utils {
                         var duration = currentTicks - thread.Value;
                         if (duration > THREAD_HANG_THRESHOLD) {
                             Logger.Error($"Thread {thread.Key} is unresponsive since {thread.Value}({duration})");
-                            badThreads.Add(thread.Key);
-                        }
-                    }
 
-                    foreach (var thread in badThreads) {
-                        _watchedThreads.Remove(thread);
+                            if (!_badThreads.Contains(thread.Key)) {
+                                _badThreads.Add(thread.Key);
+                                badThreadFound = true;
+                            }
+                        }
                     }
                 }
 
                 // Handle bad threads
-                if (badThreads.Count > 0) {
+                if (badThreadFound) {
                     try {
-                        string stackTraces = DebugHelpers.CaptureProcessStackTrace();
+                        string stackTraces = StackTraceHelper.CaptureProcessStackTrace();
                         Logger.Error(stackTraces);
                     } catch (Exception ex) {
                         Logger.Error(ex, "Failed to capture stack traces");
                     }
-                    badThreads.Clear();
                 }
             }
         }
