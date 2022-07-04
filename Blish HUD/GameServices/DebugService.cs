@@ -30,7 +30,6 @@ namespace Blish_HUD {
         public SettingEntry<bool> EnableAdditionalDebugDisplay { get; private set; }
 
         private ThreadMonitor _threadMonitor;
-        private ProcessResourceMonitor _processMonitor;
 
         #region Logging
 
@@ -241,7 +240,6 @@ namespace Blish_HUD {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
             } else {
                 _threadMonitor = new ThreadMonitor();
-                _processMonitor = new ProcessResourceMonitor();
             }
         }
 
@@ -258,10 +256,6 @@ namespace Blish_HUD {
                 _threadMonitor.MonitorCurrentThread();
                 _threadMonitor.StartMonitor();
             }
-
-            if (_processMonitor != null) {
-                _processMonitor.StartMonitor();
-            }
         }
 
         protected override void Update(GameTime gameTime) {
@@ -277,10 +271,6 @@ namespace Blish_HUD {
         protected override void Unload() {
             if (_threadMonitor != null) {
                 _threadMonitor.StopMonitor();
-            }
-
-            if (_processMonitor != null) {
-                _processMonitor.StopMonitor();
             }
         }
 

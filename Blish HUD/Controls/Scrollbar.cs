@@ -232,9 +232,6 @@ namespace Blish_HUD.Controls {
                 HandleClickScroll(false);
 
             Invalidate();
-
-            // Big bad sleep
-            Thread.Sleep(20000);
         }
 
         public override void RecalculateLayout() {
