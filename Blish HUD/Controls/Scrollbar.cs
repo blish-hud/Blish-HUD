@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using Blish_HUD.Input;
 using Glide;
 using Microsoft.Xna.Framework;
