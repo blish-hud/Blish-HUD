@@ -561,17 +561,17 @@ namespace Blish_HUD.Controls {
 
         #region Window Construction
 
-        protected Texture2D WindowBackground            { get; set; }
-        protected Rectangle WindowRegion                { get; set; }
-        protected Rectangle WindowRelativeContentRegion { get; set; }
+        protected AsyncTexture2D WindowBackground            { get; set; }
+        protected Rectangle      WindowRegion                { get; set; }
+        protected Rectangle      WindowRelativeContentRegion { get; set; }
 
         private Point _contentMargin;
 
-        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) {
+        protected void ConstructWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion) {
             ConstructWindow(background, windowRegion, contentRegion, new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT));
         }
 
-        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
+        protected void ConstructWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
             this.WindowBackground = background;
 
             this.WindowRegion = windowRegion;
