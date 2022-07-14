@@ -129,12 +129,21 @@ namespace Blish_HUD.Controls {
         }
 
         private bool _canClose = true;
+        /// <summary>
+        /// If <c>true</c>, draws an X icon on the window's titlebar and allows the user to close it by pressing it.
+        /// <br/><br/>Default: <c>true</c>
+        /// </summary>
         public bool CanClose {
             get => _canClose;
             set => SetProperty(ref _canClose, value);
         }
       
         private bool _canCloseWithEscape = true;
+        /// <summary>
+        /// If <c>true</c>, the window will close when the user presses the escape key.
+        /// <see cref="CanClose"/> must also be set to <c>true</c>.
+        /// <br/><br/>Default: <c>true</c>
+        /// </summary>
         public bool CanCloseWithEscape {
             get => _canCloseWithEscape;
             set => SetProperty(ref _canCloseWithEscape, value);
@@ -142,26 +151,27 @@ namespace Blish_HUD.Controls {
 
         private bool _canResize;
         /// <summary>
-        /// Allows the window to be resized by dragging the bottom right corner.
+        /// If <c>true</c>, allows the window to be resized by dragging the bottom right corner.
+        /// <br/><br/>Default: <c>false</c>
         /// </summary>
-        /// <remarks>This property has not been implemented.</remarks>
         public bool CanResize {
             get => _canResize;
             set => SetProperty(ref _canResize, value);
         }
 
-        private Texture2D _emblem = null;
+        private AsyncTexture2D _emblem = null;
         /// <summary>
         /// The emblem/badge displayed in the top left corner of the window.
         /// </summary>
-        public Texture2D Emblem {
+        public AsyncTexture2D Emblem {
             get => _emblem;
             set => SetProperty(ref _emblem, value, true);
         }
 
         private bool _topMost;
         /// <summary>
-        /// If this window will show on top of all other windows, regardless of which one had focus last.
+        /// If <c>true</c>, this window will show on top of all other windows, regardless of which one had focus last.
+        /// <br/><br/>Default: <c>false</c>
         /// </summary>
         public bool TopMost {
             get => _topMost;
@@ -172,6 +182,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// If <c>true</c>, the window will remember its position between Blish HUD sessions.
         /// Requires that <see cref="Id"/> be set.
+        /// <br/><br/>Default: <c>false</c>
         /// </summary>
         public bool SavesPosition {
             get => _savesPosition;
@@ -182,6 +193,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// If <c>true</c>, the window will remember its size between Blish HUD sessions.
         /// Requires that <see cref="Id"/> be set.
+        /// <br/><br/>Default: <c>false</c>
         /// </summary>
         public bool SavesSize {
             get => _savesSize;
