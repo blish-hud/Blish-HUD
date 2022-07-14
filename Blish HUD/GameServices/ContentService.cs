@@ -95,7 +95,8 @@ namespace Blish_HUD {
 
         public enum FontStyle {
             Regular,
-            Italic
+            Italic,
+            Bold,
         }
 
         public ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
