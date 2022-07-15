@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 namespace Blish_HUD {
 
     public class ArcDpsService : GameService {
+        private static readonly Logger Logger = Logger.GetLogger<ArcDpsService>();
 
         private static readonly object WatchLock = new object();
         #if DEBUG
@@ -155,6 +156,8 @@ namespace Blish_HUD {
         private void SocketErrorHandler(object sender, SocketError socketError) {
             var listener = (SocketListener)sender;
             listener.Stop();
+
+            Logger.Error("ArcDpsService stopped with socket error: {0}", socketError.ToString());
         }
 
         private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType) {
