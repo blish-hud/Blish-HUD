@@ -19,6 +19,8 @@ namespace Blish_HUD.ArcDps {
             _bufferSize = bufferSize;
         }
 
+        public bool Running { get; private set; }
+
         public event EventHandler<MessageData> ReceivedMessage;
 
         public event EventHandler<SocketError> OnSocketError;
@@ -47,6 +49,10 @@ namespace Blish_HUD.ArcDps {
                 // The next line returns true when the operation is pending; false when it completed without delay
                 if (!listenSocket.ConnectAsync(socketEventArgs)) {
                     ProcessConnect(socketEventArgs);
+
+                    if (socketEventArgs.SocketError == SocketError.Success) {
+                        this.Running = true;
+                    }
                 }
             } catch (Exception e) {
                 Logger.Warn(e, "Failed to connect to Arcdps-BHUD bridge.");
@@ -55,6 +61,7 @@ namespace Blish_HUD.ArcDps {
 
         public void Stop() {
             _cancellationTokenSource?.Cancel();
+            this.Running = false;
         }
 
         public void Release(Socket listenSocket) {
@@ -138,8 +145,8 @@ namespace Blish_HUD.ArcDps {
         }
 
         private void ProcessReceivedData(
-            int            dataStartOffset, int    totalReceivedDataSize, int alreadyProcessedDataSize,
-            AsyncUserToken token,           byte[] buffer
+            int dataStartOffset, int totalReceivedDataSize, int alreadyProcessedDataSize,
+            AsyncUserToken token, byte[] buffer
         ) {
             while (true) {
                 if (alreadyProcessedDataSize >= totalReceivedDataSize) {
