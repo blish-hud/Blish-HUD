@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
@@ -113,8 +113,37 @@ namespace Blish_HUD {
             _stopwatch.Start();
         }
 
+        /// <summary>
+        /// Starts the socket listener for the arc dps bridge.
+        /// </summary>
         private void Start(object sender, ValueEventArgs<uint> value) {
-            if (this.Loaded) _server.Start(new IPEndPoint(IPAddress.Loopback, GetPort(value.Value)));
+            this.Start(value.Value);
+        }
+
+        /// <summary>
+        /// Starts the socket listener for the arc dps bridge.
+        /// </summary>
+        private void Start(uint processId) {
+            if (this.Loaded) {
+                _server.Start(new IPEndPoint(IPAddress.Loopback, GetPort(processId)));
+            }
+        }
+
+        /// <summary>
+        /// Stops the socket listener for the arc dps bridge.
+        /// </summary>
+        private void Stop() {
+            if (this.Loaded) {
+                this._server.Stop();
+            }
+        }
+
+        /// <summary>
+        /// Restarts the socket listener for the arc dps bridge.
+        /// </summary>
+        public void Restart() {
+            this.Stop();
+            this.Start(Gw2Mumble.Info.ProcessId);
         }
 
         private static int GetPort(uint processId) {
