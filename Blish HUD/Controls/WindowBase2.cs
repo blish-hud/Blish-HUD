@@ -163,7 +163,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// The emblem/badge displayed in the top left corner of the window.
         /// </summary>
-        public AsyncTexture2D Emblem {
+        public Texture2D Emblem {
             get => _emblem;
             set => SetProperty(ref _emblem, value, true);
         }
@@ -583,6 +583,10 @@ namespace Blish_HUD.Controls {
             ConstructWindow(background, windowRegion, contentRegion, new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT));
         }
 
+        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) {
+            ConstructWindow((AsyncTexture2D)background, windowRegion, contentRegion);
+        }
+
         protected void ConstructWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
             this.WindowBackground = background;
 
@@ -608,6 +612,10 @@ namespace Blish_HUD.Controls {
             _windowTopOffsetRatio  = -windowRegion.Top  / (float)background.Height;
 
             this.Size = windowSize;
+        }
+
+        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
+            ConstructWindow((AsyncTexture2D)background, windowRegion, contentRegion, windowSize);
         }
 
         private float _windowToTextureWidthRatio;
