@@ -49,10 +49,6 @@ namespace Blish_HUD.ArcDps {
                 // The next line returns true when the operation is pending; false when it completed without delay
                 if (!listenSocket.ConnectAsync(socketEventArgs)) {
                     ProcessConnect(socketEventArgs);
-
-                    if (socketEventArgs.SocketError == SocketError.Success) {
-                        this.Running = true;
-                    }
                 }
             } catch (Exception e) {
                 Logger.Warn(e, "Failed to connect to Arcdps-BHUD bridge.");
@@ -91,6 +87,8 @@ namespace Blish_HUD.ArcDps {
             if (e.SocketError != SocketError.Success) {
                 this.OnSocketError?.Invoke(this, e.SocketError);
                 return;
+            } else {
+                this.Running = true;
             }
 
             try {
