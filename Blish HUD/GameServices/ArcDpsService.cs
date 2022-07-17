@@ -29,9 +29,9 @@ namespace Blish_HUD {
         public bool RenderPresent { get; private set; }
 
         /// <summary>
-        /// Indicates if the socket listener for the arcdps service is running.
+        ///     Indicates if the socket listener for the arcdps service is running and arcdps send an update in the last second.
         /// </summary>
-        public bool Running => this._server?.Running ?? false;
+        public bool Running => this._server?.Running ?? false && this.RenderPresent;
 
         /// <summary>
         ///     Indicates if arcdps currently draws its HUD (not in character select, cut scenes or loading screens)
