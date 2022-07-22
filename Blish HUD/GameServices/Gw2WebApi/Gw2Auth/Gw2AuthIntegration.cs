@@ -60,8 +60,8 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
                 Logger.Info(response.ErrorDescription);
             }
             
-            // Here's where a backend would normally check for an active auth process that state matches response.State
-            // We would then compare the auth response against the saved auth process and check for modifications.
+            // Here's where a backend would normally check for an active auth process where its state matches the responses' state
+            // We would then compare the permissions between saved process and response and check for modifications.
             
             await TryLogin(response.Code);
         }

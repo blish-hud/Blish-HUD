@@ -61,7 +61,9 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
         /// <summary>
         /// Releases the resources held by the encapsulated HttpListener object.
         /// </summary>
-        /// <seealso cref="https://docs.microsoft.com/en-us/dotnet/api/system.net.httplistener.system-idisposable-dispose?view=netframework-4.7.2"/>
+        /// <remarks>
+        ///     See also: <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.net.httplistener.system-idisposable-dispose?view=netframework-4.7.2"/>
+        /// </remarks>
         public void Dispose() {
             _listener.Close();
         }
