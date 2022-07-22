@@ -257,7 +257,7 @@ namespace Glide
 	            if (tweens.TryGetValue(target, out list))
 	            {
 	            	for (int i = 0; i < list.Count; ++i)
-	            		list[i].Cancel();
+	            		list[i]?.Cancel();
 	            }
 	        }
 	        
@@ -272,7 +272,7 @@ namespace Glide
 	            if (tweens.TryGetValue(target, out list))
 	            {
 	            	for (int i = 0; i < list.Count; ++i)
-	            		list[i].Cancel(properties);
+	            		list[i]?.Cancel(properties);
 	            }
 	        }
 	
@@ -286,7 +286,7 @@ namespace Glide
 	            if (tweens.TryGetValue(target, out list))
 	            {
 	                for (int i = 0; i < list.Count; ++i)
-	                	list[i].CancelAndComplete();
+	                	list[i]?.CancelAndComplete();
 	            }
 	        }
 	
@@ -301,7 +301,7 @@ namespace Glide
 	            if (tweens.TryGetValue(target, out list))
 	            {
 	                for (int i = 0; i < list.Count; ++i)
-	                	list[i].Pause();
+	                	list[i]?.Pause();
 	            }
 	        }
 	
@@ -315,7 +315,7 @@ namespace Glide
 	            if (tweens.TryGetValue(target, out list))
 	            {
 	                for (int i = 0; i < list.Count; ++i)
-	                	list[i].PauseToggle();
+	                	list[i]?.PauseToggle();
 	            }
 	        }
 	
@@ -329,7 +329,7 @@ namespace Glide
 	            if (tweens.TryGetValue(target, out list))
 	            {
 	                for (int i = 0; i < list.Count; ++i)
-	                	list[i].Resume();
+	                	list[i]?.Resume();
 	            }
 	        }
 	        #endregion

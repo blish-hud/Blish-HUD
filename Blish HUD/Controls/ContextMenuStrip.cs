@@ -145,13 +145,14 @@ namespace Blish_HUD.Controls {
         }
 
         public override void Hide() {
-            this.Visible = false;
-
-            foreach (var cmsiChild in this.Children.Select(otherChild => otherChild as ContextMenuStripItem)) {
+            var children = _children.ToArray();
+            foreach (var cmsiChild in children.Select(otherChild => otherChild as ContextMenuStripItem)) {
 				if (cmsiChild is { Submenu: { MouseOver: false } }) {
                     cmsiChild.Submenu.Hide();
                 }
             }
+
+            this.Visible = false;
         }
 
         protected override void OnChildAdded(ChildChangedEventArgs e) {
@@ -208,8 +209,14 @@ namespace Blish_HUD.Controls {
 
         private void ChildOnMouseEntered(object sender, MouseEventArgs e) {
             // Stop showing submenus if adjacent menu items are moused over
-            foreach (var ocCmsi in _children.Except(new[] { sender }).Select(otherChild => otherChild as ContextMenuStripItem)) {
+            var children = _children.ToArray();
+            foreach (var ocCmsi in children.Select(otherChild => otherChild as ContextMenuStripItem)) {
                 ocCmsi?.Submenu?.Hide();
+            }
+
+            // And then make sure we're showing just the first level of the moused-over submenu
+            if (sender is ContextMenuStripItem cmsi) {
+                cmsi.Submenu?.Show();
             }
         }
 

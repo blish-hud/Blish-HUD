@@ -14,21 +14,30 @@ namespace Blish_HUD {
 
         private const string MUSIC_DIR = @"Guild Wars 2\Music";
 
+        private const string CACHE_DIR = @"Blish HUD\cache";
+
         /// <summary>
         /// The current root application save path used for saving settings, letting modules save data, etc.
         /// By default it is found in "Documents\Guild Wars 2\addons\blishhud."
         /// </summary>
         public static string BasePath { get; }
+
         /// <summary>
         /// The path used by the game client for saving screenshots made in the game (usually using the print screen key).
         /// By default it is found in "Documents\Guild Wars 2\Screens."
         /// </summary>
         public static string ScreensPath { get; }
+
         /// <summary>
         /// The path used by the game client for loading custom music playlists in a context-sensitive manner during gameplay.
         /// By default it is found in "Documents\Guild Wars 2\Music."
         /// </summary>
         public static string MusicPath { get; }
+
+        /// <summary>
+        /// The path used by Blish HUD to store shared cache data.  This is kept in %ProgramData% by default.
+        /// </summary>
+        public static string CachePath { get; }
 
         static DirectoryUtil() {
             // Prepare user documents directory
@@ -47,19 +56,17 @@ namespace Blish_HUD {
 
             CreateDir(BasePath);
 
-            ScreensPath = ApplicationSettings.Instance.UserSettingsPath
-                       ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
-                                                                 Environment.SpecialFolderOption.DoNotVerify), 
-                                       SCREENS_DIR);
+            // Cache path is shared and not kept within the standard settings folder.
+            CreateDir(CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData,
+                                                                         Environment.SpecialFolderOption.DoNotVerify), CACHE_DIR));
 
-            CreateDir(ScreensPath);
+            CreateDir(ScreensPath = ApplicationSettings.Instance.UserSettingsPath
+                                 ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
+                                                                           Environment.SpecialFolderOption.DoNotVerify), SCREENS_DIR));
 
-            MusicPath = ApplicationSettings.Instance.UserSettingsPath
-                     ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
-                                                               Environment.SpecialFolderOption.DoNotVerify), 
-                                     MUSIC_DIR);
-
-            CreateDir(MusicPath);
+            CreateDir(MusicPath = ApplicationSettings.Instance.UserSettingsPath
+                               ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
+                                                                         Environment.SpecialFolderOption.DoNotVerify), MUSIC_DIR));
         }
 
         private static string CreateDir(string dirPath) {
@@ -74,6 +81,10 @@ namespace Blish_HUD {
 
         public static string RegisterDirectory(string directory) {
             return CreateDir(Path.Combine(BasePath, directory));
+        }
+
+        public static string RegisterDirectory(string basePath, string directory) {
+            return CreateDir(Path.Combine(basePath, directory));
         }
 
     }

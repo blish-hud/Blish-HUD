@@ -166,10 +166,10 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private AsyncTexture2D GetModuleAuthorImage() {
             if (this.Model.Manifest.Contributors?.Count > 1) {
-                return GameService.Content.GetTexture("common/157112");
+                return AsyncTexture2D.FromAssetId(157112);
             }
 
-            return GameService.Content.GetTexture("common/733268");
+            return AsyncTexture2D.FromAssetId(733268);
         }
 
         private string GetModuleAuthor() {

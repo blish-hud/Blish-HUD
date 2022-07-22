@@ -7,12 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blish_HUD.Content;
+
 namespace Blish_HUD.Controls
 {
     public class Book : Container
     {
         private readonly BitmapFont TitleFont = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size32, ContentService.FontStyle.Regular);
-        private readonly Texture2D TurnPageSprite;
+        private readonly AsyncTexture2D TurnPageSprite;
 
         private static int RIGHT_PADDING = 150;
         private static int TOP_PADDING = 100;
@@ -49,7 +51,7 @@ namespace Blish_HUD.Controls
         /// </summary>
         public Book()
         {
-            TurnPageSprite = TurnPageSprite ?? GameService.Content.GetTexture("1909317");
+            TurnPageSprite = TurnPageSprite ?? AsyncTexture2D.FromAssetId(1909317);
         }
         protected override void OnResized(ResizedEventArgs e)
         {

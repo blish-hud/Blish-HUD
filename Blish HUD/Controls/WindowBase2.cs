@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blish_HUD.Content;
 using Blish_HUD.Graphics;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
@@ -26,6 +27,8 @@ namespace Blish_HUD.Controls {
         private const int SIDEBAR_WIDTH  = 46;
         private const int SIDEBAR_OFFSET = 3; // Used to account for the small edge of transparency at the bottom of the titlebar and between the sidebar and the window background
 
+        private const int RESIZEHANDLE_SIZE = 16;
+
         #region Load Static
 
         private const string WINDOW_SETTINGS = "WindowSettings2";
@@ -38,54 +41,64 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureExitButton       = Content.GetTexture("button-exit");
         private static readonly Texture2D _textureExitButtonActive = Content.GetTexture("button-exit-active");
 
-        private static readonly Texture2D _textureWindowCorner                = Content.GetTexture(@"controls/window/156008");
-        private static readonly Texture2D _textureWindowResizableCorner       = Content.GetTexture(@"controls/window/156009");
-        private static readonly Texture2D _textureWindowResizableCornerActive = Content.GetTexture(@"controls/window/156010");
-
         private static readonly Texture2D _textureBlackFade = Content.GetTexture("fade-down-46");
-        private static readonly Texture2D _textureSplitLine = Content.GetTexture("605026");
 
         private static readonly SettingCollection _windowSettings = GameService.Settings.Settings.AddSubCollection(WINDOW_SETTINGS);
 
         #endregion
 
-        #region Static Window Management
+        #region Textures
 
-        private static readonly List<IWindow> _windows = new List<IWindow>();
+        private readonly AsyncTexture2D _textureWindowCorner                = AsyncTexture2D.FromAssetId(156008);
+        private readonly AsyncTexture2D _textureWindowResizableCorner       = AsyncTexture2D.FromAssetId(156009);
+        private readonly AsyncTexture2D _textureWindowResizableCornerActive = AsyncTexture2D.FromAssetId(156010);
+        private readonly AsyncTexture2D _textureSplitLine                   = AsyncTexture2D.FromAssetId(605026);
+
+        #endregion
+
+        #region Static Window Management
 
         /// <summary>
         /// Registers the window so that its zindex can be calculated against other windows.
         /// </summary>
+        [Obsolete("Windows no longer need to be registered or unregistered.", true)]
         public static void RegisterWindow(IWindow window) {
-            _windows.Add(window);
+            /* NOOP */
         }
 
         /// <summary>
         /// Unregisters the window so that its zindex is not longer calculated against other windows.
         /// </summary>
+        [Obsolete("Windows no longer need to be registered or unregistered.", true)]
         public static void UnregisterWindow(IWindow window) {
-            _windows.Remove(window);
+            /* NOOP */
+        }
+
+        public static IEnumerable<IWindow> GetWindows() {
+            return GameService.Graphics.SpriteScreen.GetChildrenOfType<IWindow>();
         }
 
         /// <summary>
         /// Returns the calculated zindex offset.  This should be added to the base zindex (typically <see cref="Screen.WINDOW_BASEZINDEX"/>) and returned as the zindex.
         /// </summary>
         public static int GetZIndex(IWindow thisWindow) {
-            if (!_windows.Contains(thisWindow)) {
-                throw new InvalidOperationException($"{nameof(thisWindow)} must be registered with {nameof(RegisterWindow)} before ZIndex can automatically be calculated.");
+            IWindow[] windows = GetWindows().ToArray();
+
+            if (!windows.Contains(thisWindow)) {
+                throw new InvalidOperationException($"{nameof(thisWindow)} must be a direct child of GameService.Graphics.SpriteScreen before ZIndex can automatically be calculated.");
             }
 
-            return Screen.WINDOW_BASEZINDEX + _windows.OrderBy(window => window.TopMost)
-                                                      .ThenBy(window => window.LastInteraction)
-                                                      .TakeWhile(window => window != thisWindow)
-                                                      .Count();
+            return Screen.WINDOW_BASEZINDEX + windows.OrderBy(window => window.TopMost)
+                                                     .ThenBy(window => window.LastInteraction)
+                                                     .TakeWhile(window => window != thisWindow)
+                                                     .Count();
         }
 
         /// <summary>
         /// Gets or sets the active window. Returns null if no window is visible.
         /// </summary>
         public static IWindow ActiveWindow {
-            get  => _windows.Where(w => w.Visible).OrderByDescending(GetZIndex).FirstOrDefault(); 
+            get  => GetWindows().Where(w => w.Visible).OrderByDescending(GetZIndex).FirstOrDefault(); 
             set => value.BringWindowToFront();
         }
 
@@ -116,22 +129,37 @@ namespace Blish_HUD.Controls {
         }
 
         private bool _canClose = true;
+        /// <summary>
+        /// If <c>true</c>, draws an X icon on the window's titlebar and allows the user to close it by pressing it.
+        /// <br/><br/>Default: <c>true</c>
+        /// </summary>
         public bool CanClose {
             get => _canClose;
             set => SetProperty(ref _canClose, value);
         }
-
-        private bool _canResize = false;
+      
+        private bool _canCloseWithEscape = true;
         /// <summary>
-        /// Allows the window to be resized by dragging the bottom right corner.
+        /// If <c>true</c>, the window will close when the user presses the escape key.
+        /// <see cref="CanClose"/> must also be set to <c>true</c>.
+        /// <br/><br/>Default: <c>true</c>
         /// </summary>
-        /// <remarks>This property has not been implemented.</remarks>
+        public bool CanCloseWithEscape {
+            get => _canCloseWithEscape;
+            set => SetProperty(ref _canCloseWithEscape, value);
+        }
+
+        private bool _canResize;
+        /// <summary>
+        /// If <c>true</c>, allows the window to be resized by dragging the bottom right corner.
+        /// <br/><br/>Default: <c>false</c>
+        /// </summary>
         public bool CanResize {
             get => _canResize;
             set => SetProperty(ref _canResize, value);
         }
 
-        private Texture2D _emblem = null;
+        private AsyncTexture2D _emblem = null;
         /// <summary>
         /// The emblem/badge displayed in the top left corner of the window.
         /// </summary>
@@ -142,7 +170,8 @@ namespace Blish_HUD.Controls {
 
         private bool _topMost;
         /// <summary>
-        /// If this window will show on top of all other windows, regardless of which one had focus last.
+        /// If <c>true</c>, this window will show on top of all other windows, regardless of which one had focus last.
+        /// <br/><br/>Default: <c>false</c>
         /// </summary>
         public bool TopMost {
             get => _topMost;
@@ -153,16 +182,28 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// If <c>true</c>, the window will remember its position between Blish HUD sessions.
         /// Requires that <see cref="Id"/> be set.
+        /// <br/><br/>Default: <c>false</c>
         /// </summary>
         public bool SavesPosition {
             get => _savesPosition;
             set => SetProperty(ref _savesPosition, value);
         }
 
+        protected bool _savesSize;
+        /// <summary>
+        /// If <c>true</c>, the window will remember its size between Blish HUD sessions.
+        /// Requires that <see cref="Id"/> be set.
+        /// <br/><br/>Default: <c>false</c>
+        /// </summary>
+        public bool SavesSize {
+            get => _savesSize;
+            set => SetProperty(ref _savesSize, value);
+        }
+
         private string _id;
         /// <summary>
-        /// A unique id to identify the window.  Used with <see cref="SavesPosition"/> as a unique
-        /// identifier to remember where the window is positioned.
+        /// A unique id to identify the window.  Used with <see cref="SavesPosition"/> and <see cref="SavesSize"/> as a unique
+        /// identifier to remember where the window is positioned and its size.
         /// </summary>
         public string Id {
             get => _id;
@@ -192,8 +233,6 @@ namespace Blish_HUD.Controls {
         private bool _savedVisibility = false;
 
         protected WindowBase2() {
-            WindowBase2.RegisterWindow(this);
-
             this.Opacity = 0f;
             this.Visible = false;
 
@@ -268,9 +307,16 @@ namespace Blish_HUD.Controls {
 
             if (this.Visible) return;
 
-            // Restore position from previous session
-            if (this.SavesPosition && this.Id != null && _windowSettings.TryGetSetting(this.Id, out var windowPosition)) {
-                this.Location = (windowPosition as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
+            if (this.Id != null) {
+                // Restore position from previous session
+                if (this.SavesPosition && _windowSettings.TryGetSetting(this.Id, out var windowPosition)) {
+                    this.Location = (windowPosition as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
+                }
+
+                // Restore size from previous session
+                if (this.SavesSize && _windowSettings.TryGetSetting(this.Id + "_size", out var windowSize)) {
+                    this.Size = (windowSize as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
+                }
             }
 
             // Ensure that the window is actually on the screen (accounts for screen size changes, etc.)
@@ -363,20 +409,20 @@ namespace Blish_HUD.Controls {
 
         // Mouse regions
 
-        protected Rectangle TitleBarBounds      { get; private set; } = Rectangle.Empty;
-        protected Rectangle ExitButtonBounds    { get; private set; } = Rectangle.Empty;
-        protected Rectangle ResizeHandleBounds  { get; private set; } = Rectangle.Empty;
-        protected Rectangle SidebarActiveBounds { get; private set; } = Rectangle.Empty;
+        protected Rectangle TitleBarBounds              { get; private set; } = Rectangle.Empty;
+        protected Rectangle ExitButtonBounds            { get; private set; } = Rectangle.Empty;
+        protected Rectangle ResizeHandleBounds          { get; private set; } = Rectangle.Empty;
+        protected Rectangle SidebarActiveBounds         { get; private set; } = Rectangle.Empty;
+        protected Rectangle BackgroundDestinationBounds { get; private set; } = Rectangle.Empty;
 
         // Draw regions
 
-        private Rectangle _backgroundDrawBounds      = Rectangle.Empty;
         private Rectangle _leftTitleBarDrawBounds    = Rectangle.Empty;
         private Rectangle _rightTitleBarDrawBounds   = Rectangle.Empty;
         private Rectangle _subtitleDrawBounds        = Rectangle.Empty;
         private Rectangle _emblemDrawBounds          = Rectangle.Empty;
         private Rectangle _sidebarInactiveDrawBounds = Rectangle.Empty;
-        
+
         public override void RecalculateLayout() {
             // Title bar bounds
             _rightTitleBarDrawBounds = new Rectangle(this.TitleBarBounds.Width - _textureTitleBarRight.Width + STANDARD_RIGHTTITLEBAR_HORIZONTAL_OFFSET,
@@ -412,8 +458,8 @@ namespace Blish_HUD.Controls {
                                                   _textureExitButton.Height);
 
             // Side bar bounds
-            int sideBarTop        = _leftTitleBarDrawBounds.Bottom - STANDARD_TITLEBAR_VERTICAL_OFFSET;
-            int sideBarHeight     = this.WindowRegion.Height       + STANDARD_TITLEBAR_VERTICAL_OFFSET;
+            int sideBarTop    = _leftTitleBarDrawBounds.Bottom - STANDARD_TITLEBAR_VERTICAL_OFFSET;
+            int sideBarHeight = this.Size.Y                    - sideBarTop;
 
             this.SidebarActiveBounds   = new Rectangle(_leftTitleBarDrawBounds.X + SIDEBAR_OFFSET, sideBarTop - SIDEBAR_OFFSET,                      SIDEBAR_WIDTH, this.SideBarHeight);
             _sidebarInactiveDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X + SIDEBAR_OFFSET, sideBarTop - SIDEBAR_OFFSET + this.SideBarHeight, SIDEBAR_WIDTH, sideBarHeight - this.SideBarHeight);
@@ -445,7 +491,10 @@ namespace Blish_HUD.Controls {
                 } else {
                     this.MouseOverTitleBar = true;
                 }
-            } else if (_canResize && this.ResizeHandleBounds.Contains(this.RelativeMousePosition)) {
+            } else if (_canResize 
+                    && this.ResizeHandleBounds.Contains(this.RelativeMousePosition) 
+                    && this.RelativeMousePosition.X > this.ResizeHandleBounds.Right  - RESIZEHANDLE_SIZE
+                    && this.RelativeMousePosition.Y > this.ResizeHandleBounds.Bottom - RESIZEHANDLE_SIZE) {
                 this.MouseOverResizeHandle = true;
             }
 
@@ -453,10 +502,15 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalMouseRelease(object sender, MouseEventArgs e) {
-            if (this.Visible && (this.Dragging || this.Resizing)) {
-                // Save position for next launch
-                if (this.SavesPosition && this.Id != null) {
-                    (_windowSettings[this.Id] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id, this.Location)).Value = this.Location;
+            if (this.Visible) {
+                if (this.Id != null) {
+                    if (this.SavesPosition && this.Dragging) {
+                        // Save position for next launch
+                        (_windowSettings[this.Id] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id, this.Location)).Value = this.Location;
+                    } else if (this.SavesSize && this.Resizing) {
+                        // Save size for next launch
+                        (_windowSettings[this.Id + "_size"] as SettingEntry<Point> ?? _windowSettings.DefineSetting(this.Id + "_size", this.Size)).Value = this.Size;
+                    }
                 }
 
                 this.Dragging = false;
@@ -486,6 +540,14 @@ namespace Blish_HUD.Controls {
             base.OnLeftMouseButtonPressed(e);
         }
 
+        protected override void OnClick(MouseEventArgs e) {
+            if (this.MouseOverResizeHandle && e.IsDoubleClick) {
+                this.Size = new Point(this.WindowRegion.Width, this.WindowRegion.Height + STANDARD_TITLEBAR_HEIGHT);
+            }
+
+            base.OnClick(e);
+        }
+
         private void ResetMouseRegionStates() {
             this.MouseOverTitleBar     = false;
             this.MouseOverExitButton   = false;
@@ -497,8 +559,10 @@ namespace Blish_HUD.Controls {
         /// Override to lock the window size at specific intervals or implement other resize behaviors.
         /// </summary>
         protected virtual Point HandleWindowResize(Point newSize) {
-            return new Point(MathHelper.Clamp(newSize.X, SidebarActiveBounds.Right + STANDARD_MARGIN, 1024),
-                             MathHelper.Clamp(newSize.Y, TitleBarBounds.Bottom     + STANDARD_MARGIN, 1024));
+            return new Point(MathHelper.Clamp(newSize.X, Math.Max(this.ContentRegion.X + _contentMargin.X + STANDARD_MARGIN, _subtitleDrawBounds.Left + STANDARD_MARGIN), 1024),
+                             MathHelper.Clamp(newSize.Y, this.ShowSideBar 
+                                                             ? _sidebarInactiveDrawBounds.Top + STANDARD_MARGIN
+                                                             : this.ContentRegion.Y + _contentMargin.Y + STANDARD_MARGIN, 1024));
         }
 
         public void BringWindowToFront() {
@@ -509,30 +573,78 @@ namespace Blish_HUD.Controls {
 
         #region Window Construction
 
-        protected Texture2D WindowBackground            { get; set; }
-        protected Rectangle WindowRegion                { get; set; }
-        protected Rectangle WindowRelativeContentRegion { get; set; }
+        protected AsyncTexture2D WindowBackground            { get; set; }
+        protected Rectangle      WindowRegion                { get; set; }
+        protected Rectangle      WindowRelativeContentRegion { get; set; }
+
+        private Point _contentMargin;
+
+        protected void ConstructWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion) {
+            ConstructWindow(background, windowRegion, contentRegion, new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT));
+        }
 
         protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) {
+            ConstructWindow((AsyncTexture2D)background, windowRegion, contentRegion);
+        }
+
+        protected void ConstructWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
             this.WindowBackground = background;
 
-            this.WindowRegion                = windowRegion;
+            this.WindowRegion = windowRegion;
             this.WindowRelativeContentRegion = contentRegion;
-            this.TitleBarBounds              = new Rectangle(0, 0, windowRegion.Width, STANDARD_TITLEBAR_HEIGHT);
-
-            this.Size = new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT);
-
-            _backgroundDrawBounds = new Rectangle(-windowRegion.Left, -windowRegion.Top + STANDARD_TITLEBAR_HEIGHT, background.Width, background.Height);
 
             this.Padding = new Thickness(Math.Max(windowRegion.Top - STANDARD_TITLEBAR_HEIGHT, STANDARD_TITLEBAR_VERTICAL_OFFSET), // We have to include the padding of the titlebar just in case
-                                         background.Width                        - windowRegion.Right,
+                                         background.Width - windowRegion.Right,
                                          background.Height - windowRegion.Bottom + STANDARD_TITLEBAR_HEIGHT,
                                          windowRegion.Left);
 
-            this.ContentRegion = new Rectangle(contentRegion.X                            - (int)this.Padding.Left,
+            this.ContentRegion = new Rectangle(contentRegion.X - (int)this.Padding.Left,
                                                contentRegion.Y + STANDARD_TITLEBAR_HEIGHT - (int)this.Padding.Top,
                                                contentRegion.Width,
                                                contentRegion.Height);
+
+            _contentMargin = new Point(windowRegion.Right - contentRegion.Right, windowRegion.Bottom - contentRegion.Bottom);
+
+            _windowToTextureWidthRatio  = (this.ContentRegion.Width                                            + _contentMargin.X + this.ContentRegion.X) / (float)background.Width;
+            _windowToTextureHeightRatio = (this.ContentRegion.Height + _contentMargin.Y + this.ContentRegion.Y - STANDARD_TITLEBAR_HEIGHT)                / (float)background.Height;
+
+            _windowLeftOffsetRatio = -windowRegion.Left / (float)background.Width;
+            _windowTopOffsetRatio  = -windowRegion.Top  / (float)background.Height;
+
+            this.Size = windowSize;
+        }
+
+        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
+            ConstructWindow((AsyncTexture2D)background, windowRegion, contentRegion, windowSize);
+        }
+
+        private float _windowToTextureWidthRatio;
+        private float _windowToTextureHeightRatio;
+
+        private float _windowLeftOffsetRatio;
+        private float _windowTopOffsetRatio;
+
+        protected override void OnResized(ResizedEventArgs e) {
+            this.ContentRegion = new Rectangle(this.ContentRegion.X,
+                                               this.ContentRegion.Y,
+                                               this.Width  - this.ContentRegion.X - _contentMargin.X,
+                                               this.Height - this.ContentRegion.Y - _contentMargin.Y);
+
+            CalculateWindow();
+
+            base.OnResized(e);
+        }
+
+        private void CalculateWindow() {
+            this.TitleBarBounds = new Rectangle(0, 0, this.Size.X, STANDARD_TITLEBAR_HEIGHT);
+
+            int drawWidth  = (int)((this.ContentRegion.Width                                            + _contentMargin.X + this.ContentRegion.X) / _windowToTextureWidthRatio);
+            int drawHeight = (int)((this.ContentRegion.Height + _contentMargin.Y + this.ContentRegion.Y - STANDARD_TITLEBAR_HEIGHT)                / _windowToTextureHeightRatio);
+
+            this.BackgroundDestinationBounds = new Rectangle((int)Math.Floor(_windowLeftOffsetRatio * drawWidth),
+                                                             (int)Math.Floor(_windowTopOffsetRatio  * drawHeight + STANDARD_TITLEBAR_HEIGHT),
+                                                             drawWidth,
+                                                             drawHeight);
         }
 
         #endregion
@@ -568,19 +680,15 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, this.SidebarActiveBounds, Color.Black);
 
                 // Draw faded side bar (bottom half)
-                spriteBatch.DrawOnCtrl(this, _textureBlackFade, this._sidebarInactiveDrawBounds);
+                spriteBatch.DrawOnCtrl(this, _textureBlackFade, _sidebarInactiveDrawBounds);
 
                 // Draw the splitter
-                spriteBatch.DrawOnCtrl(this, _textureSplitLine, new Rectangle(this.SidebarActiveBounds.Right - _textureSplitLine.Width / 2, this.SidebarActiveBounds.Top, _textureSplitLine.Width, this._sidebarInactiveDrawBounds.Bottom - this.SidebarActiveBounds.Top));
+                spriteBatch.DrawOnCtrl(this, _textureSplitLine, new Rectangle(this.SidebarActiveBounds.Right - _textureSplitLine.Width / 2, this.SidebarActiveBounds.Top, _textureSplitLine.Width, _sidebarInactiveDrawBounds.Bottom - this.SidebarActiveBounds.Top));
             }
         }
 
         private void PaintWindowBackground(SpriteBatch spriteBatch) {
-            if (this.ShowSideBar) {
-                spriteBatch.DrawOnCtrl(this, this.WindowBackground, _backgroundDrawBounds.OffsetBy(this.WindowRegion.Left + SIDEBAR_WIDTH, 0), new Rectangle(this.WindowRegion.Left + SIDEBAR_WIDTH, 0, this.WindowBackground.Width - this.WindowRegion.Left + SIDEBAR_WIDTH, this.WindowBackground.Height));
-            } else {
-                spriteBatch.DrawOnCtrl(this, this.WindowBackground, _backgroundDrawBounds);
-            }
+            spriteBatch.DrawOnCtrl(this, this.WindowBackground, this.BackgroundDestinationBounds);
         }
 
         private void PaintTitleBar(SpriteBatch spriteBatch) {
@@ -623,8 +731,6 @@ namespace Blish_HUD.Controls {
                 this.CurrentView.Loaded -= OnViewBuilt;
                 this.CurrentView.DoUnload();
             }
-
-            WindowBase2.UnregisterWindow(this);
 
             GameService.Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseRelease;
 

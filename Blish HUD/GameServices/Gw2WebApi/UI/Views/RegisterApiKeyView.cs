@@ -1,4 +1,5 @@
 ﻿using Blish_HUD.Controls;
+using Blish_HUD.Content;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Gw2WebApi.UI.Presenters;
 using Blish_HUD.Input;
@@ -35,11 +36,11 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private const int MAX_KEYNAME_LENGTH = 14;
         private const int MIN_KEY_LENGTH     = 10;
 
-        private readonly Dictionary<ApiTokenStatusType, Texture2D> _tokenStatusTextures = new Dictionary<ApiTokenStatusType, Texture2D>() {
-            {ApiTokenStatusType.Neutral, GameService.Content.GetTexture(@"common/154983")},
-            {ApiTokenStatusType.Failed,  GameService.Content.GetTexture(@"common/154982")},
-            {ApiTokenStatusType.Partial, GameService.Content.GetTexture(@"common/154981")},
-            {ApiTokenStatusType.Perfect, GameService.Content.GetTexture(@"common/154979")}
+        private readonly Dictionary<ApiTokenStatusType, AsyncTexture2D> _tokenStatusTextures = new Dictionary<ApiTokenStatusType, AsyncTexture2D>() {
+            {ApiTokenStatusType.Neutral, AsyncTexture2D.FromAssetId(154983)},
+            {ApiTokenStatusType.Failed,  AsyncTexture2D.FromAssetId(154982)},
+            {ApiTokenStatusType.Partial, AsyncTexture2D.FromAssetId(154981)},
+            {ApiTokenStatusType.Perfect, AsyncTexture2D.FromAssetId(154979)}
         };
 
         private readonly TokenPermission[] _minimumTokenPermissions = {
@@ -187,7 +188,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent         = buildPanel
             };
 
-            var bullet = GameService.Content.GetTexture("155038");
+            var bullet = AsyncTexture2D.FromAssetId(155038);
 
             int offset = 18;
 
@@ -208,7 +209,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             var openAnetApplicationsBttn = new StandardButton() {
                 Text     = Strings.GameServices.Gw2ApiService.Link_ManageApplications,
-                Icon     = GameService.Content.GetTexture("common/1441452"),
+                Icon     = AsyncTexture2D.FromAssetId(1441452),
                 Size     = new Point(256,        32),
                 Location = new Point(step1.Left, step1.Bottom + 5),
                 Parent   = buildPanel

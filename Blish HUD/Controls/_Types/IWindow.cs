@@ -25,9 +25,14 @@
         void BringWindowToFront();
 
         /// <summary>
-        /// If <c>true</c> the window can support closing itself (X icon or pressing ESC).  Otherwise, an external action will be required to close it.
+        /// If <c>true</c> the window can support closing itself with the X icon.  Otherwise, an external action will be required to close it.
         /// </summary>
         bool CanClose { get; }
+
+        /// <summary>
+        /// If <c>true</c> the window can support closing itself with pressing Escape.  Otherwise, an external action will be required to close it.
+        /// </summary>
+        bool CanCloseWithEscape { get; }
 
         /// <summary>
         /// Hides the window.
