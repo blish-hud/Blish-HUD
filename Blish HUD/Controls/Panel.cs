@@ -67,6 +67,20 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _backgroundTexture, value);
         }
 
+        /// <summary>
+        /// Indicates whether or not there is a <see cref="Scrollbar"/>  drawn inside the <see cref="Panel"/>.
+        /// </summary>
+        public bool ScrollbarVisible {
+            get => _panelScrollbar != null && _panelScrollbar.Drawn;
+        }
+
+        /// <summary>
+        /// Space which is taken from the <see cref="Scrollbar"/> to be drawn inside the <see cref="Panel"/>.
+        /// </summary>
+        public int ScrollbarWidth {
+            get => _panelScrollbar != null ? _panelScrollbar.ScrollbarWidth : 0;
+        }
+
         protected bool _showBorder;
         public bool ShowBorder {
             get => _showBorder;

@@ -75,6 +75,16 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _controlPadding, value, true);
         }
 
+
+        protected Vector2 _scrollPadding = new Vector2(2, 0);
+        /// <summary>
+        /// Padding on the left side of the <see cref="Scrollbar"/>.
+        /// </summary>
+        public Vector2 ScrollPadding {
+            get => _scrollPadding;
+            set => SetProperty(ref _scrollPadding, value, true);
+        }
+
         protected Vector2 _outerControlPadding = Vector2.Zero;
         public Vector2 OuterControlPadding {
             get => _outerControlPadding;
@@ -165,6 +175,7 @@ namespace Blish_HUD.Controls {
         private void ReflowChildLayoutLeftToRight(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
+            float scrollPadX = this.ScrollbarVisible ? this.ScrollbarWidth / 2 + _scrollPadding.X : 0;
 
             float nextBottom = outerPadY;
             float currentBottom = outerPadY;
@@ -172,7 +183,7 @@ namespace Blish_HUD.Controls {
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next row
-                if (child.Width >= this.Width - lastRight) {
+                if (child.Width >= (this.Width - scrollPadX) - lastRight) {
                     currentBottom = nextBottom + _controlPadding.Y;
                     lastRight = outerPadX;
                 }
@@ -189,16 +200,17 @@ namespace Blish_HUD.Controls {
         private void ReflowChildLayoutRightToLeft(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
+            float scrollPadX = this.ScrollbarVisible ? this.ScrollbarWidth / 2 + _scrollPadding.X : 0;
 
             float nextBottom = outerPadY;
             float currentBottom = outerPadY;
-            float lastLeft = this.Width - outerPadX;
+            float lastLeft = (this.Width - scrollPadX) - outerPadX;
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next row
-                if (outerPadX > lastLeft - child.Width) {
+                if (outerPadX > lastLeft - child.Width) { 
                     currentBottom = nextBottom + _controlPadding.Y;
-                    lastLeft = this.Width - outerPadX;
+                    lastLeft = (this.Width - scrollPadX) - outerPadX;
                 }
 
                 child.Location = new Point((int) (lastLeft - child.Width), (int) currentBottom);
@@ -274,8 +286,9 @@ namespace Blish_HUD.Controls {
         private void ReflowChildLayoutSingleRightToLeft(IEnumerable<Control> allChildren) {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
+            float scrollPadX = this.ScrollbarVisible ? this.ScrollbarWidth / 2 + _scrollPadding.X : 0;
 
-            var lastLeft = this.Width - outerPadX;
+            var lastLeft = (this.Width - scrollPadX) - outerPadX;
 
             foreach (var child in allChildren) {
                 child.Location = new Point((int) (lastLeft - child.Width), (int) outerPadY);

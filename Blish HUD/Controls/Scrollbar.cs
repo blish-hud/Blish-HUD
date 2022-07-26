@@ -91,6 +91,22 @@ namespace Blish_HUD.Controls {
 
         private double _scrollbarPercent = 1.0;
 
+        /// <summary>
+        /// See if the <see cref="Scrollbar"/> is beeing drawn.
+        /// </summary>
+        public bool Drawn 
+        {
+            get => Visible && _scrollbarPercent < 0.99;
+        }        
+        
+        /// <summary>
+        /// Width of the <see cref="Scrollbar"/>.
+        /// </summary>
+        public int ScrollbarWidth
+        {
+            get => Visible ? _textureBar.Width : 0;
+        }
+
         private Container _associatedContainer;
         public Container AssociatedContainer {
             get => _associatedContainer;
