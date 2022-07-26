@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace Blish_HUD.ArcDps {
 
     public sealed class SocketListener {
-
         private const int MESSAGE_HEADER_SIZE = 8;
 
         private static readonly Logger Logger = Logger.GetLogger<SocketListener>();
@@ -15,10 +15,15 @@ namespace Blish_HUD.ArcDps {
 
         private CancellationTokenSource _cancellationTokenSource;
 
+        private int _connectionTries = 0;
+
         public SocketListener(int bufferSize) {
             _bufferSize = bufferSize;
         }
 
+        /// <summary>
+        ///     Indicates whether the socket listener is running.
+        /// </summary>
         public bool Running { get; private set; }
 
         public event EventHandler<MessageData> ReceivedMessage;
@@ -42,14 +47,13 @@ namespace Blish_HUD.ArcDps {
             var socketEventArgs = new SocketAsyncEventArgs();
             socketEventArgs.Completed += OnIoCompleted;
             socketEventArgs.SetBuffer(new byte[_bufferSize], 0, _bufferSize);
-            socketEventArgs.AcceptSocket   = listenSocket;
+            socketEventArgs.AcceptSocket = listenSocket;
             socketEventArgs.RemoteEndPoint = localEndPoint;
 
+            this._connectionTries = 0;
+
             try {
-                // The next line returns true when the operation is pending; false when it completed without delay
-                if (!listenSocket.ConnectAsync(socketEventArgs)) {
-                    ProcessConnect(socketEventArgs);
-                }
+                this.Connect(socketEventArgs);
             } catch (Exception e) {
                 Logger.Warn(e, "Failed to connect to Arcdps-BHUD bridge.");
             }
@@ -58,6 +62,7 @@ namespace Blish_HUD.ArcDps {
         public void Stop() {
             _cancellationTokenSource?.Cancel();
             this.Running = false;
+            Logger.Debug("Stopped ArcDPS SocketListener.");
         }
 
         public void Release(Socket listenSocket) {
@@ -73,6 +78,7 @@ namespace Blish_HUD.ArcDps {
         }
 
         private void OnIoCompleted(object sender, SocketAsyncEventArgs e) {
+            // Operation completed async
             switch (e.LastOperation) {
                 case SocketAsyncOperation.Receive:
                     ProcessReceive(e);
@@ -83,12 +89,34 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
+        private void Connect(SocketAsyncEventArgs socketEventArgs) {
+            this._connectionTries++;
+
+            if (this._connectionTries >= 10) {
+                Logger.Error($"Socket tried connecting {this._connectionTries} times, abort.");
+                this.OnSocketError?.Invoke(this, SocketError.ConnectionReset);
+                return;
+            }
+            // The next line returns true when the operation is pending; false when it completed without delay
+            if (!socketEventArgs.AcceptSocket.ConnectAsync(socketEventArgs)) {
+                // Connected immediately
+                ProcessConnect(socketEventArgs);
+            }
+        }
+
         private void ProcessConnect(SocketAsyncEventArgs e) {
-            if (e.SocketError != SocketError.Success) {
-                this.OnSocketError?.Invoke(this, e.SocketError);
+            if (e.SocketError == SocketError.Success) {
+                this.Running = true;
+                this._connectionTries = 0;
+                Logger.Debug("Connected.");
+            } else if (e.SocketError == SocketError.ConnectionReset) {
+                Logger.Warn("Lost connection.");
+                // Connection closed, try again
+                this.Connect(e);
                 return;
             } else {
-                this.Running = true;
+                this.OnSocketError?.Invoke(this, e.SocketError);
+                return;
             }
 
             try {
@@ -131,6 +159,11 @@ namespace Blish_HUD.ArcDps {
 
                         e.SetBuffer(token.NextReceiveOffset, e.Buffer.Length - token.NextReceiveOffset);
                     }
+                } else if (e.SocketError == SocketError.ConnectionReset) {
+                    Logger.Warn("Lost connection.");
+                    // Try reconnect
+                    this.Connect(e);
+                    return;
                 } else {
                     this.OnSocketError?.Invoke(this, e.SocketError);
                 }
@@ -157,10 +190,10 @@ namespace Blish_HUD.ArcDps {
                         Buffer.BlockCopy(buffer, dataStartOffset, headerData, 0, MESSAGE_HEADER_SIZE);
                         int messageSize = BitConverter.ToInt32(headerData, 0);
 
-                        token.MessageSize     = messageSize;
+                        token.MessageSize = messageSize;
                         token.DataStartOffset = dataStartOffset + MESSAGE_HEADER_SIZE;
 
-                        dataStartOffset          =  token.DataStartOffset;
+                        dataStartOffset = token.DataStartOffset;
                         alreadyProcessedDataSize += MESSAGE_HEADER_SIZE;
                         continue;
                     }
@@ -173,9 +206,9 @@ namespace Blish_HUD.ArcDps {
                         ProcessMessage(messageData, token);
 
                         token.DataStartOffset = dataStartOffset + messageSize;
-                        token.MessageSize     = null;
+                        token.MessageSize = null;
 
-                        dataStartOffset          =  token.DataStartOffset;
+                        dataStartOffset = token.DataStartOffset;
                         alreadyProcessedDataSize += messageSize;
                         continue;
                     }
