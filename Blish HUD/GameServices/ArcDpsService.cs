@@ -16,7 +16,12 @@ namespace Blish_HUD {
         private static readonly object WatchLock = new object();
         #if DEBUG
         public static long Counter;
-        #endif
+#endif
+
+        /// <summary>
+        ///     Triggered upon error of the underlaying socket listener.
+        /// </summary>
+        public event EventHandler<SocketError> Error;
 
         /// <summary>
         ///     Provides common fields that multiple modules might want to track
@@ -192,6 +197,8 @@ namespace Blish_HUD {
             listener.Stop();
 
             Logger.Error("ArcDpsService stopped with socket error: {0}", socketError.ToString());
+
+            this.Error?.Invoke(this, socketError);
         }
 
         private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType) {
