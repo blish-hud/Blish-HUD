@@ -104,7 +104,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int ScrollbarWidth
         {
-            get => Visible ? _textureBar.Width : 0;
+            get => _barBounds.Width;
         }
 
         private Container _associatedContainer;
