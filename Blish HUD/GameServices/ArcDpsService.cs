@@ -163,6 +163,9 @@ namespace Blish_HUD {
 
         protected override void Unload() {
             Gw2Mumble.Info.ProcessIdChanged -= Start;
+            _server.ReceivedMessage -= MessageHandler;
+            _server.OnSocketError -= SocketErrorHandler;
+
             _stopwatch.Stop();
             _server.Stop();
             this.RenderPresent = false;
@@ -193,10 +196,8 @@ namespace Blish_HUD {
         }
 
         private void SocketErrorHandler(object sender, SocketError socketError) {
-            var listener = (SocketListener)sender;
-            listener.Stop();
-
-            Logger.Error("ArcDpsService stopped with socket error: {0}", socketError.ToString());
+            // Socketlistener stops by itself.
+            Logger.Error("ArcDpsService has socket error: {0}", socketError.ToString());
 
             this.Error?.Invoke(this, socketError);
         }
