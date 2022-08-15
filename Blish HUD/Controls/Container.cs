@@ -147,6 +147,22 @@ namespace Blish_HUD.Controls {
             get => _panelScrollbar != null ? (_panelScrollbar.ScrollbarWidth + (int) ScrollPadding.X) : 0;
         }
 
+        protected Point _maxSize = Point.Zero;
+        public Point MaxSize {
+            get => _maxSize;
+            protected set => SetProperty(ref _maxSize, value, true);
+        }
+
+        public int MaxWidth {
+            get => _maxSize.X;
+            protected set => SetProperty(ref _maxSize.X, value, true);
+        }
+
+        public int MaxHeight{
+            get => _maxSize.Y;
+            protected set => SetProperty(ref _maxSize.Y, value, true);
+        }
+
         private bool _contentExceedsContentRegion = false;
         public bool ContentExceedsContentRegion {
             get => _contentExceedsContentRegion;
@@ -273,17 +289,19 @@ namespace Blish_HUD.Controls {
 
             _contentBounds = ControlUtil.GetControlBounds(filteredChildren);
 
+            var limitSize = _maxSize != null;
+
             // Update our size based on the sizing mode
             var parent = this.Parent;
             if (parent != null) {
                 this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
-                                                      this.Width,
-                                                      _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
-                                                      parent.ContentRegion.Width - this.Left),
+                                                      limitSize ? Math.Min(_maxSize.X, this.Width) : this.Width,
+                                                      limitSize ? Math.Min(_maxSize.X, _contentBounds.X + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X) : _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
+                                                     limitSize ? Math.Min(_maxSize.X, parent.ContentRegion.Width - this.Left) : parent.ContentRegion.Width - this.Left),
                                       GetUpdatedSizing(this.HeightSizingMode,
-                                                      this.Height,
-                                                      _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
-                                                      parent.ContentRegion.Height - this.Top));
+                                                      limitSize ? Math.Min(_maxSize.Y, this.Height) : this.Height,
+                                                      limitSize ? Math.Min(_maxSize.Y, _contentBounds.Y + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y) : _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
+                                                      limitSize ? Math.Min(_maxSize.Y, parent.ContentRegion.Height - this.Top) : parent.ContentRegion.Height - this.Top));
 
                 ScrollbarVisible = _contentBounds.Y > this.Height;
             }
