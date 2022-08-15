@@ -289,7 +289,7 @@ namespace Blish_HUD.Controls {
 
             _contentBounds = ControlUtil.GetControlBounds(filteredChildren);
 
-            var limitSize = _maxSize != null;
+            var limitSize = _maxSize != Point.Zero;
 
             // Update our size based on the sizing mode
             var parent = this.Parent;
