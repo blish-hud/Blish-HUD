@@ -160,7 +160,7 @@ namespace Blish_HUD.Contexts {
             _fault = null;
 
             try {
-                string[] staticFestivals = await "https://bhm.blishhud.com/bh.blishhud/static-old/festivals.json".GetJsonAsync<string[]>();
+                string[] staticFestivals = await "https://l.blishhud.com/general/getactivefestivals".GetJsonAsync<string[]>();
 
                 return staticFestivals.Select(Festival.FromName);
             } catch (Exception ex) {
