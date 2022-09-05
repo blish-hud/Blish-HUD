@@ -113,6 +113,11 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
+        /// <summary>
+        /// Indicates that the Guild Wars 2 instance is likely a Steam copy of the game.
+        /// </summary>
+        public bool IsSteamVersion => _gw2ExecutablePath.Value.Contains("steamapps\\common");
+
         private string _appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         /// <summary>
         /// Indicates the associated AppData path used by the active Guild Wars 2 instance.
