@@ -100,7 +100,9 @@ namespace Blish_HUD {
                         singleInstanceMutex.ReleaseMutex();
                     }
 
-                    if (RestartOnExit) {
+                    if (RestartOnExit 
+                     && (ApplicationSettings.Instance.StartGw2 > 0 
+                      || ApplicationSettings.Instance.ProcessId > 0)) {
                         Application.Restart();
                     }
                 }

@@ -1,4 +1,5 @@
-﻿using Blish_HUD.Graphics.UI;
+﻿using Blish_HUD.Content;
+using Blish_HUD.Graphics.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -8,13 +9,17 @@ namespace Blish_HUD.Controls {
     /// </summary>
     public class StandardWindow : WindowBase2 {
 
-        public StandardWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) {
+        public StandardWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion) {
             ConstructWindow(background, windowRegion, contentRegion);
         }
 
-        public StandardWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
+        public StandardWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) : this((AsyncTexture2D)background, windowRegion, contentRegion) { /* NOOP */ }
+
+        public StandardWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
             ConstructWindow(background, windowRegion, contentRegion, windowSize);
         }
+
+        public StandardWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) : this((AsyncTexture2D)background, windowRegion, contentRegion, windowSize) { /* NOOP */ }
 
         /// <summary>
         /// Shows the window with the provided view.

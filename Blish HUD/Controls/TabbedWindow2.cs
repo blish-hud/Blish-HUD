@@ -1,4 +1,5 @@
 ﻿using System;
+using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -53,19 +54,23 @@ namespace Blish_HUD.Controls {
             TabChanged?.Invoke(this, e);
         }
 
-        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) {
+        public TabbedWindow2(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion) {
             this.Tabs        = new TabCollection(this);
             this.ShowSideBar = true;
 
             this.ConstructWindow(background, windowRegion, contentRegion);
         }
 
-        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
+        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) : this((AsyncTexture2D) background, windowRegion, contentRegion) { /* NOOP */ }
+
+        public TabbedWindow2(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
             this.Tabs        = new TabCollection(this);
             this.ShowSideBar = true;
 
             this.ConstructWindow(background, windowRegion, contentRegion, windowSize);
         }
+
+        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) : this((AsyncTexture2D) background, windowRegion, contentRegion, windowSize) { /* NOOP */ }
 
         protected override void OnClick(MouseEventArgs e) {
             if (this.HoveredTab is { Enabled: true }) {
