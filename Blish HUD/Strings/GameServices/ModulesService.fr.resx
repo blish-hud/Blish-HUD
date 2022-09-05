@@ -227,7 +227,7 @@ Téléchargez des modules et placez-les dans le dossier modules.</value>
     <value>Supprimer le module</value>
   </data>
   <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
-    <value>La version du module est trop ancienne</value>
+    <value>La version du module est incompatible</value>
   </data>
   <data name="PkgInstall_Progress_Installing" xml:space="preserve">
     <value>Installation...</value>
