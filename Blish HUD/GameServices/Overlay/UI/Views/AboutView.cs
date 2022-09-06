@@ -17,24 +17,25 @@ namespace Blish_HUD.Overlay.UI.Views {
                 Parent        = buildPanel
             };
 
-            var gw2CopyrightStatement = new Label() {
-                Font                = GameService.Content.DefaultFont16,
-                Text                = string.Format(Strings.GameServices.OverlayService.AboutAnetNotice, DateTime.Now.Year),
-                AutoSizeHeight      = true,
-                Width               = buildPanel.Width,
-                StrokeText          = true,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment   = VerticalAlignment.Top,
-                Parent              = buildPanel
+            var infoPanel = new Panel() {
+                Width = buildPanel.Width,
+                Height = 32,
+                Bottom = buildPanel.Bottom,
+                Parent = buildPanel
             };
 
-            gw2CopyrightStatement.Location = new Point(0, buildPanel.Height - gw2CopyrightStatement.Height - 64);
+            var aboutPanel = new Panel() {
+                ShowBorder = true,
+                Width = buildPanel.Width,
+                Height = buildPanel.Height - infoPanel.Height,
+                Parent = buildPanel,
+                CanScroll = true,
+            };
 
             var lovePanel = new Panel() {
-                Size = new Point(buildPanel.Width - 128, 128),
-                Left = 64,
-                Top = gw2CopyrightStatement.Top - 128 - 12,
-                Parent = buildPanel
+                Size = new Point(aboutPanel.Width - 128, 128),
+                Left = (aboutPanel.Width / 2) - ((aboutPanel.Width - 128) / 3),
+                Parent = aboutPanel
             };
 
             var heart = new Image(AsyncTexture2D.FromAssetId(156127)) {
@@ -54,31 +55,66 @@ namespace Blish_HUD.Overlay.UI.Views {
                 Parent = lovePanel
             };
 
-            var version = new Label() {
-                AutoSizeHeight   = true,
-                AutoSizeWidth    = true,
-                Text             = $"{Strings.Common.BlishHUD} v{Program.OverlayVersion.BaseAndPrerelease()}",
-                BasicTooltipText = $"v{Program.OverlayVersion}",
-                Font             = GameService.Content.DefaultFont14,
-                StrokeText       = true,
-                ClipsBounds      = false,
-                Parent           = buildPanel
+            var gw2CopyrightStatement = new Label() {
+                Font = GameService.Content.DefaultFont16,
+                Text = string.Format(Strings.GameServices.OverlayService.AboutAnetNotice, DateTime.Now.Year),
+                AutoSizeHeight = true,
+                Width = aboutPanel.Width,
+                Top = lovePanel.Bottom,
+                StrokeText = true,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top,
+                Parent = aboutPanel
             };
 
-            version.Location = new Point(buildPanel.Width - version.Width + 8, buildPanel.Height - version.Height);
+            var thirdPartySoftwareHeading = new Label() {
+                Font = GameService.Content.DefaultFont16,
+                Text = Strings.GameServices.OverlayService.AboutThirdPartySoftwareHeading,
+                Top = gw2CopyrightStatement.Bottom + 64,
+                Width = aboutPanel.Width,
+                StrokeText = true,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top,
+                Parent = aboutPanel,
+            };
+
+            var thirdPartySoftwareStatement = new Label() {
+                Font = GameService.Content.DefaultFont14,
+                Text = Strings.GameServices.OverlayService.AboutThirdPartySoftware,
+                AutoSizeHeight = true,
+                Top = thirdPartySoftwareHeading.Bottom + 32,
+                Width = aboutPanel.Width,
+                Left = 24,
+                StrokeText = false,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Parent = aboutPanel,
+            };
+
+            var version = new Label() {
+                AutoSizeHeight      = true,
+                Width               = infoPanel.Width,
+                Text                = $"{Strings.Common.BlishHUD} v{Program.OverlayVersion.BaseAndPrerelease()}",
+                BasicTooltipText    = $"v{Program.OverlayVersion}",
+                Font                = GameService.Content.DefaultFont14,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                StrokeText          = true,
+                ClipsBounds         = false,
+                Parent              = infoPanel
+            };
+
+            //version.Location = new Point(infoPanel.Width - version.Width + 8, infoPanel.Height - version.Height);
 
             var mumbleConnection = new ViewContainer() {
                 Size   = new Point(128, 20),
                 Left   = 8,
-                Bottom = version.Bottom,
-                Parent = buildPanel
+                Parent = infoPanel
             };
 
             var arcdpsBridgeConnection = new ViewContainer() {
                 Size   = new Point(128, 20),
-                Bottom = version.Bottom,
                 Left   = mumbleConnection.Right,
-                Parent = buildPanel
+                Parent = infoPanel
             };
 
             mumbleConnection.Show(new ConnectionStatusView().WithPresenter(new ConnectionStatusPresenter(() => Strings.GameServices.OverlayService.ConnectionStatus_Mumble_Name,

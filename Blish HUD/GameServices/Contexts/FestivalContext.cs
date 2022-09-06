@@ -140,7 +140,7 @@ namespace Blish_HUD.Contexts {
             if (_fault != null || festivals.Count() == _knownFestivalCategories.Count) {
                 // Known bug introduced in early 2022 around the EoD release.
                 // All festivals are for some reason returned by the API.  Very annoying.
-                festivals = await GetFestivalsFromStatic();
+                festivals = await GetFestivalsFromLambda();
             }
 
             SetFestivals(festivals);
@@ -156,11 +156,11 @@ namespace Blish_HUD.Contexts {
             this.ConfirmReady();
         }
 
-        private async Task<IEnumerable<Festival>> GetFestivalsFromStatic() {
+        private async Task<IEnumerable<Festival>> GetFestivalsFromLambda() {
             _fault = null;
 
             try {
-                string[] staticFestivals = await "https://bhm.blishhud.com/bh.blishhud/static-old/festivals.json".GetJsonAsync<string[]>();
+                string[] staticFestivals = await "https://l.blishhud.com/general/getactivefestivals".GetJsonAsync<string[]>();
 
                 return staticFestivals.Select(Festival.FromName);
             } catch (Exception ex) {
