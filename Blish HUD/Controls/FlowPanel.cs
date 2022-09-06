@@ -196,7 +196,7 @@ namespace Blish_HUD.Controls {
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next row
-                if (outerPadX > lastLeft - child.Width) { 
+                if (outerPadX > lastLeft - child.Width) {
                     currentBottom = nextBottom + _controlPadding.Y;
                     lastLeft = this.ContentRegion.Width - outerPadX;
                 }

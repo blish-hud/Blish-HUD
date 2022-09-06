@@ -148,24 +148,28 @@ namespace Blish_HUD.Controls {
         }
 
         protected Point _maxSize = Point.Zero;
+        /// <summary>
+        /// Maximum Size the <see cref="Container"/> can autoresize to.
+        /// </summary>
         public Point MaxSize {
             get => _maxSize;
             protected set => SetProperty(ref _maxSize, value, true);
         }
 
+        /// <summary>
+        /// Maximum Width the <see cref="Container"/> can autoresize to.
+        /// </summary>
         public int MaxWidth {
             get => _maxSize.X;
             protected set => SetProperty(ref _maxSize.X, value, true);
         }
 
+        /// <summary>
+        /// Maximum Height the <see cref="Container"/> can autoresize to.
+        /// </summary>
         public int MaxHeight{
             get => _maxSize.Y;
             protected set => SetProperty(ref _maxSize.Y, value, true);
-        }
-
-        private bool _contentExceedsContentRegion = false;
-        public bool ContentExceedsContentRegion {
-            get => _contentExceedsContentRegion;
         }
 
         protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
