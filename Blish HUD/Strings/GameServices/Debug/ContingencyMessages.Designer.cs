@@ -19,7 +19,7 @@ namespace Blish_HUD.Strings.GameServices.Debug {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class ContingencyMessages {
@@ -218,6 +218,33 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         internal static string MissingRef_Title {
             get {
                 return ResourceManager.GetString("MissingRef_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following NVIDIA settings cause known compatability issues:.
+        /// </summary>
+        internal static string NvidiaSettings_Description {
+            get {
+                return ResourceManager.GetString("NvidiaSettings_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open NVIDIA Control Panel.
+        /// </summary>
+        internal static string NvidiaSettings_OpenControlPanelAction {
+            get {
+                return ResourceManager.GetString("NvidiaSettings_OpenControlPanelAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incompatible NVIDIA Settings.
+        /// </summary>
+        internal static string NvidiaSettings_Title {
+            get {
+                return ResourceManager.GetString("NvidiaSettings_Title", resourceCulture);
             }
         }
         
