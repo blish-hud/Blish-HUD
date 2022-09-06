@@ -1,7 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.Win32;
+using nspector.Common;
+using nspector.Common.CustomSettings;
+using nspector.Common.Meta;
+using nspector.Native.NvApi.DriverSettings;
 
 namespace Blish_HUD.Debug {
     internal static class ContingencyChecks {
@@ -10,6 +19,7 @@ namespace Blish_HUD.Debug {
             CheckArcDps11Injected();
             CheckMinTls12();
             CheckControlledFolderAccessBlocking();
+            CheckNvidiaControlPanelSettings();
         }
 
         /// <summary>
@@ -60,5 +70,46 @@ namespace Blish_HUD.Debug {
             }
         }
 
+        private static void CheckNvidiaControlPanelSettings() {
+            try {
+                CustomSettingNames customSettingNames =  CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
+                CustomSettingNames referenceSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.ReferenceSettingNames);
+
+                DrsSettingsMetaService metaService = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
+                DrsDecrypterService decrypterService = new DrsDecrypterService(metaService);
+                DrsScannerService scannerService = new DrsScannerService(metaService, decrypterService);
+                DrsSettingsService settingService = new DrsSettingsService(metaService, decrypterService);
+
+                // this might be nicer as a resource or a config file?
+                Dictionary<ESetting, HashSet<uint>> forbiddenValues = new Dictionary<ESetting, HashSet<uint>>() {
+                    [ESetting.MAXWELL_B_SAMPLE_INTERLEAVE_ID] = new HashSet<uint>() { 1 }
+                };
+
+                // stored using forward slashes for some reason
+                string exePath = Application.ExecutablePath.Replace('\\', '/');
+                string blishProfileName = scannerService.FindProfilesUsingApplication(exePath);
+
+                List<string> errors = new List<string>();
+                foreach (KeyValuePair<ESetting, HashSet<uint>> pair in forbiddenValues) {
+                    SettingMeta settingMeta = metaService.GetSettingMeta((uint)pair.Key);
+                    uint value = settingService.GetDwordValueFromProfile(blishProfileName, (uint)pair.Key);
+
+                    if (pair.Value.Contains(value)) {
+                        SettingValue<uint> settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
+                        string val = settingValue?.ValueName != null ? settingValue.ValueName : value.ToString();
+
+                        errors.Add($"'{settingMeta.SettingName}' = '{val}'");
+                    }
+                }
+
+                if (errors.Any()) {
+                    Contingency.NotifyNvidiaSettings(string.Join(Environment.NewLine, errors));
+                }
+
+            } catch (Exception) {
+                 // we don't really care if we error here - usually means a non-nvidia system,
+                 // in which case the check is useless anyway.
+            }
+        }
     }
 }

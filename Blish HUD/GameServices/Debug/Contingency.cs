@@ -3,6 +3,7 @@ using Ookii.Dialogs.WinForms;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace Blish_HUD.Debug {
     public static class Contingency {
@@ -12,6 +13,10 @@ namespace Blish_HUD.Debug {
         private static readonly HashSet<string> _contingency = new HashSet<string>();
 
         private static void NotifyContingency(string key, string title, string description, string url, params (TaskDialogButton Button, Func<Task> OnClick)[] extraActions) {
+            NotifyContingency(key, title, description, null, url, extraActions);
+        }
+
+        private static void NotifyContingency(string key, string title, string description, string expandedDescription, string url, params (TaskDialogButton Button, Func<Task> OnClick)[] extraActions) {
             if (_contingency.Contains(key)) {
                 return;
             }
@@ -30,6 +35,7 @@ namespace Blish_HUD.Debug {
                 WindowTitle      = title,
                 MainIcon         = TaskDialogIcon.Warning,
                 MainInstruction  = description,
+                Content = expandedDescription,
                 FooterIcon       = TaskDialogIcon.Information,
                 EnableHyperlinks = true,
                 Footer           = string.Format(Strings.GameServices.Debug.ContingencyMessages.GenericUrl_Footer, url, DISCORD_JOIN_URL),
@@ -52,6 +58,16 @@ namespace Blish_HUD.Debug {
             };
 
             notifDiag.ShowDialog();
+        }
+
+        private static Task OpenNvidaControlPanel() {
+            try {
+                Process.Start(Environment.ExpandEnvironmentVariables("%programfiles%\\NVIDIA Corporation\\Control Panel Client\\nvcplui.exe"));
+            } catch (Win32Exception) {
+                Process.Start("explorer.exe", "shell:AppsFolder\\NVIDIACorp.NVIDIAControlPanel_56jybvy8sckqj!NVIDIACorp.NVIDIAControlPanel");
+            }
+
+            return Task.CompletedTask;
         }
 
         private static void NotifDiag_HyperlinkClicked(object sender, HyperlinkClickedEventArgs e) {
@@ -84,6 +100,15 @@ namespace Blish_HUD.Debug {
                               Strings.GameServices.Debug.ContingencyMessages.CfaBlocking_Title,
                               string.Format(Strings.GameServices.Debug.ContingencyMessages.CfaBlocking_Description, path),
                               "https://link.blishhud.com/cfablocking");
+        }
+
+        internal static void NotifyNvidiaSettings(string description) {
+            NotifyContingency(nameof(NotifyNvidiaSettings),
+                              Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Title,
+                              Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Description,
+                              description,
+                              "https://link.blishhud.com/nvidiasettings",
+                              (new TaskDialogButton(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_OpenControlPanelAction), OpenNvidaControlPanel));
         }
 
         public static void NotifyFileSaveAccessDenied(string path, string actionDescription, bool promptPortableMode = false) {
