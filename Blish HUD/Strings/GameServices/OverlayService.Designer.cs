@@ -61,6 +61,55 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Join our Discord.
+        /// </summary>
+        internal static string About_DiscordCallToAction_Button {
+            get {
+                return ResourceManager.GetString("About_DiscordCallToAction_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  
+        ///Need help or just want to
+        ///participate in the conversation?.
+        /// </summary>
+        internal static string About_DiscordCallToAction_Question {
+            get {
+                return ResourceManager.GetString("About_DiscordCallToAction_Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  
+        ///The majority of Blish HUD&apos;s feedback, development, and other discussions take place in our.
+        /// </summary>
+        internal static string About_DiscordCallToAction1 {
+            get {
+                return ResourceManager.GetString("About_DiscordCallToAction1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord.
+        /// </summary>
+        internal static string About_DiscordCallToAction2 {
+            get {
+                return ResourceManager.GetString("About_DiscordCallToAction2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  channel.
+        /// .
+        /// </summary>
+        internal static string About_DiscordCallToAction3 {
+            get {
+                return ResourceManager.GetString("About_DiscordCallToAction3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ©2010-{0} ArenaNet, LLC. All rights reserved. Guild Wars, Guild Wars 2, Heart of Thorns,
         ///Guild Wars 2: Path of Fire, ArenaNet, NCSOFT, the Interlocking NC Logo, and all associated
         ///logos and designs are trademarks or registered trademarks of NCSOFT Corporation. All other
@@ -98,7 +147,7 @@ namespace Blish_HUD.Strings.GameServices {
         ///
         ///MIT License
         ///
-        ///Copyright (c) 2019 Dade Lamkins
+        ///Copyright (c) 2022 Dade Lamkins
         ///
         ///Permission is hereby granted, free of charge, to any person obtaining a copy
         ///of this software and associated documentation files (the &quot;Software&quot;), to deal
