@@ -172,7 +172,7 @@ namespace Blish_HUD.Controls {
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next row
-                if (child.Width >= this.Width - lastRight) {
+                if (child.Width >= this.ContentRegion.Width - lastRight) {
                     currentBottom = nextBottom + _controlPadding.Y;
                     lastRight = outerPadX;
                 }
@@ -192,13 +192,13 @@ namespace Blish_HUD.Controls {
 
             float nextBottom = outerPadY;
             float currentBottom = outerPadY;
-            float lastLeft = this.Width - outerPadX;
+            float lastLeft = this.ContentRegion.Width - outerPadX;
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 // Need to flow over to the next row
                 if (outerPadX > lastLeft - child.Width) {
                     currentBottom = nextBottom + _controlPadding.Y;
-                    lastLeft = this.Width - outerPadX;
+                    lastLeft = this.ContentRegion.Width - outerPadX;
                 }
 
                 child.Location = new Point((int) (lastLeft - child.Width), (int) currentBottom);
@@ -275,7 +275,7 @@ namespace Blish_HUD.Controls {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
-            var lastLeft = this.Width - outerPadX;
+            var lastLeft = this.ContentRegion.Width - outerPadX;
 
             foreach (var child in allChildren) {
                 child.Location = new Point((int) (lastLeft - child.Width), (int) outerPadY);

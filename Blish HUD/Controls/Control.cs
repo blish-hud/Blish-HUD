@@ -662,6 +662,12 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _enabled, value);
         }
 
+        /// <summary>
+        /// The rectangle which will be colored behind the <see cref="Control"/> by BackgroundColor.
+        /// <br/><br/>Default: <see cref="Rectangle.Empty"/>
+        /// </summary>
+        protected Rectangle _backgroundColorBounds;
+
         protected Color _backgroundColor = Color.Transparent;
         /// <summary>
         /// The <see cref="Color"/> rendered behind the <see cref="Control"/>.
@@ -904,7 +910,7 @@ namespace Blish_HUD.Controls {
                 
             // Draw background
             if (_backgroundColor != Color.Transparent)
-                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, drawBounds, _backgroundColor);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, _backgroundColorBounds == Rectangle.Empty ? drawBounds : _backgroundColorBounds, _backgroundColor);
 
             if (!this.ClipsBounds) {
                 spriteBatch.GraphicsDevice.ScissorRectangle = Graphics.SpriteScreen.LocalBounds.ScaleBy(Graphics.UIScaleMultiplier);

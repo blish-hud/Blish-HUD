@@ -115,7 +115,6 @@ namespace Blish_HUD.Controls {
         [JsonIgnore] public float AccentOpacity { get; set; } = 1f;
 
         private Glide.Tween _collapseAnim;
-        private Scrollbar   _panelScrollbar;
 
         /// <inheritdoc />
         public bool ToggleAccordionState() {
@@ -233,7 +232,7 @@ namespace Blish_HUD.Controls {
                 int cornerAccentWidth = Math.Min(_size.X, MAX_ACCENT_WIDTH);
                 _layoutTopLeftAccentBounds = new Rectangle(-2, topOffset - 12, cornerAccentWidth, _textureCornerAccent.Height);
 
-                _layoutBottomRightAccentBounds = new Rectangle(_size.X - cornerAccentWidth + 2, _size.Y - 59, cornerAccentWidth, _textureCornerAccent.Height);
+                _layoutBottomRightAccentBounds = new Rectangle(_size.X - cornerAccentWidth, _size.Y - 59, cornerAccentWidth, _textureCornerAccent.Height);
 
                 _layoutCornerAccentSrc = new Rectangle(MAX_ACCENT_WIDTH - cornerAccentWidth, 0, cornerAccentWidth, _textureCornerAccent.Height);
 
@@ -242,12 +241,14 @@ namespace Blish_HUD.Controls {
                 _layoutLeftAccentSrc    = new Rectangle(0,  0,         _textureLeftSideAccent.Width, _layoutLeftAccentBounds.Height);
             }
 
+            ScrollbarVisible = _contentBounds.Y > (_size.Y - topOffset - bottomOffset);
+
             this.ContentRegion = new Rectangle(leftOffset,
                                                topOffset,
-                                               _size.X - leftOffset - rightOffset,
+                                               _size.X - leftOffset - rightOffset - (ScrollbarVisible ? (ScrollbarWidth / 2) + (ScrollbarVisible ? 0 : RIGHT_PADDING) : 0),
                                                _size.Y - topOffset - bottomOffset);
 
-            _layoutHeaderBounds     = new Rectangle(this.ContentRegion.Left,       0, this.ContentRegion.Width,       HEADER_HEIGHT);
+            _layoutHeaderBounds = new Rectangle(this.ContentRegion.Left, 0, this.ContentRegion.Width, HEADER_HEIGHT);
             _layoutHeaderTextBounds = new Rectangle(_layoutHeaderBounds.Left + 10, 0, _layoutHeaderBounds.Width - 10, HEADER_HEIGHT);
 
             _layoutAccordionArrowOrigin = new Vector2((float)ARROW_SIZE / 2, (float)ARROW_SIZE / 2);
@@ -255,13 +256,24 @@ namespace Blish_HUD.Controls {
                                                         (topOffset - ARROW_SIZE) / 2,
                                                         ARROW_SIZE,
                                                         ARROW_SIZE).OffsetBy(_layoutAccordionArrowOrigin.ToPoint());
+            
+            _backgroundColorBounds = new Rectangle(leftOffset,
+                                               topOffset,
+                                               _size.X - leftOffset - rightOffset - 2,
+                                               _size.Y - topOffset - bottomOffset);
+
+            if (_panelScrollbar != null) {
+                _panelScrollbar.Height = this.ContentRegion.Height - 20;
+                _panelScrollbar.Right = this.Right;
+                _panelScrollbar.Top = this.Top + this.ContentRegion.Top + 10;
+            }
         }
 
         private void UpdateScrollbar() {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
                to work correctly */
             if (this.CanScroll) {
-                if (_panelScrollbar == null) 
+                if (_panelScrollbar == null)
                     _panelScrollbar = new Scrollbar(this);
 
                 this.PropertyChanged -= UpdatePanelScrollbarOnOwnPropertyChanged;
@@ -269,7 +281,7 @@ namespace Blish_HUD.Controls {
 
                 _panelScrollbar.Parent  = this.Parent;
                 _panelScrollbar.Height  = this.ContentRegion.Height  - 20;
-                _panelScrollbar.Right   = this.Right                          - _panelScrollbar.Width / 2;
+                _panelScrollbar.Right   = this.Right;
                 _panelScrollbar.Top     = this.Top + this.ContentRegion.Top + 10;
                 _panelScrollbar.Visible = this.Visible;
                 _panelScrollbar.ZIndex  = this.ZIndex + 2;
@@ -291,7 +303,7 @@ namespace Blish_HUD.Controls {
                     _panelScrollbar.Height = this.ContentRegion.Height - 20;
                     break;
                 case "Right":
-                    _panelScrollbar.Right = this.Right - _panelScrollbar.Width / 2;
+                    _panelScrollbar.Right = this.Right;
                     break;
                 case "Top":
                     _panelScrollbar.Top = this.Top + this.ContentRegion.Top + 10;
@@ -389,8 +401,6 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void DisposeControl() {
-            _panelScrollbar?.Dispose();
-            
             foreach (var control in this._children) {
                 control.Resized -= UpdateContentRegionBounds;
                 control.Moved   -= UpdateContentRegionBounds;
