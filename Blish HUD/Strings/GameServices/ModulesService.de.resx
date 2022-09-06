@@ -220,7 +220,7 @@
     <value>Einstellungen werden angezeigt sobald das Modul aktiviert ist</value>
   </data>
   <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
-    <value>Modul Version ist zu alt</value>
+    <value>Modulversion ist inkompatibel</value>
   </data>
   <data name="NoModules_Info" xml:space="preserve">
     <value>Du hast aktuell keine Module.

@@ -322,7 +322,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Module Version Is Too Old.
+        ///   Looks up a localized string similar to Module Version Is Incompatible.
         /// </summary>
         internal static string ModuleState_Custom_ExplicitlyIncompatible {
             get {

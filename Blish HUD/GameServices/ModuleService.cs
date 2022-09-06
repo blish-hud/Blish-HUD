@@ -12,6 +12,7 @@ using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Flurl.Http;
 
 namespace Blish_HUD {
 
@@ -30,11 +31,13 @@ namespace Blish_HUD {
         private const string MODULE_MANIFESTNAME = "manifest.json";
 
         private const string MODULE_COMPATIBILITYLIST = "compatibility.json";
+        private const string MODULE_SPOILEDURI        = "https://pkgs.blishhud.com/spoiled.json";
 
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleRegistered;
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleUnregistered;
 
-        private List<ModuleDependency> _incompatibleModules = new List<ModuleDependency>(0);
+        private List<ModuleDependency> _incompatibleModules      = new List<ModuleDependency>(0);
+        private HashSet<string>        _spoiledModuleIdentifiers = new HashSet<string>(0);
 
         /// <summary>
         /// Access to repo management and state.
@@ -69,7 +72,8 @@ namespace Blish_HUD {
         }
 
         internal bool ModuleIsExplicitlyIncompatible(ModuleManager moduleManager) {
-            return _incompatibleModules.Any(compatibilityListing => string.Equals(moduleManager.Manifest.Namespace, compatibilityListing.Namespace, StringComparison.OrdinalIgnoreCase)
+            return _spoiledModuleIdentifiers.Contains($"{moduleManager.Manifest.Namespace}_{moduleManager.Manifest.Version}")
+                || _incompatibleModules.Any(compatibilityListing => string.Equals(moduleManager.Manifest.Namespace, compatibilityListing.Namespace, StringComparison.OrdinalIgnoreCase)
                                                                  && compatibilityListing.VersionRange.IsSatisfied(moduleManager.Manifest.Version.BaseVersion()));
         }
 
@@ -161,6 +165,15 @@ namespace Blish_HUD {
             }
         }
 
+        private void LoadSpoiledList() {
+            try {
+                // We block for this on purpose
+                _spoiledModuleIdentifiers = MODULE_SPOILEDURI.GetJsonAsync<string[]>().GetAwaiter().GetResult().ToHashSet();
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to load the spoiled modules list!");
+            }
+        }
+
         private void LoadCompatibility(IDataReader datReader) {
             if (datReader.FileExists(MODULE_COMPATIBILITYLIST)) {
                 try {
@@ -189,6 +202,7 @@ namespace Blish_HUD {
 
             HandleFirstVersionLaunch(datReader);
             LoadCompatibility(datReader);
+            LoadSpoiledList();
         }
         
         /// <summary>

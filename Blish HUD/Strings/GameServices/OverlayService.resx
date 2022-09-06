@@ -296,4 +296,7 @@ WARNING: Prerelease modules or Blish HUD versions may be unstable.  By enabling 
   <data name="AboutThirdPartySoftwareHeading" xml:space="preserve">
     <value>Software Licences</value>
   </data>
+  <data name="Setting_StayInTray_AppendDisabled" xml:space="preserve">
+    <value> (Disabled because you launched Blish HUD with --startgw2, --pid, -g, or -P)</value>
+  </data>
 </root>
