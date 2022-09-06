@@ -72,16 +72,16 @@ namespace Blish_HUD.Debug {
 
         private static void CheckNvidiaControlPanelSettings() {
             try {
-                CustomSettingNames customSettingNames =  CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
-                CustomSettingNames referenceSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.ReferenceSettingNames);
+                var customSettingNames    = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
+                var referenceSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.ReferenceSettingNames);
 
-                DrsSettingsMetaService metaService = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
-                DrsDecrypterService decrypterService = new DrsDecrypterService(metaService);
-                DrsScannerService scannerService = new DrsScannerService(metaService, decrypterService);
-                DrsSettingsService settingService = new DrsSettingsService(metaService, decrypterService);
+                var metaService      = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
+                var decrypterService = new DrsDecrypterService(metaService);
+                var scannerService   = new DrsScannerService(metaService, decrypterService);
+                var settingService   = new DrsSettingsService(metaService, decrypterService);
 
-                // this might be nicer as a resource or a config file?
-                Dictionary<ESetting, HashSet<uint>> forbiddenValues = new Dictionary<ESetting, HashSet<uint>>() {
+                var forbiddenValues = new Dictionary<ESetting, HashSet<uint>>() {
+                    [ESetting.FXAA_ENABLE_ID] = new HashSet<uint>() { 1 },
                     [ESetting.MAXWELL_B_SAMPLE_INTERLEAVE_ID] = new HashSet<uint>() { 1 }
                 };
 
@@ -89,14 +89,14 @@ namespace Blish_HUD.Debug {
                 string exePath = Application.ExecutablePath.Replace('\\', '/');
                 string blishProfileName = scannerService.FindProfilesUsingApplication(exePath);
 
-                List<string> errors = new List<string>();
+                var errors = new List<string>();
                 foreach (KeyValuePair<ESetting, HashSet<uint>> pair in forbiddenValues) {
                     SettingMeta settingMeta = metaService.GetSettingMeta((uint)pair.Key);
                     uint value = settingService.GetDwordValueFromProfile(blishProfileName, (uint)pair.Key);
 
                     if (pair.Value.Contains(value)) {
                         SettingValue<uint> settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
-                        string val = settingValue?.ValueName != null ? settingValue.ValueName : value.ToString();
+                        string val = settingValue?.ValueName ?? value.ToString();
 
                         errors.Add($"'{settingMeta.SettingName}' = '{val}'");
                     }
@@ -105,7 +105,6 @@ namespace Blish_HUD.Debug {
                 if (errors.Any()) {
                     Contingency.NotifyNvidiaSettings(string.Join(Environment.NewLine, errors));
                 }
-
             } catch (Exception) {
                  // we don't really care if we error here - usually means a non-nvidia system,
                  // in which case the check is useless anyway.

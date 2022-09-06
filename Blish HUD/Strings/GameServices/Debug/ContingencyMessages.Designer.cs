@@ -222,7 +222,7 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following NVIDIA settings cause known compatability issues:.
+        ///   Looks up a localized string similar to The NVIDIA settings are known to compatibility issues and should be toggled.  See the linked troubleshooting guide for more information..
         /// </summary>
         internal static string NvidiaSettings_Description {
             get {

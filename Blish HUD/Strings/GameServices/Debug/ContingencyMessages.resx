@@ -185,7 +185,7 @@ If you have an anti-virus or third party firewall utility, please ensure that Bl
 Please explicitly allow Blish HUD in your "Controlled Folder Access" settings or review the troubleshooting guide linked below.</value>
   </data>
   <data name="NvidiaSettings_Description" xml:space="preserve">
-    <value>The following NVIDIA settings cause known compatability issues:</value>
+    <value>The NVIDIA settings are known to compatibility issues and should be toggled.  See the linked troubleshooting guide for more information.</value>
   </data>
   <data name="NvidiaSettings_OpenControlPanelAction" xml:space="preserve">
     <value>Open NVIDIA Control Panel</value>
