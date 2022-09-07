@@ -289,7 +289,36 @@ WARNING: Prerelease modules or Blish HUD versions may be unstable.  By enabling 
   <data name="Setting_DynamicHUDWindows_DisplayName" xml:space="preserve">
     <value>Windows</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="AboutThirdPartySoftware" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\obj\ThirdPartySoftware.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="AboutThirdPartySoftwareHeading" xml:space="preserve">
+    <value>Software Licences</value>
+  </data>
   <data name="Setting_StayInTray_AppendDisabled" xml:space="preserve">
     <value> (Disabled because you launched Blish HUD with --startgw2, --pid, -g, or -P)</value>
+  </data>
+  <data name="About_DiscordCallToAction1" xml:space="preserve">
+    <value> 
+The majority of Blish HUD's feedback, development, and other discussions take place in our</value>
+    
+  </data>
+  <data name="About_DiscordCallToAction2" xml:space="preserve">
+    <value>Discord</value>
+    
+  </data>
+  <data name="About_DiscordCallToAction3" xml:space="preserve">
+    <value> channel.
+ </value>
+    
+  </data>
+  <data name="About_DiscordCallToAction_Question" xml:space="preserve">
+    <value> 
+Need help or just want to
+participate in the conversation?</value>
+  </data>
+  <data name="About_DiscordCallToAction_Button" xml:space="preserve">
+    <value>Join our Discord</value>
   </data>
 </root>
