@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -11,6 +11,7 @@ namespace Blish_HUD.ArcDps {
 
         private static readonly Logger Logger = Logger.GetLogger<SocketListener>();
 
+        private const int RETRY_RECEIVE_COUNT = 10;
         private readonly int _bufferSize;
 
         private CancellationTokenSource _cancellationTokenSource;
@@ -104,9 +105,7 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
-        private void StartReceive(Socket socket, SocketState state = null, int? retries = null) {
-            retries ??= _retryReceiveCount;
-
+        private void StartReceive(Socket socket, SocketState state = null, int retries = RETRY_RECEIVE_COUNT) {
             try {
                 // Create the state object.
                 state ??= new SocketState() {
