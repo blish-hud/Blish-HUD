@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -7,18 +7,19 @@ using System.Threading;
 namespace Blish_HUD.ArcDps {
 
     public sealed class SocketListener {
-        private const int MESSAGE_HEADER_SIZE = 8;
-
         private static readonly Logger Logger = Logger.GetLogger<SocketListener>();
 
+        private const int MESSAGE_HEADER_SIZE = 8;
         private const int RETRY_RECEIVE_COUNT = 10;
+
         private readonly int _bufferSize;
 
         private CancellationTokenSource _cancellationTokenSource;
 
-        private static readonly int _retryReceiveCount = 10;
-
-        private readonly SocketError[] _retryReceiveOnSocketErrors = new SocketError[] {
+        /// <summary>
+        /// Defines the socket errors on which a retry can be attempted. Max retry count is defined by <see cref="RETRY_RECEIVE_COUNT"/>.
+        /// </summary>
+        private static readonly SocketError[] _retryReceiveOnSocketErrors = new SocketError[] {
             SocketError.ConnectionReset
         };
 
@@ -35,6 +36,10 @@ namespace Blish_HUD.ArcDps {
 
         public event EventHandler<SocketError> OnSocketError;
 
+        /// <summary>
+        /// Starts the <see cref="SocketListener"/> and attempts to connect to the specified <paramref name="localEndPoint"/>.
+        /// </summary>
+        /// <param name="localEndPoint">The <see cref="EndPoint"/> to which the <see cref="SocketListener"/> should connect to.</param>
         public void Start(IPEndPoint localEndPoint) {
             if (_cancellationTokenSource is { IsCancellationRequested: false }) {
                 Logger.Warn("Start() was called more than once. Call Stop() before calling Start() again.");
@@ -43,19 +48,26 @@ namespace Blish_HUD.ArcDps {
 
             _cancellationTokenSource = new CancellationTokenSource();
 
-            var listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) {
+            Socket listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) {
                 ReceiveBufferSize = _bufferSize
             };
 
-            _cancellationTokenSource.Token.Register(() => ReleaseSocket(listenSocket));
+            _ = _cancellationTokenSource.Token.Register(() => this.ReleaseSocket(listenSocket));
 
             this.StartConnect(listenSocket, localEndPoint);
         }
 
+        /// <summary>
+        /// Stops the <see cref="SocketListener"/>.
+        /// </summary>
         public void Stop() {
             _cancellationTokenSource?.Cancel();
         }
 
+        /// <summary>
+        /// Stops the socket from receiving any further data and closes the connection.
+        /// </summary>
+        /// <param name="socket">The <see cref="Socket"/> which should close.</param>
         private void ReleaseSocket(Socket socket) {
             try {
                 if (socket.Connected) {
@@ -73,6 +85,11 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
+        /// <summary>
+        /// Starts connecting the socket (<paramref name="client"/>) to the endpoint specified by <paramref name="endPoint"/>
+        /// </summary>
+        /// <param name="client">The <see cref="Socket"/> which should connect to the spcified endpoint.</param>
+        /// <param name="endPoint">The <see cref="EndPoint"/> to which the socket (<paramref name="client"/>) should connect to.</param>
         private void StartConnect(Socket client, EndPoint endPoint) {
             try {
                 _ = client.BeginConnect(endPoint, this.ConnectCallback, client);
@@ -84,6 +101,10 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
+        /// <summary>
+        /// Handles the result of a connection attempt started by <see cref="StartConnect(Socket, EndPoint)"/>.
+        /// </summary>
+        /// <param name="ar">The AsyncResult containing the connected <see cref="Socket"/>.</param>
         private void ConnectCallback(IAsyncResult ar) {
             try {
                 // Retrieve the socket from the state object.
@@ -105,6 +126,12 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
+        /// <summary>
+        /// Starts the receiving of the <paramref name="socket"/>.
+        /// </summary>
+        /// <param name="socket">The socket which should start receiving.</param>
+        /// <param name="state">The prior socket state if not all data has been received or <c>null</c> if state can be (re)created for a new receive session.</param>
+        /// <param name="retries">The amount of retries left after a <see cref="SocketError"/> specified by <see cref="_retryReceiveOnSocketErrors"/>.</param>
         private void StartReceive(Socket socket, SocketState state = null, int retries = RETRY_RECEIVE_COUNT) {
             try {
                 // Create the state object.
@@ -140,6 +167,10 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
+        /// <summary>
+        /// Handles the result of a receive attempt started by <see cref="StartReceive(Socket, SocketState, int)"/>.
+        /// </summary>
+        /// <param name="ar">The AsyncResult containing the <see cref="SocketState"/>.</param>
         private void ReceiveCallback(IAsyncResult ar) {
             try {
                 // Retrieve the state object and the client socket 
@@ -192,6 +223,11 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
+        /// <summary>
+        /// Processes the received bytes.
+        /// </summary>
+        /// <param name="state">The <see cref="SocketState"/> which contains all read data.</param>
+        /// <param name="bytesRead">The amount of bytes read by the <see cref="SocketState.Socket"/>.</param>
         private void ProcessReceive(SocketState state, int bytesRead) {
             var token = state.Token;
 
@@ -215,6 +251,11 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
+        /// <summary>
+        /// Processes the received bytes and processes the ArcDPS message further if it could be read completely.
+        /// </summary>
+        /// <param name="state">The <see cref="SocketState"/> which contains all read data.</param>
+        /// <param name="bytesRead">The amount of bytes read by the <see cref="SocketState.Socket"/>.</param>
         private void ProcessReceivedData(SocketState state, int bytesRead) {
             int dataStartOffset = state.Token.DataStartOffset;
             int totalReceivedDataSize = state.Token.NextReceiveOffset - state.Token.DataStartOffset + bytesRead;
@@ -264,6 +305,11 @@ namespace Blish_HUD.ArcDps {
             }
         }
 
+        /// <summary>
+        /// Processes the read message from ArcDPS and forwards it via <see cref="ReceivedMessage"/>.
+        /// </summary>
+        /// <param name="messageData">The bytes of the ArcDPS message.</param>
+        /// <param name="token">The <see cref="AsyncUserToken"/> containing additional message data.</param>
         private void ProcessMessage(byte[] messageData, AsyncUserToken token) {
             try {
                 this.ReceivedMessage?.Invoke(this, new MessageData { Message = messageData, Token = token });

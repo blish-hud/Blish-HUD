@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using Blish_HUD.ArcDps;
 using Blish_HUD.ArcDps.Common;
+using Blish_HUD.ArcDps.Models;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
@@ -14,9 +15,10 @@ namespace Blish_HUD {
         private static readonly Logger Logger = Logger.GetLogger<ArcDpsService>();
 
         private static readonly object WatchLock = new object();
+
         #if DEBUG
         public static long Counter;
-#endif
+        #endif
 
         /// <summary>
         ///     Triggered upon error of the underlaying socket listener.
@@ -34,7 +36,7 @@ namespace Blish_HUD {
         public bool RenderPresent { get; private set; }
 
         /// <summary>
-        ///     Indicates if the socket listener for the arcdps service is running and arcdps send an update in the last second.
+        ///     Indicates if the socket listener for the arcdps service is running and arcdps sent an update in the last second.
         /// </summary>
         public bool Running => this._server?.Running ?? false && this.RenderPresent;
 
@@ -54,6 +56,10 @@ namespace Blish_HUD {
                 }
             }
         }
+
+        /// <summary>
+        /// The timespan after which ArcDPS is treated as not responding.
+        /// </summary>
         private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
 
         private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions =
@@ -61,6 +67,9 @@ namespace Blish_HUD {
 
         private bool _hudIsActive;
 
+        /// <summary>
+        /// The underlaying <see cref="SocketListener"/> connected to the ArcDPS BlishHUD Bridge.
+        /// </summary>
         private SocketListener _server;
 
         private Stopwatch _stopwatch;
@@ -170,24 +179,25 @@ namespace Blish_HUD {
                     this.HudIsActive = data.Message[1] != 0;
                     break;
                 case (byte) MessageType.CombatArea:
-                    ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
+                    this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
                     break;
                 case (byte) MessageType.CombatLocal:
-                    ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
+                    this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
                     break;
             }
         }
 
         private void SocketErrorHandler(object sender, SocketError socketError) {
             // Socketlistener stops by itself.
-            Logger.Error("ArcDpsService has socket error: {0}", socketError.ToString());
+            Logger.Error("Encountered socket error: {0}", socketError.ToString());
 
             this.Error?.Invoke(this, socketError);
         }
 
         private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType) {
-            var message = CombatParser.ProcessCombat(data);
-            OnRawCombatEvent(new RawCombatEventArgs(message, eventType));
+            CombatEvent message = CombatParser.ProcessCombat(data);
+
+            this.OnRawCombatEvent(new RawCombatEventArgs(message, eventType));
         }
 
         private void OnRawCombatEvent(RawCombatEventArgs e) {
