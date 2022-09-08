@@ -134,23 +134,6 @@ namespace Blish_HUD {
             }
         }
 
-        /// <summary>
-        /// Stops the socket listener for the arc dps bridge.
-        /// </summary>
-        private void Stop() {
-            if (this.Loaded) {
-                this._server.Stop();
-            }
-        }
-
-        /// <summary>
-        /// Restarts the socket listener for the arc dps bridge.
-        /// </summary>
-        public void Restart() {
-            this.Stop();
-            this.Start(Gw2Mumble.Info.ProcessId);
-        }
-
         private static int GetPort(uint processId) {
             ushort pid;
 
