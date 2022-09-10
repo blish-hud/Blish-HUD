@@ -10,6 +10,10 @@ namespace Blish_HUD.Input {
     /// Allows for actions to be ran as the result of a provided key combination.
     /// </summary>
     public class KeyBinding {
+        /// <summary>
+        /// Fires when the keys of the <see cref="KeyBinding"/> are changed.
+        /// </summary>
+        public event EventHandler<EventArgs> KeysChanged; 
 
         /// <summary>
         /// Fires when the <see cref="KeyBinding"/> is triggered.
@@ -20,18 +24,38 @@ namespace Blish_HUD.Input {
             Activated?.Invoke(this, e);
         }
 
+        private Keys _primaryKey;
         /// <summary>
         /// The primary key in the binding.
         /// </summary>
         [JsonProperty]
-        public Keys PrimaryKey { get; set; }
+        public Keys PrimaryKey { 
+            get => _primaryKey;
+            set {
+                if (_primaryKey == value) {
+                    return;
+                }
+                _primaryKey = value;
+                KeysChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
+        private ModifierKeys _modifierKeys;
         /// <summary>
         /// Any combination of <see cref="ModifierKeys"/> required to be pressed
         /// in addition to the <see cref="PrimaryKey"/> for the <see cref="KeyBinding"/> to fire.
         /// </summary>
         [JsonProperty]
-        public ModifierKeys ModifierKeys { get; set; }
+        public ModifierKeys ModifierKeys {
+            get => _modifierKeys;
+            set {
+                if (_modifierKeys == value) {
+                    return;
+                }
+                _modifierKeys = value;
+                KeysChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         private bool _enabled;
 
@@ -79,8 +103,8 @@ namespace Blish_HUD.Input {
         public KeyBinding(Keys primaryKey) : this(ModifierKeys.None, primaryKey) { /* NOOP */ }
 
         public KeyBinding(ModifierKeys modifierKeys, Keys primaryKey) {
-            this.ModifierKeys = modifierKeys;
-            this.PrimaryKey   = primaryKey;
+            _modifierKeys = modifierKeys;
+            _primaryKey   = primaryKey;
         }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
