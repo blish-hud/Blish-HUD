@@ -13,7 +13,7 @@ namespace Blish_HUD.Input {
         /// <summary>
         /// Fires when the keys of the <see cref="KeyBinding"/> are changed.
         /// </summary>
-        public event EventHandler<EventArgs> KeysChanged; 
+        public event EventHandler<EventArgs> BindingChanged; 
 
         /// <summary>
         /// Fires when the <see cref="KeyBinding"/> is triggered.
@@ -36,7 +36,7 @@ namespace Blish_HUD.Input {
                     return;
                 }
                 _primaryKey = value;
-                KeysChanged?.Invoke(this, EventArgs.Empty);
+                BindingChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -53,7 +53,7 @@ namespace Blish_HUD.Input {
                     return;
                 }
                 _modifierKeys = value;
-                KeysChanged?.Invoke(this, EventArgs.Empty);
+                BindingChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
