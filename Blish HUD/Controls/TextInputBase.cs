@@ -52,7 +52,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// Fires when the <see cref="Text"/> is changed.
         /// </summary>
-        public event EventHandler<EventArgs> TextChanged;
+        public event EventHandler<ValueChangedEventArgs<string>> TextChanged;
 
         /// <summary>
         /// Fires when the <see cref="CursorIndex"/> is changed.
