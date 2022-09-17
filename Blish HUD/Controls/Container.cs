@@ -73,12 +73,20 @@ namespace Blish_HUD.Controls {
         public Point ContentBounds => _contentBounds;
         
         private int _verticalScrollOffset;
+
+        /// <summary>
+        /// Indicates the vertical offset used when rendering the child <see cref="Control"/>s within the <see cref="ContentRegion"/>.
+        /// </summary>
         public int VerticalScrollOffset {
             get => _verticalScrollOffset;
             set => SetProperty(ref _verticalScrollOffset, value);
         }
 
         private int _horizontalScrollOffset;
+
+        /// <summary>
+        /// Indicates the horizontal offset used when rendering the child <see cref="Control"/>s within the <see cref="ContentRegion"/>.
+        /// </summary>
         public int HorizontalScrollOffset {
             get => _horizontalScrollOffset;
             set => SetProperty(ref _horizontalScrollOffset, value);
@@ -88,7 +96,7 @@ namespace Blish_HUD.Controls {
 
         /// <summary>
         /// Determines how the width of this
-        /// container should be handled.
+        /// <see cref="Container"/> should be handled.
         /// </summary>
         public virtual SizingMode WidthSizingMode {
             get => _widthSizingMode;
@@ -99,7 +107,7 @@ namespace Blish_HUD.Controls {
 
         /// <summary>
         /// Determines how the height of this
-        /// container should be handled.
+        /// <see cref="Container"/> should be handled.
         /// </summary>
         public virtual SizingMode HeightSizingMode {
             get => _heightSizingMode;
@@ -120,6 +128,9 @@ namespace Blish_HUD.Controls {
 
         protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
 
+        /// <summary>
+        /// Returns all descendant <see cref="Control"/>s of this <see cref="Container"/>.
+        /// </summary>
         public IEnumerable<Control> GetDescendants() {
             // Breadth-first unrolling without the inefficiency of recursion.
             var remainingChildren = new Queue<Control>(this.Children.ToArray());
@@ -136,6 +147,9 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Returns all child <see cref="Control"/>s of this <see cref="Container"/> of type <typeparamref name="T"/>.
+        /// </summary>
         public IEnumerable<T> GetChildrenOfType<T>() {
             foreach (var child in this.Children.ToArray()) {
                 if (child is T tChild) {
@@ -144,6 +158,10 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Attempts to add the provided <see cref="Control"/> as a child of the <see cref="Container"/>.
+        /// Adding a control this way does not update the <see cref="Control"/>'s <see cref="Control.Parent"/> making it unsuitable for most situations.
+        /// </summary>
         public bool AddChild(Control child) {
             if (_children.Contains(child)) return true;
 
@@ -162,6 +180,10 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
+        /// <summary>
+        /// Attempts to remove the provided <see cref="Control"/> from the children of this <see cref="Container"/>.
+        /// Removing a control this way does not update the <see cref="Control"/>'s <see cref="Control.Parent"/> making it unsuitable for most situations.
+        /// </summary>
         public bool RemoveChild(Control child) {
             if (!_children.Contains(child)) return true;
 
@@ -181,6 +203,9 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
+        /// <summary>
+        /// Safely clears all child <see cref="Control"/> from this <see cref="Container"/>.
+        /// </summary>
         public void ClearChildren() {
             while (_children.Count > 0) {
                 _children[0].Parent = null;
