@@ -29,9 +29,9 @@ namespace Blish_HUD.Controls {
         public event EventHandler<ValueEventArgs<float>> ValueChanged;
 
         /// <summary>
-        /// Fires when the <see cref="TrackBar"/> stops being dragged.
+        /// Fires when the <see cref="TrackBar"/> starts or stops being dragged.
         /// </summary>
-        public event EventHandler<ValueEventArgs<float>> DraggingStopped;
+        public event EventHandler<ValueEventArgs<bool>> IsDraggingChanged;
 
         protected float _maxValue = 100f;
 
@@ -84,12 +84,18 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _smallStep, value);
         }
 
+        private bool _dragging = false;
         /// <summary>
         /// <see langword="True"/> if the <see cref="TrackBar"/> is being dragged; otherwise <see langword="false"/>.
         /// </summary>
-        public bool Dragging { get; private set; }
+        public bool Dragging {
+            get => _dragging;
+            private set {
+                if (!SetProperty(ref _dragging, value)) return;
+                this.IsDraggingChanged?.Invoke(this, new ValueEventArgs<bool>(value));
+            }
+        }
 
-        private float _dragStartValue;
         private int   _dragOffset = 0;
 
         public TrackBar() {
@@ -99,19 +105,14 @@ namespace Blish_HUD.Controls {
         }
 
         private void InputOnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            if (this.Dragging && Math.Abs(_dragStartValue - this.Value) > 0.01f) {
-                this.DraggingStopped?.Invoke(this, new ValueEventArgs<float>(this.Value));
-            }
             this.Dragging = false;
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
-
             if (_layoutNubBounds.Contains(this.RelativeMousePosition) && !this.Dragging) {
-                _dragStartValue = this.Value;
-                this.Dragging   = true;
                 _dragOffset     = this.RelativeMousePosition.X - _layoutNubBounds.X - BUMPER_WIDTH / 2;
+                this.Dragging   = true;
             }
         }
 
