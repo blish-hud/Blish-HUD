@@ -57,9 +57,12 @@ namespace Blish_HUD.Modules {
         public ModuleDependencyCheckDetails GetDependencyDetails() {
             // Check against Blish HUD version
             if (this.IsBlishHud) {
+                bool satisfied = Program.OverlayVersion.PreRelease == null
+                                     ? this.VersionRange.IsSatisfied(Program.OverlayVersion.BaseVersion())
+                                     : this.VersionRange.IsSatisfied(Program.OverlayVersion);
+
                 return new ModuleDependencyCheckDetails(this,
-                                                        this.VersionRange.IsSatisfied(Program.OverlayVersion.BaseVersion())
-                                                        || Program.OverlayVersion.BaseVersion() == new Version(0, 0, 0) // Ensure local builds ignore prerequisite
+                                                        satisfied || Program.OverlayVersion.BaseVersion() == new Version(0, 0, 0) // Ensure local builds ignore prerequisite
                                                             ? ModuleDependencyCheckResult.Available
                                                             : ModuleDependencyCheckResult.AvailableWrongVersion);
             }
