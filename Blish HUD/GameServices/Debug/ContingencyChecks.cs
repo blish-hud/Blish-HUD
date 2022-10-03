@@ -124,7 +124,7 @@ namespace Blish_HUD.Debug {
         /// Blish HUD can't run while the game is configured this way.
         /// </summary>
         internal static void CheckForFullscreenDx9Conflict() {
-            if (GameService.GameIntegration.Gw2Instance.GraphicsApi == GameIntegration.Gw2GraphicsApi.DX9 
+            if (GameService.GameIntegration.Gw2Instance.GraphicsApi == GameIntegration.Gw2Instance.Gw2GraphicsApi.DX9 
              && GameService.GameIntegration.GfxSettings.ScreenMode  == GameIntegration.GfxSettings.ScreenModeSetting.Fullscreen) {
                 Contingency.NotifyConflictingFullscreenSettings();
             }
