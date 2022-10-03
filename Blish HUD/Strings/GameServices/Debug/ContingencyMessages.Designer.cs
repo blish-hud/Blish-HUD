@@ -99,6 +99,29 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Blish HUD has detected that you are running the game with DirectX 9 enabled while in fullscreen.  Blish HUD is unable to function in this configuration.  To resolve, either:
+        ///
+        ///1) Uncheck &quot;Enable DX9 Rendering (Deprecated)&quot; in your in-game graphics options.
+        ///2) Set &quot;Resolution&quot; to &quot;Windowed Fullscreen&quot; or &quot;Window&quot;.
+        ///
+        ///You can reference the guide linked below for further assistance..
+        /// </summary>
+        internal static string ConflictingFullscreenSettings_Description {
+            get {
+                return ResourceManager.GetString("ConflictingFullscreenSettings_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conflicting Graphics Settings!.
+        /// </summary>
+        internal static string ConflictingFullscreenSettings_Title {
+            get {
+                return ResourceManager.GetString("ConflictingFullscreenSettings_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update to v{0} of Blish HUD failed.  Relaunch Blish HUD to try again.  The error was:
         ///
         ///{1}.
