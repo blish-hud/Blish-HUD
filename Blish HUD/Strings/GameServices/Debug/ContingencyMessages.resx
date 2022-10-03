@@ -193,4 +193,15 @@ Please explicitly allow Blish HUD in your "Controlled Folder Access" settings or
   <data name="NvidiaSettings_Title" xml:space="preserve">
     <value>Incompatible NVIDIA Settings</value>
   </data>
+  <data name="ConflictingFullscreenSettings_Title" xml:space="preserve">
+    <value>Conflicting Graphics Settings!</value>
+  </data>
+  <data name="ConflictingFullscreenSettings_Description" xml:space="preserve">
+    <value>Blish HUD has detected that you are running the game with DirectX 9 enabled while in fullscreen.  Blish HUD is unable to function in this configuration.  To resolve, either:
+
+1) Uncheck "Enable DX9 Rendering (Deprecated)" in your in-game graphics options.
+2) Set "Resolution" to "Windowed Fullscreen" or "Window".
+
+You can reference the guide linked below for further assistance.</value>
+  </data>
 </root>
