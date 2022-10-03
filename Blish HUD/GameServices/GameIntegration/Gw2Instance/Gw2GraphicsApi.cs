@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameIntegration {
+﻿namespace Blish_HUD.GameIntegration.Gw2Instance {
 
     public enum Gw2GraphicsApi {
         /// <summary>
