@@ -321,4 +321,7 @@ participate in the conversation?</value>
   <data name="About_DiscordCallToAction_Button" xml:space="preserve">
     <value>Join our Discord</value>
   </data>
+  <data name="SelfUpdate_NewPrereleaseAvailable" xml:space="preserve">
+    <value>New Prerelease Available</value>
+  </data>
 </root>

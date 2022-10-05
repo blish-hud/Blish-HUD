@@ -57,7 +57,9 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
                 AutoSizeHeight      = true,
                 Height              = 82,
                 Top                 = blishHudHero.Bottom,
-                Text                = Strings.GameServices.OverlayService.SelfUpdate_NewUpdateAvailable,
+                Text                = newReleaseManifest.IsPrerelease 
+                                          ? Strings.GameServices.OverlayService.SelfUpdate_NewPrereleaseAvailable
+                                          : Strings.GameServices.OverlayService.SelfUpdate_NewUpdateAvailable,
                 Font                = GameService.Content.DefaultFont32,
                 StrokeText          = true,
                 VerticalAlignment   = VerticalAlignment.Middle,
