@@ -74,6 +74,11 @@ namespace Blish_HUD.Input {
         [JsonIgnore]
         public bool IsTriggering { get; private set; }
 
+        /// <summary>
+        /// If <c>true</c>, then the <see cref="KeyBinding"/> will not trigger when the user is in an in-game or Blish HUD text field.
+        /// </summary>
+        public bool IgnoreWhenInTextField { get; set; } = true;
+
         public KeyBinding() { /* NOOP */ }
 
         public KeyBinding(Keys primaryKey) : this(ModifierKeys.None, primaryKey) { /* NOOP */ }
@@ -84,7 +89,8 @@ namespace Blish_HUD.Input {
         }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
-            if (this.PrimaryKey == Keys.None || GameService.Input.Keyboard.TextFieldIsActive()) return;
+            if (this.PrimaryKey == Keys.None 
+             || (this.IgnoreWhenInTextField && GameService.Input.Keyboard.TextFieldIsActive())) return;
 
             CheckTrigger(GameService.Input.Keyboard.ActiveModifiers, GameService.Input.Keyboard.KeysDown);
         }
@@ -106,8 +112,6 @@ namespace Blish_HUD.Input {
         }
 
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
-            if (GameService.Gw2Mumble.UI.IsTextInputFocused) return;
-
             if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys) {
                 if (this.BlockSequenceFromGw2) {
                     GameService.Input.Keyboard.StageKeyBinding(this);
