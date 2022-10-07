@@ -23,7 +23,15 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        /// <summary>
+        /// Fires when the value of the <see cref="TrackBar"/> is changed.
+        /// </summary>
         public event EventHandler<ValueEventArgs<float>> ValueChanged;
+
+        /// <summary>
+        /// Fires when the <see cref="TrackBar"/> starts or stops being dragged.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<bool>> IsDraggingChanged;
 
         protected float _maxValue = 100f;
 
@@ -68,16 +76,27 @@ namespace Blish_HUD.Controls {
         protected bool _smallStep = false;
 
         /// <summary>
-        /// If <c>true</c>, values can change in increments less than 1.
-        /// If <c>false</c>, values will snap to full integers.
+        /// If <see langword="true"/>, values can change in increments less than 1.
+        /// If <see langword="false"/>, values will snap to full integers.
         /// </summary>
         public bool SmallStep {
             get => _smallStep;
             set => SetProperty(ref _smallStep, value);
         }
 
-        private bool _dragging   = false;
-        private int  _dragOffset = 0;
+        private bool _dragging = false;
+        /// <summary>
+        /// <see langword="True"/> if the <see cref="TrackBar"/> is being dragged; otherwise <see langword="false"/>.
+        /// </summary>
+        public bool Dragging {
+            get => _dragging;
+            private set {
+                if (!SetProperty(ref _dragging, value)) return;
+                this.IsDraggingChanged?.Invoke(this, new ValueEventArgs<bool>(value));
+            }
+        }
+
+        private int   _dragOffset = 0;
 
         public TrackBar() {
             this.Size = new Point(256, 16);
@@ -86,20 +105,19 @@ namespace Blish_HUD.Controls {
         }
 
         private void InputOnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            _dragging = false;
+            this.Dragging = false;
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
-
-            if (_layoutNubBounds.Contains(this.RelativeMousePosition) && !_dragging) {
-                _dragging   = true;
-                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X - BUMPER_WIDTH / 2;
+            if (_layoutNubBounds.Contains(this.RelativeMousePosition) && !this.Dragging) {
+                _dragOffset     = this.RelativeMousePosition.X - _layoutNubBounds.X - BUMPER_WIDTH / 2;
+                this.Dragging   = true;
             }
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            if (_dragging) {
+            if (this.Dragging) {
                 float rawValue = (this.RelativeMousePosition.X - BUMPER_WIDTH - _dragOffset) / (float)(this.Width - BUMPER_WIDTH - _textureNub.Width) * (this.MaxValue - this.MinValue) + this.MinValue;
 
                 this.Value = GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
