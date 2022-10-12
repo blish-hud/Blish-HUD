@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Blish_HUD.GameServices.Gw2WebApi.Gw2Auth.Controls;
 
 namespace Blish_HUD.Gw2WebApi.UI.Views {
     public class RegisterApiKeyView : View {
@@ -56,7 +57,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private (TokenInfo TokenInfo, Account AccountInfo) _loadedDetails;
 
         private TextBox        _apiKeyTextBox;
-        private StandardButton _gw2AuthButton;
+        private Gw2AuthButton  _gw2AuthButton;
         private Image          _tokenStatusImg;
         private LoadingSpinner _loadingSpinner;
         private Label          _tokenStatusLbl;
@@ -92,12 +93,10 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent         = buildPanel
             };
 
-            var orSebLblSize = GameService.Content.DefaultFont32.MeasureString("- or -");
-
             _apiKeyTextBox = new TextBox() {
                 Location = new Point(registerLbl.Left, registerLbl.Bottom + 10),
                 Font     = GameService.Content.DefaultFont16,
-                Width    = (buildPanel.Width - 55 - (int)orSebLblSize.Width / 2) / 2,
+                Width    = buildPanel.Width - 93,
                 Height   = 43,
                 Parent   = buildPanel
             };
@@ -126,26 +125,13 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent   = buildPanel
             };
 
-            var orSepLbl = new Label() {
-                Text = "- or -",
-                Font           = GameService.Content.DefaultFont32,
-                StrokeText     = true,
-                AutoSizeHeight = true,
-                AutoSizeWidth  = true,
-                Left           = _apiKeyTextBox.Right + 5,
-                Top            = _apiKeyTextBox.Top,
-                Parent         = buildPanel
-            };
-
-            _gw2AuthButton = new StandardButton() {
-                Text   = "Login with Gw2Auth",
-                Icon   = GameService.Content.GetTexture("gw2auth_64x64"),
-                ResizeIcon = true,
-                Width  = _apiKeyTextBox.Width,
-                Height = _apiKeyTextBox.Height,
-                Left   = orSepLbl.Right + 5,
-                Top    = _apiKeyTextBox.Top,
-                Parent = buildPanel
+            _gw2AuthButton = new Gw2AuthButton() {
+                BasicTooltipText = "Login with Gw2Auth",
+                Width            = _apiKeyTextBox.Height,
+                Height           = _apiKeyTextBox.Height,
+                Left             = _apiKeyTextBox.Right + 5,
+                Top              = _apiKeyTextBox.Top,
+                Parent           = buildPanel
             };
 
             _gw2AuthButton.Click += LoginWithGw2AuthBttnClicked;
@@ -430,6 +416,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         }
 
         private void LoginWithGw2AuthBttnClicked(object o, MouseEventArgs e) {
+            GameService.Content.PlaySoundEffectByName("button-click");
             GameService.Gw2WebApi.Gw2Auth.Authorize();
         }
 
