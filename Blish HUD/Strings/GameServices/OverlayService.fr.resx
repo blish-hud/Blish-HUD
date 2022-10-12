@@ -257,4 +257,7 @@ Guild Wars 2 et Blish HUD.</value>
   <data name="Setting_Volume_DisplayName" xml:space="preserve">
     <value>Volume</value>
   </data>
+  <data name="SelfUpdate_NewPrereleaseAvailable" xml:space="preserve">
+    <value>Nouvelle version bêta disponible</value>
+  </data>
 </root>

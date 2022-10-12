@@ -240,7 +240,7 @@ Download some modules and place them in the modules folder.</value>
     <value>Delete Module</value>
   </data>
   <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
-    <value>Module Version Is Too Old</value>
+    <value>Module Version Is Incompatible</value>
   </data>
   <data name="PkgManagement_IsPreview" xml:space="preserve">
     <value>Preview Release</value>

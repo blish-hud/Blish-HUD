@@ -259,4 +259,7 @@ Für die beste Erfahrung auf die selbe Taste wie im Spiel setzen.</value>
   <data name="Setting_InteractKey_DisplayName" xml:space="preserve">
     <value>Interagieren</value>
   </data>
+  <data name="SelfUpdate_NewPrereleaseAvailable" xml:space="preserve">
+    <value>Neue Beta-Version verfügbar</value>
+  </data>
 </root>

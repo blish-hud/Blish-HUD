@@ -186,10 +186,12 @@ namespace Glide
 	        /// Updates the tweener and all objects it contains.
 	        /// </summary>
 	        /// <param name="secondsElapsed">Seconds elapsed since last update.</param>
-	        public void Update(float secondsElapsed)
-	        {
-	        	for (int i = 0; i < allTweens.Count; ++i)
-	        		allTweens[i].Update(secondsElapsed);
+	        public void Update(float secondsElapsed) {
+                var tweens = allTweens.ToArray();
+
+	        	for (int i = 0; i < tweens.Length; ++i) {
+                    tweens[i]?.Update(secondsElapsed);
+                }
 	
 	            AddAndRemove();
 	        }

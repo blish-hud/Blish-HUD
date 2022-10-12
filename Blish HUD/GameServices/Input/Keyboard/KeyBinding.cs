@@ -10,6 +10,10 @@ namespace Blish_HUD.Input {
     /// Allows for actions to be ran as the result of a provided key combination.
     /// </summary>
     public class KeyBinding {
+        /// <summary>
+        /// Fires when the keys of the <see cref="KeyBinding"/> are changed.
+        /// </summary>
+        public event EventHandler<EventArgs> BindingChanged; 
 
         /// <summary>
         /// Fires when the <see cref="KeyBinding"/> is triggered.
@@ -20,18 +24,38 @@ namespace Blish_HUD.Input {
             Activated?.Invoke(this, e);
         }
 
+        private Keys _primaryKey;
         /// <summary>
         /// The primary key in the binding.
         /// </summary>
         [JsonProperty]
-        public Keys PrimaryKey { get; set; }
+        public Keys PrimaryKey { 
+            get => _primaryKey;
+            set {
+                if (_primaryKey == value) {
+                    return;
+                }
+                _primaryKey = value;
+                BindingChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
+        private ModifierKeys _modifierKeys;
         /// <summary>
         /// Any combination of <see cref="ModifierKeys"/> required to be pressed
         /// in addition to the <see cref="PrimaryKey"/> for the <see cref="KeyBinding"/> to fire.
         /// </summary>
         [JsonProperty]
-        public ModifierKeys ModifierKeys { get; set; }
+        public ModifierKeys ModifierKeys {
+            get => _modifierKeys;
+            set {
+                if (_modifierKeys == value) {
+                    return;
+                }
+                _modifierKeys = value;
+                BindingChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         private bool _enabled;
 
@@ -74,17 +98,23 @@ namespace Blish_HUD.Input {
         [JsonIgnore]
         public bool IsTriggering { get; private set; }
 
+        /// <summary>
+        /// If <c>true</c>, then the <see cref="KeyBinding"/> will not trigger when the user is in an in-game or Blish HUD text field.
+        /// </summary>
+        public bool IgnoreWhenInTextField { get; set; } = true;
+
         public KeyBinding() { /* NOOP */ }
 
         public KeyBinding(Keys primaryKey) : this(ModifierKeys.None, primaryKey) { /* NOOP */ }
 
         public KeyBinding(ModifierKeys modifierKeys, Keys primaryKey) {
-            this.ModifierKeys = modifierKeys;
-            this.PrimaryKey   = primaryKey;
+            _modifierKeys = modifierKeys;
+            _primaryKey   = primaryKey;
         }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
-            if (this.PrimaryKey == Keys.None || GameService.Input.Keyboard.TextFieldIsActive()) return;
+            if (this.PrimaryKey == Keys.None 
+             || (this.IgnoreWhenInTextField && GameService.Input.Keyboard.TextFieldIsActive())) return;
 
             CheckTrigger(GameService.Input.Keyboard.ActiveModifiers, GameService.Input.Keyboard.KeysDown);
         }
@@ -106,8 +136,6 @@ namespace Blish_HUD.Input {
         }
 
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
-            if (GameService.Gw2Mumble.UI.IsTextInputFocused) return;
-
             if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys) {
                 if (this.BlockSequenceFromGw2) {
                     GameService.Input.Keyboard.StageKeyBinding(this);

@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="Blish HUD" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="../thirdparty/nvidiaProfileInspector/nspector/Common/**/*.cs" Link="Common/%(RecursiveDir)%(Filename)%(Extension)" />
+        <Compile Remove="../thirdparty/nvidiaProfileInspector/nspector/Common/Helper/*.cs" />
+        <Compile Include="../thirdparty/nvidiaProfileInspector/nspector/Common/Helper/TempFile.cs" Link="Common/Helper/%(RecursiveDir)%(Filename)%(Extension)" />
+        <Compile Include="../thirdparty/nvidiaProfileInspector/nspector/Common/Helper/XMLHelper.cs" Link="Common/Helper/%(RecursiveDir)%(Filename)%(Extension)" />
+        <Compile Include="../thirdparty/nvidiaProfileInspector/nspector/Common/Helper/AdminHelper.cs" Link="Common/Helper/%(RecursiveDir)%(Filename)%(Extension)" />
+
+        <Compile Include="../thirdparty/nvidiaProfileInspector/nspector/Native/**/*.cs" Link="Native/%(RecursiveDir)%(Filename)%(Extension)" />
+        <Compile Remove="../thirdparty/nvidiaProfileInspector/nspector/Native/WINAPI/ShellLink.cs" />
+
+        <None Include="../thirdparty/nvidiaProfileInspector/nspector/CustomSettingNames.xml" Link="References/%(Filename)%(Extension)"/>
+        <None Include="../thirdparty/nvidiaProfileInspector/nspector/Reference.xml" Link="References/%(Filename)%(Extension)"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Properties/Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Properties/Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<CustomToolNamespace>nspector.Properties</CustomToolNamespace>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
+    </ItemGroup>
+</Project>
