@@ -19,20 +19,18 @@ namespace Blish_HUD.GameServices.Gw2WebApi.Gw2Auth.Controls {
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
-            this.Top   -= 3;
-            this.Left   -= 3;
-            this.Width  += 3;
-            this.Height += 3;
+            this.Top   -= 2;
+            this.Left   -= 2;
+            this.Width  += 4;
+            this.Height += 4;
             base.OnMouseEntered(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            this.Top                              += 3;
-            this.Left                             += 3;
-            this.Width                            -= 3;
-            this.Height                           -= 3;
-            this.SpriteBatchParameters.Effect     =  null;
-            this.SpriteBatchParameters.BlendState =  null;
+            this.Top                              += 2;
+            this.Left                             += 2;
+            this.Width                            -= 4;
+            this.Height                           -= 4;
             base.OnMouseLeft(e);
         }
 

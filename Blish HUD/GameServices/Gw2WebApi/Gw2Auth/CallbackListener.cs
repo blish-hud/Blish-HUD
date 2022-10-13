@@ -46,7 +46,6 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
             var listener = (HttpListener)result.AsyncState;
             // Call EndGetContext to complete the asynchronous operation.
             callback(listener.EndGetContext(result));
-            this.Stop();
         }
 
         /// <summary>

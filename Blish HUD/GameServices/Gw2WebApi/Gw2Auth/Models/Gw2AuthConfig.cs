@@ -9,7 +9,9 @@
 
         public string DefaultScope { get; private set; } = "gw2:account gw2:characters gw2auth:verified";
 
-        public string DefaultRedirectUri { get; private set; } = "http://127.0.0.1:8080/";
+        public string ClientRedirectUri { get; private set; } = "http://127.0.0.1:8080/";
+
+        public string ResultRedirectUri { get; private set; } = "http://bhm.blishhud.com/bh.blishhud/static-old/gw2auth_result.html";
 
         public string DefaultPrompt { get; private set; } = "consent";
 

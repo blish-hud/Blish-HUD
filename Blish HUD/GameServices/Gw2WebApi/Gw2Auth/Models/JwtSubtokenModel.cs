@@ -37,6 +37,10 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth.Models {
             this.Verified = verified;
         }
 
+        /// <returns>
+        /// <see langword="True"/> if <see cref="Error"/> is not null and not empty and <see cref="Token"/> is not present;
+        /// Otherwise <seealso langword="false"/>.
+        /// </returns>
         public bool IsError() {
             return !string.IsNullOrEmpty(this.Error);
         }

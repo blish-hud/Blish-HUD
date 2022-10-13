@@ -9,8 +9,14 @@ using System.Runtime.Serialization;
 
 namespace Blish_HUD.Gw2WebApi.Gw2Auth.Models {
     public enum Gw2AuthAttribute {
+        /// <summary>
+        /// Fallback value.
+        /// </summary>
         [EnumMember(Value = "Unknown")]
         Unknown,
+        /// <summary>
+        /// Represents the users GW2-Account-Verification status at <see href="https://gw2auth.com/">GW2Auth</see>.
+        /// </summary>
         [EnumMember(Value = "Verified")]
         Verified
     }
@@ -108,7 +114,8 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth.Models {
             }
 
             tokens = users.Values;
-            return true;
+
+            return tokens != null && tokens.Any();
         }
     }
 }
