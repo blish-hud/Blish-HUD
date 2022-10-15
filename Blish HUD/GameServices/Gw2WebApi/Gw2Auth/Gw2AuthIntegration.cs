@@ -51,7 +51,7 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
                                                                                string.IsNullOrEmpty(displayName.Trim()) ? string.Empty : $"name={displayName.Trim()}",
                                                                                $"prompt={_config.DefaultPrompt}");
 
-            Logger.Info("Starting authorization through GW2Auth.");
+            Logger.Debug("Starting authorization through GW2Auth.");
 
             _listener.Start(OnAuthorizedCallback);
 
@@ -108,7 +108,7 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
                 return;
             }
 
-            Logger.Info("Processing subtokens from GW2Auth.");
+            Logger.Debug("Processing subtokens from GW2Auth.");
 
             if (!userLogin.TryGetSubTokens(out var tokens)) { 
                 Exit(context, "invalid_request", "No API keys received.");
@@ -118,18 +118,18 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
             bool hasToken = false;
             foreach (var token in tokens) {
                 if (token.IsError()) {
-                    Logger.Warn($"Skipped corrupted subtoken \"{token.Name} - {token.Error}\".");
+                    Logger.Warn($"Skipped registration of corrupted key \"{token.Name} - {token.Error}\".");
                     continue;
                 }
 
                 if (!token.Verified) {
-                    Logger.Warn($"Skipped unverified subtoken \"{token.Name} - {token.Token.Substring(0,5)}***\".");
+                    Logger.Warn($"Skipped registration of unverified key \"{token.Name} - {token.Token.Substring(0,10)}*****\".");
                     continue;
                 }
 
                 hasToken = true;
 
-                Logger.Info($"Registering subtoken \"{token.Name} - {token.Token.Substring(0,5)}***\".");
+                Logger.Debug($"Registering key \"{token.Name} - {token.Token.Substring(0,10)}*****\".");
                 await _service.RegisterKey(token.Name, token.Token);
             }
 
@@ -141,13 +141,12 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
 
             Login?.Invoke(this, EventArgs.Empty);
             Exit(context);
-            Logger.Info($"Successfully authorized through GW2Auth. Expires {userLogin.ExpiresAt} (UTC).");
+            Logger.Debug($"Successfully authorized through GW2Auth. Expires {userLogin.ExpiresAt} (UTC).");
         }
 
         private void Exit(HttpListenerContext context, string error = null, string description = null) {
             string redirect = _config.ResultRedirectUri.SetQueryParam($"lang={GetUserLocaleShort()}");
             if (!string.IsNullOrEmpty(error)) {
-                Logger.Error(description);
                 redirect = redirect.SetQueryParams($"error={error}", 
                                                    $"error_description={description ?? string.Empty}");
             }
