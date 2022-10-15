@@ -148,7 +148,7 @@ namespace Blish_HUD.Gw2WebApi.Gw2Auth {
             string redirect = _config.ResultRedirectUri.SetQueryParam($"lang={GetUserLocaleShort()}");
             if (!string.IsNullOrEmpty(error)) {
                 redirect = redirect.SetQueryParams($"error={error}", 
-                                                   $"error_description={description ?? string.Empty}");
+                                                   $"error_description={description}");
             }
             context.Response.Redirect(redirect);
             context.Response.Close();
