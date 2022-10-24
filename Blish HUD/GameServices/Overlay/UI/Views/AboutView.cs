@@ -37,7 +37,7 @@ namespace Blish_HUD.Overlay.UI.Views {
 
             var lovePanel = new Panel() {
                 Size   = new Point(aboutPanel.Width - 128, 128),
-                Left   = (aboutPanel.Width / 2) - ((aboutPanel.Width - 128) / 3),
+                Left   = (aboutPanel.Width / 2) - ((aboutPanel.Width - 128) / 3) - 24,
                 Parent = aboutPanel,
             };
 
@@ -65,7 +65,7 @@ namespace Blish_HUD.Overlay.UI.Views {
             var discordSection = new Image(GameService.Content.GetTexture("views/about/section-splitter")) {
                 Parent          = aboutPanel,
                 Width           = aboutPanel.Width - 64,
-                Left            = 32,
+                Left            = 32 - 24,
                 Height          = 16,
                 Top             = lovePanel.Bottom,
                 Opacity = 0.5f
@@ -147,7 +147,7 @@ namespace Blish_HUD.Overlay.UI.Views {
                 Font                = GameService.Content.DefaultFont16,
                 Text                = string.Format(Strings.GameServices.OverlayService.AboutAnetNotice, DateTime.Now.Year),
                 AutoSizeHeight      = true,
-                Width               = aboutPanel.Width,
+                Width               = aboutPanel.Width - 24,
                 StrokeText          = true,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment   = VerticalAlignment.Top,
