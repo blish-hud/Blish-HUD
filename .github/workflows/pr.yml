@@ -38,7 +38,7 @@ jobs:
         run: |
           remove-item "Blish HUD/bin/x64/Release/net472/Blish HUD.xml"
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: Blish HUD.${{ steps.gitversion.outputs.semVer }}
           path: Blish HUD/bin/x64/Release/net472
