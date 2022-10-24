@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using nspector.Common;
@@ -14,6 +12,8 @@ using nspector.Native.NvApi.DriverSettings;
 
 namespace Blish_HUD.Debug {
     internal static class ContingencyChecks {
+
+        #region Launch Checks
 
         public static void RunAll() {
             CheckArcDps11Injected();
@@ -70,6 +70,10 @@ namespace Blish_HUD.Debug {
             }
         }
 
+        /// <summary>
+        /// Checks to ensure that non-default Nvidia control panel settings haven't been set for Blish HUD.
+        /// For specific settings, this can cause Blish HUD to render with an opaque background.
+        /// </summary>
         private static void CheckNvidiaControlPanelSettings() {
             try {
                 var customSettingNames    = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
@@ -110,5 +114,22 @@ namespace Blish_HUD.Debug {
                  // in which case the check is useless anyway.
             }
         }
+
+        #endregion
+
+        #region Initiated Checks
+
+        /// <summary>
+        /// Checks to see if Guild Wars 2 is running in fullscreen mode along with DX9.
+        /// Blish HUD can't run while the game is configured this way.
+        /// </summary>
+        internal static void CheckForFullscreenDx9Conflict() {
+            if (GameService.GameIntegration.Gw2Instance.GraphicsApi == GameIntegration.Gw2Instance.Gw2GraphicsApi.DX9 
+             && GameService.GameIntegration.GfxSettings.ScreenMode  == GameIntegration.GfxSettings.ScreenModeSetting.Fullscreen) {
+                Contingency.NotifyConflictingFullscreenSettings();
+            }
+        }
+
+        #endregion
     }
 }

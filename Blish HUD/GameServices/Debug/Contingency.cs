@@ -111,6 +111,13 @@ namespace Blish_HUD.Debug {
                               (new TaskDialogButton(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_OpenControlPanelAction), OpenNvidaControlPanel));
         }
 
+        internal static void NotifyConflictingFullscreenSettings() {
+            NotifyContingency(nameof(NotifyConflictingFullscreenSettings),
+                              Strings.GameServices.Debug.ContingencyMessages.ConflictingFullscreenSettings_Title,
+                              Strings.GameServices.Debug.ContingencyMessages.ConflictingFullscreenSettings_Description,
+                              "https://link.blishhud.com/fullscreenmode");
+        }
+
         public static void NotifyFileSaveAccessDenied(string path, string actionDescription, bool promptPortableMode = false) {
             // TODO: If promptPortabelMode is true, add a new button to the diag that allows the user to enable portable mode as a work around.
             NotifyContingency(nameof(NotifyFileSaveAccessDenied),

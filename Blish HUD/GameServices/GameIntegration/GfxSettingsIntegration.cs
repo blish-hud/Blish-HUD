@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Xml;
+using Blish_HUD.Debug;
 using Blish_HUD.GameIntegration.GfxSettings;
 using Blish_HUD.GameServices;
 
@@ -222,6 +223,11 @@ namespace Blish_HUD.GameIntegration {
                     gfxSettingsFileStream.Dispose();
 
                     Logger.Debug("Finished parsing GSA file.");
+
+                    // Easiest place to check where we should now know if the user is in fullscreen or not
+                    if (this.IsAvailable) {
+                        ContingencyChecks.CheckForFullscreenDx9Conflict();
+                    }
                 }
             } catch (IOException ex) {
                 if (remainingAttempts > 0) {

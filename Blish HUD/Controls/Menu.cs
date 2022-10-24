@@ -151,5 +151,15 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public override void RecalculateLayout() {
+            int lastBottom = 0;
+
+            foreach (var child in _children.Where(c => c.Visible)) {
+                child.Location = new Point(0, lastBottom);
+                child.Width = this.Width;
+
+                lastBottom = child.Bottom;
+            }
+        }
     }
 }
