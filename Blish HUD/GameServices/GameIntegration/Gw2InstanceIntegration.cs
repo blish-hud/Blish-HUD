@@ -204,7 +204,10 @@ namespace Blish_HUD.GameIntegration {
             string windowClass = null;
 
             if (newProcess == null || _gw2Process.HasExited || _gw2Process.MainWindowHandle == IntPtr.Zero) {
-                BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = false; }));
+                if (BlishHud.Instance.Form.IsHandleCreated) {
+                    // Maybe we queue this action on some kind of dedicated subservice that manages invoking things on the mainform?
+                    BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = false; }));
+                }
 
                 _gw2Process = null;
                 this.Gw2IsRunning = false;
