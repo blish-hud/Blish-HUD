@@ -19,11 +19,11 @@ jobs:
         shell: powershell
         run: |
           set-Content -Path 'Blish HUD/Properties/AssemblyVersionInfo.cs' -Value 'using System.Reflection;'
-      - uses: gittools/actions/gitversion/setup@v0.9.14
+      - uses: gittools/actions/gitversion/setup@v0.9.15
         with:
           versionSpec: '5.x'
 
-      - uses: gittools/actions/gitversion/execute@v0.9.14
+      - uses: gittools/actions/gitversion/execute@v0.9.15
         id: gitversion
         with:
           updateAssemblyInfo: true
