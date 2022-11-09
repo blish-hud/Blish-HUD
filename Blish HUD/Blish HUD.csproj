@@ -256,7 +256,7 @@
     <PackageReference Include="SemanticVersioning" Version="1.2.2" PrivateAssets="all" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" PrivateAssets="all" />
     <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
-    <PackageReference Include="protobuf-net" Version="3.0.101" PrivateAssets="all" />
+    <PackageReference Include="protobuf-net" Version="3.1.25" PrivateAssets="all" />
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
   </ItemGroup>
