@@ -129,7 +129,7 @@ Relaunch Blish HUD as an administrator or relaunch Guild Wars 2 without admin.</
     <value>Check our &lt;a href="{0}"&gt;troubleshooting guide&lt;/a&gt; for this issue or join our &lt;a href="{1}"&gt;Discord 💢help channel&lt;/a&gt;.</value>
   </data>
   <data name="ArcDpsSameDir_Description" xml:space="preserve">
-    <value>There is a custom 'd3dll.dll' (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please move Blish HUD to a different folder.</value>
+    <value>There is a custom 'd3d11.dll' (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please extract Blish HUD into a different folder.</value>
   </data>
   <data name="ArcDpsSameDir_Title" xml:space="preserve">
     <value>Blish HUD Can't Run!</value>

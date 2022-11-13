@@ -61,7 +61,7 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is a custom &apos;d3dll.dll&apos; (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please move Blish HUD to a different folder..
+        ///   Looks up a localized string similar to There is a custom &apos;d3d11.dll&apos; (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please extract Blish HUD into a different folder..
         /// </summary>
         internal static string ArcDpsSameDir_Description {
             get {
