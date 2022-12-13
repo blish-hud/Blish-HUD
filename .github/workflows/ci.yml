@@ -16,7 +16,7 @@ jobs:
         with:
           submodules: 'true'
           fetch-depth: 0
-      - uses: microsoft/setup-msbuild@v1.1
+      - uses: microsoft/setup-msbuild@v1.3
 
       # GitVersion action doesn't support /ensureassemblyinfo, see https://github.com/GitTools/actions/issues/220
       # So we need to create a new file to let GitVersion populate it
