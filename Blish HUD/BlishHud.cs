@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -58,6 +59,11 @@ namespace Blish_HUD {
         protected override void Initialize() {
             FormHandle = this.Window.Handle;
             Form       = Control.FromHandle(FormHandle).FindForm();
+
+            if (!File.Exists("OpacityFix")) {
+                // Disables flicker, but causes blending issues for some users
+                Form.BackColor = System.Drawing.Color.Black;
+            }
 
             // Avoid the flash the window shows when the application launches (-32000x-32000 is where windows places minimized windows)
             Form.Location  = new System.Drawing.Point(-32000, -32000);
