@@ -40,7 +40,7 @@ namespace Blish_HUD.GameIntegration {
             BlishHud.Instance.Form.Visible = false;
         }
 
-        public void SetShowInTaskbar(bool showInTaskbar) {
+        internal void SetShowInTaskbar(bool showInTaskbar) {
             WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, showInTaskbar);
         }
 
