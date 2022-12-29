@@ -68,7 +68,6 @@ namespace Blish_HUD {
             // Avoid the flash the window shows when the application launches (-32000x-32000 is where windows places minimized windows)
             Form.Location  = new System.Drawing.Point(-32000, -32000);
 
-            this.Window.IsBorderless = true;
             this.Window.AllowAltF4   = false;
             this.InactiveSleepTime   = TimeSpan.Zero;
 
