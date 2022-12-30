@@ -143,16 +143,16 @@ namespace Blish_HUD.ArcDps {
                 // Begin receiving the data from the remote device.
                 _ = socket.BeginReceive(state.Buffer, state.Token.NextReceiveOffset, SocketState.BUFFER_SIZE - state.Token.NextReceiveOffset, 0, this.ReceiveCallback, state);
             } catch (SocketException socketEx) {
-                Logger.Error(socketEx, "Failed to start receiving from socket: ");
+                Logger.Warn(socketEx, "Failed to start receiving from socket.");
 
                 if (Array.Exists(_retryReceiveOnSocketErrors, socketError => socketError == socketEx.SocketErrorCode)) {
-                    if (retries >= 1) {
+                    if (retries > 0) {
                         // Retry again
-                        Logger.Error("Retry starting receive");
+                        Logger.Warn("Retry starting receive");
 
-                        this.StartReceive(socket, state, retries--);
+                        this.StartReceive(socket, state, retries - 1);
                     } else {
-                        Logger.Error("Failed too many times. No repeat attempted.");
+                        Logger.Warn("Failed too many times. No repeat attempted.");
                         this.OnSocketError?.Invoke(this, socketEx.SocketErrorCode);
 
                         this.Stop();
