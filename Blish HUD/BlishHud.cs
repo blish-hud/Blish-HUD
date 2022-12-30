@@ -66,7 +66,7 @@ namespace Blish_HUD {
             }
 
             // Avoid the flash the window shows when the application launches (-32000x-32000 is where windows places minimized windows)
-            Form.Location  = new System.Drawing.Point(-32000, -32000);
+            Form.Location = new System.Drawing.Point(-32000, -32000);
 
             this.Window.AllowAltF4   = false;
             this.InactiveSleepTime   = TimeSpan.Zero;
@@ -112,6 +112,9 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) {
+                // The window can get moved back to center screen unintentionally
+                Form.Location = new System.Drawing.Point(-32000, -32000);
+
                 // If gw2 isn't open so only run the essentials
                 GameService.Debug.DoUpdate(gameTime);
                 GameService.GameIntegration.DoUpdate(gameTime);
