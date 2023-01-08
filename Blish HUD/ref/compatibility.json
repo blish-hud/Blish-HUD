@@ -1,5 +1,7 @@
 {
     "bh.general.markersandpaths": "*", // Replaced by Pathing module.
     "Taimi.UndaDaSea_BlishHUD": "<2.0.0", // Audio dependency changes break UndaDaSea in early versions.
-    "bh.general.events": "<1.0.0" // IWindow contract change broke the notification mover.
+    "bh.general.events": "<1.0.0", // IWindow contract change broke the notification mover.
+    "Kenedia.Modules.Characters": "<0.2.12",
+    "Kenedia.Modules.BuildsManager": "<0.0.20",
 }
