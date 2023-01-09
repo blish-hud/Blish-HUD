@@ -1,5 +1,4 @@
 ﻿using System;
-using Ookii.Dialogs.WinForms;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -12,11 +11,7 @@ namespace Blish_HUD.Debug {
 
         private static readonly HashSet<string> _contingency = new HashSet<string>();
 
-        private static void NotifyContingency(string key, string title, string description, string url, params (TaskDialogButton Button, Func<Task> OnClick)[] extraActions) {
-            NotifyContingency(key, title, description, null, url, extraActions);
-        }
-
-        private static void NotifyContingency(string key, string title, string description, string expandedDescription, string url, params (TaskDialogButton Button, Func<Task> OnClick)[] extraActions) {
+        private static void NotifyContingency(string key, string title, string description, string url, params ContingencyPopup.PopupButton[] extraActions) {
             if (_contingency.Contains(key)) {
                 return;
             }
@@ -31,47 +26,17 @@ namespace Blish_HUD.Debug {
                 }
             }
 
-            var notifDiag = new TaskDialog() {
-                WindowTitle      = title,
-                MainIcon         = TaskDialogIcon.Warning,
-                MainInstruction  = description,
-                Content = expandedDescription,
-                FooterIcon       = TaskDialogIcon.Information,
-                EnableHyperlinks = true,
-                Footer           = string.Format(Strings.GameServices.Debug.ContingencyMessages.GenericUrl_Footer, url, DISCORD_JOIN_URL),
-            };
-
-            notifDiag.HyperlinkClicked += NotifDiag_HyperlinkClicked;
-
-            notifDiag.Buttons.Add(new TaskDialogButton(ButtonType.Ok));
-
-            foreach (var actions in extraActions) {
-                notifDiag.Buttons.Add(actions.Button);
-            }
-
-            notifDiag.ButtonClicked += async (sender, e) => {
-                foreach (var action in extraActions) {
-                    if (e.Item == action.Button) {
-                        await action.OnClick.Invoke();
-                    }
-                }
-            };
+            var notifDiag = new ContingencyPopup(title, description, url, extraActions);
 
             notifDiag.ShowDialog();
         }
 
-        private static Task OpenNvidaControlPanel() {
+        private static void OpenNvidaControlPanel() {
             try {
                 Process.Start(Environment.ExpandEnvironmentVariables("%programfiles%\\NVIDIA Corporation\\Control Panel Client\\nvcplui.exe"));
             } catch (Win32Exception) {
                 Process.Start("explorer.exe", "shell:AppsFolder\\NVIDIACorp.NVIDIAControlPanel_56jybvy8sckqj!NVIDIACorp.NVIDIAControlPanel");
             }
-
-            return Task.CompletedTask;
-        }
-
-        private static void NotifDiag_HyperlinkClicked(object sender, HyperlinkClickedEventArgs e) {
-            Process.Start(e.Href);
         }
 
         internal static void NotifyWin32AccessDenied() {
@@ -105,10 +70,9 @@ namespace Blish_HUD.Debug {
         internal static void NotifyNvidiaSettings(string description) {
             NotifyContingency(nameof(NotifyNvidiaSettings),
                               Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Title,
-                              Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Description,
-                              description,
+                              string.Format(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Description, description),
                               "https://link.blishhud.com/nvidiasettings",
-                              (new TaskDialogButton(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_OpenControlPanelAction), OpenNvidaControlPanel));
+                              new ContingencyPopup.PopupButton(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_OpenControlPanelAction, OpenNvidaControlPanel));
         }
 
         internal static void NotifyConflictingFullscreenSettings() {
