@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace Blish_HUD.Debug {
     public static class Contingency {
 
-        private const string DISCORD_JOIN_URL = "http://link.blishhud.com/discordhelp";
+        private static readonly Logger Logger = Logger.GetLogger(typeof(Contingency));
 
         private static readonly HashSet<string> _contingency = new HashSet<string>();
 
@@ -17,6 +17,8 @@ namespace Blish_HUD.Debug {
             }
 
             _contingency.Add(key);
+
+            Logger.Warn($"Contingency '{key}' was triggered!");
 
             if (BlishHud.Instance != null) {
                 if (BlishHud.Instance.Form.InvokeRequired) {
