@@ -102,9 +102,9 @@ namespace Blish_HUD.Modules.Pkgs {
 
         protected void ToggleFilter(Func<PkgManifest, bool> filterFunc, bool state) {
             if (state) {
-                _activeFilters.Add(filterFunc);
-            } else {
                 _activeFilters.Remove(filterFunc);
+            } else {
+                _activeFilters.Add(filterFunc);
             }
         }
 
