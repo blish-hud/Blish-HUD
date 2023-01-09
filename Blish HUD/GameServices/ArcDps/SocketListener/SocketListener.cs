@@ -81,7 +81,7 @@ namespace Blish_HUD.ArcDps {
 
                 this.Running = false;
             } catch (Exception reason) {
-                Logger.Error(reason, "Failed to disconnect socket:");
+                Logger.Warn(reason, "Failed to disconnect socket:");
             }
         }
 
@@ -95,7 +95,7 @@ namespace Blish_HUD.ArcDps {
                 _ = client.BeginConnect(endPoint, this.ConnectCallback, client);
                 Logger.Debug("Connected.");
             } catch (Exception ex) {
-                Logger.Error(ex, "Failed to connect socket.");
+                Logger.Warn(ex, "Failed to connect socket.");
 
                 this.Stop();
             }
@@ -114,15 +114,19 @@ namespace Blish_HUD.ArcDps {
                 socket.EndConnect(ar);
 
                 Logger.Debug("Socket connected to {0}",
-                    socket.RemoteEndPoint.ToString());
+                             socket.RemoteEndPoint.ToString());
 
                 this.Running = true;
 
                 this.StartReceive(socket);
+            } catch (SocketException ex) {
+                Logger.Warn(ex.SocketErrorCode.ToString());
             } catch (Exception ex) {
-                Logger.Error(ex, "Failed to connect socket:");
-
-                this.Stop();
+                // If ArcDPS bridge isn't installed, then this error is almost certain to happen, so we ignore ConnectionRefused
+                if (!(ex is SocketException { SocketErrorCode: SocketError.ConnectionRefused })) {
+                    Logger.Error(ex, "Failed to connect socket:");
+                    this.Stop();
+                }
             }
         }
 
@@ -216,7 +220,7 @@ namespace Blish_HUD.ArcDps {
                     this.StartReceive(socket);
                 }
             } catch (Exception ex) {
-                Logger.Error(ex, "Failed to receive from socket:");
+                Logger.Warn(ex, "Failed to receive from socket:");
                 this.OnSocketError?.Invoke(this, SocketError.SocketError);
 
                 this.Stop();
@@ -314,7 +318,7 @@ namespace Blish_HUD.ArcDps {
             try {
                 this.ReceivedMessage?.Invoke(this, new MessageData { Message = messageData, Token = token });
             } catch (Exception ex) {
-                Logger.Error(ex, "Failed processing received message:");
+                Logger.Warn(ex, "Failed processing received message:");
             }
         }
     }

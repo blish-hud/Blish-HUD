@@ -245,7 +245,12 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The NVIDIA settings are known to compatibility issues and should be toggled.  See the linked troubleshooting guide for more information..
+        ///   Looks up a localized string similar to One of your NVIDIA settings has been changed in a way that is not compatible with Blish HUD (Blish HUD will have a black background).
+        ///
+        ///These settings must be set back to default:
+        ///{0}
+        ///
+        ///See the linked troubleshooting guide for more information on how to resolve this issue..
         /// </summary>
         internal static string NvidiaSettings_Description {
             get {
