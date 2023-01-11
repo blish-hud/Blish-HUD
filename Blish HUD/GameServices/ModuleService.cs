@@ -9,6 +9,7 @@ using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
+using Blish_HUD.Modules.UI.Controls;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
@@ -325,44 +326,14 @@ namespace Blish_HUD {
 
         private          MenuItem                            _rootModuleSettingsMenuItem;
         private readonly Dictionary<MenuItem, ModuleManager> _moduleMenus = new Dictionary<MenuItem, ModuleManager>();
-
-        private void UpdateModuleMenuItemIcon(ModuleManager module, MenuItem menuItem) {
-            menuItem.Icon = module.Enabled
-                                ? AsyncTexture2D.FromAssetId(156950)
-                                : AsyncTexture2D.FromAssetId(1444524);
-        }
-
+        
         private void RegisterModuleMenuInSettings(ModuleManager moduleManager) {
-            var moduleMi = new MenuItem(moduleManager.Manifest.Name) {
+            var moduleMi = new ModuleMenuItem(moduleManager) {
                 BasicTooltipText = moduleManager.Manifest.Description,
                 Parent           = _rootModuleSettingsMenuItem
             };
 
-            moduleMi.RightMouseButtonPressed += (sender, e) => ModuleMenuItemRightMouseButtonPressed(moduleManager, moduleMi);
-
             _moduleMenus.Add(moduleMi, moduleManager);
-
-            moduleManager.ModuleEnabled  += (sender, e) => UpdateModuleMenuItemIcon(moduleManager, moduleMi);
-            moduleManager.ModuleDisabled += (sender, e) => UpdateModuleMenuItemIcon(moduleManager, moduleMi);
-
-            UpdateModuleMenuItemIcon(moduleManager, moduleMi);
-        }
-
-        private void ModuleMenuItemRightMouseButtonPressed(ModuleManager module, MenuItem menuItem) {
-            IEnumerable<ContextMenuStripItem> GetModuleMenuItems() {
-                var enable  = new ContextMenuStripItem(Strings.GameServices.ModulesService.ModuleManagement_EnableModule) { Enabled  = !module.Enabled };
-                enable.Click += (s, e) => { module.TryEnable(); };
-
-                var disable = new ContextMenuStripItem(Strings.GameServices.ModulesService.ModuleManagement_DisableModule) { Enabled = module.Enabled };
-                disable.Click += (s, e) => { module.Disable(); };
-
-                yield return enable;
-                yield return disable;
-            }
-
-            var contextMenu = new ContextMenuStrip(GetModuleMenuItems);
-
-            contextMenu.Show(GameService.Input.Mouse.Position);
         }
 
         private void UnregisterModuleMenuInSettings(ModuleManager moduleManager) {
