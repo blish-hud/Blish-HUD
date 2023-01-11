@@ -18,7 +18,7 @@ namespace Blish_HUD.Modules.UI.Controls {
 
             spriteBatch.DrawOnCtrl(this,
                                    ContentService.Textures.Pixel,
-                                   new Rectangle(bounds.X, bounds.Y, 4, _menuItemHeight),
+                                   new Rectangle(bounds.X, bounds.Y, 5, _menuItemHeight),
                                    _module.Enabled
                                        ? Color.Green * 0.5f
                                        : Color.Gray  * 0.5f);
