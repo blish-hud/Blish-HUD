@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.UI.Controls {
                                    ContentService.Textures.Pixel,
                                    new Rectangle(bounds.X, bounds.Y, 5, _menuItemHeight),
                                    _module.Enabled
-                                       ? Color.Green * 0.5f
+                                       ? Color.Green * 0.75f
                                        : Color.Gray  * 0.5f);
         }
 
