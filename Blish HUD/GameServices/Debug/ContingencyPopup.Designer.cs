@@ -179,7 +179,6 @@
             this.MinimizeBox = false;
             this.Name = "ContingencyPopup";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.Text = "ContingencyPopup";
             this.TopMost = true;
             this.PnlExtraInfo.ResumeLayout(false);
