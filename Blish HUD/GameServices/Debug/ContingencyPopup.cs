@@ -54,8 +54,17 @@ namespace Blish_HUD.Debug {
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
+        private bool _clickAttempted = false;
+
         private void BttnOkay_Click(object sender, EventArgs e) {
-            Close();
+            if (_clickAttempted) {
+                // Make sure folks can close the window
+                Process.GetCurrentProcess().Kill();
+            } else {
+                Close();
+            }
+
+            _clickAttempted = true;
         }
 
         private void LblDescription_Resize(object sender, EventArgs e) {
