@@ -6,7 +6,7 @@ namespace Blish_HUD.Gw2WebApi {
     public class TokenBucket {
 
         private const int REFILL_INTERVAL        = 1000;
-        private const int FAILED_CONSUME_RETRIES = 3;
+        private const int FAILED_CONSUME_RETRIES = 8;
 
         /// <summary>
         /// The maximum number of tokens in the bucket.
@@ -72,7 +72,7 @@ namespace Blish_HUD.Gw2WebApi {
                 return await updateFunc().ConfigureAwait(false);
             } catch (TooManyRequestsException) {
                 // Penalize our token count - we've hit the rate limited
-                this.Tokens = Math.Min(this.Tokens - this.RefillAmount, -1);
+                this.Tokens = Math.Min(this.Tokens - this.RefillAmount, remainingAttempts - FAILED_CONSUME_RETRIES - 1);
 
                 if (remainingAttempts > 0) {
                     return await ConsumeCompliant<T>(updateFunc, remainingAttempts - 1);
@@ -80,13 +80,26 @@ namespace Blish_HUD.Gw2WebApi {
 
                 // Too many attempts
                 throw;
+            } catch (UnexpectedStatusException ex) {
+                if (ex.Response != null) {
+                    // <head><title>504 Gateway Time-out</title></head>
+                    if (ex.Response.StatusCode == System.Net.HttpStatusCode.GatewayTimeout || ex.Response.Content.Contains("504")) {
+                        await Task.Delay(1000);
+
+                        if (remainingAttempts > 0) {
+                            return await ConsumeCompliant<T>(updateFunc, remainingAttempts - 1);
+                        }
+                    }
+                }
+
+                throw;
             } catch (RequestException ex) {
                 var baseEx = ex.GetBaseException();
 
                 switch (baseEx.HResult) {
                     case -2147467259:
                         if (baseEx.Message.Contains("forbidden by its access")) { // An attempt was made to access a socket in a way forbidden by its access permissions.
-                            // This will only work on Windows systems, but it's an ambiguous HResult and changing the UI language I think isn't worth it.
+                            // This will only work on systems in English, but it's an ambiguous HResult and changing the UI language I think isn't worth it.
                             Debug.Contingency.NotifyHttpAccessDenied("to the Guild Wars 2 API");
                         }
                         break;
