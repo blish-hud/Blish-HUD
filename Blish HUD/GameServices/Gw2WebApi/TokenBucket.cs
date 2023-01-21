@@ -80,6 +80,17 @@ namespace Blish_HUD.Gw2WebApi {
 
                 // Too many attempts
                 throw;
+            } catch (UnexpectedStatusException ex) {
+                if (ex.Response != null) {
+                    // <head><title>504 Gateway Time-out</title></head>
+                    if (ex.Response.StatusCode == System.Net.HttpStatusCode.GatewayTimeout || ex.Response.Content.Contains("504")) {
+                        await Task.Delay(1000);
+
+                        if (remainingAttempts > 0) {
+                            return await ConsumeCompliant<T>(updateFunc, remainingAttempts - 1);
+                        }
+                    }
+                }
             } catch (RequestException ex) {
                 var baseEx = ex.GetBaseException();
 
