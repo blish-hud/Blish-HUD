@@ -91,6 +91,8 @@ namespace Blish_HUD.Gw2WebApi {
                         }
                     }
                 }
+
+                throw;
             } catch (RequestException ex) {
                 var baseEx = ex.GetBaseException();
 
