@@ -6,7 +6,7 @@ namespace Blish_HUD.Gw2WebApi {
     public class TokenBucket {
 
         private const int REFILL_INTERVAL        = 1000;
-        private const int FAILED_CONSUME_RETRIES = 3;
+        private const int FAILED_CONSUME_RETRIES = 8;
 
         /// <summary>
         /// The maximum number of tokens in the bucket.
