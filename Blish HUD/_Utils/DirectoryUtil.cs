@@ -60,12 +60,10 @@ namespace Blish_HUD {
             CreateDir(CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData,
                                                                          Environment.SpecialFolderOption.DoNotVerify), CACHE_DIR));
 
-            CreateDir(ScreensPath = ApplicationSettings.Instance.UserSettingsPath
-                                 ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
+            CreateDir(ScreensPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                            Environment.SpecialFolderOption.DoNotVerify), SCREENS_DIR));
 
-            CreateDir(MusicPath = ApplicationSettings.Instance.UserSettingsPath
-                               ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
+            CreateDir(MusicPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                          Environment.SpecialFolderOption.DoNotVerify), MUSIC_DIR));
         }
 
