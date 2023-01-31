@@ -234,7 +234,7 @@ namespace Blish_HUD {
 
             this.FrameCounter = new DynamicallySmoothedValue<float>(FRAME_DURATION_SAMPLES);
 
-            if (!ApplicationSettings.Instance.DebugEnabled) {
+            if (!Debugger.IsAttached) {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
             }
         }
