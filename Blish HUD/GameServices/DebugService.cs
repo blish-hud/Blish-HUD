@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 using Blish_HUD.Debug;
 using Blish_HUD.Settings;
 using Humanizer;
@@ -144,10 +146,18 @@ namespace Blish_HUD {
         }
 
         private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
+            if (args.ExceptionObject is Exception e) {
+                Fatal(e);
+            }
+        }
+
+        private static void ApplicationThreadException(object sender, ThreadExceptionEventArgs args) {
+            Fatal(args.Exception);
+        }
+
+        private static void Fatal(Exception e) {
             Input.DisableHooks();
-
-            var e = (Exception) args.ExceptionObject;
-
+            
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
         }
 
@@ -235,7 +245,10 @@ namespace Blish_HUD {
             this.FrameCounter = new DynamicallySmoothedValue<float>(FRAME_DURATION_SAMPLES);
 
             if (!Debugger.IsAttached) {
+                Application.ThreadException                += ApplicationThreadException;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+
+                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             }
         }
 
