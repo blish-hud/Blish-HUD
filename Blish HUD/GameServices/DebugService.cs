@@ -47,6 +47,9 @@ namespace Blish_HUD {
         private const int  MAX_LOG_SESSIONS = 6;
 
         internal static void InitDebug() {
+            // Better capture thrown exceptions.
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
             // Make sure crash dir is available for logs as early as possible
             string logPath = DirectoryUtil.RegisterDirectory("logs");
 
@@ -247,8 +250,6 @@ namespace Blish_HUD {
             if (!Debugger.IsAttached) {
                 Application.ThreadException                += ApplicationThreadException;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             }
         }
 

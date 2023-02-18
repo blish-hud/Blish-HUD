@@ -49,6 +49,7 @@ namespace Blish_HUD {
         private static void Main(string[] args) {
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
 
+
             var settings = Cli.Parse<ApplicationSettings>(args);
 
             if (settings.MainProcessId.HasValue) {
