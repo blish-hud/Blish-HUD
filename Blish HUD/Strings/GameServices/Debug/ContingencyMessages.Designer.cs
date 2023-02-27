@@ -19,7 +19,7 @@ namespace Blish_HUD.Strings.GameServices.Debug {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class ContingencyMessages {
@@ -61,7 +61,7 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is a custom &apos;d3dll.dll&apos; (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please move Blish HUD to a different folder..
+        ///   Looks up a localized string similar to There is a custom &apos;d3d11.dll&apos; (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please extract Blish HUD into a different folder..
         /// </summary>
         internal static string ArcDpsSameDir_Description {
             get {
@@ -95,6 +95,29 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         internal static string CfaBlocking_Title {
             get {
                 return ResourceManager.GetString("CfaBlocking_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blish HUD has detected that you are running the game with DirectX 9 enabled while in fullscreen.  Blish HUD is unable to function in this configuration.  To resolve, either:
+        ///
+        ///1) Uncheck &quot;Enable DX9 Rendering (Deprecated)&quot; in your in-game graphics options.
+        ///2) Set &quot;Resolution&quot; to &quot;Windowed Fullscreen&quot; or &quot;Window&quot;.
+        ///
+        ///You can reference the guide linked below for further assistance..
+        /// </summary>
+        internal static string ConflictingFullscreenSettings_Description {
+            get {
+                return ResourceManager.GetString("ConflictingFullscreenSettings_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conflicting Graphics Settings!.
+        /// </summary>
+        internal static string ConflictingFullscreenSettings_Title {
+            get {
+                return ResourceManager.GetString("ConflictingFullscreenSettings_Title", resourceCulture);
             }
         }
         
@@ -218,6 +241,38 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         internal static string MissingRef_Title {
             get {
                 return ResourceManager.GetString("MissingRef_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of your NVIDIA settings has been changed in a way that is not compatible with Blish HUD (Blish HUD will have a black background).
+        ///
+        ///These settings must be set back to default:
+        ///{0}
+        ///
+        ///See the linked troubleshooting guide for more information on how to resolve this issue..
+        /// </summary>
+        internal static string NvidiaSettings_Description {
+            get {
+                return ResourceManager.GetString("NvidiaSettings_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open NVIDIA Control Panel.
+        /// </summary>
+        internal static string NvidiaSettings_OpenControlPanelAction {
+            get {
+                return ResourceManager.GetString("NvidiaSettings_OpenControlPanelAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incompatible NVIDIA Settings.
+        /// </summary>
+        internal static string NvidiaSettings_Title {
+            get {
+                return ResourceManager.GetString("NvidiaSettings_Title", resourceCulture);
             }
         }
         

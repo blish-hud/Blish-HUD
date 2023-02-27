@@ -1,15 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Windows.Forms;
 using Microsoft.Win32;
+using nspector.Common;
+using nspector.Common.CustomSettings;
+using nspector.Common.Meta;
+using nspector.Native.NvApi.DriverSettings;
 
 namespace Blish_HUD.Debug {
     internal static class ContingencyChecks {
+
+        #region Launch Checks
 
         public static void RunAll() {
             CheckArcDps11Injected();
             CheckMinTls12();
             CheckControlledFolderAccessBlocking();
+            CheckNvidiaControlPanelSettings();
         }
 
         /// <summary>
@@ -60,5 +70,66 @@ namespace Blish_HUD.Debug {
             }
         }
 
+        /// <summary>
+        /// Checks to ensure that non-default Nvidia control panel settings haven't been set for Blish HUD.
+        /// For specific settings, this can cause Blish HUD to render with an opaque background.
+        /// </summary>
+        private static void CheckNvidiaControlPanelSettings() {
+            try {
+                var customSettingNames    = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
+                var referenceSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.ReferenceSettingNames);
+
+                var metaService      = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
+                var decrypterService = new DrsDecrypterService(metaService);
+                var scannerService   = new DrsScannerService(metaService, decrypterService);
+                var settingService   = new DrsSettingsService(metaService, decrypterService);
+
+                var forbiddenValues = new Dictionary<ESetting, HashSet<uint>>() {
+                    [ESetting.FXAA_ENABLE_ID] = new HashSet<uint>() { 1 },
+                    [ESetting.MAXWELL_B_SAMPLE_INTERLEAVE_ID] = new HashSet<uint>() { 1 }
+                };
+
+                // stored using forward slashes for some reason
+                string exePath = Application.ExecutablePath.Replace('\\', '/');
+                string blishProfileName = scannerService.FindProfilesUsingApplication(exePath);
+
+                var errors = new List<string>();
+                foreach (KeyValuePair<ESetting, HashSet<uint>> pair in forbiddenValues) {
+                    SettingMeta settingMeta = metaService.GetSettingMeta((uint)pair.Key);
+                    uint value = settingService.GetDwordValueFromProfile(blishProfileName, (uint)pair.Key);
+
+                    if (pair.Value.Contains(value)) {
+                        SettingValue<uint> settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
+                        string val = settingValue?.ValueName ?? value.ToString();
+
+                        errors.Add($"'{settingMeta.SettingName}' is '{val}'");
+                    }
+                }
+
+                if (errors.Any()) {
+                    Contingency.NotifyNvidiaSettings(string.Join(Environment.NewLine, errors));
+                }
+            } catch (Exception) {
+                 // we don't really care if we error here - usually means a non-nvidia system,
+                 // in which case the check is useless anyway.
+            }
+        }
+
+        #endregion
+
+        #region Initiated Checks
+
+        /// <summary>
+        /// Checks to see if Guild Wars 2 is running in fullscreen mode along with DX9.
+        /// Blish HUD can't run while the game is configured this way.
+        /// </summary>
+        internal static void CheckForFullscreenDx9Conflict() {
+            if (GameService.GameIntegration.Gw2Instance.GraphicsApi == GameIntegration.Gw2Instance.Gw2GraphicsApi.DX9 
+             && GameService.GameIntegration.GfxSettings.ScreenMode  == GameIntegration.GfxSettings.ScreenModeSetting.Fullscreen) {
+                Contingency.NotifyConflictingFullscreenSettings();
+            }
+        }
+
+        #endregion
     }
 }

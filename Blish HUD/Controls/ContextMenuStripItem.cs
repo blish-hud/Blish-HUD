@@ -77,13 +77,15 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
+            // It is important that we handle this first to avoid mistakenly removing
+            // the handlers if the control is disposed of during the click.
+            base.OnClick(e);
+
             if (this.CanCheck) {
                 this.Checked = !this.Checked;
             } else {
                 this.Parent?.Hide();
             }
-
-            base.OnClick(e);
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {

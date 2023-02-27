@@ -1,22 +1,24 @@
 ﻿using System;
-using Ookii.Dialogs.WinForms;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace Blish_HUD.Debug {
     public static class Contingency {
 
-        private const string DISCORD_JOIN_URL = "http://link.blishhud.com/discordhelp";
+        private static readonly Logger Logger = Logger.GetLogger(typeof(Contingency));
 
         private static readonly HashSet<string> _contingency = new HashSet<string>();
 
-        private static void NotifyContingency(string key, string title, string description, string url, params (TaskDialogButton Button, Func<Task> OnClick)[] extraActions) {
+        private static void NotifyContingency(string key, string title, string description, string url, params ContingencyPopup.PopupButton[] extraActions) {
             if (_contingency.Contains(key)) {
                 return;
             }
 
             _contingency.Add(key);
+
+            Logger.Warn($"Contingency '{key}' was triggered!");
 
             if (BlishHud.Instance != null) {
                 if (BlishHud.Instance.Form.InvokeRequired) {
@@ -26,36 +28,17 @@ namespace Blish_HUD.Debug {
                 }
             }
 
-            var notifDiag = new TaskDialog() {
-                WindowTitle      = title,
-                MainIcon         = TaskDialogIcon.Warning,
-                MainInstruction  = description,
-                FooterIcon       = TaskDialogIcon.Information,
-                EnableHyperlinks = true,
-                Footer           = string.Format(Strings.GameServices.Debug.ContingencyMessages.GenericUrl_Footer, url, DISCORD_JOIN_URL),
-            };
-
-            notifDiag.HyperlinkClicked += NotifDiag_HyperlinkClicked;
-
-            notifDiag.Buttons.Add(new TaskDialogButton(ButtonType.Ok));
-
-            foreach (var actions in extraActions) {
-                notifDiag.Buttons.Add(actions.Button);
-            }
-
-            notifDiag.ButtonClicked += async (sender, e) => {
-                foreach (var action in extraActions) {
-                    if (e.Item == action.Button) {
-                        await action.OnClick.Invoke();
-                    }
-                }
-            };
+            var notifDiag = new ContingencyPopup(title, description, url, extraActions);
 
             notifDiag.ShowDialog();
         }
 
-        private static void NotifDiag_HyperlinkClicked(object sender, HyperlinkClickedEventArgs e) {
-            Process.Start(e.Href);
+        private static void OpenNvidaControlPanel() {
+            try {
+                Process.Start(Environment.ExpandEnvironmentVariables("%programfiles%\\NVIDIA Corporation\\Control Panel Client\\nvcplui.exe"));
+            } catch (Win32Exception) {
+                Process.Start("explorer.exe", "shell:AppsFolder\\NVIDIACorp.NVIDIAControlPanel_56jybvy8sckqj!NVIDIACorp.NVIDIAControlPanel");
+            }
         }
 
         internal static void NotifyWin32AccessDenied() {
@@ -84,6 +67,21 @@ namespace Blish_HUD.Debug {
                               Strings.GameServices.Debug.ContingencyMessages.CfaBlocking_Title,
                               string.Format(Strings.GameServices.Debug.ContingencyMessages.CfaBlocking_Description, path),
                               "https://link.blishhud.com/cfablocking");
+        }
+
+        internal static void NotifyNvidiaSettings(string description) {
+            NotifyContingency(nameof(NotifyNvidiaSettings),
+                              Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Title,
+                              string.Format(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Description, description),
+                              "https://link.blishhud.com/nvidiasettings",
+                              new ContingencyPopup.PopupButton(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_OpenControlPanelAction, OpenNvidaControlPanel));
+        }
+
+        internal static void NotifyConflictingFullscreenSettings() {
+            NotifyContingency(nameof(NotifyConflictingFullscreenSettings),
+                              Strings.GameServices.Debug.ContingencyMessages.ConflictingFullscreenSettings_Title,
+                              Strings.GameServices.Debug.ContingencyMessages.ConflictingFullscreenSettings_Description,
+                              "https://link.blishhud.com/fullscreenmode");
         }
 
         public static void NotifyFileSaveAccessDenied(string path, string actionDescription, bool promptPortableMode = false) {

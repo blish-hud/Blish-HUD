@@ -110,9 +110,19 @@ namespace Blish_HUD.Controls {
         public bool Checked {
             get => _checked;
             set {
-                if (SetProperty(ref _checked, value)) 
+                if (SetProperty(ref _checked, value)) {
                     OnCheckedChanged(new CheckChangedEvent(_checked));
+                }
             }
+        }
+
+        protected Color _textColor = Color.White;
+        /// <summary>
+        /// The color of the <see cref="Text"/>.
+        /// </summary>
+        public Color TextColor {
+            get => _textColor;
+            set => SetProperty(ref _textColor, value);
         }
 
         #endregion
@@ -411,10 +421,7 @@ namespace Blish_HUD.Controls {
                 currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
             }
 
-            // TODO: Evaluate menu item text color
-            // Technically, this text color should be Color.FromNonPremultiplied(255, 238, 187, 255),
-            // but it doesn't look good on the purple background of the main window
-            spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont16, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight), Color.White, true, true);
+            spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont16, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight), _textColor, true, true);
         }
 
     }

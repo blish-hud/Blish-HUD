@@ -10,10 +10,11 @@ jobs:
     name: Nightly
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.3.0
         with:
+          submodules: 'true'
           fetch-depth: 0
-      - uses: microsoft/setup-msbuild@v1.0.2
+      - uses: microsoft/setup-msbuild@v1.1
 
       # GitVersion action doesn't support /ensureassemblyinfo, see https://github.com/GitTools/actions/issues/220
       # So we need to create a new file to let GitVersion populate it
@@ -21,11 +22,11 @@ jobs:
         shell: powershell
         run: |
           set-Content -Path 'Blish HUD/Properties/AssemblyVersionInfo.cs' -Value 'using System.Reflection;'
-      - uses: gittools/actions/gitversion/setup@v0.9.6
+      - uses: gittools/actions/gitversion/setup@v0.9.15
         with:
           versionSpec: '5.x'
 
-      - uses: gittools/actions/gitversion/execute@v0.9.6
+      - uses: gittools/actions/gitversion/execute@v0.9.15
         id: gitversion
         with:
           updateAssemblyInfo: true
@@ -36,7 +37,7 @@ jobs:
       - name: Run msbuild
         run: msbuild -p:Configuration=Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }}
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: Blish HUD ${{ steps.gitversion.outputs.semVer }}
           path: Blish HUD/bin/x64/Release/net472
@@ -44,7 +45,7 @@ jobs:
       - name: Run dotnet pack
         run: dotnet pack "Blish HUD" -c Release -p:VERSIONED_BUILD=${{ steps.gitversion.outputs.semVer }}
       - name: Upload NuGet package artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: Blish HUD ${{ steps.gitversion.outputs.semVer }} NuGet packages
           path: Blish HUD/bin/Release/BlishHUD.${{ steps.gitversion.outputs.semVer }}.*nupkg

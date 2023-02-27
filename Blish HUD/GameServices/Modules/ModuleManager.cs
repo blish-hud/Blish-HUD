@@ -245,6 +245,9 @@ namespace Blish_HUD.Modules {
 
             GameService.Module.UnregisterModule(this);
 
+            this.ModuleEnabled = null;
+            this.ModuleEnabled = null;
+
             _moduleAssembly = null;
 
             this.DataReader?.Dispose();

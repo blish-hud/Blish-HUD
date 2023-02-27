@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.AccessControl;
 using System.Windows.Forms;
+using Blish_HUD.GameIntegration.Gw2Instance;
 using Blish_HUD.GameServices;
 using Blish_HUD.Settings;
 using Gapotchenko.FX.Diagnostics;
@@ -11,6 +12,7 @@ using Microsoft.Win32;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameIntegration {
+
     public class Gw2InstanceIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2InstanceIntegration>();
@@ -19,6 +21,8 @@ namespace Blish_HUD.GameIntegration {
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
         private const string GW2_PATCHWINDOW_CLASS = "ArenaNet";
+        private const string GW2_DX9WINDOW_CLASS   = "ArenaNet_Dx_Window_Class";
+        private const string GW2_DX11WINDOW_CLASS  = "ArenaNet_Gr_Window_Class";
 
         private const string APPDATA_ENVKEY = "appdata";
 
@@ -113,6 +117,11 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
+        /// <summary>
+        /// Indicates if the Guild Wars 2 instance is likely a Steam copy of the game.
+        /// </summary>
+        public bool IsSteamVersion => _gw2ExecutablePath.Value.Contains("steamapps\\common");
+
         private string _appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         /// <summary>
         /// Indicates the associated AppData path used by the active Guild Wars 2 instance.
@@ -131,6 +140,11 @@ namespace Blish_HUD.GameIntegration {
             get => _commandLine;
             private set => PropertyUtil.SetProperty(ref _commandLine, value);
         }
+
+        /// <summary>
+        /// Indicates what graphics API Guild Wars 2 is actively using.
+        /// </summary>
+        public Gw2GraphicsApi GraphicsApi { get; private set; } = Gw2GraphicsApi.Unknown;
 
         // Settings
         private SettingEntry<string> _gw2ExecutablePath;
@@ -171,7 +185,24 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
+        private void UpdateDetectedGraphicsApi(string windowClassName) {
+            var lastDetectedGraphicsApi = this.GraphicsApi;
+
+            // We can detect DX9 vs. DX11 via the window class name
+            this.GraphicsApi = windowClassName switch {
+                GW2_DX9WINDOW_CLASS  => Gw2GraphicsApi.DX9,
+                GW2_DX11WINDOW_CLASS => Gw2GraphicsApi.DX11,
+                _                    => Gw2GraphicsApi.Unknown
+            };
+
+            if (this.GraphicsApi != Gw2GraphicsApi.Unknown && lastDetectedGraphicsApi != this.GraphicsApi) {
+                Logger.Info("Guild Wars 2 is running in {graphicsApi}.", this.GraphicsApi);
+            }
+        }
+
         private void HandleProcessUpdate(Process newProcess) {
+            string windowClass = null;
+
             if (newProcess == null || _gw2Process.HasExited || _gw2Process.MainWindowHandle == IntPtr.Zero) {
                 BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = false; }));
 
@@ -204,11 +235,13 @@ namespace Blish_HUD.GameIntegration {
                     Logger.Warn("Failed to auto-detect Guild Wars 2 environment variables.  Restart Guild Wars 2 to try again.");
                 } catch (NullReferenceException e) {
                     Logger.Warn(e, "Failed to grab Guild Wars 2 env variable.  It is likely exiting.");
+                } catch (ArgumentException e) {
+                    Logger.Warn(e, "Failed to parse the Guild Wars 2 env variables.");
                 }
 
                 // GW2 is running if the "_gw2Process" isn't null and the class name of process' 
                 // window is the game window name (so we know we are passed the login screen)
-                string windowClass = WindowUtil.GetClassNameOfWindow(_gw2Process.MainWindowHandle);
+                windowClass = WindowUtil.GetClassNameOfWindow(_gw2Process.MainWindowHandle);
 
                 this.Gw2IsRunning = windowClass == ApplicationSettings.Instance.WindowName
                                  || windowClass != GW2_PATCHWINDOW_CLASS;
@@ -217,6 +250,8 @@ namespace Blish_HUD.GameIntegration {
                     WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, true);
                 }
             }
+
+            UpdateDetectedGraphicsApi(windowClass);
         }
 
         private void OnGameFocusChanged(object sender, ValueEventArgs<bool> e) {

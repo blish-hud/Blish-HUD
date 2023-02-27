@@ -40,7 +40,7 @@ namespace Blish_HUD.GameIntegration {
             BlishHud.Instance.Form.Visible = false;
         }
 
-        public void SetShowInTaskbar(bool showInTaskbar) {
+        internal void SetShowInTaskbar(bool showInTaskbar) {
             WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, showInTaskbar);
         }
 
@@ -92,6 +92,8 @@ namespace Blish_HUD.GameIntegration {
         private void TrayIconMenuOnOpening(object sender, CancelEventArgs e) {
             _launchGw2Tsi.Enabled = _launchGw2AutoTsi.Enabled = !_service.Gw2Instance.Gw2IsRunning
                                                              && File.Exists(_service.Gw2Instance.Gw2ExecutablePath);
+
+            _launchGw2AutoTsi.Visible = !_service.Gw2Instance.IsSteamVersion;
         }
 
         private void AutoLaunchGame() {
@@ -104,13 +106,19 @@ namespace Blish_HUD.GameIntegration {
             var args = new List<string>();
 
             // Auto login
-            if (autologin) {
+            if (autologin && !_service.Gw2Instance.IsSteamVersion) {
+                // FYI: Steam doesn't do anything with autologin
                 args.Add("-autologin");
             }
 
             // Mumble target name
             if (ApplicationSettings.Instance.MumbleMapName != null) {
                 args.Add($"-mumble \"{ApplicationSettings.Instance.MumbleMapName}\"");
+            }
+
+            if (_service.Gw2Instance.IsSteamVersion) {
+                Process.Start("steam://run/1284210//" + string.Join(" ", args));
+                return;
             }
 
             if (File.Exists(_service.Gw2Instance.Gw2ExecutablePath)) {

@@ -25,7 +25,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             Perfect
         }
 
-        private static readonly ProcessStartInfo ArenaNetApplicationsWebsiteProcessStartInfo = new ProcessStartInfo() {
+        private static readonly ProcessStartInfo _arenaNetApplicationsWebsiteProcessStartInfo = new ProcessStartInfo() {
             FileName = "https://account.arena.net/applications",
             UseShellExecute = true
         };
@@ -248,7 +248,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent         = buildPanel
             };
 
-            openAnetApplicationsBttn.Click += delegate { Process.Start(ArenaNetApplicationsWebsiteProcessStartInfo); };
+            openAnetApplicationsBttn.Click += delegate { Process.Start(_arenaNetApplicationsWebsiteProcessStartInfo); };
 
             ReloadApiKeys();
 
@@ -256,6 +256,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         }
 
         private async void RegisterKeyBttnClicked(object sender, Input.MouseEventArgs e) {
+            _registerKeyBttn.Enabled = false;
+
             await GameService.Gw2WebApi.RegisterKey(_loadedDetails.AccountInfo.Name, this.ApiKey);
 
             ReloadApiKeys();

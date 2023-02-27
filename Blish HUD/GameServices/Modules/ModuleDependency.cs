@@ -57,9 +57,16 @@ namespace Blish_HUD.Modules {
         public ModuleDependencyCheckDetails GetDependencyDetails() {
             // Check against Blish HUD version
             if (this.IsBlishHud) {
+                bool satisfied = this.VersionRange.IsSatisfied(Program.OverlayVersion.BaseVersion());
+
+                // This is a bit scuffed - the idea here is that we only want to evaluate this like a prerelease if the version range intends to target one
+                // Otherwise, we don't want to check this way since it will make non-prerelease tags on this version to evaluate as satisfied
+                if (Program.OverlayVersion.PreRelease != null && this.VersionRange.ToString().Contains("-ci")) {
+                    satisfied &= this.VersionRange.IsSatisfied(Program.OverlayVersion);
+                }
+
                 return new ModuleDependencyCheckDetails(this,
-                                                        this.VersionRange.IsSatisfied(Program.OverlayVersion.BaseVersion())
-                                                        || Program.OverlayVersion.BaseVersion() == new Version(0, 0, 0) // Ensure local builds ignore prerequisite
+                                                        satisfied || Program.OverlayVersion.BaseVersion() == new Version(0, 0, 0) // Ensure local builds ignore prerequisite
                                                             ? ModuleDependencyCheckResult.Available
                                                             : ModuleDependencyCheckResult.AvailableWrongVersion);
             }
