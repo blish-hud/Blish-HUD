@@ -18,7 +18,13 @@ namespace Blish_HUD.Modules.Managers {
         private static readonly List<Gw2ApiManager> _apiManagers = new List<Gw2ApiManager>();
 
         internal static async Task RenewAllSubtokens() {
-            foreach (var apiManager in _apiManagers) {
+            Gw2ApiManager[] apiManagers;
+
+            lock(_apiManagers) {
+                apiManagers = _apiManagers.ToArray();
+            }
+
+            foreach (var apiManager in apiManagers) {
                 await apiManager.RenewSubtoken();
             }
         }
@@ -38,7 +44,9 @@ namespace Blish_HUD.Modules.Managers {
         public List<TokenPermission> Permissions => _permissions.ToList();
 
         private Gw2ApiManager(IEnumerable<TokenPermission> permissions, ManagedConnection moduleConnection) {
-            _apiManagers.Add(this);
+            lock (_apiManagers) {
+                _apiManagers.Add(this);
+            }
 
             _permissions       = permissions.ToHashSet();
             _activePermissions = new HashSet<TokenPermission>();
