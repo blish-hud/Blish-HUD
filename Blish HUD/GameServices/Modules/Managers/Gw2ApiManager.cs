@@ -18,7 +18,7 @@ namespace Blish_HUD.Modules.Managers {
         private static readonly List<Gw2ApiManager> _apiManagers = new List<Gw2ApiManager>();
 
         internal static async Task RenewAllSubtokens() {
-            foreach (var apiManager in _apiManagers) {
+            foreach (var apiManager in _apiManagers.ToArray()) {
                 await apiManager.RenewSubtoken();
             }
         }
