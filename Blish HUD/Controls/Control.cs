@@ -465,6 +465,21 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        protected int _columnWidth = 0;
+        public int ColumnWidth {
+            get => _columnWidth;
+            set {
+                if (value > 12) return;
+                if (value < 1) return;
+
+                _columnWidth = value;
+
+                if (this.Parent != null) {
+                    this.Size = new Point(this.Parent.Size.X / 12 * value, this.Parent.Size.Y);
+                }
+            }
+        }
+
         #endregion
 
         private bool _clipsBounds = true;
@@ -636,6 +651,10 @@ namespace Blish_HUD.Controls {
 
                     if (this.Parent == null || !this.Parent.AddChild(this)) {
                         _parent = null;
+                    }
+
+                    if (this.Parent != null && ColumnWidth != 0) {
+                        this.Size = new Point(this.Parent.Size.X / 12 * ColumnWidth, this.Parent.Size.Y);
                     }
                 }
             }
