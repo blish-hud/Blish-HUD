@@ -262,4 +262,7 @@ Lade einige herunter und platziere sie im Modulverzeichnis.</value>
   <data name="PkgManagement_Update" xml:space="preserve">
     <value>Update</value>
   </data>
+  <data name="PkgManagement_MoreInfo" xml:space="preserve">
+    <value>Mehr Info</value>
+  </data>
 </root>

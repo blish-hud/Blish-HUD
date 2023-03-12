@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
@@ -216,6 +217,14 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent = buildPanel
             };
 
+            var infoButton = new StandardButton() {
+                Width  = _actionButton.Width,
+                Right  = _actionButton.Right,
+                Top    = _actionButton.Bottom + 3,
+                Text   = Strings.GameServices.ModulesService.PkgManagement_MoreInfo,
+                Parent = buildPanel
+            };
+
             _descLabel = new Label() {
                 WrapText          = true,
                 Font              = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Regular),
@@ -229,6 +238,12 @@ namespace Blish_HUD.Modules.UI.Views {
             _statusImage.Click            += StatusImageOnClick;
             _actionButton.Click           += OnActionClicked;
             _versionDropdown.ValueChanged += OnVersionSelected;
+
+            infoButton.Click += OnMoreInfoClicked;
+        }
+
+        private void OnMoreInfoClicked(object sender, MouseEventArgs e) {
+            Process.Start($"https://link.blishhud.com/moduleinfo?module={this.ModuleNamespace}");
         }
 
         private void StatusImageOnClick(object sender, MouseEventArgs e) {
