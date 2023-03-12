@@ -45,7 +45,7 @@ namespace Blish_HUD.Debug {
             NotifyContingency(nameof(NotifyWin32AccessDenied),
                               Strings.GameServices.Debug.ContingencyMessages.Win32AccessDenied_Title,
                               Strings.GameServices.Debug.ContingencyMessages.Win32AccessDenied_Description,
-                              "http://link.blishhud.com/win32accessdenied");
+                              "https://link.blishhud.com/win32accessdenied");
         }
 
         internal static void NotifyArcDpsSameDir() {

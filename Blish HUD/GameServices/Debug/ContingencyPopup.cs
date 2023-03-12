@@ -18,7 +18,7 @@ namespace Blish_HUD.Debug {
 
         }
 
-        private const string DISCORD_JOIN_URL = "http://link.blishhud.com/discordhelp";
+        private const string DISCORD_JOIN_URL = "https://link.blishhud.com/discordhelp";
 
         public string TroubleshootingUrl { get; }
 
