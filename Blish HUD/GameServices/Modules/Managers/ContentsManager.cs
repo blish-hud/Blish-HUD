@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.Managers {
             Logger.Debug("New {contentsManagerName} instance utilizing a {dataReaderType} data reader.", nameof(ContentsManager), _reader.GetType().FullName);
         }
 
-        public static ContentsManager GetModuleInstance(ModuleManager module) {
+        internal static ContentsManager GetModuleInstance(ModuleManager module) {
             return new ContentsManager(module.DataReader.GetSubPath(REF_NAME));
         }
 

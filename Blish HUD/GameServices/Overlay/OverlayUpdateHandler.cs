@@ -9,7 +9,7 @@ using Blish_HUD.Settings;
 using Flurl.Http;
 
 namespace Blish_HUD.Overlay {
-    public class OverlayUpdateHandler : ServiceModule<OverlayService> {
+    public sealed class OverlayUpdateHandler : ServiceModule<OverlayService> {
 
         private static readonly Logger Logger = Logger.GetLogger<OverlayUpdateHandler>();
 
@@ -46,7 +46,7 @@ namespace Blish_HUD.Overlay {
                                                                      .OrderByDescending(manifest => manifest.Version)
                                                                      .FirstOrDefault();
 
-        public OverlayUpdateHandler(OverlayService service) : base(service) { /* NOOP */ }
+        internal OverlayUpdateHandler(OverlayService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
             DefineOverlayUpdateSettings(GameService.Settings.RegisterRootSettingCollection(UPDATE_SETTINGS));

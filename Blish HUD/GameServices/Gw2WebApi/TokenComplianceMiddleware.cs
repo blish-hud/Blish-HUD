@@ -5,11 +5,11 @@ using Gw2Sharp.WebApi.Http;
 using Gw2Sharp.WebApi.Middleware;
 
 namespace Blish_HUD.Gw2WebApi {
-    public class TokenComplianceMiddleware : IWebApiMiddleware {
+    internal class TokenComplianceMiddleware : IWebApiMiddleware {
 
         private readonly TokenBucket _bucket;
 
-        public TokenComplianceMiddleware(TokenBucket tokenBucket) {
+        internal TokenComplianceMiddleware(TokenBucket tokenBucket) {
             _bucket = tokenBucket;
         }
 

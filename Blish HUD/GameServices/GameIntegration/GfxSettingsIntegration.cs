@@ -9,7 +9,7 @@ using Blish_HUD.GameIntegration.GfxSettings;
 using Blish_HUD.GameServices;
 
 namespace Blish_HUD.GameIntegration {
-    public class GfxSettingsIntegration : ServiceModule<GameIntegrationService> {
+    public sealed class GfxSettingsIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<GfxSettingsIntegration>();
 
@@ -99,7 +99,7 @@ namespace Blish_HUD.GameIntegration {
 
         private bool _loadLock;
 
-        public GfxSettingsIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+        internal GfxSettingsIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
             _service.Gw2Instance.Gw2Started += Gw2Proc_Gw2Started;
