@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.TextureAtlases;
+using nspector.Native.NVAPI2;
 
 namespace Blish_HUD.Controls {
     /// <summary>
@@ -12,47 +14,56 @@ namespace Blish_HUD.Controls {
     /// </summary>
     public class Dropdown : Control {
 
-        private class DropdownPanel : Control {
-
-            private const int TOOLTIP_HOVER_DELAY    = 800;
+        private class DropdownPanel : FlowPanel {
             private const int SCROLL_CLOSE_THRESHOLD = 20;
 
             private Dropdown _assocDropdown;
-
-            private int _highlightedItemIndex = -1;
-
-            private int HighlightedItemIndex {
-                get => _highlightedItemIndex;
-                set {
-                    if (SetProperty(ref _highlightedItemIndex, value)) {
-                        _hoverTime = 0;
-                    }
-                }
-            }
-
-            private double _hoverTime;
 
             private int _startTop;
 
             private DropdownPanel(Dropdown assocDropdown) {
                 _assocDropdown = assocDropdown;
-                _size          = new Point(_assocDropdown.Width, _assocDropdown.Height * _assocDropdown.Items.Count);
-                _location      = GetPanelLocation();
-                _zIndex        = Screen.TOOLTIP_BASEZINDEX;
+                _size = new Point(_assocDropdown.Width, _assocDropdown.Height * _assocDropdown.Items.Count);
+                _location = GetPanelLocation();
+                _zIndex = Screen.TOOLTIP_BASEZINDEX;
+                this.BackgroundColor = Color.Black; // Needed as some items have white lines between them otherwise.
+                this.FlowDirection = ControlFlowDirection.SingleTopToBottom;
 
                 _startTop = _location.Y;
 
                 this.Parent = Graphics.SpriteScreen;
 
-                Input.Mouse.LeftMouseButtonPressed  += InputOnMousedOffDropdownPanel;
+                Input.Mouse.LeftMouseButtonPressed += InputOnMousedOffDropdownPanel;
                 Input.Mouse.RightMouseButtonPressed += InputOnMousedOffDropdownPanel;
+
+                this.AddItems();
+            }
+
+            private void AddItems() {
+                foreach (string itemValue in _assocDropdown.Items) {
+                    var dropdownPanelItem = new DropdownPanelItem(itemValue) {
+                        Parent = this,
+                        Height = _assocDropdown.Height,
+                        Width = _assocDropdown.Width
+                    };
+
+                    dropdownPanelItem.Click += this.DropdownPanelItem_Click;
+                }
+            }
+
+            private void DropdownPanelItem_Click(object sender, MouseEventArgs e) {
+                if (sender is DropdownPanelItem panelItem) {
+                    _assocDropdown.SelectedItem = panelItem.Value;
+
+                    this.Dispose();
+                }
             }
 
             private Point GetPanelLocation() {
                 var dropdownLocation = _assocDropdown.AbsoluteBounds.Location;
 
                 int yUnderDef = Graphics.SpriteScreen.Bottom - (dropdownLocation.Y + _assocDropdown.Height + _size.Y);
-                int yAboveDef = Graphics.SpriteScreen.Top    + (dropdownLocation.Y                         - _size.Y);
+                int yAboveDef = Graphics.SpriteScreen.Top + (dropdownLocation.Y - _size.Y);
 
                 return yUnderDef > 0 || yUnderDef > yAboveDef
                            // flip down
@@ -76,16 +87,50 @@ namespace Blish_HUD.Controls {
                 }
             }
 
-            protected override void OnMouseMoved(MouseEventArgs e) {
-                this.HighlightedItemIndex = this.RelativeMousePosition.Y / _assocDropdown.Height;
+            private void UpdateDropdownLocation() {
+                _location = GetPanelLocation();
 
-                base.OnMouseMoved(e);
+                if (Math.Abs(_location.Y - _startTop) > SCROLL_CLOSE_THRESHOLD) {
+                    Dispose();
+                }
             }
 
-            private string GetActiveItem() {
-                return _highlightedItemIndex > 0 && _highlightedItemIndex < _assocDropdown.Items.Count
-                           ? _assocDropdown.Items[_highlightedItemIndex]
-                           : string.Empty;
+            public override void UpdateContainer(GameTime gameTime) {
+                UpdateDropdownLocation();
+            }
+
+            protected override void DisposeControl() {
+                this.Children?.ToList().ForEach(child => {
+                    if (child is DropdownPanelItem panelItem) {
+                        panelItem.Click -= this.DropdownPanelItem_Click;
+                    }
+
+                    child?.Dispose();
+                });
+
+                if (_assocDropdown != null) {
+                    _assocDropdown._lastPanel = null;
+                    _assocDropdown = null;
+                }
+
+                Input.Mouse.LeftMouseButtonPressed -= InputOnMousedOffDropdownPanel;
+                Input.Mouse.RightMouseButtonPressed -= InputOnMousedOffDropdownPanel;
+
+                base.DisposeControl();
+            }
+        }
+
+        private class DropdownPanelItem : Control {
+
+            private const int TOOLTIP_HOVER_DELAY = 800;
+
+            private double _hoverTime;
+
+            public string Value { get; }
+
+            public DropdownPanelItem(string value) {
+                Value = value;
+                this.BackgroundColor = Color.Black;
             }
 
             private void UpdateHoverTimer(double elapsedMilliseconds) {
@@ -96,93 +141,56 @@ namespace Blish_HUD.Controls {
                 }
 
                 this.BasicTooltipText = _hoverTime > TOOLTIP_HOVER_DELAY
-                                            ? GetActiveItem()
+                                            ? Value
                                             : string.Empty;
-            }
-
-            private void UpdateDropdownLocation() {
-                _location = GetPanelLocation();
-
-                if (Math.Abs(_location.Y - _startTop) > SCROLL_CLOSE_THRESHOLD) {
-                    Dispose();
-                }
             }
 
             public override void DoUpdate(GameTime gameTime) {
                 UpdateHoverTimer(gameTime.ElapsedGameTime.TotalMilliseconds);
-                UpdateDropdownLocation();
-            }
-
-            protected override void OnClick(MouseEventArgs e) {
-                _assocDropdown.SelectedItem = _assocDropdown.Items[this.HighlightedItemIndex];
-
-                base.OnClick(e);
-
-                Dispose();
             }
 
             protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(Point.Zero, _size), Color.Black);
+                if (this.MouseOver) {
+                    spriteBatch.DrawOnCtrl(this,
+                                           ContentService.Textures.Pixel,
+                                           new Rectangle(2,
+                                                         2,
+                                                         _size.X - 12 - _textureArrow.Width,
+                                                         this.Height - 4),
+                                           new Color(45, 37, 25, 255));
 
-                int index = 0;
-                foreach (string item in _assocDropdown.Items) {
-                    if (index == this.HighlightedItemIndex) {
-                        spriteBatch.DrawOnCtrl(this,
-                                               ContentService.Textures.Pixel,
-                                               new Rectangle(2,
-                                                             2                     + _assocDropdown.Height * index,
-                                                             _size.X - 12          - _textureArrow.Width,
-                                                             _assocDropdown.Height - 4),
-                                               new Color(45, 37, 25, 255));
-
-                        spriteBatch.DrawStringOnCtrl(this,
-                                                     item,
-                                                     Content.DefaultFont14,
-                                                     new Rectangle(8,
-                                                                   _assocDropdown.Height * index,
-                                                                   bounds.Width - 13 - _textureArrow.Width,
-                                                                   _assocDropdown.Height),
-                                                     ContentService.Colors.Chardonnay);
-                    } else {
-                        spriteBatch.DrawStringOnCtrl(this,
-                                                     item,
-                                                     Content.DefaultFont14,
-                                                     new Rectangle(8,
-                                                                   _assocDropdown.Height * index,
-                                                                   bounds.Width - 13 - _textureArrow.Width,
-                                                                   _assocDropdown.Height),
-                                                     Color.FromNonPremultiplied(239, 240, 239, 255));
-                    }
-
-                    index++;
+                    spriteBatch.DrawStringOnCtrl(this,
+                                                 Value,
+                                                 Content.DefaultFont14,
+                                                 new Rectangle(8,
+                                                               0,
+                                                               bounds.Width - 13 - _textureArrow.Width,
+                                                               this.Height),
+                                                 ContentService.Colors.Chardonnay);
+                } else {
+                    spriteBatch.DrawStringOnCtrl(this,
+                                                 Value,
+                                                 Content.DefaultFont14,
+                                                 new Rectangle(8,
+                                                               0,
+                                                               bounds.Width - 13 - _textureArrow.Width,
+                                                               this.Height),
+                                                 Color.FromNonPremultiplied(239, 240, 239, 255));
                 }
             }
-
-            protected override void DisposeControl() {
-                if (_assocDropdown != null) {
-                    _assocDropdown._lastPanel = null;
-                    _assocDropdown            = null;
-                }
-
-                Input.Mouse.LeftMouseButtonPressed  -= InputOnMousedOffDropdownPanel;
-                Input.Mouse.RightMouseButtonPressed -= InputOnMousedOffDropdownPanel;
-
-                base.DisposeControl();
-            }
-
         }
 
         public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
-                                                                            /*   PanelOffset */ new Point(5,   2),
+                                                                            /*   PanelOffset */ new Point(5, 2),
                                                                             /* ControlOffset */ Control.ControlStandard.ControlOffset);
 
         #region Load Static
 
         private static readonly Texture2D _textureInputBox = Content.GetTexture("input-box");
 
-        private static readonly TextureRegion2D _textureArrow       = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow");
+        private static readonly TextureRegion2D _textureArrow = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow");
         private static readonly TextureRegion2D _textureArrowActive = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow-active");
-        
+
         #endregion
 
         #region Events
@@ -225,7 +233,12 @@ namespace Blish_HUD.Controls {
         public bool PanelOpen => _lastPanel != null;
 
         private DropdownPanel _lastPanel = null;
-        private bool          _hadPanel  = false;
+        private bool _hadPanel = false;
+
+        /// <summary>
+        /// Gets or sets the height of the dropdown panel. A value of -1 indicates that all values should be shown.
+        /// </summary>
+        public int PanelHeight { get; set; } = -1;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Dropdown"/> class.
@@ -259,6 +272,10 @@ namespace Blish_HUD.Controls {
 
             if (_lastPanel == null && !_hadPanel) {
                 _lastPanel = DropdownPanel.ShowPanel(this);
+                if (this.PanelHeight != -1) {
+                    _lastPanel.Height = this.PanelHeight;
+                    _lastPanel.CanScroll = true;
+                }
             } else {
                 _hadPanel = false;
             }
@@ -285,12 +302,12 @@ namespace Blish_HUD.Controls {
                                    new Rectangle(_size.X - 5, 0, 5, _size.Y),
                                    new Rectangle(_textureInputBox.Width - 5, 0,
                                                  5, _textureInputBox.Height));
-            
+
             // Draw dropdown arrow
             spriteBatch.DrawOnCtrl(this,
                                    (this.Enabled && this.MouseOver) ? _textureArrowActive : _textureArrow,
                                    new Rectangle(_size.X - _textureArrow.Width - 5,
-                                                 _size.Y / 2                 - _textureArrow.Height / 2,
+                                                 _size.Y / 2 - _textureArrow.Height / 2,
                                                  _textureArrow.Width,
                                                  _textureArrow.Height));
 
