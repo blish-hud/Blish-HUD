@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -117,7 +118,11 @@ namespace Blish_HUD.GameIntegration {
             }
 
             if (_service.Gw2Instance.IsSteamVersion) {
-                Process.Start("steam://run/1284210//" + string.Join(" ", args));
+                try {
+                    Process.Start("steam://run/1284210//" + string.Join(" ", args));
+                } catch (Exception ex) {
+                    Logger.Warn(ex, "Failed to launch Guild Wars 2 via Steam.");
+                }
                 return;
             }
 
@@ -131,7 +136,11 @@ namespace Blish_HUD.GameIntegration {
 
                 Logger.Info("Blish HUD starting Guild Wars 2 with args '{gw2Args}'", string.Join(" ", args));
 
-                gw2Proc.Start();
+                try {
+                    gw2Proc.Start();
+                } catch (Exception ex) {
+                    Logger.Warn(ex, "Failed to launch Guild Wars 2.");
+                }
             } else {
                 Logger.Warn("Blish HUD failed to launch Guild Wars 2.  The path we have is null or does not exist.  Try again after the game has been successfully detected by Blish HUD.");
             }
