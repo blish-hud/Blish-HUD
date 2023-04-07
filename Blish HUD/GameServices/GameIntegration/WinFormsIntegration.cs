@@ -7,7 +7,7 @@ using Blish_HUD.GameServices;
 using Blish_HUD.Properties;
 
 namespace Blish_HUD.GameIntegration {
-    public class WinFormsIntegration : ServiceModule<GameIntegrationService> {
+    public sealed class WinFormsIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<WinFormsIntegration>();
 
@@ -25,7 +25,7 @@ namespace Blish_HUD.GameIntegration {
         /// </summary>
         public ContextMenuStrip TrayIconMenu { get; private set; }
 
-        public WinFormsIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+        internal WinFormsIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
             WrapMainForm();

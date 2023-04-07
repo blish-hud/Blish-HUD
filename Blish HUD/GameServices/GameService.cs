@@ -41,17 +41,17 @@ namespace Blish_HUD {
 
         private IServiceModule[] _serviceModules = Array.Empty<IServiceModule>();
 
-        protected void SetServiceModules(params IServiceModule[] serviceModules) {
+        internal void SetServiceModules(params IServiceModule[] serviceModules) {
             _serviceModules = serviceModules ?? Array.Empty<IServiceModule>();
         }
 
-        public void DoInitialize(BlishHud game) {
+        internal void DoInitialize(BlishHud game) {
             ActiveBlishHud = game;
 
             Initialize();
         }
 
-        public void DoLoad() {
+        internal void DoLoad() {
             Load();
 
             foreach (var serviceModule in _serviceModules) {
@@ -62,7 +62,7 @@ namespace Blish_HUD {
             OnFinishedLoading(EventArgs.Empty);
         }
 
-        public void DoUnload() {
+        internal void DoUnload() {
             foreach (var serviceModule in _serviceModules) {
                 serviceModule.Unload();
             }
@@ -72,7 +72,7 @@ namespace Blish_HUD {
             this.Loaded = false;
         }
 
-        public void DoUpdate(GameTime gameTime) {
+        internal void DoUpdate(GameTime gameTime) {
             foreach (var serviceModule in _serviceModules) {
                 serviceModule.Update(gameTime);
             }

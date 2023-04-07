@@ -15,7 +15,7 @@ namespace Blish_HUD.Debug {
 
         #region Launch Checks
 
-        public static void RunAll() {
+        internal static void RunAll() {
             CheckArcDps11Injected();
             CheckMinTls12();
             CheckControlledFolderAccessBlocking();

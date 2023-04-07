@@ -12,7 +12,7 @@ namespace Blish_HUD {
 
         private static ApplicationSettings _instance;
 
-        internal static ApplicationSettings Instance => _instance;
+        public static ApplicationSettings Instance => _instance;
 
         public bool CliExitEarly => this.UserFacingExceptionThrown || this.HelpInvoked;
 

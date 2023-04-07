@@ -7,7 +7,7 @@ using Blish_HUD.Graphics.UI;
 using Blish_HUD.Settings;
 
 namespace Blish_HUD.Overlay {
-    public class OverlaySettingsTab : ServiceModule<OverlayService>, ISettingsMenuRegistrar {
+    public sealed class OverlaySettingsTab : ServiceModule<OverlayService>, ISettingsMenuRegistrar {
 
         public event EventHandler<EventArgs> RegistrarListChanged;
 

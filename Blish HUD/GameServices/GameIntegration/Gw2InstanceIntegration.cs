@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameIntegration {
 
-    public class Gw2InstanceIntegration : ServiceModule<GameIntegrationService> {
+    public sealed class Gw2InstanceIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2InstanceIntegration>();
 

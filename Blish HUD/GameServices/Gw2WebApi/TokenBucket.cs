@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Gw2Sharp.WebApi.Exceptions;
 
 namespace Blish_HUD.Gw2WebApi {
-    public class TokenBucket {
+    internal class TokenBucket {
 
         private const int REFILL_INTERVAL        = 1000;
         private const int FAILED_CONSUME_RETRIES = 8;
@@ -42,7 +42,7 @@ namespace Blish_HUD.Gw2WebApi {
 
         private DateTime _lastUpdate;
 
-        public TokenBucket(double maxBurst, double refillAmountPerSecond) {
+        internal TokenBucket(double maxBurst, double refillAmountPerSecond) {
             this.MaxTokens    = maxBurst;
             this.RefillAmount = refillAmountPerSecond;
             this.Tokens       = maxBurst;

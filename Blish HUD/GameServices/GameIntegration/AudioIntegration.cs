@@ -55,7 +55,7 @@ namespace Blish_HUD.GameIntegration {
         /// </summary>
         public MMDevice AudioDevice { get; private set; }
 
-        public AudioIntegration(GameIntegrationService service) : base(service) {
+        internal AudioIntegration(GameIntegrationService service) : base(service) {
             _audioEndpointNotificationReceiver = new AudioEndpointNotificationReceiver();
             _deviceEnumerator = new MMDeviceEnumerator();
         }
