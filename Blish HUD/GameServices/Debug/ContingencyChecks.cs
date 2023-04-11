@@ -15,7 +15,7 @@ namespace Blish_HUD.Debug {
 
         #region Launch Checks
 
-        public static void RunAll() {
+        internal static void RunAll() {
             CheckArcDps11Injected();
             CheckMinTls12();
             CheckControlledFolderAccessBlocking();
@@ -102,7 +102,7 @@ namespace Blish_HUD.Debug {
                         SettingValue<uint> settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
                         string val = settingValue?.ValueName ?? value.ToString();
 
-                        errors.Add($"'{settingMeta.SettingName}' = '{val}'");
+                        errors.Add($"'{settingMeta.SettingName}' is '{val}'");
                     }
                 }
 

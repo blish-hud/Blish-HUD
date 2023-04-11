@@ -458,6 +458,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to More Info.
+        /// </summary>
+        internal static string PkgManagement_MoreInfo {
+            get {
+                return ResourceManager.GetString("PkgManagement_MoreInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Checking repository....
         /// </summary>
         internal static string PkgManagement_Progress_CheckingRepository {

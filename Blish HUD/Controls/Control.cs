@@ -150,11 +150,11 @@ namespace Blish_HUD.Controls {
 
         private static Control _focusedControl;
         public static Control FocusedControl {
-            get => _activeControl;
+            get => _focusedControl;
             set {
-                if (_activeControl == value) return;
+                if (_focusedControl == value) return;
 
-                _activeControl = value;
+                _focusedControl = value;
 
                 OnFocusedControlChanged(new ControlActivatedEventArgs(_focusedControl));
             }

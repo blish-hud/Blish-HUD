@@ -1,11 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Blish_HUD.GameServices;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameIntegration {
-    public class TacOIntegration : ServiceModule<GameIntegrationService> {
+    public sealed class TacOIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<TacOIntegration>();
 
@@ -19,7 +17,7 @@ namespace Blish_HUD.GameIntegration {
         /// </summary>
         public bool TacOIsRunning { get; private set; }
 
-        public TacOIntegration(GameIntegrationService service) : base(service) { }
+        internal TacOIntegration(GameIntegrationService service) : base(service) { }
 
         public override void Update(GameTime gameTime) {
             if (this.TacOIsRunning || !_service.Gw2Instance.Gw2IsRunning) return;

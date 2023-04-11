@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameIntegration {
 
-    public class Gw2InstanceIntegration : ServiceModule<GameIntegrationService> {
+    public sealed class Gw2InstanceIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2InstanceIntegration>();
 
@@ -47,13 +47,14 @@ namespace Blish_HUD.GameIntegration {
         private Process _gw2Process;
         public Process Gw2Process {
             get => _gw2Process;
-            set {
+            private set {
                 if (PropertyUtil.SetProperty(ref _gw2Process, value)) {
                     try {
                         HandleProcessUpdate(value);
                     } catch (Win32Exception) {
                         Debug.Contingency.NotifyWin32AccessDenied();
                         _gw2Process = null;
+                        _gw2IsRunning = false;
                     }
                 }
             }
@@ -65,7 +66,7 @@ namespace Blish_HUD.GameIntegration {
         /// </summary>
         public bool Gw2IsRunning {
             get => _gw2IsRunning;
-            set {
+            private set {
                 if (PropertyUtil.SetProperty(ref _gw2IsRunning, value)) {
                     if (value) {
                         OnGw2Started();
@@ -278,6 +279,8 @@ namespace Blish_HUD.GameIntegration {
                 try {
                     this.Gw2Process.EnableRaisingEvents =  true;
                     this.Gw2Process.Exited              += OnGw2Exit;
+
+                    BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = true; }));
                 } catch (Win32Exception ex) /* [BLISHHUD-W] */ {
                     // Observed as "Access is denied"
                     Logger.Warn(ex, "A Win32Exception was encountered while trying to monitor the Gw2 process. It might be running with different permissions.");
@@ -285,8 +288,6 @@ namespace Blish_HUD.GameIntegration {
                     // Can get thrown if the game is closed just as we launched it
                     OnGw2Exit(null, EventArgs.Empty);
                 }
-
-                BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = true; }));
             }
         }
 

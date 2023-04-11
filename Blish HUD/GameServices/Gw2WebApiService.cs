@@ -221,7 +221,20 @@ namespace Blish_HUD {
 
         protected override void Unload() { /* NOOP */ }
 
-        protected override void Update(GameTime gameTime) { /* NOOP */ }
+        private double _checkFrequency = 0;
+
+        protected override void Update(GameTime gameTime) {
+            _checkFrequency += gameTime.ElapsedGameTime.TotalMilliseconds;
+
+            if (_checkFrequency > 180000) {
+                _checkFrequency = 0;
+
+                if (string.IsNullOrEmpty(PrivilegedConnection.Connection.AccessToken)) {
+                    RefreshRegisteredKeys();
+                }
+            }
+            
+        }
 
     }
 }

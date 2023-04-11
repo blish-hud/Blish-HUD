@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -8,6 +9,7 @@ using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
+using Blish_HUD.Modules.UI.Controls;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
@@ -78,6 +80,11 @@ namespace Blish_HUD {
         }
 
         public ModuleManager RegisterModule(IDataReader moduleReader) {
+            if (moduleReader == null) {
+                Logger.Warn("Failed to register a module as its archive could not be loaded.");
+                return null;
+            }
+
             if (!moduleReader.FileExists(MODULE_MANIFESTNAME)) {
                 Logger.Warn("Attempted to load an invalid module {modulePath}: {manifestName} is missing.", moduleReader.GetPathRepresentation(), MODULE_MANIFESTNAME);
                 return null;
@@ -217,7 +224,25 @@ namespace Blish_HUD {
                 return null;
             }
 
-            return RegisterModule(new ZipArchiveReader(modulePath));
+            ZipArchiveReader moduleArchive = null;
+
+            try {
+                moduleArchive = new ZipArchiveReader(modulePath);
+            } catch (InvalidDataException e) {
+                Logger.Warn(e, "Attempted to load a module {modulePath} which appears to be corrupt.  Deleting it so that it can be redownloaded.", modulePath);
+
+                try {
+                    File.Delete(modulePath); // Delete it to avoid problems and help ensure the user downloads a new copy.
+                } catch (Exception ex) {
+                    Logger.Warn(ex, "Failed to delete module {modulePath}.", modulePath);
+                }
+
+                return null;
+            } catch (Exception e) {
+                Logger.Error(e, "Attempted to load a module {modulePath} but the archive could not be read.", modulePath);
+            }
+
+            return RegisterModule(moduleArchive);
         }
 
         /// <summary>
@@ -301,9 +326,9 @@ namespace Blish_HUD {
 
         private          MenuItem                            _rootModuleSettingsMenuItem;
         private readonly Dictionary<MenuItem, ModuleManager> _moduleMenus = new Dictionary<MenuItem, ModuleManager>();
-
+        
         private void RegisterModuleMenuInSettings(ModuleManager moduleManager) {
-            var moduleMi = new MenuItem(moduleManager.Manifest.Name) {
+            var moduleMi = new ModuleMenuItem(moduleManager) {
                 BasicTooltipText = moduleManager.Manifest.Description,
                 Parent           = _rootModuleSettingsMenuItem
             };

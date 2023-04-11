@@ -12,7 +12,7 @@
 ## Download Blish HUD
 
 You can download Blish HUD:
-- Using the [direct download (v0.11.7)](https://github.com/blish-hud/Blish-HUD/releases/download/v0.11.7/Blish.HUD.0.11.7.zip) link.
+- Using the [direct download (v1.0.0)](https://github.com/blish-hud/Blish-HUD/releases/download/v1.0.0/Blish.HUD.1.0.0.zip) link.
 - From our [Releases](https://github.com/blish-hud/Blish-HUD/releases) page here on GitHub.
 
 ### Need Help?
@@ -40,16 +40,19 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 
 #### Prerequisites
 
-- [Visual Studio 2019](https://visualstudio.microsoft.com/vs/)
-- [MonoGame development tools](https://docs.monogame.net/articles/getting_started/1_setting_up_your_development_environment_windows.html)
-- [.NET 4.7.1 Developer Pack](https://www.microsoft.com/en-us/download/details.aspx?id=56119)
-- [Visual C++ Redistributable 2012](https://www.microsoft.com/en-us/download/details.aspx?id=30679)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
+- Individual Components that need to be installed in Visual Studio via the Visual Studio Installer:
+  - .NET Core 3.1 Runtime 
+  - .NET Framework 4.7.2 SDK
+  - .NET Framework 4.7.2 targeting pack
+  - Visual C++ Redistributable 2012
 
 #### Instructions
 
-1.  Clone the repo: `git clone https://github.com/blish-hud/Blish-HUD.git`
-2.  Launch the project solution in Visual Studio 2019.
-3.  Restore NuGet dependencies: `nuget restore`
+1.  Clone the repo: `git clone -v --recurse-submodules --progress  https://github.com/blish-hud/Blish-HUD.git`
+2.  Launch the project solution (.sln file) in Visual Studio 2022.
+3.  In the Solution Explorer right click on the solution icon. In the context menu click "Restore NuGet Packages".
+4.  Right click the solution icon again and click "Build Solution". 
 
 ### Module Development
 

@@ -88,11 +88,13 @@ namespace Glide
             bool doReverse = false;
             bool doComplete = false;
 
+            MemberLerper[] lerperSet = lerpers.ToArray();
+
             if (!initialized) {
                 i = vars.Count;
                 while (i-- > 0) {
-                    if (lerpers[i] != null) {
-                        lerpers[i].Initialize(start[i], end[i], behavior);
+                    if (lerperSet[i] != null) {
+                        lerperSet[i].Initialize(start[i], end[i], behavior);
                     }
                 }
                 initialized = true;
@@ -147,7 +149,7 @@ namespace Glide
             i = vars.Count;
             while (i-- > 0) {
                 if (vars[i] != null) {
-                    vars[i].Value = lerpers[i].Interpolate(t, vars[i].Value, behavior);
+                    vars[i].Value = lerperSet[i].Interpolate(t, vars[i].Value, behavior);
                 }
             }
 
