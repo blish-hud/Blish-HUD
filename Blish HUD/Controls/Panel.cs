@@ -125,7 +125,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void NavigateToBuiltPanel(BuildUIDelegate buildCall, object obj) {
-            this.Children.ToList().ForEach(c => c.Dispose());
+            foreach (Control child in this.Children) {
+                child.Dispose();
+            }
 
             var buildPanel = new Panel() {
                 Size = _size

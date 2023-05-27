@@ -627,16 +627,21 @@ namespace Blish_HUD.Controls {
         public Container Parent {
             get => _parent;
             set {
-                var currentParent = _parent;
+                var previousParent = _parent;
+                var newParent = value;
 
-                if (SetProperty(ref _parent, value)) {
-                    currentParent?.RemoveChild(this);
-
-                    _parent = value;
-
-                    if (this.Parent == null || !this.Parent.AddChild(this)) {
-                        _parent = null;
+                if (!ReferenceEquals(previousParent, newParent)) {
+                    if (previousParent != null && !previousParent.RemoveChild(this)) {
+                        // remove parent cancelled.
+                        return;
                     }
+
+                    if (newParent != null && !newParent.AddChild(this)) {
+                        // add parent cancelled.
+                        newParent = null;
+                    }
+
+                    this.SetProperty(ref _parent, newParent);
                 }
             }
         }

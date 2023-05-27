@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blish_HUD._Extensions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,40 +14,14 @@ namespace Blish_HUD.Controls {
         // different interface, but it will be a breaking change. We should
         // revise this the next time we make a major breaking change.
 
-        private class ControlEnumerator<TEnum> : IEnumerator<TEnum> {
-
-            private readonly IEnumerator<TEnum>   _inner;
-            private readonly ReaderWriterLockSlim _rwLock;
-
-            public ControlEnumerator(IEnumerator<TEnum> inner, ReaderWriterLockSlim rwLock) {
-                _inner  = inner;
-                _rwLock = rwLock;
-            }
-
-            public bool MoveNext() {
-                return _inner.MoveNext();
-            }
-
-            public void Reset() {
-                _inner.Reset();
-            }
-
-            public object Current => _inner.Current;
-
-            TEnum IEnumerator<TEnum>.Current => _inner.Current;
-
-            public void Dispose() {
-                if (_rwLock.IsReadLockHeld)
-                    _rwLock.ExitReadLock();
-            }
-        }
-
         private readonly List<T>              _innerList;
-        private readonly ReaderWriterLockSlim _listLock = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim _listLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-        public bool IsReadOnly => false;
+        public bool IsReadOnly { get; } = false;
 
-        public bool IsEmpty { get; private set; } = true;
+        public bool IsEmpty {
+            get => _innerList.Count == 0;
+        }
 
         public ControlCollection() {
             _innerList = new List<T>();
@@ -54,62 +29,46 @@ namespace Blish_HUD.Controls {
 
         public ControlCollection(IEnumerable<T> existingControls) {
             _innerList = new List<T>(existingControls);
-
-            this.IsEmpty = !_innerList.Any();
         }
 
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator() {
-            if (!_listLock.IsReadLockHeld)
-                _listLock.EnterReadLock();
-
-            return new ControlEnumerator<T>(_innerList.GetEnumerator(), _listLock);
+            // create a copy for safe enumeration.
+            return ((IEnumerable<T>)this.ToArray()).GetEnumerator();
         }
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
 
+        /// <inheritdoc/>
         public void Add(T item) {
-            if (this.Contains(item) || item == null) return;
-            
-            if (!_listLock.IsWriteLockHeld)
-                _listLock.EnterWriteLock();
-            _innerList.Add(item);
-            this.IsEmpty = false;
-            _listLock.ExitWriteLock();
+            using (_listLock.EnterDisposableWriteLock()) {
+                this.Insert(this.Count, item);
+            }
         }
 
         public void AddRange(IEnumerable<T> items) {
-            if (!_listLock.IsWriteLockHeld)
-                _listLock.EnterWriteLock();
-            _innerList.AddRange(items);
-            this.IsEmpty = !_innerList.Any();
-            _listLock.ExitWriteLock();
+            using (_listLock.EnterDisposableWriteLock()) {
+                T[] newItems = items.ToArray();
+
+                foreach (T item in newItems) {
+                    this.Add(item);
+                }
+            }
         }
 
+        /// <inheritdoc/>
         public void Clear() {
-            T[] oldItems = this.ToArray();
-
-            if (!_listLock.IsWriteLockHeld)
-                _listLock.EnterWriteLock();
-            _innerList.Clear();
-            this.IsEmpty = true;
-            _listLock.ExitWriteLock();
-            
-            foreach (var item in oldItems) {
-                item.Parent = null;
+            using (_listLock.EnterDisposableWriteLock()) {
+                _innerList.Clear();
             }
         }
 
+        /// <inheritdoc/>
         public bool Contains(T item) {
-            if (!_listLock.IsReadLockHeld)
-                _listLock.EnterReadLock();
-
-            try {
-                return _innerList.Contains(item);
-            } finally {
-                _listLock.ExitReadLock();
-            }
+            return this.IndexOf(item) != -1;
         }
 
         /// <summary>
@@ -120,96 +79,88 @@ namespace Blish_HUD.Controls {
             throw new InvalidOperationException($"{nameof(CopyTo)} not supported.  If using LINQ, ensure you call .ToList or .ToArray directly on {nameof(ControlCollection<T>)} first.");
         }
 
+        /// <inheritdoc/>
         public bool Remove(T item) {
-            if (!_listLock.IsWriteLockHeld)
-                _listLock.EnterWriteLock();
+            if (item == null) {
+                return false;
+            }
 
-            try {
+            using (_listLock.EnterDisposableWriteLock()) {
                 return _innerList.Remove(item);
-            } finally {
-                this.IsEmpty = !_innerList.Any();
-                _listLock.ExitWriteLock();
             }
         }
 
+        /// <inheritdoc/>
         public int Count {
             get {
-                if (!_listLock.IsReadLockHeld)
-                    _listLock.EnterReadLock();
-
-                try {
+                using (_listLock.EnterDisposableReadLock()) {
                     return _innerList.Count;
-                } finally {
-                    _listLock.ExitReadLock();
                 }
             }
         }
 
         public List<T> ToList() {
-            if (!_listLock.IsReadLockHeld)
-                _listLock.EnterReadLock();
-
-            try {
+            using (_listLock.EnterDisposableReadLock()) {
                 return new List<T>(_innerList);
-            } finally {
-                _listLock.ExitReadLock();
             }
         }
 
         public T[] ToArray() {
-            if (!_listLock.IsReadLockHeld)
-                _listLock.EnterReadLock();
-
-            try {
-                var items = new T[_innerList.Count];
-                _innerList.CopyTo(items, 0);
-                return items;
-            } finally {
-                _listLock.ExitReadLock();
+            using (_listLock.EnterDisposableReadLock()) {
+                return _innerList.ToArray();
             }
         }
 
+        /// <inheritdoc/>
         public int IndexOf(T item) {
-            if (!_listLock.IsReadLockHeld)
-                _listLock.EnterReadLock();
+            if (item == null) {
+                return -1;
+            }
 
-            try {
-                return _innerList.Count;
-            } finally {
-                _listLock.ExitReadLock();
+            using (_listLock.EnterDisposableReadLock()) {
+                return _innerList.IndexOf(item);
             }
         }
 
+        /// <inheritdoc/>
         public void Insert(int index, T item) {
-            if (!_listLock.IsWriteLockHeld)
-                _listLock.EnterWriteLock();
-            _innerList.Insert(index, item);
-            _listLock.ExitWriteLock();
+            if (item == null) {
+                return;
+            }
+
+            using (_listLock.EnterDisposableWriteLock()) {
+                if (!this.Contains(item)) {
+                    _innerList.Insert(index, item);
+                }
+            }
         }
 
+        /// <inheritdoc/>
         public void RemoveAt(int index) {
-            if (!_listLock.IsWriteLockHeld)
-                _listLock.EnterWriteLock();
-            _innerList.RemoveAt(index);
-            _listLock.ExitWriteLock();
+            using (_listLock.EnterDisposableWriteLock()) {
+                _innerList.RemoveAt(index);
+            }
         }
 
+        /// <inheritdoc/>
         public T this[int index] {
             get {
-                if (!_listLock.IsReadLockHeld)
-                    _listLock.EnterReadLock();
-
-                try {
+                using (_listLock.EnterDisposableReadLock()) {
                     return _innerList[index];
-                } finally {
-                    _listLock.ExitReadLock();
                 }
             }
             set {
-                if (!_listLock.IsWriteLockHeld)
-                    _listLock.EnterWriteLock();
-                _innerList[index] = value;
-                _listLock.ExitWriteLock();
+                if (value == null) {
+                    return;
+                }
+
+                using (_listLock.EnterDisposableWriteLock()) {
+                    int found = this.IndexOf(value);
+
+                    if (found != -1 && found != index) {
+                        _innerList[index] = value;
+                    }
+                }
             }
         }
 
