@@ -28,7 +28,8 @@ namespace Blish_HUD.Controls {
         }
 
         public ControlCollection(IEnumerable<T> existingControls) {
-            _innerList = new List<T>(existingControls);
+            T[] newItems = existingControls.Distinct().Where(control => control != null).ToArray();
+            _innerList = new List<T>(newItems);
         }
 
         /// <inheritdoc/>
@@ -50,8 +51,14 @@ namespace Blish_HUD.Controls {
         public void AddRange(IEnumerable<T> items) {
             T[] newItems = items.ToArray();
 
-            foreach (T item in newItems) {
-                this.Add(item);
+            using (_listLock.EnterDisposableWriteLock()) {
+                EnsureCapacity(_innerList.Count + newItems.Length);
+
+                foreach (T item in newItems) {
+                    if (item != null && !_innerList.Contains(item)) {
+                        _innerList.Add(item);
+                    }
+                }
             }
         }
 
@@ -146,17 +153,43 @@ namespace Blish_HUD.Controls {
                 }
             }
             set {
-                if (value == null) {
-                    return;
-                }
-
                 using (_listLock.EnterDisposableWriteLock()) {
-                    int found = _innerList.IndexOf(value);
+                    if (value == null) {
+                        _innerList.RemoveAt(index);
+                    } else {
+                        int found = _innerList.IndexOf(value);
 
-                    if (found != -1 && found != index) {
-                        _innerList[index] = value;
+                        if (found != index) {
+                            _innerList[index] = value;
+
+                            if (found != -1) {
+                                _innerList.RemoveAt(found);
+                            }
+                        }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Ensures the list has capacity for <paramref name="min"/> items.
+        /// Must be used from a Write Lock.
+        /// </summary>
+        /// <param name="min"></param>
+        private void EnsureCapacity(int min) {
+            const int MAX_ARRAY_LENGTH = 0x7FEFFFFF;
+
+            if (_innerList.Capacity < min) {
+                int num = (_innerList.Capacity == 0) ? 4 : (_innerList.Capacity * 2);
+                if ((uint)num > MAX_ARRAY_LENGTH) {
+                    num = MAX_ARRAY_LENGTH;
+                }
+
+                if (num < min) {
+                    num = min;
+                }
+
+                _innerList.Capacity = num;
             }
         }
 
