@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD._Extensions {
+﻿namespace Blish_HUD {
     using System.Threading;
 
     internal static class ReaderWriterLockSlimExtensions {
