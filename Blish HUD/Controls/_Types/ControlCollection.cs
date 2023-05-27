@@ -15,7 +15,7 @@ namespace Blish_HUD.Controls {
         // revise this the next time we make a major breaking change.
 
         private readonly List<T>              _innerList;
-        private readonly ReaderWriterLockSlim _listLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private readonly ReaderWriterLockSlim _listLock = new ReaderWriterLockSlim();
 
         public bool IsReadOnly { get; } = false;
 
@@ -125,7 +125,7 @@ namespace Blish_HUD.Controls {
             }
 
             using (_listLock.EnterDisposableWriteLock()) {
-                if (!this.Contains(item)) {
+                if (!_innerList.Contains(item)) {
                     _innerList.Insert(index, item);
                 }
             }
@@ -151,7 +151,7 @@ namespace Blish_HUD.Controls {
                 }
 
                 using (_listLock.EnterDisposableWriteLock()) {
-                    int found = this.IndexOf(value);
+                    int found = _innerList.IndexOf(value);
 
                     if (found != -1 && found != index) {
                         _innerList[index] = value;
