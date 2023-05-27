@@ -44,18 +44,14 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc/>
         public void Add(T item) {
-            using (_listLock.EnterDisposableWriteLock()) {
-                this.Insert(this.Count, item);
-            }
+            this.Insert(this.Count, item);
         }
 
         public void AddRange(IEnumerable<T> items) {
-            using (_listLock.EnterDisposableWriteLock()) {
-                T[] newItems = items.ToArray();
+            T[] newItems = items.ToArray();
 
-                foreach (T item in newItems) {
-                    this.Add(item);
-                }
+            foreach (T item in newItems) {
+                this.Add(item);
             }
         }
 
