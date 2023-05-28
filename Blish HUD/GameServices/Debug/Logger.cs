@@ -7,23 +7,33 @@ namespace Blish_HUD {
 
         #region Static
 
-        private static readonly ConcurrentDictionary<Type, Logger> _loggers = new ConcurrentDictionary<Type, Logger>();
+        private static readonly ConcurrentDictionary<string, Logger> _loggers = new ConcurrentDictionary<string, Logger>();
 
         public static Logger GetLogger(Type type) {
-            return _loggers.GetOrAdd(type, (t) => new Logger(t));
+            return _loggers.GetOrAdd(type.AssemblyQualifiedName, _ => new Logger(type));
         }
 
         public static Logger GetLogger<T>() {
-            return _loggers.GetOrAdd(typeof(T), (t) => new Logger(t));
+            return _loggers.GetOrAdd(typeof(T).AssemblyQualifiedName, _ => new Logger(typeof(T)));
+        }
+
+        public static Logger GetLogger(Type callingType, string name) {
+            return _loggers.GetOrAdd($"{callingType.AssemblyQualifiedName}_{name}", _ => new Logger(name));
+        }
+
+        public static Logger GetLogger<T>(string name) {
+            return _loggers.GetOrAdd($"{typeof(T).AssemblyQualifiedName}_{name}", _ => new Logger(name));
         }
 
         #endregion
 
         private readonly NLog.Logger _internalLogger;
 
-        private Logger(Type type) {
-            _internalLogger = LogManager.GetLogger(type.FullName);
+        private Logger(string name) {
+            _internalLogger = LogManager.GetLogger(name);
         }
+
+        private Logger(Type type) : this(type.FullName) { }
 
         #region Trace
 
