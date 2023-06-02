@@ -219,7 +219,7 @@ namespace Blish_HUD.GameIntegration {
                 }
 
                 try {
-                    this.CommandLine = newProcess.GetCommandLine();
+                    this.CommandLine = newProcess.ReadArguments();
                 } catch (Win32Exception e) {
                     this.CommandLine = string.Empty;
                     Logger.Warn(e, "A Win32Exception was encountered while trying to retrieve the process command line.");
