@@ -1,30 +1,26 @@
-using System;
-using System.Linq.Expressions;
-using System.Reflection;
+namespace Glide {
+    using System;
+    using System.Linq.Expressions;
+    using System.Reflection;
 
-namespace Glide
-{
-    internal class MemberAccessor
-    {
-        public object Target { get; private set; }
+    internal class MemberAccessor {
         public string MemberName { get; private set; }
         public Type MemberType { get; private set; }
 
-        public object Value
-        {
-            get { return getMethod(this.Target); }
-            set { setMethod(this.Target, value); }
+        public void SetValue(object target, object value) {
+            setMethod(target, value);
         }
 
-        public MemberAccessor(object target, string name, bool writeRequired = true)
-        {
+        public object GetValue(object target) {
+            return getMethod(target);
+        }
+
+        public MemberAccessor(object target, string name, bool writeRequired = true) {
             var T = target.GetType();
             PropertyInfo propInfo = null;
             FieldInfo fieldInfo = null;
-            this.Target = target;
 
-            if ((propInfo = T.GetProperty(name, flags)) != null)
-            {
+            if ((propInfo = T.GetProperty(name, flags)) != null) {
                 this.MemberType = propInfo.PropertyType;
                 this.MemberName = propInfo.Name;
 
@@ -35,8 +31,7 @@ namespace Glide
                     getMethod = Expression.Lambda<Func<object, object>>(convert, param).Compile();
                 }
 
-                if (writeRequired)
-                {
+                if (writeRequired) {
                     var param = Expression.Parameter(typeof(object));
                     var argument = Expression.Parameter(typeof(object));
                     var setterCall = Expression.Call(
@@ -46,9 +41,7 @@ namespace Glide
 
                     setMethod = Expression.Lambda<Action<object, object>>(setterCall, param, argument).Compile();
                 }
-            }
-            else if ((fieldInfo = T.GetField(name, flags)) != null)
-            {
+            } else if ((fieldInfo = T.GetField(name, flags)) != null) {
                 this.MemberType = fieldInfo.FieldType;
                 this.MemberName = fieldInfo.Name;
 
@@ -69,15 +62,13 @@ namespace Glide
 
                     setMethod = Expression.Lambda<Action<object, object>>(assignExp, self, value).Compile();
                 }
-            }
-            else
-            {
+            } else {
                 throw new Exception(string.Format("Field or {0} property '{1}' not found on object of type {2}.",
                         writeRequired ? "read/write" : "readable",
                         name, T.FullName));
             }
         }
-        
+
         protected Func<object, object> getMethod;
         protected Action<object, object> setMethod;
         private static BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
