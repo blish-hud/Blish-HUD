@@ -24,6 +24,8 @@ namespace Blish_HUD {
         private const int TARGET_MAX_FRAMETIME = 14;
         private const int MIN_QUEUED_RENDERS   = 1;
 
+        private static readonly Point MinimumUnscaledGameResolution = new Point(1024, 768);
+
         #region Load Static
 
         private static readonly Screen _spriteScreen;
@@ -470,10 +472,12 @@ namespace Blish_HUD {
         protected override void Load() { /* NOOP */ }
 
         private void Rescale() {
-            this.UIScaleMultiplier = GetDpiScaleRatio() * GetScaleRatio(GameService.Gw2Mumble.UI.UISize);
+            Point backbufferSize = new Point(
+                BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth,
+                BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
 
-            this.SpriteScreen.Size = new Point((int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  / this.UIScaleMultiplier),
-                                               (int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / this.UIScaleMultiplier));
+            this.UIScaleMultiplier = GetDpiScaleRatio() * GetScaleRatio(GameService.Gw2Mumble.UI.UISize) * MinimumUnscaledGameResolution.GetAspectRatioScale(backbufferSize);
+            this.SpriteScreen.Size = backbufferSize.UiToScale();
 
             this.UIScaleTransform = Matrix.CreateScale(this.UIScaleMultiplier);
         }
