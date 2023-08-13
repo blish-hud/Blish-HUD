@@ -66,7 +66,7 @@ namespace Blish_HUD.Controls {
 
         private void InitializeRectangles() {
             // No need to initialize anything if there is no space
-            if (Width == 0) {
+            if (Width == 0 && !_autoSizeWidth) {
                 return;
             }
 
