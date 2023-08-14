@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -175,7 +176,6 @@ namespace Blish_HUD {
         public SettingCollection GraphicsSettings { get; private set; }
 
         private SettingEntry<FramerateMethod> _frameLimiterSetting;
-        private SettingEntry<bool>            _enableVsyncSetting;
         private SettingEntry<bool>            _smoothCharacterPositionSetting;
         private SettingEntry<DpiMethod>       _dpiScalingMethodSetting;
         private SettingEntry<ManualUISize>    _UISizeSetting;
@@ -185,11 +185,6 @@ namespace Blish_HUD {
                        ? FramerateMethod.Custom
                        : _frameLimiterSetting.Value;
             set => _frameLimiterSetting.Value = value;
-        }
-
-        public bool EnableVsync {
-            get => _enableVsyncSetting.Value;
-            set => _enableVsyncSetting.Value = value;
         }
 
         public bool SmoothCharacterPosition {
@@ -261,19 +256,13 @@ namespace Blish_HUD {
                                                           () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
                                                           () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
 
-            _enableVsyncSetting = settings.DefineSetting("EnableVsync",
-                                                         true,
-                                                         () => Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName,
-                                                         () => Strings.GameServices.GraphicsService.Setting_Vsync_Description);
-
             if (_frameLimiterSetting.Value == FramerateMethod.SyncWithGame || _frameLimiterSetting.Value == FramerateMethod.Custom) {
                 // SyncWithGame is no longer supported.  It causes more problems than it solves.
                 // We revert to the default settings for both the framerate limiter and vsync.
 
                 // Likewise, Custom framerates are only possible via launch option currently.
                 // Old versions could enable it, so this fixes that.
-                _frameLimiterSetting.Value = FramerateMethod.LockedTo90Fps;
-                _enableVsyncSetting.Value  = true;
+                _frameLimiterSetting.Value = FramerateMethod.LockedTo60Fps;
             }
 
             _smoothCharacterPositionSetting = settings.DefineSetting("EnableCharacterPositionBuffer",
@@ -281,65 +270,62 @@ namespace Blish_HUD {
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
 
-            _dpiScalingMethodSetting =        settings.DefineSetting(nameof(DpiScalingMethod),
+            _dpiScalingMethodSetting = settings.DefineSetting(nameof(DpiScalingMethod),
                                                                      DpiMethod.SyncWithGame,
                                                                      () => Strings.GameServices.GraphicsService.Setting_DPIScaling_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_DPIScaling_Description);
 
-            _UISizeSetting =                  settings.DefineSetting(nameof(UIScalingMethod),
+            _UISizeSetting = settings.DefineSetting(nameof(UIScalingMethod),
                                                                      ManualUISize.SyncWithGame,
                                                                      () => Strings.GameServices.GraphicsService.Setting_UIScaling_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_UIScaling_Description);
-
-
+            
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
-            _enableVsyncSetting.SettingChanged  += EnableVsyncChanged;
+            FrameLimiterSettingMethodChanged(_frameLimiterSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
 
-            EnableVsyncChanged(_enableVsyncSetting, new ValueChangedEventArgs<bool>(_enableVsyncSetting.Value, _enableVsyncSetting.Value));
-            FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
+            _frameLimiterSetting.SetExcluded(FramerateMethod.Custom, FramerateMethod.SyncWithGame, FramerateMethod.TrueUnlimited);
 
-            _frameLimiterSetting.SetExcluded(FramerateMethod.Custom, FramerateMethod.SyncWithGame);
-
+            // User has specified a custom FPS target via launch arg
             if (ApplicationSettings.Instance.TargetFramerate > 0) {
-                // Disable frame limiter setting and update description - user has manually specified via launch arg
                 _frameLimiterSetting.SetDisabled();
                 _frameLimiterSetting.GetDescriptionFunc = () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description + Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Locked_Description;
 
-                FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.Custom, FramerateMethod.Custom));
+                FrameLimiterSettingMethodChanged(_frameLimiterSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.Custom, FramerateMethod.Custom));
+            }
+
+            // User has unlocked the FPS via launch arg
+            if (ApplicationSettings.Instance.UnlockFps) {
+                // Disable frame limiter setting and update description - user has unlocked the FPS via launch arg
+                _frameLimiterSetting.SetDisabled();
+                _frameLimiterSetting.GetDescriptionFunc = () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description + Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Locked_Description;
+
+                FrameLimiterSettingMethodChanged(_frameLimiterSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.TrueUnlimited, FramerateMethod.TrueUnlimited));
             }
         }
 
-        private void EnableVsyncChanged(object sender, ValueChangedEventArgs<bool> e) {
-            GraphicsDeviceManager.SynchronizeWithVerticalRetrace = e.NewValue;
-            GraphicsDeviceManager.ApplyChanges();
-        }
-
         private void FrameLimiterSettingMethodChanged(object sender, ValueChangedEventArgs<FramerateMethod> e) {
-            switch (e.NewValue) {
-                case FramerateMethod.Custom: // Only enabled via launch options
-                    BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate);
-                    break;
-                case FramerateMethod.SyncWithGame:
-                    BlishHud.Instance.IsFixedTimeStep   = false;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
-                    break;
-                case FramerateMethod.LockedTo30Fps:
-                    BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
-                    break;
-                case FramerateMethod.LockedTo60Fps:
-                    BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
-                    break;
-                case FramerateMethod.LockedTo90Fps:
-                    BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 90d);
-                    break;
-                case FramerateMethod.Unlimited:
-                    BlishHud.Instance.IsFixedTimeStep   = false;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
-                    break;
+            bool currentVsync = GraphicsDeviceManager.SynchronizeWithVerticalRetrace;
+
+            var frameRateLookup = new Dictionary<FramerateMethod, (bool IsFixedTimeStep, TimeSpan TargetElapsedTime, bool VSync)> {
+                { FramerateMethod.Custom,        (true, TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate), false) }, // Only enabled with launch args
+                { FramerateMethod.SyncWithGame,  (false, TimeSpan.FromMilliseconds(1), false) }, // Deprecated
+                { FramerateMethod.LockedTo30Fps, (true, TimeSpan.FromSeconds(1d / 30d), false) },
+                { FramerateMethod.LockedTo60Fps, (true, TimeSpan.FromSeconds(1d / 60d), false) },
+                { FramerateMethod.LockedTo90Fps, (true, TimeSpan.FromSeconds(1d / 90d), false) },
+                { FramerateMethod.Unlimited,     (false, TimeSpan.FromMilliseconds(1), true) }, // Unlimited with vsync (safe)
+                { FramerateMethod.TrueUnlimited, (false, TimeSpan.FromMilliseconds(1), false) } // Unlimited without vsync (unsafe)
+            };
+
+            if (frameRateLookup.TryGetValue(e.NewValue, out var settings)) {
+                BlishHud.Instance.IsFixedTimeStep = settings.IsFixedTimeStep;
+                BlishHud.Instance.TargetElapsedTime = settings.TargetElapsedTime;
+                if (settings.VSync != currentVsync) {
+                    GraphicsDeviceManager.SynchronizeWithVerticalRetrace = settings.VSync;
+                    GraphicsDeviceManager.ApplyChanges();
+                }
+            } else {
+                // Shouldn't be possible unless settings are manually modified
+                Logger.Warn($"Attempted to set the frame rate limiter to invalid value '{e.NewValue}'.  No changes to the frame limiter were made.");
             }
         }
 
