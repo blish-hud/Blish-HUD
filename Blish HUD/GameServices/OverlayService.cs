@@ -85,6 +85,8 @@ namespace Blish_HUD {
 
         private readonly object _exitLock = new object();
 
+        private bool _sotoIsLive = false;
+
         internal OverlayService() {
             SetServiceModules(this.OverlayUpdateHandler = new OverlayUpdateHandler(this));
         }
@@ -309,7 +311,15 @@ namespace Blish_HUD {
             }
         }
 
+        private void SotoFix() {
+            // TODO: We will eventually want to change this so that we detect if the active player has at least one level 80 - we use this to move the icon over one more.
+            if (DateTime.UtcNow.Date >= new DateTime(2023, 8, 22, 0, 0, 0, DateTimeKind.Utc)) {
+                _sotoIsLive = true;
+            }
+        }
+
         protected override void Load() {
+            SotoFix();
             BuildMainWindow();
             BuildCornerIcon();
         }
@@ -382,7 +392,8 @@ namespace Blish_HUD {
 
             if (GameIntegration.Gw2Instance.IsInGame) {
                 int offset = /* Offset +1 if Chinese client */ (GameIntegration.ClientType.ClientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
-                           + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
+                           + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0)
+                           + /* Offset +1 if SOTO released  */ (_sotoIsLive ? 1 : 0);
 
                 CornerIcon.LeftOffset = offset * 36;
             }
