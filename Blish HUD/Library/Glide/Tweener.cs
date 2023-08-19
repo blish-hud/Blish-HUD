@@ -176,10 +176,13 @@
 
             private void ForAllTweens(object target, Action<Tween> action) {
                 if (tweens.TryGetValue(target, out var list)) {
+                    Tween[] tweensList;
                     lock (list) {
-                        foreach (Tween tween in list) {
-                            action(tween);
-                        }
+                        tweensList = list.ToArray();
+                    }
+
+                    foreach (Tween tween in tweensList) {
+                        action(tween);
                     }
                 }
             }
