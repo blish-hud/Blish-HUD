@@ -264,11 +264,18 @@ namespace Blish_HUD.Controls {
                 Checked = !Checked;
             } else if (_overSection && !_children.IsEmpty) {
                 // Mouse was clicked inside of the mainbody of the MenuItem
+
+                GameService.Content.PlaySoundEffectByName($"menu-click-{RandomUtil.GetRandom(1,4)}");
                 ToggleAccordionState();
+
             } else if (_overSection && _canCheck) { 
                 // Mouse was clicked inside of the mainbody of the MenuItem,
                 // but we have no children, so we toggle checkbox
                 Checked = !Checked;
+
+            } else if (!_canCheck && _children.IsEmpty) {
+                // Cannot be checked and has no children, so we probably navigate views.
+                GameService.Content.PlaySoundEffectByName("menu-item-click");
             }
 
             if (_children.IsEmpty) {
@@ -331,7 +338,7 @@ namespace Blish_HUD.Controls {
         
         public bool ToggleAccordionState() {
             this.Collapsed = !_collapsed;
-
+            
             return _collapsed;
         }
 
