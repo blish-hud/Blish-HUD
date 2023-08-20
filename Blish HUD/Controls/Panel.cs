@@ -59,7 +59,7 @@ namespace Blish_HUD.Controls {
 
         protected AsyncTexture2D _icon;
         public AsyncTexture2D Icon {
-            get => _backgroundTexture;
+            get => _icon;
             set => SetProperty(ref _icon, value);
         }
 
