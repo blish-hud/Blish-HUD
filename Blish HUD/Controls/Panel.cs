@@ -1,10 +1,10 @@
-﻿using System;
-using System.ComponentModel;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using System;
+using System.ComponentModel;
 
 namespace Blish_HUD.Controls {
 
@@ -55,6 +55,12 @@ namespace Blish_HUD.Controls {
         public string Title {
             get => _title;
             set => SetProperty(ref _title, value, true);
+        }
+
+        protected AsyncTexture2D _icon;
+        public AsyncTexture2D Icon {
+            get => _backgroundTexture;
+            set => SetProperty(ref _icon, value);
         }
 
         protected AsyncTexture2D _backgroundTexture;
@@ -202,6 +208,7 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle _layoutHeaderBounds;
+        private Rectangle _layoutHeaderIconBounds;
         private Rectangle _layoutHeaderTextBounds;
 
         private Vector2   _layoutAccordionArrowOrigin;
@@ -248,7 +255,19 @@ namespace Blish_HUD.Controls {
                                                _size.Y - topOffset - bottomOffset);
 
             _layoutHeaderBounds     = new Rectangle(this.ContentRegion.Left,       0, this.ContentRegion.Width,       HEADER_HEIGHT);
-            _layoutHeaderTextBounds = new Rectangle(_layoutHeaderBounds.Left + 10, 0, _layoutHeaderBounds.Width - 10, HEADER_HEIGHT);
+
+            if (_icon?.HasTexture != null) {
+
+                var iconSize = _icon.Bounds.Size.ResizeKeepAspect(HEADER_HEIGHT, HEADER_HEIGHT);
+                _layoutHeaderIconBounds = new Rectangle(_layoutHeaderBounds.Left + 10, 2, iconSize.X, iconSize.Y);
+                _layoutHeaderTextBounds = new Rectangle(_layoutHeaderIconBounds.Right + 7, 0, _layoutHeaderBounds.Width - _layoutHeaderIconBounds.Width - 10, HEADER_HEIGHT);
+
+            } else {
+
+                _layoutHeaderIconBounds = Rectangle.Empty;
+                _layoutHeaderTextBounds = new Rectangle(_layoutHeaderBounds.Left + 10, 0, _layoutHeaderBounds.Width - 10, HEADER_HEIGHT);
+
+            }
 
             _layoutAccordionArrowOrigin = new Vector2((float)ARROW_SIZE / 2, (float)ARROW_SIZE / 2);
             _layoutAccordionArrowBounds = new Rectangle(_layoutHeaderBounds.Right - ARROW_SIZE,
@@ -331,6 +350,11 @@ namespace Blish_HUD.Controls {
                     spriteBatch.DrawOnCtrl(this,
                                            _texturePanelHeader,
                                            _layoutHeaderBounds);
+                }
+
+                // Panel header icon
+                if (_icon?.HasTexture != null) {
+                    spriteBatch.DrawOnCtrl(this, _icon, _layoutHeaderIconBounds, Color.White);
                 }
 
                 // Panel header text
