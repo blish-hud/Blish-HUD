@@ -117,36 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GraphicsSettingsSection" xml:space="preserve">
-    <value>Graphics Settings</value>
-    <comment>The name of the graphics settings section that is shown in the settings.</comment>
-  </data>
-  <data name="Setting_FramerateLimiter_DisplayName" xml:space="preserve">
-    <value>Frame Limiter</value>
-  </data>
-  <data name="Setting_FramerateLimiter_Description" xml:space="preserve">
-    <value>The method used to determine the framerate that Blish HUD should run at.</value>
-  </data>
-  <data name="Setting_FramerateLimiter_Locked_Description" xml:space="preserve">
-    <value>(Disabled because Blish HUD was started with --maxfps/--unlockfps specified)</value>
-  </data>
-  <data name="Setting_SmoothCharacterPosition_DisplayName" xml:space="preserve">
-    <value>Smooth Character Position</value>
-  </data>
-  <data name="Setting_SmoothCharacterPosition_Description" xml:space="preserve">
-    <value>If enabled, the character position is smoothed to prevent 3D overlay elements from jumping around.</value>
-  </data>
-  <data name="Setting_DPIScaling_DisplayName" xml:space="preserve">
-    <value>DPI Scaling</value>
-  </data>
-  <data name="Setting_DPIScaling_Description" xml:space="preserve">
-    <value>Enables additional scaling of the UI according to your system settings.</value>
-  </data>
-  <data name="Setting_UIScaling_Description" xml:space="preserve">
-    <value>Determines the scaling of the UI. Either sync with game or set manually.
-NOTE: 'Automatic' will only update while logged in with a character</value>
-  </data>
-  <data name="Setting_UIScaling_DisplayName" xml:space="preserve">
-    <value>Interface Size</value>
-  </data>
 </root>

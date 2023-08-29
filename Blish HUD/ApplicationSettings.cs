@@ -12,7 +12,7 @@ namespace Blish_HUD {
 
         private static ApplicationSettings _instance;
 
-        internal static ApplicationSettings Instance => _instance;
+        public static ApplicationSettings Instance => _instance;
 
         public bool CliExitEarly => this.UserFacingExceptionThrown || this.HelpInvoked;
 
@@ -142,9 +142,8 @@ namespace Blish_HUD {
         /// </summary>
         [
             Option(OPTION_UNLOCKFPS, 'F'),
-            Help("Deprecated as of v0.8.0.  Instead use the 'Frame Limiter' setting found in the Blish HUD graphics settings section.")
+            Help("Unlocks the frame limit allowing Blish HUD to render as fast as possible.  This will cause higher CPU and GPU utilization.")
         ]
-        [Obsolete("Deprecated as of v0.8.0.  Instead use the 'Frame Limiter' setting found in the Blish HUD graphics settings section.")]
         public bool UnlockFps { get; private set; }
 
         #endregion

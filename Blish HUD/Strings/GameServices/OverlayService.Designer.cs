@@ -269,6 +269,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New Prerelease Available.
+        /// </summary>
+        internal static string SelfUpdate_NewPrereleaseAvailable {
+            get {
+                return ResourceManager.GetString("SelfUpdate_NewPrereleaseAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New Release Available.
         /// </summary>
         internal static string SelfUpdate_NewUpdateAvailable {

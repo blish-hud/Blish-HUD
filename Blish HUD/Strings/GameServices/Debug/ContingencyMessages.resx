@@ -129,7 +129,7 @@ Relaunch Blish HUD as an administrator or relaunch Guild Wars 2 without admin.</
     <value>Check our &lt;a href="{0}"&gt;troubleshooting guide&lt;/a&gt; for this issue or join our &lt;a href="{1}"&gt;Discord 💢help channel&lt;/a&gt;.</value>
   </data>
   <data name="ArcDpsSameDir_Description" xml:space="preserve">
-    <value>There is a custom 'd3dll.dll' (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please move Blish HUD to a different folder.</value>
+    <value>There is a custom 'd3d11.dll' (e.g. ArcDPS) in the same directory as Blish HUD which will attempt to inject into Blish HUD and cause it to crash.  Please extract Blish HUD into a different folder.</value>
   </data>
   <data name="ArcDpsSameDir_Title" xml:space="preserve">
     <value>Blish HUD Can't Run!</value>
@@ -185,12 +185,28 @@ If you have an anti-virus or third party firewall utility, please ensure that Bl
 Please explicitly allow Blish HUD in your "Controlled Folder Access" settings or review the troubleshooting guide linked below.</value>
   </data>
   <data name="NvidiaSettings_Description" xml:space="preserve">
-    <value>The NVIDIA settings are known to compatibility issues and should be toggled.  See the linked troubleshooting guide for more information.</value>
+    <value>One of your NVIDIA settings has been changed in a way that is not compatible with Blish HUD (Blish HUD will have a black background).
+
+These settings must be set back to default:
+{0}
+
+See the linked troubleshooting guide for more information on how to resolve this issue.</value>
   </data>
   <data name="NvidiaSettings_OpenControlPanelAction" xml:space="preserve">
     <value>Open NVIDIA Control Panel</value>
   </data>
   <data name="NvidiaSettings_Title" xml:space="preserve">
     <value>Incompatible NVIDIA Settings</value>
+  </data>
+  <data name="ConflictingFullscreenSettings_Title" xml:space="preserve">
+    <value>Conflicting Graphics Settings!</value>
+  </data>
+  <data name="ConflictingFullscreenSettings_Description" xml:space="preserve">
+    <value>Blish HUD has detected that you are running the game with DirectX 9 enabled while in fullscreen.  Blish HUD is unable to function in this configuration.  To resolve, either:
+
+1) Uncheck "Enable DX9 Rendering (Deprecated)" in your in-game graphics options.
+2) Set "Resolution" to "Windowed Fullscreen" or "Window".
+
+You can reference the guide linked below for further assistance.</value>
   </data>
 </root>

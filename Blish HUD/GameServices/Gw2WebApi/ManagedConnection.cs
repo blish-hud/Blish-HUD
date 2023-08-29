@@ -16,7 +16,7 @@ namespace Blish_HUD.Gw2WebApi {
 
         public IGw2WebApiClient Client => _internalClient;
 
-        public ManagedConnection(string accessToken, TokenComplianceMiddleware tokenComplianceMiddle, ICacheMethod webApiCache, ICacheMethod renderCache = null, TimeSpan? renderCacheDuration = null) {
+        internal ManagedConnection(string accessToken, TokenComplianceMiddleware tokenComplianceMiddle, ICacheMethod webApiCache, ICacheMethod renderCache = null, TimeSpan? renderCacheDuration = null) {
             string ua = $"BlishHUD/{Program.OverlayVersion}";
 
             _internalConnection = new Connection(accessToken,

@@ -111,7 +111,7 @@ namespace Blish_HUD {
         private async void PlayerCharacterOnNameChanged(object sender, ValueEventArgs<string> e) {
             if (!_characterRepository.ContainsKey(e.Value)) {
                 // We don't currently have an API key associated to this character so we double-check the characters on each key
-                await RefreshRegisteredKeys ();
+                await RefreshRegisteredKeys();
             } else {
                 await UpdateActiveApiKey();
             }
@@ -213,7 +213,20 @@ namespace Blish_HUD {
 
         protected override void Unload() { /* NOOP */ }
 
-        protected override void Update(GameTime gameTime) { /* NOOP */ }
+        private double _checkFrequency = 0;
+
+        protected override void Update(GameTime gameTime) {
+            _checkFrequency += gameTime.ElapsedGameTime.TotalMilliseconds;
+
+            if (_checkFrequency > 180000) {
+                _checkFrequency = 0;
+
+                if (string.IsNullOrEmpty(PrivilegedConnection.Connection.AccessToken)) {
+                    RefreshRegisteredKeys();
+                }
+            }
+            
+        }
 
     }
 }

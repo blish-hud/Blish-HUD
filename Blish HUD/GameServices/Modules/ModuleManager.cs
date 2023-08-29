@@ -51,7 +51,7 @@ namespace Blish_HUD.Modules {
         [Import]
         public Module ModuleInstance { get; private set; }
 
-        public ModuleManager(Manifest manifest, ModuleState state, IDataReader dataReader) {
+        internal ModuleManager(Manifest manifest, ModuleState state, IDataReader dataReader) {
             this.Manifest   = manifest;
             this.State      = state;
             this.DataReader = dataReader;
@@ -244,6 +244,9 @@ namespace Blish_HUD.Modules {
             Disable();
 
             GameService.Module.UnregisterModule(this);
+
+            this.ModuleEnabled = null;
+            this.ModuleEnabled = null;
 
             _moduleAssembly = null;
 

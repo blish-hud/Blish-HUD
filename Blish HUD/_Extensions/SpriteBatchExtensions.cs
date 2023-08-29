@@ -193,14 +193,16 @@ namespace Blish_HUD {
             float absoluteOpacity = ctrl.AbsoluteOpacity();
 
             if (stroke) {
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               -strokeDistance), Color.Black * absoluteOpacity);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  -strokeDistance), Color.Black * absoluteOpacity);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  0),               Color.Black * absoluteOpacity);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  strokeDistance),  Color.Black * absoluteOpacity);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               strokeDistance),  Color.Black * absoluteOpacity);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, strokeDistance),  Color.Black * absoluteOpacity);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, 0),               Color.Black * absoluteOpacity);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, -strokeDistance), Color.Black * absoluteOpacity);
+                var strokePreMultiplied = Color.Black * absoluteOpacity;
+
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               -strokeDistance), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  -strokeDistance), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  0),               strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  strokeDistance),  strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               strokeDistance),  strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, strokeDistance),  strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, 0),               strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, -strokeDistance), strokePreMultiplied);
             }
 
             spriteBatch.DrawString(font, text, textPos, color * absoluteOpacity);

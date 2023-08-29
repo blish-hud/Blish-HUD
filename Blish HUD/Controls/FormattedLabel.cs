@@ -66,7 +66,7 @@ namespace Blish_HUD.Controls {
 
         private void InitializeRectangles() {
             // No need to initialize anything if there is no space
-            if (Width == 0) {
+            if (Width == 0 && !_autoSizeWidth) {
                 return;
             }
 
@@ -264,6 +264,8 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             if (finishedInitialization) {
+                float absoluteOpacity = this.AbsoluteOpacity();
+
                 foreach (var rectangle in _rectangles) {
                     var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(AbsoluteBounds);
                     var textColor = rectangle.Text.TextColor;
@@ -273,18 +275,18 @@ namespace Blish_HUD.Controls {
                     }
 
                     if (rectangle.ToDraw is string stringText) {
-                        spriteBatch.DrawString(rectangle.Text.Font, stringText, destinationRectangle.Location.ToVector2(), textColor);
+                        spriteBatch.DrawString(rectangle.Text.Font, stringText, destinationRectangle.Location.ToVector2(), textColor * absoluteOpacity);
                     } else if (rectangle.ToDraw is AsyncTexture2D texture) {
-                        spriteBatch.Draw(texture, destinationRectangle, Color.White);
+                        spriteBatch.Draw(texture, destinationRectangle, Color.White * absoluteOpacity);
                     }
 
                     if (rectangle.Text.IsUnderlined) {
-                        spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + destinationRectangle.Height), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + destinationRectangle.Height), textColor, thickness: 2);
+                        spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + destinationRectangle.Height), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + destinationRectangle.Height), textColor * absoluteOpacity, thickness: 2);
                     }
 
                     if (rectangle.Text.IsStrikeThrough) {
                         // TODO: Still seemed not centered
-                        spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + (destinationRectangle.Height / 2)), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + (destinationRectangle.Height / 2)), textColor, thickness: 2);
+                        spriteBatch.DrawLine(new Vector2(destinationRectangle.X, destinationRectangle.Y + (destinationRectangle.Height / 2)), new Vector2(destinationRectangle.X + destinationRectangle.Width, destinationRectangle.Y + (destinationRectangle.Height / 2)), textColor * absoluteOpacity, thickness: 2);
                     }
                 }
             }

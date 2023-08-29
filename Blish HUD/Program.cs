@@ -101,7 +101,7 @@ namespace Blish_HUD {
                     }
 
                     if (RestartOnExit 
-                     && (ApplicationSettings.Instance.StartGw2 > 0 
+                     && !(ApplicationSettings.Instance.StartGw2 > 0 
                       || ApplicationSettings.Instance.ProcessId > 0)) {
                         Application.Restart();
                     }
