@@ -104,7 +104,7 @@ namespace Blish_HUD.Modules.Managers {
         /// <param name="size">Size of the font.</param>
         public BitmapFont GetFont(string fontPath, ContentService.FontSize size) {
             using var gdx = GameService.Graphics.LendGraphicsDevice();
-            var       fontSystem = new FontSystem();
+            using var fontSystem = new FontSystem();
             fontSystem.AddFont(_reader.GetFileStream(fontPath));
             var dynamicFont = fontSystem.GetFont((int)size);
             var texture     = dynamicFont.FontSystem.ExistingTexture;
