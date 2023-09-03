@@ -1,9 +1,14 @@
-﻿using System;
-using System.IO;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
+using FontStashSharp;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using MonoGame.Extended.TextureAtlases;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Blish_HUD.Modules.Managers {
     public class ContentsManager : IDisposable {
@@ -93,11 +98,47 @@ namespace Blish_HUD.Modules.Managers {
         }
 
         /// <summary>
-        /// [NOT IMPLEMENTED] Loads a <see cref="BitmapFont"/> from a file.
+        /// Loads a <see cref="BitmapFont"/> from a file.
         /// </summary>
         /// <param name="fontPath">The path to the font file.</param>
-        public BitmapFont GetBitmapFont(string fontPath) {
-            throw new NotImplementedException();
+        /// <param name="size">Size of the font.</param>
+        public BitmapFont GetFont(string fontPath, ContentService.FontSize size) {
+            using var gdx = GameService.Graphics.LendGraphicsDevice();
+            var       fontSystem = new FontSystem();
+            fontSystem.AddFont(_reader.GetFileStream(fontPath));
+            var dynamicFont = fontSystem.GetFont((int)size);
+            var texture     = dynamicFont.FontSystem.ExistingTexture;
+
+            var regions  = new List<BitmapFontRegion>();
+
+            var xAdvance = 0;
+
+            // TODO: Adjust the characterset
+            string allCharacters = new string(Enumerable.Range(32, 126).Select(x => (char)x).ToArray());
+
+            var glyphs = dynamicFont.GetGlyphs(allCharacters,
+                                               Vector2.Zero,
+                                               Vector2.Zero);
+
+            foreach (var glyph in glyphs) {
+                var glyphTextureRegion = new TextureRegion2D(texture,
+                                                             glyph.Bounds.Left,
+                                                             glyph.Bounds.Top,
+                                                             glyph.Bounds.Width,
+                                                             glyph.Bounds.Height);
+
+                var region = new BitmapFontRegion(glyphTextureRegion,
+                                                  glyph.Codepoint,
+                                                  glyph.Bounds.Left,
+                                                  glyph.Bounds.Top,
+                                                  xAdvance);
+
+                regions.Add(region);
+
+                xAdvance += glyph.XAdvance;
+            }
+            
+            return new BitmapFont(Path.GetFileNameWithoutExtension(fontPath), regions, dynamicFont.LineHeight);
         }
 
         /// <summary>
