@@ -99,18 +99,20 @@ namespace Blish_HUD.Modules.Managers {
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="size">Size of the font.</param>
         public BitmapFont GetFont(string fontPath, ContentService.FontSize size) {
-            using var fontStream = _reader.GetFileStream(fontPath);
-            var buffer = new byte[fontStream.Length];
-            fontStream.Position = 0;
-            fontStream.Read(buffer, 0, buffer.Length);
-            var bakeResult = TtfFontBaker.Bake(buffer, (int)size, 1024, 1024, new[] {
-                                  CharacterRange.BasicLatin,
-                                  CharacterRange.Latin1Supplement,
-                                  CharacterRange.LatinExtendedA,
-                                  CharacterRange.Cyrillic
-                              });
-            using var gdx = GameService.Graphics.LendGraphicsDevice();
-            return bakeResult.CreateSpriteFont(gdx).ToBitmapFont();
+            long fontDataLength = _reader.GetFileBytes(fontPath, out byte[] fontData);
+
+            if (fontDataLength > 0) {
+                using var ctx = GameService.Graphics.LendGraphicsDeviceContext();
+                var bakeResult = TtfFontBaker.Bake(fontData, (int)size, 1024, 1024, new[] {
+                    CharacterRange.BasicLatin,
+                    CharacterRange.Latin1Supplement,
+                    CharacterRange.LatinExtendedA,
+                    CharacterRange.Cyrillic
+                });
+                return bakeResult.CreateSpriteFont(ctx.GraphicsDevice).ToBitmapFont();
+            }
+
+            return null;
         }
 
         /// <summary>
