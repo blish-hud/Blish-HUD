@@ -2,10 +2,8 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
-using MonoGame.Extended.TextureAtlases;
 using SpriteFontPlus;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Blish_HUD.Modules.Managers {
@@ -101,44 +99,18 @@ namespace Blish_HUD.Modules.Managers {
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="size">Size of the font.</param>
         public BitmapFont GetFont(string fontPath, ContentService.FontSize size) {
-
             using var fontStream = _reader.GetFileStream(fontPath);
             var buffer = new byte[fontStream.Length];
+            fontStream.Position = 0;
             fontStream.Read(buffer, 0, buffer.Length);
-
             var bakeResult = TtfFontBaker.Bake(buffer, (int)size, 1024, 1024, new[] {
                                   CharacterRange.BasicLatin,
                                   CharacterRange.Latin1Supplement,
                                   CharacterRange.LatinExtendedA,
                                   CharacterRange.Cyrillic
                               });
-
             using var gdx = GameService.Graphics.LendGraphicsDevice();
-            var font = bakeResult.CreateSpriteFont(gdx);
-
-            var texture = font.Texture;
-
-            var regions = new List<BitmapFontRegion>();
-
-            var glyphs = font.GetGlyphs();
-
-            foreach (var glyph in glyphs.Values) {
-                var glyphTextureRegion = new TextureRegion2D(texture,
-                                                             glyph.BoundsInTexture.Left,
-                                                             glyph.BoundsInTexture.Top,
-                                                             glyph.BoundsInTexture.Width,
-                                                             glyph.BoundsInTexture.Height);
-
-                var region = new BitmapFontRegion(glyphTextureRegion,
-                                                  glyph.Character,
-                                                  glyph.Cropping.Left,
-                                                  glyph.Cropping.Top,
-                                                  (int)glyph.WidthIncludingBearings);
-
-                regions.Add(region);
-            }
-
-            return new BitmapFont(Path.GetFileNameWithoutExtension(fontPath), regions, font.LineSpacing);
+            return bakeResult.CreateSpriteFont(gdx).ToBitmapFont();
         }
 
         /// <summary>
