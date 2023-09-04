@@ -238,7 +238,6 @@
     <PackageReference Include="DynamicLanguageRuntime" Version="1.3.2" PrivateAssets="all" />
     <PackageReference Include="EntryPoint" Version="1.3.0" PrivateAssets="all" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" PrivateAssets="all" />
-    <PackageReference Include="FontStashSharp.MonoGame" Version="1.2.8" />
     <PackageReference Include="Gapotchenko.FX.Diagnostics.Process" Version="2021.1.5" PrivateAssets="all" />
     <PackageReference Include="Gw2Sharp" Version="1.7.4" />
     <PackageReference Include="Humanizer.Core.de" Version="2.6.2" PrivateAssets="all" />
@@ -254,6 +253,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="[13.0.1]" />
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="all" />
     <PackageReference Include="SemanticVersioning" Version="1.2.2" PrivateAssets="all" />
+    <PackageReference Include="SpriteFontPlus.MonoGame" Version="0.7.0.22" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" PrivateAssets="all" />
     <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
     <PackageReference Include="protobuf-net" Version="3.0.101" PrivateAssets="all" />
