@@ -122,12 +122,12 @@ namespace Blish_HUD.Modules.Managers {
 
             if (fontDataLength > 0) {
                 using var ctx = GameService.Graphics.LendGraphicsDeviceContext();
-                var bakeResult = TtfFontBaker.Bake(fontData, (int)fontSize, 1024, 1024, new[] {
+                var bakeResult = TtfFontBaker.Bake(fontData, fontSize, 1024, 1024, new[] {
                     CharacterRange.BasicLatin,
                     CharacterRange.Latin1Supplement,
                     CharacterRange.LatinExtendedA
                 });
-                return bakeResult.CreateSpriteFont(ctx.GraphicsDevice).ToBitmapFont();
+                return bakeResult.CreateSpriteFont(ctx.GraphicsDevice).ToBitmapFont(lineHeight);
             }
 
             return null;
