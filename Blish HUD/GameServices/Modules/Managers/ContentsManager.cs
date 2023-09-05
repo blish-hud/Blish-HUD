@@ -97,14 +97,32 @@ namespace Blish_HUD.Modules.Managers {
         /// Loads a <see cref="BitmapFont"/> from a TrueTypeFont (*.ttf) file.
         /// </summary>
         /// <param name="fontPath">The path to the TTF font file.</param>
-        /// <param name="size">Size of the font.</param>
+        /// <param name="fontSize">Size of the font.</param>
         /// <param name="lineHeight">Line height for the <see cref="BitmapFont"/>. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
-        public BitmapFont GetBitmapFont(string fontPath, ContentService.FontSize size, int lineHeight = 0) {
+        public BitmapFont GetBitmapFont(string fontPath, ContentService.FontSize fontSize, int lineHeight = 0) {
+            return GetBitmapFont(fontPath, (int)fontSize, lineHeight);
+        }
+
+        /// <summary>
+        /// Loads a <see cref="BitmapFont"/> from a TrueTypeFont (*.ttf) file.
+        /// </summary>
+        /// <param name="fontPath">The path to the TTF font file.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="lineHeight">Line height for the <see cref="BitmapFont"/>. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
+        public BitmapFont GetBitmapFont(string fontPath, int fontSize, int lineHeight = 0) {
+            if (fontSize <= 0) {
+                throw new ArgumentException("Font size must be greater than 0.", nameof(fontSize));
+            }
+
+            if (lineHeight <= 0) {
+                throw new ArgumentException("Line height must be greater than 0.", nameof(lineHeight));
+            }
+
             long fontDataLength = _reader.GetFileBytes(fontPath, out byte[] fontData);
 
             if (fontDataLength > 0) {
                 using var ctx = GameService.Graphics.LendGraphicsDeviceContext();
-                var bakeResult = TtfFontBaker.Bake(fontData, (int)size, 1024, 1024, new[] {
+                var bakeResult = TtfFontBaker.Bake(fontData, (int)fontSize, 1024, 1024, new[] {
                     CharacterRange.BasicLatin,
                     CharacterRange.Latin1Supplement,
                     CharacterRange.LatinExtendedA
