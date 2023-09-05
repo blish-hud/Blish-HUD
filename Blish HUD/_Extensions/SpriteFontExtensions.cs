@@ -11,8 +11,9 @@ namespace Blish_HUD {
         /// Converts a <see cref="SpriteFont"/> to a <see cref="BitmapFont"/>.
         /// </summary>
         /// <param name="font">The <see cref="SpriteFont"/> to convert.</param>
+        /// <param name="lineHeight">Line height for the <see cref="BitmapFont"/>. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
         /// <returns>A <see cref="BitmapFont"/> as result of the conversion.</returns>
-        public static BitmapFont ToBitmapFont(this SpriteFont font) {
+        public static BitmapFont ToBitmapFont(this SpriteFont font, int lineHeight = 0) {
 
             var regions = new List<BitmapFontRegion>();
 
@@ -34,7 +35,7 @@ namespace Blish_HUD {
                 regions.Add(region);
             }
 
-            return new BitmapFont(Guid.NewGuid().ToString("n"), regions, font.LineSpacing);
+            return new BitmapFont($"{typeof(BitmapFont)}_{Guid.NewGuid():n}", regions, lineHeight > 0 ? lineHeight : font.LineSpacing);
         }
 
     }

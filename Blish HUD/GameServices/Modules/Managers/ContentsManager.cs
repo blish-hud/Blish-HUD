@@ -98,7 +98,8 @@ namespace Blish_HUD.Modules.Managers {
         /// </summary>
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="size">Size of the font.</param>
-        public BitmapFont GetFont(string fontPath, ContentService.FontSize size) {
+        /// <param name="lineHeight">Line height for the <see cref="BitmapFont"/>. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
+        public BitmapFont GetBitmapFont(string fontPath, ContentService.FontSize size, int lineHeight = 0) {
             long fontDataLength = _reader.GetFileBytes(fontPath, out byte[] fontData);
 
             if (fontDataLength > 0) {
@@ -106,8 +107,7 @@ namespace Blish_HUD.Modules.Managers {
                 var bakeResult = TtfFontBaker.Bake(fontData, (int)size, 1024, 1024, new[] {
                     CharacterRange.BasicLatin,
                     CharacterRange.Latin1Supplement,
-                    CharacterRange.LatinExtendedA,
-                    CharacterRange.Cyrillic
+                    CharacterRange.LatinExtendedA
                 });
                 return bakeResult.CreateSpriteFont(ctx.GraphicsDevice).ToBitmapFont();
             }
