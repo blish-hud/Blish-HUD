@@ -94,28 +94,13 @@ namespace Blish_HUD.Modules.Managers {
         }
 
         /// <summary>
-        /// Loads a <see cref="BitmapFont"/> from a TrueTypeFont (*.ttf) file.
+        /// Loads a <see cref="SpriteFont"/> from a TrueTypeFont (*.ttf) file.
         /// </summary>
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="fontSize">Size of the font.</param>
-        /// <param name="lineHeight">Line height for the <see cref="BitmapFont"/>. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
-        public BitmapFont GetBitmapFont(string fontPath, ContentService.FontSize fontSize, int lineHeight = 0) {
-            return GetBitmapFont(fontPath, (int)fontSize, lineHeight);
-        }
-
-        /// <summary>
-        /// Loads a <see cref="BitmapFont"/> from a TrueTypeFont (*.ttf) file.
-        /// </summary>
-        /// <param name="fontPath">The path to the TTF font file.</param>
-        /// <param name="fontSize">Size of the font.</param>
-        /// <param name="lineHeight">Line height for the <see cref="BitmapFont"/>. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
-        public BitmapFont GetBitmapFont(string fontPath, int fontSize, int lineHeight = 0) {
+        public SpriteFont GetSpriteFont(string fontPath, int fontSize) {
             if (fontSize <= 0) {
                 throw new ArgumentException("Font size must be greater than 0.", nameof(fontSize));
-            }
-
-            if (lineHeight < 0) {
-                throw new ArgumentException("Line height must be greater than 0.", nameof(lineHeight));
             }
 
             long fontDataLength = _reader.GetFileBytes(fontPath, out byte[] fontData);
@@ -127,10 +112,23 @@ namespace Blish_HUD.Modules.Managers {
                     CharacterRange.Latin1Supplement,
                     CharacterRange.LatinExtendedA
                 });
-                return bakeResult.CreateSpriteFont(ctx.GraphicsDevice).ToBitmapFont(lineHeight);
+                return bakeResult.CreateSpriteFont(ctx.GraphicsDevice);
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Loads a <see cref="BitmapFont"/> from a TrueTypeFont (*.ttf) file.
+        /// </summary>
+        /// <param name="fontPath">The path to the TTF font file.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="lineHeight">Sets the line height. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
+        public BitmapFont GetBitmapFont(string fontPath, int fontSize, int lineHeight = 0) {
+            if (lineHeight < 0) {
+                throw new ArgumentException("Line height cannot be negative.", nameof(lineHeight));
+            }
+            return GetSpriteFont(fontPath, fontSize)?.ToBitmapFont(lineHeight);
         }
 
         /// <summary>
