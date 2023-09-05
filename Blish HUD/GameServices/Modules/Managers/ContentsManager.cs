@@ -114,7 +114,7 @@ namespace Blish_HUD.Modules.Managers {
                 throw new ArgumentException("Font size must be greater than 0.", nameof(fontSize));
             }
 
-            if (lineHeight <= 0) {
+            if (lineHeight < 0) {
                 throw new ArgumentException("Line height must be greater than 0.", nameof(lineHeight));
             }
 
