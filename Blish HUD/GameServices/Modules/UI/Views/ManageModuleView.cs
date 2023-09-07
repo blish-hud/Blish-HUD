@@ -75,6 +75,8 @@ namespace Blish_HUD.Modules.UI.Views {
             }
         }
 
+        public string ModuleErrorReason { get; set; }
+
         private ModuleRunState _moduleRunState = ModuleRunState.Unloaded;
         public ModuleRunState ModuleState {
             get => _moduleRunState;
@@ -83,7 +85,7 @@ namespace Blish_HUD.Modules.UI.Views {
 
                 var (status, color) = _moduleStatusLookup[_moduleRunState];
 
-                UpdateModuleRunState(status, color);
+                UpdateModuleRunState(status, color, _moduleRunState == ModuleRunState.FatalError ? this.ModuleErrorReason : null);
 
                 UpdateHeaderLayout();
             }
@@ -351,9 +353,10 @@ namespace Blish_HUD.Modules.UI.Views {
             _moduleStateLabel.Location   = new Point(_moduleVersionLabel.Right + 8, _moduleNameLabel.Top);
         }
 
-        private void UpdateModuleRunState(string status, Color color) {
+        private void UpdateModuleRunState(string status, Color color, string tooltip = null) {
             _moduleStateLabel.Text      = status;
             _moduleStateLabel.TextColor = color;
+            _moduleStateLabel.BasicTooltipText = tooltip;
         }
 
     }
