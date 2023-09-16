@@ -98,7 +98,8 @@ namespace Blish_HUD.Modules.Managers {
         /// </summary>
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="fontSize">Size of the font.</param>
-        public SpriteFont GetSpriteFont(string fontPath, int fontSize) {
+        /// <param name="textureSize">Size of the <see cref="SpriteFont.Texture"/>.<br/>A greater <c>fontSize</c> results in bigger glyphs which may require more texture space.</param>
+        public SpriteFont GetSpriteFont(string fontPath, int fontSize, int textureSize = 1392) {
             if (fontSize <= 0) {
                 throw new ArgumentException("Font size must be greater than 0.", nameof(fontSize));
             }
@@ -107,7 +108,7 @@ namespace Blish_HUD.Modules.Managers {
 
             if (fontDataLength > 0) {
                 using var ctx = GameService.Graphics.LendGraphicsDeviceContext();
-                var bakeResult = TtfFontBaker.Bake(fontData, fontSize, 1024, 1024, new[] {
+                var bakeResult = TtfFontBaker.Bake(fontData, fontSize, textureSize, textureSize, new[] {
                     CharacterRange.BasicLatin,
                     CharacterRange.Latin1Supplement,
                     CharacterRange.LatinExtendedA
