@@ -104,6 +104,10 @@ namespace Blish_HUD.Modules.Managers {
                 throw new ArgumentException("Font size must be greater than 0.", nameof(fontSize));
             }
 
+            if (textureSize <= 0) {
+                throw new ArgumentException("Texture size must be greater than 0.", nameof(textureSize));
+            }
+
             long fontDataLength = _reader.GetFileBytes(fontPath, out byte[] fontData);
 
             if (fontDataLength > 0) {
@@ -125,11 +129,9 @@ namespace Blish_HUD.Modules.Managers {
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="fontSize">Size of the font.</param>
         /// <param name="lineHeight">Sets the line height. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
-        public BitmapFont GetBitmapFont(string fontPath, int fontSize, int lineHeight = 0) {
-            if (lineHeight < 0) {
-                throw new ArgumentException("Line height cannot be negative.", nameof(lineHeight));
-            }
-            return GetSpriteFont(fontPath, fontSize)?.ToBitmapFont(lineHeight);
+        /// <param name="textureSize">Size of the <see cref="SpriteFont.Texture"/>.<br/>A greater <c>fontSize</c> results in bigger glyphs which may require more texture space.</param>
+        public BitmapFont GetBitmapFont(string fontPath, int fontSize, int lineHeight = 0, int textureSize = 1392) {
+            return GetSpriteFont(fontPath, fontSize, textureSize)?.ToBitmapFont(lineHeight);
         }
 
         /// <summary>

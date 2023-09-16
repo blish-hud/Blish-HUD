@@ -14,6 +14,9 @@ namespace Blish_HUD {
         /// <param name="lineHeight">Line height for the <see cref="BitmapFont"/>. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
         /// <returns>A <see cref="BitmapFont"/> as result of the conversion.</returns>
         public static BitmapFont ToBitmapFont(this SpriteFont font, int lineHeight = 0) {
+            if (lineHeight < 0) {
+                throw new ArgumentException("Line height cannot be negative.", nameof(lineHeight));
+            }
 
             var regions = new List<BitmapFontRegion>();
 
