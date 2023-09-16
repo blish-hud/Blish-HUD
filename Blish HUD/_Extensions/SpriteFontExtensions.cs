@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Blish_HUD {
-    internal static class SpriteFontExtensions {
+    public static class SpriteFontExtensions {
 
         /// <summary>
         /// Converts a <see cref="SpriteFont"/> to a <see cref="BitmapFont"/>.
