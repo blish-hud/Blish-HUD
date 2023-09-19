@@ -124,13 +124,13 @@ namespace Blish_HUD.Modules.Managers {
         }
 
         /// <summary>
-        /// Loads a <see cref="BitmapFont"/> from a TrueTypeFont (*.ttf) file.
+        /// Loads a <see cref="Content.BitmapFont"/> from a TrueTypeFont (*.ttf) file.
         /// </summary>
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="fontSize">Size of the font.</param>
         /// <param name="lineHeight">Sets the line height. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
         /// <param name="textureSize">Size of the <see cref="SpriteFont.Texture"/>.<br/>A greater <c>fontSize</c> results in bigger glyphs which may require more texture space.</param>
-        public BitmapFont GetBitmapFont(string fontPath, int fontSize, int lineHeight = 0, int textureSize = 1392) {
+        public Content.BitmapFont GetBitmapFont(string fontPath, int fontSize, int lineHeight = 0, int textureSize = 1392) {
             return GetSpriteFont(fontPath, fontSize, textureSize)?.ToBitmapFont(lineHeight);
         }
 
