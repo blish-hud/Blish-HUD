@@ -1,8 +1,7 @@
-﻿using System;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
+using System;
+using BitmapFont = MonoGame.Extended.BitmapFonts.BitmapFont;
 
 namespace Blish_HUD.Controls {
     internal class FormattedLabelPart : IDisposable {

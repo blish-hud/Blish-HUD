@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.IO.Compression;
-using System.Text.RegularExpressions;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
+using BitmapFont = MonoGame.Extended.BitmapFonts.BitmapFont;
 
 namespace Blish_HUD {
 

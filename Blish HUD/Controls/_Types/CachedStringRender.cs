@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ServiceModel;
-using Blish_HUD;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
+using System;
+using System.Collections.Concurrent;
+using BitmapFont = MonoGame.Extended.BitmapFonts.BitmapFont;
 
 namespace Blish_HUD.Controls {
     public class CachedStringRender : IDisposable {
