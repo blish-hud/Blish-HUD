@@ -73,10 +73,10 @@ namespace Blish_HUD.Modules {
                 return false;
 
             if (!this.DependenciesMet) {
-                Logger.Warn($"Module {this.Manifest.Namespace} can not be loaded as not all dependencies are available. Missing: {string.Join(", ", this.Manifest.Dependencies.Where(d => d.GetDependencyDetails().CheckResult != ModuleDependencyCheckResult.Available).Select(md => $"{md.Namespace} ({md.GetDependencyDetails().CheckResult})"))}");
+                Logger.Warn($"Module {this.Manifest.Namespace} can not be loaded as not all dependencies are available. Missing: {string.Join(", ", this.GetMissingDependencies().Select(md => $"{md.Namespace} ({md.GetDependencyDetails().CheckResult})"))}");
                 return false;
             } else if (!_dependenciesAvailable && this.State.IgnoreDependencies) {
-                Logger.Warn($"Module {this.Manifest.Namespace} has not all dependencies available but is set to ignore. Missing: {string.Join(", ", this.Manifest.Dependencies.Where(d => d.GetDependencyDetails().CheckResult != ModuleDependencyCheckResult.Available).Select(md => $"{md.Namespace} ({md.GetDependencyDetails().CheckResult})"))}");
+                Logger.Warn($"Module {this.Manifest.Namespace} has not all dependencies available but is set to ignore. Missing: {string.Join(", ", this.GetMissingDependencies().Select(md => $"{md.Namespace} ({md.GetDependencyDetails().CheckResult})"))}");
             }
 
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
@@ -140,6 +140,10 @@ namespace Blish_HUD.Modules {
 
             this.State.Enabled = this.Enabled;
             GameService.Settings.Save();
+        }
+
+        private List<ModuleDependency> GetMissingDependencies() {
+            return this.Manifest.Dependencies.Where(d => d.GetDependencyDetails().CheckResult != ModuleDependencyCheckResult.Available).ToList();
         }
 
         public void DeleteModule() {
