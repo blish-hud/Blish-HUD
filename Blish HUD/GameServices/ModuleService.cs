@@ -329,42 +329,37 @@ namespace Blish_HUD {
                 return dependencyModules;
             }).ToList();
 
-            if (resolvedDependencyOrder != null) {
-                Logger.Debug($"Resolved dependency order: {string.Join(", ", resolvedDependencyOrder.Select(x => x.Manifest.Namespace).ToArray())}");
+            Logger.Debug($"Resolved dependency order: {string.Join(", ", resolvedDependencyOrder.Select(x => x.Manifest.Namespace).ToArray())}");
 
-                foreach (var module in resolvedDependencyOrder) {
-                    if (module.State.Enabled) {
-                        module.TryEnable();
-                    }
+            foreach (var module in resolvedDependencyOrder) {
+                if (module.State.Enabled) {
+                    module.TryEnable();
                 }
-            }else {
-                Logger.Error($"Could not resolve dependencies of any module.");
             }
         }
 
-        private static IEnumerable<ModuleManager> SortByDependency(IEnumerable<ModuleManager> source, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies, bool throwOnCycle = false, bool logOnCycle = true) {
+        private static IEnumerable<ModuleManager> SortByDependency(IEnumerable<ModuleManager> source, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies) {
             var sorted = new List<ModuleManager>();
             var visited = new HashSet<ModuleManager>();
 
-            foreach (var item in source)
-                VisitDependency(item, visited, sorted, dependencies, throwOnCycle, logOnCycle);
+            foreach (var item in source) {
+                VisitDependency(item, visited, sorted, dependencies);
+            }
 
             return sorted;
         }
 
-        private static void VisitDependency(ModuleManager item, HashSet<ModuleManager> visited, List<ModuleManager> sorted, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies, bool throwOnCycle, bool logOnCycle) {
+        private static void VisitDependency(ModuleManager item, HashSet<ModuleManager> visited, List<ModuleManager> sorted, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies) {
             if (!visited.Contains(item)) {
                 visited.Add(item);
 
-                foreach (var dep in dependencies(item))
-                    VisitDependency(dep, visited, sorted, dependencies, throwOnCycle, logOnCycle);
+                foreach (var dep in dependencies(item)) {
+                    VisitDependency(dep, visited, sorted, dependencies);
+                }
 
                 sorted.Add(item);
-            } else {
-                if (!sorted.Contains(item)) {
-                    if (logOnCycle) Logger.Warn($"Cyclic dependency found: {item.Manifest.Namespace}");
-                    if (throwOnCycle) throw new Exception($"Cyclic dependency found: {item.Manifest.Namespace}");
-                }
+            } else if (!sorted.Contains(item)) {
+                throw new Exception($"Cyclic dependency found: {item.Manifest.GetDetailedName()}");
             }
         }
 
