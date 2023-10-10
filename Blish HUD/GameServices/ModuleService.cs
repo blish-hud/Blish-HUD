@@ -300,8 +300,10 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
-                debugModule.State.Enabled = true;
-                _modules.Add(debugModule); // Don't start directly and let it load normally with dependency order
+                if (debugModule != null) {
+                    debugModule.State.Enabled = true;
+                    _modules.Add(debugModule); // Don't start directly and let it load normally with dependency order
+                }
             }
 
             HandleRefLoading();
@@ -325,41 +327,45 @@ namespace Blish_HUD {
                 });
 
                 return dependencyModules;
-            });
+            }).ToList();
 
-            Logger.Debug($"Resolved dependency order: {string.Join(", ", resolvedDependencyOrder?.Select(x => x.Manifest.Namespace)?.ToArray() ?? new string[0])}");
+            if (resolvedDependencyOrder != null) {
+                Logger.Debug($"Resolved dependency order: {string.Join(", ", resolvedDependencyOrder.Select(x => x.Manifest.Namespace).ToArray())}");
 
-            foreach (var module in resolvedDependencyOrder) {
-                if (module.State.Enabled) {
-                    module.TryEnable();
+                foreach (var module in resolvedDependencyOrder) {
+                    if (module.State.Enabled) {
+                        module.TryEnable();
+                    }
                 }
+            }else {
+                Logger.Error($"Could not resolve dependencies of any module.");
             }
         }
 
         private static IEnumerable<ModuleManager> SortByDependency(IEnumerable<ModuleManager> source, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies, bool throwOnCycle = false, bool logOnCycle = true) {
-            void Visit(ModuleManager item, HashSet<ModuleManager> visited, List<ModuleManager> sorted, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies, bool throwOnCycle, bool logOnCycle) {
-                if (!visited.Contains(item)) {
-                    visited.Add(item);
-
-                    foreach (var dep in dependencies(item))
-                        Visit(dep, visited, sorted, dependencies, throwOnCycle, logOnCycle);
-
-                    sorted.Add(item);
-                } else {
-                    if (!sorted.Contains(item)) {
-                        if (logOnCycle) Logger.Warn($"Cyclic dependency found: {item.Manifest.Namespace}");
-                        if (throwOnCycle) throw new Exception($"Cyclic dependency found: {item.Manifest.Namespace}");
-                    }
-                }
-            }
-
             var sorted = new List<ModuleManager>();
             var visited = new HashSet<ModuleManager>();
 
             foreach (var item in source)
-                Visit(item, visited, sorted, dependencies, throwOnCycle, logOnCycle);
+                VisitDependency(item, visited, sorted, dependencies, throwOnCycle, logOnCycle);
 
             return sorted;
+        }
+
+        private static void VisitDependency(ModuleManager item, HashSet<ModuleManager> visited, List<ModuleManager> sorted, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies, bool throwOnCycle, bool logOnCycle) {
+            if (!visited.Contains(item)) {
+                visited.Add(item);
+
+                foreach (var dep in dependencies(item))
+                    VisitDependency(dep, visited, sorted, dependencies, throwOnCycle, logOnCycle);
+
+                sorted.Add(item);
+            } else {
+                if (!sorted.Contains(item)) {
+                    if (logOnCycle) Logger.Warn($"Cyclic dependency found: {item.Manifest.Namespace}");
+                    if (throwOnCycle) throw new Exception($"Cyclic dependency found: {item.Manifest.Namespace}");
+                }
+            }
         }
 
         private MenuItem _rootModuleSettingsMenuItem;
