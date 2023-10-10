@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Blish_HUD.Content;
 
@@ -38,9 +39,11 @@ namespace Blish_HUD.Modules {
         /// </summary>
         public bool Enabled { get; private set; }
 
+        private bool _dependenciesAvailable => Manifest.Dependencies.TrueForAll(d => d.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available);
+
         public bool DependenciesMet =>
             State.IgnoreDependencies
-         || Manifest.Dependencies.TrueForAll(d => d.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available);
+         || _dependenciesAvailable;
 
         public Manifest Manifest { get; }
 
@@ -68,6 +71,13 @@ namespace Blish_HUD.Modules {
              || this.IsModuleAssemblyStateDirty                          // User updated the module after the old assembly had already been enabled.
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
                 return false;
+
+            if (!this.DependenciesMet) {
+                Logger.Warn($"Module {this.Manifest.Namespace} can not be loaded as not all dependencies are available. Missing: {string.Join(", ", this.Manifest.Dependencies.Where(d => d.GetDependencyDetails().CheckResult != ModuleDependencyCheckResult.Available).Select(md => $"{md.Namespace} ({md.GetDependencyDetails().CheckResult})"))}");
+                return false;
+            } else if (!_dependenciesAvailable && this.State.IgnoreDependencies) {
+                Logger.Warn($"Module {this.Manifest.Namespace} has not all dependencies available but is set to ignore. Missing: {string.Join(", ", this.Manifest.Dependencies.Where(d => d.GetDependencyDetails().CheckResult != ModuleDependencyCheckResult.Available).Select(md => $"{md.Namespace} ({md.GetDependencyDetails().CheckResult})"))}");
+            }
 
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 

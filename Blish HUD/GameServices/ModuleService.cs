@@ -300,7 +300,8 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
-                debugModule?.TryEnable();
+                debugModule.State.Enabled = true;
+                _modules.Add(debugModule); // Don't start directly and let it load normally with dependency order
             }
 
             HandleRefLoading();
@@ -317,20 +318,55 @@ namespace Blish_HUD {
         }
 
         private void Gw2Instance_Gw2Started(object sender, EventArgs e) {
-            foreach (var module in _modules) {
+            var resolvedDependencyOrder = SortByDependency(_modules, module => {
+                var dependencyModules = _modules.Where(m => {
+                    // Get all modules which have a dependency on the current module
+                    return module.Manifest?.Dependencies?.Any(dm => !dm.IsBlishHud && dm.Namespace == m.Manifest.Namespace) ?? false;
+                });
+
+                return dependencyModules;
+            });
+
+            Logger.Debug($"Resolved dependency order: {string.Join(", ", resolvedDependencyOrder?.Select(x => x.Manifest.Namespace)?.ToArray() ?? new string[0])}");
+
+            foreach (var module in resolvedDependencyOrder) {
                 if (module.State.Enabled) {
                     module.TryEnable();
                 }
             }
         }
 
-        private          MenuItem                            _rootModuleSettingsMenuItem;
+        private static IEnumerable<T> SortByDependency<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies, bool throwOnCycle = false) {
+            void Visit<T>(T item, HashSet<T> visited, List<T> sorted, Func<T, IEnumerable<T>> dependencies, bool throwOnCycle) {
+                if (!visited.Contains(item)) {
+                    visited.Add(item);
+
+                    foreach (var dep in dependencies(item))
+                        Visit(dep, visited, sorted, dependencies, throwOnCycle);
+
+                    sorted.Add(item);
+                } else {
+                    if (throwOnCycle && !sorted.Contains(item))
+                        throw new Exception("Cyclic dependency found");
+                }
+            }
+
+            var sorted = new List<T>();
+            var visited = new HashSet<T>();
+
+            foreach (var item in source)
+                Visit(item, visited, sorted, dependencies, throwOnCycle);
+
+            return sorted;
+        }
+
+        private MenuItem _rootModuleSettingsMenuItem;
         private readonly Dictionary<MenuItem, ModuleManager> _moduleMenus = new Dictionary<MenuItem, ModuleManager>();
         
         private void RegisterModuleMenuInSettings(ModuleManager moduleManager) {
             var moduleMi = new ModuleMenuItem(moduleManager) {
                 BasicTooltipText = moduleManager.Manifest.Description,
-                Parent           = _rootModuleSettingsMenuItem
+                Parent = _rootModuleSettingsMenuItem
             };
 
             _moduleMenus.Add(moduleMi, moduleManager);
