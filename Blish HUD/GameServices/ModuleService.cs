@@ -336,26 +336,28 @@ namespace Blish_HUD {
             }
         }
 
-        private static IEnumerable<T> SortByDependency<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies, bool throwOnCycle = false) {
-            void Visit<T>(T item, HashSet<T> visited, List<T> sorted, Func<T, IEnumerable<T>> dependencies, bool throwOnCycle) {
+        private static IEnumerable<ModuleManager> SortByDependency(IEnumerable<ModuleManager> source, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies, bool throwOnCycle = false, bool logOnCycle = true) {
+            void Visit(ModuleManager item, HashSet<ModuleManager> visited, List<ModuleManager> sorted, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies, bool throwOnCycle, bool logOnCycle) {
                 if (!visited.Contains(item)) {
                     visited.Add(item);
 
                     foreach (var dep in dependencies(item))
-                        Visit(dep, visited, sorted, dependencies, throwOnCycle);
+                        Visit(dep, visited, sorted, dependencies, throwOnCycle, logOnCycle);
 
                     sorted.Add(item);
                 } else {
-                    if (throwOnCycle && !sorted.Contains(item))
-                        throw new Exception("Cyclic dependency found");
+                    if (!sorted.Contains(item)) {
+                        if (logOnCycle) Logger.Warn($"Cyclic dependency found: {item.Manifest.Namespace}");
+                        if (throwOnCycle) throw new Exception($"Cyclic dependency found: {item.Manifest.Namespace}");
+                    }
                 }
             }
 
-            var sorted = new List<T>();
-            var visited = new HashSet<T>();
+            var sorted = new List<ModuleManager>();
+            var visited = new HashSet<ModuleManager>();
 
             foreach (var item in source)
-                Visit(item, visited, sorted, dependencies, throwOnCycle);
+                Visit(item, visited, sorted, dependencies, throwOnCycle, logOnCycle);
 
             return sorted;
         }
