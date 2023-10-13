@@ -320,16 +320,9 @@ namespace Blish_HUD {
         }
 
         private void Gw2Instance_Gw2Started(object sender, EventArgs e) {
-            var resolvedDependencyOrder = SortByDependency(_modules, module => {
-                var dependencyModules = _modules.Where(m => {
-                    // Get all modules which have a dependency on the current module
-                    return module.Manifest?.Dependencies?.Any(dm => !dm.IsBlishHud && dm.Namespace == m.Manifest.Namespace) ?? false;
-                });
+            var resolvedDependencyOrder = SortByDependencies(_modules).ToList();
 
-                return dependencyModules;
-            }).ToList();
-
-            Logger.Debug($"Resolved dependency order: {string.Join(", ", resolvedDependencyOrder.Select(x => x.Manifest.Namespace).ToArray())}");
+            Logger.Debug($"Resolved load dependency order: {string.Join(", ", resolvedDependencyOrder.Select(x => x.Manifest.Namespace).ToArray())}");
 
             foreach (var module in resolvedDependencyOrder) {
                 if (module.State.Enabled) {
@@ -338,12 +331,19 @@ namespace Blish_HUD {
             }
         }
 
-        private static IEnumerable<ModuleManager> SortByDependency(IEnumerable<ModuleManager> source, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies) {
+        private static IEnumerable<ModuleManager> SortByDependencies(IEnumerable<ModuleManager> modules) {
             var sorted = new List<ModuleManager>();
             var visited = new HashSet<ModuleManager>();
 
-            foreach (var item in source) {
-                VisitDependency(item, visited, sorted, dependencies);
+            foreach (var module in modules) {
+                VisitDependency(module, visited, sorted, m => {
+                    var dependencyModules = modules.Where(m => {
+                        // Get all modules which have a dependency on the current module
+                        return m.Manifest?.Dependencies?.Any(md => !md.IsBlishHud && md.Namespace == m.Manifest.Namespace) ?? false;
+                    });
+
+                    return dependencyModules;
+                });
             }
 
             return sorted;
@@ -432,7 +432,12 @@ namespace Blish_HUD {
         protected override void Unload() {
             GameService.GameIntegration.Gw2Instance.Gw2Started -= Gw2Instance_Gw2Started;
 
-            foreach (var module in _modules) {
+            // We need to unload modules in reverse order as modules could need to execute context methods on unload.
+            var resolvedDependencyOrder = SortByDependencies(_modules).Reverse().ToList();
+
+            Logger.Debug($"Resolved unload dependency order: {string.Join(", ", resolvedDependencyOrder.Select(x => x.Manifest.Namespace).ToArray())}");
+
+            foreach (var module in resolvedDependencyOrder) {
                 if (module.Enabled) {
                     try {
                         Logger.Info("Unloading module {module}.", module.Manifest.GetDetailedName());
