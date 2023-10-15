@@ -67,7 +67,6 @@
     <Compile Remove="Content\**" />
     <EmbeddedResource Remove="Content\**" />
     <None Remove="Content\**" />
-    <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
 
   <ItemGroup>
