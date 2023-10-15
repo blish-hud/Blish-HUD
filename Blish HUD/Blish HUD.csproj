@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <Platforms>x64</Platforms>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>WinExe</OutputType>
     <LangVersion>8</LangVersion>
@@ -247,7 +246,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" PrivateAssets="all" />
     <PackageReference Include="MonoGame.Extended" Version="[3.8.0]" />
     <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="3.8.0" PrivateAssets="all" />
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="[3.8.0.1641]" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="[3.8.1.303]" />
     <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="[13.0.1]" />
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="all" />
