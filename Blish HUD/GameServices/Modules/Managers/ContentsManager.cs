@@ -1,7 +1,6 @@
 ﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 using SpriteFontPlus;
 using System;
 using System.IO;
@@ -112,11 +111,7 @@ namespace Blish_HUD.Modules.Managers {
 
             if (fontDataLength > 0) {
                 using var ctx = GameService.Graphics.LendGraphicsDeviceContext();
-                var bakeResult = TtfFontBaker.Bake(fontData, fontSize, textureSize, textureSize, new[] {
-                    CharacterRange.BasicLatin,
-                    CharacterRange.Latin1Supplement,
-                    CharacterRange.LatinExtendedA
-                });
+                var bakeResult = TtfFontBaker.Bake(fontData, fontSize, textureSize, textureSize, ContentService.Gw2CharacterRange);
                 return bakeResult.CreateSpriteFont(ctx.GraphicsDevice);
             }
 
