@@ -7,6 +7,7 @@ namespace Blish_HUD.Controls {
     public class KeybindingAssigner : LabelBase {
 
         private const int UNIVERSAL_PADDING = 2;
+        private const int DEFAULT_LABEL_WIDTH = 183;
 
         /// <summary>
         /// Fires when the keybinding on the assigned <see cref="KeyBinding"/> is updated
@@ -107,6 +108,14 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            var textWidth = (int)Math.Ceiling(_font.MeasureString(_text).Width);
+
+            if (textWidth > _nameWidth) {
+                _nameWidth = textWidth;
+                _size.X += _nameWidth - DEFAULT_LABEL_WIDTH;
+                RecalculateLayout();
+            }
+
             // Draw white panel for keybinding name
             spriteBatch.DrawOnCtrl(this,
                                    ContentService.Textures.Pixel,

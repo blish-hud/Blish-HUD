@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private const int CONTROL_PADDING = 5;
 
-        private const int DROPDOWN_WIDTH  = 250;
+        private const int DROPDOWN_WIDTH  = 310;
         private const int DROPDOWN_HEIGHT = 27;
 
         private Label    _displayNameLabel;
@@ -78,8 +78,12 @@ namespace Blish_HUD.Settings.UI.Views {
             _displayNameLabel.Height = this.ViewTarget.Height;
 
             if (this.DefinedWidth > 0) {
-                _enumDropdown.Left    = _displayNameLabel.Right + CONTROL_PADDING;
-                this.ViewTarget.Width = _enumDropdown.Right     + CONTROL_PADDING;
+                if (_displayNameLabel.Right + CONTROL_PADDING <= 185) {
+                    _enumDropdown.Left = 185;
+                } else {
+                    _enumDropdown.Left = _displayNameLabel.Right + CONTROL_PADDING;
+                }
+                this.ViewTarget.Width = _enumDropdown.Right + CONTROL_PADDING;
             } else {
                 _enumDropdown.Location = new Point(this.ViewTarget.Width - CONTROL_PADDING - DROPDOWN_WIDTH, 0);
             }
