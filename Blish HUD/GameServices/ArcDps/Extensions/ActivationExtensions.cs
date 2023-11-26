@@ -1,4 +1,4 @@
-﻿using static Blish_HUD.ArcDps.ArcDpsEnums;
+﻿using Blish_HUD.GameServices.ArcDps.Models;
 namespace Blish_HUD.ArcDps {
     public static class ActivationExtensions {
         public static bool StartCasting(this Activation activation) {

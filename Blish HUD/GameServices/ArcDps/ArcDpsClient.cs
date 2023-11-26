@@ -1,60 +1,20 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.GameServices.ArcDps {
-    internal abstract class MessageProcessor {
-
-        public abstract void Process(byte[] message, CancellationToken ct);
-    }
-
-
-    internal abstract class MessageProcessor<T> : MessageProcessor
-        where T : Message {
-        private readonly List<Func<T, CancellationToken, Task>> listener;
-
-        public override void Process(byte[] message, CancellationToken ct) {
-            var parsedMessage = InternalProcess(message);
-            ArrayPool<byte>.Shared.Return(message);
-            Task.Run(async () => await this.SendToListener(parsedMessage, ct));
-
-        }
-
-        private async Task SendToListener(T Message, CancellationToken ct) {
-            foreach (var listener in this.listener) {
-                ct.ThrowIfCancellationRequested();
-                await listener.Invoke(Message, ct);
-            }
-        }
-
-        internal abstract T InternalProcess(byte[] message);
-
-        public void RegisterListener(Func<T, CancellationToken, Task> listener) {
-            this.listener.Add(listener);
-        }
-
-    }
-    internal class CombatEventProcessor : MessageProcessor<Message> {
-        internal override Message InternalProcess(byte[] message) {
-            throw new NotImplementedException();
-        }
-    }
-
-    internal class Message {
-
-    }
-
     internal class ArcDpsClient : IArcDpsClient {
+#if DEBUG
+        public static long Counter;
+#endif
+
         private static readonly Logger _logger = Logger.GetLogger<ArcDpsService>();
         private readonly BlockingCollection<byte[]>[] messageQueues;
         private readonly Dictionary<int, MessageProcessor> processors = new Dictionary<int, MessageProcessor>() {
@@ -82,7 +42,7 @@ namespace Blish_HUD.GameServices.ArcDps {
         }
 
         public void RegisterMessageTypeListener<T>(int type, Func<T, CancellationToken, Task> listener)
-            where T : Message {
+            where T : struct {
             var processor = (MessageProcessor<T>)this.processors[type];
             if (messageQueues[type] == null) {
                 messageQueues[type] = new BlockingCollection<byte[]>();
@@ -136,10 +96,6 @@ namespace Blish_HUD.GameServices.ArcDps {
             }
         }
 
-        public BlockingCollection<byte[]> GetMessageQueue(int messageType) {
-            return this.messageQueues[messageType];
-        }
-
         private async Task Receive(CancellationToken ct) {
             _logger.Info($"Start Receive Task for {this.Client.Client.RemoteEndPoint?.ToString()}");
             try {
@@ -161,6 +117,9 @@ namespace Blish_HUD.GameServices.ArcDps {
                     ReadFromStream(this.networkStream, messageBuffer, messageLength);
                     pool.Return(messageBuffer);
                     this.messageQueues[messageType]?.Add(messageBuffer);
+#if DEBUG
+                    Interlocked.Increment(ref Counter);
+#endif
                 }
             } catch (Exception ex) {
                 _logger.Error(ex.ToString());

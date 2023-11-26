@@ -1,5 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using Blish_HUD.GameServices.ArcDps.Models;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Blish_HUD.ArcDps.Common {
 
@@ -38,34 +41,36 @@ namespace Blish_HUD.ArcDps.Common {
             if (_enabled) return;
 
             _enabled                          =  true;
-            GameService.ArcDps.RawCombatEvent += CombatHandler;
+            GameService.ArcDps.RegisterMessageType<CombatCallback>(0, CombatHandler);
         }
 
-        private void CombatHandler(object sender, RawCombatEventArgs args) {
-            if (args.CombatEvent.Ev != null) return;
+        private Task CombatHandler(CombatCallback combatEvent, CancellationToken ct) {
+            //if (args.CombatEvent.Ev != null) return Task.CompletedTask;
 
             /* notify tracking change */
-            if (args.CombatEvent.Src.Elite != 0) return;
+            if (combatEvent.Source.Elite != 0) return Task.CompletedTask;
 
             /* add */
-            if (args.CombatEvent.Src.Profession != 0) {
-                if (_playersInSquad.ContainsKey(args.CombatEvent.Src.Name)) return;
+            if (combatEvent.Source.Profession != 0) {
+                if (_playersInSquad.ContainsKey(combatEvent.Source.Name)) return Task.CompletedTask;
 
-                string accountName = args.CombatEvent.Dst.Name.StartsWith(":")
-                                         ? args.CombatEvent.Dst.Name.Substring(1)
-                                         : args.CombatEvent.Dst.Name;
+                string accountName = combatEvent.Destination.Name.StartsWith(":")
+                                         ? combatEvent.Destination.Name.Substring(1)
+                                         : combatEvent.Destination.Name;
 
                 var player = new Player(
-                                        args.CombatEvent.Src.Name, accountName,
-                                        args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite, args.CombatEvent.Dst.Self != 0
+                                        combatEvent.Source.Name, accountName,
+                                        combatEvent.Destination.Profession, combatEvent.Destination.Elite, combatEvent.Destination.Self != 0
                                        );
 
-                if (_playersInSquad.TryAdd(args.CombatEvent.Src.Name, player)) this.PlayerAdded?.Invoke(player);
+                if (_playersInSquad.TryAdd(combatEvent.Source.Name, player)) this.PlayerAdded?.Invoke(player);
             }
             /* remove */
             else {
-                if (_playersInSquad.TryRemove(args.CombatEvent.Src.Name, out var player)) this.PlayerRemoved?.Invoke(player);
+                if (_playersInSquad.TryRemove(combatEvent.Source.Name, out var player)) this.PlayerRemoved?.Invoke(player);
             }
+
+            return Task.CompletedTask;
         }
 
         public struct Player {

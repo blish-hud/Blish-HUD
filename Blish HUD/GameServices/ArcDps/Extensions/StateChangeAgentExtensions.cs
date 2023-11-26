@@ -1,4 +1,5 @@
-﻿using static Blish_HUD.ArcDps.ArcDpsEnums;
+﻿using Blish_HUD.GameServices.ArcDps.Models;
+using static Blish_HUD.ArcDps.ArcDpsIdCollection;
 namespace Blish_HUD.ArcDps {
     public static class StateChangeAgentExtensions {
         public static bool SrcIsAgent(this StateChange state) {

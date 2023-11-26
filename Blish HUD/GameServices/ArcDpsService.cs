@@ -4,9 +4,10 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using Blish_HUD.ArcDps;
 using Blish_HUD.ArcDps.Common;
-using Blish_HUD.ArcDps.Models;
+using Blish_HUD.GameServices.ArcDps;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
@@ -14,11 +15,19 @@ namespace Blish_HUD {
     public class ArcDpsService : GameService {
         private static readonly Logger Logger = Logger.GetLogger<ArcDpsService>();
 
-        private static readonly object WatchLock = new object();
+        /// <summary>
+        /// The timespan after which ArcDPS is treated as not responding.
+        /// </summary>
+        private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
+        private readonly CancellationTokenSource _arcDpsClientCancellationTokenSource = new CancellationTokenSource();
+        private IArcDpsClient _arcDpsClient;
+        private bool _hudIsActive;
+        private Stopwatch _stopwatch;
+        private bool _subscribed;
 
-        #if DEBUG
-        public static long Counter;
-        #endif
+#if DEBUG
+        public static long Counter => ArcDpsClient.Counter;
+#endif
 
         /// <summary>
         ///     Triggered upon error of the underlaying socket listener.
@@ -38,88 +47,34 @@ namespace Blish_HUD {
         /// <summary>
         ///     Indicates if the socket listener for the arcdps service is running and arcdps sent an update in the last second.
         /// </summary>
-        public bool Running => this._server?.Running ?? false && this.RenderPresent;
+        public bool Running => this._arcDpsClient?.Client.Connected ?? false && this.RenderPresent;
 
         /// <summary>
         ///     Indicates if arcdps currently draws its HUD (not in character select, cut scenes or loading screens)
         /// </summary>
         public bool HudIsActive {
             get {
-                lock (WatchLock) {
+                lock (_stopwatch) {
                     return _hudIsActive;
                 }
             }
             private set {
-                lock (WatchLock) {
+                lock (_stopwatch) {
                     _stopwatch.Restart();
                     _hudIsActive = value;
                 }
             }
         }
 
-        /// <summary>
-        /// The timespan after which ArcDPS is treated as not responding.
-        /// </summary>
-        private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
-
-        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions =
-            new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
-
-        private bool _hudIsActive;
-
-        /// <summary>
-        /// The underlaying <see cref="SocketListener"/> connected to the ArcDPS BlishHUD Bridge.
-        /// </summary>
-        private SocketListener _server;
-
-        private Stopwatch _stopwatch;
-
-        private bool _subscribed;
-
-        public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds) {
-            if (!_subscribed) {
-                this.RawCombatEvent += DispatchSkillSubscriptions;
-                _subscribed         =  true;
-            }
-
-            foreach (uint skillId in skillIds) {
-                if (!_subscriptions.ContainsKey(skillId)) _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
-
-                _subscriptions[skillId].Add(func);
-            }
+        public void RegisterMessageType<T>(int type, Func<T, CancellationToken, Task> listener)
+            where T : struct {
+            _arcDpsClient.RegisterMessageTypeListener(type, listener);
         }
-
-        private void DispatchSkillSubscriptions(object sender, RawCombatEventArgs eventHandler) {
-            if (eventHandler.CombatEvent.Ev == null) return;
-
-            uint skillId = eventHandler.CombatEvent.Ev.SkillId;
-            if (!_subscriptions.ContainsKey(skillId)) return;
-
-            foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) action(sender, eventHandler);
-        }
-
-        /// <remarks>
-        ///     Please note that you block the socket server with whatever
-        ///     you are doing on this event. So please don't do anything
-        ///     that requires heavy work. Make your own worker thread
-        ///     if you need to.
-        ///     Also note, that this is not the main thread, so operations
-        ///     other parts of BHUD have to be thread safe.
-        /// </remarks>
-        /// <summary>
-        ///     Holds unprocessed combat data
-        /// </summary>
-        public event EventHandler<RawCombatEventArgs> RawCombatEvent;
 
         protected override void Initialize() {
-            this.Common             =  new CommonFields();
-            _stopwatch              =  new Stopwatch();
-            _server                 =  new SocketListener(200_000);
-            _server.ReceivedMessage += MessageHandler;
-            _server.OnSocketError += SocketErrorHandler;
-            #if DEBUG
-            this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
-            #endif
+            this.Common             = new CommonFields();
+            _stopwatch              = new Stopwatch();
+            _arcDpsClient           = new ArcDpsClient();
         }
 
         protected override void Load() {
@@ -139,7 +94,7 @@ namespace Blish_HUD {
         /// </summary>
         private void Start(uint processId) {
             if (this.Loaded) {
-                _server.Start(new IPEndPoint(IPAddress.Loopback, GetPort(processId)));
+                _arcDpsClient.Initialize(new IPEndPoint(IPAddress.Loopback, GetPort(processId)), _arcDpsClientCancellationTokenSource.Token);
             }
         }
 
@@ -155,37 +110,36 @@ namespace Blish_HUD {
 
         protected override void Unload() {
             Gw2Mumble.Info.ProcessIdChanged -= Start;
-            _server.ReceivedMessage -= MessageHandler;
-            _server.OnSocketError -= SocketErrorHandler;
+            _arcDpsClientCancellationTokenSource.Cancel();
 
             _stopwatch.Stop();
-            _server.Stop();
+            _arcDpsClient.Disconnect();
             this.RenderPresent = false;
         }
 
         protected override void Update(GameTime gameTime) {
             TimeSpan elapsed;
 
-            lock (WatchLock) {
+            lock (_stopwatch) {
                 elapsed = _stopwatch.Elapsed;
             }
 
             this.RenderPresent = elapsed < _leeway;
         }
 
-        private void MessageHandler(object sender, MessageData data) {
-            switch (data.Message[0]) {
-                case (byte) MessageType.ImGui:
-                    this.HudIsActive = data.Message[1] != 0;
-                    break;
-                case (byte) MessageType.CombatArea:
-                    this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
-                    break;
-                case (byte) MessageType.CombatLocal:
-                    this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
-                    break;
-            }
-        }
+        //private void MessageHandler(object sender, MessageData data) {
+        //    switch (data.Message[0]) {
+        //        case (byte) MessageType.ImGui:
+        //            this.HudIsActive = data.Message[1] != 0;
+        //            break;
+        //        case (byte) MessageType.CombatArea:
+        //            this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
+        //            break;
+        //        case (byte) MessageType.CombatLocal:
+        //            this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
+        //            break;
+        //    }
+        //}
 
         private void SocketErrorHandler(object sender, SocketError socketError) {
             // Socketlistener stops by itself.
@@ -193,25 +147,6 @@ namespace Blish_HUD {
 
             this.Error?.Invoke(this, socketError);
         }
-
-        private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType) {
-            CombatEvent message = CombatParser.ProcessCombat(data);
-
-            this.OnRawCombatEvent(new RawCombatEventArgs(message, eventType));
-        }
-
-        private void OnRawCombatEvent(RawCombatEventArgs e) {
-            this.RawCombatEvent?.Invoke(this, e);
-        }
-
-        private enum MessageType {
-
-            ImGui       = 1,
-            CombatArea  = 2,
-            CombatLocal = 3
-
-        }
-
     }
 
 }

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.GameServices.ArcDps {
-    internal class BincodeSerializer {
+    public class BincodeSerializer {
         public static class FloatConverter {
             public static class Float32Converter {
                 public static float Convert(BinaryReader reader) {
@@ -29,15 +29,15 @@ namespace Blish_HUD.GameServices.ArcDps {
                 public static VarintEncoding Instance = new VarintEncoding();
 
                 public ulong ConvertUnsigned(BinaryReader reader) {
-                    var firstByte = reader.ReadBytes(1);
+                    var firstByte = reader.ReadByte();
 
-                    if (firstByte[0] < 251) {
-                        return reader.ReadByte();
-                    } else if (firstByte[0] == 251) {
+                    if (firstByte < 251) {
+                        return firstByte;
+                    } else if (firstByte == 251) {
                         return reader.ReadUInt16();
-                    } else if (firstByte[0] == 252) {
+                    } else if (firstByte == 252) {
                         return reader.ReadUInt32();
-                    } else if (firstByte[0] == 253) {
+                    } else if (firstByte == 253) {
                         return reader.ReadUInt64();
                     } else {
                         throw new InvalidOperationException("Varint Encoding size was Int128");
@@ -70,7 +70,7 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                 public static byte ConvertUnsigned(BinaryReader reader) {
                     if (UseVarint) {
-                        return (byte)VarintEncoding.Instance.Convert(reader);
+                        return (byte)VarintEncoding.Instance.ConvertUnsigned(reader);
                     }
                     return reader.ReadByte();
                 }
@@ -86,7 +86,7 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                 public static ushort ConvertUnsigned(BinaryReader reader) {
                     if (UseVarint) {
-                        return (ushort)VarintEncoding.Instance.Convert(reader);
+                        return (ushort)VarintEncoding.Instance.ConvertUnsigned(reader);
                     }
                     return reader.ReadUInt16();
                 }
@@ -102,7 +102,7 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                 public static uint ConvertUnsigned(BinaryReader reader) {
                     if (UseVarint) {
-                        return (uint)VarintEncoding.Instance.Convert(reader);
+                        return (uint)VarintEncoding.Instance.ConvertUnsigned(reader);
                     }
                     return reader.ReadUInt32();
                 }
@@ -118,7 +118,7 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                 public static ulong ConvertUnsigned(BinaryReader reader) {
                     if (UseVarint) {
-                        return (ulong)VarintEncoding.Instance.Convert(reader);
+                        return (ulong)VarintEncoding.Instance.ConvertUnsigned(reader);
                     }
                     return reader.ReadUInt64();
                 }
