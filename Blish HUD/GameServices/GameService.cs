@@ -17,7 +17,8 @@ namespace Blish_HUD {
             Graphics        = new GraphicsService(),
             Overlay         = new OverlayService(),
             GameIntegration = new GameIntegrationService(),
-            ArcDps          = new ArcDpsServiceV2(),
+            ArcDps          = new ArcDpsService(),
+            ArcDpsV2          = new ArcDpsServiceV2(),
             Contexts        = new ContextsService(),
             Module          = new ModuleService()
         };
@@ -92,7 +93,8 @@ namespace Blish_HUD {
         public static readonly OverlayService         Overlay;
         public static readonly InputService           Input;
         public static readonly GameIntegrationService GameIntegration;
-        public static readonly ArcDpsServiceV2          ArcDps;
+        public static readonly ArcDpsService          ArcDps;
+        public static readonly ArcDpsServiceV2        ArcDpsV2;
         public static readonly ContextsService        Contexts;
         public static readonly ModuleService          Module;
 

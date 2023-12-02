@@ -1,16 +1,13 @@
-﻿using Blish_HUD.GameServices.ArcDps.V2.Models;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Blish_HUD.GameServices.ArcDps.V2 {
+namespace Blish_HUD.ArcDps.Common {
 
     public class CommonFields {
 
         /// <summary>
-        ///     Delegate which will be invoked in <see cref="PlayerAdded" /> and
-        ///     <see cref="PlayerRemoved" />
+        ///     Delegate which will be invoked in <see cref="CommonFields.PlayerAdded" /> and
+        ///     <see cref="CommonFields.PlayerRemoved" />
         /// </summary>
         public delegate void PresentPlayersChange(Player player);
 
@@ -40,47 +37,45 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
         public void Activate() {
             if (_enabled) return;
 
-            _enabled = true;
-            //GameService.ArcDps.RegisterMessageType<CombatCallback>(0, CombatHandler);
+            _enabled                          =  true;
+            GameService.ArcDps.RawCombatEvent += CombatHandler;
         }
 
-        private Task CombatHandler(CombatCallback combatEvent, CancellationToken ct) {
-            //if (args.CombatEvent.Ev != null) return Task.CompletedTask;
+        private void CombatHandler(object sender, RawCombatEventArgs args) {
+            if (args.CombatEvent.Ev != null) return;
 
             /* notify tracking change */
-            if (combatEvent.Source.Elite != 0) return Task.CompletedTask;
+            if (args.CombatEvent.Src.Elite != 0) return;
 
             /* add */
-            if (combatEvent.Source.Profession != 0) {
-                if (_playersInSquad.ContainsKey(combatEvent.Source.Name)) return Task.CompletedTask;
+            if (args.CombatEvent.Src.Profession != 0) {
+                if (_playersInSquad.ContainsKey(args.CombatEvent.Src.Name)) return;
 
-                string accountName = combatEvent.Destination.Name.StartsWith(":")
-                                         ? combatEvent.Destination.Name.Substring(1)
-                                         : combatEvent.Destination.Name;
+                string accountName = args.CombatEvent.Dst.Name.StartsWith(":")
+                                         ? args.CombatEvent.Dst.Name.Substring(1)
+                                         : args.CombatEvent.Dst.Name;
 
                 var player = new Player(
-                                        combatEvent.Source.Name, accountName,
-                                        combatEvent.Destination.Profession, combatEvent.Destination.Elite, combatEvent.Destination.Self != 0
+                                        args.CombatEvent.Src.Name, accountName,
+                                        args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite, args.CombatEvent.Dst.Self != 0
                                        );
 
-                if (_playersInSquad.TryAdd(combatEvent.Source.Name, player)) this.PlayerAdded?.Invoke(player);
+                if (_playersInSquad.TryAdd(args.CombatEvent.Src.Name, player)) this.PlayerAdded?.Invoke(player);
             }
             /* remove */
             else {
-                if (_playersInSquad.TryRemove(combatEvent.Source.Name, out var player)) this.PlayerRemoved?.Invoke(player);
+                if (_playersInSquad.TryRemove(args.CombatEvent.Src.Name, out var player)) this.PlayerRemoved?.Invoke(player);
             }
-
-            return Task.CompletedTask;
         }
 
         public struct Player {
 
             public Player(string characterName, string accountName, uint profession, uint elite, bool self) {
                 this.CharacterName = characterName;
-                this.AccountName = accountName;
-                this.Profession = profession;
-                this.Elite = elite;
-                this.Self = self;
+                this.AccountName   = accountName;
+                this.Profession    = profession;
+                this.Elite         = elite;
+                this.Self          = self;
             }
 
             /// <summary>
