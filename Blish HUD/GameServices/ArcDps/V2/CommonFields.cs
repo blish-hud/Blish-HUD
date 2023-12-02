@@ -1,16 +1,16 @@
-﻿using Blish_HUD.GameServices.ArcDps.Models;
+﻿using Blish_HUD.GameServices.ArcDps.V2.Models;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Blish_HUD.ArcDps.Common {
+namespace Blish_HUD.GameServices.ArcDps.V2 {
 
     public class CommonFields {
 
         /// <summary>
-        ///     Delegate which will be invoked in <see cref="CommonFields.PlayerAdded" /> and
-        ///     <see cref="CommonFields.PlayerRemoved" />
+        ///     Delegate which will be invoked in <see cref="PlayerAdded" /> and
+        ///     <see cref="PlayerRemoved" />
         /// </summary>
         public delegate void PresentPlayersChange(Player player);
 
@@ -40,7 +40,7 @@ namespace Blish_HUD.ArcDps.Common {
         public void Activate() {
             if (_enabled) return;
 
-            _enabled                          =  true;
+            _enabled = true;
             GameService.ArcDps.RegisterMessageType<CombatCallback>(0, CombatHandler);
         }
 
@@ -77,10 +77,10 @@ namespace Blish_HUD.ArcDps.Common {
 
             public Player(string characterName, string accountName, uint profession, uint elite, bool self) {
                 this.CharacterName = characterName;
-                this.AccountName   = accountName;
-                this.Profession    = profession;
-                this.Elite         = elite;
-                this.Self          = self;
+                this.AccountName = accountName;
+                this.Profession = profession;
+                this.Elite = elite;
+                this.Self = self;
             }
 
             /// <summary>

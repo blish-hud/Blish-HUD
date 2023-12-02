@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameServices.ArcDps.Models {
+﻿namespace Blish_HUD.GameServices.ArcDps.V2.Models {
     public enum StateChange : byte {
         None = 0,
         EnterCombat = 1,

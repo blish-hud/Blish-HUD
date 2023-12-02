@@ -1,7 +1,8 @@
-﻿using Blish_HUD.GameServices.ArcDps.Models;
-using Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras;
+﻿using Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras;
+using Blish_HUD.GameServices.ArcDps.V2;
+using Blish_HUD.GameServices.ArcDps.V2.Models;
 
-namespace Blish_HUD.GameServices.ArcDps.Extensions {
+namespace Blish_HUD.GameServices.ArcDps.V2.Extensions {
     public static class BincodeBinaryReaderExtensions {
         public static CombatCallback ParseCombatCallback(this BincodeBinaryReader reader) {
             var result = default(CombatCallback);
@@ -86,7 +87,7 @@ namespace Blish_HUD.GameServices.ArcDps.Extensions {
 
         // This is used to not make an expensive reflection typeof/GetType and wasting precious time
         private static T ParseEnum<T>(byte enumByteValue, int maxValue, T unknown)
-            where T: System.Enum {
+            where T : System.Enum {
             if (enumByteValue > maxValue) {
                 return unknown;
             }

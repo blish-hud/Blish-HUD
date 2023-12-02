@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Blish_HUD.ArcDps {
+namespace Blish_HUD.GameServices.ArcDps.V2 {
     /// <summary>
     /// ArcDps Enums and helpful extension methods.
     /// </summary>
@@ -253,7 +253,7 @@ namespace Blish_HUD.ArcDps {
                 // Enum has shifted by -1
                 if (bt <= (byte)BuffAttribute.SiphonRec - 1) {
                     // only apply +1 shift to enum higher or equal to the one removed
-                    res = bt < (byte)BuffAttribute.FlatInc ? (BuffAttribute)(bt) : (BuffAttribute)(bt + 1);
+                    res = bt < (byte)BuffAttribute.FlatInc ? (BuffAttribute)bt : (BuffAttribute)(bt + 1);
                 } else {
                     res = BuffAttribute.Unknown;
                 }

@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameServices.ArcDps.Models {
+﻿namespace Blish_HUD.GameServices.ArcDps.V2.Models {
     /// <summary>
     /// A combat event, like arcdps exposes it to its plugins
     /// </summary>

@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Blish_HUD.GameServices.ArcDps.V2;
 
 namespace Blish_HUD.GameServices.ArcDps {
     internal class ArcDpsClient : IArcDpsClient {
@@ -15,7 +16,7 @@ namespace Blish_HUD.GameServices.ArcDps {
         public static long Counter;
 #endif
 
-        private static readonly Logger _logger = Logger.GetLogger<ArcDpsService>();
+        private static readonly Logger _logger = Logger.GetLogger<ArcDpsServiceV2>();
         private readonly BlockingCollection<byte[]>[] messageQueues;
         private readonly Dictionary<int, MessageProcessor> processors = new Dictionary<int, MessageProcessor>() {
             { 0, new CombatEventProcessor() },

@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameServices.ArcDps.Models {
+﻿namespace Blish_HUD.GameServices.ArcDps.V2.Models {
     /// <summary>
     /// Infos and data about the combat event.
     /// </summary>
@@ -6,7 +6,7 @@
     /// For more information see the <see cref="https://deltaconnected.com/arcdps/api/">arcdps plugin documentation</see>.
     /// </remarks>
     public struct CombatEvent {
-        
+
         /// <summary>
         /// Time when the event was registered.
         /// </summary>

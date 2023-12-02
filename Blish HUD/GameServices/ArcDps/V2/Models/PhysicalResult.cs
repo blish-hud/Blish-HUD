@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameServices.ArcDps.Models {
+﻿namespace Blish_HUD.GameServices.ArcDps.V2.Models {
     public enum PhysicalResult : byte {
         Normal = 0,
         Critical = 1,

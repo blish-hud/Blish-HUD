@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameServices.ArcDps.Models {
+﻿namespace Blish_HUD.GameServices.ArcDps.V2.Models {
     public enum Activation : byte {
         None = 0,
         Normal = 1,

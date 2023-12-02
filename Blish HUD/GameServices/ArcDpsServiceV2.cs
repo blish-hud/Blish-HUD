@@ -6,14 +6,14 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Blish_HUD.ArcDps;
-using Blish_HUD.ArcDps.Common;
 using Blish_HUD.GameServices.ArcDps;
+using Blish_HUD.GameServices.ArcDps.V2;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
 
-    public class ArcDpsService : GameService {
-        private static readonly Logger Logger = Logger.GetLogger<ArcDpsService>();
+    public class ArcDpsServiceV2 : GameService {
+        private static readonly Logger Logger = Logger.GetLogger<ArcDpsServiceV2>();
 
         /// <summary>
         /// The timespan after which ArcDPS is treated as not responding.

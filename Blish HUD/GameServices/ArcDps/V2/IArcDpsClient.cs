@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Blish_HUD.GameServices.ArcDps {
+namespace Blish_HUD.GameServices.ArcDps.V2 {
     internal interface IArcDpsClient {
         TcpClient Client { get; }
 

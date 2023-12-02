@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Blish_HUD.GameServices.ArcDps {
+namespace Blish_HUD.GameServices.ArcDps.V2 {
     internal abstract class MessageProcessor<T> : MessageProcessor
         where T : struct {
         private readonly List<Func<T, CancellationToken, Task>> listener;
@@ -12,12 +12,12 @@ namespace Blish_HUD.GameServices.ArcDps {
         public override void Process(byte[] message, CancellationToken ct) {
             var parsedMessage = InternalProcess(message);
             ArrayPool<byte>.Shared.Return(message);
-            Task.Run(async () => await this.SendToListener(parsedMessage, ct));
+            Task.Run(async () => await SendToListener(parsedMessage, ct));
 
         }
 
         private async Task SendToListener(T Message, CancellationToken ct) {
-            foreach (var listener in this.listener) {
+            foreach (var listener in listener) {
                 ct.ThrowIfCancellationRequested();
                 await listener.Invoke(Message, ct);
             }

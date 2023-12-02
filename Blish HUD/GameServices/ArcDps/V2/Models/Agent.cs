@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameServices.ArcDps.Models {
+﻿namespace Blish_HUD.GameServices.ArcDps.V2.Models {
     /// <summary>
     /// An Agent. Could be anything that has behaviour in-game, for example a player or an NPC
     /// </summary>

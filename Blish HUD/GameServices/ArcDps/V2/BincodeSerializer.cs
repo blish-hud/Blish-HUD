@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blish_HUD.GameServices.ArcDps {
+namespace Blish_HUD.GameServices.ArcDps.V2 {
     public class BincodeSerializer {
         public static class FloatConverter {
             public static class Float32Converter {
@@ -45,8 +45,8 @@ namespace Blish_HUD.GameServices.ArcDps {
                 }
 
                 public long Convert(BinaryReader reader) {
-                    var unsigned = this.ConvertUnsigned(reader);
-                    return this.UnZigZag(unsigned);
+                    var unsigned = ConvertUnsigned(reader);
+                    return UnZigZag(unsigned);
                 }
 
                 private long UnZigZag(ulong unsigned) {
@@ -111,14 +111,14 @@ namespace Blish_HUD.GameServices.ArcDps {
             public static class Int64Converter {
                 public static long Convert(BinaryReader reader) {
                     if (UseVarint) {
-                        return (long)VarintEncoding.Instance.Convert(reader);
+                        return VarintEncoding.Instance.Convert(reader);
                     }
                     return reader.ReadInt64();
                 }
 
                 public static ulong ConvertUnsigned(BinaryReader reader) {
                     if (UseVarint) {
-                        return (ulong)VarintEncoding.Instance.ConvertUnsigned(reader);
+                        return VarintEncoding.Instance.ConvertUnsigned(reader);
                     }
                     return reader.ReadUInt64();
                 }
@@ -162,7 +162,7 @@ namespace Blish_HUD.GameServices.ArcDps {
             public static class StringConverter {
                 public static string Convert(BinaryReader reader) {
                     var size = IntConverter.USizeConverter.Convert(reader);
-                    return System.Text.Encoding.UTF8.GetString(reader.ReadBytes((int)size));
+                    return Encoding.UTF8.GetString(reader.ReadBytes((int)size));
                 }
             }
 
