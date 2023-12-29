@@ -19,6 +19,7 @@ namespace Blish_HUD.GameIntegration {
         private ToolStripItem _launchGw2Tsi;
         private ToolStripItem _launchGw2AutoTsi;
         private ToolStripItem _openBlishSettingsFolder;
+        private ToolStripItem _openBlishProgramDataFolder;
         private ToolStripItem _exitTsi;
 
         /// <summary>
@@ -76,12 +77,21 @@ namespace Blish_HUD.GameIntegration {
 
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
 
+            // Open Settings Folder
             _openBlishSettingsFolder = this.TrayIconMenu.Items.Add(Strings.GameServices.GameIntegrationService.TrayIcon_OpenSettingsFolder);
 
             _openBlishSettingsFolder.Click += delegate {
                 Process.Start(DirectoryUtil.BasePath);
             };
 
+            // Open ProgamData Folder
+            _openBlishProgramDataFolder = this.TrayIconMenu.Items.Add(Strings.GameServices.GameIntegrationService.TrayIcon_OpenProgramDataFolder);
+
+            _openBlishProgramDataFolder.Click += delegate {
+                Process.Start(DirectoryUtil.ProgramData);
+            };
+
+            // ------- & Exit
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
             _exitTsi = this.TrayIconMenu.Items.Add(string.Format(Strings.Common.Action_Exit,  Strings.Common.BlishHUD));
 

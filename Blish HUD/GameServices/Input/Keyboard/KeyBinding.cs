@@ -136,7 +136,7 @@ namespace Blish_HUD.Input {
         }
 
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
-            if ((this.ModifierKeys & activeModifiers) == this.ModifierKeys) {
+            if (activeModifiers == this.ModifierKeys) {
                 if (this.BlockSequenceFromGw2) {
                     GameService.Input.Keyboard.StageKeyBinding(this);
                 }

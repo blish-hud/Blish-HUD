@@ -209,4 +209,7 @@ See the linked troubleshooting guide for more information on how to resolve this
 
 You can reference the guide linked below for further assistance.</value>
   </data>
+  <data name="NvidiaSettings_Error" xml:space="preserve">
+    <value>'{0}' should not be '{1}'</value>
+  </data>
 </root>
