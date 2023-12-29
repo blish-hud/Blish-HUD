@@ -14,7 +14,9 @@ namespace Blish_HUD {
 
         private const string MUSIC_DIR = @"Guild Wars 2\Music";
 
-        private const string CACHE_DIR = @"Blish HUD\cache";
+        private const string PROGRAMDATA_DIR = "Blish HUD";
+
+        private const string CACHE_DIR = @"cache";
 
         /// <summary>
         /// The current root application save path used for saving settings, letting modules save data, etc.
@@ -35,7 +37,13 @@ namespace Blish_HUD {
         public static string MusicPath { get; }
 
         /// <summary>
-        /// The path used by Blish HUD to store shared cache data.  This is kept in %ProgramData% by default.
+        /// The path used by Blish HUD to store non-user data related to the application.  This is kept in '%ProgramData%\Blish HUD' by default.
+        /// This directory should likely not contain module data.
+        /// </summary>
+        public static string ProgramData { get; set; }
+
+        /// <summary>
+        /// The path used by Blish HUD to store shared cache data.  This is kept in \cache under <see cref="ProgramData"/>.
         /// </summary>
         public static string CachePath { get; }
 
@@ -43,7 +51,7 @@ namespace Blish_HUD {
             // Prepare user documents directory
             // Check if Blish directory contains "Settings" folder
             // in that case override MyDocuments location as default for portability
-            // --settings cli argument has still priority
+            // --settings cli argument still has priority
             if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Settings"))) {
                 BasePath = ApplicationSettings.Instance.UserSettingsPath
                         ?? Path.Combine(Directory.GetCurrentDirectory(), "Settings");
@@ -54,11 +62,15 @@ namespace Blish_HUD {
                                         ADDON_DIR);
             }
 
-            CreateDir(BasePath);
+            // Directories under ProgramData
+            CreateDir(ProgramData = ApplicationSettings.Instance.ProgramDataPath
+                                 ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData,
+                                                                           Environment.SpecialFolderOption.DoNotVerify), PROGRAMDATA_DIR));
 
-            // Cache path is shared and not kept within the standard settings folder.
-            CreateDir(CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData,
-                                                                         Environment.SpecialFolderOption.DoNotVerify), CACHE_DIR));
+            CreateDir(CachePath = Path.Combine(ProgramData, CACHE_DIR));
+
+            // Directories under documents
+            CreateDir(BasePath);
 
             CreateDir(ScreensPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                            Environment.SpecialFolderOption.DoNotVerify), SCREENS_DIR));

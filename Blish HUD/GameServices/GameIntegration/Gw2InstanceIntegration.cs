@@ -292,6 +292,8 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private Process GetGw2ProcessByPID(int pid, string src) {
+            if (pid == 0) return null; // Fix reading empty process. Caused by MumbleLink mock tools.
+
             try {
                 return Process.GetProcessById(pid);
             } catch (ArgumentException) {

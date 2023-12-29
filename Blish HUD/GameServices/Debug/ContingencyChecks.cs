@@ -102,7 +102,7 @@ namespace Blish_HUD.Debug {
                         SettingValue<uint> settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
                         string val = settingValue?.ValueName ?? value.ToString();
 
-                        errors.Add($"'{settingMeta.SettingName}' is '{val}'");
+                        errors.Add(string.Format(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Error, settingMeta.SettingName, val));
                     }
                 }
 
