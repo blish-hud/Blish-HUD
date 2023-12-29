@@ -259,6 +259,15 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; should not be &apos;{1}&apos;.
+        /// </summary>
+        internal static string NvidiaSettings_Error {
+            get {
+                return ResourceManager.GetString("NvidiaSettings_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open NVIDIA Control Panel.
         /// </summary>
         internal static string NvidiaSettings_OpenControlPanelAction {
