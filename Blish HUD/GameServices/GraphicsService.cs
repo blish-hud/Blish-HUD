@@ -462,7 +462,13 @@ namespace Blish_HUD {
                 BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth,
                 BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
 
-            this.UIScaleMultiplier = GetDpiScaleRatio() * GetScaleRatio(GameService.Gw2Mumble.UI.UISize) * MinimumUnscaledGameResolution.GetAspectRatioScale(backbufferSize);
+            int integerDpi = (int)GetDpiScaleRatio();
+            Point scaledMinimumGameResolution = MinimumUnscaledGameResolution * new Point(integerDpi, integerDpi);
+
+            this.UIScaleMultiplier = GetDpiScaleRatio()
+              * GetScaleRatio(GameService.Gw2Mumble.UI.UISize)
+              * scaledMinimumGameResolution.GetAspectRatioScale(backbufferSize);
+
             this.SpriteScreen.Size = backbufferSize.UiToScale();
 
             this.UIScaleTransform = Matrix.CreateScale(this.UIScaleMultiplier);

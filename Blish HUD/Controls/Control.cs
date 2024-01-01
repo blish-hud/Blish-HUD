@@ -191,10 +191,12 @@ namespace Blish_HUD.Controls {
         /// </summary>
         protected virtual void OnLeftMouseButtonPressed(MouseEventArgs e) {
             this.LeftMouseButtonPressed?.Invoke(this, e);
+
+            _clickPrimed = true;
         }
 
         private double _lastClickTime = 0;
-
+        private bool _clickPrimed = false;
 
         /// <summary>
         /// Called when a left mouse button release occurs on the <see cref="Control"/>.
@@ -203,7 +205,7 @@ namespace Blish_HUD.Controls {
         protected virtual void OnLeftMouseButtonReleased(MouseEventArgs e) {
             this.LeftMouseButtonReleased?.Invoke(this, e);
 
-            if (_enabled) {
+            if (_enabled && _clickPrimed) {
                 // Distinguish click from double-click
                 if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastClickTime < SystemInformation.DoubleClickTime) {
                     OnClick(new MouseEventArgs(e.EventType, true));
@@ -260,6 +262,8 @@ namespace Blish_HUD.Controls {
         /// </summary>
         protected virtual void OnMouseLeft(MouseEventArgs e) {
             this.MouseLeft?.Invoke(this, e);
+
+            _clickPrimed = false;
         }
 
         /// <summary>

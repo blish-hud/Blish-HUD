@@ -219,7 +219,7 @@ namespace Blish_HUD.GameIntegration {
                 }
 
                 try {
-                    this.CommandLine = newProcess.GetCommandLine();
+                    this.CommandLine = newProcess.ReadArguments();
                 } catch (Win32Exception e) {
                     this.CommandLine = string.Empty;
                     Logger.Warn(e, "A Win32Exception was encountered while trying to retrieve the process command line.");
@@ -292,6 +292,8 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private Process GetGw2ProcessByPID(int pid, string src) {
+            if (pid == 0) return null; // Fix reading empty process. Caused by MumbleLink mock tools.
+
             try {
                 return Process.GetProcessById(pid);
             } catch (ArgumentException) {
