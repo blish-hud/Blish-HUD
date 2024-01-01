@@ -19,7 +19,6 @@ namespace Blish_HUD.Debug {
             CheckArcDps11Injected();
             CheckMinTls12();
             CheckControlledFolderAccessBlocking();
-            CheckNvidiaControlPanelSettings();
         }
 
         /// <summary>
