@@ -45,6 +45,7 @@ namespace Blish_HUD {
          * P, pid       - The PID of the process to overlay.
          * r, ref       - The path to the ref.dat file.
          * s, settings  - The path where Blish HUD will save settings and other files.
+         * a, progdata  - The path where Blish HUD will save non-user data.
          * w, window    - The name of the window to overlay.
          * g, startgw2  - The start mode for Gw2 (0 = don't start, 1 = start gw2, 2 = start gw2 autologin).
          */
@@ -115,6 +116,16 @@ namespace Blish_HUD {
             Help("The path where Blish HUD will save settings and other files.")
         ]
         public string UserSettingsPath { get; private set; }
+
+        public const string OPTION_PROGRAMDATA = "progdata";
+        /// <summary>
+        /// The path used by Blish HUD to store non-user data related to the application.
+        /// </summary>
+        [
+            OptionParameter(OPTION_PROGRAMDATA, 'a'),
+            Help("The path used by Blish HUD to store non-user data related to the application.")
+        ]
+        public string ProgramDataPath { get; private set; }
 
         public const string OPTION_REFPATH = "ref";
         /// <summary>
