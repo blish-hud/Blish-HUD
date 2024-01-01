@@ -258,9 +258,8 @@ namespace Blish_HUD.Controls {
 
             if (_icon?.HasTexture != null) {
 
-                var iconSize = _icon.Bounds.Size.ResizeKeepAspect(HEADER_HEIGHT, HEADER_HEIGHT);
-                _layoutHeaderIconBounds = new Rectangle(_layoutHeaderBounds.Left + 10, 2, iconSize.X, iconSize.Y);
-                _layoutHeaderTextBounds = new Rectangle(_layoutHeaderIconBounds.Right + 7, 0, _layoutHeaderBounds.Width - _layoutHeaderIconBounds.Width - 10, HEADER_HEIGHT);
+                _layoutHeaderIconBounds = new Rectangle(_layoutHeaderBounds.Left + 3, 3, HEADER_HEIGHT - 6, HEADER_HEIGHT - 6);
+                _layoutHeaderTextBounds = new Rectangle(_layoutHeaderIconBounds.Right + 5, 0, _layoutHeaderBounds.Width - _layoutHeaderIconBounds.Width, HEADER_HEIGHT);
 
             } else {
 
