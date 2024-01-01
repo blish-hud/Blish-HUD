@@ -338,7 +338,6 @@ namespace Blish_HUD.Controls {
         
         public bool ToggleAccordionState() {
             this.Collapsed = !_collapsed;
-            
             return _collapsed;
         }
 
