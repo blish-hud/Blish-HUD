@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Blish_HUD.Content;
 
@@ -40,7 +41,7 @@ namespace Blish_HUD.Modules {
 
         public bool DependenciesMet =>
             State.IgnoreDependencies
-         || Manifest.Dependencies.TrueForAll(d => d.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available);
+         || this.AreDependenciesAvailable();
 
         public Manifest Manifest { get; }
 
@@ -68,6 +69,13 @@ namespace Blish_HUD.Modules {
              || this.IsModuleAssemblyStateDirty                          // User updated the module after the old assembly had already been enabled.
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
                 return false;
+
+            if (!this.DependenciesMet) {
+                Logger.Warn($"Module {this.Manifest.GetDetailedName()} can not be loaded as not all dependencies are available. Missing: {string.Join(", ", this.GetMissingDependencies().Select(md => $"{md.Namespace} ({md.GetDependencyDetails().CheckResult})"))}");
+                return false;
+            } else if (!this.AreDependenciesAvailable() && this.State.IgnoreDependencies) {
+                Logger.Warn($"Module {this.Manifest.GetDetailedName()} has not all dependencies available but is set to ignore. Missing: {string.Join(", ", this.GetMissingDependencies().Select(md => $"{md.Namespace} ({md.GetDependencyDetails().CheckResult})"))}");
+            }
 
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 
@@ -132,10 +140,18 @@ namespace Blish_HUD.Modules {
             GameService.Settings.Save();
         }
 
+        private List<ModuleDependency> GetMissingDependencies() {
+            return this.Manifest.Dependencies.Where(d => d.GetDependencyDetails().CheckResult != ModuleDependencyCheckResult.Available).ToList();
+        }
+
         public void DeleteModule() {
             Disable();
             GameService.Module.UnregisterModule(this);
             this.DataReader.DeleteRoot();
+        }
+
+        private bool AreDependenciesAvailable() {
+            return Manifest.Dependencies.TrueForAll(d => d.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available);
         }
 
         private Assembly LoadPackagedAssembly(string assemblyPath) {

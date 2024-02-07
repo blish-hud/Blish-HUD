@@ -5,7 +5,7 @@
     },
     "PowerShell HUD": {
       "commandName": "Project",
-      "commandLineArgs": "-p powershell -w ConsoleWindowClass"
+      "commandLineArgs": " --process WindowsTerminal --window \"Windows PowerShell\" "
     }
   }
 }

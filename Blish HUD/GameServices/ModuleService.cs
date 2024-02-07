@@ -300,7 +300,10 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
-                debugModule?.TryEnable();
+                if (debugModule != null) {
+                    debugModule.State.Enabled = true;
+                    _modules.Add(debugModule); // Don't start directly and let it load normally with dependency order
+                }
             }
 
             HandleRefLoading();
@@ -317,20 +320,56 @@ namespace Blish_HUD {
         }
 
         private void Gw2Instance_Gw2Started(object sender, EventArgs e) {
-            foreach (var module in _modules) {
+            var resolvedDependencyOrder = SortByDependencies(_modules).ToList();
+
+            Logger.Debug($"Resolved load dependency order: {string.Join(", ", resolvedDependencyOrder.Select(x => x.Manifest.Namespace).ToArray())}");
+
+            foreach (var module in resolvedDependencyOrder) {
                 if (module.State.Enabled) {
                     module.TryEnable();
                 }
             }
         }
 
-        private          MenuItem                            _rootModuleSettingsMenuItem;
+        private static IEnumerable<ModuleManager> SortByDependencies(IEnumerable<ModuleManager> modules) {
+            var sorted = new List<ModuleManager>();
+            var visited = new HashSet<ModuleManager>();
+
+            foreach (var module in modules) {
+                VisitDependency(module, visited, sorted, m => {
+                    var dependencyModules = modules.Where(m => {
+                        // Get all modules which have a dependency on the current module
+                        return m.Manifest?.Dependencies?.Any(md => !md.IsBlishHud && md.Namespace == m.Manifest.Namespace) ?? false;
+                    });
+
+                    return dependencyModules;
+                });
+            }
+
+            return sorted;
+        }
+
+        private static void VisitDependency(ModuleManager item, HashSet<ModuleManager> visited, List<ModuleManager> sorted, Func<ModuleManager, IEnumerable<ModuleManager>> dependencies) {
+            if (!visited.Contains(item)) {
+                visited.Add(item);
+
+                foreach (var dep in dependencies(item)) {
+                    VisitDependency(dep, visited, sorted, dependencies);
+                }
+
+                sorted.Add(item);
+            } else if (!sorted.Contains(item)) {
+                throw new Exception($"Cyclic dependency found: {item.Manifest.GetDetailedName()}");
+            }
+        }
+
+        private MenuItem _rootModuleSettingsMenuItem;
         private readonly Dictionary<MenuItem, ModuleManager> _moduleMenus = new Dictionary<MenuItem, ModuleManager>();
         
         private void RegisterModuleMenuInSettings(ModuleManager moduleManager) {
             var moduleMi = new ModuleMenuItem(moduleManager) {
                 BasicTooltipText = moduleManager.Manifest.Description,
-                Parent           = _rootModuleSettingsMenuItem
+                Parent = _rootModuleSettingsMenuItem
             };
 
             _moduleMenus.Add(moduleMi, moduleManager);
@@ -393,7 +432,12 @@ namespace Blish_HUD {
         protected override void Unload() {
             GameService.GameIntegration.Gw2Instance.Gw2Started -= Gw2Instance_Gw2Started;
 
-            foreach (var module in _modules) {
+            // We need to unload modules in reverse order as modules could need to execute context methods on unload.
+            var resolvedDependencyOrder = SortByDependencies(_modules).Reverse().ToList();
+
+            Logger.Debug($"Resolved unload dependency order: {string.Join(", ", resolvedDependencyOrder.Select(x => x.Manifest.Namespace).ToArray())}");
+
+            foreach (var module in resolvedDependencyOrder) {
                 if (module.Enabled) {
                     try {
                         Logger.Info("Unloading module {module}.", module.Manifest.GetDetailedName());
