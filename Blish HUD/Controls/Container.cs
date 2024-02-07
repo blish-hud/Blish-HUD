@@ -124,6 +124,60 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _autoSizePadding, value);
         }
 
+        protected Scrollbar _panelScrollbar;
+
+        protected Vector2 _scrollPadding = new Vector2(4, 0);
+        /// <summary>
+        /// Padding on the left side of the <see cref="Scrollbar"/>.
+        /// </summary>
+        public Vector2 ScrollPadding {
+            get => _scrollPadding;
+            set => SetProperty(ref _scrollPadding, value, true);
+        }
+
+        /// <summary>
+        /// Indicates whether or not there is a <see cref="Scrollbar"/>  drawn inside the <see cref="Panel"/>.
+        /// </summary>
+        public bool ScrollbarVisible {
+            //get => _panelScrollbar != null && _panelScrollbar.Drawn;
+            //get => _panelScrollbar != null;
+            get => _scrollbarVisible;
+            protected set => SetProperty(ref _scrollbarVisible, value, true);
+        }
+        protected bool _scrollbarVisible = false;
+
+        /// <summary>
+        /// Space which is taken from the <see cref="Scrollbar"/> to be drawn inside the <see cref="Panel"/>.
+        /// </summary>
+        public int ScrollbarWidth {
+            get => _panelScrollbar != null ? (_panelScrollbar.ScrollbarWidth + (int) ScrollPadding.X) : 0;
+        }
+
+        protected Point _maxSize = Point.Zero;
+        /// <summary>
+        /// Maximum Size the <see cref="Container"/> can autoresize to.
+        /// </summary>
+        public Point MaxSize {
+            get => _maxSize;
+            protected set => SetProperty(ref _maxSize, value, true);
+        }
+
+        /// <summary>
+        /// Maximum Width the <see cref="Container"/> can autoresize to.
+        /// </summary>
+        public int MaxWidth {
+            get => _maxSize.X;
+            protected set => SetProperty(ref _maxSize.X, value, true);
+        }
+
+        /// <summary>
+        /// Maximum Height the <see cref="Container"/> can autoresize to.
+        /// </summary>
+        public int MaxHeight{
+            get => _maxSize.Y;
+            protected set => SetProperty(ref _maxSize.Y, value, true);
+        }
+
         protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
 
         /// <summary>
@@ -162,6 +216,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public bool AddChild(Control child) {
             if (_children.Contains(child)) return true;
+            if (_panelScrollbar != null && child == _panelScrollbar) return true;
 
             var resultingChildren = _children.ToList();
             resultingChildren.Add(child);
@@ -257,20 +312,25 @@ namespace Blish_HUD.Controls {
             UpdateContainer(gameTime);
 
             Control[] children = _children.ToArray();
+            var filteredChildren = children.Where(c => c.GetType() != typeof(Scrollbar) && c.Visible).ToArray();
 
-            _contentBounds = ControlUtil.GetControlBounds(children);
+            _contentBounds = ControlUtil.GetControlBounds(filteredChildren);
+
+            var limitSize = _maxSize != Point.Zero;
 
             // Update our size based on the sizing mode
             var parent = this.Parent;
-            if (parent != null) { 
+            if (parent != null) {
                 this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
-                                                      this.Width,
-                                                      _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
-                                                      parent.ContentRegion.Width - this.Left),
+                                                      limitSize ? Math.Min(_maxSize.X, this.Width) : this.Width,
+                                                      limitSize ? Math.Min(_maxSize.X, _contentBounds.X + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X) : _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
+                                                     limitSize ? Math.Min(_maxSize.X, parent.ContentRegion.Width - this.Left) : parent.ContentRegion.Width - this.Left),
                                       GetUpdatedSizing(this.HeightSizingMode,
-                                                      this.Height,
-                                                      _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
-                                                      parent.ContentRegion.Height - this.Top));
+                                                      limitSize ? Math.Min(_maxSize.Y, this.Height) : this.Height,
+                                                      limitSize ? Math.Min(_maxSize.Y, _contentBounds.Y + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y) : _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
+                                                      limitSize ? Math.Min(_maxSize.Y, parent.ContentRegion.Height - this.Top) : parent.ContentRegion.Height - this.Top));
+
+                ScrollbarVisible = _contentBounds.Y > this.Height;
             }
 
             // Update our children
@@ -303,8 +363,9 @@ namespace Blish_HUD.Controls {
         public virtual void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
-            var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
-            
+            var cR = ContentRegion.ToBounds(this.AbsoluteBounds);
+            var contentScissor = Rectangle.Intersect(scissor, cR);
+
             var zSortedChildren = _children.ToArray().OrderBy(i => i.ZIndex);
 
             // Render each visible child
@@ -325,6 +386,8 @@ namespace Blish_HUD.Controls {
             foreach (var descendant in GetDescendants()) {
                 descendant.Dispose();
             }
+
+            _panelScrollbar?.Dispose();
 
             base.DisposeControl();
         }
