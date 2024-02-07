@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.IO.Compression;
-using System.Text.RegularExpressions;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
+using SpriteFontPlus;
+using BitmapFont = MonoGame.Extended.BitmapFonts.BitmapFont;
 
 namespace Blish_HUD {
 
@@ -58,6 +59,25 @@ namespace Blish_HUD {
         }
 
         private IDataReader _audioDataReader;
+
+        internal static CharacterRange GeneralPunctuation    = new CharacterRange('\u2000', '\u206F');
+        internal static CharacterRange Arrows                = new CharacterRange('\u2190', '\u21FF');
+        internal static CharacterRange MathematicalOperators = new CharacterRange('\u2200', '\u22FF');
+        internal static CharacterRange BoxDrawing            = new CharacterRange('\u2500', '\u2570');
+        internal static CharacterRange GeometricShapes       = new CharacterRange('\u25A0', '\u25FF');
+        internal static CharacterRange MiscellaneousSymbols  = new CharacterRange('\u2600', '\u26FF');
+
+        internal static readonly CharacterRange[] Gw2CharacterRange = {
+            CharacterRange.BasicLatin,
+            CharacterRange.Latin1Supplement,
+            CharacterRange.LatinExtendedA,
+            GeneralPunctuation,
+            Arrows,
+            MathematicalOperators,
+            BoxDrawing,
+            GeometricShapes,
+            MiscellaneousSymbols
+        };
 
         private BitmapFont  _defaultFont12;
         public  BitmapFont  DefaultFont12 => _defaultFont12 ??= GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular);
