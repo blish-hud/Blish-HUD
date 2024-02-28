@@ -105,7 +105,7 @@ namespace Blish_HUD {
                 pid = (ushort) processId;
             }
 
-            return pid | (1 << 14) | (1 << 15);
+            return (pid | (1 << 14) | (1 << 15)) + 1;
         }
 
         protected override void Unload() {
@@ -126,20 +126,6 @@ namespace Blish_HUD {
 
             this.RenderPresent = elapsed < _leeway;
         }
-
-        //private void MessageHandler(object sender, MessageData data) {
-        //    switch (data.Message[0]) {
-        //        case (byte) MessageType.ImGui:
-        //            this.HudIsActive = data.Message[1] != 0;
-        //            break;
-        //        case (byte) MessageType.CombatArea:
-        //            this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
-        //            break;
-        //        case (byte) MessageType.CombatLocal:
-        //            this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
-        //            break;
-        //    }
-        //}
 
         private void SocketErrorHandler(object sender, SocketError socketError) {
             // Socketlistener stops by itself.
