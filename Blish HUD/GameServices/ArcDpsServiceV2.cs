@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Blish_HUD.ArcDps;
 using Blish_HUD.GameServices.ArcDps;
 using Blish_HUD.GameServices.ArcDps.V2;
+using Blish_HUD.GameServices.ArcDps.V2.Models;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
@@ -74,12 +75,16 @@ namespace Blish_HUD {
         protected override void Initialize() {
             this.Common             = new CommonFields();
             _stopwatch              = new Stopwatch();
-            _arcDpsClient           = new ArcDpsClient();
+            _arcDpsClient           = new ArcDpsClient(ArcDpsBridgeVersion.V1);
+            _arcDpsClient.Error += SocketErrorHandler;
         }
 
         protected override void Load() {
             Gw2Mumble.Info.ProcessIdChanged += Start;
             _stopwatch.Start();
+            this.RegisterMessageType<CombatCallback>(0, async (combatEvent, ct) => {
+                System.Diagnostics.Debug.WriteLine("");
+            });
         }
 
         /// <summary>
@@ -105,7 +110,9 @@ namespace Blish_HUD {
                 pid = (ushort) processId;
             }
 
-            return (pid | (1 << 14) | (1 << 15)) + 1;
+            // +1 for V2 and +0 for V1
+            //return (pid | (1 << 14) | (1 << 15)) + 1;
+            return (pid | (1 << 14) | (1 << 15));
         }
 
         protected override void Unload() {
@@ -114,6 +121,7 @@ namespace Blish_HUD {
 
             _stopwatch.Stop();
             _arcDpsClient.Disconnect();
+            _arcDpsClient.Error -= SocketErrorHandler;
             this.RenderPresent = false;
         }
 

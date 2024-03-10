@@ -11,6 +11,12 @@ using System.Threading.Tasks;
 using Blish_HUD.GameServices.ArcDps.V2;
 
 namespace Blish_HUD.GameServices.ArcDps {
+
+    public enum ArcDpsBridgeVersion {
+        V1 = 0,
+        V2 = 1,
+    }
+
     internal class ArcDpsClient : IArcDpsClient {
 #if DEBUG
         public static long Counter;
@@ -18,13 +24,13 @@ namespace Blish_HUD.GameServices.ArcDps {
 
         private static readonly Logger _logger = Logger.GetLogger<ArcDpsServiceV2>();
         private readonly BlockingCollection<byte[]>[] messageQueues;
-        private readonly Dictionary<int, MessageProcessor> processors = new Dictionary<int, MessageProcessor>() {
-            { 0, new CombatEventProcessor() },
-        };
-
+        private readonly Dictionary<int, MessageProcessor> processors = new Dictionary<int, MessageProcessor>();
+        private readonly ArcDpsBridgeVersion arcDpsBridgeVersion;
         private bool isConnected = false;
         private NetworkStream networkStream;
         private CancellationToken ct;
+
+        public event EventHandler<SocketError> Error;
 
         public bool IsConnected => this.isConnected && this.Client.Connected;
 
@@ -32,13 +38,21 @@ namespace Blish_HUD.GameServices.ArcDps {
 
         public event Action Disconnected;
 
-        public ArcDpsClient() {
+        public ArcDpsClient(ArcDpsBridgeVersion arcDpsBridgeVersion) {
+            this.arcDpsBridgeVersion = arcDpsBridgeVersion;
+
+            if (this.arcDpsBridgeVersion == ArcDpsBridgeVersion.V1) {
+                processors.Add(0, new LegacyCombatProcessor());
+            } else {
+                processors.Add(0, new CombatEventProcessor());
+            }
+
             // hardcoded message queue size. One Collection per message type. This is done just for optimizations
             this.messageQueues = new BlockingCollection<byte[]>[4];
 
-            for (int i = 0; i < this.messageQueues.Length; i++) {
-                this.messageQueues[i] = new BlockingCollection<byte[]>();
-            }
+            //for (int i = 0; i < this.messageQueues.Length; i++) {
+            //    this.messageQueues[i] = new BlockingCollection<byte[]>();
+            //}
             this.Client = new TcpClient();
         }
 
@@ -59,9 +73,13 @@ namespace Blish_HUD.GameServices.ArcDps {
         }
 
         private void ProcessMessage(MessageProcessor processor, BlockingCollection<byte[]> messageQueue) {
-            foreach (var item in messageQueue.GetConsumingEnumerable()) {
+            while (true) {
                 ct.ThrowIfCancellationRequested();
-                processor.Process(item, ct);
+                Task.Delay(1).Wait();
+                foreach (var item in messageQueue.GetConsumingEnumerable()) {
+                    ct.ThrowIfCancellationRequested();
+                    processor.Process(item, ct);
+                }
             }
         }
 
@@ -78,7 +96,11 @@ namespace Blish_HUD.GameServices.ArcDps {
             this.isConnected = true;
 
             try {
-                Task.Run(async () => await this.Receive(ct), ct);
+                if (this.arcDpsBridgeVersion == ArcDpsBridgeVersion.V1) {
+                    Task.Run(async () => await this.LegacyReceive(ct), ct);
+                } else {
+                    Task.Run(async () => await this.Receive(ct), ct);
+                }
             } catch (OperationCanceledException) {
                 // NOP
             }
@@ -95,6 +117,46 @@ namespace Blish_HUD.GameServices.ArcDps {
                 this.isConnected = false;
                 this.Disconnected?.Invoke();
             }
+        }
+
+        private async Task LegacyReceive(CancellationToken ct) {
+            _logger.Info($"Start Legacy Receive Task for {this.Client.Client.RemoteEndPoint?.ToString()}");
+            try {
+                var messageHeaderBuffer = new byte[9];
+                ArrayPool<byte> pool = ArrayPool<byte>.Shared;
+                while (this.Client.Connected) {
+                    ct.ThrowIfCancellationRequested();
+
+                    if (this.Client.Available == 0) {
+                        await Task.Delay(1, ct);
+                    }
+
+                    ReadFromStream(this.networkStream, messageHeaderBuffer, 9);
+
+                    // In V1 the message type is part of the message and therefor included in message length, so we subtract it here
+                    var messageLength = Unsafe.ReadUnaligned<int>(ref messageHeaderBuffer[0]) - 1;
+                    var messageType = messageHeaderBuffer[8];
+
+                    var messageBuffer = pool.Rent(messageLength);
+                    ReadFromStream(this.networkStream, messageBuffer, messageLength);
+                    pool.Return(messageBuffer);
+
+                    // Map Combat Event messages to the V2 '0' type and ignore that ImGui type
+                    if (messageType == 2 || messageType == 3) {
+                        messageType = 0;
+                        this.messageQueues[messageType]?.Add(messageBuffer);
+#if DEBUG
+                        Interlocked.Increment(ref Counter);
+#endif
+                    }
+                }
+            } catch (Exception ex) {
+                _logger.Error(ex.ToString());
+                this.Error?.Invoke(this, SocketError.SocketError);
+                this.Disconnect();
+            }
+
+            _logger.Info($"Legacy Receive Task for {this.Client.Client?.RemoteEndPoint?.ToString()} stopped");
         }
 
         private async Task Receive(CancellationToken ct) {
@@ -124,6 +186,7 @@ namespace Blish_HUD.GameServices.ArcDps {
                 }
             } catch (Exception ex) {
                 _logger.Error(ex.ToString());
+                this.Error?.Invoke(this, SocketError.SocketError);
                 this.Disconnect();
             }
 

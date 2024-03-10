@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Blish_HUD.GameServices.ArcDps.V2 {
     internal abstract class MessageProcessor<T> : MessageProcessor
         where T : struct {
-        private readonly List<Func<T, CancellationToken, Task>> listener;
+        private readonly List<Func<T, CancellationToken, Task>> listener = new List<Func<T, CancellationToken, Task>>();
 
         public override void Process(byte[] message, CancellationToken ct) {
             var parsedMessage = InternalProcess(message);

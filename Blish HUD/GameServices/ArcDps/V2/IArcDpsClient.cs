@@ -11,8 +11,12 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
     internal interface IArcDpsClient {
         TcpClient Client { get; }
 
+        event EventHandler<SocketError> Error;
+
         void Disconnect();
+        
         void Initialize(IPEndPoint endpoint, CancellationToken ct);
+
         void RegisterMessageTypeListener<T>(int type, Func<T, CancellationToken, Task> listener) where T : struct;
     }
 }

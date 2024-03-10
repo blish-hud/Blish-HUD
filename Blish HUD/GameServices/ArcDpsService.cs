@@ -7,16 +7,19 @@ using System.Threading;
 using Blish_HUD.ArcDps;
 using Blish_HUD.ArcDps.Common;
 using Blish_HUD.ArcDps.Models;
+using Blish_HUD.GameServices.ArcDps.V2.Models;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
 
     public class ArcDpsService : GameService {
         private static readonly Logger Logger = Logger.GetLogger<ArcDpsService>();
-
         private static readonly object WatchLock = new object();
 
-        #if DEBUG
+        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions =
+            new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
+
+#if DEBUG
         public static long Counter;
         #endif
 
@@ -33,52 +36,34 @@ namespace Blish_HUD {
         /// <summary>
         ///     Indicates if arcdps updated <see cref="HudIsActive" /> in the last second (it should every in-game frame)
         /// </summary>
-        public bool RenderPresent { get; private set; }
+        public bool RenderPresent => GameService.ArcDpsV2.RenderPresent;
 
         /// <summary>
         ///     Indicates if the socket listener for the arcdps service is running and arcdps sent an update in the last second.
         /// </summary>
-        public bool Running => this._server?.Running ?? false && this.RenderPresent;
+        public bool Running => GameService.ArcDpsV2.Running;
 
         /// <summary>
         ///     Indicates if arcdps currently draws its HUD (not in character select, cut scenes or loading screens)
         /// </summary>
-        public bool HudIsActive {
-            get {
-                lock (WatchLock) {
-                    return _hudIsActive;
-                }
-            }
-            private set {
-                lock (WatchLock) {
-                    _stopwatch.Restart();
-                    _hudIsActive = value;
-                }
-            }
-        }
+        public bool HudIsActive => GameService.ArcDpsV2.HudIsActive;
+        
 
         /// <summary>
         /// The timespan after which ArcDPS is treated as not responding.
         /// </summary>
         private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
 
-        private readonly ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>> _subscriptions =
-            new ConcurrentDictionary<uint, ConcurrentBag<Action<object, RawCombatEventArgs>>>();
-
-        private bool _hudIsActive;
-
-        /// <summary>
-        /// The underlaying <see cref="SocketListener"/> connected to the ArcDPS BlishHUD Bridge.
-        /// </summary>
-        private SocketListener _server;
-
         private Stopwatch _stopwatch;
-
         private bool _subscribed;
 
         public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds) {
+
             if (!_subscribed) {
-                this.RawCombatEvent += DispatchSkillSubscriptions;
+                GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(0, async (combatEvent, ct) => {
+                    DispatchSkillSubscriptions(combatEvent);
+                    await System.Threading.Tasks.Task.CompletedTask;
+                });
                 _subscribed         =  true;
             }
 
@@ -89,13 +74,60 @@ namespace Blish_HUD {
             }
         }
 
-        private void DispatchSkillSubscriptions(object sender, RawCombatEventArgs eventHandler) {
-            if (eventHandler.CombatEvent.Ev == null) return;
-
-            uint skillId = eventHandler.CombatEvent.Ev.SkillId;
+        private void DispatchSkillSubscriptions(CombatCallback combatEvent) {
+            uint skillId = combatEvent.Event.SkillId;
             if (!_subscriptions.ContainsKey(skillId)) return;
 
-            foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) action(sender, eventHandler);
+            foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) {
+                action(this, new RawCombatEventArgs(
+                    new ArcDps.Models.CombatEvent(
+                        new Ev(
+                            combatEvent.Event.Time,
+                            combatEvent.Event.SourceAgent,
+                            combatEvent.Event.DestinationAgent,
+                            combatEvent.Event.Value,
+                            combatEvent.Event.BuffDamage,
+                            combatEvent.Event.OverstackValue,
+                            combatEvent.Event.SkillId,
+                            combatEvent.Event.SourceInstanceId,
+                            combatEvent.Event.DestinationInstanceId,
+                            combatEvent.Event.SourceMasterInstanceId,
+                            combatEvent.Event.DestinationMasterInstanceId,
+                            (ArcDpsEnums.IFF)(int)combatEvent.Event.Iff,
+                            combatEvent.Event.Buff,
+                            combatEvent.Event.Result,
+                            (ArcDpsEnums.Activation)(int)combatEvent.Event.IsActivation,
+                            (ArcDpsEnums.BuffRemove)(int)combatEvent.Event.IsBuffRemoved,
+                            combatEvent.Event.IsNinety,
+                            combatEvent.Event.IsFifty,
+                            combatEvent.Event.IsMoving,
+                            (ArcDpsEnums.StateChange)(int)combatEvent.Event.IsStateChanged,
+                            combatEvent.Event.IsFlanking,
+                            combatEvent.Event.IsShiels,
+                            combatEvent.Event.IsOffCycle,
+                            combatEvent.Event.Pad61,
+                            combatEvent.Event.Pad62,
+                            combatEvent.Event.Pad63,
+                            combatEvent.Event.Pad64),
+                        new Ag(
+                            combatEvent.Source.Name, 
+                            combatEvent.Source.Id, 
+                            combatEvent.Source.Profession, 
+                            combatEvent.Source.Elite, 
+                            combatEvent.Source.Self, 
+                            combatEvent.Source.Team),
+                        new Ag(
+                            combatEvent.Destination.Name, 
+                            combatEvent.Destination.Id, 
+                            combatEvent.Destination.Profession, 
+                            combatEvent.Destination.Elite, 
+                            combatEvent.Destination.Self, 
+                            combatEvent.Destination.Team),
+                        combatEvent.SkillName,
+                        combatEvent.Id,
+                        combatEvent.Revision),
+                    RawCombatEventArgs.CombatEventType.Local));
+            }
         }
 
         /// <remarks>
@@ -112,55 +144,21 @@ namespace Blish_HUD {
         public event EventHandler<RawCombatEventArgs> RawCombatEvent;
 
         protected override void Initialize() {
+            GameService.ArcDpsV2.Error += Error;
+
             this.Common             =  new CommonFields();
             _stopwatch              =  new Stopwatch();
-            _server                 =  new SocketListener(200_000);
-            _server.ReceivedMessage += MessageHandler;
-            _server.OnSocketError += SocketErrorHandler;
             #if DEBUG
             this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
             #endif
         }
 
         protected override void Load() {
-            Gw2Mumble.Info.ProcessIdChanged += Start;
             _stopwatch.Start();
         }
 
-        /// <summary>
-        /// Starts the socket listener for the arc dps bridge.
-        /// </summary>
-        private void Start(object sender, ValueEventArgs<uint> value) {
-            this.Start(value.Value);
-        }
-
-        /// <summary>
-        /// Starts the socket listener for the arc dps bridge.
-        /// </summary>
-        private void Start(uint processId) {
-            if (this.Loaded) {
-                _server.Start(new IPEndPoint(IPAddress.Loopback, GetPort(processId)));
-            }
-        }
-
-        private static int GetPort(uint processId) {
-            ushort pid;
-
-            unchecked {
-                pid = (ushort) processId;
-            }
-
-            return pid | (1 << 14) | (1 << 15);
-        }
-
         protected override void Unload() {
-            Gw2Mumble.Info.ProcessIdChanged -= Start;
-            _server.ReceivedMessage -= MessageHandler;
-            _server.OnSocketError -= SocketErrorHandler;
-
             _stopwatch.Stop();
-            _server.Stop();
-            this.RenderPresent = false;
         }
 
         protected override void Update(GameTime gameTime) {
@@ -169,49 +167,6 @@ namespace Blish_HUD {
             lock (WatchLock) {
                 elapsed = _stopwatch.Elapsed;
             }
-
-            this.RenderPresent = elapsed < _leeway;
         }
-
-        private void MessageHandler(object sender, MessageData data) {
-            switch (data.Message[0]) {
-                case (byte) MessageType.ImGui:
-                    this.HudIsActive = data.Message[1] != 0;
-                    break;
-                case (byte) MessageType.CombatArea:
-                    this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Area);
-                    break;
-                case (byte) MessageType.CombatLocal:
-                    this.ProcessCombat(data.Message, RawCombatEventArgs.CombatEventType.Local);
-                    break;
-            }
-        }
-
-        private void SocketErrorHandler(object sender, SocketError socketError) {
-            // Socketlistener stops by itself.
-            Logger.Error("Encountered socket error: {0}", socketError.ToString());
-
-            this.Error?.Invoke(this, socketError);
-        }
-
-        private void ProcessCombat(byte[] data, RawCombatEventArgs.CombatEventType eventType) {
-            CombatEvent message = CombatParser.ProcessCombat(data);
-
-            this.OnRawCombatEvent(new RawCombatEventArgs(message, eventType));
-        }
-
-        private void OnRawCombatEvent(RawCombatEventArgs e) {
-            this.RawCombatEvent?.Invoke(this, e);
-        }
-
-        private enum MessageType {
-
-            ImGui       = 1,
-            CombatArea  = 2,
-            CombatLocal = 3
-
-        }
-
     }
-
 }
