@@ -29,6 +29,7 @@ namespace Blish_HUD.GameServices.ArcDps {
         private bool isConnected = false;
         private NetworkStream networkStream;
         private CancellationToken ct;
+        private bool disposedValue;
 
         public event EventHandler<SocketError> Error;
 
@@ -79,6 +80,7 @@ namespace Blish_HUD.GameServices.ArcDps {
                 foreach (var item in messageQueue.GetConsumingEnumerable()) {
                     ct.ThrowIfCancellationRequested();
                     processor.Process(item, ct);
+                    ArrayPool<byte>.Shared.Return(item);
                 }
             }
         }
@@ -139,7 +141,6 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                     var messageBuffer = pool.Rent(messageLength);
                     ReadFromStream(this.networkStream, messageBuffer, messageLength);
-                    pool.Return(messageBuffer);
 
                     // Map Combat Event messages to the V2 '0' type and ignore that ImGui type
                     if (messageType == 2 || messageType == 3) {
@@ -199,6 +200,29 @@ namespace Blish_HUD.GameServices.ArcDps {
             while (bytesRead != length) {
                 bytesRead += stream.Read(buffer, bytesRead, length - bytesRead);
             }
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    Client.Dispose();
+                    foreach (var item in messageQueues) {
+                        if (item.Count != 0) {
+                            foreach (var message in item) {
+                                ArrayPool<byte>.Shared.Return(message);
+                            }
+                        }
+                    }
+                    networkStream.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

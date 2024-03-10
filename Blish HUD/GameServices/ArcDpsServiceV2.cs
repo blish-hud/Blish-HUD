@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
@@ -21,6 +22,7 @@ namespace Blish_HUD {
         /// </summary>
         private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
         private readonly CancellationTokenSource _arcDpsClientCancellationTokenSource = new CancellationTokenSource();
+        private readonly List<Action> _registerListeners = new List<Action>();
         private IArcDpsClient _arcDpsClient;
         private bool _hudIsActive;
         private Stopwatch _stopwatch;
@@ -69,14 +71,16 @@ namespace Blish_HUD {
 
         public void RegisterMessageType<T>(int type, Func<T, CancellationToken, Task> listener)
             where T : struct {
-            _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            Action action = () => _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            _registerListeners.Add(action);
+            if (_arcDpsClient != null) {
+                action();
+            }
         }
 
         protected override void Initialize() {
             this.Common             = new CommonFields();
             _stopwatch              = new Stopwatch();
-            _arcDpsClient           = new ArcDpsClient(ArcDpsBridgeVersion.V1);
-            _arcDpsClient.Error += SocketErrorHandler;
         }
 
         protected override void Load() {
@@ -99,11 +103,24 @@ namespace Blish_HUD {
         /// </summary>
         private void Start(uint processId) {
             if (this.Loaded) {
-                _arcDpsClient.Initialize(new IPEndPoint(IPAddress.Loopback, GetPort(processId)), _arcDpsClientCancellationTokenSource.Token);
+                if (_arcDpsClient != null) {
+                    _arcDpsClientCancellationTokenSource.Cancel();
+                    _arcDpsClient.Dispose();
+                    _arcDpsClient = null;
+                }
+                var version = GetVersion(processId);
+                _arcDpsClient = new ArcDpsClient(version);
+
+                foreach (var item in _registerListeners) {
+                    item();
+                }
+
+                _arcDpsClient.Error += SocketErrorHandler;
+                _arcDpsClient.Initialize(new IPEndPoint(IPAddress.Loopback, GetPort(processId, version)), _arcDpsClientCancellationTokenSource.Token);
             }
         }
 
-        private static int GetPort(uint processId) {
+        private static int GetPort(uint processId, ArcDpsBridgeVersion version) {
             ushort pid;
 
             unchecked {
@@ -111,8 +128,12 @@ namespace Blish_HUD {
             }
 
             // +1 for V2 and +0 for V1
-            //return (pid | (1 << 14) | (1 << 15)) + 1;
-            return (pid | (1 << 14) | (1 << 15));
+            var port = pid | (1 << 14) | (1 << 15);
+            if (version == ArcDpsBridgeVersion.V2) {
+                port++;
+            }
+
+            return port;
         }
 
         protected override void Unload() {
@@ -140,6 +161,15 @@ namespace Blish_HUD {
             Logger.Error("Encountered socket error: {0}", socketError.ToString());
 
             this.Error?.Invoke(this, socketError);
+        }
+
+        private ArcDpsBridgeVersion GetVersion(uint processId) {
+            var port = GetPort(processId, ArcDpsBridgeVersion.V1);
+            var client = new TcpClient();
+            client.Connect(new IPEndPoint(IPAddress.Loopback, port));
+            var result = client.Connected;
+            client.Dispose();
+            return result ? ArcDpsBridgeVersion.V1 : ArcDpsBridgeVersion.V2;
         }
     }
 

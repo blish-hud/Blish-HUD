@@ -4,8 +4,15 @@ using System.Text;
 
 namespace Blish_HUD.GameServices.ArcDps.V2 {
     internal class LegacyCombatProcessor : MessageProcessor<CombatCallback> {
-        internal override CombatCallback InternalProcess(byte[] message) {
-            return ProcessCombat(message);
+        internal override bool TryInternalProcess(byte[] message, out CombatCallback result) {
+            try {
+                result = ProcessCombat(message);
+                return true;
+
+            } catch (Exception) {
+                result = default;
+                return false;
+            }
         }
 
         public static CombatCallback ProcessCombat(byte[] data) {
@@ -118,7 +125,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
                 IsOffCycle = isOffCycle,
                 Pad61 = pad61,
                 Pad62 = pad62,
-                Pad63 = pad63,  
+                Pad63 = pad63,
                 Pad64 = pad64,
             };
 

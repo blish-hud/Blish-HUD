@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.GameServices.ArcDps.V2 {
-    internal interface IArcDpsClient {
+    internal interface IArcDpsClient : IDisposable {
         TcpClient Client { get; }
 
         event EventHandler<SocketError> Error;
