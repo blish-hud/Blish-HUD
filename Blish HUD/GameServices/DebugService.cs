@@ -37,7 +37,7 @@ namespace Blish_HUD {
 
         private static LoggingConfiguration _logConfiguration;
 
-        private const string STRUCLOG_TIME      = "${date:universalTime=false:format=HH\\:mm\\:ss.mmm K}"; // Default culture is invariant
+        private const string STRUCLOG_TIME      = "${date:universalTime=false:format=HH\\:mm\\:ss.ffff K}"; // Default culture is invariant
         private const string STRUCLOG_LEVEL     = "${level:uppercase=true:padding=-5}";
         private const string STRUCLOG_LOGGER    = "${logger}";
         private const string STRUCLOG_MESSAGE   = "${message}";
