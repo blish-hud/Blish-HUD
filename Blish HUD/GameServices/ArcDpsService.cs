@@ -177,25 +177,21 @@ namespace Blish_HUD {
                             combatEvent.Event.Pad64);
             }
 
-            if (combatEvent.Source.Id != default) {
-                source = new Ag(
-                            combatEvent.Source.Name,
-                            combatEvent.Source.Id,
-                            combatEvent.Source.Profession,
-                            combatEvent.Source.Elite,
-                            combatEvent.Source.Self,
-                            combatEvent.Source.Team);
-            }
+            source = new Ag(
+                        combatEvent.Source.Name,
+                        combatEvent.Source.Id,
+                        combatEvent.Source.Profession,
+                        combatEvent.Source.Elite,
+                        combatEvent.Source.Self,
+                        combatEvent.Source.Team);
 
-            if (combatEvent.Destination.Id != default) {
-                destination = new Ag(
-                            combatEvent.Destination.Name,
-                            combatEvent.Destination.Id,
-                            combatEvent.Destination.Profession,
-                            combatEvent.Destination.Elite,
-                            combatEvent.Destination.Self,
-                            combatEvent.Destination.Team);
-            }
+            destination = new Ag(
+                        combatEvent.Destination.Name,
+                        combatEvent.Destination.Id,
+                        combatEvent.Destination.Profession,
+                        combatEvent.Destination.Elite,
+                        combatEvent.Destination.Self,
+                        combatEvent.Destination.Team);
 
             return new RawCombatEventArgs(new ArcDps.Models.CombatEvent(
                         ev,
