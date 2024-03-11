@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
 
+    [Obsolete("This class only wraps the V2 service, please use that one instead")]
     public class ArcDpsService : GameService {
         private static readonly Logger Logger = Logger.GetLogger<ArcDpsService>();
         private static readonly object WatchLock = new object();
@@ -26,26 +27,31 @@ namespace Blish_HUD {
         /// <summary>
         ///     Triggered upon error of the underlaying socket listener.
         /// </summary>
+        [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public event EventHandler<SocketError> Error;
 
         /// <summary>
         ///     Provides common fields that multiple modules might want to track
         /// </summary>
+        [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public CommonFields Common { get; private set; }
 
         /// <summary>
         ///     Indicates if arcdps updated <see cref="HudIsActive" /> in the last second (it should every in-game frame)
         /// </summary>
+        [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public bool RenderPresent => GameService.ArcDpsV2.RenderPresent;
 
         /// <summary>
         ///     Indicates if the socket listener for the arcdps service is running and arcdps sent an update in the last second.
         /// </summary>
+        [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public bool Running => GameService.ArcDpsV2.Running;
 
         /// <summary>
         ///     Indicates if arcdps currently draws its HUD (not in character select, cut scenes or loading screens)
         /// </summary>
+        [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public bool HudIsActive => GameService.ArcDpsV2.HudIsActive;
 
 
@@ -57,6 +63,7 @@ namespace Blish_HUD {
         private Stopwatch _stopwatch;
         private bool _subscribed;
 
+        [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds) {
 
             if (!_subscribed) {
@@ -94,6 +101,7 @@ namespace Blish_HUD {
         /// <summary>
         ///     Holds unprocessed combat data
         /// </summary>
+        [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public event EventHandler<RawCombatEventArgs> RawCombatEvent;
 
         protected override void Initialize() {
@@ -169,7 +177,7 @@ namespace Blish_HUD {
                             combatEvent.Event.Pad64);
             }
 
-            if(combatEvent.Source.Id != default) {
+            if (combatEvent.Source.Id != default) {
                 source = new Ag(
                             combatEvent.Source.Name,
                             combatEvent.Source.Id,
