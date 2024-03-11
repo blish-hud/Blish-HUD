@@ -12,11 +12,6 @@ using Blish_HUD.GameServices.ArcDps.V2;
 
 namespace Blish_HUD.GameServices.ArcDps {
 
-    public enum ArcDpsBridgeVersion {
-        V1 = 0,
-        V2 = 1,
-    }
-
     internal class ArcDpsClient : IArcDpsClient {
 #if DEBUG
         public static long Counter;
