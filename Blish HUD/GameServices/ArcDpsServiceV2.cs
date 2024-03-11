@@ -161,12 +161,12 @@ namespace Blish_HUD {
         }
 
         private ArcDpsBridgeVersion GetVersion(uint processId) {
-            var port = GetPort(processId, ArcDpsBridgeVersion.V1);
+            var port = GetPort(processId, ArcDpsBridgeVersion.V2);
             var client = new TcpClient();
             client.Connect(new IPEndPoint(IPAddress.Loopback, port));
             var result = client.Connected;
             client.Dispose();
-            return result ? ArcDpsBridgeVersion.V1 : ArcDpsBridgeVersion.V2;
+            return result ? ArcDpsBridgeVersion.V2 : ArcDpsBridgeVersion.V1;
         }
     }
 
