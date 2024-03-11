@@ -180,7 +180,7 @@ namespace Blish_HUD {
             }
 
             try {
-                var port = GetPort(processId, ArcDpsBridgeVersion.V2);
+                var port = GetPort(processId, ArcDpsBridgeVersion.V1);
                 var client = new TcpClient();
                 client.Connect(new IPEndPoint(IPAddress.Loopback, port));
                 client.Dispose();
