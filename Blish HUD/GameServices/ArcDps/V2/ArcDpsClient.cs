@@ -174,7 +174,6 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                     var messageBuffer = pool.Rent(messageLength);
                     ReadFromStream(this.networkStream, messageBuffer, messageLength);
-                    pool.Return(messageBuffer);
                     this.messageQueues[messageType]?.Add(messageBuffer);
 #if DEBUG
                     Interlocked.Increment(ref Counter);
