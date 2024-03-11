@@ -86,9 +86,6 @@ namespace Blish_HUD {
         protected override void Load() {
             Gw2Mumble.Info.ProcessIdChanged += Start;
             _stopwatch.Start();
-            this.RegisterMessageType<CombatCallback>(0, async (combatEvent, ct) => {
-                System.Diagnostics.Debug.WriteLine("");
-            });
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace Blish_HUD {
 
 #if DEBUG
         public static long Counter;
-        #endif
+#endif
 
         /// <summary>
         ///     Triggered upon error of the underlaying socket listener.
@@ -47,7 +47,7 @@ namespace Blish_HUD {
         ///     Indicates if arcdps currently draws its HUD (not in character select, cut scenes or loading screens)
         /// </summary>
         public bool HudIsActive => GameService.ArcDpsV2.HudIsActive;
-        
+
 
         /// <summary>
         /// The timespan after which ArcDPS is treated as not responding.
@@ -64,7 +64,7 @@ namespace Blish_HUD {
                     DispatchSkillSubscriptions(combatEvent);
                     await System.Threading.Tasks.Task.CompletedTask;
                 });
-                _subscribed         =  true;
+                _subscribed = true;
             }
 
             foreach (uint skillId in skillIds) {
@@ -79,9 +79,67 @@ namespace Blish_HUD {
             if (!_subscriptions.ContainsKey(skillId)) return;
 
             foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) {
-                action(this, new RawCombatEventArgs(
-                    new ArcDps.Models.CombatEvent(
-                        new Ev(
+                action(this, ConvertFrom(combatEvent));
+            }
+        }
+
+        /// <remarks>
+        ///     Please note that you block the socket server with whatever
+        ///     you are doing on this event. So please don't do anything
+        ///     that requires heavy work. Make your own worker thread
+        ///     if you need to.
+        ///     Also note, that this is not the main thread, so operations
+        ///     other parts of BHUD have to be thread safe.
+        /// </remarks>
+        /// <summary>
+        ///     Holds unprocessed combat data
+        /// </summary>
+        public event EventHandler<RawCombatEventArgs> RawCombatEvent;
+
+        protected override void Initialize() {
+            GameService.ArcDpsV2.Error += Error;
+
+            this.Common = new CommonFields();
+            _stopwatch = new Stopwatch();
+#if DEBUG
+            this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
+#endif
+
+            GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(0, async (combatEvent, ct) => {
+                var rawCombat = ConvertFrom(combatEvent);
+                this.RawCombatEvent?.Invoke(this, rawCombat);
+                await System.Threading.Tasks.Task.CompletedTask;
+            });
+        }
+
+        protected override void Load() {
+            _stopwatch.Start();
+            this.SubscribeToCombatEventId((source, combatEvent) => {
+                System.Diagnostics.Debug.WriteLine("");
+            },
+            43916);
+        }
+
+        protected override void Unload() {
+            _stopwatch.Stop();
+        }
+
+        protected override void Update(GameTime gameTime) {
+            TimeSpan elapsed;
+
+            lock (WatchLock) {
+                elapsed = _stopwatch.Elapsed;
+            }
+        }
+
+        private static RawCombatEventArgs ConvertFrom(CombatCallback combatEvent) {
+
+            Ev ev = null;
+            Ag source = null;
+            Ag destination = null;
+
+            if (combatEvent.Event.Time != default) {
+                ev = new Ev(
                             combatEvent.Event.Time,
                             combatEvent.Event.SourceAgent,
                             combatEvent.Event.DestinationAgent,
@@ -108,65 +166,37 @@ namespace Blish_HUD {
                             combatEvent.Event.Pad61,
                             combatEvent.Event.Pad62,
                             combatEvent.Event.Pad63,
-                            combatEvent.Event.Pad64),
-                        new Ag(
-                            combatEvent.Source.Name, 
-                            combatEvent.Source.Id, 
-                            combatEvent.Source.Profession, 
-                            combatEvent.Source.Elite, 
-                            combatEvent.Source.Self, 
-                            combatEvent.Source.Team),
-                        new Ag(
-                            combatEvent.Destination.Name, 
-                            combatEvent.Destination.Id, 
-                            combatEvent.Destination.Profession, 
-                            combatEvent.Destination.Elite, 
-                            combatEvent.Destination.Self, 
-                            combatEvent.Destination.Team),
+                            combatEvent.Event.Pad64);
+            }
+
+            if(combatEvent.Source.Id != default) {
+                source = new Ag(
+                            combatEvent.Source.Name,
+                            combatEvent.Source.Id,
+                            combatEvent.Source.Profession,
+                            combatEvent.Source.Elite,
+                            combatEvent.Source.Self,
+                            combatEvent.Source.Team);
+            }
+
+            if (combatEvent.Destination.Id != default) {
+                destination = new Ag(
+                            combatEvent.Destination.Name,
+                            combatEvent.Destination.Id,
+                            combatEvent.Destination.Profession,
+                            combatEvent.Destination.Elite,
+                            combatEvent.Destination.Self,
+                            combatEvent.Destination.Team);
+            }
+
+            return new RawCombatEventArgs(new ArcDps.Models.CombatEvent(
+                        ev,
+                        source,
+                        destination,
                         combatEvent.SkillName,
                         combatEvent.Id,
                         combatEvent.Revision),
-                    RawCombatEventArgs.CombatEventType.Local));
-            }
-        }
-
-        /// <remarks>
-        ///     Please note that you block the socket server with whatever
-        ///     you are doing on this event. So please don't do anything
-        ///     that requires heavy work. Make your own worker thread
-        ///     if you need to.
-        ///     Also note, that this is not the main thread, so operations
-        ///     other parts of BHUD have to be thread safe.
-        /// </remarks>
-        /// <summary>
-        ///     Holds unprocessed combat data
-        /// </summary>
-        public event EventHandler<RawCombatEventArgs> RawCombatEvent;
-
-        protected override void Initialize() {
-            GameService.ArcDpsV2.Error += Error;
-
-            this.Common             =  new CommonFields();
-            _stopwatch              =  new Stopwatch();
-            #if DEBUG
-            this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
-            #endif
-        }
-
-        protected override void Load() {
-            _stopwatch.Start();
-        }
-
-        protected override void Unload() {
-            _stopwatch.Stop();
-        }
-
-        protected override void Update(GameTime gameTime) {
-            TimeSpan elapsed;
-
-            lock (WatchLock) {
-                elapsed = _stopwatch.Elapsed;
-            }
+                    RawCombatEventArgs.CombatEventType.Local);
         }
     }
 }
