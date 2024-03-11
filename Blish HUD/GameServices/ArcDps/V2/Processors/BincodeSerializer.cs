@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blish_HUD.GameServices.ArcDps.V2 {
+namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
     public static class BincodeSerializer {
         public static class FloatConverter {
             public static class Float32Converter {

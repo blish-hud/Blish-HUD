@@ -67,8 +67,12 @@ namespace Blish_HUD {
         public void SubscribeToCombatEventId(Action<object, RawCombatEventArgs> func, params uint[] skillIds) {
 
             if (!_subscribed) {
-                GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(0, async (combatEvent, ct) => {
-                    DispatchSkillSubscriptions(combatEvent);
+                GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(2, async (combatEvent, ct) => {
+                    DispatchSkillSubscriptions(combatEvent, RawCombatEventArgs.CombatEventType.Area);
+                    await System.Threading.Tasks.Task.CompletedTask;
+                });
+                GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(3, async (combatEvent, ct) => {
+                    DispatchSkillSubscriptions(combatEvent, RawCombatEventArgs.CombatEventType.Local);
                     await System.Threading.Tasks.Task.CompletedTask;
                 });
                 _subscribed = true;
@@ -81,12 +85,12 @@ namespace Blish_HUD {
             }
         }
 
-        private void DispatchSkillSubscriptions(CombatCallback combatEvent) {
+        private void DispatchSkillSubscriptions(CombatCallback combatEvent, RawCombatEventArgs.CombatEventType combatEventType) {
             uint skillId = combatEvent.Event.SkillId;
             if (!_subscriptions.ContainsKey(skillId)) return;
 
             foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) {
-                action(this, ConvertFrom(combatEvent));
+                action(this, ConvertFrom(combatEvent, combatEventType));
             }
         }
 
@@ -113,8 +117,14 @@ namespace Blish_HUD {
             this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
 #endif
 
-            GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(0, async (combatEvent, ct) => {
-                var rawCombat = ConvertFrom(combatEvent);
+            GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(2, async (combatEvent, ct) => {
+                var rawCombat = ConvertFrom(combatEvent, RawCombatEventArgs.CombatEventType.Area);
+                this.RawCombatEvent?.Invoke(this, rawCombat);
+                await System.Threading.Tasks.Task.CompletedTask;
+            });
+
+            GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(3, async (combatEvent, ct) => {
+                var rawCombat = ConvertFrom(combatEvent, RawCombatEventArgs.CombatEventType.Local);
                 this.RawCombatEvent?.Invoke(this, rawCombat);
                 await System.Threading.Tasks.Task.CompletedTask;
             });
@@ -140,11 +150,9 @@ namespace Blish_HUD {
             }
         }
 
-        private static RawCombatEventArgs ConvertFrom(CombatCallback combatEvent) {
+        private static RawCombatEventArgs ConvertFrom(CombatCallback combatEvent, RawCombatEventArgs.CombatEventType combatEventType) {
 
             Ev ev = null;
-            Ag source = null;
-            Ag destination = null;
 
             if (combatEvent.Event.Time != default) {
                 ev = new Ev(
@@ -177,7 +185,7 @@ namespace Blish_HUD {
                             combatEvent.Event.Pad64);
             }
 
-            source = new Ag(
+            var source = new Ag(
                         combatEvent.Source.Name,
                         combatEvent.Source.Id,
                         combatEvent.Source.Profession,
@@ -185,7 +193,7 @@ namespace Blish_HUD {
                         combatEvent.Source.Self,
                         combatEvent.Source.Team);
 
-            destination = new Ag(
+            var destination = new Ag(
                         combatEvent.Destination.Name,
                         combatEvent.Destination.Id,
                         combatEvent.Destination.Profession,
@@ -200,7 +208,7 @@ namespace Blish_HUD {
                         combatEvent.SkillName,
                         combatEvent.Id,
                         combatEvent.Revision),
-                    RawCombatEventArgs.CombatEventType.Local);
+                    combatEventType);
         }
     }
 }

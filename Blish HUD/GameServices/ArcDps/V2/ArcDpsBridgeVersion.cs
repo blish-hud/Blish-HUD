@@ -2,5 +2,6 @@
     public enum ArcDpsBridgeVersion {
         V1 = 0,
         V2 = 1,
+        None = 100,
     }
 }

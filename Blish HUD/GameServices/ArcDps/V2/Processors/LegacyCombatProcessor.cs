@@ -2,8 +2,9 @@
 using System;
 using System.Text;
 
-namespace Blish_HUD.GameServices.ArcDps.V2 {
+namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
     internal class LegacyCombatProcessor : MessageProcessor<CombatCallback> {
+
         internal override bool TryInternalProcess(byte[] message, out CombatCallback result) {
             try {
                 result = ProcessCombat(message);
@@ -114,12 +115,12 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
                 Iff = (Affinity)iff,
                 Buff = buff,
                 Result = result,
-                IsActivation = (Models.Activation)isActivation,
-                IsBuffRemoved = (Models.BuffRemove)isBuffRemove,
+                IsActivation = (Activation)isActivation,
+                IsBuffRemoved = (BuffRemove)isBuffRemove,
                 IsNinety = isNinety,
                 IsFifty = isFifty,
                 IsMoving = isMoving,
-                IsStateChanged = (Models.StateChange)isStateChange,
+                IsStateChanged = (StateChange)isStateChange,
                 IsFlanking = isFlanking,
                 IsShiels = isShields,
                 IsOffCycle = isOffCycle,

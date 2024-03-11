@@ -1,6 +1,6 @@
 ﻿using Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras;
-using Blish_HUD.GameServices.ArcDps.V2;
 using Blish_HUD.GameServices.ArcDps.V2.Models;
+using Blish_HUD.GameServices.ArcDps.V2.Processors;
 
 namespace Blish_HUD.GameServices.ArcDps.V2.Extensions {
     public static class BincodeBinaryReaderExtensions {

@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Blish_HUD.GameServices.ArcDps.V2;
+using Blish_HUD.GameServices.ArcDps.V2.Processors;
 
 namespace Blish_HUD.GameServices.ArcDps {
 
@@ -37,10 +38,14 @@ namespace Blish_HUD.GameServices.ArcDps {
         public ArcDpsClient(ArcDpsBridgeVersion arcDpsBridgeVersion) {
             this.arcDpsBridgeVersion = arcDpsBridgeVersion;
 
+            processors.Add(1, new ImGuiProcessor());
+
             if (this.arcDpsBridgeVersion == ArcDpsBridgeVersion.V1) {
-                processors.Add(0, new LegacyCombatProcessor());
+                processors.Add(2, new LegacyCombatProcessor());
+                processors.Add(3, new LegacyCombatProcessor());
             } else {
-                processors.Add(0, new CombatEventProcessor());
+                processors.Add(2, new CombatEventProcessor());
+                processors.Add(3, new CombatEventProcessor());
             }
 
             // hardcoded message queue size. One Collection per message type. This is done just for optimizations
@@ -137,14 +142,11 @@ namespace Blish_HUD.GameServices.ArcDps {
                     var messageBuffer = pool.Rent(messageLength);
                     ReadFromStream(this.networkStream, messageBuffer, messageLength);
 
-                    // Map Combat Event messages to the V2 '0' type and ignore that ImGui type
-                    if (messageType == 2 || messageType == 3) {
-                        messageType = 0;
-                        this.messageQueues[messageType]?.Add(messageBuffer);
+                    this.messageQueues[messageType]?.Add(messageBuffer);
 #if DEBUG
-                        Interlocked.Increment(ref Counter);
+                    Interlocked.Increment(ref Counter);
 #endif
-                    }
+
                 }
             } catch (Exception ex) {
                 _logger.Error(ex.ToString());

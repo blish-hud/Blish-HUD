@@ -1,5 +1,6 @@
 ﻿using Blish_HUD.GameServices.ArcDps.V2.Extensions;
 using Blish_HUD.GameServices.ArcDps.V2.Models;
+using Blish_HUD.GameServices.ArcDps.V2.Processors;
 using SharpDX;
 using System;
 using System.IO;

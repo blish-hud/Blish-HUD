@@ -100,12 +100,17 @@ namespace Blish_HUD {
         /// </summary>
         private void Start(uint processId) {
             if (this.Loaded) {
+                var version = GetVersion(processId);
+                if (version == ArcDpsBridgeVersion.None) {
+                    return;
+                }
+
                 if (_arcDpsClient != null) {
                     _arcDpsClientCancellationTokenSource.Cancel();
                     _arcDpsClient.Dispose();
                     _arcDpsClient = null;
                 }
-                var version = GetVersion(processId);
+
                 _arcDpsClient = new ArcDpsClient(version);
 
                 foreach (var item in _registerListeners) {
@@ -114,6 +119,10 @@ namespace Blish_HUD {
 
                 _arcDpsClient.Error += SocketErrorHandler;
                 _arcDpsClient.Initialize(new IPEndPoint(IPAddress.Loopback, GetPort(processId, version)), _arcDpsClientCancellationTokenSource.Token);
+
+                RegisterMessageType<ImGuiCallback>(1, async (imGuiCallback, ct) => {
+                    this.HudIsActive = imGuiCallback.NotCharacterSelectOrLoading != 0;
+                });
             }
         }
 
@@ -165,12 +174,21 @@ namespace Blish_HUD {
                 var port = GetPort(processId, ArcDpsBridgeVersion.V2);
                 var client = new TcpClient();
                 client.Connect(new IPEndPoint(IPAddress.Loopback, port));
-                var result = client.Connected;
                 client.Dispose();
-                return result ? ArcDpsBridgeVersion.V2 : ArcDpsBridgeVersion.V1;
+                return ArcDpsBridgeVersion.V2;
             } catch (Exception) {
-                return ArcDpsBridgeVersion.V1;
             }
+
+            try {
+                var port = GetPort(processId, ArcDpsBridgeVersion.V2);
+                var client = new TcpClient();
+                client.Connect(new IPEndPoint(IPAddress.Loopback, port));
+                client.Dispose();
+                return ArcDpsBridgeVersion.V1;
+            } catch (Exception) {
+            }
+
+            return ArcDpsBridgeVersion.None;
         }
     }
 

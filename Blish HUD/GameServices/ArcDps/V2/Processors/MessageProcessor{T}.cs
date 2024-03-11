@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Blish_HUD.GameServices.ArcDps.V2 {
+namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
     internal abstract class MessageProcessor<T> : MessageProcessor
         where T : struct {
         private readonly List<Func<T, CancellationToken, Task>> listeners = new List<Func<T, CancellationToken, Task>>();
 
         public override void Process(byte[] message, CancellationToken ct) {
-            if (this.listeners.Count > 0 && TryInternalProcess(message, out var parsedMessage)) {
+            if (listeners.Count > 0 && TryInternalProcess(message, out var parsedMessage)) {
                 ArrayPool<byte>.Shared.Return(message);
                 Task.Run(async () => await SendToListener(parsedMessage, ct));
             }
@@ -27,7 +27,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
         internal abstract bool TryInternalProcess(byte[] message, out T result);
 
         public void RegisterListener(Func<T, CancellationToken, Task> listener) {
-            this.listeners.Add(listener);
+            listeners.Add(listener);
         }
 
     }
