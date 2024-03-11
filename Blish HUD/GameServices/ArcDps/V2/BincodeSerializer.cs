@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.GameServices.ArcDps.V2 {
-    public class BincodeSerializer {
+    public static class BincodeSerializer {
         public static class FloatConverter {
             public static class Float32Converter {
                 public static float Convert(BinaryReader reader) {
@@ -26,7 +26,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             public static bool UseVarint { get; set; } = true;
 
             public class VarintEncoding {
-                public static VarintEncoding Instance = new VarintEncoding();
+                public static readonly VarintEncoding Instance = new VarintEncoding();
 
                 public ulong ConvertUnsigned(BinaryReader reader) {
                     var firstByte = reader.ReadByte();

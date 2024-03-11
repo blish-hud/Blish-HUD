@@ -50,7 +50,7 @@ namespace Blish_HUD {
         /// <summary>
         ///     Indicates if the socket listener for the arcdps service is running and arcdps sent an update in the last second.
         /// </summary>
-        public bool Running => this._arcDpsClient?.Client.Connected ?? false && this.RenderPresent;
+        public bool Running => (this._arcDpsClient?.Client.Connected ?? false) && this.RenderPresent;
 
         /// <summary>
         ///     Indicates if arcdps currently draws its HUD (not in character select, cut scenes or loading screens)
@@ -136,7 +136,7 @@ namespace Blish_HUD {
         protected override void Unload() {
             Gw2Mumble.Info.ProcessIdChanged -= Start;
             _arcDpsClientCancellationTokenSource.Cancel();
-
+            _arcDpsClientCancellationTokenSource.Dispose();
             _stopwatch.Stop();
             _arcDpsClient.Disconnect();
             _arcDpsClient.Error -= SocketErrorHandler;

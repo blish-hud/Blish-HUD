@@ -46,9 +46,6 @@ namespace Blish_HUD.GameServices.ArcDps {
             // hardcoded message queue size. One Collection per message type. This is done just for optimizations
             this.messageQueues = new BlockingCollection<byte[]>[4];
 
-            //for (int i = 0; i < this.messageQueues.Length; i++) {
-            //    this.messageQueues[i] = new BlockingCollection<byte[]>();
-            //}
             this.Client = new TcpClient();
         }
 
@@ -69,7 +66,7 @@ namespace Blish_HUD.GameServices.ArcDps {
         }
 
         private void ProcessMessage(MessageProcessor processor, BlockingCollection<byte[]> messageQueue) {
-            while (true) {
+            while (!ct.IsCancellationRequested) {
                 ct.ThrowIfCancellationRequested();
                 Task.Delay(1).Wait();
                 foreach (var item in messageQueue.GetConsumingEnumerable()) {
@@ -78,6 +75,8 @@ namespace Blish_HUD.GameServices.ArcDps {
                     ArrayPool<byte>.Shared.Return(item);
                 }
             }
+
+            ct.ThrowIfCancellationRequested();
         }
 
         /// <summary>
@@ -86,6 +85,7 @@ namespace Blish_HUD.GameServices.ArcDps {
         /// <param name="endpoint"></param>
         /// <param name="ct">CancellationToken to cancel the whole client</param>
         public void Initialize(IPEndPoint endpoint, CancellationToken ct) {
+            this.ct = ct;
             this.Client.Connect(endpoint);
             _logger.Info("Connected to arcdps endpoint on: " + endpoint.ToString());
 

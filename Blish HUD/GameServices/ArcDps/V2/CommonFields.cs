@@ -45,8 +45,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
         }
 
         private Task CombatHandler(CombatCallback combatEvent, CancellationToken ct) {
-            //if (args.CombatEvent.Ev != null) return Task.CompletedTask;
-
             /* notify tracking change */
             if (combatEvent.Source.Elite != 0) return Task.CompletedTask;
 
