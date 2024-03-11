@@ -79,8 +79,8 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            this.Common             = new CommonFields();
-            _stopwatch              = new Stopwatch();
+            this.Common = new CommonFields();
+            _stopwatch = new Stopwatch();
         }
 
         protected override void Load() {
@@ -121,7 +121,7 @@ namespace Blish_HUD {
             ushort pid;
 
             unchecked {
-                pid = (ushort) processId;
+                pid = (ushort)processId;
             }
 
             // +1 for V2 and +0 for V1
@@ -161,12 +161,16 @@ namespace Blish_HUD {
         }
 
         private ArcDpsBridgeVersion GetVersion(uint processId) {
-            var port = GetPort(processId, ArcDpsBridgeVersion.V2);
-            var client = new TcpClient();
-            client.Connect(new IPEndPoint(IPAddress.Loopback, port));
-            var result = client.Connected;
-            client.Dispose();
-            return result ? ArcDpsBridgeVersion.V2 : ArcDpsBridgeVersion.V1;
+            try {
+                var port = GetPort(processId, ArcDpsBridgeVersion.V2);
+                var client = new TcpClient();
+                client.Connect(new IPEndPoint(IPAddress.Loopback, port));
+                var result = client.Connected;
+                client.Dispose();
+                return result ? ArcDpsBridgeVersion.V2 : ArcDpsBridgeVersion.V1;
+            } catch (Exception) {
+                return ArcDpsBridgeVersion.V1;
+            }
         }
     }
 
