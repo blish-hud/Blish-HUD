@@ -1,9 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Blish_HUD.ArcDps.Common {
 
     public class CommonFields {
+        private bool _enabled = false;
 
         /// <summary>
         ///     Delegate which will be invoked in <see cref="CommonFields.PlayerAdded" /> and
@@ -15,11 +17,9 @@ namespace Blish_HUD.ArcDps.Common {
         ///     Contains every player in the current group or squad.
         ///     Key: Character Name, Value: Account Name
         /// </summary>
-        public IReadOnlyDictionary<string, Player> PlayersInSquad => _playersInSquad;
-
-        private readonly ConcurrentDictionary<string, Player> _playersInSquad = new ConcurrentDictionary<string, Player>();
-
-        private bool _enabled;
+        public IReadOnlyDictionary<string, Player> PlayersInSquad => GameService.ArcDpsV2.Common.PlayersInSquad
+            .Select(x => new KeyValuePair<string, Player>(x.Key, new Player(x.Value.CharacterName, x.Value.AccountName, x.Value.Profession, x.Value.Elite, x.Value.Self)))
+            .ToDictionary(x=> x.Key, x => x.Value);
 
         /// <summary>
         ///     Gets invoked whenever someone joins the squad or group.
@@ -35,37 +35,12 @@ namespace Blish_HUD.ArcDps.Common {
         ///     Activates the <see cref="CommonFields" /> service.
         /// </summary>
         public void Activate() {
+            GameService.ArcDpsV2.Common.PlayerAdded += player => PlayerAdded?.Invoke(new Player(player.CharacterName, player.AccountName, player.Profession, player.Elite, player.Self));
+            GameService.ArcDpsV2.Common.PlayerRemoved += player => PlayerRemoved?.Invoke(new Player(player.CharacterName, player.AccountName, player.Profession, player.Elite, player.Self));
+
             if (_enabled) return;
 
             _enabled                          =  true;
-            GameService.ArcDps.RawCombatEvent += CombatHandler;
-        }
-
-        private void CombatHandler(object sender, RawCombatEventArgs args) {
-            if (args.CombatEvent.Ev != null) return;
-
-            /* notify tracking change */
-            if (args.CombatEvent.Src.Elite != 0) return;
-
-            /* add */
-            if (args.CombatEvent.Src.Profession != 0) {
-                if (_playersInSquad.ContainsKey(args.CombatEvent.Src.Name)) return;
-
-                string accountName = args.CombatEvent.Dst.Name.StartsWith(":")
-                                         ? args.CombatEvent.Dst.Name.Substring(1)
-                                         : args.CombatEvent.Dst.Name;
-
-                var player = new Player(
-                                        args.CombatEvent.Src.Name, accountName,
-                                        args.CombatEvent.Dst.Profession, args.CombatEvent.Dst.Elite, args.CombatEvent.Dst.Self != 0
-                                       );
-
-                if (_playersInSquad.TryAdd(args.CombatEvent.Src.Name, player)) this.PlayerAdded?.Invoke(player);
-            }
-            /* remove */
-            else {
-                if (_playersInSquad.TryRemove(args.CombatEvent.Src.Name, out var player)) this.PlayerRemoved?.Invoke(player);
-            }
         }
 
         public struct Player {
