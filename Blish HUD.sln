@@ -8,32 +8,33 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0C6D94B-7035-478B-BA1B-CEB7A5D079BD}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
 		Resources.Designer.t4 = Resources.Designer.t4
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nspector", "nspector\nspector.csproj", "{51CEA931-296F-4A96-A3CF-28691A90BFCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nspector", "nspector\nspector.csproj", "{51CEA931-296F-4A96-A3CF-28691A90BFCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Release|x64 = Release|x64
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|x64.ActiveCfg = Debug|x64
-		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|x64.Build.0 = Debug|x64
-		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x64.ActiveCfg = Release|x64
-		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x64.Build.0 = Release|x64
-		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Debug|x64.Build.0 = Debug|Any CPU
-		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Release|x64.ActiveCfg = Release|Any CPU
-		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Release|x64.Build.0 = Release|Any CPU
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_ConfirmAddLanguageFile = True
-		RESX_AutoCreateNewLanguageFiles = True
 		SolutionGuid = {BCD3C4BD-915D-4622-A220-D39D18A327D9}
+		RESX_AutoCreateNewLanguageFiles = True
+		RESX_ConfirmAddLanguageFile = True
 	EndGlobalSection
 EndGlobal

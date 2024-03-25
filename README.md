@@ -42,7 +42,7 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
 - Individual Components that need to be installed in Visual Studio via the Visual Studio Installer:
-  - .NET Core 3.1 Runtime 
+  - .NET 6.0 Runtime 
   - .NET Framework 4.7.2 SDK
   - .NET Framework 4.7.2 targeting pack
   - Visual C++ Redistributable 2012

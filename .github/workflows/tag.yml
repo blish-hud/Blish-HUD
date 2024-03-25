@@ -16,10 +16,10 @@ jobs:
           fetch-depth: 0
       - uses: microsoft/setup-msbuild@v1.1
 
-      - name: Ensure dotnet 3.1 is available
+      - name: Ensure dotnet 6.0 is available
         shell: powershell
         run: |
-          choco install dotnetcore-3.1-runtime
+          choco install dotnet-6.0-runtime
       # GitVersion action doesn't support /ensureassemblyinfo, see https://github.com/GitTools/actions/issues/220
       # So we need to create a new file to let GitVersion populate it
       - name: Create assembly info file for GitVersion
