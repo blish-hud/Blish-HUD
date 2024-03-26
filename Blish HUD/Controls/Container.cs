@@ -131,7 +131,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public IEnumerable<Control> GetDescendants() {
             // Breadth-first unrolling without the inefficiency of recursion.
-            var remainingChildren = new Queue<Control>(this.Children.ToArray());
+            var remainingChildren = new Queue<Control>(this.Children);
 
             while (remainingChildren.Count > 0) {
                 var child = remainingChildren.Dequeue();
@@ -149,11 +149,7 @@ namespace Blish_HUD.Controls {
         /// Returns all child <see cref="Control"/>s of this <see cref="Container"/> of type <typeparamref name="T"/>.
         /// </summary>
         public IEnumerable<T> GetChildrenOfType<T>() {
-            foreach (var child in this.Children.ToArray()) {
-                if (child is T tChild) {
-                    yield return tChild;
-                }
-            }
+            return this.Children.OfType<T>();
         }
 
         /// <summary>
@@ -172,6 +168,7 @@ namespace Blish_HUD.Controls {
             if (evRes.Cancel) return false;
 
             _children.Add(child);
+            child.Parent = this;
 
             Invalidate();
 
@@ -195,6 +192,7 @@ namespace Blish_HUD.Controls {
             if (evRes.Cancel) return false;
 
             _children.Remove(child);
+            child.Parent = null;
 
             Invalidate();
 
@@ -205,8 +203,8 @@ namespace Blish_HUD.Controls {
         /// Safely clears all child <see cref="Control"/> from this <see cref="Container"/>.
         /// </summary>
         public void ClearChildren() {
-            while (_children.Count > 0) {
-                _children[0].Parent = null;
+            foreach (Control child in this.Children) {
+                this.RemoveChild(child);
             }
         }
 

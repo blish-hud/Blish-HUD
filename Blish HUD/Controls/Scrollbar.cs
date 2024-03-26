@@ -253,13 +253,9 @@ namespace Blish_HUD.Controls {
         private void RecalculateScrollbarSize() {
             if (_associatedContainer == null) return;
 
-            var tempContainerChidlren = _associatedContainer.Children.ToArray();
-
             _containerLowestContent = 0;
 
-            for (int i = 0; i < tempContainerChidlren.Length; i++) {
-                ref var child = ref tempContainerChidlren[i];
-
+            foreach (var child in _associatedContainer.Children) {
                 if (child.Visible) {
                     _containerLowestContent = Math.Max(_containerLowestContent, child.Bottom);
                 }
