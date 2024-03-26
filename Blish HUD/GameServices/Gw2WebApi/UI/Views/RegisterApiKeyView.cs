@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Blish_HUD.Controls;
 using Blish_HUD.Content;
-using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Gw2WebApi.UI.Presenters;
+using Blish_HUD.Input;
 using Gw2Sharp.WebApi.Exceptions;
 using Gw2Sharp.WebApi.V2.Models;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Blish_HUD.GameServices.Gw2WebApi.Gw2Auth.Controls;
 
 namespace Blish_HUD.Gw2WebApi.UI.Views {
     public class RegisterApiKeyView : View {
@@ -55,6 +57,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private (TokenInfo TokenInfo, Account AccountInfo) _loadedDetails;
 
         private TextBox        _apiKeyTextBox;
+        private Gw2AuthButton  _gw2AuthButton;
         private Image          _tokenStatusImg;
         private LoadingSpinner _loadingSpinner;
         private Label          _tokenStatusLbl;
@@ -66,7 +69,17 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private readonly Action<string> _tokenCheckDebounceWrapper;
 
         public RegisterApiKeyView() {
-            _tokenCheckDebounceWrapper = ((Action<string>)CheckToken).Debounce();
+            _tokenCheckDebounceWrapper  =  ((Action<string>)CheckToken).Debounce();
+        }
+
+        protected override Task<bool> Load(IProgress<string> progress) {
+            GameService.Gw2WebApi.Gw2Auth.Login += OnGw2AuthLogin;
+            return base.Load(progress);
+        }
+
+        protected override void Unload() {
+            GameService.Gw2WebApi.Gw2Auth.Login -= OnGw2AuthLogin;
+            base.Unload();
         }
 
         protected override void Build(Container buildPanel) {
@@ -83,7 +96,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _apiKeyTextBox = new TextBox() {
                 Location = new Point(registerLbl.Left, registerLbl.Bottom + 10),
                 Font     = GameService.Content.DefaultFont16,
-                Width    = buildPanel.Width - 50,
+                Width    = buildPanel.Width - 93,
                 Height   = 43,
                 Parent   = buildPanel
             };
@@ -112,6 +125,17 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent   = buildPanel
             };
 
+            _gw2AuthButton = new Gw2AuthButton() {
+                BasicTooltipText = "Login with Gw2Auth",
+                Width            = _apiKeyTextBox.Height,
+                Height           = _apiKeyTextBox.Height,
+                Left             = _apiKeyTextBox.Right + 5,
+                Top              = _apiKeyTextBox.Top,
+                Parent           = buildPanel
+            };
+
+            _gw2AuthButton.Click += LoginWithGw2AuthBttnClicked;
+
             _loadingSpinner = new LoadingSpinner() {
                 Size     = _tokenStatusImg.Size,
                 Location = _tokenStatusImg.Location,
@@ -135,7 +159,6 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 ShowBorder          = true,
                 Parent              = buildPanel
             };
-
 
             clearKeyBttn.Click += delegate { ClearApiKey(); };
 
@@ -390,6 +413,15 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                                     || tokenStatusType == ApiTokenStatusType.Perfect;
 
             _tokenStatusImg.Show();
+        }
+
+        private void LoginWithGw2AuthBttnClicked(object o, MouseEventArgs e) {
+            GameService.Content.PlaySoundEffectByName("button-click");
+            GameService.Gw2WebApi.Gw2Auth.Authorize();
+        }
+
+        private void OnGw2AuthLogin(object o, EventArgs e) {
+            ReloadApiKeys();
         }
 
         public void ClearApiKey() {
