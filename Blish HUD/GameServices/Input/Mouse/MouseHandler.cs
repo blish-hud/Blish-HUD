@@ -215,7 +215,5 @@ namespace Blish_HUD.Input {
         public void UnsetActiveControl() {
             this.ActiveControl = null;
         }
-
     }
-
 }

@@ -146,7 +146,6 @@ namespace Blish_HUD.Controls {
             if (e.EventType == MouseEventType.XButton1Pressed          ||
                 e.EventType == MouseEventType.XButton2Pressed          ||
                 e.EventType == MouseEventType.MiddleMouseButtonPressed) {
-
                 this.PrimaryKey   = Keys.None;
                 this.ModifierKeys = KeysUtil.ModifiersFromKeys(Input.Keyboard.KeysDown);
 
