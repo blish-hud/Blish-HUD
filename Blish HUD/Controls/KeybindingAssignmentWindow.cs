@@ -1,5 +1,6 @@
 ﻿using System;
 using Blish_HUD.Input;
+using Blish_HUD.Input.Mouse;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -48,6 +49,7 @@ namespace Blish_HUD.Controls {
 
         private ModifierKeys _modifierKeys;
         private Keys         _primaryKey;
+        private MouseButtons _primaryMouseButton;
 
         /// <summary>
         /// The current modifier key(s) assignment.
@@ -62,17 +64,38 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public Keys PrimaryKey {
             get => _primaryKey;
-            private set => SetProperty(ref _primaryKey, value, true);
+            private set {
+                if (SetProperty(ref _primaryKey, value, true)) {
+                    _primaryMouseButton = MouseButtons.None;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The current primary mouse button assignment.
+        /// </summary>
+        public MouseButtons PrimaryMouseButton {
+            get => _primaryMouseButton;
+            private set {
+                if (SetProperty(ref _primaryMouseButton, value, true)) {
+                    _primaryKey = Keys.None;
+                }
+            }
         }
 
         private readonly string _assignmentName;
 
         private string _assignmentDisplayString;
 
-        public KeybindingAssignmentWindow(string assignmentName, ModifierKeys modifierKeys = ModifierKeys.None, Keys primaryKey = Keys.None) {
-            _assignmentName = assignmentName;
-            _modifierKeys   = modifierKeys;
-            _primaryKey     = primaryKey;
+        public KeybindingAssignmentWindow(string assignmentName, ModifierKeys modifierKeys = ModifierKeys.None, Keys primaryKey = Keys.None) : this(assignmentName, modifierKeys, primaryKey, MouseButtons.None) {
+            /* NOOP */
+        }
+        
+        public KeybindingAssignmentWindow(string assignmentName, ModifierKeys modifierKeys = ModifierKeys.None, Keys primaryKey = Keys.None, MouseButtons primaryMouseButton = MouseButtons.None) {
+            _assignmentName     = assignmentName;
+            _modifierKeys       = modifierKeys;
+            _primaryKey         = primaryKey;
+            _primaryMouseButton = primaryMouseButton;
 
             this.BackgroundColor = Color.Black * 0.3f;
             this.Size            = new Point(_normalizedWindowRegion.Width, _normalizedWindowRegion.Height);
@@ -81,7 +104,10 @@ namespace Blish_HUD.Controls {
 
             BuildChildElements();
 
-            Input.Keyboard.KeyStateChanged += KeyboardOnKeyStateChanged;
+            Input.Keyboard.KeyStateChanged       += KeyboardOnKeyStateChanged;
+            Input.Mouse.XButton1Pressed          += MouseButtonPressed;
+            Input.Mouse.XButton2Pressed          += MouseButtonPressed;
+            Input.Mouse.MiddleMouseButtonPressed += MouseButtonPressed;
         }
 
         protected override void OnShown(EventArgs e) {
@@ -95,6 +121,10 @@ namespace Blish_HUD.Controls {
         private void BlockGameInput(string input) { /* NOOP */ }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
+            if (!this.Visible) {
+                return;
+            }
+
             if (e.Key == Keys.Escape) {
                 if (e.EventType == KeyboardEventType.KeyUp) {
                     OnAssignmentCanceled(EventArgs.Empty);
@@ -105,6 +135,27 @@ namespace Blish_HUD.Controls {
 
             if (e.EventType == KeyboardEventType.KeyDown) {
                 (this.ModifierKeys, this.PrimaryKey) = KeysUtil.SplitToBindingPair(Input.Keyboard.KeysDown);
+            }
+        }
+
+        private void MouseButtonPressed(object sender, MouseEventArgs e) {
+            if (!this.Visible) {
+                return;
+            }
+
+            if (e.EventType == MouseEventType.XButton1Pressed          ||
+                e.EventType == MouseEventType.XButton2Pressed          ||
+                e.EventType == MouseEventType.MiddleMouseButtonPressed) {
+
+                this.PrimaryKey   = Keys.None;
+                this.ModifierKeys = KeysUtil.ModifiersFromKeys(Input.Keyboard.KeysDown);
+
+                this.PrimaryMouseButton = e.EventType switch {
+                    MouseEventType.XButton1Pressed => MouseButtons.XButton1,
+                    MouseEventType.XButton2Pressed => MouseButtons.XButton2,
+                    MouseEventType.MiddleMouseButtonPressed => MouseButtons.MiddleButton,
+                    _ => this.PrimaryMouseButton
+                };
             }
         }
 
@@ -153,8 +204,9 @@ namespace Blish_HUD.Controls {
             _acceptBttn.Location = new Point(_cancelBttn.Left - 8 - _acceptBttn.Width, _cancelBttn.Top);
 
             _unbindBttn.Click += delegate {
-                this.ModifierKeys = ModifierKeys.None;
-                this.PrimaryKey   = Keys.None;
+                this.ModifierKeys       = ModifierKeys.None;
+                this.PrimaryKey         = Keys.None;
+                this.PrimaryMouseButton = MouseButtons.None;
             };
 
             _cancelBttn.Click += delegate {
@@ -186,10 +238,10 @@ namespace Blish_HUD.Controls {
                 this.ContentRegion = _windowRegion;
             }
 
-            _assignmentDisplayString = KeysUtil.GetFriendlyName(_modifierKeys, _primaryKey);
+            _assignmentDisplayString = KeysUtil.GetFriendlyName(_modifierKeys, _primaryKey, _primaryMouseButton);
 
             if (_unbindBttn != null) {
-                _unbindBttn.Enabled = this.PrimaryKey != Keys.None;
+                _unbindBttn.Enabled = this.PrimaryKey != Keys.None || this.PrimaryMouseButton != MouseButtons.None;
             }
         }
 
@@ -205,7 +257,10 @@ namespace Blish_HUD.Controls {
 
             GameService.Input.Keyboard.UnsetTextInputListner(BlockGameInput);
 
-            Input.Keyboard.KeyStateChanged -= KeyboardOnKeyStateChanged;
+            Input.Keyboard.KeyStateChanged       -= KeyboardOnKeyStateChanged;
+            Input.Mouse.XButton1Pressed          -= MouseButtonPressed;
+            Input.Mouse.XButton2Pressed          -= MouseButtonPressed;
+            Input.Mouse.MiddleMouseButtonPressed -= MouseButtonPressed;
         }
 
         // We implement IWindow to avoid other windows from reacting to our ESC input

@@ -92,13 +92,14 @@ namespace Blish_HUD.Controls {
         }
 
         private void SetupNewAssignmentWindow() {
-            var newHkAssign = new KeybindingAssignmentWindow(_text, _keyBinding.ModifierKeys, _keyBinding.PrimaryKey) {
+            var newHkAssign = new KeybindingAssignmentWindow(_text, _keyBinding.ModifierKeys, _keyBinding.PrimaryKey, _keyBinding.PrimaryMouseButton) {
                 Parent = Graphics.SpriteScreen
             };
 
             newHkAssign.AssignmentAccepted += delegate {
-                _keyBinding.ModifierKeys = newHkAssign.ModifierKeys;
-                _keyBinding.PrimaryKey   = newHkAssign.PrimaryKey;
+                _keyBinding.ModifierKeys       = newHkAssign.ModifierKeys;
+                _keyBinding.PrimaryKey         = newHkAssign.PrimaryKey;
+                _keyBinding.PrimaryMouseButton = newHkAssign.PrimaryMouseButton;
 
                 OnBindingChanged(EventArgs.Empty);
             };
