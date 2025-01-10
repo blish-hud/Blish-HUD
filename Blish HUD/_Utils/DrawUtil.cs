@@ -47,7 +47,7 @@ namespace Blish_HUD {
             string[] words      = text.Split(' ');
             var      sb         = new StringBuilder();
             float    lineWidth  = 0f;
-            float    spaceWidth = spriteFont.MeasureString(" ").Width;
+            float    spaceWidth = spriteFont.MeasureString("_").Width;
 
             foreach (string word in words) {
                 Vector2 size = spriteFont.MeasureString(word);
