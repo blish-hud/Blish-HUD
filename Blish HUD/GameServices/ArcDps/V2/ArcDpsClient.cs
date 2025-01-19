@@ -62,14 +62,14 @@ namespace Blish_HUD.GameServices.ArcDps {
         public bool IsMessageTypeAvailable(MessageType type)
             => this._processors.ContainsKey((int)type);
 
-        public void RegisterMessageTypeListener<T>(int type, Func<T, CancellationToken, Task> listener)
+        public void RegisterMessageTypeListener<T>(IArcDpsMessageListener<T> listener)
             where T : struct {
-            var processor = (MessageProcessor<T>)_processors[type];
-            if (_messageQueues[type] == null) {
-                _messageQueues[type] = new BlockingCollection<byte[]>();
+            var processor = (MessageProcessor<T>)_processors[(int)listener.MessageType];
+            if (_messageQueues[(int)listener.MessageType] == null) {
+                _messageQueues[(int)listener.MessageType] = new BlockingCollection<byte[]>();
 
                 try {
-                    Task.Run(() => ProcessMessage(processor, _messageQueues[type]));
+                    Task.Run(() => ProcessMessage(processor, _messageQueues[(int)listener.MessageType]));
                 } catch (OperationCanceledException) {
                     // NOP
                 }

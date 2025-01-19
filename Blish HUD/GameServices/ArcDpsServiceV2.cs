@@ -77,18 +77,23 @@ namespace Blish_HUD {
         public bool IsMessageTypeAvailable(MessageType type)
             => _arcDpsClient.IsMessageTypeAvailable(type);
 
-        public void RegisterMessageType<T>(MessageType type, Func<T, CancellationToken, Task> listener)
+        public void RegisterMessageType<T>(IArcDpsMessageListener<T> listener)
             where T : struct {
-            RegisterMessageType<T>((int)type, listener);
-        }
-
-        public void RegisterMessageType<T>(int type, Func<T, CancellationToken, Task> listener)
-            where T : struct {
-            Action action = () => _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            Action action = () => _arcDpsClient.RegisterMessageTypeListener(listener);
             _registerListeners.Add(action);
             if (_arcDpsClient != null) {
                 action();
             }
+        }
+
+        public void RegisterMessageType<T>(MessageType messageType, Func<T, CancellationToken, Task> listener)
+            where T : struct {
+            RegisterMessageType(new ArcDpsMessageListener<T>(messageType, listener));
+        }
+
+        public void RegisterMessageType<T>(int messageType, Func<T, CancellationToken, Task> listener) 
+            where T : struct {
+            RegisterMessageType(new ArcDpsMessageListener<T>((MessageType)messageType, listener));
         }
 
         protected override void Initialize() {
@@ -133,9 +138,9 @@ namespace Blish_HUD {
                 _arcDpsClient.Error += SocketErrorHandler;
                 _arcDpsClient.Initialize(new IPEndPoint(IPAddress.Loopback, GetPort(processId, version)), _arcDpsClientCancellationTokenSource.Token);
 
-                RegisterMessageType<ImGuiCallback>(MessageType.ImGui, async (imGuiCallback, ct) => {
+                RegisterMessageType(new ArcDpsMessageListener<ImGuiCallback>(MessageType.ImGui, async (imGuiCallback, ct) => {
                     this.HudIsActive = imGuiCallback.NotCharacterSelectOrLoading != 0;
-                });
+                }));
             }
         }
 

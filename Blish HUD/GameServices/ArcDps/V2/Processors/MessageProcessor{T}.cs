@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
     internal abstract class MessageProcessor<T> : MessageProcessor
         where T : struct {
-        private readonly List<Func<T, CancellationToken, Task>> listeners = new List<Func<T, CancellationToken, Task>>();
+        private readonly List<IArcDpsMessageListener<T>> listeners = new List<IArcDpsMessageListener<T>>();
 
         public override void Process(byte[] message, CancellationToken ct) {
             if (listeners.Count > 0 && TryInternalProcess(message, out var parsedMessage)) {
@@ -19,14 +19,20 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
         private async Task SendToListener(T Message, CancellationToken ct) {
             foreach (var listener in listeners) {
                 ct.ThrowIfCancellationRequested();
-                await listener.Invoke(Message, ct);
+                await listener.HandleAsync(Message, ct);
             }
         }
 
         internal abstract bool TryInternalProcess(byte[] message, out T result);
 
-        public void RegisterListener(Func<T, CancellationToken, Task> listener) {
+        public void RegisterListener(IArcDpsMessageListener<T> listener) {
             listeners.Add(listener);
+            listener.Disposing += RemoveListener;
+        }
+
+        private void RemoveListener(IArcDpsMessageListener<T> listener) {
+            listener.Disposing -= RemoveListener;
+            listeners.Remove(listener);
         }
 
     }
