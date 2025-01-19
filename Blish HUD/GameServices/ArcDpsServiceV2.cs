@@ -86,11 +86,13 @@ namespace Blish_HUD {
             }
         }
 
+        [Obsolete("Use RegisterMessageType<T>(IArcDpsMessageListener<T> listener) instead")]
         public void RegisterMessageType<T>(MessageType messageType, Func<T, CancellationToken, Task> listener)
             where T : struct {
             RegisterMessageType(new ArcDpsMessageListener<T>(messageType, listener));
         }
 
+        [Obsolete("Use RegisterMessageType<T>(IArcDpsMessageListener<T> listener) instead")]
         public void RegisterMessageType<T>(int messageType, Func<T, CancellationToken, Task> listener) 
             where T : struct {
             RegisterMessageType(new ArcDpsMessageListener<T>((MessageType)messageType, listener));
