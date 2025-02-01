@@ -1,4 +1,4 @@
-﻿using Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras;
+﻿using Blish_HUD.GameServices.ArcDps.V2.Models.UnofficialExtras;
 using Blish_HUD.GameServices.ArcDps.V2.Models;
 using Blish_HUD.GameServices.ArcDps.V2.Processors;
 using System;
@@ -72,8 +72,8 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Extensions {
             return result;
         }
 
-        public static ChatMessageInfo ParseChatMessageInfo(this BincodeBinaryReader reader) {
-            var result = default(ChatMessageInfo);
+        public static SquadMessageInfo ParseSquadMessageInfo(this BincodeBinaryReader reader) {
+            var result = default(SquadMessageInfo);
             result.ChannelId = reader.Convert.ParseUInt();
             result.ChannelType = ParseEnum((byte)reader.Convert.ParseUInt(), (int)ChannelType.Invalid, ChannelType.Invalid);
             result.Subgroup = reader.Convert.ParseByte();
@@ -82,6 +82,14 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Extensions {
             result.AccountName = reader.Convert.ParseString();
             result.CharacterName = reader.Convert.ParseString();
             result.Text = reader.Convert.ParseString();
+            return result;
+        }
+
+        public static NpcMessageInfo ParseNpcMessageInfo(this BincodeBinaryReader reader) {
+            var result = default(NpcMessageInfo);
+            result.CharacterName = reader.Convert.ParseString();
+            result.Message       = reader.Convert.ParseString();
+            result.TimeStamp     = reader.Convert.ParseULong();
             return result;
         }
 
