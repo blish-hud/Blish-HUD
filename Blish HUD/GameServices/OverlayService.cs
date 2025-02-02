@@ -225,8 +225,9 @@ namespace Blish_HUD {
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             var culture = GetCultureFromGw2Locale(e.NewValue);
 
+            // Update the UI culture for the entire application domain by setting DefaultThreadCurrentUICulture
+            // DO NOT change CurrentUICulture, otherwise running threads will NOT get updated with the new default.
             CultureInfo.DefaultThreadCurrentUICulture = culture;
-            CultureInfo.CurrentUICulture              = culture;
 
             this.UserLocaleChanged?.Invoke(this, new ValueEventArgs<CultureInfo>(culture));
         }
