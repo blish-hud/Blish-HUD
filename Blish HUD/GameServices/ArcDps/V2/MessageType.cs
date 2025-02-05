@@ -9,6 +9,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
         // Unofficial Extras
         UserInfo         = 4,
         SquadMessage     = 5,
-        NpcMessage       = 6
+        NpcMessage       = 6,
     }
 }
