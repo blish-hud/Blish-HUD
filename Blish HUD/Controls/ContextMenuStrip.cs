@@ -10,7 +10,7 @@ namespace Blish_HUD.Controls {
     /// <summary>
     /// Represents a right-click shortcut menu.  Can be assigned to <see cref="Control.Menu"/>.
     /// </summary>
-    public class ContextMenuStrip : Container {
+    public class ContextMenuStrip : ReferenceCountedContainer {
 
         private const int BORDER_PADDING = 2;
 

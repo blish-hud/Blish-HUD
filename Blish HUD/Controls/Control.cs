@@ -118,6 +118,10 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        ~Control() {
+            Dispose();
+        }
+
         static Control() {
             _defaultSpriteBatchParameters = new SpriteBatchParameters();
 
@@ -559,9 +563,14 @@ namespace Blish_HUD.Controls {
             get {
                 if (_tooltip != null && !_tooltip._disposedValue) return _tooltip;
 
-                return !string.IsNullOrWhiteSpace(_basicTooltipText)
-                    ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
-                    : null;
+                if (!string.IsNullOrWhiteSpace(_basicTooltipText)) {
+                    var tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText));
+
+                    if (SetProperty(ref _tooltip, tooltip))
+                        return tooltip;
+                }
+
+                return null;
             }
             set => SetProperty(ref _tooltip, value);
         }
@@ -959,6 +968,12 @@ namespace Blish_HUD.Controls {
                     // Cancel any animations that were currently running on this object
                     Animation.Tweener.TargetCancel(this);
 
+                    //Menu will be disposed if there are no other references to it
+                    this.Tooltip = null;
+
+                    //Menu will be disposed if there are no other references to it
+                    this.Menu = null;
+
                     // Remove self from parent object
                     this.Parent = null;
 
@@ -989,8 +1004,14 @@ namespace Blish_HUD.Controls {
         protected bool SetProperty<T>(ref T property, T newValue, bool invalidateLayout = false, [CallerMemberName] string propertyName = null) {
             if (Equals(property, newValue) || propertyName == null) return false;
 
+            if(property is IReferenceCountedObject currentRefProp)
+                currentRefProp.DecrementReference();
+
             property = newValue;
 
+            if (property is IReferenceCountedObject newRefProp)
+                newRefProp.IncrementReference();
+            
             OnPropertyChanged(propertyName, invalidateLayout);
 
             return true;
