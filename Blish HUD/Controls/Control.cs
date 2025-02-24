@@ -119,7 +119,8 @@ namespace Blish_HUD.Controls {
         #endregion
 
         ~Control() {
-            Dispose();
+            // Pass false so the managed objects are not released
+            Dispose(false);
         }
 
         static Control() {
