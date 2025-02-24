@@ -7,7 +7,6 @@ using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Presenters;
 using Blish_HUD.Strings.GameServices;
 using Microsoft.Xna.Framework;
-using System.Linq;
 
 namespace Blish_HUD.Modules.UI.Views {
     public class ModuleRepoView : View {
