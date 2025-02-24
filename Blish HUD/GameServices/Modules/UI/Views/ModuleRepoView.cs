@@ -7,6 +7,7 @@ using Blish_HUD.Modules.Pkgs;
 using Blish_HUD.Modules.UI.Presenters;
 using Blish_HUD.Strings.GameServices;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace Blish_HUD.Modules.UI.Views {
     public class ModuleRepoView : View {
@@ -92,12 +93,19 @@ namespace Blish_HUD.Modules.UI.Views {
 
         private void SearchboxOnTextChanged(object sender, EventArgs e) {
             this.RepoFlowPanel.FilterChildren<ViewContainer>(viewContainer => PkgParamFilter(viewContainer, PkgNeedsUpdateFilter, PkgSearchFilter));
+
+            UpdateChildrenTint();
         }
 
         private bool PkgSearchFilter(ViewContainer viewContainer) {
             var pkgView = viewContainer.CurrentView as ManagePkgView;
 
-            return pkgView.ModuleName.ToLowerInvariant().Contains(_searchbox.Text.ToLowerInvariant());
+            var normalizedInput = _searchbox.Text.ToLowerInvariant();
+
+            var matchName = pkgView.ModuleName.ToLowerInvariant().Contains(normalizedInput);
+            var matchDescription = pkgView.ModuleDescription.ToLowerInvariant().Contains(normalizedInput);
+
+            return matchName || matchDescription;
         }
 
         private bool PkgNeedsUpdateFilter(ViewContainer viewContainer) {
@@ -114,6 +122,15 @@ namespace Blish_HUD.Modules.UI.Views {
             }
 
             return true;
+        }
+
+        private void UpdateChildrenTint() {
+            bool s = true;
+
+            foreach (var child in this.RepoFlowPanel.Children) {
+                if (child.Visible && child is ViewContainer container)
+                    container.ShowTint = (s = !s);
+            }
         }
 
     }
