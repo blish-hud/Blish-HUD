@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.AccessControl;
 using System.Windows.Forms;
 using Blish_HUD.GameIntegration.Gw2Instance;
@@ -262,17 +264,12 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void TryAttachToGw2() {
-            // Get process from Mumble if it is defined
-            // otherwise just get the first instance running
-            if (ApplicationSettings.Instance.MumbleMapName != null) {
-                // User-set mumble link name - so don't fallback.
-                this.Gw2Process = GetMumbleSpecifiedGw2Process();
-            } else {
-                // No user-set mumble link name - so fallback,
-                // starting with default mumble data if found
-                this.Gw2Process = GetMumbleSpecifiedGw2Process()
-                               ?? GetDefaultGw2ProcessById()
-                               ?? GetDefaultGw2ProcessByName();
+            if (!TryGetGw2Process(out Process gw2Process, out bool shouldShowContingency)) {
+                this.Gw2Process = null;
+
+                if (shouldShowContingency) {
+                    Debug.Contingency.NotifyWin32AccessDenied();
+                }
             }
 
             if (this.Gw2IsRunning) {
@@ -291,52 +288,94 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
-        private Process GetGw2ProcessByPID(int pid, string src) {
-            if (pid == 0) return null; // Fix reading empty process. Caused by MumbleLink mock tools.
+        private bool TryGetGw2Process(out Process gw2Process, out bool shouldShowContingency) {
+            shouldShowContingency = false;
 
-            try {
-                return Process.GetProcessById(pid);
-            } catch (ArgumentException) {
-                Logger.Debug("{src} {pid} which did not correlate to an active process.", src, pid);
-            } catch (InvalidOperationException) {
-                Logger.Debug("{src} {pid} failed to return a process.", src, pid);
-            }
-
-            return null;
-        }
-
-        private Process GetMumbleSpecifiedGw2Process() {
-            GameService.Gw2Mumble.RefreshClient();
-
-            if (GameService.Gw2Mumble.IsAvailable) {
-                return GetGw2ProcessByPID((int)GameService.Gw2Mumble.Info.ProcessId, "Mumble reported PID");
-            }
-
-            return null;
-        }
-
-        private Process GetDefaultGw2ProcessById() {
-            if (ApplicationSettings.Instance.ProcessId != 0) {
-                return GetGw2ProcessByPID(ApplicationSettings.Instance.ProcessId, "PID specified by --pid");
-            }
-
-            return null;
-        }
-
-        private Process GetDefaultGw2ProcessByName() {
-            Process[] gw2Processes = Array.Empty<Process>();
-
-            if (ApplicationSettings.Instance.ProcessName != null) {
-                gw2Processes = Process.GetProcessesByName(ApplicationSettings.Instance.ProcessName);
-            } else {
-                for (int i = 0; i < _processNames.Length && gw2Processes.Length < 1; i++) {
-                    gw2Processes = Process.GetProcessesByName(_processNames[i]);
+            foreach (Process process in EnumerateGw2Processes()) {
+                try {
+                    //check access
+                    shouldShowContingency = false;
+                    using (process.SafeHandle) {
+                        gw2Process = process;
+                        return true;
+                    }
+                } catch (Win32Exception ex) {
+                    shouldShowContingency = true;
+                    Logger.Debug(ex, $"Skipping process {process.Id} as OpenProcess failed.");
                 }
             }
 
-            return gw2Processes.Length > 0
-                       ? gw2Processes[0]
-                       : null;
+            gw2Process = null;
+            return false;
+        }
+
+        private IEnumerable<Process> EnumerateGw2Processes() {
+            // Get process from Mumble if it is defined
+            // otherwise just get the first instance running
+            if (ApplicationSettings.Instance.MumbleMapName != null) {
+                // User-set mumble link name - so don't fallback.
+                if (TryGetMumbleSpecifiedGw2Process(out Process gw2Process)) {
+                    yield return gw2Process;
+                }
+            } else {
+                // No user-set mumble link name - so fallback,
+                // starting with default mumble data if found
+                if (TryGetMumbleSpecifiedGw2Process(out Process gw2Process)) {
+                    yield return gw2Process;
+                }
+                
+                if (TryGetDefaultGw2ProcessById(out gw2Process)) {
+                    yield return gw2Process;
+                }
+                
+                foreach (Process process in GetDefaultGw2ProcessesByName()) {
+                    yield return process;
+                }
+            }
+        }
+
+        private bool TryGetGw2ProcessByPID(int pid, string src, out Process gw2Process) {
+            if (pid == 0) {
+                gw2Process = null;
+                return false;
+            }
+
+            try {
+                gw2Process = Process.GetProcessById(pid);
+                return true;
+            } catch (ArgumentException) {
+                Logger.Debug("{src} {pid} which did not correlate to an active process.", src, pid);
+                gw2Process = null;
+                return false;
+            } catch (InvalidOperationException) {
+                Logger.Debug("{src} {pid} failed to return a process.", src, pid);
+                gw2Process = null;
+                return false;
+            }
+        }
+
+        private bool TryGetMumbleSpecifiedGw2Process(out Process gw2Process) {
+            GameService.Gw2Mumble.RefreshClient();
+
+            if (!GameService.Gw2Mumble.IsAvailable) {
+                gw2Process = null;
+                return false;
+            }
+
+            return TryGetGw2ProcessByPID((int)GameService.Gw2Mumble.Info.ProcessId, "Mumble reported PID", out gw2Process);
+        }
+
+        private bool TryGetDefaultGw2ProcessById(out Process gw2Process) {
+            if (ApplicationSettings.Instance.ProcessId == 0) {
+                gw2Process = null;
+                return false;
+            }
+
+            return TryGetGw2ProcessByPID(ApplicationSettings.Instance.ProcessId, "PID specified by --pid", out gw2Process);
+        }
+
+        private IEnumerable<Process> GetDefaultGw2ProcessesByName() {
+            return _processNames.SelectMany(Process.GetProcessesByName);
         }
 
         private string GetGw2PathFromRegistry() {
