@@ -228,25 +228,11 @@ namespace Blish_HUD.Controls {
             SetText(_text.Substring(0, index) + _text.Substring(index + length), true);
         }
 
-        private string RemoveUnsupportedChars(string value) {
-            var result = new StringBuilder(value.Length);
-
-            foreach (char c in value) {
-                if (_font.GetCharacterRegion(c) != null || (_multiline && c == NEWLINE)) {
-                    result.Append(c);
-                }
-            }
-
-            return result.ToString();
-        }
-
         private bool InsertChars(int index, string value, out int length) {
             if (string.IsNullOrEmpty(value)) {
                 length = 0;
                 return false;
             }
-
-            value = RemoveUnsupportedChars(value);
 
             int startLength = _text.Length;
 
@@ -394,15 +380,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected void UserSetCursorIndex(int newIndex) {
-            if (newIndex > _text.Length) {
-                newIndex = _text.Length;
-            }
-
-            if (newIndex < 0) {
-                newIndex = 0;
-            }
-
-            this.CursorIndex = newIndex;
+            this.CursorIndex = MathHelper.Clamp(newIndex, 0, _text.Length);
         }
 
         protected void ResetSelection() {
@@ -537,9 +515,40 @@ namespace Blish_HUD.Controls {
             return GetClosestRightWordSelectionBoundary(index);
         }
 
+        protected int GetClosestLeftCharacterBoundary(int index) {
+            string text = this._text;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
+
+            index = MathHelper.Clamp(index, 0, this._text.Length);
+
+            if (index > 0 && index < text.Length && char.IsSurrogatePair(text, index - 1)) {
+                index--;
+            }
+
+            return index;
+        }
+
+        protected int GetClosestRightCharacterBoundary(int index) {
+            string text = this._text;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
+
+            index = MathHelper.Clamp(index, 0, this._text.Length);
+
+            if (index > 0 && index < text.Length && char.IsSurrogatePair(text, index - 1)) {
+                index++;
+            }
+
+            return index;
+        }
+
         private string ProcessText(string value) {
             if (value == null) return string.Empty;
 
+            value.ReplaceInvalidSurrogates();
             value = value.Replace("\r", string.Empty);
 
             if (!_multiline) {
@@ -722,8 +731,14 @@ namespace Blish_HUD.Controls {
                         UserSetCursorIndex(deleteToIndex);
                         ResetSelection();
                     }
-                } else if (Delete(_cursorIndex - 1, 1)) {
-                    UserSetCursorIndex(_cursorIndex - 1);
+                    return;
+                }
+
+                int toIndex = _cursorIndex;
+                int fromIndex = GetClosestLeftCharacterBoundary(toIndex - 1);
+
+                if (Delete(fromIndex, toIndex - fromIndex)) {
+                    UserSetCursorIndex(fromIndex);
                     ResetSelection();
                 }
             } else {
@@ -737,22 +752,28 @@ namespace Blish_HUD.Controls {
                     int deleteToIndex = GetClosestRightWordNavigationBoundary(_cursorIndex);
 
                     Delete(_cursorIndex, deleteToIndex - _cursorIndex);
-                } else {
-                    Delete(_cursorIndex, 1);
+                    return;
                 }
+
+                int fromIndex = _cursorIndex;
+                int toIndex = GetClosestRightCharacterBoundary(fromIndex + 1);
+
+                Delete(fromIndex, toIndex - fromIndex);
             } else {
                 DeleteSelection();
             }
         }
 
         protected virtual void HandleLeft(bool ctrlDown) {
-            int newIndex = _cursorIndex - 1;
+            int newIndex;
 
             if (ctrlDown) {
                 newIndex = GetClosestLeftWordNavigationBoundary(_cursorIndex);
             } else if (_selectionStart != _selectionEnd && !this.IsShiftDown) {
                 // Collapse the selection to the left side
                 newIndex = Math.Min(_selectionStart, _selectionEnd);
+            } else {
+                newIndex = GetClosestLeftCharacterBoundary(newIndex);
             }
 
             UserSetCursorIndex(newIndex);
@@ -760,13 +781,15 @@ namespace Blish_HUD.Controls {
         }
 
         protected virtual void HandleRight(bool ctrlDown) {
-            int newIndex = _cursorIndex + 1;
+            int newIndex;
 
             if (ctrlDown) {
                 newIndex = GetClosestRightWordNavigationBoundary(_cursorIndex);
             } else if (_selectionStart != _selectionEnd && !this.IsShiftDown) {
                 // Collapse the selection to the right side
                 newIndex = Math.Max(_selectionStart, _selectionEnd);
+            } else {
+                newIndex = GetClosestRightCharacterBoundary(newIndex);
             }
 
             UserSetCursorIndex(newIndex);
