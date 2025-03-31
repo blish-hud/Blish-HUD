@@ -255,5 +255,6 @@ indent_style=space
 indent_size=4
 tab_width=4
 dotnet_style_namespace_match_folder = true:none
-
 dotnet_style_prefer_auto_properties = true:warning
+
+dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion

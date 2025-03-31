@@ -67,11 +67,7 @@ namespace Blish_HUD.Controls {
 
             var parent = this.Parent;
 
-            if (parent != null) {
-                this.Width = Math.Max(parent.Width - 4, nWidth);
-            } else {
-                this.Width = nWidth;
-            }
+            this.Width = parent != null ? Math.Max(parent.Width - 4, nWidth) : nWidth;
         }
 
         protected override void OnClick(MouseEventArgs e) {

@@ -150,11 +150,9 @@ namespace Blish_HUD.Controls {
         protected override void UpdateScrolling() {
             float lineWidth = MeasureStringWidth(_text.Substring(0, _cursorIndex));
 
-            if (_cursorIndex > _prevCursorIndex) {
-                _horizontalOffset = (int)Math.Max(_horizontalOffset, lineWidth - _size.X);
-            } else {
-                _horizontalOffset = (int)Math.Min(_horizontalOffset, lineWidth);
-            }
+            _horizontalOffset = _cursorIndex > _prevCursorIndex
+                ? (int)Math.Max(_horizontalOffset, lineWidth - _size.X)
+                : (int)Math.Min(_horizontalOffset, lineWidth);
 
             _prevCursorIndex = _cursorIndex;
             Invalidate();

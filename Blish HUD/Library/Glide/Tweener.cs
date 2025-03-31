@@ -268,11 +268,7 @@ namespace Glide {
                         float d = r - angle;
                         float a = (float)Math.Abs(d);
 
-                        if (a >= 180) {
-                            range = (360 - a) * (d > 0 ? -1 : 1);
-                        } else {
-                            range = d;
-                        }
+                        range = a >= 180 ? (360 - a) * (d > 0 ? -1 : 1) : d;
                     }
                 }
 

@@ -22,11 +22,7 @@ namespace Blish_HUD {
             this.Mouse = new MouseHandler();
             this.Keyboard = new KeyboardHandler();
 
-            if (ApplicationSettings.Instance.DebugEnabled) {
-                _hookManager = new DebugHelperHookManager();
-            } else {
-                _hookManager = new WinApiHookManager();
-            }
+            _hookManager = ApplicationSettings.Instance.DebugEnabled ? new DebugHelperHookManager() : (IHookManager)new WinApiHookManager();
         }
 
         internal void EnableHooks() {

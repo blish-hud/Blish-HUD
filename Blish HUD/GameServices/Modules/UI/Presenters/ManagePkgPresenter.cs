@@ -77,13 +77,11 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private void SetUi() {
             this.View.ModuleVersions = this.Model.Select(m => m.Version).OrderByDescending(v => v);
 
-            if (_existingModule != null) {
-                this.View.VersionRelationship = this.Model.Max(m => m.Version) > _existingModule.Manifest.Version
+            this.View.VersionRelationship = _existingModule != null
+                ? this.Model.Max(m => m.Version) > _existingModule.Manifest.Version
                                                     ? ManagePkgView.PkgVersionRelationship.CanUpdate
-                                                    : ManagePkgView.PkgVersionRelationship.CurrentVersion;
-            } else {
-                this.View.VersionRelationship = ManagePkgView.PkgVersionRelationship.NotInstalled;
-            }
+                                                    : ManagePkgView.PkgVersionRelationship.CurrentVersion
+                : ManagePkgView.PkgVersionRelationship.NotInstalled;
 
             SetActiveVersion(GetDefaultVersion());
         }

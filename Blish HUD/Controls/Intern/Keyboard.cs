@@ -21,9 +21,8 @@ namespace Blish_HUD.Controls.Intern {
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void Press(VirtualKeyShort key, bool sendToSystem = false) {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
-                Extern.Input[] nInputs;
-                if (ExtendedKeys.Contains(key)) {
-                    nInputs = new[]
+                var nInputs = ExtendedKeys.Contains(key)
+                    ? (new[]
                     {
                         new Extern.Input
                         {
@@ -51,9 +50,8 @@ namespace Blish_HUD.Controls.Intern {
                                 }
                             }
                         }
-                    };
-                } else {
-                    nInputs = new[]
+                    })
+                    : (new[]
                     {
                         new Extern.Input
                         {
@@ -67,8 +65,7 @@ namespace Blish_HUD.Controls.Intern {
                                 }
                             }
                         }
-                    };
-                }
+                    });
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             } else {
                 uint vkCode = (uint)key;
@@ -90,9 +87,8 @@ namespace Blish_HUD.Controls.Intern {
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void Release(VirtualKeyShort key, bool sendToSystem = false) {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
-                Extern.Input[] nInputs;
-                if (ExtendedKeys.Contains(key)) {
-                    nInputs = new[]
+                var nInputs = ExtendedKeys.Contains(key)
+                    ? (new[]
                     {
                         new Extern.Input
                         {
@@ -120,9 +116,8 @@ namespace Blish_HUD.Controls.Intern {
                                 }
                             }
                         }
-                    };
-                } else {
-                    nInputs = new[]
+                    })
+                    : (new[]
                     {
                         new Extern.Input
                         {
@@ -137,8 +132,7 @@ namespace Blish_HUD.Controls.Intern {
                                 }
                             }
                         }
-                    };
-                }
+                    });
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             } else {
                 uint vkCode = (uint)key;

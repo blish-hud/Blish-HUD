@@ -52,15 +52,13 @@ namespace Blish_HUD {
             // Check if Blish directory contains "Settings" folder
             // in that case override MyDocuments location as default for portability
             // --settings cli argument still has priority
-            if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Settings"))) {
-                BasePath = ApplicationSettings.Instance.UserSettingsPath
-                        ?? Path.Combine(Directory.GetCurrentDirectory(), "Settings");
-            } else {
-                BasePath = ApplicationSettings.Instance.UserSettingsPath
+            BasePath = Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Settings"))
+                ? ApplicationSettings.Instance.UserSettingsPath
+                        ?? Path.Combine(Directory.GetCurrentDirectory(), "Settings")
+                : ApplicationSettings.Instance.UserSettingsPath
                         ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
                                                                    Environment.SpecialFolderOption.DoNotVerify),
                                         ADDON_DIR);
-            }
 
             // Directories under ProgramData
             CreateDir(ProgramData = ApplicationSettings.Instance.ProgramDataPath
