@@ -66,9 +66,11 @@ namespace Blish_HUD {
             if (fr < 0) {
                 fr = 0;
             }
+
             if (fr > 255) {
                 fr = 255;
             }
+
             return (byte)fr;
         }
     }

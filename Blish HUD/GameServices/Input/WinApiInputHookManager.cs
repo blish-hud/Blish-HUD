@@ -32,6 +32,7 @@ namespace Blish_HUD.Input {
                 int error = Marshal.GetLastWin32Error();
                 Logger.Warn($"SetWindowsHookEx failed with code {error}");
             }
+
             return _hook != IntPtr.Zero;
         }
 
@@ -46,6 +47,7 @@ namespace Blish_HUD.Input {
                 int error = Marshal.GetLastWin32Error();
                 Logger.Warn($"UnhookWindowsHookEx failed with code {error}");
             }
+
             _hook = IntPtr.Zero;
         }
 

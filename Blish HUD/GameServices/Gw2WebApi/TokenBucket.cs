@@ -102,6 +102,7 @@ namespace Blish_HUD.Gw2WebApi {
                             // This will only work on systems in English, but it's an ambiguous HResult and changing the UI language I think isn't worth it.
                             Debug.Contingency.NotifyHttpAccessDenied("to the Guild Wars 2 API");
                         }
+
                         break;
                 }
 

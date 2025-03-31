@@ -44,6 +44,7 @@ namespace Blish_HUD.Controls {
                     if (colorBoxes.ContainsKey(associatedColorBox.Color)) {
                         colorBoxes[associatedColorBox.Color].IsSelected = true;
                     }
+
                     this.SelectedColor = this.AssociatedColorBox.Color;
                 }
             }

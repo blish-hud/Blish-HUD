@@ -417,6 +417,7 @@ namespace Blish_HUD {
             if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
                 this.World.Render(ctx.GraphicsDevice);
             }
+
             GameService.Debug.StopTimeFunc("3D objects");
 
             // Slightly better scaling (text is a bit more legible)
@@ -438,6 +439,7 @@ namespace Blish_HUD {
                     i++;
                 }
             }
+
             GameService.Debug.StopTimeFunc("Render Queue");
         }
 

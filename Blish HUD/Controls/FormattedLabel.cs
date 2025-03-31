@@ -83,12 +83,14 @@ namespace Blish_HUD.Controls {
                         if (lastYRectangle == default) {
                             lastYRectangle = possibleLastYRectangles.First();
                         }
+
                         imageRectangle.X = 0;
                         imageRectangle.Y = lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height;
                     }
 
                     _rectangles.Add((new RectangleWrapper(imageRectangle), item, item.PrefixImage));
                 }
+
                 var splittedText = item.Text.Split(new[] { "\n" }, StringSplitOptions.None).ToList();
                 string firstText = splittedText[0];
                 var rectangle = HandleFirstTextPart(item, firstText);
@@ -137,6 +139,7 @@ namespace Blish_HUD.Controls {
                         if (lastYRectangle == default) {
                             lastYRectangle = possibleLastYRectangles.First();
                         }
+
                         imageRectangle.X = 0;
                         imageRectangle.Y = lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height;
                     }
@@ -213,6 +216,7 @@ namespace Blish_HUD.Controls {
                     foreach (var rectangle in item) {
                         rectangle.Rectangle.Y = nextRectangleY;
                     }
+
                     int maxHeightInRow = item.Max(x => x.Rectangle.Height);
                     nextRectangleY += maxHeightInRow;
                 }
@@ -225,6 +229,7 @@ namespace Blish_HUD.Controls {
                     foreach (var rectangle in item) {
                         rectangle.Rectangle.Y = nextRectangleY;
                     }
+
                     nextRectangleY -= maxHeightInRow;
                 }
             }

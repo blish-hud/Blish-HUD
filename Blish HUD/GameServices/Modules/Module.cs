@@ -121,6 +121,7 @@ namespace Blish_HUD.Modules {
                     } else {
                         this.RunState = ModuleRunState.Loaded;
                     }
+
                     break;
 
                 case TaskStatus.RanToCompletion:

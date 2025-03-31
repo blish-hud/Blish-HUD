@@ -387,8 +387,10 @@ namespace Blish_HUD.GameIntegration {
                                 if (GameService.Overlay.ShowInTaskbar.Value) {
                                     WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, false);
                                 }
+
                                 break;
                         }
+
                         break;
                 }
 

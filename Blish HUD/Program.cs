@@ -35,6 +35,7 @@ namespace Blish_HUD {
             if (!string.IsNullOrEmpty(OverlayVersion.PreRelease)) {
                 Logger.Info("Running PreRelease {preReleaseVersion}", OverlayVersion.PreRelease);
             }
+
             if (!string.IsNullOrEmpty(OverlayVersion.Build)) {
                 Logger.Info("Running Build {build}", OverlayVersion.Build);
             }

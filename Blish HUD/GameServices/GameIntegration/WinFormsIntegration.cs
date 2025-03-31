@@ -131,6 +131,7 @@ namespace Blish_HUD.GameIntegration {
                 } catch (Exception ex) {
                     Logger.Warn(ex, "Failed to launch Guild Wars 2 via Steam.");
                 }
+
                 return;
             }
 

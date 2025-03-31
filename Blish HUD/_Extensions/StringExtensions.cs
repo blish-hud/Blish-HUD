@@ -50,6 +50,7 @@ namespace Blish_HUD {
             for (int i = 0; i < hashBytes.Length; i++) {
                 sb.Append(hashBytes[i].ToString("X2"));
             }
+
             return sb.ToString();
         }
     }

@@ -40,6 +40,7 @@ namespace Blish_HUD {
                     new_dictionary[p.Key] = p.Value;
                 }
             }
+
             return new_dictionary;
         }
     }

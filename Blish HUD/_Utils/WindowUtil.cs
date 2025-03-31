@@ -188,6 +188,7 @@ namespace Blish_HUD {
                         SetWindowPos(winHandle, nextHandle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
                     }
                 }
+
                 return (OverlayUpdateResponse.WithoutFocus, screenPoint.X == MINIMIZED_POS, 0);
             }
 
@@ -236,6 +237,7 @@ namespace Blish_HUD {
             } catch (Exception ex) {
                 className = ex.Message;
             }
+
             return className;
         }
     }

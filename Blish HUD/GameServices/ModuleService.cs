@@ -389,6 +389,7 @@ namespace Blish_HUD {
                             throw;
                         }
                     }
+
                     GameService.Debug.StopTimeFunc(module.Manifest.Name);
                 }
             }

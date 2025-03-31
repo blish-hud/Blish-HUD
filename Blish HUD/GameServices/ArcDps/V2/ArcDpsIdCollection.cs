@@ -254,9 +254,11 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             } else {
                 res = bt <= (byte)BuffAttribute.SiphonRec ? (BuffAttribute)bt : BuffAttribute.Unknown;
             }
+
             if (res == BuffAttribute.UnusedSiphonInc_Arc) {
                 res = BuffAttribute.Unknown;
             }
+
             return res;
         }
 

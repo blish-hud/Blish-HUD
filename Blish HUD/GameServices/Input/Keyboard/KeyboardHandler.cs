@@ -189,6 +189,7 @@ namespace Blish_HUD.Input {
                 Logger.Debug("Staging keybind {keybind}.", keyBinding.GetBindingDisplayText());
                 _stagedKeyBindings.Add(keyBinding);
             }
+
             _stagedKeyBindingLock.ExitWriteLock();
         }
 
@@ -198,6 +199,7 @@ namespace Blish_HUD.Input {
                 Logger.Debug("Unstaging keybind {keybind}.", keyBinding.GetBindingDisplayText());
                 _stagedKeyBindings.Remove(keyBinding);
             }
+
             _stagedKeyBindingLock.ExitWriteLock();
         }
 

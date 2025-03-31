@@ -36,6 +36,7 @@ namespace Blish_HUD.Input {
                 if (_primaryKey == value) {
                     return;
                 }
+
                 _primaryKey = value;
                 BindingChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -53,6 +54,7 @@ namespace Blish_HUD.Input {
                 if (_modifierKeys == value) {
                     return;
                 }
+
                 _modifierKeys = value;
                 BindingChanged?.Invoke(this, EventArgs.Empty);
             }

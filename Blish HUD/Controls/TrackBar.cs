@@ -44,6 +44,7 @@ namespace Blish_HUD.Controls {
                 if (SetProperty(ref _maxValue, value, true)) {
                     this.Value = _value;
                 }
+
                 MinMaxChanged();
             }
         }
@@ -59,6 +60,7 @@ namespace Blish_HUD.Controls {
                 if (SetProperty(ref _minValue, value, true)) {
                     this.Value = _value;
                 }
+
                 MinMaxChanged();
             }
         }

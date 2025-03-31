@@ -249,6 +249,7 @@ namespace Blish_HUD.GameServices.ArcDps {
                             }
                         }
                     }
+
                     _networkStream?.Dispose();
                 }
 

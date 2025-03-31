@@ -87,6 +87,7 @@ namespace Glide {
                 while (i-- > 0) {
                     lerperSet[i]?.Initialize(start[i], end[i], behavior);
                 }
+
                 initialized = true;
             }
 
@@ -122,12 +123,15 @@ namespace Glide {
                     Delay = repeatDelay;
                     doReverse = true;
                 }
+
                 if (repeatCount <= 0) {
                     doComplete = true;
                 }
+
                 if (repeatCount == 0) {
                     Remover.Remove(this);
                 }
+
                 if (repeatCount > 0) {
                     repeatCount--;
                 }

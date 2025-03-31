@@ -113,6 +113,7 @@ namespace Blish_HUD.Controls {
                         break;
                     }
                 }
+
                 tabList.Clear();
             }
 
@@ -135,6 +136,7 @@ namespace Blish_HUD.Controls {
                         break;
                     }
                 }
+
                 tabList.Clear();
             }
 

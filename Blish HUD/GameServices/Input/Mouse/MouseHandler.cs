@@ -217,6 +217,7 @@ namespace Blish_HUD.Input {
                 // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic .. (both seem to always be 0 right now?)
                 HandleMouseEvent(new MouseEventArgs(MouseEventType.RightMouseButtonPressed, mouseEvent.PointX, mouseEvent.PointY, mouseEvent.MouseData, mouseEvent.Flags, mouseEvent.Time, mouseEvent.Extra));
             }
+
             this.State = tmpState;
         }
 

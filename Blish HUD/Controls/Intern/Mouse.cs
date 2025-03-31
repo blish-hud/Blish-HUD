@@ -70,6 +70,7 @@ namespace Blish_HUD.Controls.Intern {
                 xPos = pos.X;
                 yPos = pos.Y;
             }
+
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
                 var nInputs = new[]
                 {
@@ -109,6 +110,7 @@ namespace Blish_HUD.Controls.Intern {
                 xPos = pos.X;
                 yPos = pos.Y;
             }
+
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
                 var nInputs = new[]
                 {
@@ -154,6 +156,7 @@ namespace Blish_HUD.Controls.Intern {
                 xPos = pos.X;
                 yPos = pos.Y;
             }
+
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
                 var nInputs = new[]
                 {
@@ -231,6 +234,7 @@ namespace Blish_HUD.Controls.Intern {
                     xPos = pos.X;
                     yPos = pos.Y;
                 }
+
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDBLCLK[button], wParam, lParam);

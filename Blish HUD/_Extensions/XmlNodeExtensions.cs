@@ -11,6 +11,7 @@ namespace Blish_HUD {
                 xw.Indentation = indentation;
                 node.WriteContentTo(xw);
             }
+
             return sw.ToString();
         }
     }

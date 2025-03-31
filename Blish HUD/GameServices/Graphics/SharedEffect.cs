@@ -22,6 +22,7 @@ namespace Blish_HUD.Graphics {
                     lock (_loadedEffects) {
                         _loadedEffects.Remove(loadedEffect);
                     }
+
                     Logger.Debug("An EntityEffect was disposed of.");
 
                     continue;

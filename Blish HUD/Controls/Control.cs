@@ -855,12 +855,14 @@ namespace Blish_HUD.Controls {
                         TriggerMouseEvent(mouseEventType);
                         return this;
                     }
+
                     break;
                 case MouseEventType.MouseWheelScrolled:
                     if (inputCapture.HasFlag(CaptureType.MouseWheel) || inputCapture.HasFlag(CaptureType.Filter)) {
                         TriggerMouseEvent(mouseEventType);
                         return this;
                     }
+
                     break;
             }
 

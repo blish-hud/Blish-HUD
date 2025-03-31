@@ -56,6 +56,7 @@ namespace Blish_HUD.GameIntegration {
                 if (Math.Abs(_volume.GetValueOrDefault() - value) > 0.0001f) {
                     VolumeChanged?.Invoke(this, new ValueEventArgs<float>(value));
                 }
+
                 _volume = value;
             }
         }

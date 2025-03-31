@@ -27,14 +27,17 @@ namespace Blish_HUD {
                 // Same as original .NET C# string.Replace behavior.
                 throw new ArgumentNullException(nameof(str));
             }
+
             if (str.Length == 0) {
                 // Same as original .NET C# string.Replace behavior.
                 return str;
             }
+
             if (oldValue == null) {
                 // Same as original .NET C# string.Replace behavior.
                 throw new ArgumentNullException(nameof(oldValue));
             }
+
             if (oldValue.Length == 0) {
                 // Same as original .NET C# string.Replace behavior.
                 throw new ArgumentException("String cannot be of zero length.");
