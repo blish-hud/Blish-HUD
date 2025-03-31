@@ -260,4 +260,4 @@ dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
 dotnet_style_prefer_conditional_expression_over_return = true:suggestion
 dotnet_style_allow_multiple_blank_lines_experimental = false:warning
 
-dotnet_style_allow_statement_immediately_after_block_experimental = false:warning
+insert_final_newline = true
