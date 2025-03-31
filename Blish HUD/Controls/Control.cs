@@ -988,9 +988,9 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public void Dispose() =>
+        public void Dispose()
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
+            => Dispose(true);
         #endregion
 
         #region Property Management and Binding

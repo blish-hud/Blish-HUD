@@ -23,10 +23,10 @@ namespace Blish_HUD.Modules.UI.Presenters {
             return base.Load(progress);
         }
 
-        private Version GetDefaultVersion() =>
+        private Version GetDefaultVersion()
             // It seems to be a better user experience to always default to the latest for
             // those that want to quickly update.
-            this.Model.Max(m => m.Version);
+            => this.Model.Max(m => m.Version);
 
         private void SetActiveVersion(Version version) {
             _selectedVersion = this.Model.First(m => m.Version == version);

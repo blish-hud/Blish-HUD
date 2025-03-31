@@ -159,8 +159,8 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private Rectangle FirstItemBoxRegion =>
-            new Rectangle(0,
+        private Rectangle FirstItemBoxRegion
+            => new Rectangle(0,
                           (this.MenuItemHeight / 2) - (ICON_SIZE / 2),
                           ICON_SIZE,
                           ICON_SIZE);
