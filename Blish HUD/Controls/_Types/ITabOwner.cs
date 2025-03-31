@@ -7,12 +7,12 @@
         /// <summary>
         /// A collection of <see cref="Tab"/> controls, in the order they will be displayed in the window.
         /// </summary>
-        TabCollection Tabs { get; }
+        public TabCollection Tabs { get; }
 
         /// <summary>
         /// The actively selected tab.
         /// </summary>
-        Tab SelectedTab { get; set; }
+        public Tab SelectedTab { get; set; }
 
     }
 }

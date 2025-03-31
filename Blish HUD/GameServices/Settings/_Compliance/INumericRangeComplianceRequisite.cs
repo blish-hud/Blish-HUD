@@ -4,7 +4,7 @@ namespace Blish_HUD.Settings {
     public interface INumericRangeComplianceRequisite<T> : IComplianceRequisite
         where T : IComparable<T> {
 
-        T MinValue { get; }
-        T MaxValue { get; }
+        public T MinValue { get; }
+        public T MaxValue { get; }
     }
 }

@@ -5,19 +5,19 @@ namespace Blish_HUD.DebugHelper.Services {
 
     public interface IMessageService {
 
-        void Start();
+        public void Start();
 
-        void Stop();
+        public void Stop();
 
-        void Register<T>(Action<T> callback) where T : Message;
+        public void Register<T>(Action<T> callback) where T : Message;
 
-        void Unregister<T>() where T : Message;
+        public void Unregister<T>() where T : Message;
 
-        void Send(Message message);
+        public void Send(Message message);
 
-        T SendAndWait<T>(Message message) where T : Message;
+        public T SendAndWait<T>(Message message) where T : Message;
 
-        T SendAndWait<T>(Message message, TimeSpan timeout) where T : Message;
+        public T SendAndWait<T>(Message message, TimeSpan timeout) where T : Message;
 
     }
 

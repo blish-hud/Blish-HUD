@@ -10,7 +10,7 @@ namespace Glide {
     public partial class Tween {
         private interface IRemoveTweens //	lol get it
         {
-            void Remove(Tween t);
+            public void Remove(Tween t);
         }
 
         public class TweenerImpl : IRemoveTweens {

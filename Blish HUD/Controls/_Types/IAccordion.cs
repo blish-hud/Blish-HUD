@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace Blish_HUD.Controls {
     public interface IAccordion {
 
-        bool Collapsed { get; set; }
+        public bool Collapsed { get; set; }
 
-        bool ToggleAccordionState();
+        public bool ToggleAccordionState();
 
-        void Expand();
+        public void Expand();
 
-        void Collapse();
+        public void Collapse();
 
     }
 }

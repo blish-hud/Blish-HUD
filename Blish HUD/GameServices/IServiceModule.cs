@@ -1,9 +1,9 @@
 ﻿namespace Blish_HUD.GameServices {
     internal interface IServiceModule : IUpdatable {
 
-        void Load();
+        public void Load();
 
-        void Unload();
+        public void Unload();
 
     }
 }

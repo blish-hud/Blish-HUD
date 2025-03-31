@@ -207,3 +207,4 @@ csharp_using_directive_placement = outside_namespace:warning
 indent_style=space
 indent_size=4
 tab_width=4
+dotnet_style_namespace_match_folder = true:none

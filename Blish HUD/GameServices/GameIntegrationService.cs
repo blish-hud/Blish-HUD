@@ -136,19 +136,19 @@ namespace Blish_HUD {
             /// <summary>
             /// Sends a message to the chat.
             /// </summary>
-            void Send(string message);
+            public void Send(string message);
             /// <summary>
             /// Adds a string to the input field.
             /// </summary>
-            void Paste(string text);
+            public void Paste(string text);
             /// <summary>
             /// Returns the current string in the input field.
             /// </summary>
-            Task<string> GetInputText();
+            public Task<string> GetInputText();
             /// <summary>
             /// Clears the input field.
             /// </summary>
-            void Clear();
+            public void Clear();
         }
         ///<inheritdoc/>
         private class GameChat : IGameChat {

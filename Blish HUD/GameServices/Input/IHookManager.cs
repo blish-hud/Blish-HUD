@@ -4,21 +4,21 @@ namespace Blish_HUD.Input {
 
     internal interface IHookManager : IDisposable {
 
-        void Load();
+        public void Load();
 
-        void Unload();
+        public void Unload();
 
-        bool EnableHook();
+        public bool EnableHook();
 
-        void DisableHook();
+        public void DisableHook();
 
-        void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback);
+        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback);
 
-        void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback);
+        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback);
 
-        void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
+        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
 
-        void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
+        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
 
     }
 

@@ -4,11 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Graphics {
     public interface IEffect : IDisposable {
 
-        EffectTechnique CurrentTechnique { get; set; }
+        public EffectTechnique CurrentTechnique { get; set; }
 
-        EffectParameterCollection Parameters { get; }
+        public EffectParameterCollection Parameters { get; }
 
-        EffectTechniqueCollection Techniques { get; }
+        public EffectTechniqueCollection Techniques { get; }
 
     }
 }

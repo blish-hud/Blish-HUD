@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace Blish_HUD.GameServices.ArcDps.V2 {
     internal interface IArcDpsClient : IDisposable {
-        TcpClient Client { get; }
+        public TcpClient Client { get; }
 
-        event EventHandler<SocketError> Error;
+        public event EventHandler<SocketError> Error;
 
-        void Disconnect();
+        public void Disconnect();
 
-        void Initialize(IPEndPoint endpoint, CancellationToken ct);
+        public void Initialize(IPEndPoint endpoint, CancellationToken ct);
 
-        bool IsMessageTypeAvailable(MessageType type);
+        public bool IsMessageTypeAvailable(MessageType type);
 
-        void RegisterMessageTypeListener<T>(int type, Func<T, CancellationToken, Task> listener) where T : struct;
+        public void RegisterMessageTypeListener<T>(int type, Func<T, CancellationToken, Task> listener) where T : struct;
     }
 }

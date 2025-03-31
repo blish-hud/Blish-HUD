@@ -13,19 +13,19 @@ namespace Blish_HUD.Graphics.UI {
         /// </summary>
         /// <param name="progress">If reported to, will show the loading status in the <see cref="Controls.ViewContainer"/>.</param>
         /// <returns>A <c>bool</c> indicating if the <see cref="IPresenter"/> loaded successfully or not.</returns>
-        Task<bool> DoLoad(IProgress<string> progress);
+        public Task<bool> DoLoad(IProgress<string> progress);
 
         /// <summary>
         /// Runs after the <see cref="IView"/> has been built for the first time.
         /// This is a good time to update the view to match the model state.
         /// </summary>
-        void DoUpdateView();
+        public void DoUpdateView();
 
         /// <summary>
         /// Unload any resources that need to be manually unloaded
         /// as this <see cref="IPresenter"/> will no longer be used.
         /// </summary>
-        void DoUnload();
+        public void DoUnload();
 
     }
 }

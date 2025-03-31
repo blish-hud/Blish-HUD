@@ -10,9 +10,9 @@ namespace Blish_HUD.Controls {
 
     public interface ICheckable {
 
-        event EventHandler<CheckChangedEvent> CheckedChanged;
+        public event EventHandler<CheckChangedEvent> CheckedChanged;
 
-        bool Checked { get; set; }
+        public bool Checked { get; set; }
 
     }
 

@@ -6,12 +6,12 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// The current state of the view.
         /// </summary>
-        ViewState ViewState { get; }
+        public ViewState ViewState { get; }
 
         /// <summary>
         /// The <see cref="IView"/> this container is currently displaying.
         /// </summary>
-        IView CurrentView { get; }
+        public IView CurrentView { get; }
 
     }
 }

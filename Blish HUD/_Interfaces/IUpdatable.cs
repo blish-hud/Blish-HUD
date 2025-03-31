@@ -6,7 +6,7 @@ namespace Blish_HUD {
         /// <summary>
         /// Indicates that this can be updated as part of the standard update loop.
         /// </summary>
-        void Update(GameTime gameTime);
+        public void Update(GameTime gameTime);
 
     }
 }
