@@ -1,6 +1,5 @@
 ﻿namespace Blish_HUD.Input {
-
-    delegate bool HandleMouseInputDelegate(MouseEventArgs mouseEventArgs);
+    internal delegate bool HandleMouseInputDelegate(MouseEventArgs mouseEventArgs);
 
     internal interface IMouseHookManager {
 

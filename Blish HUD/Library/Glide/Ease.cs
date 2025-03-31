@@ -5,14 +5,14 @@ namespace Glide {
     /// Static class with useful easer functions that can be used by Tweens.
     /// </summary>
     public static class Ease {
-        const float PI = 3.14159f;
-        const float PI2 = PI / 2;
-        const float B1 = 1 / 2.75f;
-        const float B2 = 2 / 2.75f;
-        const float B3 = 1.5f / 2.75f;
-        const float B4 = 2.5f / 2.75f;
-        const float B5 = 2.25f / 2.75f;
-        const float B6 = 2.625f / 2.75f;
+        private const float PI = 3.14159f;
+        private const float PI2 = PI / 2;
+        private const float B1 = 1 / 2.75f;
+        private const float B2 = 2 / 2.75f;
+        private const float B3 = 1.5f / 2.75f;
+        private const float B4 = 2.5f / 2.75f;
+        private const float B5 = 2.25f / 2.75f;
+        private const float B6 = 2.625f / 2.75f;
 
         /// <summary>
         /// Ease a value to its target and then back. Use this to wrap another easing function.

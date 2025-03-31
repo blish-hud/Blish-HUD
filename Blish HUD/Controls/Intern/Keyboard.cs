@@ -172,7 +172,8 @@ namespace Blish_HUD.Controls.Intern {
             Release(key, sendToSystem);
         }
     }
-    class ExtraKeyInfo {
+
+    internal class ExtraKeyInfo {
         public ushort repeatCount;
         public char scanCode;
         public ushort extendedKey, prevKeyState, transitionState;

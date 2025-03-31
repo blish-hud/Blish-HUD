@@ -275,7 +275,7 @@
             #endregion
 
             private class NumericLerper : MemberLerper {
-                float from, to, range;
+                private float from, to, range;
 
                 public override void Initialize(object fromValue, object toValue, Behavior behavior) {
                     from = Convert.ToSingle(fromValue);

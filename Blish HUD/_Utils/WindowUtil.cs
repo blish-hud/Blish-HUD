@@ -53,7 +53,7 @@ namespace Blish_HUD {
         private static extern bool GetClientRect(IntPtr hWnd, ref RECT lpRect);
 
         [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
