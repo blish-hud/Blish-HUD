@@ -13,7 +13,7 @@ namespace Blish_HUD.Settings.UI.Presenters {
 
         protected override Task<bool> Load(IProgress<string> progress) {
             this.Model.SettingChanged += ModelOnSettingChanged;
-            this.View.ValueChanged    += ViewOnValueChanged;
+            this.View.ValueChanged += ViewOnValueChanged;
 
             return base.Load(progress);
         }
@@ -61,12 +61,12 @@ namespace Blish_HUD.Settings.UI.Presenters {
                                         : this.Model.EntryKey;
 
             this.View.Description = this.Model.Description;
-            this.View.Value       = this.Model.Value;
+            this.View.Value = this.Model.Value;
         }
 
         protected override void Unload() {
             this.Model.SettingChanged -= ModelOnSettingChanged;
-            this.View.ValueChanged    -= ViewOnValueChanged;
+            this.View.ValueChanged -= ViewOnValueChanged;
         }
 
     }

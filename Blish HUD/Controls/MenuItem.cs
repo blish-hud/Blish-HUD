@@ -13,10 +13,10 @@ namespace Blish_HUD.Controls {
     public class MenuItem : Container, IMenuItem, ICheckable, IAccordion {
 
         private const int DEFAULT_ITEM_HEIGHT = 32;
-        
+
         private const int ICON_PADDING = 10;
-        private const int ICON_SIZE    = 32;
-        
+        private const int ICON_SIZE = 32;
+
         private const int ARROW_SIZE = 16;
 
         #region Textures
@@ -40,7 +40,7 @@ namespace Blish_HUD.Controls {
         #endregion
 
         #region Properties
-        
+
         protected int _menuItemHeight = DEFAULT_ITEM_HEIGHT;
         public int MenuItemHeight {
             get => _menuItemHeight;
@@ -168,7 +168,7 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        private Glide.Tween                      _slideAnim;
+        private Glide.Tween _slideAnim;
         private Effects.ScrollingHighlightEffect _scrollEffect;
 
         public MenuItem() : this("", null) { /* NOOP */ }
@@ -228,7 +228,7 @@ namespace Blish_HUD.Controls {
 
         public void Deselect() {
             bool isSelected = this.Selected;
-            _selectedMenuItem         = null;
+            _selectedMenuItem = null;
             _scrollEffect.ForceActive = false;
 
             if (isSelected) {
@@ -237,7 +237,7 @@ namespace Blish_HUD.Controls {
         }
 
         #endregion
-        
+
         public override void RecalculateLayout() {
             _scrollEffect.Size = new Vector2(_size.X, _menuItemHeight);
 
@@ -259,13 +259,13 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            if (_canCheck && this.MouseOverIconBox) { 
+            if (_canCheck && this.MouseOverIconBox) {
                 // Mouse was clicked inside of the checkbox
                 Checked = !Checked;
 
             } else if (_overSection && !_children.IsEmpty) {
                 // Mouse was clicked inside of the mainbody of the MenuItem
-                GameService.Content.PlaySoundEffectByName($"menu-click-{RandomUtil.GetRandom(1,4)}");
+                GameService.Content.PlaySoundEffectByName($"menu-click-{RandomUtil.GetRandom(1, 4)}");
                 ToggleAccordionState();
 
             } else if (_overSection && _canCheck) {
@@ -311,7 +311,7 @@ namespace Blish_HUD.Controls {
             base.OnMouseLeft(e);
         }
 
-        protected override void OnChildAdded(ChildChangedEventArgs e) { 
+        protected override void OnChildAdded(ChildChangedEventArgs e) {
             if (!(e.ChangedChild is MenuItem newChild)) {
                 e.Cancel = true;
                 return;
@@ -328,14 +328,14 @@ namespace Blish_HUD.Controls {
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 child.Location = new Point(0, lastBottom);
-                child.Width    = this.Width;
+                child.Width = this.Width;
 
                 lastBottom = child.Bottom;
             }
 
             return lastBottom;
         }
-        
+
         public bool ToggleAccordionState() {
             this.Collapsed = !_collapsed;
             return _collapsed;

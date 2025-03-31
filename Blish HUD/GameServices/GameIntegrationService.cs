@@ -50,11 +50,11 @@ namespace Blish_HUD {
 
         private void WireOldEvents() {
 #pragma warning disable 0612, 0618
-            this.Gw2Instance.Gw2Closed        += (sender, e) => this.Gw2Closed?.Invoke(sender, e);
-            this.Gw2Instance.Gw2Started       += (sender, e) => this.Gw2Started?.Invoke(sender, e);
+            this.Gw2Instance.Gw2Closed += (sender, e) => this.Gw2Closed?.Invoke(sender, e);
+            this.Gw2Instance.Gw2Started += (sender, e) => this.Gw2Started?.Invoke(sender, e);
             this.Gw2Instance.Gw2AcquiredFocus += (sender, e) => this.Gw2AcquiredFocus?.Invoke(sender, e);
-            this.Gw2Instance.Gw2LostFocus     += (sender, e) => this.Gw2LostFocus?.Invoke(sender, e);
-            this.Gw2Instance.IsInGameChanged  += (sender, e) => this.IsInGameChanged?.Invoke(sender, e);
+            this.Gw2Instance.Gw2LostFocus += (sender, e) => this.Gw2LostFocus?.Invoke(sender, e);
+            this.Gw2Instance.IsInGameChanged += (sender, e) => this.IsInGameChanged?.Invoke(sender, e);
 #pragma warning restore 0612, 0618
         }
 
@@ -73,7 +73,7 @@ namespace Blish_HUD {
 
         [Obsolete("Use GameIntegration.Gw2Instance.IsInGameChanged (0.11.0+) instead.")]
         public event EventHandler<ValueEventArgs<bool>> IsInGameChanged;
-        
+
         public IGameChat Chat { get; private set; }
 
         [Obsolete("Use GameIntegration.Gw2Instance.IsInGame (0.11.0+) instead.")]
@@ -104,10 +104,10 @@ namespace Blish_HUD {
         internal GameIntegrationService() {
             SetServiceModules(this.Gw2Instance = new Gw2InstanceIntegration(this),
                               this.GfxSettings = new GfxSettingsIntegration(this),
-                              this.ClientType  = new ClientTypeIntegration(this),
-                              this.Audio       = new AudioIntegration(this),
-                              this.TacO        = new TacOIntegration(this),
-                              this.WinForms    = new WinFormsIntegration(this));
+                              this.ClientType = new ClientTypeIntegration(this),
+                              this.Audio = new AudioIntegration(this),
+                              this.TacO = new TacOIntegration(this),
+                              this.WinForms = new WinFormsIntegration(this));
         }
 
         protected override void Initialize() {
@@ -174,7 +174,8 @@ namespace Blish_HUD {
                                                    Logger.Warn(result.Exception, "Failed to send message {message}", message);
                                                } else if (prevClipboardContent != null)
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
-                                           }); });
+                                           });
+                                   });
             }
 
             ///<inheritdoc/>
@@ -200,7 +201,8 @@ namespace Blish_HUD {
                                                    Logger.Warn(result.Exception, "Failed to paste {text}", text);
                                                } else if (prevClipboardContent != null)
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
-                                           }); });
+                                           });
+                                   });
             }
 
             ///<inheritdoc/>

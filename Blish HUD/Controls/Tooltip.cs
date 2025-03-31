@@ -9,8 +9,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-   public class Tooltip : Container, IViewContainer {
-        
+    public class Tooltip : Container, IViewContainer {
+
         internal const int MOUSE_VERTICAL_MARGIN = 36;
 
         private const int PADDING = 2;
@@ -30,7 +30,7 @@ namespace Blish_HUD.Controls {
 
             _allTooltips = new ControlCollection<Tooltip>();
 
-            ActiveControlChanged   += ControlOnActiveControlChanged;
+            ActiveControlChanged += ControlOnActiveControlChanged;
             Input.Mouse.MouseMoved += HandleMouseMoved;
         }
 
@@ -53,14 +53,14 @@ namespace Blish_HUD.Controls {
             }
 
             if (_prevControl != null) {
-                _prevControl.Hidden   -= ActivatedControlOnHidden;
+                _prevControl.Hidden -= ActivatedControlOnHidden;
                 _prevControl.Disposed -= ActivatedControlOnHidden;
             }
 
             _prevControl = e.ActivatedControl;
 
             if (_prevControl != null) {
-                e.ActivatedControl.Hidden   += ActivatedControlOnHidden;
+                e.ActivatedControl.Hidden += ActivatedControlOnHidden;
                 e.ActivatedControl.Disposed += ActivatedControlOnHidden;
             }
         }
@@ -85,7 +85,7 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        public ViewState ViewState   { get; private set; } = ViewState.None;
+        public ViewState ViewState { get; private set; } = ViewState.None;
 
         public IView CurrentView { get; private set; }
 
@@ -149,10 +149,10 @@ namespace Blish_HUD.Controls {
             // Ensure we don't miss it if a child control is resized or is moved
             if (e.Added) {
                 e.ChangedChild.Resized += Invalidate;
-                e.ChangedChild.Moved   += Invalidate;
+                e.ChangedChild.Moved += Invalidate;
             } else {
                 e.ChangedChild.Resized -= Invalidate;
-                e.ChangedChild.Moved   -= Invalidate;
+                e.ChangedChild.Moved -= Invalidate;
             }
         }
 
@@ -188,7 +188,7 @@ namespace Blish_HUD.Controls {
             this.Opacity = 0f;
 
             if (_animFadeLifecycle == null) {
-                _animFadeLifecycle = Animation.Tweener.Tween(this, new {Opacity = 1f}, 0.1f);
+                _animFadeLifecycle = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.1f);
             }
 
             this.Parent = Graphics.SpriteScreen;
@@ -209,11 +209,11 @@ namespace Blish_HUD.Controls {
         public override void RecalculateLayout() {
             var visibleChildren = _children.Where(c => c.Visible).ToList();
 
-            int boundsWidth  = 0;
+            int boundsWidth = 0;
             int boundsHeight = 0;
 
             if (visibleChildren.Count > 0) {
-                boundsWidth  = visibleChildren.Max(c => c.Right);
+                boundsWidth = visibleChildren.Max(c => c.Right);
                 boundsHeight = visibleChildren.Max(c => c.Bottom);
             }
 
@@ -251,11 +251,11 @@ namespace Blish_HUD.Controls {
 
             foreach (var control in _children) {
                 control.Resized -= Invalidate;
-                control.Moved   -= Invalidate;
+                control.Moved -= Invalidate;
             }
 
             base.DisposeControl();
         }
 
-   }
+    }
 }

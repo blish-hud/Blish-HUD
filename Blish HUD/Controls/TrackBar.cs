@@ -10,7 +10,7 @@ using MonoGame.Extended.TextureAtlases;
 
 namespace Blish_HUD.Controls {
     public class TrackBar : Control {
-        
+
         private const int BUMPER_WIDTH = 4;
 
         private readonly List<float> tenIncrements = new List<float>();
@@ -19,7 +19,7 @@ namespace Blish_HUD.Controls {
 
         private readonly AsyncTexture2D _textureTrack = AsyncTexture2D.FromAssetId(154968);
 
-        private static readonly TextureRegion2D _textureNub   = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-nub");
+        private static readonly TextureRegion2D _textureNub = Resources.Control.TextureAtlasControl.GetRegion("trackbar/tb-nub");
 
         #endregion
 
@@ -96,7 +96,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private int   _dragOffset = 0;
+        private int _dragOffset = 0;
 
         public TrackBar() {
             this.Size = new Point(256, 16);
@@ -111,8 +111,8 @@ namespace Blish_HUD.Controls {
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
             if (_layoutNubBounds.Contains(this.RelativeMousePosition) && !this.Dragging) {
-                _dragOffset     = this.RelativeMousePosition.X - _layoutNubBounds.X - BUMPER_WIDTH / 2;
-                this.Dragging   = true;
+                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X - BUMPER_WIDTH / 2;
+                this.Dragging = true;
             }
         }
 
@@ -138,7 +138,7 @@ namespace Blish_HUD.Controls {
         private Rectangle _layoutRightBumper;
 
         public override void RecalculateLayout() {
-            _layoutLeftBumper  = new Rectangle(0,                         0, BUMPER_WIDTH, this.Height);
+            _layoutLeftBumper = new Rectangle(0, 0, BUMPER_WIDTH, this.Height);
             _layoutRightBumper = new Rectangle(this.Width - BUMPER_WIDTH, 0, BUMPER_WIDTH, this.Height);
 
             float valueOffset = (this.Value - this.MinValue) / (this.MaxValue - this.MinValue) * (_size.X - BUMPER_WIDTH - _textureNub.Width);
@@ -156,7 +156,7 @@ namespace Blish_HUD.Controls {
 
         protected override void DisposeControl() {
             base.DisposeControl();
-            
+
             Input.Mouse.LeftMouseButtonReleased -= InputOnLeftMouseButtonReleased;
         }
 

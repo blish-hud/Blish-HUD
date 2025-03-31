@@ -28,7 +28,7 @@ namespace Blish_HUD.Controls {
                     }
 
                     OnChecked(new CheckChangedEvent(_checked));
-                } 
+                }
             }
         }
 

@@ -93,8 +93,7 @@ namespace Blish_HUD {
         /// <param name="maxHeight">The maximum Y bound to scale within.</param>
         /// <param name="enlarge">A value indicating whether to allow scale ratios above 1.</param>
         /// <returns>A new <see cref="Point"/> with the same aspect ratio as <paramref name="src"/>, scaled to <paramref name="maxWidth"/>, <paramref name="maxHeight"/></returns>
-        public static Point ResizeKeepAspect(this Point src, int maxWidth, int maxHeight, bool enlarge)
-        {
+        public static Point ResizeKeepAspect(this Point src, int maxWidth, int maxHeight, bool enlarge) {
             return ResizeKeepAspect(src, maxWidth, maxHeight, ScaleMode.Fit, enlarge);
         }
 

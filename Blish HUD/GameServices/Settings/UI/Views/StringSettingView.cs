@@ -6,10 +6,10 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private const int CONTROL_PADDING = 5;
 
-        private const int TEXTBOX_WIDTH  = 250;
+        private const int TEXTBOX_WIDTH = 250;
         private const int TEXTBOX_HEIGHT = 27;
 
-        private Label   _displayNameLabel;
+        private Label _displayNameLabel;
         private TextBox _stringTextbox;
 
         public StringSettingView(SettingEntry<string> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
@@ -18,7 +18,7 @@ namespace Blish_HUD.Settings.UI.Views {
             switch (complianceRequisite) {
                 case SettingDisabledComplianceRequisite disabledRequisite:
                     _displayNameLabel.Enabled = !disabledRequisite.Disabled;
-                    _stringTextbox.Enabled    = !disabledRequisite.Disabled;
+                    _stringTextbox.Enabled = !disabledRequisite.Disabled;
                     break;
                 default:
                     return false;
@@ -30,12 +30,12 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void BuildSetting(Container buildPanel) {
             _displayNameLabel = new Label() {
                 AutoSizeWidth = true,
-                Location      = new Point(CONTROL_PADDING, 0),
-                Parent        = buildPanel
+                Location = new Point(CONTROL_PADDING, 0),
+                Parent = buildPanel
             };
 
             _stringTextbox = new TextBox() {
-                Size   = new Point(TEXTBOX_WIDTH, TEXTBOX_HEIGHT),
+                Size = new Point(TEXTBOX_WIDTH, TEXTBOX_HEIGHT),
                 Parent = buildPanel
             };
 
@@ -51,12 +51,12 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         private void UpdateSizeAndLayout() {
-            this.ViewTarget.Height   = _stringTextbox.Bottom;
+            this.ViewTarget.Height = _stringTextbox.Bottom;
             _displayNameLabel.Height = _stringTextbox.Bottom;
 
             if (this.DefinedWidth > 0) {
-                _stringTextbox.Left   = _displayNameLabel.Right + CONTROL_PADDING;
-                this.ViewTarget.Width = _stringTextbox.Right    + CONTROL_PADDING;
+                _stringTextbox.Left = _displayNameLabel.Right + CONTROL_PADDING;
+                this.ViewTarget.Width = _stringTextbox.Right + CONTROL_PADDING;
             } else {
                 _stringTextbox.Location = new Point(this.ViewTarget.Width - CONTROL_PADDING - TEXTBOX_WIDTH, 0);
             }

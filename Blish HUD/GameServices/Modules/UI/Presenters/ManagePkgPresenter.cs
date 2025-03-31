@@ -36,18 +36,18 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void UpdateViewForVersion() {
-            this.View.ModuleName        = _selectedVersion.Name;
-            this.View.ModuleNamespace   = _selectedVersion.Namespace;
+            this.View.ModuleName = _selectedVersion.Name;
+            this.View.ModuleNamespace = _selectedVersion.Namespace;
             this.View.ModuleContributor = _selectedVersion.Contributors[0];
-            this.View.SelectedVersion   = _selectedVersion.Version;
-            this.View.IsPreviewVersion  = _selectedVersion.IsPreview;
+            this.View.SelectedVersion = _selectedVersion.Version;
+            this.View.IsPreviewVersion = _selectedVersion.IsPreview;
 
             if (_selectedVersion is PkgManifestV1 pkgv1) {
                 this.View.ModuleDescription = pkgv1.Description;
             }
 
             (_packageAction, this.View.PackageActionText) = GetPackageAction();
-            this.View.PackageActionEnabled                = _packageAction != null;
+            this.View.PackageActionEnabled = _packageAction != null;
         }
 
         private (Func<PkgManifest, ModuleManager, IProgress<string>, Task<(ModuleManager NewModule, bool Success, string Error)>> Action, string ActionText) GetPackageAction() {
@@ -69,7 +69,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         protected override void UpdateView() {
-            this.View.ActionClicked   += OnActionClicked;
+            this.View.ActionClicked += OnActionClicked;
             this.View.VersionSelected += OnVersionSelected;
 
             SetUi();

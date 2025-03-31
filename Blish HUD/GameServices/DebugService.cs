@@ -37,14 +37,14 @@ namespace Blish_HUD {
 
         private static LoggingConfiguration _logConfiguration;
 
-        private const string STRUCLOG_TIME      = "${date:universalTime=false:format=HH\\:mm\\:ss.ffff K}"; // Default culture is invariant
-        private const string STRUCLOG_LEVEL     = "${level:uppercase=true:padding=-5}";
-        private const string STRUCLOG_LOGGER    = "${logger}";
-        private const string STRUCLOG_MESSAGE   = "${message}";
+        private const string STRUCLOG_TIME = "${date:universalTime=false:format=HH\\:mm\\:ss.ffff K}"; // Default culture is invariant
+        private const string STRUCLOG_LEVEL = "${level:uppercase=true:padding=-5}";
+        private const string STRUCLOG_LOGGER = "${logger}";
+        private const string STRUCLOG_MESSAGE = "${message}";
         private const string STRUCLOG_EXCEPTION = "${onexception:${newline}${exception:format=toString}${newline}}";
 
-        private const long MAX_LOG_SIZE     = 1048576; // 1 MB
-        private const int  MAX_LOG_SESSIONS = 6;
+        private const long MAX_LOG_SIZE = 1048576; // 1 MB
+        private const int MAX_LOG_SESSIONS = 6;
 
         internal static void InitDebug() {
             // Better capture thrown exceptions.
@@ -59,22 +59,22 @@ namespace Blish_HUD {
             string headerLayout = $"Blish HUD v{Program.OverlayVersion}";
 
             var logFile = new FileTarget("logfile") {
-                Layout            = $"{STRUCLOG_TIME} | {STRUCLOG_LEVEL} | {STRUCLOG_LOGGER} | {STRUCLOG_MESSAGE}{STRUCLOG_EXCEPTION}",
-                Header            = headerLayout,
-                FileNameKind      = FilePathKind.Absolute,
-                ArchiveFileKind   = FilePathKind.Absolute,
-                FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.log"),
-                MaxArchiveFiles   = MAX_LOG_SESSIONS,
-                ArchiveAboveSize  = MAX_LOG_SIZE,
-                EnableFileDelete  = true,
-                CreateDirs        = true,
-                Encoding          = Encoding.UTF8,
-                KeepFileOpen      = true
+                Layout = $"{STRUCLOG_TIME} | {STRUCLOG_LEVEL} | {STRUCLOG_LOGGER} | {STRUCLOG_MESSAGE}{STRUCLOG_EXCEPTION}",
+                Header = headerLayout,
+                FileNameKind = FilePathKind.Absolute,
+                ArchiveFileKind = FilePathKind.Absolute,
+                FileName = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.log"),
+                MaxArchiveFiles = MAX_LOG_SESSIONS,
+                ArchiveAboveSize = MAX_LOG_SIZE,
+                EnableFileDelete = true,
+                CreateDirs = true,
+                Encoding = Encoding.UTF8,
+                KeepFileOpen = true
             };
 
             var asyncLogFile = new AsyncTargetWrapper("asynclogfile", logFile) {
-                QueueLimit        = 200,
-                OverflowAction    = AsyncTargetWrapperOverflowAction.Discard,
+                QueueLimit = 200,
+                OverflowAction = AsyncTargetWrapperOverflowAction.Discard,
                 ForceLockingQueue = false
             };
 
@@ -124,7 +124,7 @@ namespace Blish_HUD {
             LogManager.ThrowExceptions = true;
 
             var logDebug = new MethodCallTarget("logdebug") {
-                ClassName  = typeof(DebugService).AssemblyQualifiedName,
+                ClassName = typeof(DebugService).AssemblyQualifiedName,
                 MethodName = nameof(TargetDebug),
                 Parameters = {
                     new MethodCallParameter(STRUCLOG_TIME),
@@ -139,8 +139,8 @@ namespace Blish_HUD {
         }
 
         public static void UpdateLogLevel(LogLevel newLogLevel) {
-            foreach(var rule in LogManager.Configuration.LoggingRules) {
-                foreach(var target in rule.Targets) {
+            foreach (var rule in LogManager.Configuration.LoggingRules) {
+                foreach (var target in rule.Targets) {
                     rule.SetLoggingLevels(newLogLevel, LogLevel.Fatal);
                 }
             }
@@ -160,7 +160,7 @@ namespace Blish_HUD {
 
         private static void Fatal(Exception e) {
             Input.DisableHooks();
-            
+
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
         }
 
@@ -248,7 +248,7 @@ namespace Blish_HUD {
             this.FrameCounter = new DynamicallySmoothedValue<float>(FRAME_DURATION_SAMPLES);
 
             if (!Debugger.IsAttached) {
-                Application.ThreadException                += ApplicationThreadException;
+                Application.ThreadException += ApplicationThreadException;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
             }
         }
@@ -258,9 +258,9 @@ namespace Blish_HUD {
 
             this.OverlayTexts = new OverlayStrings();
             this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.Entities.Count()}");
-            this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
-            this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
-            this.OverlayTexts.TryAdd("volume",      _ => "Average In-Game Volume: " + GameIntegration.Audio.Volume);
+            this.OverlayTexts.TryAdd("renderLate", gameTime => "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"));
+            this.OverlayTexts.TryAdd("arcDps", _ => "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"));
+            this.OverlayTexts.TryAdd("volume", _ => "Average In-Game Volume: " + GameIntegration.Audio.Volume);
         }
 
         protected override void Update(GameTime gameTime) {
@@ -276,12 +276,12 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            EnableDebugLogging =           settings.DefineSetting("EnableDebugLogging", 
+            EnableDebugLogging = settings.DefineSetting("EnableDebugLogging",
                                                                   File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"),
                                                                   () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
 
-            EnableFPSDisplay =             settings.DefineSetting("EnableFPSDisplay",
+            EnableFPSDisplay = settings.DefineSetting("EnableFPSDisplay",
                                                                   false,
                                                                   () => Strings.GameServices.DebugService.Setting_FPSDisplay_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description);
@@ -298,10 +298,10 @@ namespace Blish_HUD {
             if (ApplicationSettings.Instance.DebugEnabled) {
                 // Disable all debug setting and update description - user has manually specified --debug as launch arg
                 EnableDebugLogging.SetDisabled();
-                EnableDebugLogging.GetDescriptionFunc =           () => Strings.GameServices.DebugService.Setting_DebugLogging_Description +           "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+                EnableDebugLogging.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_DebugLogging_Description + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
 
                 EnableFPSDisplay.SetDisabled();
-                EnableFPSDisplay.GetDescriptionFunc =             () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description +             "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+                EnableFPSDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
 
                 EnableAdditionalDebugDisplay.SetDisabled();
                 EnableAdditionalDebugDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;

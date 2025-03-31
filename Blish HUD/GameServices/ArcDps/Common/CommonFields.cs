@@ -19,7 +19,7 @@ namespace Blish_HUD.ArcDps.Common {
         /// </summary>
         public IReadOnlyDictionary<string, Player> PlayersInSquad => GameService.ArcDpsV2.Common.PlayersInSquad
             .Select(x => new KeyValuePair<ulong, Player>(x.Key, new Player(x.Value.CharacterName, x.Value.AccountName, x.Value.Profession, x.Value.Elite, x.Value.Self)))
-            .ToDictionary(x=> x.Value.CharacterName, x => x.Value);
+            .ToDictionary(x => x.Value.CharacterName, x => x.Value);
 
         /// <summary>
         ///     Gets invoked whenever someone joins the squad or group.
@@ -38,7 +38,7 @@ namespace Blish_HUD.ArcDps.Common {
             if (_enabled) return;
 
             _enabled = true;
-            GameService.ArcDpsV2.Common.PlayerAdded   += player => PlayerAdded?.Invoke(new Player(player.CharacterName,   player.AccountName, player.Profession, player.Elite, player.Self));
+            GameService.ArcDpsV2.Common.PlayerAdded += player => PlayerAdded?.Invoke(new Player(player.CharacterName, player.AccountName, player.Profession, player.Elite, player.Self));
             GameService.ArcDpsV2.Common.PlayerRemoved += player => PlayerRemoved?.Invoke(new Player(player.CharacterName, player.AccountName, player.Profession, player.Elite, player.Self));
             GameService.ArcDpsV2.Common.Activate();
         }
@@ -47,10 +47,10 @@ namespace Blish_HUD.ArcDps.Common {
 
             public Player(string characterName, string accountName, uint profession, uint elite, bool self) {
                 this.CharacterName = characterName;
-                this.AccountName   = accountName;
-                this.Profession    = profession;
-                this.Elite         = elite;
-                this.Self          = self;
+                this.AccountName = accountName;
+                this.Profession = profession;
+                this.Elite = elite;
+                this.Self = self;
             }
 
             /// <summary>

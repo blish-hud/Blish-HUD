@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
-    public class AnimationService:GameService {
+    public class AnimationService : GameService {
 
         public Glide.Tweener Tweener { get; private set; }
 

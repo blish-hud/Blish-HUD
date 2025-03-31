@@ -19,7 +19,7 @@ namespace Blish_HUD.Modules.Pkgs {
 
         [JsonProperty("version", Required = Required.Always), JsonConverter(typeof(Content.Serialization.SemVerConverter))]
         public SemVer.Version Version { get; private set; }
-        
+
         [JsonProperty("contributors", Required = Required.Always)]
         public List<ModuleContributor> Contributors { get; private set; }
 

@@ -26,7 +26,7 @@ namespace Blish_HUD {
 
         public ValueChangedEventArgs(T previousValue, T newValue) {
             _previousValue = previousValue;
-            _newValue      = newValue;
+            _newValue = newValue;
         }
 
     }

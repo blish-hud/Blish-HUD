@@ -12,9 +12,9 @@ namespace Blish_HUD.Settings {
 
         public class SettingCollectionConverter : JsonConverter<SettingCollection> {
 
-            private const string ATTR_LAZY       = "Lazy";
+            private const string ATTR_LAZY = "Lazy";
             private const string ATTR_RENDERINUI = "Ui";
-            private const string ATTR_ENTRIES    = "Entries";
+            private const string ATTR_ENTRIES = "Entries";
 
             public override void WriteJson(JsonWriter writer, SettingCollection value, JsonSerializer serializer) {
                 var settingCollectionObject = new JObject();
@@ -46,7 +46,7 @@ namespace Blish_HUD.Settings {
 
                 var jObj = JObject.Load(reader);
 
-                bool isLazy     = false;
+                bool isLazy = false;
                 bool renderInUi = false;
 
                 if (jObj[ATTR_LAZY] != null) {
@@ -69,7 +69,7 @@ namespace Blish_HUD.Settings {
         private readonly ReaderWriterLockSlim _entryLock = new ReaderWriterLockSlim();
 
         private readonly List<SettingEntry> _definedEntries = new List<SettingEntry>();
-        private          List<SettingEntry> _undefinedEntries;
+        private List<SettingEntry> _undefinedEntries;
 
         public bool LazyLoaded { get; }
 
@@ -90,14 +90,14 @@ namespace Blish_HUD.Settings {
         public bool RenderInUi { get; set; }
 
         public SettingCollection(bool lazy = false) {
-            this.LazyLoaded  = lazy;
+            this.LazyLoaded = lazy;
             _entryTokens = null;
 
             _undefinedEntries = new List<SettingEntry>();
         }
 
         public SettingCollection(bool lazy, JToken entryTokens) {
-            this.LazyLoaded  = lazy;
+            this.LazyLoaded = lazy;
             _entryTokens = entryTokens;
 
             if (!this.LazyLoaded) {
@@ -114,7 +114,7 @@ namespace Blish_HUD.Settings {
 
             definedEntry.GetDisplayNameFunc = displayNameFunc ?? (() => null);
             definedEntry.GetDescriptionFunc = descriptionFunc ?? (() => null);
-            definedEntry.SessionDefined     = true;
+            definedEntry.SessionDefined = true;
 
             _entryLock.EnterWriteLock();
             _undefinedEntries.Remove(definedEntry);

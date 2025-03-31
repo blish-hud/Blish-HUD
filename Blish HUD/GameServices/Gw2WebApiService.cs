@@ -26,15 +26,15 @@ namespace Blish_HUD {
         #region Cache Handling
 
         private TokenComplianceMiddleware _sharedTokenBucketMiddleware;
-        private ICacheMethod              _sharedWebCache;
-        private ICacheMethod              _sharedRenderCache;
+        private ICacheMethod _sharedWebCache;
+        private ICacheMethod _sharedRenderCache;
 
         private void InitCache() {
             var bucket = new TokenBucket(300, 5);
 
             _sharedTokenBucketMiddleware = new TokenComplianceMiddleware(bucket);
-            _sharedWebCache              = new MemoryCacheMethod();
-            _sharedRenderCache           = new MemoryCacheMethod();
+            _sharedWebCache = new MemoryCacheMethod();
+            _sharedRenderCache = new MemoryCacheMethod();
         }
 
         #endregion
@@ -47,17 +47,17 @@ namespace Blish_HUD {
         private void CreateInternalConnection() {
             InitCache();
 
-            _anonymousConnection  = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            _anonymousConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
             _privilegedConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
         }
 
-        public   ManagedConnection AnonymousConnection  => _anonymousConnection;
+        public ManagedConnection AnonymousConnection => _anonymousConnection;
         internal ManagedConnection PrivilegedConnection => _privilegedConnection;
 
         #endregion
 
-        private readonly ConcurrentDictionary<string, string>            _characterRepository = new ConcurrentDictionary<string, string>();
-        private readonly ConcurrentDictionary<string, ManagedConnection> _cachedConnections   = new ConcurrentDictionary<string, ManagedConnection>();
+        private readonly ConcurrentDictionary<string, string> _characterRepository = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, ManagedConnection> _cachedConnections = new ConcurrentDictionary<string, ManagedConnection>();
 
         private SettingCollection _apiSettings;
         private SettingCollection _apiKeyRepository;
@@ -224,7 +224,7 @@ namespace Blish_HUD {
                     RefreshRegisteredKeys();
                 }
             }
-            
+
         }
 
     }

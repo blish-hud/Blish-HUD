@@ -20,16 +20,16 @@ namespace Blish_HUD.Controls {
 
         private const string WINDOW_SETTINGS = "WindowSettings";
 
-        private static readonly Texture2D _textureTitleBarLeft        = Content.GetTexture("titlebar-inactive");
-        private static readonly Texture2D _textureTitleBarRight       = Content.GetTexture("window-topright");
-        private static readonly Texture2D _textureTitleBarLeftActive  = Content.GetTexture("titlebar-active");
+        private static readonly Texture2D _textureTitleBarLeft = Content.GetTexture("titlebar-inactive");
+        private static readonly Texture2D _textureTitleBarRight = Content.GetTexture("window-topright");
+        private static readonly Texture2D _textureTitleBarLeftActive = Content.GetTexture("titlebar-active");
         private static readonly Texture2D _textureTitleBarRightActive = Content.GetTexture("window-topright-active");
 
-        private static readonly Texture2D _textureExitButton       = Content.GetTexture("button-exit");
+        private static readonly Texture2D _textureExitButton = Content.GetTexture("button-exit");
         private static readonly Texture2D _textureExitButtonActive = Content.GetTexture("button-exit-active");
 
-        private readonly AsyncTexture2D _textureWindowCorner                = AsyncTexture2D.FromAssetId(156008);
-        private readonly AsyncTexture2D _textureWindowResizableCorner       = AsyncTexture2D.FromAssetId(156009);
+        private readonly AsyncTexture2D _textureWindowCorner = AsyncTexture2D.FromAssetId(156008);
+        private readonly AsyncTexture2D _textureWindowResizableCorner = AsyncTexture2D.FromAssetId(156009);
         private readonly AsyncTexture2D _textureWindowResizableCornerActive = AsyncTexture2D.FromAssetId(156010);
 
         private static readonly SettingCollection _windowSettings = GameService.Settings.Settings.AddSubCollection(WINDOW_SETTINGS);
@@ -138,7 +138,7 @@ namespace Blish_HUD.Controls {
 
         private readonly Glide.Tween _animFade;
 
-        protected bool  Dragging  = false;
+        protected bool Dragging = false;
         protected Point DragStart = Point.Zero;
 
         protected bool _hoverClose = false;
@@ -150,7 +150,7 @@ namespace Blish_HUD.Controls {
         #region Window Construction
 
         protected Texture2D _windowBackground;
-        protected Vector2   _windowBackgroundOrigin;
+        protected Vector2 _windowBackgroundOrigin;
         protected Rectangle _windowBackgroundBounds;
         protected Rectangle _titleBarBounds;
 
@@ -171,8 +171,8 @@ namespace Blish_HUD.Controls {
 
         #region Region States
 
-        protected bool MouseOverTitleBar     = false;
-        protected bool MouseOverExitButton   = false;
+        protected bool MouseOverTitleBar = false;
+        protected bool MouseOverExitButton = false;
         protected bool MouseOverCornerResize = false;
 
         #endregion
@@ -220,14 +220,14 @@ namespace Blish_HUD.Controls {
         protected virtual void ConstructWindow(Texture2D background, Vector2 backgroundOrigin, Rectangle? windowBackgroundBounds = null, Thickness outerPadding = default, int titleBarHeight = 0, bool standardWindow = true) {
             StandardWindow = standardWindow;
 
-            _windowBackground       = background;
+            _windowBackground = background;
             _windowBackgroundOrigin = backgroundOrigin;
 
             Rectangle tempBounds = windowBackgroundBounds ?? background.Bounds;
 
             _titleBarBounds = new Rectangle(0, 0, tempBounds.Width, titleBarHeight);
 
-            this.Size    = tempBounds.Size;
+            this.Size = tempBounds.Size;
             this.Padding = outerPadding;
 
             _windowBackgroundBounds = new Rectangle(0, titleBarHeight, tempBounds.Width + (int)_padding.Right + (int)_padding.Left, tempBounds.Height + (int)_padding.Bottom);
@@ -238,8 +238,8 @@ namespace Blish_HUD.Controls {
             int titleBarDrawOffset = _titleBarBounds.Y - (_textureTitleBarLeft.Height / 2 - _titleBarBounds.Height / 2);
             int titleBarRightWidth = _textureTitleBarRight.Width - COMMON_MARGIN;
 
-            _layoutLeftTitleBarBounds  = new Rectangle(_titleBarBounds.X,                          titleBarDrawOffset, Math.Min(_titleBarBounds.Width - titleBarRightWidth, _windowBackgroundBounds.Width - titleBarRightWidth), _textureTitleBarLeft.Height);
-            _layoutRightTitleBarBounds = new Rectangle(_titleBarBounds.Right - titleBarRightWidth, titleBarDrawOffset, _textureTitleBarRight.Width,                                                                              _textureTitleBarRight.Height);
+            _layoutLeftTitleBarBounds = new Rectangle(_titleBarBounds.X, titleBarDrawOffset, Math.Min(_titleBarBounds.Width - titleBarRightWidth, _windowBackgroundBounds.Width - titleBarRightWidth), _textureTitleBarLeft.Height);
+            _layoutRightTitleBarBounds = new Rectangle(_titleBarBounds.Right - titleBarRightWidth, titleBarDrawOffset, _textureTitleBarRight.Width, _textureTitleBarRight.Height);
 
             // Title bar text bounds
             if (!string.IsNullOrEmpty(_title) && !string.IsNullOrEmpty(_subtitle)) {
@@ -263,8 +263,8 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnMouseMoved(MouseEventArgs e) {
-            MouseOverTitleBar     = false;
-            MouseOverExitButton   = false;
+            MouseOverTitleBar = false;
+            MouseOverExitButton = false;
             MouseOverCornerResize = false;
 
             if (this.RelativeMousePosition.Y < _titleBarBounds.Bottom) {
@@ -283,8 +283,8 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc />
         protected override void OnMouseLeft(MouseEventArgs e) {
-            MouseOverTitleBar     = false;
-            MouseOverExitButton   = false;
+            MouseOverTitleBar = false;
+            MouseOverExitButton = false;
             MouseOverCornerResize = false;
 
             base.OnMouseLeft(e);
@@ -294,7 +294,7 @@ namespace Blish_HUD.Controls {
             BringWindowToFront();
 
             if (MouseOverTitleBar) {
-                Dragging  = true;
+                Dragging = true;
                 DragStart = Input.Mouse.Position;
             } else if (MouseOverExitButton) {
                 Hide();
@@ -325,7 +325,7 @@ namespace Blish_HUD.Controls {
         #region Window Navigation
 
         private readonly LinkedList<Panel> _currentNav = new LinkedList<Panel>();
-        private          double            _lastInteraction;
+        private double _lastInteraction;
 
         public virtual void Navigate(Panel newPanel, bool keepHistory = true) {
             if (!keepHistory)
@@ -379,7 +379,7 @@ namespace Blish_HUD.Controls {
 
             _animFade.Resume();
         }
-        
+
         public override void Hide() {
             if (!this.Visible) return;
 
@@ -418,10 +418,10 @@ namespace Blish_HUD.Controls {
 
         protected virtual void PaintTitleBar(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_mouseOver && MouseOverTitleBar) {
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeftActive,  _layoutLeftTitleBarBounds);
+                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeftActive, _layoutLeftTitleBarBounds);
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRightActive, _layoutRightTitleBarBounds);
             } else {
-                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeft,  _layoutLeftTitleBarBounds);
+                spriteBatch.DrawOnCtrl(this, _textureTitleBarLeft, _layoutLeftTitleBarBounds);
                 spriteBatch.DrawOnCtrl(this, _textureTitleBarRight, _layoutRightTitleBarBounds);
             }
 
@@ -481,7 +481,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-#endregion
+        #endregion
 
         protected override void DisposeControl() {
             WindowBase2.UnregisterWindow(this);

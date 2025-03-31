@@ -8,7 +8,7 @@ namespace Blish_HUD.Modules.Managers {
 
         protected static readonly Logger Logger = Logger.GetLogger<DirectoriesManager>();
 
-        private readonly HashSet<string>            _directoryNames;
+        private readonly HashSet<string> _directoryNames;
         private readonly Dictionary<string, string> _directoryPaths;
 
         public IReadOnlyList<string> RegisteredDirectories => _directoryNames.ToList();

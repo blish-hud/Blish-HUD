@@ -8,11 +8,11 @@ namespace Blish_HUD.Modules {
 
         private static readonly Logger Logger = Logger.GetLogger<ModuleParameters>();
 
-        private Manifest           _manifest;
-        private SettingsManager    _settingsManager;
-        private ContentsManager    _contentsManager;
+        private Manifest _manifest;
+        private SettingsManager _settingsManager;
+        private ContentsManager _contentsManager;
         private DirectoriesManager _directoriesManager;
-        private Gw2ApiManager      _gw2ApiManager;
+        private Gw2ApiManager _gw2ApiManager;
 
         public Manifest Manifest => _manifest;
 
@@ -41,10 +41,10 @@ namespace Blish_HUD.Modules {
             var builtModuleParameters = new ModuleParameters {
                 _manifest = manifest,
 
-                _settingsManager    = SettingsManager.GetModuleInstance(module),
-                _contentsManager    = ContentsManager.GetModuleInstance(module),
+                _settingsManager = SettingsManager.GetModuleInstance(module),
+                _contentsManager = ContentsManager.GetModuleInstance(module),
                 _directoriesManager = DirectoriesManager.GetModuleInstance(module),
-                _gw2ApiManager      = Gw2ApiManager.GetModuleInstance(module)
+                _gw2ApiManager = Gw2ApiManager.GetModuleInstance(module)
             };
 
             if (builtModuleParameters._gw2ApiManager == null) {

@@ -25,7 +25,7 @@ namespace Blish_HUD.Controls {
             get => _fadeView;
             set => SetProperty(ref _fadeView, value);
         }
-        
+
         public IView CurrentView { get; private set; }
 
         private Tween _fadeInAnimation;
@@ -50,7 +50,7 @@ namespace Blish_HUD.Controls {
             newView.DoLoad(progressIndicator).ContinueWith(BuildView);
 
             if (_fadeView) {
-                _fadeInAnimation = GameService.Animation.Tweener.Tween(this, new {Opacity = 1f}, FADE_DURATION);
+                _fadeInAnimation = GameService.Animation.Tweener.Tween(this, new { Opacity = 1f }, FADE_DURATION);
             }
 
             base.Show();
@@ -66,14 +66,14 @@ namespace Blish_HUD.Controls {
             }
 
             // Reset panel defaults
-            this.BackgroundColor   = Color.Transparent;
+            this.BackgroundColor = Color.Transparent;
             this.BackgroundTexture = null;
-            this.ClipsBounds       = true;
+            this.ClipsBounds = true;
 
             // Potentially prepare for next fade-in
             _fadeInAnimation?.Cancel();
             _fadeInAnimation = null;
-            _opacity         = _fadeView ? 0f : 1f;
+            _opacity = _fadeView ? 0f : 1f;
 
             this.ClearChildren();
 

@@ -21,7 +21,7 @@ namespace Blish_HUD.Modules.UI.Controls {
                                    new Rectangle(bounds.X, bounds.Y, 5, _menuItemHeight),
                                    _module.Enabled
                                        ? Color.Green * 0.75f
-                                       : Color.Gray  * 0.5f);
+                                       : Color.Gray * 0.5f);
         }
 
         protected override void OnRightMouseButtonPressed(MouseEventArgs e) {

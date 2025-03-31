@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Blish_HUD {
     public static class StringExtensions {
-        
+
         private static readonly int _charSize = sizeof(char);
 
         public static unsafe byte[] GetBytes(this string str) {

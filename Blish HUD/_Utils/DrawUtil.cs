@@ -44,10 +44,10 @@ namespace Blish_HUD {
 
         /// <remarks> Source: https://stackoverflow.com/a/15987581/595437 </remarks>
         private static string WrapTextSegment(BitmapFont spriteFont, string text, float maxLineWidth) {
-            string[] words      = text.Split(' ');
-            var      sb         = new StringBuilder();
-            float    lineWidth  = 0f;
-            float    spaceWidth = spriteFont.MeasureString(" ").Width;
+            string[] words = text.Split(' ');
+            var sb = new StringBuilder();
+            float lineWidth = 0f;
+            float spaceWidth = spriteFont.MeasureString(" ").Width;
 
             foreach (string word in words) {
                 Vector2 size = spriteFont.MeasureString(word);

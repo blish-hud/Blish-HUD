@@ -83,20 +83,20 @@ namespace Blish_HUD {
 
         #region Static Service References
 
-        public static readonly DebugService           Debug;
-        public static readonly SettingsService        Settings;
-        public static readonly ContentService         Content;
-        public static readonly Gw2MumbleService       Gw2Mumble;
-        public static readonly Gw2WebApiService       Gw2WebApi;
-        public static readonly AnimationService       Animation;
-        public static readonly GraphicsService        Graphics;
-        public static readonly OverlayService         Overlay;
-        public static readonly InputService           Input;
+        public static readonly DebugService Debug;
+        public static readonly SettingsService Settings;
+        public static readonly ContentService Content;
+        public static readonly Gw2MumbleService Gw2Mumble;
+        public static readonly Gw2WebApiService Gw2WebApi;
+        public static readonly AnimationService Animation;
+        public static readonly GraphicsService Graphics;
+        public static readonly OverlayService Overlay;
+        public static readonly InputService Input;
         public static readonly GameIntegrationService GameIntegration;
-        public static readonly ArcDpsService          ArcDps;
-        public static readonly ArcDpsServiceV2        ArcDpsV2;
-        public static readonly ContextsService        Contexts;
-        public static readonly ModuleService          Module;
+        public static readonly ArcDpsService ArcDps;
+        public static readonly ArcDpsServiceV2 ArcDpsV2;
+        public static readonly ContextsService Contexts;
+        public static readonly ModuleService Module;
 
         #endregion
 

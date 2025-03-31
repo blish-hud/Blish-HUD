@@ -13,7 +13,7 @@ namespace Blish_HUD.Controls {
         private const int TAB_VERTICALOFFSET = 40;
 
         private const int TAB_HEIGHT = 50;
-        private const int TAB_WIDTH  = 84;
+        private const int TAB_WIDTH = 84;
 
         #region Load Static
 
@@ -44,7 +44,7 @@ namespace Blish_HUD.Controls {
 
         private Tab HoveredTab { get; set; }
 
-        protected  virtual void OnTabChanged(ValueChangedEventArgs<Tab> e) {
+        protected virtual void OnTabChanged(ValueChangedEventArgs<Tab> e) {
             ShowView(e.NewValue?.View());
 
             if (this.Visible && e.PreviousValue != null) {
@@ -55,22 +55,22 @@ namespace Blish_HUD.Controls {
         }
 
         public TabbedWindow2(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion) {
-            this.Tabs        = new TabCollection(this);
+            this.Tabs = new TabCollection(this);
             this.ShowSideBar = true;
 
             this.ConstructWindow(background, windowRegion, contentRegion);
         }
 
-        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) : this((AsyncTexture2D) background, windowRegion, contentRegion) { /* NOOP */ }
+        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) : this((AsyncTexture2D)background, windowRegion, contentRegion) { /* NOOP */ }
 
         public TabbedWindow2(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
-            this.Tabs        = new TabCollection(this);
+            this.Tabs = new TabCollection(this);
             this.ShowSideBar = true;
 
             this.ConstructWindow(background, windowRegion, contentRegion, windowSize);
         }
 
-        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) : this((AsyncTexture2D) background, windowRegion, contentRegion, windowSize) { /* NOOP */ }
+        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) : this((AsyncTexture2D)background, windowRegion, contentRegion, windowSize) { /* NOOP */ }
 
         protected override void OnClick(MouseEventArgs e) {
             if (this.HoveredTab is { Enabled: true }) {
@@ -104,7 +104,7 @@ namespace Blish_HUD.Controls {
                 int tabTop = this.SidebarActiveBounds.Top + TAB_VERTICALOFFSET + tabIndex * TAB_HEIGHT;
 
                 bool selected = tab == this.SelectedTab;
-                bool hovered  = tab == this.HoveredTab;
+                bool hovered = tab == this.HoveredTab;
 
                 if (selected) {
                     var tabBounds = new Rectangle(this.SidebarActiveBounds.Left - (TAB_WIDTH - this.SidebarActiveBounds.Width) + 2,

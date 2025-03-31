@@ -11,12 +11,12 @@ namespace Blish_HUD.Input {
         private static readonly Logger Logger = Logger.GetLogger<DebugHelperHookManager>();
         private static readonly PingMessage PingMessage = new PingMessage();
 
-        private IMouseHookManager    _mouseHookManager;
+        private IMouseHookManager _mouseHookManager;
         private IKeyboardHookManager _keyboardHookManager;
-        private Process              _process;
-        private IMessageService      _debugHelperMessageService;
-        private Timer                _pingTimer;
-        private bool                 _isHookEnabled = false;
+        private Process _process;
+        private IMessageService _debugHelperMessageService;
+        private Timer _pingTimer;
+        private bool _isHookEnabled = false;
 
         public void Load() {
             Logger.Debug("Loading DebugHelper input hooks");
@@ -26,10 +26,10 @@ namespace Blish_HUD.Input {
 
             _process = new Process {
                 StartInfo = new ProcessStartInfo(processFileName, $"--mainprocessid {currentProcess.Id}") {
-                    RedirectStandardInput  = true,
+                    RedirectStandardInput = true,
                     RedirectStandardOutput = true,
-                    UseShellExecute        = false,
-                    CreateNoWindow         = true
+                    UseShellExecute = false,
+                    CreateNoWindow = true
                 }
             };
             _process.Exited += Process_Exited;
@@ -40,7 +40,7 @@ namespace Blish_HUD.Input {
             _debugHelperMessageService = new StreamMessageService(_process.StandardOutput.BaseStream, _process.StandardInput.BaseStream);
             _debugHelperMessageService.Start();
 
-            _pingTimer         =  new Timer(10) { AutoReset = true };
+            _pingTimer = new Timer(10) { AutoReset = true };
             _pingTimer.Elapsed += (s, e) => {
                 try {
                     _debugHelperMessageService.Send(PingMessage);
@@ -50,7 +50,7 @@ namespace Blish_HUD.Input {
             };
             _pingTimer.Start();
 
-            _mouseHookManager    = new DebugHelperMouseHookManager(_debugHelperMessageService);
+            _mouseHookManager = new DebugHelperMouseHookManager(_debugHelperMessageService);
             _keyboardHookManager = new DebugHelperKeyboardHookManager(_debugHelperMessageService);
         }
 
@@ -65,7 +65,7 @@ namespace Blish_HUD.Input {
             Logger.Debug("Killing subprocess with id {ProcessId}", _process.Id);
             if (!_process.HasExited) _process.Kill();
             _debugHelperMessageService = null;
-            _process                   = null;
+            _process = null;
         }
 
         public bool EnableHook() {

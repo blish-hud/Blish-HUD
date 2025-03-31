@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls.Effects {
     public abstract class ControlEffect {
-        
+
         protected Control AssignedControl { get; }
 
 

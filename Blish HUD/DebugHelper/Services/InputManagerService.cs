@@ -12,19 +12,19 @@ namespace Blish_HUD.DebugHelper.Services {
 
         private const int PING_TIMEOUT_BEFORE_PAUSING_HOOKS = 50;
 
-        private readonly IMessageService     messageService;
-        private readonly MouseHookService    mouseHookService;
+        private readonly IMessageService messageService;
+        private readonly MouseHookService mouseHookService;
         private readonly KeyboardHookService keyboardHookService;
-        private readonly TTimer              timeoutTimer  = new TTimer(PING_TIMEOUT_BEFORE_PAUSING_HOOKS) { AutoReset = false };
-        private          bool                stopRequested = false;
-        private          bool                hookRequested = false;
-        private          Thread?             thread;
+        private readonly TTimer timeoutTimer = new TTimer(PING_TIMEOUT_BEFORE_PAUSING_HOOKS) { AutoReset = false };
+        private bool stopRequested = false;
+        private bool hookRequested = false;
+        private Thread? thread;
 
         public InputManagerService(IMessageService messageService, MouseHookService mouseHookService, KeyboardHookService keyboardHookService) {
-            this.messageService      =  messageService;
-            this.mouseHookService    =  mouseHookService;
-            this.keyboardHookService =  keyboardHookService;
-            timeoutTimer.Elapsed     += HandleTimeout;
+            this.messageService = messageService;
+            this.mouseHookService = mouseHookService;
+            this.keyboardHookService = keyboardHookService;
+            timeoutTimer.Elapsed += HandleTimeout;
         }
 
         public void Start() {
@@ -47,7 +47,7 @@ namespace Blish_HUD.DebugHelper.Services {
             thread.Join();
 
             stopRequested = false;
-            thread        = null;
+            thread = null;
         }
 
         private void Loop() {

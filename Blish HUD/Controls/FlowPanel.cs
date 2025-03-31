@@ -35,7 +35,7 @@ namespace Blish_HUD.Controls {
         /// regardless of the vertical space available.
         /// </summary>
         SingleTopToBottom,
-        
+
         /// <summary>
         /// Child controls are organized right to left.
         /// When the width of the container is exceeded,
@@ -43,14 +43,14 @@ namespace Blish_HUD.Controls {
         /// row to continue to be organized.
         /// </summary>
         RightToLeft,
-        
+
         /// <summary>
         /// Child controls are organized right to left.
         /// They will be organized into a single row
         /// regardless of the horizontal space available.
         /// </summary>
         SingleRightToLeft,
-        
+
         /// <summary>
         /// Child controls are organized bottom to top.
         /// When the height of the container is exceeded,
@@ -177,7 +177,7 @@ namespace Blish_HUD.Controls {
                     lastRight = outerPadX;
                 }
 
-                child.Location = new Point((int) lastRight, (int) currentBottom);
+                child.Location = new Point((int)lastRight, (int)currentBottom);
 
                 lastRight = child.Right + _controlPadding.X;
 
@@ -201,7 +201,7 @@ namespace Blish_HUD.Controls {
                     lastLeft = this.Width - outerPadX;
                 }
 
-                child.Location = new Point((int) (lastLeft - child.Width), (int) currentBottom);
+                child.Location = new Point((int)(lastLeft - child.Width), (int)currentBottom);
 
                 lastLeft = child.Left - _controlPadding.X;
 
@@ -225,7 +225,7 @@ namespace Blish_HUD.Controls {
                     lastBottom = outerPadY;
                 }
 
-                child.Location = new Point((int) currentRight, (int) lastBottom);
+                child.Location = new Point((int)currentRight, (int)lastBottom);
 
                 lastBottom = child.Bottom + _controlPadding.Y;
 
@@ -249,7 +249,7 @@ namespace Blish_HUD.Controls {
                     lastTop = this.Height - outerPadY;
                 }
 
-                child.Location = new Point((int) currentRight, (int) (lastTop - child.Height));
+                child.Location = new Point((int)currentRight, (int)(lastTop - child.Height));
 
                 lastTop = child.Top - _controlPadding.Y;
 
@@ -265,7 +265,7 @@ namespace Blish_HUD.Controls {
             var lastLeft = outerPadX;
 
             foreach (var child in allChildren) {
-                child.Location = new Point((int) lastLeft, (int) outerPadY);
+                child.Location = new Point((int)lastLeft, (int)outerPadY);
 
                 lastLeft = child.Right + _controlPadding.X;
             }
@@ -278,7 +278,7 @@ namespace Blish_HUD.Controls {
             var lastLeft = this.Width - outerPadX;
 
             foreach (var child in allChildren) {
-                child.Location = new Point((int) (lastLeft - child.Width), (int) outerPadY);
+                child.Location = new Point((int)(lastLeft - child.Width), (int)outerPadY);
 
                 lastLeft = child.Left - _controlPadding.X;
             }
@@ -291,7 +291,7 @@ namespace Blish_HUD.Controls {
             var lastBottom = outerPadY;
 
             foreach (var child in allChildren) {
-                child.Location = new Point((int) outerPadX, (int) lastBottom);
+                child.Location = new Point((int)outerPadX, (int)lastBottom);
 
                 lastBottom = child.Bottom + _controlPadding.Y;
             }
@@ -304,7 +304,7 @@ namespace Blish_HUD.Controls {
             var lastTop = this.Height - outerPadY;
 
             foreach (var child in allChildren) {
-                child.Location = new Point((int) outerPadX, (int) (lastTop - child.Height));
+                child.Location = new Point((int)outerPadX, (int)(lastTop - child.Height));
 
                 lastTop = child.Top - _controlPadding.Y;
             }

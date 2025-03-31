@@ -6,10 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Blish_HUD.Controls
-{
-    public class CounterBox : Control
-    {
+namespace Blish_HUD.Controls {
+    public class CounterBox : Control {
 
         private readonly Texture2D MinusSprite;
         private readonly Texture2D PlusSprite;
@@ -17,11 +15,9 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// The width of the value's display space (ie. the gap between the increment and the decrement button.)
         /// </summary>
-        public int ValueWidth
-        {
+        public int ValueWidth {
             get => _valueWidth;
-            set
-            {
+            set {
                 if (_valueWidth == value) return;
                 _valueWidth = value;
                 Invalidate();
@@ -31,11 +27,9 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// Optional prefix to be prepended to the displayed value.
         /// </summary>
-        public string Prefix
-        {
+        public string Prefix {
             get => _prefix;
-            set
-            {
+            set {
                 if (string.Equals(_prefix, value)) return;
                 _prefix = value;
                 Invalidate();
@@ -45,11 +39,9 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// Optional suffix to be appended to the displayed value.
         /// </summary>
-        public string Suffix
-        {
+        public string Suffix {
             get => _suffix;
-            set
-            {
+            set {
                 if (string.Equals(_suffix, value)) return;
                 _suffix = value;
                 Invalidate();
@@ -59,8 +51,7 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// The numerator by which to increment or decrement the value of this CounterBox.
         /// </summary>
-        public int Numerator
-        {
+        public int Numerator {
             get => _numerator;
             set => _numerator = value;
         }
@@ -68,11 +59,9 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// The maximum value of the counterbox. Cannot be lesser than MinValue, thus should be assigned BEFORE MinValue.
         /// </summary>
-        public int MaxValue
-        {
+        public int MaxValue {
             get => _maxValue;
-            set
-            {
+            set {
                 if (value < _minValue) return;
                 _maxValue = value;
                 Invalidate();
@@ -82,11 +71,9 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// The minimum value of the counterbox. Cannot be greater than MaxValue, thus should be assigned AFTER MaxValue;
         /// </summary>
-        public int MinValue
-        {
+        public int MinValue {
             get => _minValue;
-            set
-            {
+            set {
                 if (value > _maxValue) return;
                 _minValue = value;
                 Invalidate();
@@ -96,8 +83,7 @@ namespace Blish_HUD.Controls
         /// <summary>
         /// If set, doubles the value when incrementing and halfs it when decrementing.
         /// </summary>
-        public bool Exponential
-        {
+        public bool Exponential {
             get => _exponential;
             set => _exponential = value;
         }
@@ -117,15 +103,15 @@ namespace Blish_HUD.Controls
         private Timer _holdTimer;
         private const int HOLD_MILISECONDS = 700;
         public CounterBox() {
-            _holdTimer     = new Timer(HOLD_MILISECONDS);
+            _holdTimer = new Timer(HOLD_MILISECONDS);
             _holdTimerFast = new Stopwatch();
-            MinusSprite    = MinusSprite ?? Content.GetTexture("minus");
-            PlusSprite     = PlusSprite ?? Content.GetTexture("plus");
+            MinusSprite = MinusSprite ?? Content.GetTexture("minus");
+            PlusSprite = PlusSprite ?? Content.GetTexture("plus");
 
             this.MouseMoved += OnMouseMoved;
-            this.MouseLeft  += OnMouseLeft;
+            this.MouseLeft += OnMouseLeft;
 
-            this.LeftMouseButtonPressed  += OnLeftMouseButtonPressed;
+            this.LeftMouseButtonPressed += OnLeftMouseButtonPressed;
             this.LeftMouseButtonReleased += OnLeftMouseButtonReleased;
 
             this.Disposed += delegate { _holdTimer?.Close(); _holdTimerFast?.Stop(); };
@@ -133,22 +119,18 @@ namespace Blish_HUD.Controls
             this.Size = new Point(150, 20);
         }
         private bool _mouseOverPlus = false;
-        private bool MouseOverPlus
-        {
+        private bool MouseOverPlus {
             get => _mouseOverPlus;
-            set
-            {
+            set {
                 if (_mouseOverPlus == value) return;
                 _mouseOverPlus = value;
                 Invalidate();
             }
         }
         private bool _mouseOverMinus = false;
-        private bool MouseOverMinus
-        {
+        private bool MouseOverMinus {
             get => _mouseOverMinus;
-            set
-            {
+            set {
                 if (_mouseOverMinus == value) return;
                 _mouseOverMinus = value;
                 Invalidate();
@@ -160,12 +142,10 @@ namespace Blish_HUD.Controls
             this.MouseOverMinus = false;
             ResetHoldTimer();
         }
-        private void OnMouseMoved(object sender, MouseEventArgs e)
-        {
+        private void OnMouseMoved(object sender, MouseEventArgs e) {
             var relPos = e.MouseState.Position - this.AbsoluteBounds.Location;
 
-            if (this.MouseOver)
-            {
+            if (this.MouseOver) {
                 this.MouseOverMinus = relPos.X < 17 && relPos.X > 0;
                 this.MouseOverPlus = relPos.X < 36 + this.ValueWidth && relPos.X > 19 + this.ValueWidth;
 
@@ -211,8 +191,7 @@ namespace Blish_HUD.Controls
             _holdTimer = new Timer(HOLD_MILISECONDS);
             _holdTimerFast.Reset();
         }
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
-        {
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_mouseOverMinus && _pressed) {
                 spriteBatch.DrawOnCtrl(this, MinusSprite, new Rectangle(2, 2, 15, 15), Color.White);
             } else {

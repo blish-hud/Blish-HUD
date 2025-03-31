@@ -76,13 +76,13 @@ namespace Blish_HUD.Debug {
         /// </summary>
         private static void CheckNvidiaControlPanelSettings() {
             try {
-                var customSettingNames    = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
+                var customSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
                 var referenceSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.ReferenceSettingNames);
 
-                var metaService      = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
+                var metaService = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
                 var decrypterService = new DrsDecrypterService(metaService);
-                var scannerService   = new DrsScannerService(metaService, decrypterService);
-                var settingService   = new DrsSettingsService(metaService, decrypterService);
+                var scannerService = new DrsScannerService(metaService, decrypterService);
+                var settingService = new DrsSettingsService(metaService, decrypterService);
 
                 var forbiddenValues = new Dictionary<ESetting, HashSet<uint>>() {
                     [ESetting.FXAA_ENABLE_ID] = new HashSet<uint>() { 1 },
@@ -110,8 +110,8 @@ namespace Blish_HUD.Debug {
                     Contingency.NotifyNvidiaSettings(string.Join(Environment.NewLine, errors));
                 }
             } catch (Exception) {
-                 // we don't really care if we error here - usually means a non-nvidia system,
-                 // in which case the check is useless anyway.
+                // we don't really care if we error here - usually means a non-nvidia system,
+                // in which case the check is useless anyway.
             }
         }
 
@@ -124,8 +124,8 @@ namespace Blish_HUD.Debug {
         /// Blish HUD can't run while the game is configured this way.
         /// </summary>
         internal static void CheckForFullscreenDx9Conflict() {
-            if (GameService.GameIntegration.Gw2Instance.GraphicsApi == GameIntegration.Gw2Instance.Gw2GraphicsApi.DX9 
-             && GameService.GameIntegration.GfxSettings.ScreenMode  == GameIntegration.GfxSettings.ScreenModeSetting.Fullscreen) {
+            if (GameService.GameIntegration.Gw2Instance.GraphicsApi == GameIntegration.Gw2Instance.Gw2GraphicsApi.DX9
+             && GameService.GameIntegration.GfxSettings.ScreenMode == GameIntegration.GfxSettings.ScreenModeSetting.Fullscreen) {
                 Contingency.NotifyConflictingFullscreenSettings();
             }
         }

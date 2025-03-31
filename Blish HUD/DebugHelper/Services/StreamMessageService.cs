@@ -10,18 +10,18 @@ namespace Blish_HUD.DebugHelper.Services {
 
     public class StreamMessageService : IMessageService, IDisposable {
 
-        private readonly ConcurrentDictionary<ulong, ManualResetEventSlim> waitingMessages   = new ConcurrentDictionary<ulong, ManualResetEventSlim>();
-        private readonly ConcurrentDictionary<ulong, Message>              receivedMessages  = new ConcurrentDictionary<ulong, Message>();
-        private readonly ConcurrentDictionary<Type, Action<Message>>       registedCallbacks = new ConcurrentDictionary<Type, Action<Message>>();
-        private readonly Stream                                            inStream;
-        private readonly Stream                                            outStream;
-        private readonly object                                            outLock = new object();
-        private          Thread?                                           thread;
-        private          bool                                              stopRequested = false;
-        private          long                                              lastMessageId = 0;
+        private readonly ConcurrentDictionary<ulong, ManualResetEventSlim> waitingMessages = new ConcurrentDictionary<ulong, ManualResetEventSlim>();
+        private readonly ConcurrentDictionary<ulong, Message> receivedMessages = new ConcurrentDictionary<ulong, Message>();
+        private readonly ConcurrentDictionary<Type, Action<Message>> registedCallbacks = new ConcurrentDictionary<Type, Action<Message>>();
+        private readonly Stream inStream;
+        private readonly Stream outStream;
+        private readonly object outLock = new object();
+        private Thread? thread;
+        private bool stopRequested = false;
+        private long lastMessageId = 0;
 
         public StreamMessageService(Stream inStream, Stream outStream) {
-            this.inStream  = inStream;
+            this.inStream = inStream;
             this.outStream = outStream;
         }
 
@@ -39,7 +39,7 @@ namespace Blish_HUD.DebugHelper.Services {
             thread.Join();
 
             stopRequested = false;
-            thread        = null;
+            thread = null;
         }
 
         private void Loop() {
@@ -91,9 +91,9 @@ namespace Blish_HUD.DebugHelper.Services {
 
             using var process = Process.GetCurrentProcess();
 
-            ulong time      = (ulong)(DateTime.UtcNow - process.StartTime).TotalMilliseconds & 0x1FFFFFFFFFF;
-            ulong processId = (ulong)process.Id                                              & 0x3FF;
-            ulong seq       = (ulong)Interlocked.Increment(ref lastMessageId)                & 0x1FFF;
+            ulong time = (ulong)(DateTime.UtcNow - process.StartTime).TotalMilliseconds & 0x1FFFFFFFFFF;
+            ulong processId = (ulong)process.Id & 0x3FF;
+            ulong seq = (ulong)Interlocked.Increment(ref lastMessageId) & 0x1FFF;
             message.Id = (time << 23) | (processId << 13) | seq;
         }
 

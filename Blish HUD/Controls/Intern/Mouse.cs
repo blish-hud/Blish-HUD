@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Blish_HUD.Controls.Extern;
-namespace Blish_HUD.Controls.Intern
-{
-    public enum MouseButton
-    {
+namespace Blish_HUD.Controls.Intern {
+    public enum MouseButton {
         LEFT,
         RIGHT,
         MIDDLE,
         XBUTTON
     }
-    public static class Mouse
-    {
+    public static class Mouse {
         private const uint WM_MOUSEWHEEL = 0x020A;
         private const uint WM_MOUSEHWHEEL = 0x020E;
         private const int WHEEL_DELTA = 120;
@@ -67,16 +64,13 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="xPos">The X coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current X coordinate.</param>
         /// <param name="yPos">The Y coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current Y coordinate.</param>
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void Press(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false)
-        {
-            if (xPos == -1 || yPos == -1)
-            {
+        public static void Press(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false) {
+            if (xPos == -1 || yPos == -1) {
                 var pos = GetPosition();
                 xPos = pos.X;
                 yPos = pos.Y;
             }
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
-            {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
                 var nInputs = new[]
                 {
                     new Extern.Input
@@ -96,9 +90,7 @@ namespace Blish_HUD.Controls.Intern
                     }
                 };
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
-            }
-            else
-            {
+            } else {
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONDOWN[button], wParam, lParam);
@@ -111,16 +103,13 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="xPos">The X coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current X coordinate.</param>
         /// <param name="yPos">The Y coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current Y coordinate.</param>
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void Release(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false)
-        {
-            if (xPos == -1 || yPos == -1)
-            {
+        public static void Release(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false) {
+            if (xPos == -1 || yPos == -1) {
                 var pos = GetPosition();
                 xPos = pos.X;
                 yPos = pos.Y;
             }
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
-            {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
                 var nInputs = new[]
                 {
                     new Extern.Input
@@ -140,9 +129,7 @@ namespace Blish_HUD.Controls.Intern
                     }
                 };
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
-            }
-            else
-            {
+            } else {
                 uint wParam = (uint)VirtualButtonShort[button];
                 int lParam = xPos | (yPos << 16);
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_BUTTONUP[button], wParam, lParam);
@@ -156,19 +143,16 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="xPos">The X coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current X coordinate.</param>
         /// <param name="yPos">The Y coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current Y coordinate.</param>
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void RotateWheel(int wheelDistance, bool horizontalWheel = false, int xPos = -1, int yPos = -1, bool sendToSystem = false)
-        {
+        public static void RotateWheel(int wheelDistance, bool horizontalWheel = false, int xPos = -1, int yPos = -1, bool sendToSystem = false) {
             wheelDistance = wheelDistance % WHEEL_DELTA;
             if (wheelDistance == 0) return;
 
-            if (xPos == -1 || yPos == -1)
-            {
+            if (xPos == -1 || yPos == -1) {
                 var pos = GetPosition();
                 xPos = pos.X;
                 yPos = pos.Y;
             }
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
-            {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
                 var nInputs = new[]
                 {
                     new Extern.Input
@@ -188,9 +172,7 @@ namespace Blish_HUD.Controls.Intern
                     }
                 };
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
-            }
-            else
-            {
+            } else {
                 uint wParam = (uint)(0 | wheelDistance << 16);
                 int lParam = xPos | (yPos << 16);
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, horizontalWheel ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL, wParam, lParam);
@@ -202,14 +184,10 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="xPos">The X coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current X coordinate.</param>
         /// <param name="yPos">The Y coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current Y coordinate.</param>
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void SetPosition(int xPos, int yPos, bool sendToSystem = false)
-        {
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
-            {
+        public static void SetPosition(int xPos, int yPos, bool sendToSystem = false) {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
                 PInvoke.SetCursorPos(xPos, yPos);
-            }
-            else
-            {
+            } else {
                 int lParam = xPos | (yPos << 16);
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_MOUSEMOVE, 0, lParam);
             }
@@ -217,8 +195,7 @@ namespace Blish_HUD.Controls.Intern
         /// <summary>
         /// Gets the cursors absolute screen position.
         /// </summary>
-        public static Point GetPosition()
-        {
+        public static Point GetPosition() {
             POINT lpPoint;
             PInvoke.GetCursorPos(out lpPoint);
             return lpPoint;
@@ -230,8 +207,7 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="xPos">The X coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current X coordinate.</param>
         /// <param name="yPos">The Y coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current Y coordinate.</param>
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void Click(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false)
-        {
+        public static void Click(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false) {
             Press(button, xPos, yPos, sendToSystem);
             Release(button, xPos, yPos, sendToSystem);
         }
@@ -242,20 +218,14 @@ namespace Blish_HUD.Controls.Intern
         /// <param name="xPos">The X coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current X coordinate.</param>
         /// <param name="yPos">The Y coodinate where this action takes place. Relative to the game client window if sendToSystem is not set. Default: current Y coordinate.</param>
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void DoubleClick(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false)
-        {
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
-            {
-                for (int i = 0; i <= 1; i++)
-                {
+        public static void DoubleClick(MouseButton button, int xPos = -1, int yPos = -1, bool sendToSystem = false) {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
+                for (int i = 0; i <= 1; i++) {
                     Press(button, xPos, yPos, sendToSystem);
                     Release(button, xPos, yPos, sendToSystem);
                 }
-            }
-            else
-            {
-                if (xPos == -1 || yPos == -1)
-                {
+            } else {
+                if (xPos == -1 || yPos == -1) {
                     var pos = GetPosition();
                     xPos = pos.X;
                     yPos = pos.Y;

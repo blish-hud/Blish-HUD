@@ -32,11 +32,11 @@ namespace Blish_HUD.Modules {
                 JObject mdObj = JObject.Load(reader);
 
                 foreach (var prop in mdObj) {
-                    string dependencyNamespace    = prop.Key;
+                    string dependencyNamespace = prop.Key;
                     string dependencyVersionRange = prop.Value.ToString();
 
                     moduleDependencyList.Add(new ModuleDependency() {
-                        Namespace    = dependencyNamespace,
+                        Namespace = dependencyNamespace,
                         VersionRange = new Range(dependencyVersionRange)
                     });
                 }

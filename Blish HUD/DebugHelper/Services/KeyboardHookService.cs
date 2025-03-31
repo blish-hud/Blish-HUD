@@ -11,11 +11,11 @@ namespace Blish_HUD.DebugHelper.Services {
 
         private readonly IMessageService messageService;
         private readonly User32.HOOKPROC hookProc; // Store the callback delegate, otherwise it might get garbage collected
-        private          IntPtr          hook;
+        private IntPtr hook;
 
         public KeyboardHookService(IMessageService messageService) {
             this.messageService = messageService;
-            hookProc            = HookCallback;
+            hookProc = HookCallback;
         }
 
         public void Start() {
@@ -31,11 +31,11 @@ namespace Blish_HUD.DebugHelper.Services {
             if (nCode != 0) return User32.CallNextHookEx(HookType.WH_KEYBOARD_LL, nCode, wParam, lParam);
 
             uint eventType = ((uint)wParam % 2) + 256; // filter out SysKeyDown & SysKeyUp
-            int  key       = Marshal.ReadInt32(lParam);
+            int key = Marshal.ReadInt32(lParam);
 
             var message = new KeyboardEventMessage {
                 EventType = eventType,
-                Key       = key
+                Key = key
             };
 
             KeyboardResponseMessage? response = messageService.SendAndWait<KeyboardResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));

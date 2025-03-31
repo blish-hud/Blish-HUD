@@ -26,8 +26,8 @@ namespace Blish_HUD.Modules.UI.Views {
             }
         }
 
-        private Menu                 _dependencyMenuList;
-        private Label                _messageLabel;
+        private Menu _dependencyMenuList;
+        private Label _messageLabel;
         private ContextMenuStripItem _ignoreModuleDependenciesToggle;
 
         public ModuleDependencyView() { /* NOOP */ }
@@ -42,22 +42,22 @@ namespace Blish_HUD.Modules.UI.Views {
             this.Menu = new ContextMenuStrip();
             _ignoreModuleDependenciesToggle = this.Menu.AddMenuItem(Strings.GameServices.ModulesService.ModuleManagement_IgnoreDependencyRequirements);
             _ignoreModuleDependenciesToggle.CanCheck = true;
-            _ignoreModuleDependenciesToggle.CheckedChanged += delegate(object sender, CheckChangedEvent e) { IgnoreModuleDependencies = e.Checked; };
+            _ignoreModuleDependenciesToggle.CheckedChanged += delegate (object sender, CheckChangedEvent e) { IgnoreModuleDependencies = e.Checked; };
 
             _dependencyMenuList = new Menu() {
-                Size           = buildPanel.ContentRegion.Size,
+                Size = buildPanel.ContentRegion.Size,
                 MenuItemHeight = 22,
-                Visible        = false,
-                Parent         = buildPanel,
+                Visible = false,
+                Parent = buildPanel,
             };
 
             _messageLabel = new Label() {
-                Size                = buildPanel.ContentRegion.Size,
+                Size = buildPanel.ContentRegion.Size,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Text                = Strings.GameServices.ModulesService.Dependency_NoDependencies,
-                StrokeText          = true,
-                Font                = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic),
-                Parent              = buildPanel
+                Text = Strings.GameServices.ModulesService.Dependency_NoDependencies,
+                StrokeText = true,
+                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic),
+                Parent = buildPanel
             };
         }
 
@@ -67,11 +67,11 @@ namespace Blish_HUD.Modules.UI.Views {
 
             foreach ((string name, string status, var result) in dependencies) {
                 _ = new StatusMenuItem() {
-                    Text            = name,
-                    StatusText      = status,
+                    Text = name,
+                    StatusText = status,
                     StatusTextColor = _dependencyDisplayColor[result],
-                    Enabled         = false,
-                    Parent          = _dependencyMenuList
+                    Enabled = false,
+                    Parent = _dependencyMenuList
                 };
             }
 

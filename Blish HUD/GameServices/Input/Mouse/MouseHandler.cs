@@ -36,7 +36,7 @@ namespace Blish_HUD.Input {
         public Control ActiveControl {
             get => _activeControl;
             private set {
-                _hudFocused    = value != null;
+                _hudFocused = value != null;
                 _activeControl = value;
 
                 Control.ActiveControl = value;
@@ -65,7 +65,7 @@ namespace Blish_HUD.Input {
             }
         }
 
-        private bool           _hudFocused;
+        private bool _hudFocused;
         private MouseEventArgs _mouseEvent;
 
         internal MouseHandler() { }
@@ -92,7 +92,7 @@ namespace Blish_HUD.Input {
             }
 
             if (this.CameraDragging || !this.CursorIsVisible) return false;
-            
+
             _mouseEvent = mouseEventArgs;
 
             return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased             // Never block the users input if they are releasing the left mouse button
@@ -142,9 +142,9 @@ namespace Blish_HUD.Input {
 
             var rawMouseState = Mouse.GetState();
 
-            this.State = new MouseState((int) (rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
-                                        (int) (rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
-                                        _mouseEvent?.WheelDelta ?? 0, 
+            this.State = new MouseState((int)(rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
+                                        (int)(rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
+                                        _mouseEvent?.WheelDelta ?? 0,
                                         rawMouseState.LeftButton,
                                         rawMouseState.MiddleButton,
                                         rawMouseState.RightButton,
@@ -162,7 +162,7 @@ namespace Blish_HUD.Input {
 
             // Handle mouse events blocked by the mouse hook
             if (_mouseEvent != null) {
-                if(_recentlyEnabled) {
+                if (_recentlyEnabled) {
                     _recentlyEnabled = false;
                     SimulateNonCapturePressedEvent(_mouseEvent);
                 }

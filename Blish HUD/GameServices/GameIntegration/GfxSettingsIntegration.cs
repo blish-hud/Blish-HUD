@@ -125,7 +125,7 @@ namespace Blish_HUD.GameIntegration {
                              ? floatResult
                              : default(float?)
                        : default;
-        }    
+        }
 
         private T? GetStringEnumSetting<T>(Func<string, T?> getSettingFunc, [CallerMemberName] string settingName = null) where T : struct {
             if (settingName == null) throw new ArgumentNullException(nameof(settingName));
@@ -144,10 +144,10 @@ namespace Blish_HUD.GameIntegration {
             }
 
             _fileSystemWatcher = new FileSystemWatcher {
-                Path                  = gw2AppDataPath,
-                NotifyFilter          = NotifyFilters.LastWrite,
-                Filter                = GFXSETTINGS_NAME,
-                EnableRaisingEvents   = true,
+                Path = gw2AppDataPath,
+                NotifyFilter = NotifyFilters.LastWrite,
+                Filter = GFXSETTINGS_NAME,
+                EnableRaisingEvents = true,
                 IncludeSubdirectories = false
             };
 

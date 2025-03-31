@@ -14,12 +14,12 @@ namespace Blish_HUD.Input {
             if (nCode != 0) return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
 
             KeyboardEventType eventType = (KeyboardEventType)(((uint)wParam % 2) + 256); // filter out SysKeyDown & SysKeyUp
-            Keys              key       = (Keys)Marshal.ReadInt32(lParam);
+            Keys key = (Keys)Marshal.ReadInt32(lParam);
 
             KeyboardEventArgs KeyboardEventArgs = new KeyboardEventArgs(eventType, key);
-            bool              isHandled         = false;
+            bool isHandled = false;
 
-            lock (((IList) this.Handlers).SyncRoot) {
+            lock (((IList)this.Handlers).SyncRoot) {
                 foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
                     isHandled = handler(KeyboardEventArgs);
                     if (isHandled) break;

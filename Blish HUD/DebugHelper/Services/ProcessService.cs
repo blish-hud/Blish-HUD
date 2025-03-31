@@ -8,7 +8,7 @@ namespace Blish_HUD.DebugHelper.Services {
         private readonly Process process;
 
         public ProcessService(int blishHudProcessId) {
-            process                     = Process.GetProcessById(blishHudProcessId);
+            process = Process.GetProcessById(blishHudProcessId);
             process.EnableRaisingEvents = true;
         }
 

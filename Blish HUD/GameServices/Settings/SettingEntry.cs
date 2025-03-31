@@ -8,8 +8,8 @@ namespace Blish_HUD.Settings {
 
     public abstract class SettingEntry : INotifyPropertyChanged {
 
-        protected const string SETTINGTYPE_KEY  = "T";
-        protected const string SETTINGNAME_KEY  = "Key";
+        protected const string SETTINGTYPE_KEY = "T";
+        protected const string SETTINGNAME_KEY = "Key";
         protected const string SETTINGVALUE_KEY = "Value";
 
         public class SettingEntryConverter : JsonConverter<SettingEntry> {
@@ -21,8 +21,8 @@ namespace Blish_HUD.Settings {
 
                 var entryType = value.GetSettingType();
 
-                entryObject.Add(SETTINGTYPE_KEY,  $"{entryType.FullName}, {entryType.Assembly.GetName().Name}");
-                entryObject.Add(SETTINGNAME_KEY,  value.EntryKey);
+                entryObject.Add(SETTINGTYPE_KEY, $"{entryType.FullName}, {entryType.Assembly.GetName().Name}");
+                entryObject.Add(SETTINGNAME_KEY, value.EntryKey);
                 entryObject.Add(SETTINGVALUE_KEY, JToken.FromObject(value.GetSettingValue(), serializer));
 
                 entryObject.WriteTo(writer);
@@ -32,7 +32,7 @@ namespace Blish_HUD.Settings {
                 var jObj = JObject.Load(reader);
 
                 string entryTypeString = jObj[SETTINGTYPE_KEY].Value<string>();
-                var    entryType       = Type.GetType(entryTypeString);
+                var entryType = Type.GetType(entryTypeString);
 
                 if (entryType == null) {
                     Logger.Warn("Failed to load setting of missing type '{settingDefinedType}'.", entryTypeString);

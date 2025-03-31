@@ -89,11 +89,11 @@ namespace Blish_HUD.Input {
         /// A list of keys currently being pressed down.
         /// </summary>
         public IReadOnlyList<Keys> KeysDown => _keysDown.AsReadOnly();
-        
+
         private Action<string> _textInputDelegate;
 
         private readonly ReaderWriterLockSlim _stagedKeyBindingLock = new ReaderWriterLockSlim();
-        private readonly HashSet<KeyBinding>  _stagedKeyBindings    = new HashSet<KeyBinding>();
+        private readonly HashSet<KeyBinding> _stagedKeyBindings = new HashSet<KeyBinding>();
 
         internal KeyboardHandler() { }
 
@@ -170,7 +170,7 @@ namespace Blish_HUD.Input {
         private void UpdateStates() {
             Keys[] downArray = _keysDown.ToArray();
 
-            this.State           = new KeyboardState(downArray);
+            this.State = new KeyboardState(downArray);
             this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
         }
 

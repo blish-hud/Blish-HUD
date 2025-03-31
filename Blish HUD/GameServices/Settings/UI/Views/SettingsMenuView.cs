@@ -16,7 +16,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         public event EventHandler<ControlActivatedEventArgs> MenuItemSelected;
 
-        private Menu          _menuSettingsList;
+        private Menu _menuSettingsList;
         private ViewContainer _settingViewContainer;
 
         public SettingsMenuView() { /* NOOP */ }
@@ -28,27 +28,27 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void Build(Container buildPanel) {
             var settingsMenuSection = new Panel() {
                 ShowBorder = true,
-                Size       = new Point(265, 680),
-                Location   = new Point(9,   10),
-                Title      = Strings.GameServices.SettingsService.SettingsTab,
-                Parent     = buildPanel,
-                CanScroll  = true,
+                Size = new Point(265, 680),
+                Location = new Point(9, 10),
+                Title = Strings.GameServices.SettingsService.SettingsTab,
+                Parent = buildPanel,
+                CanScroll = true,
             };
 
             _menuSettingsList = new Menu() {
-                Size           = settingsMenuSection.ContentRegion.Size,
+                Size = settingsMenuSection.ContentRegion.Size,
                 MenuItemHeight = 40,
-                Parent         = settingsMenuSection,
-                CanSelect      = true,
+                Parent = settingsMenuSection,
+                CanSelect = true,
             };
 
             _menuSettingsList.ItemSelected += SettingsListMenuOnItemSelected;
 
             _settingViewContainer = new ViewContainer() {
                 FadeView = true,
-                Size     = new Point(718,                    settingsMenuSection.Height),
+                Size = new Point(718, settingsMenuSection.Height),
                 Location = new Point(buildPanel.Width - 740, 10),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
         }
 
@@ -78,7 +78,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected override void Unload() {
             base.Unload();
-            
+
             if (_menuSettingsList != null) {
                 _menuSettingsList.ItemSelected -= SettingsListMenuOnItemSelected;
             }

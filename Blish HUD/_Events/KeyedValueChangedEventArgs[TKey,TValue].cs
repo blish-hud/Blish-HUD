@@ -14,7 +14,7 @@ namespace Blish_HUD {
         public TValue Value { get; }
 
         public KeyedValueChangedEventArgs(TKey key, TValue value) {
-            this.Key   = key;
+            this.Key = key;
             this.Value = value;
         }
 

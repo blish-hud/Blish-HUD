@@ -28,9 +28,9 @@ namespace Blish_HUD.Controls {
         public Point SuffixImageSize { get; }
 
         public ContentService.FontSize FontSize { get; }
-        
+
         public ContentService.FontFace FontFace { get; }
-        
+
         public Color TextColor { get; }
 
         public Color HoverColor { get; }

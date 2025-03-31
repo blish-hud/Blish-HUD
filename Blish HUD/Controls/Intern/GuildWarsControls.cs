@@ -1,7 +1,5 @@
-﻿namespace Blish_HUD.Controls.Intern
-{
-    public enum GuildWarsControls
-    {
+﻿namespace Blish_HUD.Controls.Intern {
+    public enum GuildWarsControls {
         None,
         SwapWeapons,
         WeaponSkill1,

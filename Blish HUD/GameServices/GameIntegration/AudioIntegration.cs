@@ -21,26 +21,26 @@ namespace Blish_HUD.GameIntegration {
             DefaultDevice
         }
 
-        private const    string                APPLICATION_SETTINGS         = "OverlayConfiguration";
-        private const    string                USEGAMEVOLUME_SETTINGS       = "GameVolume";
-        private const    string                MUTEIFNOGAMEAUDIO_SETTINGS   = "MuteIfNoGameAudio";
-        private const    string                VOLUME_SETTINGS              = "Volume";
-        private const    string                DEVICE_SETTINGS              = "OutputDevice";
-        private const    int                   CHECK_INTERVAL               = 250;
-        private const    int                   AUDIO_DEVICE_UPDATE_INTERVAL = 10000;
-        private const    int                   AUDIOBUFFER_LENGTH           = 20;
-        private const    float                 MAX_VOLUME                   = 0.4f;
-        private readonly RingBuffer<float>     _audioPeakBuffer             = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
-        private readonly MMDeviceEnumerator    _deviceEnumerator;
-        private          SettingEntry<bool>    _useGameVolume;
-        private          SettingEntry<Devices> _deviceSetting;
-        private          SettingEntry<float>   _volumeSetting;
-        private          SettingEntry<bool>    _muteIfNoGameAudio;
+        private const string APPLICATION_SETTINGS = "OverlayConfiguration";
+        private const string USEGAMEVOLUME_SETTINGS = "GameVolume";
+        private const string MUTEIFNOGAMEAUDIO_SETTINGS = "MuteIfNoGameAudio";
+        private const string VOLUME_SETTINGS = "Volume";
+        private const string DEVICE_SETTINGS = "OutputDevice";
+        private const int CHECK_INTERVAL = 250;
+        private const int AUDIO_DEVICE_UPDATE_INTERVAL = 10000;
+        private const int AUDIOBUFFER_LENGTH = 20;
+        private const float MAX_VOLUME = 0.4f;
+        private readonly RingBuffer<float> _audioPeakBuffer = new RingBuffer<float>(AUDIOBUFFER_LENGTH);
+        private readonly MMDeviceEnumerator _deviceEnumerator;
+        private SettingEntry<bool> _useGameVolume;
+        private SettingEntry<Devices> _deviceSetting;
+        private SettingEntry<float> _volumeSetting;
+        private SettingEntry<bool> _muteIfNoGameAudio;
 
-        private readonly AudioEndpointNotificationReceiver                                    _audioEndpointNotificationReceiver;
+        private readonly AudioEndpointNotificationReceiver _audioEndpointNotificationReceiver;
         private readonly List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)> _gw2AudioDevices = new List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)>();
 
-        private double _timeSinceCheck             = 0;
+        private double _timeSinceCheck = 0;
         private double _timeSinceAudioDeviceUpdate = 0;
 
         private float? _volume;
@@ -73,16 +73,16 @@ namespace Blish_HUD.GameIntegration {
 
         public override void Load() {
             var audioSettings = GameService.Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
-            _useGameVolume = audioSettings.DefineSetting(USEGAMEVOLUME_SETTINGS, true, 
-                                                         () => Strings.GameServices.OverlayService.Setting_UseGameVolume_DisplayName, 
+            _useGameVolume = audioSettings.DefineSetting(USEGAMEVOLUME_SETTINGS, true,
+                                                         () => Strings.GameServices.OverlayService.Setting_UseGameVolume_DisplayName,
                                                          () => Strings.GameServices.OverlayService.Setting_UseGameVolume_Description);
-            _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2, 
-                                                         () => Strings.GameServices.OverlayService.Setting_Volume_DisplayName, 
+            _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2,
+                                                         () => Strings.GameServices.OverlayService.Setting_Volume_DisplayName,
                                                          () => Strings.GameServices.OverlayService.Setting_Volume_Description);
-            _muteIfNoGameAudio = audioSettings.DefineSetting(MUTEIFNOGAMEAUDIO_SETTINGS, true, 
+            _muteIfNoGameAudio = audioSettings.DefineSetting(MUTEIFNOGAMEAUDIO_SETTINGS, true,
                                                              () => Strings.GameServices.OverlayService.Setting_MuteIfNoGameAudio_DisplayName,
                                                              () => Strings.GameServices.OverlayService.Setting_MuteIfNoGameAudio_Description);
-            
+
             _volumeSetting.SetRange(0.0f, MAX_VOLUME);
 
             _deviceSetting = audioSettings.DefineSetting(DEVICE_SETTINGS, Devices.Gw2OutputDevice, () => Strings.GameServices.OverlayService.Setting_AudioDevice_DisplayName, () => Strings.GameServices.OverlayService.Setting_AudioDevice_Description + " (This setting is temporarily disabled in this version)");
@@ -99,8 +99,8 @@ namespace Blish_HUD.GameIntegration {
             _deviceEnumerator.RegisterEndpointNotificationCallback(_audioEndpointNotificationReceiver);
 
             _audioEndpointNotificationReceiver.DefaultDeviceChanged += delegate { UpdateAudioDevice(); };
-            _deviceSetting.SettingChanged                           += delegate { UpdateAudioDevice(); };
-            _service.Gw2Instance.Gw2Started                         += delegate { InitializeProcessMeterInformations(); };
+            _deviceSetting.SettingChanged += delegate { UpdateAudioDevice(); };
+            _service.Gw2Instance.Gw2Started += delegate { InitializeProcessMeterInformations(); };
         }
 
         public override void Update(GameTime gameTime) {
@@ -201,7 +201,7 @@ namespace Blish_HUD.GameIntegration {
                     // Skip this audio device.  Something about it is unsupported.
                     continue;
                 } catch (Exception) {
-                    continue; 
+                    continue;
                 }
 
                 bool shouldDispose = true;

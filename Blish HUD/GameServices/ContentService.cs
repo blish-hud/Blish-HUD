@@ -20,9 +20,9 @@ namespace Blish_HUD {
 
         #region Load Static
 
-        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
-        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
-        
+        private static readonly ConcurrentDictionary<string, BitmapFont> _loadedBitmapFonts = new ConcurrentDictionary<string, BitmapFont>();
+        private static readonly ConcurrentDictionary<string, Texture2D> _loadedTextures = new ConcurrentDictionary<string, Texture2D>();
+
         #endregion
 
         public static class Colors {
@@ -59,20 +59,20 @@ namespace Blish_HUD {
 
         private IDataReader _audioDataReader;
 
-        private BitmapFont  _defaultFont12;
-        public  BitmapFont  DefaultFont12 => _defaultFont12 ??= GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular);
+        private BitmapFont _defaultFont12;
+        public BitmapFont DefaultFont12 => _defaultFont12 ??= GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular);
 
         private BitmapFont _defaultFont14;
-        public  BitmapFont DefaultFont14 => _defaultFont14 ??= GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular);
+        public BitmapFont DefaultFont14 => _defaultFont14 ??= GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular);
 
         private BitmapFont _defaultFont16;
-        public  BitmapFont DefaultFont16 => _defaultFont16 ??= GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular);
+        public BitmapFont DefaultFont16 => _defaultFont16 ??= GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular);
 
         private BitmapFont _defaultFont18;
-        public  BitmapFont DefaultFont18 => _defaultFont18 ??= GetFont(FontFace.Menomonia, FontSize.Size18, FontStyle.Regular);
+        public BitmapFont DefaultFont18 => _defaultFont18 ??= GetFont(FontFace.Menomonia, FontSize.Size18, FontStyle.Regular);
 
         private BitmapFont _defaultFont32;
-        public  BitmapFont DefaultFont32 => _defaultFont32 ??= GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular);
+        public BitmapFont DefaultFont32 => _defaultFont32 ??= GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular);
 
         public enum FontFace {
             Menomonia
@@ -136,7 +136,7 @@ namespace Blish_HUD {
 
             try {
                 const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
-                var          filePath                    = soundName + SOUND_EFFECT_FILE_EXTENSION;
+                var filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
 
                 if (_audioDataReader.FileExists(filePath)) {
                     SoundEffect.FromStream(_audioDataReader.GetFileStream(filePath)).Play(GameService.GameIntegration.Audio.Volume, 0, 0);
@@ -259,7 +259,7 @@ namespace Blish_HUD {
             }
 
             string signature = splitUri.Groups[1].Value;
-            string fileId    = splitUri.Groups[2].Value;
+            string fileId = splitUri.Groups[2].Value;
 
             return GetRenderServiceTexture(signature, fileId);
         }

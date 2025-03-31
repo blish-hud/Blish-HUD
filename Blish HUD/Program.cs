@@ -71,7 +71,7 @@ namespace Blish_HUD {
             EnableLogging();
 
             Logger.Info("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
-            
+
             string mutexName = string.IsNullOrEmpty(ApplicationSettings.Instance.MumbleMapName) ? $"{APP_GUID}" : $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}";
             using (Mutex singleInstanceMutex = new Mutex(true, mutexName, out bool ownsMutex)) {
                 try {
@@ -100,8 +100,8 @@ namespace Blish_HUD {
                         singleInstanceMutex.ReleaseMutex();
                     }
 
-                    if (RestartOnExit 
-                     && !(ApplicationSettings.Instance.StartGw2 > 0 
+                    if (RestartOnExit
+                     && !(ApplicationSettings.Instance.StartGw2 > 0
                       || ApplicationSettings.Instance.ProcessId > 0)) {
                         Application.Restart();
                     }

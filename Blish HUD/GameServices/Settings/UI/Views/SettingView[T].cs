@@ -12,8 +12,8 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private readonly int _definedWidth;
 
-        private string   _displayName;
-        private string   _description;
+        private string _displayName;
+        private string _description;
         private TSetting _value;
 
         public Func<TSetting, SettingValidationResult> ValidationFunc { get; set; }

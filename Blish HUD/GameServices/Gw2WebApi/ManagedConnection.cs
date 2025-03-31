@@ -25,7 +25,7 @@ namespace Blish_HUD.Gw2WebApi {
                                                  renderCache,
                                                  renderCacheDuration ?? TimeSpan.MaxValue,
                                                  ua);
-            
+
             _internalConnection.Middleware.Add(tokenComplianceMiddle);
 
             _internalClient = new Gw2Client(_internalConnection).WebApi;

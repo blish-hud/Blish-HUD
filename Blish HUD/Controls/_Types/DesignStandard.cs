@@ -15,8 +15,8 @@ namespace Blish_HUD.Controls {
         public Point ControlOffset { get; }
 
         public DesignStandard(Point size, Point panelOffset, Point controlOffset) {
-            this.Size          = size;
-            this.PanelOffset   = panelOffset;
+            this.Size = size;
+            this.PanelOffset = panelOffset;
             this.ControlOffset = controlOffset;
         }
 

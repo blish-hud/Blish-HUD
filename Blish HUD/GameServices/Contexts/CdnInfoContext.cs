@@ -22,17 +22,17 @@ namespace Blish_HUD.Contexts {
             private readonly int _manifestFileId;
             private readonly int _manifestFileSize;
 
-            public int BuildId          => _buildId;
-            public int ExeFileId        => _exeFileId;
-            public int ExeFileSize      => _exeFileSize;
-            public int ManifestFileId   => _manifestFileId;
+            public int BuildId => _buildId;
+            public int ExeFileId => _exeFileId;
+            public int ExeFileSize => _exeFileSize;
+            public int ManifestFileId => _manifestFileId;
             public int ManifestFileSize => _manifestFileSize;
 
             public CdnInfo(int buildId, int exeFileId, int exeFileSize, int manifestFileId, int manifestFileSize) {
-                _buildId          = buildId;
-                _exeFileId        = exeFileId;
-                _exeFileSize      = exeFileSize;
-                _manifestFileId   = manifestFileId;
+                _buildId = buildId;
+                _exeFileId = exeFileId;
+                _exeFileSize = exeFileSize;
+                _manifestFileId = manifestFileId;
                 _manifestFileSize = manifestFileSize;
             }
 
@@ -48,14 +48,14 @@ namespace Blish_HUD.Contexts {
 
             public CdnSet(CdnInfo standard, CdnInfo chinese) {
                 this.Standard = standard;
-                this.Chinese  = chinese;
+                this.Chinese = chinese;
             }
 
         }
 
         private const int TOTAL_CDN_ENDPOINTS = 2;
 
-        private const string GW2_ASSETCDN_URL    = "http://assetcdn.101.arenanetworks.com/latest/101";
+        private const string GW2_ASSETCDN_URL = "http://assetcdn.101.arenanetworks.com/latest/101";
         private const string GW2_CN_ASSETCDN_URL = "http://assetcdn.111.cgw2.com/latest/111";
 
         private const string BHUD_BUILDINFO_LAMBDA = "https://l.blishhud.com/general/getbuildinfo";
@@ -79,7 +79,7 @@ namespace Blish_HUD.Contexts {
             BHUD_BUILDINFO_LAMBDA.GetJsonAsync<CdnSet>().ContinueWith(cdnSet => {
                 if (!cdnSet.IsFaulted) {
                     SetCdnInfo(ref _standardCdnInfo, cdnSet.Result.Standard);
-                    SetCdnInfo(ref _chineseCdnInfo,  cdnSet.Result.Chinese);
+                    SetCdnInfo(ref _chineseCdnInfo, cdnSet.Result.Chinese);
                 } else {
                     LoadFromCdn();
                 }
@@ -87,7 +87,7 @@ namespace Blish_HUD.Contexts {
         }
 
         private void LoadFromCdn() {
-            GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _standardCdnInfo,   cdnInfo.Result));
+            GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _standardCdnInfo, cdnInfo.Result));
             GetCdnInfoFromCdnUrl(GW2_CN_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _chineseCdnInfo, cdnInfo.Result));
         }
 
@@ -118,7 +118,7 @@ namespace Blish_HUD.Contexts {
                 parsedSuccessfully &= int.TryParse(cdnVars[2], out int exeFileSize);
                 parsedSuccessfully &= int.TryParse(cdnVars[3], out int manifestFileId);
                 parsedSuccessfully &= int.TryParse(cdnVars[4], out int manifestFileSize);
-                
+
                 if (parsedSuccessfully) {
                     return new CdnInfo(buildId, exeFileId, exeFileSize, manifestFileId, manifestFileSize);
                 }

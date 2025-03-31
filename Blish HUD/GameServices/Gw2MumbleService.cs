@@ -81,11 +81,11 @@ namespace Blish_HUD {
             _gw2Client = new Gw2Client();
             RefreshClient();
 
-            this.Info            = new Info(this);
+            this.Info = new Info(this);
             this.PlayerCharacter = new PlayerCharacter(this);
-            this.PlayerCamera    = new PlayerCamera(this);
-            this.CurrentMap      = new CurrentMap(this);
-            this.UI              = new UI(this);
+            this.PlayerCamera = new PlayerCamera(this);
+            this.CurrentMap = new CurrentMap(this);
+            this.UI = new UI(this);
         }
 
         protected override void Initialize() { /* NOOP */ }
@@ -138,7 +138,7 @@ namespace Blish_HUD {
 
         private IGw2MumbleClient GetRawClient() {
             this.CurrentMumbleMapName = GetLinkName();
-            
+
             var client = _gw2Client.Mumble[this.CurrentMumbleMapName];
             client.Update(); // We update once to at least indicate that it's alive.
 

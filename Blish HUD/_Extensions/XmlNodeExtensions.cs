@@ -7,7 +7,7 @@ namespace Blish_HUD {
         public static string ToString(this XmlNode node, int indentation) {
             using (var sw = new StringWriter()) {
                 using (var xw = new XmlTextWriter(sw)) {
-                    xw.Formatting  = Formatting.Indented;
+                    xw.Formatting = Formatting.Indented;
                     xw.Indentation = indentation;
                     node.WriteContentTo(xw);
                 }

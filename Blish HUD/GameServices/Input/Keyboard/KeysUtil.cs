@@ -55,7 +55,7 @@ namespace Blish_HUD.Input {
                 if (_friendlyKeyNames.ContainsKey(key)) continue;
 
                 // 2 = MAPVK_VK_TO_CHAR and then we mask out the dead key indicator
-                uint mappedCharCode = MapVirtualKey((uint) key, 2) & 0x0FFFFFFF;
+                uint mappedCharCode = MapVirtualKey((uint)key, 2) & 0x0FFFFFFF;
 
                 char mappedChar;
 
@@ -126,14 +126,14 @@ namespace Blish_HUD.Input {
         /// </summary>
         public static (ModifierKeys, Keys) SplitToBindingPair(IEnumerable<Keys> keys) {
             var modifiers = ModifierKeys.None;
-            var key       = Keys.None;
+            var key = Keys.None;
 
             var firstModifier = Keys.None;
 
             foreach (var providedKey in keys) {
                 var modifier = ModifierKeyFromKey(providedKey);
 
-                if (modifier == ModifierKeys.None) { 
+                if (modifier == ModifierKeys.None) {
                     if (key == Keys.None) {
                         key = providedKey;
                     }

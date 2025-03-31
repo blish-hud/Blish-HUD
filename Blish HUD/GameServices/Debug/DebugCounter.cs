@@ -23,7 +23,7 @@ namespace Blish_HUD.Debug {
         private long _intervalStartOffset;
 
         private float? _calculatedAverage = null;
-        private long?  _calculatedTotal   = null;
+        private long? _calculatedTotal = null;
 
         public DebugCounter(int bufferLength) {
             _buffer = new RingBuffer<long>(bufferLength);
@@ -38,7 +38,7 @@ namespace Blish_HUD.Debug {
         public void EndInterval() {
             _buffer.PushValue(_sharedStopwatch.ElapsedMilliseconds - _intervalStartOffset);
             _calculatedAverage = null;
-            _calculatedTotal   = null;
+            _calculatedTotal = null;
         }
 
         public float GetAverage() {

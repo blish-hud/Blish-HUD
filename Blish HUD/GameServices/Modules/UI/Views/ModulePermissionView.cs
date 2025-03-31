@@ -12,7 +12,7 @@ namespace Blish_HUD.Modules.UI.Views {
         public event EventHandler<KeyedValueChangedEventArgs<TokenPermission, bool>> PermissionStateChanged;
 
         private FlowPanel _permissionFlowPanel;
-        private Label     _messageLabel;
+        private Label _messageLabel;
 
         private bool[] _checkboxStates;
 
@@ -45,21 +45,21 @@ namespace Blish_HUD.Modules.UI.Views {
             this.Title = Strings.GameServices.ModulesService.ModuleManagement_ApiPermissions;
 
             _permissionFlowPanel = new FlowPanel() {
-                Size                = buildPanel.ContentRegion.Size,
-                Visible             = false,
-                FlowDirection       = ControlFlowDirection.TopToBottom,
-                ControlPadding      = new Vector2(14, 1),
+                Size = buildPanel.ContentRegion.Size,
+                Visible = false,
+                FlowDirection = ControlFlowDirection.TopToBottom,
+                ControlPadding = new Vector2(14, 1),
                 OuterControlPadding = new Vector2(15, 13),
-                Parent              = buildPanel
+                Parent = buildPanel
             };
 
             _messageLabel = new Label() {
-                Size                = buildPanel.ContentRegion.Size,
+                Size = buildPanel.ContentRegion.Size,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Text                = Strings.GameServices.ModulesService.ApiPermission_NoPermissionsRequested,
-                StrokeText          = true,
-                Font                = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic),
-                Parent              = buildPanel
+                Text = Strings.GameServices.ModulesService.ApiPermission_NoPermissionsRequested,
+                StrokeText = true,
+                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Italic),
+                Parent = buildPanel
             };
         }
 
@@ -71,10 +71,10 @@ namespace Blish_HUD.Modules.UI.Views {
 
             foreach ((var permission, bool optional, string description, bool set) in permissions) {
                 var permissionCheckbox = new Checkbox() {
-                    Text             = permission.ToString(),
-                    Enabled          = optional && this.Editable,
+                    Text = permission.ToString(),
+                    Enabled = optional && this.Editable,
                     BasicTooltipText = description,
-                    Parent           = _permissionFlowPanel
+                    Parent = _permissionFlowPanel
                 };
 
                 permissionCheckbox.CheckedChanged += delegate (object sender, CheckChangedEvent e) {

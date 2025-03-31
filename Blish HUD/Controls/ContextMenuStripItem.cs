@@ -9,7 +9,7 @@ namespace Blish_HUD.Controls {
 
     public class ContextMenuStripItem : Control, ICheckable {
 
-        private const int BULLET_SIZE        = 18;
+        private const int BULLET_SIZE = 18;
         private const int HORIZONTAL_PADDING = 6;
 
         private const int TEXT_LEFTPADDING = HORIZONTAL_PADDING + BULLET_SIZE + HORIZONTAL_PADDING;
@@ -18,7 +18,7 @@ namespace Blish_HUD.Controls {
 
         private readonly AsyncTexture2D _textureBullet = AsyncTexture2D.FromAssetId(155038);
 
-        private static readonly Texture2D _textureArrow  = Content.GetTexture("context-menu-strip-submenu");
+        private static readonly Texture2D _textureArrow = Content.GetTexture("context-menu-strip-submenu");
 
         #endregion
 
@@ -54,7 +54,7 @@ namespace Blish_HUD.Controls {
                 }
             }
         }
-        
+
         public ContextMenuStripItem() {
             this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
         }
@@ -65,7 +65,7 @@ namespace Blish_HUD.Controls {
 
         public override void RecalculateLayout() {
             var textSize = GameService.Content.DefaultFont14.MeasureString(_text);
-            int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
+            int nWidth = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
 
             var parent = this.Parent;
 
@@ -104,7 +104,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            var modifierTint = this.Enabled 
+            var modifierTint = this.Enabled
                                    ? this.MouseOver
                                         ? StandardColors.Tinted
                                         : StandardColors.Default

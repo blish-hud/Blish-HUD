@@ -19,7 +19,7 @@ namespace Blish_HUD {
         public KeyboardHandler Keyboard { get; }
 
         internal InputService() {
-            this.Mouse    = new MouseHandler();
+            this.Mouse = new MouseHandler();
             this.Keyboard = new KeyboardHandler();
 
             if (ApplicationSettings.Instance.DebugEnabled) {
@@ -55,8 +55,8 @@ namespace Blish_HUD {
         protected override void Load() {
             _hookManager.Load();
             GameIntegration.Gw2Instance.Gw2AcquiredFocus += (s, e) => EnableHooks();
-            GameIntegration.Gw2Instance.Gw2LostFocus     += (s, e) => DisableHooks();
-            GameIntegration.Gw2Instance.Gw2Closed        += (s, e) => DisableHooks();
+            GameIntegration.Gw2Instance.Gw2LostFocus += (s, e) => DisableHooks();
+            GameIntegration.Gw2Instance.Gw2Closed += (s, e) => DisableHooks();
         }
 
         protected override void Unload() {

@@ -1,10 +1,8 @@
 using System.Runtime.InteropServices;
 
-namespace Blish_HUD.Controls.Extern
-{
+namespace Blish_HUD.Controls.Extern {
     [StructLayout(LayoutKind.Explicit)]
-    internal struct InputUnion
-    {
+    internal struct InputUnion {
         [FieldOffset(0)]
         internal MouseInput mi;
         [FieldOffset(0)]

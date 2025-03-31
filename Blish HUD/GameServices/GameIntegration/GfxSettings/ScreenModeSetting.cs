@@ -1,8 +1,8 @@
 ﻿namespace Blish_HUD.GameIntegration.GfxSettings {
     public readonly struct ScreenModeSetting {
 
-        private const string SETTING_WINDOWED           = "windowed";
-        private const string SETTING_FULLSCREEN         = "fullscreen";
+        private const string SETTING_WINDOWED = "windowed";
+        private const string SETTING_FULLSCREEN = "fullscreen";
         private const string SETTING_WINDOWEDFULLSCREEN = "windowed_fullscreen";
 
         private string Value { get; }
@@ -20,14 +20,14 @@
             };
         }
 
-        public override int  GetHashCode()      => this.Value.GetHashCode();
+        public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
         public static implicit operator string(ScreenModeSetting screenModeSetting) => screenModeSetting.Value;
-        public static implicit operator ScreenModeSetting(string value)             => new ScreenModeSetting(value);
+        public static implicit operator ScreenModeSetting(string value) => new ScreenModeSetting(value);
 
-        public static ScreenModeSetting Windowed           { get; } = new ScreenModeSetting(SETTING_WINDOWED);
-        public static ScreenModeSetting Fullscreen         { get; } = new ScreenModeSetting(SETTING_FULLSCREEN);
+        public static ScreenModeSetting Windowed { get; } = new ScreenModeSetting(SETTING_WINDOWED);
+        public static ScreenModeSetting Fullscreen { get; } = new ScreenModeSetting(SETTING_FULLSCREEN);
         public static ScreenModeSetting WindowedFullscreen { get; } = new ScreenModeSetting(SETTING_WINDOWEDFULLSCREEN);
 
     }

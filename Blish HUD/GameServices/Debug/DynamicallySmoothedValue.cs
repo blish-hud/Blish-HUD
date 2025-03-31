@@ -18,7 +18,7 @@ namespace Blish_HUD.Debug {
 
         private readonly Func<int> _getBufferLengthFunc;
 
-        private readonly Func<T, T, T>     _addExpression;
+        private readonly Func<T, T, T> _addExpression;
         private readonly Func<T, float, T> _divideExpression;
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Blish_HUD.Debug {
         public DynamicallySmoothedValue(int bufferMax, Func<int> getBufferLengthFunc = null) : base(bufferMax) {
             _getBufferLengthFunc = getBufferLengthFunc ?? (() => bufferMax);
 
-            _addExpression    = PrepareAddExpression<T>();
+            _addExpression = PrepareAddExpression<T>();
             _divideExpression = PrepareDivideExpression<T>();
         }
 

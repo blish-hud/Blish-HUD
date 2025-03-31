@@ -34,20 +34,20 @@ namespace Blish_HUD.Settings.UI.Views {
         private void UpdateBoundsLocking(bool locked) {
             if (_settingFlowPanel == null) return;
 
-            _settingFlowPanel.ShowBorder  = !locked;
+            _settingFlowPanel.ShowBorder = !locked;
             _settingFlowPanel.CanCollapse = !locked;
         }
 
         protected override void BuildSetting(Container buildPanel) {
             _settingFlowPanel = new FlowPanel() {
-                Size                = buildPanel.Size,
-                FlowDirection       = ControlFlowDirection.SingleTopToBottom,
-                ControlPadding      = new Vector2(5,  2),
+                Size = buildPanel.Size,
+                FlowDirection = ControlFlowDirection.SingleTopToBottom,
+                ControlPadding = new Vector2(5, 2),
                 OuterControlPadding = new Vector2(10, 15),
-                WidthSizingMode     = SizingMode.Fill,
-                HeightSizingMode    = SizingMode.AutoSize,
-                AutoSizePadding     = new Point(0, 15),
-                Parent              = buildPanel
+                WidthSizingMode = SizingMode.Fill,
+                HeightSizingMode = SizingMode.AutoSize,
+                AutoSizePadding = new Point(0, 15),
+                Parent = buildPanel
             };
 
             foreach (var setting in _settings.Where(s => s.SessionDefined)) {
@@ -55,9 +55,9 @@ namespace Blish_HUD.Settings.UI.Views {
 
                 if ((settingView = SettingView.FromType(setting, _settingFlowPanel.Width)) != null) {
                     _lastSettingContainer = new ViewContainer() {
-                        WidthSizingMode   = SizingMode.Fill,
-                        HeightSizingMode  = SizingMode.AutoSize,
-                        Parent            = _settingFlowPanel
+                        WidthSizingMode = SizingMode.Fill,
+                        HeightSizingMode = SizingMode.AutoSize,
+                        Parent = _settingFlowPanel
                     };
 
                     _lastSettingContainer.Show(settingView);

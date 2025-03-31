@@ -11,9 +11,9 @@ namespace Blish_HUD.Input {
 
         protected override void HookCallback(KeyboardEventMessage message) {
             KeyboardEventArgs keyboardEventArgs = new KeyboardEventArgs((KeyboardEventType)message.EventType, (Keys)message.Key);
-            bool              isHandled         = false;
+            bool isHandled = false;
 
-            lock (((IList) this.Handlers).SyncRoot) {
+            lock (((IList)this.Handlers).SyncRoot) {
                 foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
                     isHandled = handler(keyboardEventArgs);
                     if (isHandled) break;
@@ -21,7 +21,7 @@ namespace Blish_HUD.Input {
             }
 
             KeyboardResponseMessage response = new KeyboardResponseMessage {
-                Id        = message.Id,
+                Id = message.Id,
                 IsHandled = isHandled
             };
 
@@ -30,7 +30,7 @@ namespace Blish_HUD.Input {
 
         protected override void DummyHookCallback(KeyboardEventMessage message) {
             KeyboardResponseMessage response = new KeyboardResponseMessage {
-                Id        = message.Id,
+                Id = message.Id,
                 IsHandled = false
             };
 

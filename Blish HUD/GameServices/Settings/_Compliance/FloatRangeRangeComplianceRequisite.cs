@@ -1,6 +1,6 @@
 ﻿namespace Blish_HUD.Settings {
     public readonly struct FloatRangeRangeComplianceRequisite : INumericRangeComplianceRequisite<float> {
-        
+
         public float MinValue { get; }
         public float MaxValue { get; }
 

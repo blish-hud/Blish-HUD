@@ -25,7 +25,7 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void BuildSetting(Container buildPanel) {
             _boolCheckbox = new Checkbox() {
                 Location = new Point(CONTROL_PADDING),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             _boolCheckbox.CheckedChanged += BoolCheckboxOnCheckedChanged;

@@ -108,22 +108,22 @@ namespace Blish_HUD.Controls {
                         e.ChangedChild.Top = lastItem.Bottom;
                     }
                 };
-                
+
                 e.ChangedChild.Top = lastItem.Bottom;
             }
 
             ShouldShift = e.ResultingChildren.Any(mi => {
-                                                      MenuItem cmi = (MenuItem) mi;
+                MenuItem cmi = (MenuItem)mi;
 
-                                                      return cmi.CanCheck || cmi.Icon != null || cmi.Children.Any();
-                                                  });
+                return cmi.CanCheck || cmi.Icon != null || cmi.Children.Any();
+            });
 
             base.OnChildAdded(e);
         }
 
         public MenuItem AddMenuItem(string text, Texture2D icon = null) {
             return new MenuItem(text) {
-                Icon   = icon,
+                Icon = icon,
                 Parent = this
             };
         }

@@ -7,11 +7,11 @@ namespace Blish_HUD.Overlay.UI.Views {
 
         protected override void Build(Container buildPanel) {
             var rootPanel = new FlowPanel() {
-                WidthSizingMode  = SizingMode.Fill,
+                WidthSizingMode = SizingMode.Fill,
                 HeightSizingMode = SizingMode.Fill,
-                FlowDirection    = ControlFlowDirection.SingleTopToBottom,
-                CanScroll        = true,
-                Parent           = buildPanel
+                FlowDirection = ControlFlowDirection.SingleTopToBottom,
+                CanScroll = true,
+                Parent = buildPanel
             };
 
             BuildOverlaySettings(rootPanel);
@@ -19,11 +19,11 @@ namespace Blish_HUD.Overlay.UI.Views {
 
         private ViewContainer GetStandardPanel(Panel rootPanel, string title) {
             return new ViewContainer() {
-                WidthSizingMode  = SizingMode.Fill,
+                WidthSizingMode = SizingMode.Fill,
                 HeightSizingMode = SizingMode.AutoSize,
-                Title            = title,
-                ShowBorder       = true,
-                Parent           = rootPanel
+                Title = title,
+                ShowBorder = true,
+                Parent = rootPanel
             };
         }
 

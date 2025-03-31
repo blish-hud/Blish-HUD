@@ -46,8 +46,8 @@ namespace Blish_HUD.Controls {
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Insert,
-                Index         = where,
-                Length        = length
+                Index = where,
+                Length = length
             });
         }
 
@@ -56,9 +56,9 @@ namespace Blish_HUD.Controls {
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Delete,
-                Index         = where,
-                Length        = length,
-                Data          = text.Substring(where, length)
+                Index = where,
+                Length = length,
+                Data = text.Substring(where, length)
             });
         }
 
@@ -67,9 +67,9 @@ namespace Blish_HUD.Controls {
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Replace,
-                Index         = where,
-                Length        = newLength,
-                Data          = text.Substring(where, length)
+                Index = where,
+                Length = newLength,
+                Data = text.Substring(where, length)
             });
         }
 

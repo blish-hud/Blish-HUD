@@ -8,18 +8,18 @@ namespace Blish_HUD.Modules.UI.Views {
 
         protected override void Build(Container buildPanel) {
             var info = new Label() {
-                Size                = buildPanel.Size / new Point(1, 2),
-                Parent              = buildPanel,
-                Text                = Strings.GameServices.ModulesService.NoModules_Info,
+                Size = buildPanel.Size / new Point(1, 2),
+                Parent = buildPanel,
+                Text = Strings.GameServices.ModulesService.NoModules_Info,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment   = VerticalAlignment.Middle,
-                Font                = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Italic),
+                VerticalAlignment = VerticalAlignment.Middle,
+                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Italic),
             };
 
             var openDir = new StandardButton() {
-                Text     = Strings.GameServices.ModulesService.NoModules_OpenFolder,
-                Parent   = buildPanel,
-                Width    = 200,
+                Text = Strings.GameServices.ModulesService.NoModules_OpenFolder,
+                Parent = buildPanel,
+                Width = 200,
                 Location = new Point(buildPanel.Size.X / 2 - 100, info.Bottom - 100),
             };
 

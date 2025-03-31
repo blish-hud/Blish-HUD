@@ -15,11 +15,11 @@ namespace Blish_HUD.Controls {
 
         private class ControlEnumerator<TEnum> : IEnumerator<TEnum> {
 
-            private readonly IEnumerator<TEnum>   _inner;
+            private readonly IEnumerator<TEnum> _inner;
             private readonly ReaderWriterLockSlim _rwLock;
 
             public ControlEnumerator(IEnumerator<TEnum> inner, ReaderWriterLockSlim rwLock) {
-                _inner  = inner;
+                _inner = inner;
                 _rwLock = rwLock;
             }
 
@@ -41,7 +41,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private readonly List<T>              _innerList;
+        private readonly List<T> _innerList;
         private readonly ReaderWriterLockSlim _listLock = new ReaderWriterLockSlim();
 
         public bool IsReadOnly => false;
@@ -71,7 +71,7 @@ namespace Blish_HUD.Controls {
 
         public void Add(T item) {
             if (this.Contains(item) || item == null) return;
-            
+
             if (!_listLock.IsWriteLockHeld)
                 _listLock.EnterWriteLock();
             _innerList.Add(item);
@@ -95,7 +95,7 @@ namespace Blish_HUD.Controls {
             _innerList.Clear();
             this.IsEmpty = true;
             _listLock.ExitWriteLock();
-            
+
             foreach (var item in oldItems) {
                 item.Parent = null;
             }

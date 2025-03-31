@@ -12,7 +12,7 @@ namespace Blish_HUD.Content.Serialization {
 
         /// <inheritdoc />
         public override Version ReadJson(JsonReader reader, Type objectType, Version existingValue, bool hasExistingValue, JsonSerializer serializer) {
-             return new SemVer.Version((string)reader.Value, true);
+            return new SemVer.Version((string)reader.Value, true);
         }
 
     }

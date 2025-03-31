@@ -11,11 +11,11 @@ namespace Blish_HUD.DebugHelper.Services {
 
         private readonly IMessageService messageService;
         private readonly User32.HOOKPROC hookProc; // Store the callback delegate, otherwise it might get garbage collected
-        private          IntPtr          hook;
+        private IntPtr hook;
 
         public MouseHookService(IMessageService messageService) {
             this.messageService = messageService;
-            hookProc            = HookCallback;
+            hookProc = HookCallback;
         }
 
         public void Start() {
@@ -30,16 +30,16 @@ namespace Blish_HUD.DebugHelper.Services {
         private int HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
             if (nCode != 0) return User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
 
-            int               eventType  = (int)wParam;
+            int eventType = (int)wParam;
             MOUSELLHOOKSTRUCT hookStruct = Marshal.PtrToStructure<MOUSELLHOOKSTRUCT>(lParam);
 
             var message = new MouseEventMessage {
                 EventType = eventType,
-                PointX    = hookStruct.pt.x,
-                PointY    = hookStruct.pt.y,
+                PointX = hookStruct.pt.x,
+                PointY = hookStruct.pt.y,
                 MouseData = hookStruct.mouseData,
-                Flags     = hookStruct.flags,
-                Time      = hookStruct.time,
+                Flags = hookStruct.flags,
+                Time = hookStruct.time,
                 ExtraInfo = hookStruct.extraInfo
             };
 

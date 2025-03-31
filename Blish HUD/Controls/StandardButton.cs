@@ -10,20 +10,20 @@ namespace Blish_HUD.Controls {
     public class StandardButton : LabelBase {
 
         public const int STANDARD_CONTROL_HEIGHT = 26;
-        public const int DEFAULT_CONTROL_WIDTH   = 128;
+        public const int DEFAULT_CONTROL_WIDTH = 128;
 
-        private const int ICON_SIZE        = 16;
+        private const int ICON_SIZE = 16;
         private const int ICON_TEXT_OFFSET = 4;
 
-        private const int ATLAS_SPRITE_WIDTH  = 350;
+        private const int ATLAS_SPRITE_WIDTH = 350;
         private const int ATLAS_SPRITE_HEIGHT = 20;
 
-        private const int   ANIM_FRAME_COUNT = 8;
-        private const float ANIM_FRAME_TIME  = 0.25f;
+        private const int ANIM_FRAME_COUNT = 8;
+        private const float ANIM_FRAME_TIME = 0.25f;
 
         #region Load Static
 
-        private static readonly Texture2D _textureButtonIdle   = Content.GetTexture(@"common/button-states");
+        private static readonly Texture2D _textureButtonIdle = Content.GetTexture(@"common/button-states");
         private static readonly Texture2D _textureButtonBorder = Content.GetTexture("button-border");
 
         #endregion
@@ -66,9 +66,9 @@ namespace Blish_HUD.Controls {
         private Tween _animOut;
 
         public StandardButton() {
-            _textColor           = Color.Black;
+            _textColor = Color.Black;
             _horizontalAlignment = HorizontalAlignment.Left;
-            _verticalAlignment   = VerticalAlignment.Middle;
+            _verticalAlignment = VerticalAlignment.Middle;
 
             this.Size = new Point(DEFAULT_CONTROL_WIDTH, STANDARD_CONTROL_HEIGHT);
         }
@@ -137,7 +137,7 @@ namespace Blish_HUD.Controls {
                                        _textureButtonIdle,
                                        new Rectangle(3, 3, _size.X - 6, _size.Y - 5),
                                        new Rectangle(this.AnimationState * ATLAS_SPRITE_WIDTH, 0, ATLAS_SPRITE_WIDTH, ATLAS_SPRITE_HEIGHT));
-            } else { 
+            } else {
                 // TODO: Use the actual button texture instead
                 spriteBatch.DrawOnCtrl(this,
                                        ContentService.Textures.Pixel,
@@ -149,19 +149,19 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this,
                                    _textureButtonBorder,
                                    new Rectangle(2, 0, this.Width - 5, 4),
-                                   new Rectangle(0, 0, 1,              4));
+                                   new Rectangle(0, 0, 1, 4));
 
             // Right Shadow
             spriteBatch.DrawOnCtrl(this,
                                    _textureButtonBorder,
                                    new Rectangle(this.Width - 4, 2, 4, this.Height - 3),
-                                   new Rectangle(0,              1, 4, 1));
+                                   new Rectangle(0, 1, 4, 1));
 
             // Bottom Shadow
             spriteBatch.DrawOnCtrl(this,
                                    _textureButtonBorder,
                                    new Rectangle(3, this.Height - 4, this.Width - 6, 4),
-                                   new Rectangle(1, 0,               1,              4));
+                                   new Rectangle(1, 0, 1, 4));
 
             // Left Shadow
             spriteBatch.DrawOnCtrl(this,

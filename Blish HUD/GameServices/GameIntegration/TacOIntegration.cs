@@ -7,8 +7,8 @@ namespace Blish_HUD.GameIntegration {
 
         private static readonly Logger Logger = Logger.GetLogger<TacOIntegration>();
 
-        private const string TACO_PROCESS   = "GW2TacO";
-        private const int    CHECK_INTERVAL = 3000;
+        private const string TACO_PROCESS = "GW2TacO";
+        private const int CHECK_INTERVAL = 3000;
 
         private double _timeSinceCheck;
 

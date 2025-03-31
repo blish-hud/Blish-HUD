@@ -18,27 +18,27 @@ using Matrix = Microsoft.Xna.Framework.Matrix;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
-    public class GraphicsService:GameService {
+    public class GraphicsService : GameService {
 
         private const string GRAPHICS_SETTINGS = "GraphicsConfiguration";
 
         private const int TARGET_MAX_FRAMETIME = 14;
-        private const int MIN_QUEUED_RENDERS   = 1;
+        private const int MIN_QUEUED_RENDERS = 1;
 
         private static readonly Point MinimumUnscaledGameResolution = new Point(1024, 768);
 
         #region Load Static
 
         private static readonly Screen _spriteScreen;
-        private static readonly World  _world;
+        private static readonly World _world;
         private static readonly uint _legacyDpi;
 
         static GraphicsService() {
             _spriteScreen = new Screen();
-            _world        = new World(GameService.Gw2Mumble.PlayerCamera);
-            _legacyDpi    = GetDpiLegacy();
+            _world = new World(GameService.Gw2Mumble.PlayerCamera);
+            _legacyDpi = GetDpiLegacy();
 
-            GameService.Gw2Mumble.FinishedLoading += delegate(object sender, EventArgs args) {
+            GameService.Gw2Mumble.FinishedLoading += delegate (object sender, EventArgs args) {
                 _world.Camera = GameService.Gw2Mumble.PlayerCamera;
             };
         }
@@ -102,8 +102,7 @@ namespace Blish_HUD {
                 Marshal.ThrowExceptionForHR(hr);
 
                 return dpiY;
-            }
-            catch {
+            } catch {
                 return _legacyDpi;
             }
 
@@ -144,20 +143,20 @@ namespace Blish_HUD {
         public float GetDpiScaleRatio() {
             if (this.DpiScalingMethod == DpiMethod.UseGameDpi
                  || this.DpiScalingMethod == DpiMethod.SyncWithGame && GameIntegration.GfxSettings.DpiScaling.GetValueOrDefault()) {
-                    uint dpi = GetDpi();
+                uint dpi = GetDpi();
 
-                    // If DPI is 0 then the window handle is likely not valid
-                    return dpi != 0
-                               ? dpi / 96f
-                               : 1f;
+                // If DPI is 0 then the window handle is likely not valid
+                return dpi != 0
+                           ? dpi / 96f
+                           : 1f;
             }
 
             return 1f;
         }
 
-        public  Matrix UIScaleTransform { get; private set; } = Matrix.Identity;
+        public Matrix UIScaleTransform { get; private set; } = Matrix.Identity;
 
-        public  float UIScaleMultiplier { get; private set; } = 1f;
+        public float UIScaleMultiplier { get; private set; } = 1f;
 
         public Screen SpriteScreen => _spriteScreen;
 
@@ -168,17 +167,17 @@ namespace Blish_HUD {
         [Obsolete("To ensure exclusive use of the graphics device use GameService.Graphics.LendGraphicsDevice().", true)]
         public GraphicsDevice GraphicsDevice => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
 
-        public int WindowWidth  => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Width;
+        public int WindowWidth => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Width;
         public int WindowHeight => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Height;
 
-        public  float AspectRatio { get; private set; }
+        public float AspectRatio { get; private set; }
 
         public SettingCollection GraphicsSettings { get; private set; }
 
         private SettingEntry<FramerateMethod> _frameLimiterSetting;
-        private SettingEntry<bool>            _smoothCharacterPositionSetting;
-        private SettingEntry<DpiMethod>       _dpiScalingMethodSetting;
-        private SettingEntry<ManualUISize>    _UISizeSetting;
+        private SettingEntry<bool> _smoothCharacterPositionSetting;
+        private SettingEntry<DpiMethod> _dpiScalingMethodSetting;
+        private SettingEntry<ManualUISize> _UISizeSetting;
 
         public FramerateMethod FrameLimiter {
             get => ApplicationSettings.Instance.TargetFramerate > 0
@@ -207,11 +206,11 @@ namespace Blish_HUD {
                 if (!this.Resolution.Equals(value)) {
                     try {
                         using (var ctx = GameService.Graphics.LendGraphicsDeviceContext()) {
-                            BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
+                            BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth = value.X;
                             BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
                             BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
                         }
-                        
+
                         // Exception would be from the code above, but don't update our
                         // scaling if there is an exception
                         ScreenSizeUpdated(value);
@@ -279,7 +278,7 @@ namespace Blish_HUD {
                                                                      ManualUISize.SyncWithGame,
                                                                      () => Strings.GameServices.GraphicsService.Setting_UIScaling_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_UIScaling_Description);
-            
+
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
             FrameLimiterSettingMethodChanged(_frameLimiterSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
 
@@ -329,8 +328,8 @@ namespace Blish_HUD {
             }
         }
 
-        private readonly object _lendLockLow    = new object();
-        private readonly object _lendLockNext   = new object();
+        private readonly object _lendLockLow = new object();
+        private readonly object _lendLockNext = new object();
         private readonly object _lendLockDevice = new object();
 
         /// <summary>
@@ -416,7 +415,7 @@ namespace Blish_HUD {
             _renderTimer.Restart();
 
             using GraphicsDeviceContext ctx = this.LendGraphicsDeviceContext();
-            
+
             if (_renderTimer.ElapsedMilliseconds > 1) {
                 Logger.Debug($"Render thread stalled for {_renderTimer.ElapsedMilliseconds} ms.");
             }

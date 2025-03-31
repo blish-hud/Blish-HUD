@@ -36,8 +36,8 @@ namespace Blish_HUD.Content {
         }
 
         /// <inheritdoc cref="Texture2D.Width"/>
-        public int Width => this.HasTexture 
-                                ? _activeTexture2D.Width 
+        public int Width => this.HasTexture
+                                ? _activeTexture2D.Width
                                 : throw new InvalidOperationException($"{nameof(AsyncTexture2D)} object must have a Texture.");
 
         /// <inheritdoc cref="Texture2D.Height"/>
@@ -91,7 +91,7 @@ namespace Blish_HUD.Content {
         private void ApplyTextureSwap(GameTime gameTime) {
             var previousTexture2D = _activeTexture2D;
             _activeTexture2D = _stagedTexture2D;
-            this.HasSwapped  = true;
+            this.HasSwapped = true;
             _stagedTexture2D = null;
             this.TextureSwapped?.Invoke(this, new ValueChangedEventArgs<Texture2D>(previousTexture2D, _activeTexture2D));
         }

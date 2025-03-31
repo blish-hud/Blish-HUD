@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 namespace Blish_HUD.Graphics.UI {
     public abstract class Presenter<TView, TModel> : IPresenter<TView> where TView : class, IView {
 
-        private readonly TView  _view;
+        private readonly TView _view;
         private readonly TModel _model;
 
         /// <inheritdoc cref="IPresenter{TView}.View"/>
-        public TView View  => _view;
+        public TView View => _view;
 
         /// <summary>
         /// The model this <see cref="Presenter{TView,TModel}"/> will use to determine
@@ -17,7 +17,7 @@ namespace Blish_HUD.Graphics.UI {
         public TModel Model => _model;
 
         protected Presenter(TView view, TModel model) {
-            _view  = view;
+            _view = view;
             _model = model;
         }
 

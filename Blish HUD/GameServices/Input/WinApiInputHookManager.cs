@@ -10,7 +10,7 @@ namespace Blish_HUD.Input {
         private static readonly Logger Logger = Logger.GetLogger<WinApiMouseHookManager>();
 
         private readonly HookExtern.HookCallbackDelegate _hookProc; // Store the callback delegate, otherwise it might get garbage collected
-        private          IntPtr                          _hook;
+        private IntPtr _hook;
 
 
         protected WinApiInputHookManager() {

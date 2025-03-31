@@ -11,7 +11,7 @@ namespace Blish_HUD.Debug {
             get => _texts[key];
             set => _texts[key] = value;
         }
-        public ICollection<string>                 Keys   => _texts.Keys;
+        public ICollection<string> Keys => _texts.Keys;
         public ICollection<Func<GameTime, string>> Values => _texts.Values;
 
         private readonly ConcurrentDictionary<string, Func<GameTime, string>> _texts = new ConcurrentDictionary<string, Func<GameTime, string>>();

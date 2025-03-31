@@ -27,7 +27,7 @@ namespace Blish_HUD.Settings.UI.Views {
             };
 
             buildPanel.HeightSizingMode = SizingMode.AutoSize;
-            buildPanel.WidthSizingMode  = SizingMode.AutoSize;
+            buildPanel.WidthSizingMode = SizingMode.AutoSize;
 
             _keybindingAssigner.BindingChanged += KeybindingAssignerOnBindingChanged;
         }

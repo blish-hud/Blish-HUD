@@ -522,7 +522,7 @@ namespace Blish_HUD.Controls {
 
                 if (parent == null) return this.LocalBounds;
 
-                var parentBounds        = parent.AbsoluteBounds;
+                var parentBounds = parent.AbsoluteBounds;
                 var parentContentRegion = parent.ContentRegion;
 
                 // Clean this up
@@ -702,10 +702,10 @@ namespace Blish_HUD.Controls {
 
         // TODO: Not sure if these are needed anymore since GameServices are much easier to reference now
         // Aliases to make life easier
-        protected static ContentService   Content   => GameService.Content;
-        protected static InputService     Input     => GameService.Input;
+        protected static ContentService Content => GameService.Content;
+        protected static InputService Input => GameService.Input;
         protected static AnimationService Animation => GameService.Animation;
-        protected static GraphicsService  Graphics  => GameService.Graphics;
+        protected static GraphicsService Graphics => GameService.Graphics;
 
         protected Control() {
             // TODO: This needs to get handled by the menustrip itself, not by the control
@@ -721,7 +721,7 @@ namespace Blish_HUD.Controls {
 
             this.Menu.Show(Input.Mouse.Position);
         }
-        
+
         /// <summary>
         /// Avoid overriding <see cref="Invalidate"/> as it has the potential to be called multiple times prior to a render taking place.
         /// </summary>
@@ -782,7 +782,7 @@ namespace Blish_HUD.Controls {
         public virtual void RecalculateLayout() {
             /* NOOP */
         }
-        
+
         protected float AbsoluteOpacity(bool isInternal) {
             var parent = this.Parent;
 
@@ -801,7 +801,7 @@ namespace Blish_HUD.Controls {
         /// Specifies which type of input this <see cref="Control"/> accepts, possibly blocks from other <see cref="Control"/>s, and prevents the game from seeing.
         /// </summary>
         public CaptureType Captures => CapturesInput();
-        
+
         /// <summary>
         /// Override to specify which type of input this <see cref="Control"/> accepts or intercepts.
         /// </summary>
@@ -905,7 +905,7 @@ namespace Blish_HUD.Controls {
             this.EffectBehind?.Draw(spriteBatch, drawBounds);
 
             spriteBatch.Begin(this.SpriteBatchParameters);
-                
+
             // Draw background
             if (_backgroundColor != Color.Transparent)
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, drawBounds, _backgroundColor);
@@ -934,26 +934,26 @@ namespace Blish_HUD.Controls {
                     this.Disposed?.Invoke(this, EventArgs.Empty);
 
                     // Unassociate any subcontrols
-                    this.EffectBehind  = null;
+                    this.EffectBehind = null;
                     this.EffectInFront = null;
 
                     // Disconnect all existing event handlers
-                    this.LeftMouseButtonPressed   = null;
-                    this.LeftMouseButtonReleased  = null;
-                    this.MouseMoved               = null;
-                    this.RightMouseButtonPressed  = null;
+                    this.LeftMouseButtonPressed = null;
+                    this.LeftMouseButtonReleased = null;
+                    this.MouseMoved = null;
+                    this.RightMouseButtonPressed = null;
                     this.RightMouseButtonReleased = null;
-                    this.MouseWheelScrolled       = null;
-                    this.MouseEntered             = null;
-                    this.MouseLeft                = null;
-                    this.Click                    = null;
+                    this.MouseWheelScrolled = null;
+                    this.MouseEntered = null;
+                    this.MouseLeft = null;
+                    this.Click = null;
 
-                    this.Resized         = null;
-                    this.Moved           = null;
-                    this.Disposed        = null;
+                    this.Resized = null;
+                    this.Moved = null;
+                    this.Disposed = null;
                     this.PropertyChanged = null;
 
-                    this.Shown  = null;
+                    this.Shown = null;
                     this.Hidden = null;
 
                     // Cancel any animations that were currently running on this object
@@ -1017,10 +1017,10 @@ namespace Blish_HUD.Controls {
         #region Helper Classes
         private readonly struct SuspendLayoutScope : IDisposable {
             private readonly Control _owner;
-            private readonly bool    _forceRecalculate;
+            private readonly bool _forceRecalculate;
 
             public SuspendLayoutScope(Control owner, bool forceRecalculate = false) {
-                _owner            = owner;
+                _owner = owner;
                 _forceRecalculate = forceRecalculate;
                 _owner.SuspendLayout();
             }

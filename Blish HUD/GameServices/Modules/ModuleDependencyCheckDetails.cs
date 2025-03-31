@@ -10,9 +10,9 @@ namespace Blish_HUD.Modules {
         public ModuleManager Module { get; }
 
         public ModuleDependencyCheckDetails(ModuleDependency dependency, ModuleDependencyCheckResult checkResult, ModuleManager module = null) {
-            this.Dependency  = dependency;
+            this.Dependency = dependency;
             this.CheckResult = checkResult;
-            this.Module      = module;
+            this.Module = module;
         }
 
         public string GetDisplayName() {

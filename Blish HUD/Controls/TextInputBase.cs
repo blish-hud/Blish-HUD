@@ -192,8 +192,8 @@ namespace Blish_HUD.Controls {
 
         /// Get state of modifier keys
         protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
-        protected bool IsCtrlDown  => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
-        protected bool IsAltDown   => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
+        protected bool IsCtrlDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
+        protected bool IsAltDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
 
         protected bool _multiline;
         protected bool _caretVisible;
@@ -201,8 +201,8 @@ namespace Blish_HUD.Controls {
         protected bool _cursorDragging;
 
         private TimeSpan _lastInvalidate;
-        private bool     _insertMode;
-        private bool     _suppressRedoStackReset;
+        private bool _insertMode;
+        private bool _suppressRedoStackReset;
 
         private readonly UndoRedoStack _undoStack = new UndoRedoStack();
         private readonly UndoRedoStack _redoStack = new UndoRedoStack();
@@ -210,7 +210,7 @@ namespace Blish_HUD.Controls {
         private readonly Dictionary<Keys, KeyRepeatState> _keyRepeatStates;
 
         public TextInputBase() {
-            _lastInvalidate  = DateTime.MinValue.TimeOfDay;
+            _lastInvalidate = DateTime.MinValue.TimeOfDay;
             _keyRepeatStates = new Dictionary<Keys, KeyRepeatState>();
         }
 
@@ -295,9 +295,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void ReplaceAll(string value) {
-            Replace(0, 
-                    string.IsNullOrEmpty(value) 
-                        ? 0 
+            Replace(0,
+                    string.IsNullOrEmpty(value)
+                        ? 0
                         : value.Length,
                     value);
         }
@@ -425,7 +425,7 @@ namespace Blish_HUD.Controls {
 
         protected void SelectAll() {
             this.SelectionStart = 0;
-            this.SelectionEnd   = _text.Length;
+            this.SelectionEnd = _text.Length;
         }
 
         protected float MeasureStringWidth(string text) {
@@ -589,7 +589,7 @@ namespace Blish_HUD.Controls {
         protected virtual void HandleCopy() {
             if (_selectionEnd != _selectionStart) {
                 int selectStart = Math.Min(_selectionStart, _selectionEnd);
-                int selectEnd   = Math.Max(_selectionStart, _selectionEnd);
+                int selectEnd = Math.Max(_selectionStart, _selectionEnd);
 
                 string clipboardText = _text.Substring(selectStart, selectEnd - selectStart);
 
@@ -707,15 +707,15 @@ namespace Blish_HUD.Controls {
 
         private void UpdateFocusState(bool focused) {
             if (focused) {
-                Input.Mouse.LeftMouseButtonPressed  += OnGlobalMouseLeftMouseButtonPressed;
+                Input.Mouse.LeftMouseButtonPressed += OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
-                Input.Keyboard.KeyStateChanged      += OnGlobalKeyboardKeyStateChanged;
+                Input.Keyboard.KeyStateChanged += OnGlobalKeyboardKeyStateChanged;
 
                 GameService.Input.Keyboard.SetTextInputListner(OnTextInput);
             } else {
-                Input.Mouse.LeftMouseButtonPressed  -= OnGlobalMouseLeftMouseButtonPressed;
+                Input.Mouse.LeftMouseButtonPressed -= OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseLeftMouseButtonReleased;
-                Input.Keyboard.KeyStateChanged      -= OnGlobalKeyboardKeyStateChanged;
+                Input.Keyboard.KeyStateChanged -= OnGlobalKeyboardKeyStateChanged;
 
                 GameService.Input.Keyboard.UnsetTextInputListner(OnTextInput);
 
@@ -808,7 +808,7 @@ namespace Blish_HUD.Controls {
 
                 if (_cursorMoved) {
                     _lastInvalidate = gameTime.TotalGameTime;
-                    _cursorMoved    = false;
+                    _cursorMoved = false;
                 }
 
                 // Repeat pressed keys

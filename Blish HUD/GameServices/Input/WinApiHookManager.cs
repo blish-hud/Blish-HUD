@@ -8,15 +8,15 @@ namespace Blish_HUD.Input {
 
         private static readonly Logger Logger = Logger.GetLogger<WinApiHookManager>();
 
-        private readonly IMouseHookManager    mouseHookManager;
+        private readonly IMouseHookManager mouseHookManager;
         private readonly IKeyboardHookManager keyboardHookManager;
-        private readonly AutoResetEvent       inputHookEvent = new AutoResetEvent(false);
-        private          bool                 stopRequested  = false;
-        private          Thread               thread;
-        private          bool                 inputSuccessful = false;
+        private readonly AutoResetEvent inputHookEvent = new AutoResetEvent(false);
+        private bool stopRequested = false;
+        private Thread thread;
+        private bool inputSuccessful = false;
 
         public WinApiHookManager() {
-            mouseHookManager    = new WinApiMouseHookManager();
+            mouseHookManager = new WinApiMouseHookManager();
             keyboardHookManager = new WinApiKeyboardHookManager();
         }
 
@@ -49,7 +49,7 @@ namespace Blish_HUD.Input {
             thread.Join();
 
             stopRequested = false;
-            thread        = null;
+            thread = null;
         }
 
         public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.RegisterHandler(handleMouseInputCallback); }

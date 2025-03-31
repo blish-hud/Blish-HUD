@@ -13,9 +13,9 @@ namespace Blish_HUD.Input {
             if (nCode != 0) return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
 
             MouseEventArgs mouseEventArgs = new MouseEventArgs((MouseEventType)wParam, Marshal.PtrToStructure<MouseLLHookStruct>(lParam));
-            bool           isHandled      = false;
+            bool isHandled = false;
 
-            lock (((IList) this.Handlers).SyncRoot) {
+            lock (((IList)this.Handlers).SyncRoot) {
                 foreach (HandleMouseInputDelegate handler in this.Handlers) {
                     isHandled = handler(mouseEventArgs);
                     if (isHandled) break;

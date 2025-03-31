@@ -50,7 +50,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             foreach (var option in this.Model.GetExtraOptions()) {
                 var menuItem = this.View.SettingsMenu.AddMenuItem(option.OptionName);
                 menuItem.CanCheck = option.IsToggle;
-                menuItem.Checked  = option.IsChecked;
+                menuItem.Checked = option.IsChecked;
                 menuItem.Click += delegate {
                     option.OptionAction(menuItem.Checked);
 
@@ -65,7 +65,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         /// <param name="moduleNamespace">The namespace of the module to get the installed version of.</param>
         /// <returns>The currently installed module version or null if module is not installed.</returns>
         private SemVer.Version GetCurrentModuleVersion(string moduleNamespace) {
-            return GameService.Module.Modules.FirstOrDefault(m => m.Manifest.Namespace == moduleNamespace)?.Manifest?.Version;  
+            return GameService.Module.Modules.FirstOrDefault(m => m.Manifest.Namespace == moduleNamespace)?.Manifest?.Version;
         }
 
         private void UpdatePackagesView() {
@@ -85,11 +85,11 @@ namespace Blish_HUD.Modules.UI.Presenters {
                                             }) // Modules with update at top
                                             .ThenBy(pkgs => pkgs.Last().Name)) {
                 var nPanel = new ViewContainer {
-                    Size             = new Point(this.View.RepoFlowPanel.Width - 25, 64),
-                    ShowTint         = (s = !s),
-                    Parent           = this.View.RepoFlowPanel,
+                    Size = new Point(this.View.RepoFlowPanel.Width - 25, 64),
+                    ShowTint = (s = !s),
+                    Parent = this.View.RepoFlowPanel,
                     HeightSizingMode = SizingMode.AutoSize,
-                    AutoSizePadding  = new Point(0, 5)
+                    AutoSizePadding = new Point(0, 5)
                 };
 
                 nPanel.Show(new ManagePkgView(pkgManifest));

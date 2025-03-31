@@ -69,7 +69,7 @@ namespace Blish_HUD.Controls {
 
         protected Point _contentBounds = Point.Zero;
         public Point ContentBounds => _contentBounds;
-        
+
         private int _verticalScrollOffset;
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Blish_HUD.Controls {
             get => _heightSizingMode;
             set => SetProperty(ref _heightSizingMode, value);
         }
-        
+
         private Point _autoSizePadding = Point.Zero;
 
         /// <summary>
@@ -211,14 +211,14 @@ namespace Blish_HUD.Controls {
         }
 
         public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            Control thisResult  = null;
+            Control thisResult = null;
             Control childResult = null;
 
             if (CapturesInput() != CaptureType.None) {
                 thisResult = base.TriggerMouseInput(mouseEventType, ms);
             }
 
-            List<Control>               children        = _children.ToList();
+            List<Control> children = _children.ToList();
             IOrderedEnumerable<Control> zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
 
             foreach (var childControl in zSortedChildren) {
@@ -262,14 +262,14 @@ namespace Blish_HUD.Controls {
 
             // Update our size based on the sizing mode
             var parent = this.Parent;
-            if (parent != null) { 
+            if (parent != null) {
                 this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
                                                       this.Width,
-                                                      _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
+                                                      _contentBounds.X + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
                                                       parent.ContentRegion.Width - this.Left),
                                       GetUpdatedSizing(this.HeightSizingMode,
                                                       this.Height,
-                                                      _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
+                                                      _contentBounds.Y + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
                                                       parent.ContentRegion.Height - this.Top));
             }
 
@@ -304,7 +304,7 @@ namespace Blish_HUD.Controls {
 
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
             var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
-            
+
             var zSortedChildren = _children.ToArray().OrderBy(i => i.ZIndex);
 
             // Render each visible child

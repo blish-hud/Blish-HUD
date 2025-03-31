@@ -12,7 +12,7 @@ namespace Blish_HUD.Debug {
             public Action OnClick { get; }
 
             public PopupButton(string text, Action onClick) {
-                this.Text    = text;
+                this.Text = text;
                 this.OnClick = onClick;
             }
 
@@ -29,9 +29,9 @@ namespace Blish_HUD.Debug {
         public ContingencyPopup(string title, string description, string troubleshootingUrl, IEnumerable<PopupButton> buttons = null) {
             InitializeComponent();
 
-            this.Text                = title;
+            this.Text = title;
             this.LblDescription.Text = description;
-            this.TroubleshootingUrl  = troubleshootingUrl;
+            this.TroubleshootingUrl = troubleshootingUrl;
 
             if (buttons != null) {
                 foreach (var button in buttons) {

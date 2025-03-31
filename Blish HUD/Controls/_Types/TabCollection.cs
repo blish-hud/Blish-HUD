@@ -32,7 +32,7 @@ namespace Blish_HUD.Controls {
                 tab.OrderPriority = _tabs.Count;
             }
 
-            _tabs = new List<Tab>(_tabs.Concat(new []{ tab }).OrderBy(t => t.OrderPriority));
+            _tabs = new List<Tab>(_tabs.Concat(new[] { tab }).OrderBy(t => t.OrderPriority));
 
             if (_tabs.Count == 1) {
                 _owner.SelectedTab = tab;
@@ -75,7 +75,7 @@ namespace Blish_HUD.Controls {
             return null;
         }
 
-        public int  Count      => _tabs.Count;
+        public int Count => _tabs.Count;
         public bool IsReadOnly => false;
 
     }

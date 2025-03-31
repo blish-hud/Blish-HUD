@@ -15,18 +15,18 @@ namespace Blish_HUD.Controls {
         public event EventHandler<EventArgs> ColorChanged;
         public event EventHandler<EventArgs> Selected;
 
-        private const int    DEFAULT_COLOR_SIZE                          = 32;
-        private const string COLOR_CHANGE_SOUND_NAME                     = "color-change";
-        private const string DRAW_VARIATION_DYE_CHANNEL_NAME             = "colorpicker/cp-clr-dc";
-        private const string DRAW_VARIATION_DYE_CHANNEL_X2_NAME          = "colorpicker/cp-clr-dc-x2";
+        private const int DEFAULT_COLOR_SIZE = 32;
+        private const string COLOR_CHANGE_SOUND_NAME = "color-change";
+        private const string DRAW_VARIATION_DYE_CHANNEL_NAME = "colorpicker/cp-clr-dc";
+        private const string DRAW_VARIATION_DYE_CHANNEL_X2_NAME = "colorpicker/cp-clr-dc-x2";
         private const string DRAW_VARIATION_DYE_CHANNEL_X2_VERTICAL_NAME = "colorpicker/cp-clr-dc-x2-vert";
-        private const string DRAW_VARIATION_DYE_CHANNEL_X4_NAME          = "colorpicker/cp-clr-dc-x4";
-        private const string DRAW_VARIATION_VERSION_ONE_NAME             = "colorpicker/cp-clr-v1";
-        private const string DRAW_VARIATION_VERSION_TWO_NAME             = "colorpicker/cp-clr-v2";
-        private const string DRAW_VARIATION_VERSION_THREE_NAME           = "colorpicker/cp-clr-v3";
-        private const string DRAW_VARIATION_VERSION_FOUR_NAME            = "colorpicker/cp-clr-v4";
-        private const string HIGHLIGHT_NAME                              = "colorpicker/cp-clr-active";
-        private const string HOVER_NAME                                  = "colorpicker/cp-clr-hover";
+        private const string DRAW_VARIATION_DYE_CHANNEL_X4_NAME = "colorpicker/cp-clr-dc-x4";
+        private const string DRAW_VARIATION_VERSION_ONE_NAME = "colorpicker/cp-clr-v1";
+        private const string DRAW_VARIATION_VERSION_TWO_NAME = "colorpicker/cp-clr-v2";
+        private const string DRAW_VARIATION_VERSION_THREE_NAME = "colorpicker/cp-clr-v3";
+        private const string DRAW_VARIATION_VERSION_FOUR_NAME = "colorpicker/cp-clr-v4";
+        private const string HIGHLIGHT_NAME = "colorpicker/cp-clr-active";
+        private const string HOVER_NAME = "colorpicker/cp-clr-hover";
 
         private readonly int drawVariation;
 
@@ -61,17 +61,17 @@ namespace Blish_HUD.Controls {
         };
 
         // Sprite when square with > 24 size, sprite used in the dye channel of armor in game
-        private static readonly TextureRegion2D _spriteDyeChannel           = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_NAME);
+        private static readonly TextureRegion2D _spriteDyeChannel = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_NAME);
 
         // Sprite when rectangle with more width than height, texture used in the dye channel of armor, appears when 1 < channels < 4
-        private static readonly TextureRegion2D _spriteDyeChannelX2         = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X2_NAME);
+        private static readonly TextureRegion2D _spriteDyeChannelX2 = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X2_NAME);
         private static readonly TextureRegion2D _spriteDyeChannelX2Vertical = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X2_VERTICAL_NAME);
 
         // Sprite for when both width and height > 64, texture used in the dye channel of armor, for 1 channel armor
-        private static readonly TextureRegion2D _spriteDyeChannelX4         = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X4_NAME);
-        private static readonly TextureRegion2D _spriteHighlight            = Resources.Control.TextureAtlasControl.GetRegion(HIGHLIGHT_NAME);
-        private static readonly TextureRegion2D _spriteHover                = Resources.Control.TextureAtlasControl.GetRegion(HOVER_NAME);
-        
+        private static readonly TextureRegion2D _spriteDyeChannelX4 = Resources.Control.TextureAtlasControl.GetRegion(DRAW_VARIATION_DYE_CHANNEL_X4_NAME);
+        private static readonly TextureRegion2D _spriteHighlight = Resources.Control.TextureAtlasControl.GetRegion(HIGHLIGHT_NAME);
+        private static readonly TextureRegion2D _spriteHover = Resources.Control.TextureAtlasControl.GetRegion(HOVER_NAME);
+
         public ColorBox() : base() {
             Size = new Point(DEFAULT_COLOR_SIZE);
 

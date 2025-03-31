@@ -10,8 +10,8 @@ namespace Blish_HUD.Library.Glide.CustomLerpers {
         private Point _pointRange;
 
         public override void Initialize(object fromValue, object toValue, Behavior behavior) {
-            _pointFrom = (Point) fromValue;
-            _pointTo = (Point) toValue;
+            _pointFrom = (Point)fromValue;
+            _pointTo = (Point)toValue;
             _pointRange = _pointTo - _pointFrom;
         }
 
@@ -21,14 +21,14 @@ namespace Blish_HUD.Library.Glide.CustomLerpers {
 
             // Only a subtle difference since Point only supports int anyways
             if (behavior.HasFlag(Behavior.Round)) {
-                x = (float) Math.Round(x);
-                y = (float) Math.Round(y);
+                x = (float)Math.Round(x);
+                y = (float)Math.Round(y);
             }
 
-            var current = (Point) currentValue;
+            var current = (Point)currentValue;
 
-            if (_pointRange.X != 0) current.X = (int) x;
-            if (_pointRange.Y != 0) current.Y = (int) y;
+            if (_pointRange.X != 0) current.X = (int)x;
+            if (_pointRange.Y != 0) current.Y = (int)y;
 
             return current;
         }

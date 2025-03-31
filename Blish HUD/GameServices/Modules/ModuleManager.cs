@@ -25,20 +25,20 @@ namespace Blish_HUD.Modules {
         }
 
         private Assembly _moduleAssembly;
-        
+
         private bool _forceAllowDependency = false;
 
         /// <summary>
         /// Indicates that the modules assembly has been loaded into memory.
         /// </summary>
         public bool AssemblyLoaded => _moduleAssembly != null;
-        
+
         /// <summary>
         /// Used to indicate if a different version of the assembly has previously
         /// been loaded preventing us from loading another of a different version.
         /// </summary>
         public bool IsModuleAssemblyStateDirty { get; private set; }
-        
+
         /// <summary>
         /// Indicates if the module is currently enabled.
         /// </summary>
@@ -58,8 +58,8 @@ namespace Blish_HUD.Modules {
         public Module ModuleInstance { get; private set; }
 
         internal ModuleManager(Manifest manifest, ModuleState state, IDataReader dataReader) {
-            this.Manifest   = manifest;
-            this.State      = state;
+            this.Manifest = manifest;
+            this.State = state;
             this.DataReader = dataReader;
 
             if (_dirtyNamespaces.Contains(this.Manifest.Namespace)) {
@@ -101,7 +101,7 @@ namespace Blish_HUD.Modules {
                             this.ModuleEnabled?.Invoke(this, EventArgs.Empty);
                         } catch (TypeLoadException ex) {
                             this.ModuleInstance = null;
-                            this.Enabled        = false;
+                            this.Enabled = false;
                             Logger.Error(ex, "Module {module} failed to load because it depended on a type which is not available in this version.  Ensure you are using the correct module and Blish HUD versions.", this.Manifest.GetDetailedName());
                         }
                     }
@@ -129,7 +129,7 @@ namespace Blish_HUD.Modules {
                 this.ModuleInstance?.Dispose();
             } catch (Exception ex) {
                 Logger.GetLogger(this.ModuleInstance != null ? this.ModuleInstance.GetType() : typeof(ModuleManager)).Error(ex, "Module {module} threw an exception while unloading.", this.Manifest.GetDetailedName());
-                
+
                 if (ApplicationSettings.Instance.DebugEnabled) {
                     // To assist in debugging modules
                     throw;
@@ -137,7 +137,7 @@ namespace Blish_HUD.Modules {
             }
 
             this.ModuleInstance = null;
-            
+
             this.ModuleDisabled?.Invoke(this, EventArgs.Empty);
 
             this.State.Enabled = this.Enabled;
@@ -154,7 +154,7 @@ namespace Blish_HUD.Modules {
             string symbolsPath = assemblyPath.Replace(".dll", ".pdb");
 
             byte[] assemblyData = this.DataReader.GetFileBytes(assemblyPath);
-            byte[] symbolData   = this.DataReader.GetFileBytes(symbolsPath) ?? new byte[0];
+            byte[] symbolData = this.DataReader.GetFileBytes(symbolsPath) ?? new byte[0];
 
             return Assembly.Load(assemblyData, symbolData);
         }
@@ -232,7 +232,7 @@ namespace Blish_HUD.Modules {
                 }
             }
 
-            var catalog   = new AssemblyCatalog(_moduleAssembly);
+            var catalog = new AssemblyCatalog(_moduleAssembly);
             var container = new CompositionContainer(catalog);
 
             container.ComposeExportedValue("ModuleParameters", parameters);

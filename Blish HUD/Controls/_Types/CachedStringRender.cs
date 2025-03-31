@@ -33,25 +33,25 @@ namespace Blish_HUD.Controls {
 
         public VerticalAlignment VerticalAlignment { get; }
 
-        public CachedStringRender(string              text,
-                                  BitmapFont          font,
-                                  Rectangle           destinationRectangle,
-                                  Color               color,
-                                  bool                wrap,
-                                  bool                stroke,
-                                  int                 strokeDistance      = 1,
+        public CachedStringRender(string text,
+                                  BitmapFont font,
+                                  Rectangle destinationRectangle,
+                                  Color color,
+                                  bool wrap,
+                                  bool stroke,
+                                  int strokeDistance = 1,
                                   HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
-                                  VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
+                                  VerticalAlignment verticalAlignment = VerticalAlignment.Middle) {
 
-            this.Text                 = text;
-            this.Font                 = font;
+            this.Text = text;
+            this.Font = font;
             this.DestinationRectangle = new Rectangle(Point.Zero, destinationRectangle.Size);
-            this.Color                = color;
-            this.Wrap                 = wrap;
-            this.Stroke               = stroke;
-            this.StrokeDistance       = strokeDistance;
-            this.HorizontalAlignment  = horizontalAlignment;
-            this.VerticalAlignment    = verticalAlignment;
+            this.Color = color;
+            this.Wrap = wrap;
+            this.Stroke = stroke;
+            this.StrokeDistance = strokeDistance;
+            this.HorizontalAlignment = horizontalAlignment;
+            this.VerticalAlignment = verticalAlignment;
 
             _cachedRender = new AsyncTexture2D(ContentService.Textures.TransparentPixel.Duplicate());
         }
@@ -101,8 +101,8 @@ namespace Blish_HUD.Controls {
                 hashCode = (hashCode * 397) ^ this.Wrap.GetHashCode();
                 hashCode = (hashCode * 397) ^ this.Stroke.GetHashCode();
                 hashCode = (hashCode * 397) ^ this.StrokeDistance;
-                hashCode = (hashCode * 397) ^ (int) this.HorizontalAlignment;
-                hashCode = (hashCode * 397) ^ (int) this.VerticalAlignment;
+                hashCode = (hashCode * 397) ^ (int)this.HorizontalAlignment;
+                hashCode = (hashCode * 397) ^ (int)this.VerticalAlignment;
                 return hashCode;
             }
         }
@@ -116,18 +116,18 @@ namespace Blish_HUD.Controls {
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
 
-            return Equals((CachedStringRender) obj);
+            return Equals((CachedStringRender)obj);
         }
 
-        public static CachedStringRender GetCachedStringRender(string              text,
-                                                               BitmapFont          font,
-                                                               Rectangle           destinationRectangle,
-                                                               Color               color,
-                                                               bool                wrap,
-                                                               bool                stroke,
-                                                               int                 strokeDistance      = 1,
+        public static CachedStringRender GetCachedStringRender(string text,
+                                                               BitmapFont font,
+                                                               Rectangle destinationRectangle,
+                                                               Color color,
+                                                               bool wrap,
+                                                               bool stroke,
+                                                               int strokeDistance = 1,
                                                                HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
-                                                               VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
+                                                               VerticalAlignment verticalAlignment = VerticalAlignment.Middle) {
 
             var checkCsr = new CachedStringRender(text, font, destinationRectangle, color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
 

@@ -21,12 +21,12 @@ namespace Blish_HUD.Modules {
 
         private const string REPO_SETTINGS = "ModuleRepoConfiguration";
 
-        private const string DEFAULT_REPOURL_SETTING      = "DefaultPkgsUrl";
+        private const string DEFAULT_REPOURL_SETTING = "DefaultPkgsUrl";
         private const string ACKNOWLEDGED_UPDATES_SETTING = "AcknowledgedUpdates";
 
         private const string DEFAULT_BHUDPKGS_REPOURL = "https://pkgs.blishhud.com/";
 
-        private const string TEXTUREREF_REPOMENU               = "156764-noarrow";
+        private const string TEXTUREREF_REPOMENU = "156764-noarrow";
         private const string TEXTUREREF_REPOMENU_PENDINGUPDATE = "156764-update";
 
         private readonly List<IPkgRepoProvider> _repos = new List<IPkgRepoProvider>();
@@ -49,13 +49,13 @@ namespace Blish_HUD.Modules {
         public IReadOnlyCollection<IPkgRepoProvider> PkgRepos => _repos.AsReadOnly();
 
         private SettingEntry<string> _defaultRepoUrlSetting;
-        private SettingCollection    _acknowledgedUpdates;
+        private SettingCollection _acknowledgedUpdates;
 
-        private MenuItem         _repoMenuItem;
+        private MenuItem _repoMenuItem;
         private IPkgRepoProvider _defaultRepoProvider;
 
         internal ModulePkgRepoHandler(ModuleService service) : base(service) { /* NOOP */ }
-        
+
         public override void Load() {
             DefineModuleRepoSettings(GameService.Settings.RegisterRootSettingCollection(REPO_SETTINGS));
             _defaultRepoProvider = new StaticPkgRepoProvider(_defaultRepoUrlSetting.Value);
@@ -100,21 +100,21 @@ namespace Blish_HUD.Modules {
 
             if (this.UnacknowledgedUpdates.Any(module => GameService.Overlay.ShowPreviews.Value || !module.IsPreview)) {
                 // settings menu item indicator
-                _repoMenuItem.Text             = $"{Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection} ({Strings.GameServices.ModulesService.PkgManagement_Update.ToQuantity(_pendingUpdates.Length)})";
-                _repoMenuItem.Icon             = GameService.Content.GetTexture(TEXTUREREF_REPOMENU_PENDINGUPDATE);
+                _repoMenuItem.Text = $"{Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection} ({Strings.GameServices.ModulesService.PkgManagement_Update.ToQuantity(_pendingUpdates.Length)})";
+                _repoMenuItem.Icon = GameService.Content.GetTexture(TEXTUREREF_REPOMENU_PENDINGUPDATE);
                 _repoMenuItem.BasicTooltipText = $"{Strings.GameServices.ModulesService.PkgManagement_Update.Pluralize()}:\n\n{string.Join("\n", _pendingUpdates.Select(GetUpgradePathStringFromRepoPkgGroup))}";
 
                 // Main Blish HUD icon
-                GameService.Overlay.BlishMenuIcon.Icon      = GameService.Content.GetTexture("logo-update");
+                GameService.Overlay.BlishMenuIcon.Icon = GameService.Content.GetTexture("logo-update");
                 GameService.Overlay.BlishMenuIcon.HoverIcon = GameService.Content.GetTexture("logo-big-update");
             } else {
                 // settings menu item indicator
-                _repoMenuItem.Icon             = GameService.Content.GetTexture(TEXTUREREF_REPOMENU);
-                _repoMenuItem.Text             = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection;
+                _repoMenuItem.Icon = GameService.Content.GetTexture(TEXTUREREF_REPOMENU);
+                _repoMenuItem.Text = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection;
                 _repoMenuItem.BasicTooltipText = null;
 
                 // Main Blish HUD icon
-                GameService.Overlay.BlishMenuIcon.Icon      = GameService.Content.GetTexture("logo");
+                GameService.Overlay.BlishMenuIcon.Icon = GameService.Content.GetTexture("logo");
                 GameService.Overlay.BlishMenuIcon.HoverIcon = GameService.Content.GetTexture("logo-big");
             }
         }

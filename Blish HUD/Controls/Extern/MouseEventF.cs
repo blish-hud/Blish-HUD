@@ -1,10 +1,8 @@
 using System;
 
-namespace Blish_HUD.Controls.Extern
-{
+namespace Blish_HUD.Controls.Extern {
     [Flags]
-    internal enum MouseEventF : uint
-    {
+    internal enum MouseEventF : uint {
         ABSOLUTE = 0x8000,
         HWHEEL = 0x01000,
         MOVE = 0x0001,

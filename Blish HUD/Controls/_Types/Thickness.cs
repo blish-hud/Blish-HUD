@@ -13,14 +13,14 @@
         #region Constructors
 
         public Thickness(float topThickness, float rightThickness, float bottomThickness, float leftThickness) {
-            Top    = topThickness;
-            Right  = rightThickness;
+            Top = topThickness;
+            Right = rightThickness;
             Bottom = bottomThickness;
-            Left   = leftThickness;
+            Left = leftThickness;
         }
 
         public Thickness(float verticalThickness, float horizontalThickness) : this(verticalThickness, horizontalThickness, verticalThickness, horizontalThickness) { /* ALIAS */ }
-        public Thickness(float topThickness,      float horizontalThickness, float bottomThickness) : this(topThickness, horizontalThickness, bottomThickness, horizontalThickness) { /* ALIAS */ }
+        public Thickness(float topThickness, float horizontalThickness, float bottomThickness) : this(topThickness, horizontalThickness, bottomThickness, horizontalThickness) { /* ALIAS */ }
         public Thickness(float thickness) : this(thickness, thickness, thickness, thickness) { /* ALIAS */ }
 
         #endregion

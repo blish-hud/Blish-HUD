@@ -13,14 +13,14 @@ namespace Blish_HUD {
 
         private static readonly Logger Logger = Logger.GetLogger(typeof(WindowUtil));
 
-        private const uint WS_EX_TOPMOST       = 0x00000008;
-        private const uint WS_EX_TRANSPARENT   = 0x00000020;
-        private const uint WS_EX_TOOLWINDOW    = 0x00000080;
+        private const uint WS_EX_TOPMOST = 0x00000008;
+        private const uint WS_EX_TRANSPARENT = 0x00000020;
+        private const uint WS_EX_TOOLWINDOW = 0x00000080;
         private const uint WS_EX_CONTROLPARENT = 0x00010000;
-        private const uint WS_EX_APPWINDOW     = 0x00040000;
-        private const uint WS_EX_LAYERED       = 0x00080000;
+        private const uint WS_EX_APPWINDOW = 0x00040000;
+        private const uint WS_EX_LAYERED = 0x00080000;
 
-        private const int GWL_STYLE   = -16;
+        private const int GWL_STYLE = -16;
         private const int GWL_EXSTYLE = -20;
 
         private const int SW_HIDE = 0;
@@ -32,8 +32,8 @@ namespace Blish_HUD {
         private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
 
-        private const uint SWP_NOSIZE         = 0x0001;
-        private const uint SWP_NOMOVE         = 0x0002;
+        private const uint SWP_NOSIZE = 0x0001;
+        private const uint SWP_NOMOVE = 0x0002;
 
         private const int MINIMIZED_POS = -32000;
 
@@ -95,12 +95,12 @@ namespace Blish_HUD {
         }
 
         private enum GW : uint {
-            HWNDFIRST    = 0,
-            HWNDLAST     = 1,
-            HWNDNEXT     = 2,
-            HWNDPREV     = 3,
-            OWNER        = 4,
-            CHILD        = 5,
+            HWNDFIRST = 0,
+            HWNDLAST = 1,
+            HWNDNEXT = 2,
+            HWNDPREV = 3,
+            OWNER = 4,
+            CHILD = 5,
             ENABLEDPOPUP = 6
         }
 
@@ -111,7 +111,7 @@ namespace Blish_HUD {
 
         private static IntPtr GetWindowLong(IntPtr hWnd, int nIndex) => IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLongPtr32(hWnd, nIndex);
 
-        private static int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong) => IntPtr.Size != 8 ? SetWindowLong32(hWnd, nIndex, dwNewLong) : (int) SetWindowLongPtr64(hWnd, nIndex, new UIntPtr(dwNewLong));
+        private static int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong) => IntPtr.Size != 8 ? SetWindowLong32(hWnd, nIndex, dwNewLong) : (int)SetWindowLongPtr64(hWnd, nIndex, new UIntPtr(dwNewLong));
 
         private static void SetWindowParam(IntPtr winHandle, bool showInTaskbar = false) {
             uint windowParam = WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_CONTROLPARENT | WS_EX_LAYERED;
@@ -213,9 +213,9 @@ namespace Blish_HUD {
                 SetWindowPos(winHandle, HWND_TOPMOST, clientRect.Left + screenPoint.X, clientRect.Top + screenPoint.Y, clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top, 0);
 
                 var marg = new Margins {
-                    cxLeftWidth    = 0,
-                    cyTopHeight    = 0,
-                    cxRightWidth   = clientRect.Right,
+                    cxLeftWidth = 0,
+                    cyTopHeight = 0,
+                    cxRightWidth = clientRect.Right,
                     cyBottomHeight = clientRect.Bottom
                 };
 
@@ -226,7 +226,7 @@ namespace Blish_HUD {
         }
 
         internal static string GetClassNameOfWindow(IntPtr hwnd) {
-            string        className = "";
+            string className = "";
             StringBuilder classText = null;
             try {
                 int cls_max_length = 1000;

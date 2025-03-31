@@ -24,7 +24,7 @@ namespace Blish_HUD.Modules.UI.Views {
         }
 
         public event EventHandler<ValueEventArgs<Version>> VersionSelected;
-        public event EventHandler<EventArgs>               ActionClicked;
+        public event EventHandler<EventArgs> ActionClicked;
 
         public string PackageActionText {
             get => _actionButton?.Text ?? throw new ViewNotBuiltException();
@@ -44,7 +44,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 _nameLabel.Visible = true;
                 //_authLabel.Left  = _nameLabel.Right  + 10;
                 _previewLabel.Left = _nameLabel.Right + 10;
-                _previewLabel.Top  = _nameLabel.Top   + 2;
+                _previewLabel.Top = _nameLabel.Top + 2;
             }
         }
 
@@ -70,7 +70,7 @@ namespace Blish_HUD.Modules.UI.Views {
 
                 _moduleContributor = value;
 
-                _authLabel.Text             = $"{Strings.GameServices.ModulesService.ModuleManagement_AuthoredBy} {_moduleContributor.Name}";
+                _authLabel.Text = $"{Strings.GameServices.ModulesService.ModuleManagement_AuthoredBy} {_moduleContributor.Name}";
                 _authLabel.BasicTooltipText = _moduleContributor.Username;
             }
         }
@@ -120,17 +120,17 @@ namespace Blish_HUD.Modules.UI.Views {
         private void SetRelationIcon(PkgVersionRelationship pkgVersionRelationship) {
             switch (pkgVersionRelationship) {
                 case PkgVersionRelationship.NotInstalled:
-                    _statusImage.Visible      = false;
+                    _statusImage.Visible = false;
                     break;
                 case PkgVersionRelationship.CanUpdate:
-                    _statusImage.Texture          = AsyncTexture2D.FromAssetId(157397);
+                    _statusImage.Texture = AsyncTexture2D.FromAssetId(157397);
                     _statusImage.BasicTooltipText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageRelationship_CanUpdate;
-                    _statusImage.Visible          = true;
+                    _statusImage.Visible = true;
                     break;
                 case PkgVersionRelationship.CurrentVersion:
-                    _statusImage.Texture          = AsyncTexture2D.FromAssetId(157330);
+                    _statusImage.Texture = AsyncTexture2D.FromAssetId(157330);
                     _statusImage.BasicTooltipText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageRelationship_CurrentVersion;
-                    _statusImage.Visible          = true;
+                    _statusImage.Visible = true;
                     break;
             }
         }
@@ -148,12 +148,12 @@ namespace Blish_HUD.Modules.UI.Views {
             }
         }
 
-        private Label          _nameLabel;
-        private Label          _previewLabel;
-        private Label          _authLabel;
-        private Label          _descLabel;
-        private Image          _statusImage;
-        private Dropdown       _versionDropdown;
+        private Label _nameLabel;
+        private Label _previewLabel;
+        private Label _authLabel;
+        private Label _descLabel;
+        private Image _statusImage;
+        private Dropdown _versionDropdown;
         private StandardButton _actionButton;
 
         public ManagePkgView() { /* NOOP */ }
@@ -164,79 +164,79 @@ namespace Blish_HUD.Modules.UI.Views {
 
         protected override void Build(Container buildPanel) {
             _nameLabel = new Label() {
-                Text           = "W",
-                AutoSizeWidth  = true,
+                Text = "W",
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Font           = GameService.Content.DefaultFont18,
-                Location       = new Point(5, 5),
-                Visible        = false,
-                Parent         = buildPanel
+                Font = GameService.Content.DefaultFont18,
+                Location = new Point(5, 5),
+                Visible = false,
+                Parent = buildPanel
             };
 
             _previewLabel = new Label() {
-                Text           = Strings.GameServices.ModulesService.PkgManagement_IsPreview,
-                TextColor      = Color.Orange,
-                AutoSizeWidth  = true,
+                Text = Strings.GameServices.ModulesService.PkgManagement_IsPreview,
+                TextColor = Color.Orange,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Font           = GameService.Content.DefaultFont14,
-                Location       = new Point(_nameLabel.Right + 4, 8),
-                Visible        = false,
-                Parent         = buildPanel
+                Font = GameService.Content.DefaultFont14,
+                Location = new Point(_nameLabel.Right + 4, 8),
+                Visible = false,
+                Parent = buildPanel
             };
 
             _authLabel = new Label() {
-                Visible           = false,
-                AutoSizeWidth     = true,
-                AutoSizeHeight    = false,
-                Height            = _nameLabel.Height,
+                Visible = false,
+                AutoSizeWidth = true,
+                AutoSizeHeight = false,
+                Height = _nameLabel.Height,
                 VerticalAlignment = VerticalAlignment.Bottom,
-                Left              = _nameLabel.Right + 10,
-                Top               = _nameLabel.Top,
-                Parent            = buildPanel
+                Left = _nameLabel.Right + 10,
+                Top = _nameLabel.Top,
+                Parent = buildPanel
             };
 
             _versionDropdown = new Dropdown() {
-                Width   = 128,
-                Right   = buildPanel.Width - 5,
-                Top     = 5,
-                Parent  = buildPanel
+                Width = 128,
+                Right = buildPanel.Width - 5,
+                Top = 5,
+                Parent = buildPanel
             };
 
             _statusImage = new Image(AsyncTexture2D.FromAssetId(157397)) {
                 Visible = false,
-                Size    = new Point(16, 16),
-                Top     = _versionDropdown.Height / 2 - 8 + _versionDropdown.Top,
-                Right   = _versionDropdown.Left           - 8,
-                Parent  = buildPanel
+                Size = new Point(16, 16),
+                Top = _versionDropdown.Height / 2 - 8 + _versionDropdown.Top,
+                Right = _versionDropdown.Left - 8,
+                Parent = buildPanel
             };
 
             _actionButton = new StandardButton() {
-                Width  = 132,
-                Right  = buildPanel.Width        - 3,
-                Top    = _versionDropdown.Bottom + 3,
+                Width = 132,
+                Right = buildPanel.Width - 3,
+                Top = _versionDropdown.Bottom + 3,
                 Parent = buildPanel
             };
 
             var infoButton = new StandardButton() {
-                Width  = _actionButton.Width,
-                Right  = _actionButton.Right,
-                Top    = _actionButton.Bottom + 3,
-                Text   = Strings.GameServices.ModulesService.PkgManagement_MoreInfo,
+                Width = _actionButton.Width,
+                Right = _actionButton.Right,
+                Top = _actionButton.Bottom + 3,
+                Text = Strings.GameServices.ModulesService.PkgManagement_MoreInfo,
                 Parent = buildPanel
             };
 
             _descLabel = new Label() {
-                WrapText          = true,
-                Font              = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Regular),
-                Location          = new Point(_nameLabel.Left,                                    _nameLabel.Bottom + 4),
-                AutoSizeHeight    = true,
-                Width             = 548,
-                Parent            = buildPanel,
+                WrapText = true,
+                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Regular),
+                Location = new Point(_nameLabel.Left, _nameLabel.Bottom + 4),
+                AutoSizeHeight = true,
+                Width = 548,
+                Parent = buildPanel,
                 VerticalAlignment = VerticalAlignment.Top,
             };
 
-            _statusImage.Click            += StatusImageOnClick;
-            _actionButton.Click           += OnActionClicked;
+            _statusImage.Click += StatusImageOnClick;
+            _actionButton.Click += OnActionClicked;
             _versionDropdown.ValueChanged += OnVersionSelected;
 
             infoButton.Click += OnMoreInfoClicked;

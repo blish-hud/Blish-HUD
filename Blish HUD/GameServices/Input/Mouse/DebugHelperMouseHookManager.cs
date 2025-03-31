@@ -16,7 +16,7 @@ namespace Blish_HUD.Input {
 
             bool isHandled = false;
 
-            lock (((IList) this.Handlers).SyncRoot) {
+            lock (((IList)this.Handlers).SyncRoot) {
                 foreach (HandleMouseInputDelegate handler in this.Handlers) {
                     isHandled = handler(mouseEventArgs);
                     if (isHandled) break;
@@ -24,7 +24,7 @@ namespace Blish_HUD.Input {
             }
 
             MouseResponseMessage response = new MouseResponseMessage {
-                Id        = message.Id,
+                Id = message.Id,
                 IsHandled = isHandled
             };
 
@@ -33,7 +33,7 @@ namespace Blish_HUD.Input {
 
         protected override void DummyHookCallback(MouseEventMessage message) {
             MouseResponseMessage response = new MouseResponseMessage {
-                Id        = message.Id,
+                Id = message.Id,
                 IsHandled = false
             };
 

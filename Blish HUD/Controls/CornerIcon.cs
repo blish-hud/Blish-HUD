@@ -25,10 +25,10 @@ namespace Blish_HUD.Controls {
 
         private static readonly Rectangle _standardIconBounds;
 
-        private const int   ICON_POSITION = 10;
-        private const int   ICON_SIZE     = 32;
-        private const float ICON_TRANS    = 0.6f;
-        
+        private const int ICON_POSITION = 10;
+        private const int ICON_SIZE = 32;
+        private const float ICON_TRANS = 0.6f;
+
         private float _hoverTrans = ICON_TRANS;
         public float HoverTrans {
             get => this.Enabled ? _hoverTrans : ICON_TRANS;
@@ -119,7 +119,7 @@ namespace Blish_HUD.Controls {
             _standardIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
 
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
-            
+
             GameService.Input.Mouse.MouseMoved += (sender, e) => {
                 CornerIcon[] cornerIcons = null;
 
@@ -181,7 +181,7 @@ namespace Blish_HUD.Controls {
 
         public CornerIcon() {
             this.Parent = Graphics.SpriteScreen;
-            this.Size   = new Point(ICON_SIZE, ICON_SIZE);
+            this.Size = new Point(ICON_SIZE, ICON_SIZE);
             this.DynamicHide = true;
 
             lock (CornerIcons) {
@@ -190,7 +190,7 @@ namespace Blish_HUD.Controls {
         }
 
         public CornerIcon(AsyncTexture2D icon, string iconName) : this() {
-            _icon     = icon;
+            _icon = icon;
             _iconName = iconName;
         }
 

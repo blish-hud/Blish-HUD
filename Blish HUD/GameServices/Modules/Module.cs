@@ -16,7 +16,7 @@ namespace Blish_HUD.Modules {
         #region Module Events
 
         public event EventHandler<ModuleRunStateChangedEventArgs> ModuleRunStateChanged;
-        public event EventHandler<EventArgs>                      ModuleLoaded;
+        public event EventHandler<EventArgs> ModuleLoaded;
 
         public event EventHandler<UnobservedTaskExceptionEventArgs> ModuleException;
 
@@ -177,12 +177,12 @@ namespace Blish_HUD.Modules {
             Unload();
             this.RunState = ModuleRunState.Unloaded;
 
-            this.ModuleLoaded          = null;
+            this.ModuleLoaded = null;
             this.ModuleRunStateChanged = null;
-            this.ModuleException       = null;
+            this.ModuleException = null;
         }
 
-#endregion
+        #endregion
 
         #region Virtual Methods
 

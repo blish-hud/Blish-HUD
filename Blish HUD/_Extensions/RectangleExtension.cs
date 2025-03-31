@@ -6,7 +6,7 @@ namespace Blish_HUD {
     public static class RectangleExtension {
 
         public static Rectangle WithPadding(this Rectangle rect, Thickness thickness) {
-            return  new Rectangle(rect.X - (int)thickness.Left, rect.Y - (int)thickness.Top, rect.Width + (int)thickness.Left + (int)thickness.Right, rect.Height + (int)thickness.Top + (int)thickness.Bottom);
+            return new Rectangle(rect.X - (int)thickness.Left, rect.Y - (int)thickness.Top, rect.Width + (int)thickness.Left + (int)thickness.Right, rect.Height + (int)thickness.Top + (int)thickness.Bottom);
         }
 
         public static Rectangle Add(this Rectangle u1, Rectangle u2) {
@@ -18,9 +18,9 @@ namespace Blish_HUD {
         }
 
         public static Rectangle WithSetDimension(this Rectangle rect, int? x, int? y, int? width, int? height) {
-            return new Rectangle(x      ?? rect.X,
-                                 y      ?? rect.Y,
-                                 width  ?? rect.Width,
+            return new Rectangle(x ?? rect.X,
+                                 y ?? rect.Y,
+                                 width ?? rect.Width,
                                  height ?? rect.Height);
         }
 

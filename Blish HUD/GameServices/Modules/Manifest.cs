@@ -1,4 +1,4 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Gw2Sharp.WebApi.V2.Models;
 using JsonSubTypes;
 using Newtonsoft.Json;
@@ -55,10 +55,10 @@ namespace Blish_HUD.Modules {
 
         protected Manifest() {
             // Ensure nothing is empty, regardless of manifest version and contents
-            this.Description    = this.Description    ?? "";
-            this.Dependencies   = this.Dependencies   ?? new List<ModuleDependency>(0);
-            this.Url            = this.Url            ?? "";
-            this.Directories    = this.Directories    ?? new List<string>(0);
+            this.Description = this.Description ?? "";
+            this.Dependencies = this.Dependencies ?? new List<ModuleDependency>(0);
+            this.Url = this.Url ?? "";
+            this.Directories = this.Directories ?? new List<string>(0);
             this.ApiPermissions = this.ApiPermissions ?? new Dictionary<TokenPermission, ModuleApiPermissions>(0);
         }
 

@@ -17,12 +17,12 @@ namespace Blish_HUD.GameIntegration {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2InstanceIntegration>();
 
-        private const string GW2_REGISTRY_KEY     = @"SOFTWARE\ArenaNet\Guild Wars 2";
+        private const string GW2_REGISTRY_KEY = @"SOFTWARE\ArenaNet\Guild Wars 2";
         private const string GW2_REGISTRY_PATH_SV = "Path";
 
         private const string GW2_PATCHWINDOW_CLASS = "ArenaNet";
-        private const string GW2_DX9WINDOW_CLASS   = "ArenaNet_Dx_Window_Class";
-        private const string GW2_DX11WINDOW_CLASS  = "ArenaNet_Gr_Window_Class";
+        private const string GW2_DX9WINDOW_CLASS = "ArenaNet_Dx_Window_Class";
+        private const string GW2_DX11WINDOW_CLASS = "ArenaNet_Gr_Window_Class";
 
         private const string APPDATA_ENVKEY = "appdata";
 
@@ -36,10 +36,10 @@ namespace Blish_HUD.GameIntegration {
 
         public event EventHandler<ValueEventArgs<bool>> IsInGameChanged;
 
-        private void OnGw2Started()                            => this.Gw2Started?.Invoke(this, EventArgs.Empty);
-        private void OnGw2Closed()                             => this.Gw2Closed?.Invoke(this, EventArgs.Empty);
-        private void OnGw2AcquiredFocus()                      => this.Gw2AcquiredFocus?.Invoke(this, EventArgs.Empty);
-        private void OnGw2LostFocus()                          => this.Gw2LostFocus?.Invoke(this, EventArgs.Empty);
+        private void OnGw2Started() => this.Gw2Started?.Invoke(this, EventArgs.Empty);
+        private void OnGw2Closed() => this.Gw2Closed?.Invoke(this, EventArgs.Empty);
+        private void OnGw2AcquiredFocus() => this.Gw2AcquiredFocus?.Invoke(this, EventArgs.Empty);
+        private void OnGw2LostFocus() => this.Gw2LostFocus?.Invoke(this, EventArgs.Empty);
         private void OnIsInGameChanged(ValueEventArgs<bool> e) => this.IsInGameChanged?.Invoke(this, e);
 
         #endregion
@@ -191,9 +191,9 @@ namespace Blish_HUD.GameIntegration {
 
             // We can detect DX9 vs. DX11 via the window class name
             this.GraphicsApi = windowClassName switch {
-                GW2_DX9WINDOW_CLASS  => Gw2GraphicsApi.DX9,
+                GW2_DX9WINDOW_CLASS => Gw2GraphicsApi.DX9,
                 GW2_DX11WINDOW_CLASS => Gw2GraphicsApi.DX11,
-                _                    => Gw2GraphicsApi.Unknown
+                _ => Gw2GraphicsApi.Unknown
             };
 
             if (this.GraphicsApi != Gw2GraphicsApi.Unknown && lastDetectedGraphicsApi != this.GraphicsApi) {
@@ -277,8 +277,8 @@ namespace Blish_HUD.GameIntegration {
 
             if (this.Gw2IsRunning) {
                 try {
-                    this.Gw2Process.EnableRaisingEvents =  true;
-                    this.Gw2Process.Exited              += OnGw2Exit;
+                    this.Gw2Process.EnableRaisingEvents = true;
+                    this.Gw2Process.Exited += OnGw2Exit;
 
                     BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = true; }));
                 } catch (Win32Exception ex) /* [BLISHHUD-W] */ {
@@ -376,7 +376,7 @@ namespace Blish_HUD.GameIntegration {
                         switch (updateResult.ErrorCode) {
                             case 1400:
                                 this.Gw2Process?.Refresh();
-                                
+
                                 if (this.Gw2Process == null || this.Gw2Process.MainWindowHandle == IntPtr.Zero) {
                                     // Guild Wars 2 most likely closed
                                     goto case -1;

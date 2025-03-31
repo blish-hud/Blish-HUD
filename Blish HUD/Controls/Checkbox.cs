@@ -38,8 +38,8 @@ namespace Blish_HUD.Controls {
         public Checkbox() : base() {
             _size = new Point(64, CHECKBOX_SIZE / 2);
 
-            _autoSizeWidth     = true;
-            _textColor         = Color.White;
+            _autoSizeWidth = true;
+            _textColor = Color.White;
             _verticalAlignment = VerticalAlignment.Middle;
         }
 

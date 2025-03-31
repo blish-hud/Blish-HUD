@@ -1,7 +1,5 @@
-namespace Blish_HUD.Controls.Extern
-{
-    internal enum ScanCodeShort : short
-    {
+namespace Blish_HUD.Controls.Extern {
+    internal enum ScanCodeShort : short {
         LBUTTON = 0,
         RBUTTON = 0,
         CANCEL = 70,

@@ -78,8 +78,8 @@ namespace Blish_HUD.Input {
                     // no translation for the current state of the keyboard
                     return "";
                 case 2:
-                    // two or more characters were written to the buffer
-                    // this is most likely a dead-key that could not be combined with the current one
+                // two or more characters were written to the buffer
+                // this is most likely a dead-key that could not be combined with the current one
                 case 1:
                 default:
                     // single character was written to the buffer

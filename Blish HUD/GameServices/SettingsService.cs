@@ -20,22 +20,22 @@ namespace Blish_HUD {
 
         [Obsolete]
         public delegate void SettingTypeRendererDelegate(SettingEntry setting, Panel settingPanel);
-        
+
         [JsonIgnore]
         internal JsonSerializerSettings JsonReaderSettings { get; private set; }
-        
+
         [JsonIgnore]
         private string _settingsPath;
 
         internal SettingCollection Settings { get; private set; }
 
-        private bool   _dirtySave;
+        private bool _dirtySave;
         private double _saveBuffer;
 
         protected override void Initialize() {
             JsonReaderSettings = new JsonSerializerSettings() {
                 PreserveReferencesHandling = PreserveReferencesHandling.None,
-                TypeNameHandling           = TypeNameHandling.Auto,
+                TypeNameHandling = TypeNameHandling.Auto,
                 Converters = new List<JsonConverter>() {
                     new SettingCollection.SettingCollectionConverter(),
                     new SettingEntry.SettingEntryConverter(),
@@ -121,7 +121,7 @@ namespace Blish_HUD {
             }
 
             _saveBuffer = 0;
-            _dirtySave  = false;
+            _dirtySave = false;
 
             Logger.Debug("Settings were saved successfully.");
         }
@@ -145,6 +145,6 @@ namespace Blish_HUD {
                 }
             }
         }
-        
+
     }
 }

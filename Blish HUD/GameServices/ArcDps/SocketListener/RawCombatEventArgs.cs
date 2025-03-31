@@ -27,7 +27,7 @@ namespace Blish_HUD.ArcDps {
 
         public RawCombatEventArgs(CombatEvent combatEvent, CombatEventType eventType) {
             this.CombatEvent = combatEvent;
-            this.EventType   = eventType;
+            this.EventType = eventType;
         }
 
     }

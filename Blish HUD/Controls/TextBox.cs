@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Blish_HUD.Controls {
     public class TextBox : TextInputBase {
 
-        private const int STANDARD_CONTROLWIDTH  = 250;
+        private const int STANDARD_CONTROLWIDTH = 250;
         private const int STANDARD_CONTROLHEIGHT = 27;
 
         private const int TEXT_HORIZONTALPADDING = 10;
@@ -18,7 +18,7 @@ namespace Blish_HUD.Controls {
         #endregion
 
         public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
-                                                                            /*   PanelOffset */ new Point(5,   2),
+                                                                            /*   PanelOffset */ new Point(5, 2),
                                                                             /* ControlOffset */ ControlStandard.ControlOffset);
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Blish_HUD.Controls {
             EnterPressed?.Invoke(this, e);
         }
 
-        private int _prevCursorIndex  = 0;
+        private int _prevCursorIndex = 0;
         private int _horizontalOffset = 0;
 
         public TextBox() {
@@ -84,9 +84,9 @@ namespace Blish_HUD.Controls {
             return charIndex;
         }
 
-        private Rectangle _textRegion      = Rectangle.Empty;
+        private Rectangle _textRegion = Rectangle.Empty;
         private Rectangle _highlightRegion = Rectangle.Empty;
-        private Rectangle _cursorRegion    = Rectangle.Empty;
+        private Rectangle _cursorRegion = Rectangle.Empty;
 
         private Rectangle CalculateTextRegion() {
             int verticalPadding = _size.Y / 2 - (_font.LineHeight / 2);
@@ -98,16 +98,15 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle CalculateHighlightRegion() {
-            int selectionStart  = Math.Min(_selectionStart, _selectionEnd);
+            int selectionStart = Math.Min(_selectionStart, _selectionEnd);
             int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
 
             if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) return Rectangle.Empty;
 
             float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
-            float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
+            float highlightWidth = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
 
-            switch (this.HorizontalAlignment)
-            {
+            switch (this.HorizontalAlignment) {
                 case HorizontalAlignment.Center:
                     highlightLeftOffset += (this.Width - highlightWidth) / 2f - TEXT_HORIZONTALPADDING;
                     break;
@@ -143,9 +142,9 @@ namespace Blish_HUD.Controls {
         }
 
         public override void RecalculateLayout() {
-            _textRegion      = CalculateTextRegion();
+            _textRegion = CalculateTextRegion();
             _highlightRegion = CalculateHighlightRegion();
-            _cursorRegion    = CalculateCursorRegion();
+            _cursorRegion = CalculateCursorRegion();
         }
 
         protected override void UpdateScrolling() {
@@ -167,12 +166,12 @@ namespace Blish_HUD.Controls {
                                        this,
                                        _textureTextbox,
                                        new Rectangle(Point.Zero, _size - new Point(5, 0)),
-                                       new Rectangle(0,          0, Math.Min(_textureTextbox.Width - 5, _size.X - 5), _textureTextbox.Height)
+                                       new Rectangle(0, 0, Math.Min(_textureTextbox.Width - 5, _size.X - 5), _textureTextbox.Height)
                                       );
 
                 spriteBatch.DrawOnCtrl(
                                        this, _textureTextbox,
-                                       new Rectangle(_size.X               - 5, 0, 5, _size.Y),
+                                       new Rectangle(_size.X - 5, 0, 5, _size.Y),
                                        new Rectangle(_textureTextbox.Width - 5, 0, 5, _textureTextbox.Height)
                                       );
             }

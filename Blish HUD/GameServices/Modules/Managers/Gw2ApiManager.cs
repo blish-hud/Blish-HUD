@@ -12,7 +12,7 @@ namespace Blish_HUD.Modules.Managers {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2ApiManager>();
 
-        private const int    SUBTOKEN_LIFETIME  = 7;
+        private const int SUBTOKEN_LIFETIME = 7;
         private const string SUBTOKEN_CLAIMTYPE = "permissions";
 
         private static readonly List<Gw2ApiManager> _apiManagers = new List<Gw2ApiManager>();
@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.Managers {
         internal static async Task RenewAllSubtokens() {
             Gw2ApiManager[] apiManagers;
 
-            lock(_apiManagers) {
+            lock (_apiManagers) {
                 apiManagers = _apiManagers.ToArray();
             }
 
@@ -50,9 +50,9 @@ namespace Blish_HUD.Modules.Managers {
                 _apiManagers.Add(this);
             }
 
-            _permissions       = permissions.ToHashSet();
+            _permissions = permissions.ToHashSet();
             _activePermissions = new HashSet<TokenPermission>();
-            _subtokenHandler   = new JwtSecurityTokenHandler();
+            _subtokenHandler = new JwtSecurityTokenHandler();
 
             _connection = moduleConnection;
         }

@@ -11,8 +11,8 @@ namespace Blish_HUD.Modules.Pkgs {
     public class StaticPkgRepoProvider : IPkgRepoProvider {
 
         private static readonly Logger Logger = Logger.GetLogger<StaticPkgRepoProvider>();
-        
-        private const string ASSET_PACKAGE_NAME        = "/packages.gz";
+
+        private const string ASSET_PACKAGE_NAME = "/packages.gz";
         private const string PREVIEWASSET_PACKAGE_NAME = "/preview-packages.gz";
 
         private static readonly Dictionary<string, PkgManifest[]> _pkgCache = new Dictionary<string, PkgManifest[]>();
@@ -40,7 +40,7 @@ namespace Blish_HUD.Modules.Pkgs {
                     _pkgCache[this.PkgUrl] = repoResults.ToArray();
                 }
             }
-            
+
             return _pkgCache.ContainsKey(this.PkgUrl);
         }
 
@@ -95,9 +95,9 @@ namespace Blish_HUD.Modules.Pkgs {
 
             // Filters
             yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterSupportedVersions, (toggleState) => ToggleFilter(FilterShowOnlySupportedVersion, toggleState), true, _activeFilters.Contains(FilterShowOnlySupportedVersion));
-            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterModulesWithUpdates, (toggleState) => ToggleFilter(FilterShowOnlyUpdates,         toggleState), true, _activeFilters.Contains(FilterShowOnlyUpdates));
-            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterInstalledModules, (toggleState) => ToggleFilter(FilterShowOnlyInstalled,         toggleState), true, _activeFilters.Contains(FilterShowOnlyInstalled));
-            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterNotInstalledModules, (toggleState) => ToggleFilter(FilterShowOnlyNotInstalled,   toggleState), true, _activeFilters.Contains(FilterShowOnlyNotInstalled));
+            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterModulesWithUpdates, (toggleState) => ToggleFilter(FilterShowOnlyUpdates, toggleState), true, _activeFilters.Contains(FilterShowOnlyUpdates));
+            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterInstalledModules, (toggleState) => ToggleFilter(FilterShowOnlyInstalled, toggleState), true, _activeFilters.Contains(FilterShowOnlyInstalled));
+            yield return (Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_ProviderExtraOption_FilterNotInstalledModules, (toggleState) => ToggleFilter(FilterShowOnlyNotInstalled, toggleState), true, _activeFilters.Contains(FilterShowOnlyNotInstalled));
         }
 
         protected void ToggleFilter(Func<PkgManifest, bool> filterFunc, bool state) {
@@ -108,24 +108,24 @@ namespace Blish_HUD.Modules.Pkgs {
             }
         }
 
-         public static bool FilterShowOnlySupportedVersion(PkgManifest pkgManifest) {
+        public static bool FilterShowOnlySupportedVersion(PkgManifest pkgManifest) {
             var blishHudDependency = pkgManifest.Dependencies.Find(d => d.IsBlishHud);
 
-            return blishHudDependency                                    != null
+            return blishHudDependency != null
                 && blishHudDependency.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available;
         }
 
-         public static bool FilterShowOnlyUpdates(PkgManifest pkgManifest) {
+        public static bool FilterShowOnlyUpdates(PkgManifest pkgManifest) {
             return GameService.Module.Modules.Any(m =>
                                                       string.Equals(m.Manifest.Namespace, pkgManifest.Namespace, StringComparison.OrdinalIgnoreCase)
                                                    && m.Manifest.Version < pkgManifest.Version);
         }
 
-         public static bool FilterShowOnlyInstalled(PkgManifest pkgManifest) {
+        public static bool FilterShowOnlyInstalled(PkgManifest pkgManifest) {
             return GameService.Module.Modules.Any(m => string.Equals(m.Manifest.Namespace, pkgManifest.Namespace, StringComparison.OrdinalIgnoreCase));
         }
 
-         public static bool FilterShowOnlyNotInstalled(PkgManifest pkgManifest) {
+        public static bool FilterShowOnlyNotInstalled(PkgManifest pkgManifest) {
             return !FilterShowOnlyInstalled(pkgManifest);
         }
 

@@ -42,11 +42,11 @@ namespace Blish_HUD {
             BlishHud.Instance = this;
 
             this.ActiveGraphicsDeviceManager = new GraphicsDeviceManager(this);
-            this.ActiveGraphicsDeviceManager.PreparingDeviceSettings += delegate(object sender, PreparingDeviceSettingsEventArgs args) {
+            this.ActiveGraphicsDeviceManager.PreparingDeviceSettings += delegate (object sender, PreparingDeviceSettingsEventArgs args) {
                 args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 4;
             };
 
-            this.ActiveGraphicsDeviceManager.GraphicsProfile     = GraphicsProfile.HiDef;
+            this.ActiveGraphicsDeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             this.ActiveGraphicsDeviceManager.PreferMultiSampling = true;
 
             this.ActiveContentManager = this.Content;
@@ -55,10 +55,10 @@ namespace Blish_HUD {
 
             this.IsMouseVisible = true;
         }
-        
+
         protected override void Initialize() {
             FormHandle = this.Window.Handle;
-            Form       = Control.FromHandle(FormHandle).FindForm();
+            Form = Control.FromHandle(FormHandle).FindForm();
 
 
             Form.BackColor = System.Drawing.Color.Black;
@@ -103,9 +103,9 @@ namespace Blish_HUD {
 
         protected override void UnloadContent() {
             base.UnloadContent();
-            
+
             Logger.Debug("Unloading services.");
-            
+
             // Let all of the game services have a chance to unload
             foreach (var service in GameService.All) {
                 service.DoUnload();
@@ -167,7 +167,7 @@ namespace Blish_HUD {
             _basicSpriteBatch.Begin();
             GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
             _basicSpriteBatch.End();
-            
+
             base.Draw(gameTime);
         }
     }

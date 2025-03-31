@@ -11,9 +11,9 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
 
         // Consider pivoting this to a common control with support for showing multiple.
 
-        private const int   BOUNCE_COUNT    = 15;
+        private const int BOUNCE_COUNT = 15;
         private const float BOUNCE_DURATION = 1f;
-        private const float BOUNCE_DELAY    = 1.4f;
+        private const float BOUNCE_DELAY = 1.4f;
 
         private const float BOUNCE_ROTATION = -MathHelper.PiOver4 / 4;
 
@@ -37,16 +37,16 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             set => SetProperty(ref _chestOpen, value);
         }
 
-        private int   _wiggleDirection = 1;
-        private bool  _nonOpp          = false;
-        private float _rotation        = 0f;
+        private int _wiggleDirection = 1;
+        private bool _nonOpp = false;
+        private float _rotation = 0f;
 
         public BouncyNotification(AsyncTexture2D chestTexture, AsyncTexture2D openChestTexture = null) {
-            _chestTexture     = chestTexture;
+            _chestTexture = chestTexture;
             _openChestTexture = openChestTexture;
 
-            this.Size             = new Point(64, 64);
-            this.ClipsBounds      = false;
+            this.Size = new Point(64, 64);
+            this.ClipsBounds = false;
 
             DoWiggle();
         }
@@ -59,14 +59,14 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
                 .Reflect()
                 .Repeat(BOUNCE_COUNT)
                 .Ease(Ease.BounceInOut)
-                .Rotation(Tween.RotationUnit.Radians) 
+                .Rotation(Tween.RotationUnit.Radians)
                 // Almost certainly a better way to do this if I thought about it for a bit longer
-                .OnRepeat(() => _wiggleDirection *= (_nonOpp = !_nonOpp) ? -1 : 1) 
+                .OnRepeat(() => _wiggleDirection *= (_nonOpp = !_nonOpp) ? -1 : 1)
                 .OnComplete(DoWiggle);
         }
 
         public override void DoUpdate(GameTime gameTime) {
-            this.Location = new Point(GameService.Graphics.SpriteScreen.Width - this.Width - 24 /* Distance from right edge */, (GameService.Gw2Mumble.UI.IsCompassTopRight 
+            this.Location = new Point(GameService.Graphics.SpriteScreen.Width - this.Width - 24 /* Distance from right edge */, (GameService.Gw2Mumble.UI.IsCompassTopRight
                                                                                                      /* COMPASS TOP    RIGHT */ ? GameService.Graphics.SpriteScreen.Height - 24 /* Distance from bottom edge */
                                                                                                      /* COMPASS BOTTOM RIGHT */ : GameService.Graphics.SpriteScreen.Height - 35 /* Distance from bottom edge of map */ - (int)(GameService.Gw2Mumble.UI.CompassSize.Height / 0.897f))
                                                                                                                               - this.Height - 64 /* Above actual bouncy chests */ - 12 /* Buffer from other bouncy chests */);

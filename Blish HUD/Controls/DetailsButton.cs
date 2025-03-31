@@ -61,33 +61,33 @@ namespace Blish_HUD.Controls {
     /// </summary>
     public class DetailsButton : FlowPanel {
 
-        private const int DEFAULT_EVENTSUMMARY_WIDTH   = 354;
-        private const int DEFAULT_EVENTSUMMARY_HEIGHT  = 100;
+        private const int DEFAULT_EVENTSUMMARY_WIDTH = 354;
+        private const int DEFAULT_EVENTSUMMARY_HEIGHT = 100;
         private const int DEFAULT_BOTTOMSECTION_HEIGHT = 35;
 
         #region Textures
 
-        private readonly AsyncTexture2D _textureFillCrest              = Content.GetTexture(@"controls/detailsbutton/605004");
-        private readonly AsyncTexture2D _textureVignette               = AsyncTexture2D.FromAssetId(605003);
-        private readonly AsyncTexture2D _textureCornerButton           = AsyncTexture2D.FromAssetId(605011);
+        private readonly AsyncTexture2D _textureFillCrest = Content.GetTexture(@"controls/detailsbutton/605004");
+        private readonly AsyncTexture2D _textureVignette = AsyncTexture2D.FromAssetId(605003);
+        private readonly AsyncTexture2D _textureCornerButton = AsyncTexture2D.FromAssetId(605011);
         private readonly AsyncTexture2D _textureBottomSectionSeparator = AsyncTexture2D.FromAssetId(157218);
 
         #endregion
 
-        private DetailsDisplayMode   _displayMode = DetailsDisplayMode.Standard;
-        private DetailsIconSize      _iconSize    = DetailsIconSize.Large;
-        private string               _text;
-        private string               _iconDetails;
-        private AsyncTexture2D       _icon;
-        private bool                 _showVignette = true;
-        private int                  _maxFill;
-        private int                  _currentFill;
-        private bool                 _showFillFraction;
-        private Color                _fillColor           = Color.LightGray;
-        private DetailsHighlightType _highlightType       = DetailsHighlightType.ScrollingHighlight;
-        private int                  _bottomSectionHeight = DEFAULT_BOTTOMSECTION_HEIGHT;
-        private bool                 _showToggleButton    = false;
-        private bool                 _toggleState         = false;
+        private DetailsDisplayMode _displayMode = DetailsDisplayMode.Standard;
+        private DetailsIconSize _iconSize = DetailsIconSize.Large;
+        private string _text;
+        private string _iconDetails;
+        private AsyncTexture2D _icon;
+        private bool _showVignette = true;
+        private int _maxFill;
+        private int _currentFill;
+        private bool _showFillFraction;
+        private Color _fillColor = Color.LightGray;
+        private DetailsHighlightType _highlightType = DetailsHighlightType.ScrollingHighlight;
+        private int _bottomSectionHeight = DEFAULT_BOTTOMSECTION_HEIGHT;
+        private bool _showToggleButton = false;
+        private bool _toggleState = false;
 
         /// <summary>
         /// Determines the way the <see cref="DetailsButton"/> will render.
@@ -221,12 +221,12 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _bottomSectionHeight, value, true);
         }
 
-        private          Glide.Tween              _animFill;
+        private Glide.Tween _animFill;
         private readonly ScrollingHighlightEffect _scrollEffect;
 
         public DetailsButton() {
             this.Size = new Point(DEFAULT_EVENTSUMMARY_WIDTH, DEFAULT_EVENTSUMMARY_HEIGHT);
-            
+
             this.ControlPadding = new Vector2(6, 1);
             this.PadLeftBeforeControl = true;
             this.PadTopBeforeControl = true;
@@ -242,7 +242,7 @@ namespace Blish_HUD.Controls {
             _scrollEffect.SetEnableState(
                                          _highlightType == DetailsHighlightType.ScrollingHighlight
                                             && (this.RelativeMousePosition.Y < this.ContentRegion.Top
-                                            ||  this.RelativeMousePosition.X < this.ContentRegion.Left)
+                                            || this.RelativeMousePosition.X < this.ContentRegion.Left)
                                         );
 
             base.OnMouseMoved(e);
@@ -314,7 +314,7 @@ namespace Blish_HUD.Controls {
                                                _icon,
                                                new Rectangle(
                                                              iconSize / 2 - 64 / 2 + iconOffset,
-                                                             iconSize / 2          - 64 / 2,
+                                                             iconSize / 2 - 64 / 2,
                                                              64,
                                                              64 - (int)(64 * localIconFill)
                                                             ),
@@ -328,7 +328,7 @@ namespace Blish_HUD.Controls {
                                                _icon,
                                                new Rectangle(
                                                              iconSize / 2 - 64 / 2 + iconOffset,
-                                                             iconSize / 2 - 64 / 2  + (64 - (int)(localIconFill * 64)),
+                                                             iconSize / 2 - 64 / 2 + (64 - (int)(localIconFill * 64)),
                                                              64,
                                                              (int)(localIconFill * 64)
                                                             ),
@@ -342,7 +342,7 @@ namespace Blish_HUD.Controls {
 
                     // Only show the fill crest if we aren't full
                     if (fillPercent < 0.99)
-                        spriteBatch.DrawOnCtrl(this, _textureFillCrest,  new Rectangle(0, iconSize - (int) (fillSpace), iconSize, (int)fillSpace));
+                        spriteBatch.DrawOnCtrl(this, _textureFillCrest, new Rectangle(0, iconSize - (int)(fillSpace), iconSize, (int)fillSpace));
                 }
 
                 if (_showFillFraction)
@@ -353,7 +353,7 @@ namespace Blish_HUD.Controls {
                                        this,
                                        _icon,
                                        new Rectangle(iconSize / 2 - 64 / 2 + iconOffset,
-                                                     iconSize / 2          - 64 / 2,
+                                                     iconSize / 2 - 64 / 2,
                                                      64,
                                                      64)
                                       );

@@ -18,15 +18,15 @@ namespace Blish_HUD.Content {
         private const string ASSETSERV_HOST = "https://assets.gw2dat.com";
 
         private const string ASSETCACHE_PATH = "assets/";
-        private const string METADATA_FILE   = "metadata.gz";
+        private const string METADATA_FILE = "metadata.gz";
 
-        private const double RETRY_COUNT  = 5;
-        private const int    RETRY_DELAY  = 2000;
+        private const double RETRY_COUNT = 5;
+        private const int RETRY_DELAY = 2000;
         private const double RETRY_RELOAD = 5000d;
 
-        private Point[]                           _textureSizes;
+        private Point[] _textureSizes;
         private Dictionary<int, TextureReference> _textureReferences;
-        private Texture2D[]                       _transparentTextures;
+        private Texture2D[] _transparentTextures;
 
         private double _retryTokens = RETRY_COUNT;
 
@@ -82,7 +82,7 @@ namespace Blish_HUD.Content {
                                      // Use the last one successfully downloaded
                                      ? File.Open(metadataCache, FileMode.Open, FileAccess.Read, FileShare.Read)
                                      // Yikes, use the one we ship with
-                                     : LoadFallbackMetadataStream(); 
+                                     : LoadFallbackMetadataStream();
             }
 
             return metadataStream;
@@ -94,15 +94,15 @@ namespace Blish_HUD.Content {
             if (metadataStream.Length == 0) {
                 Logger.Warn("Failed to load asset metadata.  Textures won't be loaded.");
 
-                _textureReferences   = new Dictionary<int, TextureReference>(0);
-                _textureSizes        = Array.Empty<Point>();
+                _textureReferences = new Dictionary<int, TextureReference>(0);
+                _textureSizes = Array.Empty<Point>();
                 _transparentTextures = Array.Empty<Texture2D>();
 
                 return;
             }
 
-            using var gzipStream     = new GZipStream(metadataStream, CompressionMode.Decompress);
-            using var parser         = new BinaryReader(gzipStream);
+            using var gzipStream = new GZipStream(metadataStream, CompressionMode.Decompress);
+            using var parser = new BinaryReader(gzipStream);
 
             // BinaryReader to keep things fairly readable
 
@@ -110,14 +110,14 @@ namespace Blish_HUD.Content {
 
             int sizeCount = parser.ReadInt32();
 
-            _textureSizes        = new Point[sizeCount];
+            _textureSizes = new Point[sizeCount];
             _transparentTextures = new Texture2D[sizeCount];
 
             for (int sizeIndex = 0; sizeIndex < sizeCount; sizeIndex++) {
-                int width  = parser.ReadInt32();
+                int width = parser.ReadInt32();
                 int height = parser.ReadInt32();
 
-                _textureSizes[sizeIndex]        = new Point(width, height);
+                _textureSizes[sizeIndex] = new Point(width, height);
                 _transparentTextures[sizeIndex] = new Texture2D(BlishHud.Instance.GraphicsDevice /* This is safe since we're loading early on the main thread */, width, height);
                 _transparentTextures[sizeIndex].SetData(Enumerable.Repeat(Color.Transparent, width * height).ToArray());
 
@@ -142,9 +142,9 @@ namespace Blish_HUD.Content {
                 _lastDebugReport = gameTime.TotalGameTime.TotalMilliseconds;
             }
 
-            return _lastDebugString ??= "Loaded Asset Textures: " + _textureReferences.Values.Count(tf => 
-                                                                                                          tf.Texture != null 
-                                                                                                       && tf.Texture.TryGetTarget(out var texture) 
+            return _lastDebugString ??= "Loaded Asset Textures: " + _textureReferences.Values.Count(tf =>
+                                                                                                          tf.Texture != null
+                                                                                                       && tf.Texture.TryGetTarget(out var texture)
                                                                                                        && !texture.IsDisposed);
         }
 
@@ -179,9 +179,9 @@ namespace Blish_HUD.Content {
         /// specify <see cref="FileShare.ReadWrite"/> to avoid conflicting with the caching mechanism.
         /// </summary>
         public string GetLocalTexturePath(int assetId) {
-            string textureName  = $"{assetId}.png";
-            string textureDir   = Path.Combine(_assetCachePath, $"{textureName[0]}");
-            string localTexture = Path.Combine(textureDir,      textureName);
+            string textureName = $"{assetId}.png";
+            string textureDir = Path.Combine(_assetCachePath, $"{textureName[0]}");
+            string localTexture = Path.Combine(textureDir, textureName);
 
             try {
                 Directory.CreateDirectory(textureDir);

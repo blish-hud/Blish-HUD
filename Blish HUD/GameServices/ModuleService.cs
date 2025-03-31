@@ -25,21 +25,21 @@ namespace Blish_HUD {
         private const string MODULE_SETTINGS = "ModuleConfiguration";
 
         private const string MODULESTATES_CORE_SETTING = "ModuleStates";
-        private const string EXPORTED_VERSION_SETTING  = "ExportedOn";
+        private const string EXPORTED_VERSION_SETTING = "ExportedOn";
 
         private const string MODULES_DIRECTORY = "modules";
 
-        private const string MODULE_EXTENSION    = ".bhm";
+        private const string MODULE_EXTENSION = ".bhm";
         private const string MODULE_MANIFESTNAME = "manifest.json";
 
         private const string MODULE_COMPATIBILITYLIST = "compatibility.json";
-        private const string MODULE_SPOILEDURI        = "https://pkgs.blishhud.com/spoiled.json";
+        private const string MODULE_SPOILEDURI = "https://pkgs.blishhud.com/spoiled.json";
 
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleRegistered;
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleUnregistered;
 
-        private List<ModuleDependency> _incompatibleModules      = new List<ModuleDependency>(0);
-        private HashSet<string>        _spoiledModuleIdentifiers = new HashSet<string>(0);
+        private List<ModuleDependency> _incompatibleModules = new List<ModuleDependency>(0);
+        private HashSet<string> _spoiledModuleIdentifiers = new HashSet<string>(0);
 
         /// <summary>
         /// Access to repo management and state.
@@ -50,13 +50,13 @@ namespace Blish_HUD {
 
         internal string ModulesDirectory => DirectoryUtil.RegisterDirectory(MODULES_DIRECTORY);
 
-        private SettingEntry<List<string>>                    _exportedOnVersions;
+        private SettingEntry<List<string>> _exportedOnVersions;
         private SettingEntry<Dictionary<string, ModuleState>> _moduleStates;
 
         public SettingEntry<Dictionary<string, ModuleState>> ModuleStates => _moduleStates;
 
-        private readonly List<ModuleManager>          _modules = new List<ModuleManager>();
-        public           IReadOnlyList<ModuleManager> Modules => _modules.ToList();
+        private readonly List<ModuleManager> _modules = new List<ModuleManager>();
+        public IReadOnlyList<ModuleManager> Modules => _modules.ToList();
 
         internal ModuleService() {
             SetServiceModules(this.ModulePkgRepoHandler = new ModulePkgRepoHandler(this));
@@ -69,8 +69,8 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _moduleStates       = settings.DefineSetting(MODULESTATES_CORE_SETTING, new Dictionary<string, ModuleState>());
-            _exportedOnVersions = settings.DefineSetting(EXPORTED_VERSION_SETTING,  new List<string>());
+            _moduleStates = settings.DefineSetting(MODULESTATES_CORE_SETTING, new Dictionary<string, ModuleState>());
+            _exportedOnVersions = settings.DefineSetting(EXPORTED_VERSION_SETTING, new List<string>());
         }
 
         internal bool ModuleIsExplicitlyIncompatible(ModuleManager moduleManager) {
@@ -184,8 +184,8 @@ namespace Blish_HUD {
         private void LoadCompatibility(IDataReader datReader) {
             if (datReader.FileExists(MODULE_COMPATIBILITYLIST)) {
                 try {
-                    var    compatibilityStream = datReader.GetFileStream(MODULE_COMPATIBILITYLIST).ReplaceWithMemoryStream();
-                    string compatibilityRaw    = Encoding.UTF8.GetString(compatibilityStream.GetBuffer(), 0, (int)compatibilityStream.Length);
+                    var compatibilityStream = datReader.GetFileStream(MODULE_COMPATIBILITYLIST).ReplaceWithMemoryStream();
+                    string compatibilityRaw = Encoding.UTF8.GetString(compatibilityStream.GetBuffer(), 0, (int)compatibilityStream.Length);
                     _incompatibleModules = JsonConvert.DeserializeObject<List<ModuleDependency>>(compatibilityRaw, new ModuleDependency.VersionDependenciesConverter());
                 } catch (Exception ex) {
                     Logger.Warn(ex, "Failed to load {compatibilityFile} from the ref.dat.", MODULE_COMPATIBILITYLIST);
@@ -211,7 +211,7 @@ namespace Blish_HUD {
             LoadCompatibility(datReader);
             LoadSpoiledList();
         }
-        
+
         /// <summary>
         /// Registers a packed (.bhm) module with the <see cref="ModuleService"/>.
         /// </summary>
@@ -324,13 +324,13 @@ namespace Blish_HUD {
             }
         }
 
-        private          MenuItem                            _rootModuleSettingsMenuItem;
+        private MenuItem _rootModuleSettingsMenuItem;
         private readonly Dictionary<MenuItem, ModuleManager> _moduleMenus = new Dictionary<MenuItem, ModuleManager>();
-        
+
         private void RegisterModuleMenuInSettings(ModuleManager moduleManager) {
             var moduleMi = new ModuleMenuItem(moduleManager) {
                 BasicTooltipText = moduleManager.Manifest.Description,
-                Parent           = _rootModuleSettingsMenuItem
+                Parent = _rootModuleSettingsMenuItem
             };
 
             _moduleMenus.Add(moduleMi, moduleManager);
@@ -356,7 +356,7 @@ namespace Blish_HUD {
 
         private void RegisterModulesInSettings() {
             _rootModuleSettingsMenuItem = new MenuItem(Strings.GameServices.ModulesService.ManageModulesSection, Content.GetTexture("156764-noarrow"));
-            
+
             Overlay.SettingsTab.RegisterSettingMenu(_rootModuleSettingsMenuItem, HandleModuleSettingMenu, int.MaxValue - 10);
         }
 

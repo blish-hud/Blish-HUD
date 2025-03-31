@@ -13,10 +13,10 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private const int CONTROL_PADDING = 5;
 
-        private const int DROPDOWN_WIDTH  = 250;
+        private const int DROPDOWN_WIDTH = 250;
         private const int DROPDOWN_HEIGHT = 27;
 
-        private Label    _displayNameLabel;
+        private Label _displayNameLabel;
         private Dropdown _enumDropdown;
 
         private TEnum[] _enumValues;
@@ -34,12 +34,12 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void BuildSetting(Container buildPanel) {
             _displayNameLabel = new Label() {
                 AutoSizeWidth = true,
-                Location      = new Point(CONTROL_PADDING, 0),
-                Parent        = buildPanel
+                Location = new Point(CONTROL_PADDING, 0),
+                Parent = buildPanel
             };
 
             _enumDropdown = new Dropdown() {
-                Size   = new Point(DROPDOWN_WIDTH, DROPDOWN_HEIGHT),
+                Size = new Point(DROPDOWN_WIDTH, DROPDOWN_HEIGHT),
                 Parent = buildPanel
             };
 
@@ -60,7 +60,7 @@ namespace Blish_HUD.Settings.UI.Views {
                     break;
                 case SettingDisabledComplianceRequisite disabledRequisite:
                     _displayNameLabel.Enabled = !disabledRequisite.Disabled;
-                    _enumDropdown.Enabled     = !disabledRequisite.Disabled;
+                    _enumDropdown.Enabled = !disabledRequisite.Disabled;
                     break;
                 default:
                     return false;
@@ -74,12 +74,12 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         private void UpdateSizeAndLayout() {
-            this.ViewTarget.Height   = _enumDropdown.Bottom;
+            this.ViewTarget.Height = _enumDropdown.Bottom;
             _displayNameLabel.Height = this.ViewTarget.Height;
 
             if (this.DefinedWidth > 0) {
-                _enumDropdown.Left    = _displayNameLabel.Right + CONTROL_PADDING;
-                this.ViewTarget.Width = _enumDropdown.Right     + CONTROL_PADDING;
+                _enumDropdown.Left = _displayNameLabel.Right + CONTROL_PADDING;
+                this.ViewTarget.Width = _enumDropdown.Right + CONTROL_PADDING;
             } else {
                 _enumDropdown.Location = new Point(this.ViewTarget.Width - CONTROL_PADDING - DROPDOWN_WIDTH, 0);
             }

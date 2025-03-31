@@ -13,21 +13,21 @@ namespace Blish_HUD.Controls {
     [Obsolete("This control will be removed in the future.  Use TabbedWindow2 instead.")]
     public class TabbedWindow : WindowBase {
 
-        private const int TAB_HEIGHT    = 52;
-        private const int TAB_WIDTH     = 104;
+        private const int TAB_HEIGHT = 52;
+        private const int TAB_WIDTH = 104;
         private const int TAB_ICON_SIZE = 32;
 
         private const int TAB_SECTION_WIDTH = 46;
 
-        private const int WINDOWCONTENT_WIDTH  = 1024;
+        private const int WINDOWCONTENT_WIDTH = 1024;
         private const int WINDOWCONTENT_HEIGHT = 700;
 
         #region Textures
 
-        private static readonly Texture2D      _textureDefaultBackround = Content.GetTexture("controls/window/502049");
-        private readonly        AsyncTexture2D _textureSplitLine        = AsyncTexture2D.FromAssetId(605024);
-        private static readonly Texture2D      _textureBlackFade        = Content.GetTexture("fade-down-46");
-        private static readonly Texture2D      _textureTabActive        = Content.GetTexture("window-tab-active");
+        private static readonly Texture2D _textureDefaultBackround = Content.GetTexture("controls/window/502049");
+        private readonly AsyncTexture2D _textureSplitLine = AsyncTexture2D.FromAssetId(605024);
+        private static readonly Texture2D _textureBlackFade = Content.GetTexture("fade-down-46");
+        private static readonly Texture2D _textureTabActive = Content.GetTexture("window-tab-active");
 
         #endregion
 
@@ -55,10 +55,10 @@ namespace Blish_HUD.Controls {
 
         private readonly LinkedList<IView> _currentNav = new LinkedList<IView>();
 
-        private readonly Dictionary<WindowTab, Rectangle>   _tabRegions = new Dictionary<WindowTab, Rectangle>();
-        private readonly Dictionary<WindowTab, Panel>       _panels     = new Dictionary<WindowTab, Panel>();
-        private readonly Dictionary<WindowTab, Func<IView>> _views      = new Dictionary<WindowTab, Func<IView>>();
-        private          List<WindowTab>                    _tabs       = new List<WindowTab>();
+        private readonly Dictionary<WindowTab, Rectangle> _tabRegions = new Dictionary<WindowTab, Rectangle>();
+        private readonly Dictionary<WindowTab, Panel> _panels = new Dictionary<WindowTab, Panel>();
+        private readonly Dictionary<WindowTab, Func<IView>> _views = new Dictionary<WindowTab, Func<IView>>();
+        private List<WindowTab> _tabs = new List<WindowTab>();
 
         private readonly ViewContainer _activeViewContainer;
 
@@ -75,9 +75,9 @@ namespace Blish_HUD.Controls {
 
             _activeViewContainer = new ViewContainer() {
                 HeightSizingMode = SizingMode.Fill,
-                WidthSizingMode  = SizingMode.Fill,
-                Size             = _contentRegion.Value.Size,
-                Parent           = this
+                WidthSizingMode = SizingMode.Fill,
+                Size = _contentRegion.Value.Size,
+                Parent = this
             };
         }
 
@@ -107,8 +107,8 @@ namespace Blish_HUD.Controls {
                 for (int tabIndex = 0; tabIndex < _tabs.Count; tabIndex++) {
                     var tab = _tabs[tabIndex];
                     if (_tabRegions[tab].Contains(RelativeMousePosition)) {
-                        HoveredTabIndex       = tabIndex;
-                        newSet                = true;
+                        HoveredTabIndex = tabIndex;
+                        newSet = true;
                         this.BasicTooltipText = tab.Name;
 
                         break;
@@ -118,7 +118,7 @@ namespace Blish_HUD.Controls {
             }
 
             if (!newSet) {
-                this.HoveredTabIndex  = -1;
+                this.HoveredTabIndex = -1;
                 this.BasicTooltipText = null;
             }
 
@@ -201,7 +201,7 @@ namespace Blish_HUD.Controls {
 
                 // Update tab index without making tab switch noise
                 if (_selectedTabIndex == -1) {
-                    _subtitle         = prevTab.Name;
+                    _subtitle = prevTab.Name;
                     _selectedTabIndex = _tabs.IndexOf(prevTab);
 
                     Navigate(viewFunc(), false);
@@ -262,7 +262,7 @@ namespace Blish_HUD.Controls {
         }
 
         #endregion
-        
+
         #region Calculated Layout
 
         private Rectangle _layoutTopTabBarBounds;
@@ -281,15 +281,15 @@ namespace Blish_HUD.Controls {
 
             if (_tabs.Count == 0) return;
 
-            var firstTabBounds    = TabBoundsFromIndex(0);
+            var firstTabBounds = TabBoundsFromIndex(0);
             var selectedTabBounds = _tabRegions[this.SelectedTab];
-            var lastTabBounds     = TabBoundsFromIndex(_tabRegions.Count - 1);
+            var lastTabBounds = TabBoundsFromIndex(_tabRegions.Count - 1);
 
-            _layoutTopTabBarBounds    = new Rectangle(0, 0,                    TAB_SECTION_WIDTH, firstTabBounds.Top);
+            _layoutTopTabBarBounds = new Rectangle(0, 0, TAB_SECTION_WIDTH, firstTabBounds.Top);
             _layoutBottomTabBarBounds = new Rectangle(0, lastTabBounds.Bottom, TAB_SECTION_WIDTH, _size.Y - lastTabBounds.Bottom);
 
-            int topSplitHeight    = selectedTabBounds.Top - ContentRegion.Top;
-            int bottomSplitHeight = ContentRegion.Bottom  - selectedTabBounds.Bottom;
+            int topSplitHeight = selectedTabBounds.Top - ContentRegion.Top;
+            int bottomSplitHeight = ContentRegion.Bottom - selectedTabBounds.Bottom;
 
             _layoutTopSplitLineBounds = new Rectangle(ContentRegion.X - _textureSplitLine.Width + 1,
                                                       ContentRegion.Y,

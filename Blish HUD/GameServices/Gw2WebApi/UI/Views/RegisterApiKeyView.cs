@@ -33,7 +33,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private static readonly Logger Logger = Logger.GetLogger<RegisterApiKeyView>();
 
         private const int MAX_KEYNAME_LENGTH = 14;
-        private const int MIN_KEY_LENGTH     = 10;
+        private const int MIN_KEY_LENGTH = 10;
 
         private readonly Dictionary<ApiTokenStatusType, AsyncTexture2D> _tokenStatusTextures = new Dictionary<ApiTokenStatusType, AsyncTexture2D>() {
             {ApiTokenStatusType.Neutral, AsyncTexture2D.FromAssetId(154983)},
@@ -54,12 +54,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         private (TokenInfo TokenInfo, Account AccountInfo) _loadedDetails;
 
-        private TextBox        _apiKeyTextBox;
-        private Image          _tokenStatusImg;
+        private TextBox _apiKeyTextBox;
+        private Image _tokenStatusImg;
         private LoadingSpinner _loadingSpinner;
-        private Label          _tokenStatusLbl;
+        private Label _tokenStatusLbl;
         private StandardButton _registerKeyBttn;
-        private FlowPanel      _tokensList;
+        private FlowPanel _tokensList;
 
         private CancellationTokenSource _tokenTestCanceller;
 
@@ -71,69 +71,69 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         protected override void Build(Container buildPanel) {
             var registerLbl = new Label() {
-                Text           = Strings.GameServices.Gw2ApiService.ManageApiKeys_Title,
-                Font           = GameService.Content.DefaultFont32,
-                StrokeText     = true,
+                Text = Strings.GameServices.Gw2ApiService.ManageApiKeys_Title,
+                Font = GameService.Content.DefaultFont32,
+                StrokeText = true,
                 AutoSizeHeight = true,
-                AutoSizeWidth  = true,
-                Location       = new Point(25, 25),
-                Parent         = buildPanel
+                AutoSizeWidth = true,
+                Location = new Point(25, 25),
+                Parent = buildPanel
             };
 
             _apiKeyTextBox = new TextBox() {
                 Location = new Point(registerLbl.Left, registerLbl.Bottom + 10),
-                Font     = GameService.Content.DefaultFont16,
-                Width    = buildPanel.Width - 50,
-                Height   = 43,
-                Parent   = buildPanel
+                Font = GameService.Content.DefaultFont16,
+                Width = buildPanel.Width - 50,
+                Height = 43,
+                Parent = buildPanel
             };
 
             _apiKeyTextBox.TextChanged += ApiKeyTextBoxOnTextChanged;
 
             _registerKeyBttn = new StandardButton() {
-                Text   = Strings.GameServices.Gw2ApiService.ManageApiKeys_Register,
-                Width  = 96,
-                Right  = _apiKeyTextBox.Right,
-                Top    = _apiKeyTextBox.Bottom + 5,
+                Text = Strings.GameServices.Gw2ApiService.ManageApiKeys_Register,
+                Width = 96,
+                Right = _apiKeyTextBox.Right,
+                Top = _apiKeyTextBox.Bottom + 5,
                 Parent = buildPanel
             };
 
             var clearKeyBttn = new StandardButton() {
-                Text   = Strings.Common.Action_Clear,
-                Width  = 96,
-                Right  = _registerKeyBttn.Left - 10,
-                Top    = _registerKeyBttn.Top,
+                Text = Strings.Common.Action_Clear,
+                Width = 96,
+                Right = _registerKeyBttn.Left - 10,
+                Top = _registerKeyBttn.Top,
                 Parent = buildPanel
             };
 
             _tokenStatusImg = new Image() {
-                Size     = new Point(32,                  32),
+                Size = new Point(32, 32),
                 Location = new Point(_apiKeyTextBox.Left, _apiKeyTextBox.Bottom + 5),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             _loadingSpinner = new LoadingSpinner() {
-                Size     = _tokenStatusImg.Size,
+                Size = _tokenStatusImg.Size,
                 Location = _tokenStatusImg.Location,
-                Visible  = false,
-                Parent   = buildPanel
+                Visible = false,
+                Parent = buildPanel
             };
 
             _tokenStatusLbl = new Label() {
-                Font          = GameService.Content.DefaultFont16,
+                Font = GameService.Content.DefaultFont16,
                 AutoSizeWidth = true,
-                Location      = new Point(_tokenStatusImg.Right + 5, _tokenStatusImg.Top),
-                Height        = _tokenStatusImg.Height,
-                Parent        = buildPanel
+                Location = new Point(_tokenStatusImg.Right + 5, _tokenStatusImg.Top),
+                Height = _tokenStatusImg.Height,
+                Parent = buildPanel
             };
 
             _tokensList = new FlowPanel {
-                Location            = new Point(_apiKeyTextBox.Left, _tokenStatusImg.Bottom                     + 25),
-                Size                = new Point(380,                 buildPanel.Height - _tokenStatusImg.Bottom - 25),
+                Location = new Point(_apiKeyTextBox.Left, _tokenStatusImg.Bottom + 25),
+                Size = new Point(380, buildPanel.Height - _tokenStatusImg.Bottom - 25),
                 OuterControlPadding = new Vector2(11, 11),
-                CanScroll           = true,
-                ShowBorder          = true,
-                Parent              = buildPanel
+                CanScroll = true,
+                ShowBorder = true,
+                Parent = buildPanel
             };
 
 
@@ -142,13 +142,13 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _registerKeyBttn.Click += RegisterKeyBttnClicked;
 
             var instructions = new Label() {
-                Text           = Strings.Common.Instructions,
-                Location       = new Point(_tokensList.Right + 10, _tokensList.Top + 24),
-                Font           = GameService.Content.DefaultFont32,
-                AutoSizeWidth  = true,
+                Text = Strings.Common.Instructions,
+                Location = new Point(_tokensList.Right + 10, _tokensList.Top + 24),
+                Font = GameService.Content.DefaultFont32,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                StrokeText     = true,
-                Parent         = buildPanel
+                StrokeText = true,
+                Parent = buildPanel
             };
 
             var bullet = AsyncTexture2D.FromAssetId(155038);
@@ -156,96 +156,96 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             int offset = 18;
 
             var step1Bullet = new Image(bullet) {
-                Size     = new Point(16,                16),
+                Size = new Point(16, 16),
                 Location = new Point(instructions.Left, instructions.Bottom + 10),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             var step1 = new Label() {
-                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step1,
-                Location       = new Point(step1Bullet.Right + 2, step1Bullet.Top - 3),
-                Font           = GameService.Content.DefaultFont16,
-                AutoSizeWidth  = true,
+                Text = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step1,
+                Location = new Point(step1Bullet.Right + 2, step1Bullet.Top - 3),
+                Font = GameService.Content.DefaultFont16,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Parent         = buildPanel
+                Parent = buildPanel
             };
 
             var openAnetApplicationsBttn = new StandardButton() {
-                Text     = Strings.GameServices.Gw2ApiService.Link_ManageApplications,
-                Icon     = AsyncTexture2D.FromAssetId(1441452),
-                Size     = new Point(256,        32),
+                Text = Strings.GameServices.Gw2ApiService.Link_ManageApplications,
+                Icon = AsyncTexture2D.FromAssetId(1441452),
+                Size = new Point(256, 32),
                 Location = new Point(step1.Left, step1.Bottom + 5),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             var step2Bullet = new Image(bullet) {
-                Size     = new Point(16,                16),
+                Size = new Point(16, 16),
                 Location = new Point(step1Bullet.Left, openAnetApplicationsBttn.Bottom + offset),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             var step2 = new Label() {
-                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step2,
-                Location       = new Point(step2Bullet.Right + 2, step2Bullet.Top - 3),
-                Font           = GameService.Content.DefaultFont16,
-                AutoSizeWidth  = true,
+                Text = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step2,
+                Location = new Point(step2Bullet.Right + 2, step2Bullet.Top - 3),
+                Font = GameService.Content.DefaultFont16,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Parent         = buildPanel
+                Parent = buildPanel
             };
 
             var step3Bullet = new Image(bullet) {
-                Size     = new Point(16,               16),
+                Size = new Point(16, 16),
                 Location = new Point(step1Bullet.Left, step2.Bottom + offset),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             var step3 = new Label() {
-                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step3,
-                Location       = new Point(step3Bullet.Right + 2, step3Bullet.Top - 3),
-                Font           = GameService.Content.DefaultFont16,
-                AutoSizeWidth  = true,
+                Text = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step3,
+                Location = new Point(step3Bullet.Right + 2, step3Bullet.Top - 3),
+                Font = GameService.Content.DefaultFont16,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Parent         = buildPanel
+                Parent = buildPanel
             };
 
             var step3Warn = new Label() {
-                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Warning,
-                TextColor      = Control.StandardColors.Yellow,
-                Location       = new Point(step3.Left, step3.Bottom + 3),
-                Font           = GameService.Content.DefaultFont12,
-                AutoSizeWidth  = true,
+                Text = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Warning,
+                TextColor = Control.StandardColors.Yellow,
+                Location = new Point(step3.Left, step3.Bottom + 3),
+                Font = GameService.Content.DefaultFont12,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Parent         = buildPanel
+                Parent = buildPanel
             };
 
             var step4Bullet = new Image(bullet) {
-                Size     = new Point(16,               16),
+                Size = new Point(16, 16),
                 Location = new Point(step1Bullet.Left, step3Warn.Bottom + offset),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             var step4 = new Label() {
-                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step4,
-                Location       = new Point(step4Bullet.Right + 2, step4Bullet.Top - 3),
-                Font           = GameService.Content.DefaultFont16,
-                AutoSizeWidth  = true,
+                Text = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step4,
+                Location = new Point(step4Bullet.Right + 2, step4Bullet.Top - 3),
+                Font = GameService.Content.DefaultFont16,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Parent         = buildPanel
+                Parent = buildPanel
             };
 
             var step5Bullet = new Image(bullet) {
-                Size     = new Point(16,               16),
+                Size = new Point(16, 16),
                 Location = new Point(step1Bullet.Left, step4.Bottom + offset),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             var step5 = new Label() {
-                Text           = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step5,
-                Location       = new Point(step5Bullet.Right + 2, step5Bullet.Top - 3),
-                Font           = GameService.Content.DefaultFont16,
-                AutoSizeWidth  = true,
+                Text = Strings.GameServices.Gw2ApiService.CreateTokenInstructions_Step5,
+                Location = new Point(step5Bullet.Right + 2, step5Bullet.Top - 3),
+                Font = GameService.Content.DefaultFont16,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Parent         = buildPanel
+                Parent = buildPanel
             };
 
             openAnetApplicationsBttn.Click += delegate { Process.Start(_arenaNetApplicationsWebsiteProcessStartInfo); };
@@ -270,12 +270,12 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             foreach (var key in GameService.Gw2WebApi.GetKeys()) {
                 var nPanel = new ViewContainer() {
-                    Size     = new Point(350, 82),
+                    Size = new Point(350, 82),
                     ShowTint = true,
-                    Parent   = _tokensList
+                    Parent = _tokensList
                 };
 
-                var apiTokenView      = new ApiTokenView();
+                var apiTokenView = new ApiTokenView();
                 var apiTokenPresenter = new ApiTokenPresenter(apiTokenView, key);
 
                 nPanel.Show(apiTokenView.WithPresenter(apiTokenPresenter));
