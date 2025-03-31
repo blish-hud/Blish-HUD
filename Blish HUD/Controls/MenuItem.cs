@@ -63,9 +63,7 @@ namespace Blish_HUD.Controls {
         public bool Selected => _selectedMenuItem == this;
 
         protected MenuItem _selectedMenuItem;
-        public MenuItem SelectedMenuItem {
-            get => _selectedMenuItem;
-        }
+        public MenuItem SelectedMenuItem => _selectedMenuItem;
 
         protected int _menuDepth = 0;
         protected int MenuDepth {

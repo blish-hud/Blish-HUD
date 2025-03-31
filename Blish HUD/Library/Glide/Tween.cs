@@ -34,17 +34,17 @@ namespace Glide {
         /// <summary>
         /// The time remaining before the tween ends or repeats.
         /// </summary>
-        public float TimeRemaining { get { return Duration - Time; } }
+        public float TimeRemaining => Duration - Time;
 
         /// <summary>
         /// A value between 0 and 1, where 0 means the tween has not been started and 1 means that it has completed.
         /// </summary>
-        public float Completion { get { return Duration > 0 ? Math.Min(Math.Max(Time / Duration, 0), 1) : 1; } }
+        public float Completion => Duration > 0 ? Math.Min(Math.Max(Time / Duration, 0), 1) : 1;
 
         /// <summary>
         /// Whether the tween is currently looping.
         /// </summary>
-        public bool Looping { get { return repeatCount != 0; } }
+        public bool Looping => repeatCount != 0;
 
         /// <summary>
         /// The object this tween targets. Will be null if the tween represents a timer.
