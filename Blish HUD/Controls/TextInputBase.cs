@@ -493,7 +493,7 @@ namespace Blish_HUD.Controls {
 
             value = ProcessText(value);
 
-            if (!SetProperty(ref _text, value, false, nameof(Text))) {
+            if (!SetProperty(ref _text, value, false, nameof(this.Text))) {
                 return false;
             }
 
@@ -518,7 +518,7 @@ namespace Blish_HUD.Controls {
         }
 
         public override bool GetFocusState() {
-            return Focused;
+            return this.Focused;
         }
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {

@@ -123,7 +123,7 @@ namespace Blish_HUD.GameIntegration {
                     var (Device, Peak) = peakValues.OrderByDescending(x => x.Peak).First();
 
                     if (_deviceSetting.Value == Devices.Gw2OutputDevice) {
-                        AudioDevice = Device.AudioDevice;
+                        this.AudioDevice = Device.AudioDevice;
                     }
 
                     _audioPeakBuffer.PushValue(Peak);

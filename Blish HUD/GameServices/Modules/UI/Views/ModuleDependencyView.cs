@@ -42,7 +42,7 @@ namespace Blish_HUD.Modules.UI.Views {
             this.Menu = new ContextMenuStrip();
             _ignoreModuleDependenciesToggle = this.Menu.AddMenuItem(Strings.GameServices.ModulesService.ModuleManagement_IgnoreDependencyRequirements);
             _ignoreModuleDependenciesToggle.CanCheck = true;
-            _ignoreModuleDependenciesToggle.CheckedChanged += delegate (object sender, CheckChangedEvent e) { IgnoreModuleDependencies = e.Checked; };
+            _ignoreModuleDependenciesToggle.CheckedChanged += delegate (object sender, CheckChangedEvent e) { this.IgnoreModuleDependencies = e.Checked; };
 
             _dependencyMenuList = new Menu() {
                 Size = buildPanel.ContentRegion.Size,

@@ -31,8 +31,8 @@ namespace Blish_HUD {
 
         internal void EnableHooks() {
             if (_hookManager.EnableHook()) {
-                _hookManager.RegisterMouseHandler(Mouse.HandleInput);
-                _hookManager.RegisterKeyboardHandler(Keyboard.HandleInput);
+                _hookManager.RegisterMouseHandler(this.Mouse.HandleInput);
+                _hookManager.RegisterKeyboardHandler(this.Keyboard.HandleInput);
 
                 this.Mouse.OnEnable();
                 this.Keyboard.OnEnable();
@@ -43,8 +43,8 @@ namespace Blish_HUD {
 
         internal void DisableHooks() {
             _hookManager.DisableHook();
-            _hookManager.UnregisterMouseHandler(Mouse.HandleInput);
-            _hookManager.UnregisterKeyboardHandler(Keyboard.HandleInput);
+            _hookManager.UnregisterMouseHandler(this.Mouse.HandleInput);
+            _hookManager.UnregisterKeyboardHandler(this.Keyboard.HandleInput);
 
             this.Mouse.OnDisable();
             this.Keyboard.OnDisable();
@@ -65,8 +65,8 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            Mouse.Update();
-            Keyboard.Update();
+            this.Mouse.Update();
+            this.Keyboard.Update();
         }
     }
 }

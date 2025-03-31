@@ -54,7 +54,7 @@ namespace Blish_HUD.Controls {
             // TODO: If not enabled, draw darker to indicate it is disabled
 
             spriteBatch.DrawOnCtrl(tabbedControl,
-                                   Icon,
+                                   this.Icon,
                                    new Rectangle(bounds.Right - (bounds.Width / 2) - (this.Icon.Texture.Width / 2),
                                                  bounds.Bottom - (bounds.Height / 2) - (this.Icon.Texture.Height / 2),
                                                  this.Icon.Texture.Width,

@@ -86,7 +86,7 @@ namespace Blish_HUD.Modules.UI.Views {
             };
 
             settingsButton.Click += (sender, args) => {
-                SettingsMenu.Show((Control)sender);
+                this.SettingsMenu.Show((Control)sender);
             };
         }
 

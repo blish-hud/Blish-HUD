@@ -269,7 +269,7 @@ namespace Blish_HUD.Controls {
         protected override void OnClick(MouseEventArgs e) {
             if (_canCheck && this.MouseOverIconBox) {
                 // Mouse was clicked inside of the checkbox
-                Checked = !Checked;
+                this.Checked = !this.Checked;
 
             } else if (_overSection && !_children.IsEmpty) {
                 // Mouse was clicked inside of the mainbody of the MenuItem
@@ -279,7 +279,7 @@ namespace Blish_HUD.Controls {
             } else if (_overSection && _canCheck) {
                 // Mouse was clicked inside of the mainbody of the MenuItem,
                 // but we have no children, so we toggle checkbox
-                Checked = !Checked;
+                this.Checked = !this.Checked;
 
             } else if (!_canCheck && _children.IsEmpty) {
                 // Cannot be checked and has no children, so we probably navigate views.
@@ -295,26 +295,26 @@ namespace Blish_HUD.Controls {
 
         protected override void OnMouseMoved(MouseEventArgs e) {
             // Helps us know when the mouse is over the MenuItem itself, or actually over its children
-            OverSection = RelativeMousePosition.Y <= _menuItemHeight;
+            this.OverSection = this.RelativeMousePosition.Y <= _menuItemHeight;
 
-            if (OverSection) {
+            if (this.OverSection) {
                 _scrollEffect.Enable();
             } else {
                 _scrollEffect.Disable();
             }
 
             // Used if this menu item has its checkbox enabled
-            MouseOverIconBox = _canCheck
+            this.MouseOverIconBox = _canCheck
                             && _overSection
-                            && FirstItemBoxRegion
-                              .OffsetBy(LeftSidePadding, 0)
-                              .Contains(RelativeMousePosition);
+                            && this.FirstItemBoxRegion
+                              .OffsetBy(this.LeftSidePadding, 0)
+                              .Contains(this.RelativeMousePosition);
 
             base.OnMouseMoved(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            OverSection = false;
+            this.OverSection = false;
 
             base.OnMouseLeft(e);
         }

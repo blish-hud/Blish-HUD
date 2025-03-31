@@ -13,10 +13,10 @@
         #region Constructors
 
         public Thickness(float topThickness, float rightThickness, float bottomThickness, float leftThickness) {
-            Top = topThickness;
-            Right = rightThickness;
-            Bottom = bottomThickness;
-            Left = leftThickness;
+            this.Top = topThickness;
+            this.Right = rightThickness;
+            this.Bottom = bottomThickness;
+            this.Left = leftThickness;
         }
 
         public Thickness(float verticalThickness, float horizontalThickness) : this(verticalThickness, horizontalThickness, verticalThickness, horizontalThickness) { /* ALIAS */ }

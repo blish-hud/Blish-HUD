@@ -121,12 +121,12 @@ namespace Blish_HUD.Modules {
                             throw _loadTask.Exception;
                         }
                     } else {
-                        RunState = ModuleRunState.Loaded;
+                        this.RunState = ModuleRunState.Loaded;
                     }
                     break;
 
                 case TaskStatus.RanToCompletion:
-                    RunState = ModuleRunState.Loaded;
+                    this.RunState = ModuleRunState.Loaded;
                     Logger.Info("Module {module} finished loading.", ModuleParameters.Manifest.GetDetailedName());
                     break;
 

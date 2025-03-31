@@ -108,10 +108,10 @@ namespace Blish_HUD.Input {
                 }
             }
 
-            if (FocusedControl != null) {
-                foreach (var ancestor in FocusedControl.GetAncestors()) {
+            if (this.FocusedControl != null) {
+                foreach (var ancestor in this.FocusedControl.GetAncestors()) {
                     if (ancestor.Visible == false) {
-                        FocusedControl.UnsetFocus();
+                        this.FocusedControl.UnsetFocus();
                     }
                 }
             }
@@ -226,8 +226,8 @@ namespace Blish_HUD.Input {
             // Handle the escape key
             if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown) {
                 // Loose focus on input fields
-                if (FocusedControl != null) {
-                    FocusedControl.UnsetFocus();
+                if (this.FocusedControl != null) {
+                    this.FocusedControl.UnsetFocus();
                     return true;
                 }
 

@@ -723,7 +723,7 @@ namespace Blish_HUD.Controls {
 
         private int _layoutSuspendCount = 0;
         [JsonIgnore]
-        internal bool IsLayoutSuspended => Interlocked.CompareExchange(ref _layoutSuspendCount, 0, 0) != 0 || (Parent?.IsLayoutSuspended).GetValueOrDefault();
+        internal bool IsLayoutSuspended => Interlocked.CompareExchange(ref _layoutSuspendCount, 0, 0) != 0 || (this.Parent?.IsLayoutSuspended).GetValueOrDefault();
 
         [JsonIgnore]
         internal LayoutState LayoutState { get; private set; } = LayoutState.SkipDraw;
@@ -810,7 +810,7 @@ namespace Blish_HUD.Controls {
         private void UpdateLayout() {
             try {
                 if (Interlocked.Increment(ref this._layoutSuspendCount) == 1 &&
-                    !(Parent?.IsLayoutSuspended).GetValueOrDefault() &&
+                    !(this.Parent?.IsLayoutSuspended).GetValueOrDefault() &&
                     this.LayoutState != LayoutState.Ready) {
 
                     RecalculateLayout();

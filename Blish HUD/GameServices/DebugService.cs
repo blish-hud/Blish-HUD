@@ -219,11 +219,11 @@ namespace Blish_HUD {
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
 
-            if (EnableFPSDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
+            if (this.EnableFPSDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
                 spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.Value, 0)}", new Vector2(debugLeft, 25), Color.Red);
             }
 
-            if (EnableAdditionalDebugDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
+            if (this.EnableAdditionalDebugDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
                 int i = 0;
 
                 foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
@@ -278,35 +278,35 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            EnableDebugLogging = settings.DefineSetting("EnableDebugLogging",
+            this.EnableDebugLogging = settings.DefineSetting("EnableDebugLogging",
                                                                   File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"),
                                                                   () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
 
-            EnableFPSDisplay = settings.DefineSetting("EnableFPSDisplay",
+            this.EnableFPSDisplay = settings.DefineSetting("EnableFPSDisplay",
                                                                   false,
                                                                   () => Strings.GameServices.DebugService.Setting_FPSDisplay_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description);
 
-            EnableAdditionalDebugDisplay = settings.DefineSetting("EnableAdditionalDebugDisplay",
+            this.EnableAdditionalDebugDisplay = settings.DefineSetting("EnableAdditionalDebugDisplay",
                                                                   false,
                                                                   () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_Description);
 
 
-            EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
+            this.EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
 
 
             if (ApplicationSettings.Instance.DebugEnabled) {
                 // Disable all debug setting and update description - user has manually specified --debug as launch arg
-                EnableDebugLogging.SetDisabled();
-                EnableDebugLogging.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_DebugLogging_Description + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+                this.EnableDebugLogging.SetDisabled();
+                this.EnableDebugLogging.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_DebugLogging_Description + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
 
-                EnableFPSDisplay.SetDisabled();
-                EnableFPSDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+                this.EnableFPSDisplay.SetDisabled();
+                this.EnableFPSDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
 
-                EnableAdditionalDebugDisplay.SetDisabled();
-                EnableAdditionalDebugDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+                this.EnableAdditionalDebugDisplay.SetDisabled();
+                this.EnableAdditionalDebugDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
             }
         }
 

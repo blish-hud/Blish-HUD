@@ -109,7 +109,7 @@ namespace Blish_HUD.Controls {
         public int Value {
             get => _value;
             set {
-                _value = MathHelper.Clamp(value, MinValue, MaxValue);
+                _value = MathHelper.Clamp(value, this.MinValue, this.MaxValue);
                 Invalidate();
             }
         }
@@ -197,17 +197,17 @@ namespace Blish_HUD.Controls {
         private void ChangeValue() {
             if (_mouseOverMinus) {
                 if (_exponential) {
-                    Value /= 2;
+                    this.Value /= 2;
                 } else {
-                    Value -= _numerator;
+                    this.Value -= _numerator;
                 }
             }
 
             if (_mouseOverPlus) {
                 if (_exponential) {
-                    Value *= 2;
+                    this.Value *= 2;
                 } else {
-                    Value += _numerator;
+                    this.Value += _numerator;
                 }
             }
         }

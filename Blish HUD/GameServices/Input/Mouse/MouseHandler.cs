@@ -138,7 +138,7 @@ namespace Blish_HUD.Input {
                 return;
             }
 
-            if (CameraDragging) {
+            if (this.CameraDragging) {
                 return;
             }
 

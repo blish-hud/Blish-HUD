@@ -286,7 +286,7 @@ namespace Blish_HUD.Controls {
         public override void UpdateContainer(GameTime gameTime) {
             if (this.Dragging) {
                 var nOffset = Input.Mouse.Position - _dragStart;
-                Location += nOffset;
+                this.Location += nOffset;
 
                 _dragStart = Input.Mouse.Position;
             } else if (this.Resizing) {
@@ -391,7 +391,7 @@ namespace Blish_HUD.Controls {
         private void OnViewBuilt(object sender, EventArgs e) {
             this.CurrentView.Loaded -= OnViewBuilt;
 
-            ViewState = ViewState.Loaded;
+            this.ViewState = ViewState.Loaded;
         }
 
         private void BuildView(Task<bool> loadResult) {
@@ -729,7 +729,7 @@ namespace Blish_HUD.Controls {
 
         private void PaintExitButton(SpriteBatch spriteBatch) {
             if (this.CanClose) {
-                spriteBatch.DrawOnCtrl(this, MouseOverExitButton
+                spriteBatch.DrawOnCtrl(this, this.MouseOverExitButton
                                                  ? _textureExitButtonActive
                                                  : _textureExitButton,
                                        this.ExitButtonBounds);

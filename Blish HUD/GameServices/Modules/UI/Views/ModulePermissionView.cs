@@ -93,7 +93,7 @@ namespace Blish_HUD.Modules.UI.Views {
 
         private void ResetCheckboxStates() {
             var checkboxes = _permissionFlowPanel.GetChildrenOfType<Checkbox>().ToArray();
-            if (Editable) {
+            if (this.Editable) {
                 for (int i = 0; i < checkboxes.Length; i++) {
                     checkboxes[i].Enabled = _checkboxStates[i];
                 }

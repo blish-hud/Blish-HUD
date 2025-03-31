@@ -75,7 +75,7 @@ namespace Blish_HUD.Controls {
         private static readonly TextureRegion2D _spriteHover = Resources.Control.TextureAtlasControl.GetRegion(HOVER_NAME);
 
         public ColorBox() : base() {
-            Size = new Point(DEFAULT_COLOR_SIZE);
+            this.Size = new Point(DEFAULT_COLOR_SIZE);
 
             drawVariation = RandomUtil.GetRandom(0, _possibleDrawVariations.Length - 1);
         }

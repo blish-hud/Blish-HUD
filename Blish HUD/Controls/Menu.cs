@@ -57,7 +57,7 @@ namespace Blish_HUD.Controls {
         public MenuItem SelectedMenuItem => _selectedMenuItem;
 
         void IMenuItem.Select() {
-            throw new InvalidOperationException($"The root {nameof(Menu)} instance can not be selected.");
+            throw new InvalidOperationException($"The root {nameof(this.Menu)} instance can not be selected.");
         }
 
         public void Select(MenuItem menuItem, List<IMenuItem> itemPath) {
@@ -114,7 +114,7 @@ namespace Blish_HUD.Controls {
                 e.ChangedChild.Top = lastItem.Bottom;
             }
 
-            ShouldShift = e.ResultingChildren.Any(mi => {
+            this.ShouldShift = e.ResultingChildren.Any(mi => {
                 MenuItem cmi = (MenuItem)mi;
 
                 return cmi.CanCheck || cmi.Icon != null || cmi.Children.Any();
@@ -142,13 +142,13 @@ namespace Blish_HUD.Controls {
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw items dark every other one
-            for (int sec = 0; sec < _size.Y / MenuItemHeight; sec += 2) {
+            for (int sec = 0; sec < _size.Y / this.MenuItemHeight; sec += 2) {
                 spriteBatch.DrawOnCtrl(this,
                                        _textureMenuItemFade.Texture,
                                        new Rectangle(0,
-                                                     (MenuItemHeight * sec) - VerticalScrollOffset,
+                                                     (this.MenuItemHeight * sec) - this.VerticalScrollOffset,
                                                      _size.X,
-                                                     MenuItemHeight),
+                                                     this.MenuItemHeight),
                                        Color.Black * 0.7f);
             }
         }

@@ -113,7 +113,7 @@ namespace Blish_HUD {
         protected override void Initialize() {
             this.ServiceSettings = Settings.RegisterRootSettingCollection(GAMEINTEGRATION_SETTINGS);
 
-            Chat = new GameChat();
+            this.Chat = new GameChat();
         }
 
         protected override void Load() {

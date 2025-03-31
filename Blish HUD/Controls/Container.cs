@@ -311,7 +311,7 @@ namespace Blish_HUD.Controls {
         public virtual void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
-            var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
+            var contentScissor = Rectangle.Intersect(scissor, this.ContentRegion.ToBounds(this.AbsoluteBounds));
 
             var zSortedChildren = _children.ToArray().OrderBy(i => i.ZIndex);
 

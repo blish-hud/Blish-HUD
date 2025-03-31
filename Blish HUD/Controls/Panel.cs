@@ -384,14 +384,14 @@ namespace Blish_HUD.Controls {
 
             if (this.ShowBorder) {
                 // Lightly tint the background of the panel
-                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, this.ContentRegion, Color.Black * (0.1f * AccentOpacity));
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, this.ContentRegion, Color.Black * (0.1f * this.AccentOpacity));
 
                 // Top left accent
                 spriteBatch.DrawOnCtrl(this,
                                        _textureCornerAccent,
                                        _layoutTopLeftAccentBounds,
                                        _layoutCornerAccentSrc,
-                                       Color.White * AccentOpacity,
+                                       Color.White * this.AccentOpacity,
                                        0,
                                        Vector2.Zero,
                                        SpriteEffects.FlipHorizontally);
@@ -401,7 +401,7 @@ namespace Blish_HUD.Controls {
                                        _textureCornerAccent,
                                        _layoutBottomRightAccentBounds,
                                        _layoutCornerAccentSrc,
-                                       Color.White * AccentOpacity,
+                                       Color.White * this.AccentOpacity,
                                        0,
                                        Vector2.Zero,
                                        SpriteEffects.FlipVertically);
@@ -411,7 +411,7 @@ namespace Blish_HUD.Controls {
                                        _textureLeftSideAccent,
                                        _layoutLeftAccentBounds,
                                        _layoutLeftAccentSrc,
-                                       Color.Black * AccentOpacity,
+                                       Color.Black * this.AccentOpacity,
                                        0,
                                        Vector2.Zero,
                                        SpriteEffects.FlipVertically);

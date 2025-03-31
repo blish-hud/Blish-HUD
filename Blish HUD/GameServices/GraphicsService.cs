@@ -269,12 +269,12 @@ namespace Blish_HUD {
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
 
-            _dpiScalingMethodSetting = settings.DefineSetting(nameof(DpiScalingMethod),
+            _dpiScalingMethodSetting = settings.DefineSetting(nameof(this.DpiScalingMethod),
                                                                      DpiMethod.SyncWithGame,
                                                                      () => Strings.GameServices.GraphicsService.Setting_DPIScaling_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_DPIScaling_Description);
 
-            _UISizeSetting = settings.DefineSetting(nameof(UIScalingMethod),
+            _UISizeSetting = settings.DefineSetting(nameof(this.UIScalingMethod),
                                                                      ManualUISize.SyncWithGame,
                                                                      () => Strings.GameServices.GraphicsService.Setting_UIScaling_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_UIScaling_Description);
@@ -303,7 +303,7 @@ namespace Blish_HUD {
         }
 
         private void FrameLimiterSettingMethodChanged(object sender, ValueChangedEventArgs<FramerateMethod> e) {
-            bool currentVsync = GraphicsDeviceManager.SynchronizeWithVerticalRetrace;
+            bool currentVsync = this.GraphicsDeviceManager.SynchronizeWithVerticalRetrace;
 
             var frameRateLookup = new Dictionary<FramerateMethod, (bool IsFixedTimeStep, TimeSpan TargetElapsedTime, bool VSync)> {
                 { FramerateMethod.Custom,        (true, TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate), false) }, // Only enabled with launch args
@@ -319,8 +319,8 @@ namespace Blish_HUD {
                 BlishHud.Instance.IsFixedTimeStep = settings.IsFixedTimeStep;
                 BlishHud.Instance.TargetElapsedTime = settings.TargetElapsedTime;
                 if (settings.VSync != currentVsync) {
-                    GraphicsDeviceManager.SynchronizeWithVerticalRetrace = settings.VSync;
-                    GraphicsDeviceManager.ApplyChanges();
+                    this.GraphicsDeviceManager.SynchronizeWithVerticalRetrace = settings.VSync;
+                    this.GraphicsDeviceManager.ApplyChanges();
                 }
             } else {
                 // Shouldn't be possible unless settings are manually modified

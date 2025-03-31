@@ -412,7 +412,7 @@ namespace Blish_HUD.Controls {
         public override void UpdateContainer(GameTime gameTime) {
             if (Dragging) {
                 var nOffset = Input.Mouse.Position - DragStart;
-                Location += nOffset;
+                this.Location += nOffset;
 
                 DragStart = Input.Mouse.Position;
             }

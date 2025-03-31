@@ -247,7 +247,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
         }
 
         protected override void DisposeControl() {
-            Visible = false;
+            this.Visible = false;
 
             if (_bouncyChest != null) {
                 _bouncyChest.Click -= BouncyChest_Click;

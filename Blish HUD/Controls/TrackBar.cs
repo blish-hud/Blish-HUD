@@ -124,7 +124,7 @@ namespace Blish_HUD.Controls {
                 float rawValue = ((this.RelativeMousePosition.X - BUMPER_WIDTH - _dragOffset) / (float)(this.Width - BUMPER_WIDTH - _textureNub.Width) * (this.MaxValue - this.MinValue)) + this.MinValue;
 
                 this.Value = GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
-                                 ? SmallStep ? rawValue : (float)Math.Round(rawValue, 0)
+                                 ? this.SmallStep ? rawValue : (float)Math.Round(rawValue, 0)
                                  : tenIncrements.Aggregate((x, y) => Math.Abs(x - rawValue) < Math.Abs(y - rawValue) ? x : y);
             }
         }

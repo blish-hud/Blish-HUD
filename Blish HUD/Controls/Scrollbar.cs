@@ -185,7 +185,7 @@ namespace Blish_HUD.Controls {
         };
 
         private void HandleClickScroll(bool clicked) {
-            Action<int> scroll = pixels => this.ScrollDistance = ((_containerContentDiff * this.ScrollDistance) + pixels) / _containerContentDiff;
+            Action<int> scroll = pixels => this.ScrollDistance = ((this._containerContentDiff * this.ScrollDistance) + pixels) / this._containerContentDiff;
             Func<bool, Action<int>> getScrollAction = c => c ? ScrollAnimated : scroll;
 
             var relMousePos = Input.Mouse.Position - this.AbsoluteBounds.Location;
@@ -216,7 +216,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void ScrollAnimated(int pixels) {
-            this.TargetScrollDistance = ((_containerContentDiff * this.ScrollDistance) + pixels) / _containerContentDiff;
+            this.TargetScrollDistance = ((this._containerContentDiff * this.ScrollDistance) + pixels) / this._containerContentDiff;
             _targetScrollDistanceAnim = Animation.Tweener
                      .Tween(this, new { ScrollDistance = this.TargetScrollDistance }, 0f, overwrite: true).Ease(Ease.QuadOut);
         }
@@ -226,7 +226,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateAssocContainer() {
-            AssociatedContainer.VerticalScrollOffset = (int)Math.Floor((_containerLowestContent - AssociatedContainer.ContentRegion.Height) * this.ScrollDistance);
+            this.AssociatedContainer.VerticalScrollOffset = (int)Math.Floor((_containerLowestContent - this.AssociatedContainer.ContentRegion.Height) * this.ScrollDistance);
         }
 
         public override void DoUpdate(GameTime gameTime) {
@@ -292,11 +292,11 @@ namespace Blish_HUD.Controls {
                 return;
             }
 
-            var drawTint = (ScrollFocus == ClickFocus.None && this.MouseOver) || (_associatedContainer != null && _associatedContainer.MouseOver)
+            var drawTint = (this.ScrollFocus == ClickFocus.None && this.MouseOver) || (_associatedContainer != null && _associatedContainer.MouseOver)
                                ? Color.White
                                : ContentService.Colors.Darkened(0.6f);
 
-            drawTint = ScrollFocus != ClickFocus.None
+            drawTint = this.ScrollFocus != ClickFocus.None
                            ? ContentService.Colors.Darkened(0.9f)
                            : drawTint;
 

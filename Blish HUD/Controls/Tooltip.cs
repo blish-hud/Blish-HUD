@@ -124,7 +124,7 @@ namespace Blish_HUD.Controls {
         private void OnViewBuilt(object sender, EventArgs e) {
             this.CurrentView.Loaded -= OnViewBuilt;
 
-            ViewState = ViewState.Loaded;
+            this.ViewState = ViewState.Loaded;
         }
 
         private void BuildView(Task<bool> loadResult) {

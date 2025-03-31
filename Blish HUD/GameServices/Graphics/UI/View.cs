@@ -8,7 +8,7 @@
         }
 
         protected View(IPresenter presenter) {
-            Presenter = presenter ?? _sharedNullPresenter;
+            this.Presenter = presenter ?? _sharedNullPresenter;
         }
 
         // BREAKME: Avoids a breaking change, but is not necessary for anything recompiled.

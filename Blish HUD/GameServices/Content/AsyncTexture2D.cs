@@ -107,7 +107,7 @@ namespace Blish_HUD.Content {
         }
 
         public override bool Equals(object obj) {
-            if (!HasTexture) {
+            if (!this.HasTexture) {
                 return obj == null;
             }
 

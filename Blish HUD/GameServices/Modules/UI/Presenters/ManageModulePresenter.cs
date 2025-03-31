@@ -135,7 +135,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private void DisplayStateDetails() {
             if (!GameService.Module.ModuleIsExplicitlyIncompatible(this.Model)) {
-                var runState = Model.ModuleInstance?.RunState ?? ModuleRunState.Unloaded;
+                var runState = this.Model.ModuleInstance?.RunState ?? ModuleRunState.Unloaded;
                 this.View.ModuleErrorReason = runState == ModuleRunState.FatalError ? this.Model.ModuleInstance?.ErrorReason : null;
 
                 this.View.ModuleState = runState;

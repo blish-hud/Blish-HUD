@@ -33,7 +33,7 @@ namespace Blish_HUD {
         private double _saveBuffer;
 
         protected override void Initialize() {
-            JsonReaderSettings = new JsonSerializerSettings() {
+            this.JsonReaderSettings = new JsonSerializerSettings() {
                 PreserveReferencesHandling = PreserveReferencesHandling.None,
                 TypeNameHandling = TypeNameHandling.Auto,
                 Converters = new List<JsonConverter>() {
@@ -61,7 +61,7 @@ namespace Blish_HUD {
             try {
                 rawSettings = File.ReadAllText(_settingsPath);
 
-                this.Settings = JsonConvert.DeserializeObject<SettingCollection>(rawSettings, JsonReaderSettings) ?? new SettingCollection(false);
+                this.Settings = JsonConvert.DeserializeObject<SettingCollection>(rawSettings, this.JsonReaderSettings) ?? new SettingCollection(false);
             } catch (UnauthorizedAccessException) {
                 Blish_HUD.Debug.Contingency.NotifyFileSaveAccessDenied(_settingsPath, Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Action_ToLoadSettings);
             } catch (Exception ex) {
@@ -92,7 +92,7 @@ namespace Blish_HUD {
         }
 
         public void Save(bool forceSave = false) {
-            if (!Loaded && !forceSave) {
+            if (!this.Loaded && !forceSave) {
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace Blish_HUD {
         }
 
         private void PerformSave() {
-            string rawSettings = JsonConvert.SerializeObject(this.Settings, Formatting.Indented, JsonReaderSettings);
+            string rawSettings = JsonConvert.SerializeObject(this.Settings, Formatting.Indented, this.JsonReaderSettings);
 
             try {
                 string tempSettingsPath = $"{_settingsPath}.new";

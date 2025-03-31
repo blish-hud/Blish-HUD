@@ -50,35 +50,35 @@ namespace Blish_HUD.Controls {
             Color hoverColor,
             ContentService.FontSize fontSize,
             ContentService.FontFace fontFace) {
-            IsBold = isBold;
-            IsItalic = isItalic;
-            IsStrikeThrough = isStrikeThrough;
-            IsUnderlined = isUnderlined;
-            Text = text;
-            Link = link;
-            PrefixImage = prefixImage;
-            SuffixImage = suffixImage;
-            PrefixImageSize = prefixImageSize;
-            SuffixImageSize = suffixImageSize;
-            HoverColor = hoverColor;
-            FontSize = fontSize;
-            FontFace = fontFace;
-            TextColor = textColor == default ? Color.White : textColor;
+            this.IsBold = isBold;
+            this.IsItalic = isItalic;
+            this.IsStrikeThrough = isStrikeThrough;
+            this.IsUnderlined = isUnderlined;
+            this.Text = text;
+            this.Link = link;
+            this.PrefixImage = prefixImage;
+            this.SuffixImage = suffixImage;
+            this.PrefixImageSize = prefixImageSize;
+            this.SuffixImageSize = suffixImageSize;
+            this.HoverColor = hoverColor;
+            this.FontSize = fontSize;
+            this.FontFace = fontFace;
+            this.TextColor = textColor == default ? Color.White : textColor;
 
             var style = ContentService.FontStyle.Regular;
 
-            if (IsItalic) {
+            if (this.IsItalic) {
                 style = ContentService.FontStyle.Italic;
-            } else if (IsBold) {
+            } else if (this.IsBold) {
                 style = ContentService.FontStyle.Bold;
             }
 
-            Font = GameService.Content.GetFont(FontFace, FontSize, style);
+            this.Font = GameService.Content.GetFont(this.FontFace, this.FontSize, style);
         }
 
         public void Dispose() {
-            PrefixImage?.Dispose();
-            SuffixImage?.Dispose();
+            this.PrefixImage?.Dispose();
+            this.SuffixImage?.Dispose();
         }
     }
 }

@@ -57,13 +57,13 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            FormHandle = this.Window.Handle;
-            Form = Control.FromHandle(FormHandle).FindForm();
+            this.FormHandle = this.Window.Handle;
+            this.Form = Control.FromHandle(this.FormHandle).FindForm();
 
 
-            Form.BackColor = System.Drawing.Color.Black;
+            this.Form.BackColor = System.Drawing.Color.Black;
             // Avoid the flash the window shows when the application launches (-32000x-32000 is where windows places minimized windows)
-            Form.Location = new System.Drawing.Point(-32000, -32000);
+            this.Form.Location = new System.Drawing.Point(-32000, -32000);
 
             if (!File.Exists("OpacityFix")) {
                 // Causes an issue with it showing a black box if we don't set this to true
@@ -82,7 +82,7 @@ namespace Blish_HUD {
         }
 
         protected override void LoadContent() {
-            UiRasterizer = new RasterizerState() {
+            this.UiRasterizer = new RasterizerState() {
                 ScissorTestEnable = true
             };
 
@@ -114,7 +114,7 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) {
-                Form.Location = new System.Drawing.Point(-32000, -32000);
+                this.Form.Location = new System.Drawing.Point(-32000, -32000);
 
                 // If gw2 isn't open so only run the essentials
                 GameService.Debug.DoUpdate(gameTime);

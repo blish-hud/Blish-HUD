@@ -220,7 +220,7 @@ namespace Blish_HUD {
             if (_checkFrequency > 180000) {
                 _checkFrequency = 0;
 
-                if (string.IsNullOrEmpty(PrivilegedConnection.Connection.AccessToken)) {
+                if (string.IsNullOrEmpty(this.PrivilegedConnection.Connection.AccessToken)) {
                     RefreshRegisteredKeys();
                 }
             }

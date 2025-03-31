@@ -33,7 +33,7 @@ namespace Blish_HUD.GameServices.ArcDps {
 
         public event EventHandler<SocketError> Error;
 
-        public bool IsConnected => _isConnected && (Client?.Connected ?? false);
+        public bool IsConnected => _isConnected && (this.Client?.Connected ?? false);
 
         public TcpClient Client { get; private set; }
 
@@ -103,13 +103,13 @@ namespace Blish_HUD.GameServices.ArcDps {
             _cancellationTokenSource = new CancellationTokenSource();
             _linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(ct, this._cancellationTokenSource.Token);
             _linkedToken = _linkedTokenSource.Token;
-            Client?.Dispose();
-            Client = new TcpClient();
-            Client.ReceiveBufferSize = 4096;
-            Client.Connect(endpoint);
+            this.Client?.Dispose();
+            this.Client = new TcpClient();
+            this.Client.ReceiveBufferSize = 4096;
+            this.Client.Connect(endpoint);
             _logger.Info("Connected to arcdps endpoint on: " + endpoint.ToString());
 
-            _networkStream = Client.GetStream();
+            _networkStream = this.Client.GetStream();
             _isConnected = true;
 
             try {
@@ -125,9 +125,9 @@ namespace Blish_HUD.GameServices.ArcDps {
 
         public void Disconnect() {
             if (_isConnected) {
-                if (Client?.Connected ?? false) {
-                    Client.Close();
-                    Client.Dispose();
+                if (this.Client?.Connected ?? false) {
+                    this.Client.Close();
+                    this.Client.Dispose();
                     _logger.Info("Disconnected from arcdps endpoint");
                 }
 
@@ -137,14 +137,14 @@ namespace Blish_HUD.GameServices.ArcDps {
         }
 
         private async Task LegacyReceive(CancellationToken ct) {
-            _logger.Info($"Start Legacy Receive Task for {Client?.Client.RemoteEndPoint?.ToString()}");
+            _logger.Info($"Start Legacy Receive Task for {this.Client?.Client.RemoteEndPoint?.ToString()}");
             try {
                 byte[] messageHeaderBuffer = new byte[9];
                 ArrayPool<byte> pool = ArrayPool<byte>.Shared;
-                while (Client?.Connected ?? false) {
+                while (this.Client?.Connected ?? false) {
                     ct.ThrowIfCancellationRequested();
 
-                    if (Client.Available == 0) {
+                    if (this.Client.Available == 0) {
                         await Task.Delay(1, ct);
                         continue;
                     }
@@ -170,18 +170,18 @@ namespace Blish_HUD.GameServices.ArcDps {
                 Disconnect();
             }
 
-            _logger.Info($"Legacy Receive Task for {Client?.Client.RemoteEndPoint?.ToString()} stopped");
+            _logger.Info($"Legacy Receive Task for {this.Client?.Client.RemoteEndPoint?.ToString()} stopped");
         }
 
         private async Task Receive(CancellationToken ct) {
-            _logger.Info($"Start Receive Task for {Client?.Client.RemoteEndPoint?.ToString()}");
+            _logger.Info($"Start Receive Task for {this.Client?.Client.RemoteEndPoint?.ToString()}");
             try {
                 byte[] messageHeaderBuffer = new byte[5];
                 ArrayPool<byte> pool = ArrayPool<byte>.Shared;
-                while (Client?.Connected ?? false) {
+                while (this.Client?.Connected ?? false) {
                     ct.ThrowIfCancellationRequested();
 
-                    if (Client.Available == 0) {
+                    if (this.Client.Available == 0) {
                         await Task.Delay(1, ct);
                         continue;
                     }
@@ -210,7 +210,7 @@ namespace Blish_HUD.GameServices.ArcDps {
                 Disconnect();
             }
 
-            _logger.Info($"Receive Task for {Client?.Client.RemoteEndPoint?.ToString()} stopped");
+            _logger.Info($"Receive Task for {this.Client?.Client.RemoteEndPoint?.ToString()} stopped");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -237,7 +237,7 @@ namespace Blish_HUD.GameServices.ArcDps {
             if (!_disposedValue) {
                 if (disposing) {
                     _cancellationTokenSource.Cancel();
-                    Client?.Dispose();
+                    this.Client?.Dispose();
                     if (_messageQueues != null) {
                         foreach (var item in _messageQueues) {
                             if (item != null) {

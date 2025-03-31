@@ -12,7 +12,7 @@ namespace Blish_HUD.Controls.Effects {
         /// The size within the <see cref="Control"/> it applies to.  If not explicitly set, the size of the assigned control will be used.
         /// </summary>
         public Vector2 Size {
-            get => _size ?? AssignedControl.Size.ToVector2();
+            get => _size ?? this.AssignedControl.Size.ToVector2();
             set => _size = value;
         }
 

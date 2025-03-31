@@ -115,7 +115,7 @@ namespace Blish_HUD.Controls {
                 var drawIcon = _icon;
 
                 if (_activeIcon != null) {
-                    if (!_toggleGlow && MouseOver) {
+                    if (!_toggleGlow && this.MouseOver) {
                         drawIcon = _activeIcon;
                     }
 

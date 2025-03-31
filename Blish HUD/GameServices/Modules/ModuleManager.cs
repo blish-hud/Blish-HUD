@@ -45,8 +45,8 @@ namespace Blish_HUD.Modules {
         public bool Enabled { get; private set; }
 
         public bool DependenciesMet =>
-            State.IgnoreDependencies
-         || Manifest.Dependencies.TrueForAll(d => d.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available);
+            this.State.IgnoreDependencies
+         || this.Manifest.Dependencies.TrueForAll(d => d.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available);
 
         public Manifest Manifest { get; }
 

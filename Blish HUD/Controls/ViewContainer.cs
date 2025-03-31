@@ -42,7 +42,7 @@ namespace Blish_HUD.Controls {
                 return;
             }
 
-            ViewState = ViewState.Loading;
+            this.ViewState = ViewState.Loading;
 
             this.CurrentView = newView;
 
@@ -85,7 +85,7 @@ namespace Blish_HUD.Controls {
         private void BuildView(object sender, EventArgs e) {
             this.CurrentView.Loaded -= BuildView;
 
-            ViewState = ViewState.Loaded;
+            this.ViewState = ViewState.Loaded;
         }
 
         private void BuildView(Task<bool> loadResult) {
@@ -97,7 +97,7 @@ namespace Blish_HUD.Controls {
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             base.PaintBeforeChildren(spriteBatch, bounds);
 
-            if (ViewState == ViewState.Loading) {
+            if (this.ViewState == ViewState.Loading) {
                 spriteBatch.DrawStringOnCtrl(this, _loadingMessage ?? "", Content.DefaultFont14, this.ContentRegion, Color.White, false, true, 1, HorizontalAlignment.Center);
             }
         }

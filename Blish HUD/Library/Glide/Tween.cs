@@ -52,7 +52,7 @@ namespace Glide {
         public object Target { get; }
 
         private Tween(object target, float duration, float delay, IRemoveTweens remover) {
-            Target = target;
+            this.Target = target;
             Duration = duration;
             Delay = delay;
             Remover = remover;
@@ -135,7 +135,7 @@ namespace Glide {
                 }
             }
 
-            float t = Completion;
+            float t = this.Completion;
             if (ease != null) {
                 t = Math.Min(Math.Max(ease(t), 0), 1);
             }

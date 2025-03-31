@@ -86,7 +86,7 @@ namespace Blish_HUD.Controls {
                 Content.PlaySoundEffectByName($"tab-swap-{RandomUtil.GetRandom(1, 5)}");
             }
 
-            this.Subtitle = SelectedTab.Name;
+            this.Subtitle = this.SelectedTab.Name;
 
             Navigate(_views[this.SelectedTab](), false);
 
@@ -102,12 +102,12 @@ namespace Blish_HUD.Controls {
         protected override void OnMouseMoved(MouseEventArgs e) {
             bool newSet = false;
 
-            if (RelativeMousePosition.X < StandardTabBounds.Right && RelativeMousePosition.Y > StandardTabBounds.Y) {
+            if (this.RelativeMousePosition.X < StandardTabBounds.Right && this.RelativeMousePosition.Y > StandardTabBounds.Y) {
                 var tabList = _tabRegions.ToList();
                 for (int tabIndex = 0; tabIndex < _tabs.Count; tabIndex++) {
                     var tab = _tabs[tabIndex];
-                    if (_tabRegions[tab].Contains(RelativeMousePosition)) {
-                        HoveredTabIndex = tabIndex;
+                    if (_tabRegions[tab].Contains(this.RelativeMousePosition)) {
+                        this.HoveredTabIndex = tabIndex;
                         newSet = true;
                         this.BasicTooltipText = tab.Name;
 
@@ -126,12 +126,12 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
-            if (RelativeMousePosition.X < StandardTabBounds.Right && RelativeMousePosition.Y > StandardTabBounds.Y) {
+            if (this.RelativeMousePosition.X < StandardTabBounds.Right && this.RelativeMousePosition.Y > StandardTabBounds.Y) {
                 var tabList = _tabs.ToList();
                 for (int tabIndex = 0; tabIndex < _tabs.Count; tabIndex++) {
                     var tab = tabList[tabIndex];
-                    if (_tabRegions[tab].Contains(RelativeMousePosition)) {
-                        SelectedTabIndex = tabIndex;
+                    if (_tabRegions[tab].Contains(this.RelativeMousePosition)) {
+                        this.SelectedTabIndex = tabIndex;
 
                         break;
                     }
@@ -258,7 +258,7 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle TabBoundsFromIndex(int index) {
-            return StandardTabBounds.OffsetBy(-TAB_WIDTH, ContentRegion.Y + (index * TAB_HEIGHT));
+            return StandardTabBounds.OffsetBy(-TAB_WIDTH, this.ContentRegion.Y + (index * TAB_HEIGHT));
         }
 
         #endregion
@@ -290,17 +290,17 @@ namespace Blish_HUD.Controls {
             _layoutTopTabBarBounds = new Rectangle(0, 0, TAB_SECTION_WIDTH, firstTabBounds.Top);
             _layoutBottomTabBarBounds = new Rectangle(0, lastTabBounds.Bottom, TAB_SECTION_WIDTH, _size.Y - lastTabBounds.Bottom);
 
-            int topSplitHeight = selectedTabBounds.Top - ContentRegion.Top;
-            int bottomSplitHeight = ContentRegion.Bottom - selectedTabBounds.Bottom;
+            int topSplitHeight = selectedTabBounds.Top - this.ContentRegion.Top;
+            int bottomSplitHeight = this.ContentRegion.Bottom - selectedTabBounds.Bottom;
 
-            _layoutTopSplitLineBounds = new Rectangle(ContentRegion.X - _textureSplitLine.Width + 1,
-                                                      ContentRegion.Y,
+            _layoutTopSplitLineBounds = new Rectangle(this.ContentRegion.X - _textureSplitLine.Width + 1,
+                                                      this.ContentRegion.Y,
                                                       _textureSplitLine.Width,
                                                       topSplitHeight);
 
             _layoutTopSplitLineSourceBounds = new Rectangle(0, 0, _textureSplitLine.Width, topSplitHeight);
 
-            _layoutBottomSplitLineBounds = new Rectangle(ContentRegion.X - _textureSplitLine.Width + 1,
+            _layoutBottomSplitLineBounds = new Rectangle(this.ContentRegion.X - _textureSplitLine.Width + 1,
                                                          selectedTabBounds.Bottom,
                                                          _textureSplitLine.Width,
                                                          bottomSplitHeight);
