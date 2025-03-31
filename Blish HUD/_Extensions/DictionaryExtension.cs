@@ -33,7 +33,7 @@ namespace Blish_HUD {
             this T main,
             params Dictionary<TKey, TValue>[] dictionaries)
             where T : IDictionary<TKey, TValue>, new() {
-            T new_dictionary = new T();
+            var new_dictionary = new T();
             foreach (IDictionary<TKey, TValue> src in
                 (new List<IDictionary<TKey, TValue>> { main }).Concat(dictionaries)) {
                 foreach (KeyValuePair<TKey, TValue> p in src) {

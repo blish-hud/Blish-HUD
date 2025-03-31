@@ -31,7 +31,7 @@ namespace Blish_HUD.Modules {
 
                 var moduleDependencyList = new List<ModuleDependency>();
 
-                JObject mdObj = JObject.Load(reader);
+                var mdObj = JObject.Load(reader);
 
                 foreach (var prop in mdObj) {
                     string dependencyNamespace = prop.Key;

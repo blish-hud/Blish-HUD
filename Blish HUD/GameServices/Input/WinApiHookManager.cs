@@ -65,7 +65,7 @@ namespace Blish_HUD.Input {
         public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) => keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback);
 
         private void Loop() {
-            using Timer timer = new Timer {
+            using var timer = new Timer {
                 Interval = 10
             };
 

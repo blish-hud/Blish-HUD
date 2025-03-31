@@ -149,7 +149,7 @@ namespace Blish_HUD {
 
             // TODO: This does not account for vertical alignment
             if (horizontalAlignment != HorizontalAlignment.Left && (wrap || text.Contains("\n"))) {
-                using StringReader reader = new StringReader(text);
+                using var reader = new StringReader(text);
                 string line;
 
                 int lineHeightDiff = 0;

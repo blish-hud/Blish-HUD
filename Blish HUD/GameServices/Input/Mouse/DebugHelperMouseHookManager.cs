@@ -9,7 +9,7 @@ namespace Blish_HUD.Input {
         public DebugHelperMouseHookManager(IMessageService debugHelperMessageService) : base(debugHelperMessageService) { }
 
         protected override void HookCallback(MouseEventMessage message) {
-            MouseEventArgs mouseEventArgs = new MouseEventArgs(
+            var mouseEventArgs = new MouseEventArgs(
                                                                (MouseEventType)message.EventType, message.PointX, message.PointY, message.MouseData, message.Flags,
                                                                message.Time, message.ExtraInfo
                                                               );
@@ -25,7 +25,7 @@ namespace Blish_HUD.Input {
                 }
             }
 
-            MouseResponseMessage response = new MouseResponseMessage {
+            var response = new MouseResponseMessage {
                 Id = message.Id,
                 IsHandled = isHandled
             };
@@ -34,7 +34,7 @@ namespace Blish_HUD.Input {
         }
 
         protected override void DummyHookCallback(MouseEventMessage message) {
-            MouseResponseMessage response = new MouseResponseMessage {
+            var response = new MouseResponseMessage {
                 Id = message.Id,
                 IsHandled = false
             };

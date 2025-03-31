@@ -227,7 +227,7 @@ namespace Blish_HUD {
             string className = "";
             try {
                 int cls_max_length = 1000;
-                StringBuilder classText = new StringBuilder("", cls_max_length + 5);
+                var classText = new StringBuilder("", cls_max_length + 5);
                 GetClassName(hwnd, classText, cls_max_length + 2);
 
                 if (!string.IsNullOrEmpty(classText.ToString())) {

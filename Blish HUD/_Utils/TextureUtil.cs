@@ -33,7 +33,7 @@ namespace Blish_HUD {
             try {
                 texture = Texture2D.FromStream(graphics, stream);
 
-                Color[] data = new Color[texture.Width * texture.Height];
+                var data = new Color[texture.Width * texture.Height];
                 texture.GetData(data);
 
                 for (int i = 0; i < data.Length; ++i) {

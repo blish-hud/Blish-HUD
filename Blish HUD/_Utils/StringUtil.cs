@@ -42,7 +42,7 @@ namespace Blish_HUD {
 
             // Prepare string builder for storing the processed string.
             // Note: StringBuilder has a better performance than String by 30-40%.
-            StringBuilder resultStringBuilder = new StringBuilder(str.Length);
+            var resultStringBuilder = new StringBuilder(str.Length);
 
             // Analyze the replacement: replace or remove.
             bool isReplacementNullOrEmpty = string.IsNullOrEmpty(newValue);

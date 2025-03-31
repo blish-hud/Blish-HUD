@@ -220,7 +220,7 @@ namespace Blish_HUD.Controls {
                 thisResult = base.TriggerMouseInput(mouseEventType, ms);
             }
 
-            List<Control> children = _children.ToList();
+            var children = _children.ToList();
             IOrderedEnumerable<Control> zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
 
             foreach (var childControl in zSortedChildren) {

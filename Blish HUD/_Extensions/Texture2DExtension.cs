@@ -10,7 +10,7 @@ namespace Blish_HUD {
             using var ctx = GameService.Graphics.LendGraphicsDeviceContext();
             var croppedTexture = new Texture2D(ctx.GraphicsDevice, region.Width, region.Height);
 
-            Color[] clrData = new Color[region.Width * region.Height];
+            var clrData = new Color[region.Width * region.Height];
             texture2D.GetData(0, region, clrData, 0, region.Width * region.Height);
             croppedTexture.SetData(clrData);
 
@@ -42,7 +42,7 @@ namespace Blish_HUD {
                 throw new ArgumentOutOfRangeException(nameof(region.Bottom));
             }
 
-            Color[] colorData = new Color[region.Width * region.Height];
+            var colorData = new Color[region.Width * region.Height];
 
             for (int i = 0; i < colorData.Length - 1; i++) {
                 colorData[i] = color;

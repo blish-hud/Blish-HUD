@@ -88,7 +88,7 @@ namespace Blish_HUD {
         }
 
         private static uint GetDpiLegacy() {
-            using System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero);
+            using var g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero);
             return (uint)g.DpiY;
         }
 
@@ -444,7 +444,7 @@ namespace Blish_HUD {
         protected override void Load() { /* NOOP */ }
 
         private void Rescale() {
-            Point backbufferSize = new Point(
+            var backbufferSize = new Point(
                 BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth,
                 BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
 

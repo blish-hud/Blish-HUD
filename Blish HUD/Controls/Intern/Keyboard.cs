@@ -72,7 +72,7 @@ namespace Blish_HUD.Controls.Intern {
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             } else {
                 uint vkCode = (uint)key;
-                ExtraKeyInfo lParam = new ExtraKeyInfo() {
+                var lParam = new ExtraKeyInfo() {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
 
@@ -142,7 +142,7 @@ namespace Blish_HUD.Controls.Intern {
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             } else {
                 uint vkCode = (uint)key;
-                ExtraKeyInfo lParam = new ExtraKeyInfo() {
+                var lParam = new ExtraKeyInfo() {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
                     repeatCount = 1,
                     prevKeyState = 1,

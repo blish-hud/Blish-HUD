@@ -75,7 +75,7 @@ namespace Blish_HUD {
             Logger.Info("Launched from {launchDirectory} with args {launchOptions}.", Directory.GetCurrentDirectory(), string.Join(" ", args));
 
             string mutexName = string.IsNullOrEmpty(ApplicationSettings.Instance.MumbleMapName) ? $"{APP_GUID}" : $"{APP_GUID}:{ApplicationSettings.Instance.MumbleMapName}";
-            using Mutex singleInstanceMutex = new Mutex(true, mutexName, out bool ownsMutex);
+            using var singleInstanceMutex = new Mutex(true, mutexName, out bool ownsMutex);
             try {
                 if (!ownsMutex) {
                     // we don't own the mutex - try to acquire.

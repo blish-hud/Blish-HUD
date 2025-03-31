@@ -10,7 +10,7 @@ namespace Blish_HUD.Input {
         public DebugHelperKeyboardHookManager(IMessageService debugHelperMessageService) : base(debugHelperMessageService) { }
 
         protected override void HookCallback(KeyboardEventMessage message) {
-            KeyboardEventArgs keyboardEventArgs = new KeyboardEventArgs((KeyboardEventType)message.EventType, (Keys)message.Key);
+            var keyboardEventArgs = new KeyboardEventArgs((KeyboardEventType)message.EventType, (Keys)message.Key);
             bool isHandled = false;
 
             lock (((IList)this.Handlers).SyncRoot) {
@@ -22,7 +22,7 @@ namespace Blish_HUD.Input {
                 }
             }
 
-            KeyboardResponseMessage response = new KeyboardResponseMessage {
+            var response = new KeyboardResponseMessage {
                 Id = message.Id,
                 IsHandled = isHandled
             };
@@ -31,7 +31,7 @@ namespace Blish_HUD.Input {
         }
 
         protected override void DummyHookCallback(KeyboardEventMessage message) {
-            KeyboardResponseMessage response = new KeyboardResponseMessage {
+            var response = new KeyboardResponseMessage {
                 Id = message.Id,
                 IsHandled = false
             };

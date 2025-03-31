@@ -148,7 +148,7 @@ namespace Blish_HUD.Modules {
         /// <returns>A string containing the error reasons.</returns>
         private static string GetModuleErrorReason(Exception ex) {
             if (ex is AggregateException ae && ae.InnerExceptions.Count > 0) {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 foreach (Exception innerException in ae.InnerExceptions) {
                     if (innerException != null) {
                         sb.AppendLine(innerException.Message);
