@@ -81,7 +81,10 @@ namespace Blish_HUD {
 
         public void RegisterMessageType<T>(int type, Func<T, CancellationToken, Task> listener)
             where T : struct {
-            void action() => _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            void action() {
+                _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            }
+
             _registerListeners.Add(action);
             if (_arcDpsClient != null) {
                 action();

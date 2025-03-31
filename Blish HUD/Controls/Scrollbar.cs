@@ -183,8 +183,13 @@ namespace Blish_HUD.Controls {
         };
 
         private void HandleClickScroll(bool clicked) {
-            void scroll(int pixels) => this.ScrollDistance = ((this._containerContentDiff * this.ScrollDistance) + pixels) / this._containerContentDiff;
-            Action<int> getScrollAction(bool c) => c ? ScrollAnimated : (Action<int>)scroll;
+            void scroll(int pixels) {
+                this.ScrollDistance = ((this._containerContentDiff * this.ScrollDistance) + pixels) / this._containerContentDiff;
+            }
+
+            Action<int> getScrollAction(bool c) {
+                return c ? ScrollAnimated : (Action<int>)scroll;
+            }
 
             var relMousePos = Input.Mouse.Position - this.AbsoluteBounds.Location;
 
