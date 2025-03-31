@@ -156,9 +156,7 @@ namespace Blish_HUD {
             }
         }
 
-        private static void ApplicationThreadException(object sender, ThreadExceptionEventArgs args) {
-            Fatal(args.Exception);
-        }
+        private static void ApplicationThreadException(object sender, ThreadExceptionEventArgs args) => Fatal(args.Exception);
 
         private static void Fatal(Exception e) {
             Input.DisableHooks();
@@ -186,9 +184,7 @@ namespace Blish_HUD {
         /// </summary>
         /// <param name="func"></param>
         [Conditional("DEBUG")]
-        public void StartTimeFunc(string func) {
-            StartTimeFunc(func, DEFAULT_DEBUGCOUNTER_SAMPLES);
-        }
+        public void StartTimeFunc(string func) => StartTimeFunc(func, DEFAULT_DEBUGCOUNTER_SAMPLES);
 
         [Conditional("DEBUG")]
         public void StartTimeFunc(string func, int length) {
@@ -200,9 +196,7 @@ namespace Blish_HUD {
         }
 
         [Conditional("DEBUG")]
-        public void StopTimeFunc(string func) {
-            _funcTimes[func].EndInterval();
-        }
+        public void StopTimeFunc(string func) => _funcTimes[func].EndInterval();
 
         [Conditional("DEBUG")]
         public void StopTimeFuncAndOutput(string func) {
@@ -269,9 +263,7 @@ namespace Blish_HUD {
             /* NOOP */
         }
 
-        internal void TickFrameCounter(float elapsedTime) {
-            this.FrameCounter.PushValue(1f / elapsedTime);
-        }
+        internal void TickFrameCounter(float elapsedTime) => this.FrameCounter.PushValue(1f / elapsedTime);
 
         protected override void Unload() {
             /* NOOP */

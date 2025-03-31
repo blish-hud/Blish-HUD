@@ -65,9 +65,7 @@ namespace Blish_HUD.Gw2Mumble {
             _service = service;
         }
 
-        internal void Update(GameTime gameTime) {
-            HandleEvents();
-        }
+        internal void Update(GameTime gameTime) => HandleEvents();
 
     }
 

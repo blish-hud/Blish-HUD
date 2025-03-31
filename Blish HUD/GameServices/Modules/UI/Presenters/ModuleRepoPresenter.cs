@@ -14,17 +14,11 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         public ModuleRepoPresenter(ModuleRepoView view, IPkgRepoProvider model) : base(view, model) { /* NOOP */ }
 
-        private void OnModuleRegistered(object sender, ValueEventArgs<ModuleManager> e) {
-            this.View.DirtyAssemblyStateExists = this.View.DirtyAssemblyStateExists || e.Value.IsModuleAssemblyStateDirty;
-        }
+        private void OnModuleRegistered(object sender, ValueEventArgs<ModuleManager> e) => this.View.DirtyAssemblyStateExists = this.View.DirtyAssemblyStateExists || e.Value.IsModuleAssemblyStateDirty;
 
-        protected override async Task<bool> Load(IProgress<string> progress) {
-            return await this.Model.Load(progress);
-        }
+        protected override async Task<bool> Load(IProgress<string> progress) => await this.Model.Load(progress);
 
-        protected override void Unload() {
-            GameService.Module.ModuleRegistered -= OnModuleRegistered;
-        }
+        protected override void Unload() => GameService.Module.ModuleRegistered -= OnModuleRegistered;
 
         protected override void UpdateView() {
             UpdateAssemblyDirtiedState();
@@ -66,9 +60,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         /// </summary>
         /// <param name="moduleNamespace">The namespace of the module to get the installed version of.</param>
         /// <returns>The currently installed module version or null if module is not installed.</returns>
-        private SemVer.Version GetCurrentModuleVersion(string moduleNamespace) {
-            return GameService.Module.Modules.FirstOrDefault(m => m.Manifest.Namespace == moduleNamespace)?.Manifest?.Version;
-        }
+        private SemVer.Version GetCurrentModuleVersion(string moduleNamespace) => GameService.Module.Modules.FirstOrDefault(m => m.Manifest.Namespace == moduleNamespace)?.Manifest?.Version;
 
         private void UpdatePackagesView() {
             this.View.RepoFlowPanel.ClearChildren();

@@ -99,9 +99,7 @@ namespace Blish_HUD.Debug {
                               "https://link.blishhud.com/httpaccessdenied");
         }
 
-        public static void NotifyCoreUpdateFailed(SemVer.Version version, Exception failureException) {
-            NotifyCoreUpdateFailed(version, failureException.Message);
-        }
+        public static void NotifyCoreUpdateFailed(SemVer.Version version, Exception failureException) => NotifyCoreUpdateFailed(version, failureException.Message);
 
         public static void NotifyCoreUpdateFailed(SemVer.Version version, string message) {
             NotifyContingency(nameof(NotifyCoreUpdateFailed),

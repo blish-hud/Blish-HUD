@@ -128,9 +128,7 @@ namespace Blish_HUD.Content {
             }
         }
 
-        public override void Load() {
-            GameService.Debug.OverlayTexts.Add("LoadedAssetTextures", ReportDebug);
-        }
+        public override void Load() => GameService.Debug.OverlayTexts.Add("LoadedAssetTextures", ReportDebug);
 
         private double _lastDebugReport = 0;
         private string _lastDebugString = string.Empty;
@@ -147,9 +145,7 @@ namespace Blish_HUD.Content {
                                                                                                        && !texture.IsDisposed);
         }
 
-        public override void Update(GameTime gameTime) {
-            _retryTokens = Math.Min(_retryTokens + (gameTime.ElapsedGameTime.TotalMilliseconds / RETRY_RELOAD), RETRY_COUNT);
-        }
+        public override void Update(GameTime gameTime) => _retryTokens = Math.Min(_retryTokens + (gameTime.ElapsedGameTime.TotalMilliseconds / RETRY_RELOAD), RETRY_COUNT);
 
         private static async Task<Texture2D> LoadTextureFromFileSystem(string path) {
             if (Program.IsMainThread) {

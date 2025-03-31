@@ -3,9 +3,7 @@
 namespace Blish_HUD {
     internal static class VersionExtensions {
 
-        public static string BaseAndPrerelease(this SemVer.Version version) {
-            return version.ToString().Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries)[0];
-        }
+        public static string BaseAndPrerelease(this SemVer.Version version) => version.ToString().Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries)[0];
 
     }
 }

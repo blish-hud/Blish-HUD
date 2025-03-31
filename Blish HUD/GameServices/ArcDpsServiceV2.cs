@@ -77,9 +77,7 @@ namespace Blish_HUD {
             => _arcDpsClient.IsMessageTypeAvailable(type);
 
         public void RegisterMessageType<T>(MessageType type, Func<T, CancellationToken, Task> listener)
-            where T : struct {
-            RegisterMessageType<T>((int)type, listener);
-        }
+            where T : struct => RegisterMessageType<T>((int)type, listener);
 
         public void RegisterMessageType<T>(int type, Func<T, CancellationToken, Task> listener)
             where T : struct {
@@ -103,9 +101,7 @@ namespace Blish_HUD {
         /// <summary>
         /// Starts the socket listener for the arc dps bridge.
         /// </summary>
-        private void Start(object sender, ValueEventArgs<uint> value) {
-            this.Start(value.Value);
-        }
+        private void Start(object sender, ValueEventArgs<uint> value) => this.Start(value.Value);
 
         /// <summary>
         /// Starts the socket listener for the arc dps bridge.

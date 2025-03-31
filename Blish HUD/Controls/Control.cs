@@ -144,9 +144,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private static void OnActiveControlChanged(ControlActivatedEventArgs e) {
-            ActiveControlChanged?.Invoke(null, e);
-        }
+        private static void OnActiveControlChanged(ControlActivatedEventArgs e) => ActiveControlChanged?.Invoke(null, e);
 
         public static event EventHandler<ControlActivatedEventArgs> FocusedControlChanged;
 
@@ -164,9 +162,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private static void OnFocusedControlChanged(ControlActivatedEventArgs e) {
-            ActiveControlChanged?.Invoke(null, e);
-        }
+        private static void OnFocusedControlChanged(ControlActivatedEventArgs e) => ActiveControlChanged?.Invoke(null, e);
 
         #endregion
 
@@ -224,41 +220,31 @@ namespace Blish_HUD.Controls {
         /// Called when the mouse moves over the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnMouseMoved(MouseEventArgs e) {
-            this.MouseMoved?.Invoke(this, e);
-        }
+        protected virtual void OnMouseMoved(MouseEventArgs e) => this.MouseMoved?.Invoke(this, e);
 
         /// <summary>
         /// Called when a right mouse button press occurs on the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnRightMouseButtonPressed(MouseEventArgs e) {
-            this.RightMouseButtonPressed?.Invoke(this, e);
-        }
+        protected virtual void OnRightMouseButtonPressed(MouseEventArgs e) => this.RightMouseButtonPressed?.Invoke(this, e);
 
         /// <summary>
         /// Called when a right mouse button release occurs on the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnRightMouseButtonReleased(MouseEventArgs e) {
-            this.RightMouseButtonReleased?.Invoke(this, e);
-        }
+        protected virtual void OnRightMouseButtonReleased(MouseEventArgs e) => this.RightMouseButtonReleased?.Invoke(this, e);
 
         /// <summary>
         /// Called the mouse wheel is scrolled while the mouse is over the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnMouseWheelScrolled(MouseEventArgs e) {
-            this.MouseWheelScrolled?.Invoke(this, e);
-        }
+        protected virtual void OnMouseWheelScrolled(MouseEventArgs e) => this.MouseWheelScrolled?.Invoke(this, e);
 
         /// <summary>
         /// Called when the mouse enters into the bounds of the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnMouseEntered(MouseEventArgs e) {
-            this.MouseEntered?.Invoke(this, e);
-        }
+        protected virtual void OnMouseEntered(MouseEventArgs e) => this.MouseEntered?.Invoke(this, e);
 
         /// <summary>
         /// Called when the mouse exits from the bounds of the <see cref="Control"/>.
@@ -274,9 +260,7 @@ namespace Blish_HUD.Controls {
         /// Called when a left mouse button press occurs on the <see cref="Control"/> while <see cref="Enabled"/> is <c>true</c>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnClick(MouseEventArgs e) {
-            this.Click?.Invoke(this, e);
-        }
+        protected virtual void OnClick(MouseEventArgs e) => this.Click?.Invoke(this, e);
 
         #endregion
 
@@ -290,33 +274,25 @@ namespace Blish_HUD.Controls {
         /// Called when the value of <see cref="Visible"/> is changed to <c>true</c>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnShown(EventArgs e) {
-            this.Shown?.Invoke(this, e);
-        }
+        protected virtual void OnShown(EventArgs e) => this.Shown?.Invoke(this, e);
 
         /// <summary>
         /// Called when the value of <see cref="Visible"/> is changed to <c>false</c>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnHidden(EventArgs e) {
-            this.Hidden?.Invoke(this, e);
-        }
+        protected virtual void OnHidden(EventArgs e) => this.Hidden?.Invoke(this, e);
 
         /// <summary>
         /// Called when the <see cref="Size"/> of the <see cref="Control"/> is changed.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnResized(ResizedEventArgs e) {
-            this.Resized?.Invoke(this, e);
-        }
+        protected virtual void OnResized(ResizedEventArgs e) => this.Resized?.Invoke(this, e);
 
         /// <summary>
         /// Called when the <see cref="Location"/> of the <see cref="Control"/> is changed.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnMoved(MovedEventArgs e) {
-            this.Moved?.Invoke(this, e);
-        }
+        protected virtual void OnMoved(MovedEventArgs e) => this.Moved?.Invoke(this, e);
 
         #endregion
 
@@ -535,11 +511,9 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _effectInFront, value);
         }
 
-        public virtual void UnsetFocus() {
-            FocusedControl = null;
-        }
+        public virtual void UnsetFocus() => FocusedControl = null;
 
-        public virtual bool GetFocusState() { return false; }
+        public virtual bool GetFocusState() => false;
 
         /// <summary>
         /// The bounds of the control, relative to the parent control.
@@ -783,18 +757,14 @@ namespace Blish_HUD.Controls {
         /// The layout of the <see cref="Control"/> will be suspended until
         /// <see cref="ResumeLayout"/> is called.
         /// </summary>
-        public void SuspendLayout() {
-            Interlocked.Increment(ref _layoutSuspendCount);
-        }
+        public void SuspendLayout() => Interlocked.Increment(ref _layoutSuspendCount);
 
         /// <summary>
         /// Suspends the layout of the <see cref="Control"/> until the context is
         /// disposed (i.e. when exiting a <see langword="using"/> block) and ensures
         /// correct resumption of layout in the event of exceptions.
         /// </summary>
-        public IDisposable SuspendLayoutContext() {
-            return new SuspendLayoutScope(this);
-        }
+        public IDisposable SuspendLayoutContext() => new SuspendLayoutScope(this);
 
         /// <summary>
         /// Allows the layout of the control to be calculated on the next
@@ -840,9 +810,7 @@ namespace Blish_HUD.Controls {
                        : MathHelper.Clamp(parent.AbsoluteOpacity(true) - (1f - _opacity), 0f, 1f);
         }
 
-        public float AbsoluteOpacity() {
-            return AbsoluteOpacity(false);
-        }
+        public float AbsoluteOpacity() => AbsoluteOpacity(false);
 
         /// <summary>
         /// Specifies which type of input this <see cref="Control"/> accepts, possibly blocks from other <see cref="Control"/>s, and prevents the game from seeing.
@@ -853,9 +821,7 @@ namespace Blish_HUD.Controls {
         /// Override to specify which type of input this <see cref="Control"/> accepts or intercepts.
         /// </summary>
         /// <seealso cref="Captures"/>
-        protected virtual CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
+        protected virtual CaptureType CapturesInput() => CaptureType.Mouse;
 
         protected void TriggerMouseEvent(MouseEventType mouseEventType) {
             switch (mouseEventType) {
@@ -911,16 +877,12 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// Makes the control visible.
         /// </summary>
-        public virtual void Show() {
-            this.Visible = true;
-        }
+        public virtual void Show() => this.Visible = true;
 
         /// <summary>
         /// Hides the control so that it is no longer visible.
         /// </summary>
-        public virtual void Hide() {
-            this.Visible = false;
-        }
+        public virtual void Hide() => this.Visible = false;
 
         public virtual void DoUpdate(GameTime gameTime) { /* NOOP */ }
 
@@ -1026,10 +988,9 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public void Dispose() {
+        public void Dispose() =>
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-        }
         #endregion
 
         #region Property Management and Binding
@@ -1060,9 +1021,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            OnPropertyChanged(propertyName, false);
-        }
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => OnPropertyChanged(propertyName, false);
 
         #endregion
 
@@ -1077,9 +1036,7 @@ namespace Blish_HUD.Controls {
                 _owner.SuspendLayout();
             }
 
-            public void Dispose() {
-                _owner.ResumeLayout(_forceRecalculate);
-            }
+            public void Dispose() => _owner.ResumeLayout(_forceRecalculate);
         }
         #endregion
     }

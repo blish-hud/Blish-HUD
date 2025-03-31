@@ -52,9 +52,7 @@ namespace Blish_HUD.Settings.UI.Views {
             };
         }
 
-        public void SetSettingView(IView view) {
-            _settingViewContainer.Show(view);
-        }
+        public void SetSettingView(IView view) => _settingViewContainer.Show(view);
 
         public void SetMenuItems(IEnumerable<MenuItem> menuItems) {
             if (_menuSettingsList == null) {
@@ -74,9 +72,7 @@ namespace Blish_HUD.Settings.UI.Views {
             }
         }
 
-        private void SettingsListMenuOnItemSelected(object sender, ControlActivatedEventArgs e) {
-            this.MenuItemSelected?.Invoke(this, e);
-        }
+        private void SettingsListMenuOnItemSelected(object sender, ControlActivatedEventArgs e) => this.MenuItemSelected?.Invoke(this, e);
 
         protected override void Unload() {
             base.Unload();

@@ -31,9 +31,7 @@ namespace Blish_HUD.Settings.UI.Views {
             _boolCheckbox.CheckedChanged += BoolCheckboxOnCheckedChanged;
         }
 
-        private void BoolCheckboxOnCheckedChanged(object sender, CheckChangedEvent e) {
-            this.OnValueChanged(new ValueEventArgs<bool>(e.Checked));
-        }
+        private void BoolCheckboxOnCheckedChanged(object sender, CheckChangedEvent e) => this.OnValueChanged(new ValueEventArgs<bool>(e.Checked));
 
         private void UpdateSize() {
             this.ViewTarget.Size = new Point(_boolCheckbox.Right + CONTROL_PADDING,
@@ -46,13 +44,9 @@ namespace Blish_HUD.Settings.UI.Views {
             UpdateSize();
         }
 
-        protected override void RefreshDescription(string description) {
-            _boolCheckbox.BasicTooltipText = description;
-        }
+        protected override void RefreshDescription(string description) => _boolCheckbox.BasicTooltipText = description;
 
-        protected override void RefreshValue(bool value) {
-            _boolCheckbox.Checked = value;
-        }
+        protected override void RefreshValue(bool value) => _boolCheckbox.Checked = value;
 
         protected override void Unload() {
             if (_boolCheckbox != null) {

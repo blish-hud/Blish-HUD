@@ -421,13 +421,9 @@ namespace Blish_HUD.Controls {
             this.CursorIndex = newIndex;
         }
 
-        protected void ResetSelection() {
-            this.SelectionStart = _selectionEnd = _cursorIndex;
-        }
+        protected void ResetSelection() => this.SelectionStart = _selectionEnd = _cursorIndex;
 
-        protected void UpdateSelection() {
-            this.SelectionEnd = _cursorIndex;
-        }
+        protected void UpdateSelection() => this.SelectionEnd = _cursorIndex;
 
         protected void UpdateSelectionIfShiftDown() {
             if (this.IsShiftDown) {
@@ -517,9 +513,7 @@ namespace Blish_HUD.Controls {
             GameService.Input.Keyboard.FocusedControl = null;
         }
 
-        public override bool GetFocusState() {
-            return this.Focused;
-        }
+        public override bool GetFocusState() => this.Focused;
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
             // TODO: move this to KeyboardHandler or similar
@@ -662,13 +656,9 @@ namespace Blish_HUD.Controls {
                          });
         }
 
-        protected virtual void HandleUndo() {
-            UndoRedo(_undoStack, _redoStack);
-        }
+        protected virtual void HandleUndo() => UndoRedo(_undoStack, _redoStack);
 
-        protected virtual void HandleRedo() {
-            UndoRedo(_redoStack, _undoStack);
-        }
+        protected virtual void HandleRedo() => UndoRedo(_redoStack, _undoStack);
 
         protected virtual void HandleBackspace() {
             if (_selectionStart == _selectionEnd) {
@@ -741,9 +731,7 @@ namespace Blish_HUD.Controls {
             UpdateSelectionIfShiftDown();
         }
 
-        protected virtual void HandleEnter() {
-            InputChar(NEWLINE);
-        }
+        protected virtual void HandleEnter() => InputChar(NEWLINE);
 
         protected abstract void UpdateScrolling();
 
@@ -767,13 +755,9 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void OnGlobalMouseLeftMouseButtonPressed(object sender, MouseEventArgs e) {
-            this.Focused = _mouseOver && _enabled;
-        }
+        private void OnGlobalMouseLeftMouseButtonPressed(object sender, MouseEventArgs e) => this.Focused = _mouseOver && _enabled;
 
-        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            _cursorDragging = false;
-        }
+        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) => _cursorDragging = false;
 
         public abstract int GetCursorIndexFromPosition(int x, int y);
 
@@ -864,9 +848,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected override void DisposeControl() {
-            this.Focused = false;
-        }
+        protected override void DisposeControl() => this.Focused = false;
 
     }
 }

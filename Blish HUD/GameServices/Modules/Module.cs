@@ -36,9 +36,7 @@ namespace Blish_HUD.Modules {
         /// <see cref="LoadAsync"/> has completed).  You must call "base.OnModuleLoaded(e)" at the
         /// end for the <see cref="Module.ModuleLoaded"/> event to fire.
         /// </summary>
-        protected virtual void OnModuleLoaded(EventArgs e) {
-            ModuleLoaded?.Invoke(this, e);
-        }
+        protected virtual void OnModuleLoaded(EventArgs e) => ModuleLoaded?.Invoke(this, e);
 
         protected void OnModuleException(UnobservedTaskExceptionEventArgs e) {
             ModuleException?.Invoke(this, e);
@@ -205,9 +203,7 @@ namespace Blish_HUD.Modules {
         /// The <see cref="IView"/> to display in the settings area of the module when it is enabled.
         /// By default, this is a <see cref="SettingsView"/> of your module settings.
         /// </summary>
-        public virtual IView GetSettingsView() {
-            return new SettingsView(this.ModuleParameters.SettingsManager.ModuleSettings);
-        }
+        public virtual IView GetSettingsView() => new SettingsView(this.ModuleParameters.SettingsManager.ModuleSettings);
 
         /// <summary>
         /// Load content and more here. This call is asynchronous, so it is a good time to run

@@ -130,9 +130,7 @@ namespace Blish_HUD.Settings {
         }
 
         [Obsolete("This function does not produce a localization friendly SettingEntry.")]
-        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName, string description, SettingsService.SettingTypeRendererDelegate renderer = null) {
-            return DefineSetting(entryKey, defaultValue, () => displayName, () => description);
-        }
+        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName, string description, SettingsService.SettingTypeRendererDelegate renderer = null) => DefineSetting(entryKey, defaultValue, () => displayName, () => description);
 
         public void UndefineSetting(string entryKey) {
             var entryToRemove = this[entryKey];
@@ -145,25 +143,15 @@ namespace Blish_HUD.Settings {
             }
         }
 
-        public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
-            return AddSubCollection(collectionKey, false, lazyLoaded, null);
-        }
+        public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) => AddSubCollection(collectionKey, false, lazyLoaded, null);
 
-        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) {
-            return AddSubCollection(collectionKey, renderInUi, lazyLoaded, null);
-        }
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) => AddSubCollection(collectionKey, renderInUi, lazyLoaded, null);
 
-        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, Func<string> displayNameFunc = null) {
-            return AddSubCollection(collectionKey, renderInUi, false, displayNameFunc);
-        }
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, Func<string> displayNameFunc = null) => AddSubCollection(collectionKey, renderInUi, false, displayNameFunc);
 
-        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false, Func<string> displayNameFunc = null) {
-            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }, displayNameFunc).Value;
-        }
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false, Func<string> displayNameFunc = null) => DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }, displayNameFunc).Value;
 
-        public bool ContainsSetting(string entryKey) {
-            return (this.Entries.Any(entry => string.Equals(entry.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase)));
-        }
+        public bool ContainsSetting(string entryKey) => (this.Entries.Any(entry => string.Equals(entry.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase)));
 
         public bool TryGetSetting(string entryKey, out SettingEntry settingEntry) {
             settingEntry = this[entryKey];
@@ -204,14 +192,10 @@ namespace Blish_HUD.Settings {
         #region IEnumerable
 
         /// <inheritdoc />
-        public IEnumerator<SettingEntry> GetEnumerator() {
-            return this.Entries.GetEnumerator();
-        }
+        public IEnumerator<SettingEntry> GetEnumerator() => this.Entries.GetEnumerator();
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         #endregion
 

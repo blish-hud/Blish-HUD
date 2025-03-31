@@ -95,9 +95,7 @@ namespace Blish_HUD {
         /// Allows you to enqueue a call that will occur during the next time the update loop executes.
         /// </summary>
         /// <param name="call">A method accepting <see cref="GameTime" /> as a parameter.</param>
-        public void QueueMainThreadUpdate(Action<GameTime> call) {
-            _queuedUpdates.Enqueue(call);
-        }
+        public void QueueMainThreadUpdate(Action<GameTime> call) => _queuedUpdates.Enqueue(call);
 
         protected override void Initialize() {
             this.OverlaySettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
@@ -218,9 +216,7 @@ namespace Blish_HUD {
             GameIntegration.WinForms.SetShowInTaskbar(GameIntegration.Gw2Instance.Gw2IsRunning && this.ShowInTaskbar.Value);
         }
 
-        private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
-            GameIntegration.WinForms.SetShowInTaskbar(e.NewValue);
-        }
+        private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) => GameIntegration.WinForms.SetShowInTaskbar(e.NewValue);
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             var culture = GetCultureFromGw2Locale(e.NewValue);

@@ -38,18 +38,14 @@ namespace Glide {
             /// </summary>
             /// <typeparam name="TLerper">The Lerper class to use for properties of the given type.</typeparam>
             /// <param name="propertyType">The type of the property to associate the given Lerper with.</param>
-            public static void SetLerper<TLerper>(Type propertyType) where TLerper : MemberLerper, new() {
-                SetLerper(typeof(TLerper), propertyType);
-            }
+            public static void SetLerper<TLerper>(Type propertyType) where TLerper : MemberLerper, new() => SetLerper(typeof(TLerper), propertyType);
 
             /// <summary>
             /// Associate a Lerper type with a property type.
             /// </summary>
             /// <param name="lerperType">The type of the Lerper to use for properties of the given type.</param>
             /// <param name="propertyType">The type of the property to associate the given Lerper with.</param>
-            public static void SetLerper(Type lerperType, Type propertyType) {
-                registeredLerpers[propertyType] = lerperType.GetConstructor(Type.EmptyTypes);
-            }
+            public static void SetLerper(Type lerperType, Type propertyType) => registeredLerpers[propertyType] = lerperType.GetConstructor(Type.EmptyTypes);
 
             protected TweenerImpl() {
                 tweens = new ConcurrentDictionary<object, List<Tween>>();
@@ -128,37 +124,27 @@ namespace Glide {
             /// <summary>
             /// Remove tweens from the tweener without calling their complete functions.
             /// </summary>
-            public void Cancel() {
-                ForAllTweens(toRemove.Enqueue);
-            }
+            public void Cancel() => ForAllTweens(toRemove.Enqueue);
 
             /// <summary>
             /// Assign tweens their final value and remove them from the tweener.
             /// </summary>
-            public void CancelAndComplete() {
-                ForAllTweens(tw => tw.CancelAndComplete());
-            }
+            public void CancelAndComplete() => ForAllTweens(tw => tw.CancelAndComplete());
 
             /// <summary>
             /// Set tweens to pause. They won't update and their delays won't tick down.
             /// </summary>
-            public void Pause() {
-                ForAllTweens(tw => tw.Pause());
-            }
+            public void Pause() => ForAllTweens(tw => tw.Pause());
 
             /// <summary>
             /// Toggle tweens' paused value.
             /// </summary>
-            public void PauseToggle() {
-                ForAllTweens(tw => tw.PauseToggle());
-            }
+            public void PauseToggle() => ForAllTweens(tw => tw.PauseToggle());
 
             /// <summary>
             /// Resumes tweens from a paused state.
             /// </summary>
-            public void Resume() {
-                ForAllTweens(tw => tw.Resume());
-            }
+            public void Resume() => ForAllTweens(tw => tw.Resume());
 
             /// <summary>
             /// Updates the tweener and all objects it contains.
@@ -197,9 +183,7 @@ namespace Glide {
                 return (MemberLerper)lerper.Invoke(null);
             }
 
-            void IRemoveTweens.Remove(Tween tween) {
-                toRemove.Enqueue(tween);
-            }
+            void IRemoveTweens.Remove(Tween tween) => toRemove.Enqueue(tween);
 
             private void AddAndRemove() {
                 while (toAdd.TryDequeue(out Tween tween)) {
@@ -227,51 +211,39 @@ namespace Glide {
             /// Cancel all tweens with the given target.
             /// </summary>
             /// <param name="target">The object being tweened that you want to cancel.</param>
-            public void TargetCancel(object target) {
-                ForAllTweens(target, tw => tw.Cancel());
-            }
+            public void TargetCancel(object target) => ForAllTweens(target, tw => tw.Cancel());
 
             /// <summary>
             /// Cancel tweening named properties on the given target.
             /// </summary>
             /// <param name="target">The object being tweened that you want to cancel properties on.</param>
             /// <param name="properties">The properties to cancel.</param>
-            public void TargetCancel(object target, params string[] properties) {
-                ForAllTweens(target, tw => tw.Cancel(properties));
-            }
+            public void TargetCancel(object target, params string[] properties) => ForAllTweens(target, tw => tw.Cancel(properties));
 
             /// <summary>
             /// Cancel, complete, and call complete callbacks for all tweens with the given target..
             /// </summary>
             /// <param name="target">The object being tweened that you want to cancel and complete.</param>
-            public void TargetCancelAndComplete(object target) {
-                ForAllTweens(target, tw => tw.CancelAndComplete());
-            }
+            public void TargetCancelAndComplete(object target) => ForAllTweens(target, tw => tw.CancelAndComplete());
 
 
             /// <summary>
             /// Pause all tweens with the given target.
             /// </summary>
             /// <param name="target">The object being tweened that you want to pause.</param>
-            public void TargetPause(object target) {
-                ForAllTweens(target, tw => tw.Pause());
-            }
+            public void TargetPause(object target) => ForAllTweens(target, tw => tw.Pause());
 
             /// <summary>
             /// Toggle the pause state of all tweens with the given target.
             /// </summary>
             /// <param name="target">The object being tweened that you want to toggle pause.</param>
-            public void TargetPauseToggle(object target) {
-                ForAllTweens(target, tw => tw.PauseToggle());
-            }
+            public void TargetPauseToggle(object target) => ForAllTweens(target, tw => tw.PauseToggle());
 
             /// <summary>
             /// Resume all tweens with the given target.
             /// </summary>
             /// <param name="target">The object being tweened that you want to resume.</param>
-            public void TargetResume(object target) {
-                ForAllTweens(target, tw => tw.Resume());
-            }
+            public void TargetResume(object target) => ForAllTweens(target, tw => tw.Resume());
             #endregion
 
             private class NumericLerper : MemberLerper {

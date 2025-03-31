@@ -71,9 +71,7 @@ namespace Blish_HUD.Contexts {
             GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
         }
 
-        protected override void Load() {
-            LoadFromLambda();
-        }
+        protected override void Load() => LoadFromLambda();
 
         private void LoadFromLambda() {
             BHUD_BUILDINFO_LAMBDA.GetJsonAsync<CdnSet>().ContinueWith(cdnSet => {
@@ -91,9 +89,7 @@ namespace Blish_HUD.Contexts {
             GetCdnInfoFromCdnUrl(GW2_CN_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _chineseCdnInfo, cdnInfo.Result));
         }
 
-        protected override void Unload() {
-            _loadCount = 0;
-        }
+        protected override void Unload() => _loadCount = 0;
 
         private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
             // Unload without DoUnload to avoid expiring the context
@@ -139,9 +135,7 @@ namespace Blish_HUD.Contexts {
             }
         }
 
-        private void SetCdnInfo(ref CdnInfo cdnInfo, string result) {
-            SetCdnInfo(ref cdnInfo, ParseCdnInfo(result));
-        }
+        private void SetCdnInfo(ref CdnInfo cdnInfo, string result) => SetCdnInfo(ref cdnInfo, ParseCdnInfo(result));
 
         private async Task<string> GetCdnInfoFromCdnUrl(string cdnUrl) {
             try {
@@ -184,17 +178,13 @@ namespace Blish_HUD.Contexts {
         /// If <see cref="ContextAvailability.Available"/>, returns
         /// <see cref="CdnInfo"/> provided by the standard asset CDN.
         /// </summary>
-        public ContextAvailability TryGetStandardCdnInfo(out ContextResult<CdnInfo> contextResult) {
-            return TryGetCdnInfo(ref _standardCdnInfo, out contextResult);
-        }
+        public ContextAvailability TryGetStandardCdnInfo(out ContextResult<CdnInfo> contextResult) => TryGetCdnInfo(ref _standardCdnInfo, out contextResult);
 
         /// <summary>
         /// If <see cref="ContextAvailability.Available"/>, returns
         /// <see cref="CdnInfo"/> provided by the Chinese asset CDN.
         /// </summary>
-        public ContextAvailability TryGetChineseCdnInfo(out ContextResult<CdnInfo> contextResult) {
-            return TryGetCdnInfo(ref _chineseCdnInfo, out contextResult);
-        }
+        public ContextAvailability TryGetChineseCdnInfo(out ContextResult<CdnInfo> contextResult) => TryGetCdnInfo(ref _chineseCdnInfo, out contextResult);
 
     }
 

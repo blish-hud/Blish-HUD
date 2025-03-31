@@ -132,13 +132,9 @@ namespace Blish_HUD {
 
         protected override void Load() { /* NOOP */ }
 
-        internal SettingCollection RegisterRootSettingCollection(string collectionKey) {
-            return this.Settings.AddSubCollection(collectionKey, false);
-        }
+        internal SettingCollection RegisterRootSettingCollection(string collectionKey) => this.Settings.AddSubCollection(collectionKey, false);
 
-        protected override void Unload() {
-            Save(true);
-        }
+        protected override void Unload() => Save(true);
 
         protected override void Update(GameTime gameTime) {
             if (_dirtySave) {

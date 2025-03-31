@@ -132,9 +132,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             Unknown
         };
 
-        internal static BuffCycle GetBuffCycle(byte bt) {
-            return bt < (byte)BuffCycle.Unknown ? (BuffCycle)bt : BuffCycle.Unknown;
-        }
+        internal static BuffCycle GetBuffCycle(byte bt) => bt < (byte)BuffCycle.Unknown ? (BuffCycle)bt : BuffCycle.Unknown;
 
         // Breakbar State
 
@@ -145,9 +143,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             None = 3,
             Unknown
         };
-        internal static BreakbarState GetBreakbarState(int value) {
-            return value < (int)BreakbarState.Unknown ? (BreakbarState)value : BreakbarState.Unknown;
-        }
+        internal static BreakbarState GetBreakbarState(int value) => value < (int)BreakbarState.Unknown ? (BreakbarState)value : BreakbarState.Unknown;
 
         // Buff Formula
 
@@ -161,9 +157,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             Force = 5,
             Unknown,
         };
-        internal static BuffStackType GetBuffStackType(byte bt) {
-            return bt < (byte)BuffStackType.Unknown ? (BuffStackType)bt : BuffStackType.Unknown;
-        }
+        internal static BuffStackType GetBuffStackType(byte bt) => bt < (byte)BuffStackType.Unknown ? (BuffStackType)bt : BuffStackType.Unknown;
 
         public enum BuffAttribute : short {
             None = 0,
@@ -293,9 +287,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             Marker = 1,
             Unknown
         }
-        internal static ContentLocal GetContentLocal(byte bt) {
-            return bt < (byte)ContentLocal.Unknown ? (ContentLocal)bt : ContentLocal.Unknown;
-        }
+        internal static ContentLocal GetContentLocal(byte bt) => bt < (byte)ContentLocal.Unknown ? (ContentLocal)bt : ContentLocal.Unknown;
 
         // Custom ids
         private const int DummyTarget = -1;
@@ -840,9 +832,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             //
             Unknown = int.MaxValue,
         };
-        public static TrashID GetTrashID(int id) {
-            return Enum.IsDefined(typeof(TrashID), id) ? (TrashID)id : TrashID.Unknown;
-        }
+        public static TrashID GetTrashID(int id) => Enum.IsDefined(typeof(TrashID), id) ? (TrashID)id : TrashID.Unknown;
 
         public enum TargetID : int {
             WorldVersusWorld = 1,
@@ -952,9 +942,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             //
             Unknown = int.MaxValue,
         };
-        public static TargetID GetTargetID(int id) {
-            return Enum.IsDefined(typeof(TargetID), id) ? (TargetID)id : TargetID.Unknown;
-        }
+        public static TargetID GetTargetID(int id) => Enum.IsDefined(typeof(TargetID), id) ? (TargetID)id : TargetID.Unknown;
 
         public enum ChestID : int {
             ChestOfDesmina = ArcDpsIdCollection.ChestOfDesmina,
@@ -964,9 +952,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             //
             None = int.MaxValue,
         };
-        public static ChestID GetChestID(int id) {
-            return Enum.IsDefined(typeof(ChestID), id) ? (ChestID)id : ChestID.None;
-        }
+        public static ChestID GetChestID(int id) => Enum.IsDefined(typeof(ChestID), id) ? (ChestID)id : ChestID.None;
 
         public enum MinionID : int {
             // Racial Summons
@@ -1216,8 +1202,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             Unknown,
         }
 
-        public static MinionID GetMinionID(int id) {
-            return Enum.IsDefined(typeof(MinionID), id) ? (MinionID)id : MinionID.Unknown;
-        }
+        public static MinionID GetMinionID(int id) => Enum.IsDefined(typeof(MinionID), id) ? (MinionID)id : MinionID.Unknown;
     }
 }

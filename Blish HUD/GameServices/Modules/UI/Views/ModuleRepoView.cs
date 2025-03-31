@@ -90,9 +90,7 @@ namespace Blish_HUD.Modules.UI.Views {
             };
         }
 
-        private void SearchboxOnTextChanged(object sender, EventArgs e) {
-            this.RepoFlowPanel.FilterChildren<ViewContainer>(viewContainer => PkgParamFilter(viewContainer, PkgNeedsUpdateFilter, PkgSearchFilter));
-        }
+        private void SearchboxOnTextChanged(object sender, EventArgs e) => this.RepoFlowPanel.FilterChildren<ViewContainer>(viewContainer => PkgParamFilter(viewContainer, PkgNeedsUpdateFilter, PkgSearchFilter));
 
         private bool PkgSearchFilter(ViewContainer viewContainer) {
             var pkgView = viewContainer.CurrentView as ManagePkgView;

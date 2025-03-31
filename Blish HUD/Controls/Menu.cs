@@ -19,9 +19,7 @@ namespace Blish_HUD.Controls {
         #region Events
 
         public event EventHandler<ControlActivatedEventArgs> ItemSelected;
-        protected virtual void OnItemSelected(ControlActivatedEventArgs e) {
-            this.ItemSelected?.Invoke(this, e);
-        }
+        protected virtual void OnItemSelected(ControlActivatedEventArgs e) => this.ItemSelected?.Invoke(this, e);
 
         #endregion
 
@@ -56,9 +54,7 @@ namespace Blish_HUD.Controls {
         private MenuItem _selectedMenuItem;
         public MenuItem SelectedMenuItem => _selectedMenuItem;
 
-        void IMenuItem.Select() {
-            throw new InvalidOperationException($"The root {nameof(this.Menu)} instance can not be selected.");
-        }
+        void IMenuItem.Select() => throw new InvalidOperationException($"The root {nameof(this.Menu)} instance can not be selected.");
 
         public void Select(MenuItem menuItem, List<IMenuItem> itemPath) {
             if (!_canSelect) {
@@ -75,13 +71,9 @@ namespace Blish_HUD.Controls {
             OnItemSelected(new ControlActivatedEventArgs(menuItem));
         }
 
-        public void Select(MenuItem menuItem) {
-            menuItem.Select();
-        }
+        public void Select(MenuItem menuItem) => menuItem.Select();
 
-        void IMenuItem.Deselect() {
-            Select(null, null);
-        }
+        void IMenuItem.Deselect() => Select(null, null);
 
         protected override void OnResized(ResizedEventArgs e) {
             foreach (var childMenuItem in _children) {

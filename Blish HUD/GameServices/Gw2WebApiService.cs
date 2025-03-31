@@ -151,9 +151,7 @@ namespace Blish_HUD {
             }
         }
 
-        internal string[] GetKeys() {
-            return _apiKeyRepository.Cast<SettingEntry<string>>().Select((setting) => setting.Value).ToArray();
-        }
+        internal string[] GetKeys() => _apiKeyRepository.Cast<SettingEntry<string>>().Select((setting) => setting.Value).ToArray();
 
         private async Task UpdateCharacterList(SettingEntry<string> definedKey) {
             try {
@@ -169,13 +167,9 @@ namespace Blish_HUD {
             }
         }
 
-        private async Task<List<string>> GetCharacters(ManagedConnection connection) {
-            return (await connection.Client.V2.Characters.IdsAsync()).ToList();
-        }
+        private async Task<List<string>> GetCharacters(ManagedConnection connection) => (await connection.Client.V2.Characters.IdsAsync()).ToList();
 
-        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) {
-            return await RequestSubtoken(_privilegedConnection, permissions, days);
-        }
+        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) => await RequestSubtoken(_privilegedConnection, permissions, days);
 
         public async Task<string> RequestSubtoken(ManagedConnection connection, IEnumerable<TokenPermission> permissions, int days) {
             var tokenPermissions = permissions as TokenPermission[] ?? permissions.ToArray();

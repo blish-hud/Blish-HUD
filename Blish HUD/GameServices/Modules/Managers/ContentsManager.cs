@@ -20,17 +20,13 @@ namespace Blish_HUD.Modules.Managers {
             Logger.Debug("New {contentsManagerName} instance utilizing a {dataReaderType} data reader.", nameof(ContentsManager), _reader.GetType().FullName);
         }
 
-        internal static ContentsManager GetModuleInstance(ModuleManager module) {
-            return new ContentsManager(module.DataReader.GetSubPath(REF_NAME));
-        }
+        internal static ContentsManager GetModuleInstance(ModuleManager module) => new ContentsManager(module.DataReader.GetSubPath(REF_NAME));
 
         /// <summary>
         /// Loads a <see cref="Texture2D"/> from a file such as a PNG.
         /// </summary>
         /// <param name="texturePath">The path to the texture.</param>
-        public Texture2D GetTexture(string texturePath) {
-            return GetTexture(texturePath, ContentService.Textures.Error);
-        }
+        public Texture2D GetTexture(string texturePath) => GetTexture(texturePath, ContentService.Textures.Error);
 
         /// <summary>
         /// Loads a <see cref="Texture2D"/> from a file such as a PNG. If the requested texture is inaccessible, the <see cref="fallbackTexture"/> will be returned.
@@ -92,29 +88,21 @@ namespace Blish_HUD.Modules.Managers {
             return null;
         }
 
-        public BitmapFont GetBitmapFont(string fontPath) {
-            throw new NotImplementedException();
-        }
+        public BitmapFont GetBitmapFont(string fontPath) => throw new NotImplementedException();
 
         /// <summary>
         /// [NOT IMPLEMENTED] Loads a <see cref="Model"/> from a file.
         /// </summary>
         /// <param name="modelPath">The path to the model.</param>
-        public Model GetModel(string modelPath) {
-            throw new NotImplementedException();
-        }
+        public Model GetModel(string modelPath) => throw new NotImplementedException();
 
         /// <summary>
         /// Retrieves the stream of a file.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
-        public Stream GetFileStream(string filePath) {
-            return _reader.GetFileStream(filePath);
-        }
+        public Stream GetFileStream(string filePath) => _reader.GetFileStream(filePath);
 
-        public void Dispose() {
-            _reader?.Dispose();
-        }
+        public void Dispose() => _reader?.Dispose();
 
     }
 

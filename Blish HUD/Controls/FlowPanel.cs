@@ -119,9 +119,7 @@ namespace Blish_HUD.Controls {
             e.ChangedChild.Resized -= ChangedChildOnResized;
         }
 
-        private void ChangedChildOnResized(object sender, ResizedEventArgs e) {
-            OnChildrenChanged(_children.ToArray());
-        }
+        private void ChangedChildOnResized(object sender, ResizedEventArgs e) => OnChildrenChanged(_children.ToArray());
 
         private void OnChildrenChanged(IEnumerable<Control> resultingChildren) {
             if (this.IsLayoutSuspended) {

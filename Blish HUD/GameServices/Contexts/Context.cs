@@ -13,9 +13,7 @@ namespace Blish_HUD.Contexts {
         /// </summary>
         public event EventHandler<EventArgs> StateChanged;
 
-        protected void OnStateChanged(EventArgs e) {
-            this.StateChanged?.Invoke(this, e);
-        }
+        protected void OnStateChanged(EventArgs e) => this.StateChanged?.Invoke(this, e);
 
         private ContextState _state = ContextState.None;
 
@@ -54,9 +52,7 @@ namespace Blish_HUD.Contexts {
         /// <summary>
         /// Called to confirm that the context is now <see cref="ContextState.Ready"/>.
         /// </summary>
-        protected void ConfirmReady() {
-            this.State = ContextState.Ready;
-        }
+        protected void ConfirmReady() => this.State = ContextState.Ready;
 
         /// <summary>
         /// If the <see cref="State"/> is not <see cref="ContextState.Ready"/> and a function is called

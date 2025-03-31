@@ -12,9 +12,7 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
 
-        private void OnChecked(CheckChangedEvent e) {
-            CheckedChanged?.Invoke(this, e);
-        }
+        private void OnChecked(CheckChangedEvent e) => CheckedChanged?.Invoke(this, e);
 
         private bool _checked = false;
         public bool Checked {

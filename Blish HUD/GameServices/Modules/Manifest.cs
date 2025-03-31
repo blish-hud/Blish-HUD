@@ -66,9 +66,7 @@ namespace Blish_HUD.Modules {
         /// Gets the detailed name of the module suitable for displaying in logs.
         /// [ModuleName] ([ModuleNamespace] v[ModuleVersion])
         /// </summary>
-        public virtual string GetDetailedName() {
-            return $"{this.Name} ({this.Namespace}) v{this.Version}";
-        }
+        public virtual string GetDetailedName() => $"{this.Name} ({this.Namespace}) v{this.Version}";
 
     }
 

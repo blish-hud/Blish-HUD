@@ -107,7 +107,7 @@ namespace Blish_HUD.DebugHelper.Services {
             isDisposed = true;
         }
 
-        public void Dispose() { Dispose(true); }
+        public void Dispose() => Dispose(true);
 
         #endregion
 

@@ -17,25 +17,19 @@ namespace Glide {
         /// <summary>
         /// Ease a value to its target and then back. Use this to wrap another easing function.
         /// </summary>
-        public static Func<float, float> ToAndFro(Func<float, float> easer) {
-            return t => ToAndFro(easer(t));
-        }
+        public static Func<float, float> ToAndFro(Func<float, float> easer) => t => ToAndFro(easer(t));
 
         /// <summary>
         /// Ease a value to its target and then back.
         /// </summary>
-        public static float ToAndFro(float t) {
-            return t < 0.5f ? t * 2 : 1 + ((t - 0.5f) / 0.5f * -1);
-        }
+        public static float ToAndFro(float t) => t < 0.5f ? t * 2 : 1 + ((t - 0.5f) / 0.5f * -1);
 
         /// <summary>
         /// Elastic in.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float ElasticIn(float t) {
-            return (float)(Math.Sin(13 * PI2 * t) * Math.Pow(2, 10 * (t - 1)));
-        }
+        public static float ElasticIn(float t) => (float)(Math.Sin(13 * PI2 * t) * Math.Pow(2, 10 * (t - 1)));
 
         /// <summary>
         /// Elastic out.
@@ -68,108 +62,84 @@ namespace Glide {
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuadIn(float t) {
-            return (float)(t * t);
-        }
+        public static float QuadIn(float t) => (float)(t * t);
 
         /// <summary>
         /// Quadratic out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuadOut(float t) {
-            return (float)(-t * (t - 2));
-        }
+        public static float QuadOut(float t) => (float)(-t * (t - 2));
 
         /// <summary>
         /// Quadratic in and out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuadInOut(float t) {
-            return (float)(t <= .5 ? t * t * 2 : 1 - ((--t) * t * 2));
-        }
+        public static float QuadInOut(float t) => (float)(t <= .5 ? t * t * 2 : 1 - ((--t) * t * 2));
 
         /// <summary>
         /// Cubic in.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float CubeIn(float t) {
-            return (float)(t * t * t);
-        }
+        public static float CubeIn(float t) => (float)(t * t * t);
 
         /// <summary>
         /// Cubic out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float CubeOut(float t) {
-            return (float)(1 + ((--t) * t * t));
-        }
+        public static float CubeOut(float t) => (float)(1 + ((--t) * t * t));
 
         /// <summary>
         /// Cubic in and out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float CubeInOut(float t) {
-            return (float)(t <= .5 ? t * t * t * 4 : 1 + ((--t) * t * t * 4));
-        }
+        public static float CubeInOut(float t) => (float)(t <= .5 ? t * t * t * 4 : 1 + ((--t) * t * t * 4));
 
         /// <summary>
         /// Quart in.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuartIn(float t) {
-            return (float)(t * t * t * t);
-        }
+        public static float QuartIn(float t) => (float)(t * t * t * t);
 
         /// <summary>
         /// Quart out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuartOut(float t) {
-            return (float)(1 - ((t -= 1) * t * t * t));
-        }
+        public static float QuartOut(float t) => (float)(1 - ((t -= 1) * t * t * t));
 
         /// <summary>
         /// Quart in and out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuartInOut(float t) {
-            return (float)(t <= .5 ? t * t * t * t * 8 : ((1 - ((t = (t * 2) - 2) * t * t * t)) / 2) + .5);
-        }
+        public static float QuartInOut(float t) => (float)(t <= .5 ? t * t * t * t * 8 : ((1 - ((t = (t * 2) - 2) * t * t * t)) / 2) + .5);
 
         /// <summary>
         /// Quint in.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuintIn(float t) {
-            return (float)(t * t * t * t * t);
-        }
+        public static float QuintIn(float t) => (float)(t * t * t * t * t);
 
         /// <summary>
         /// Quint out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuintOut(float t) {
-            return (float)(((--t) * t * t * t * t) + 1);
-        }
+        public static float QuintOut(float t) => (float)(((--t) * t * t * t * t) + 1);
 
         /// <summary>
         /// Quint in and out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float QuintInOut(float t) {
-            return (float)(((t *= 2) < 1) ? t * t * t * t * t / 2 : (((t -= 2) * t * t * t * t) + 2) / 2);
-        }
+        public static float QuintInOut(float t) => (float)(((t *= 2) < 1) ? t * t * t * t * t / 2 : (((t -= 2) * t * t * t * t) + 2) / 2);
 
         /// <summary>
         /// Sine in.
@@ -189,18 +159,14 @@ namespace Glide {
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float SineOut(float t) {
-            return (float)(Math.Sin(PI2 * t));
-        }
+        public static float SineOut(float t) => (float)(Math.Sin(PI2 * t));
 
         /// <summary>
         /// Sine in and out
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float SineInOut(float t) {
-            return (float)((-Math.Cos(PI * t) / 2) + .5);
-        }
+        public static float SineInOut(float t) => (float)((-Math.Cos(PI * t) / 2) + .5);
 
         /// <summary>
         /// Bounce in.
@@ -288,36 +254,28 @@ namespace Glide {
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float CircIn(float t) {
-            return (float)(-(Math.Sqrt(1 - (t * t)) - 1));
-        }
+        public static float CircIn(float t) => (float)(-(Math.Sqrt(1 - (t * t)) - 1));
 
         /// <summary>
         /// Circle out
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float CircOut(float t) {
-            return (float)(Math.Sqrt(1 - ((t - 1) * (t - 1))));
-        }
+        public static float CircOut(float t) => (float)(Math.Sqrt(1 - ((t - 1) * (t - 1))));
 
         /// <summary>
         /// Circle in and out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float CircInOut(float t) {
-            return (float)(t <= .5 ? (Math.Sqrt(1 - (t * t * 4)) - 1) / -2 : (Math.Sqrt(1 - (((t * 2) - 2) * ((t * 2) - 2))) + 1) / 2);
-        }
+        public static float CircInOut(float t) => (float)(t <= .5 ? (Math.Sqrt(1 - (t * t * 4)) - 1) / -2 : (Math.Sqrt(1 - (((t * 2) - 2) * ((t * 2) - 2))) + 1) / 2);
 
         /// <summary>
         /// Exponential in.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float ExpoIn(float t) {
-            return (float)(Math.Pow(2, 10 * (t - 1)));
-        }
+        public static float ExpoIn(float t) => (float)(Math.Pow(2, 10 * (t - 1)));
 
         /// <summary>
         /// Exponential out.
@@ -350,18 +308,14 @@ namespace Glide {
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float BackIn(float t) {
-            return (float)(t * t * ((2.70158 * t) - 1.70158));
-        }
+        public static float BackIn(float t) => (float)(t * t * ((2.70158 * t) - 1.70158));
 
         /// <summary>
         /// Back out.
         /// </summary>
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
-        public static float BackOut(float t) {
-            return (float)(1 - ((--t) * t * ((-2.70158 * t) - 1.70158)));
-        }
+        public static float BackOut(float t) => (float)(1 - ((--t) * t * ((-2.70158 * t) - 1.70158)));
 
         /// <summary>
         /// Back in and out.

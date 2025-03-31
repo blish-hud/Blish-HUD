@@ -268,17 +268,10 @@ namespace Blish_HUD {
                 Keyboard.Stroke(VirtualKeyShort.RETURN);
             }
 
-            private void Unfocus() {
-                Mouse.Click(MouseButton.LEFT, Graphics.WindowWidth / 2, 0);
-            }
+            private void Unfocus() => Mouse.Click(MouseButton.LEFT, Graphics.WindowWidth / 2, 0);
 
-            private bool IsTextValid(string text) {
-                return (text != null && text.Length < 200);
-                // More checks? (Symbols: https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset)
-            }
-            private bool IsBusy() {
-                return !GameIntegration.Gw2Instance.Gw2IsRunning || !GameIntegration.Gw2Instance.Gw2HasFocus || !GameIntegration.Gw2Instance.IsInGame;
-            }
+            private bool IsTextValid(string text) => (text != null && text.Length < 200);// More checks? (Symbols: https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset)
+            private bool IsBusy() => !GameIntegration.Gw2Instance.Gw2IsRunning || !GameIntegration.Gw2Instance.Gw2HasFocus || !GameIntegration.Gw2Instance.IsInGame;
         }
         #endregion
 

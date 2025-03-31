@@ -57,9 +57,7 @@ namespace Blish_HUD.Modules.Managers {
             _connection = moduleConnection;
         }
 
-        internal static Gw2ApiManager GetModuleInstance(ModuleManager module) {
-            return new Gw2ApiManager(module.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>(), GameService.Gw2WebApi.GetConnection(string.Empty));
-        }
+        internal static Gw2ApiManager GetModuleInstance(ModuleManager module) => new Gw2ApiManager(module.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>(), GameService.Gw2WebApi.GetConnection(string.Empty));
 
         internal async Task RenewSubtoken() {
             // If we have no consented permissions, we early exit.
@@ -99,13 +97,9 @@ namespace Blish_HUD.Modules.Managers {
         [Obsolete("HavePermissions is deprecated, please use HasPermissions (0.11.1+) instead.")]
         public bool HavePermissions(IEnumerable<TokenPermission> permissions) => HasPermissions(permissions);
 
-        public bool HasPermissions(IEnumerable<TokenPermission> permissions) {
-            return _activePermissions.IsSupersetOf(permissions);
-        }
+        public bool HasPermissions(IEnumerable<TokenPermission> permissions) => _activePermissions.IsSupersetOf(permissions);
 
-        public bool HasPermission(TokenPermission permission) {
-            return _activePermissions.Contains(permission);
-        }
+        public bool HasPermission(TokenPermission permission) => _activePermissions.Contains(permission);
     }
 
 }

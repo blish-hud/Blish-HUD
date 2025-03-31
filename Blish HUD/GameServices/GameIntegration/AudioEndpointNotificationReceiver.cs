@@ -15,24 +15,14 @@ namespace Blish_HUD.GameIntegration {
         public event DeviceStateChangeDelegate DeviceStateChanged;
         public event DevicePropertyValueChangedDelegate PropertyValueChanged;
 
-        public void OnDefaultDeviceChanged(DataFlow flow, Role role, string defaultDeviceId) {
-            DefaultDeviceChanged?.Invoke(flow, role, defaultDeviceId);
-        }
+        public void OnDefaultDeviceChanged(DataFlow flow, Role role, string defaultDeviceId) => DefaultDeviceChanged?.Invoke(flow, role, defaultDeviceId);
 
-        public void OnDeviceAdded(string deviceId) {
-            DeviceAdded?.Invoke(deviceId);
-        }
+        public void OnDeviceAdded(string deviceId) => DeviceAdded?.Invoke(deviceId);
 
-        public void OnDeviceRemoved(string deviceId) {
-            DeviceRemoved?.Invoke(deviceId);
-        }
+        public void OnDeviceRemoved(string deviceId) => DeviceRemoved?.Invoke(deviceId);
 
-        public void OnDeviceStateChanged(string deviceId, DeviceState newState) {
-            DeviceStateChanged?.Invoke(deviceId, newState);
-        }
+        public void OnDeviceStateChanged(string deviceId, DeviceState newState) => DeviceStateChanged?.Invoke(deviceId, newState);
 
-        public void OnPropertyValueChanged(string deviceId, PropertyKey key) {
-            PropertyValueChanged?.Invoke(deviceId, key);
-        }
+        public void OnPropertyValueChanged(string deviceId, PropertyKey key) => PropertyValueChanged?.Invoke(deviceId, key);
     }
 }

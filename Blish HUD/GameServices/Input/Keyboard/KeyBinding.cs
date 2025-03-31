@@ -23,9 +23,7 @@ namespace Blish_HUD.Input {
         /// </summary>
         public event EventHandler<EventArgs> Activated;
 
-        protected void OnActivated(EventArgs e) {
-            Activated?.Invoke(this, e);
-        }
+        protected void OnActivated(EventArgs e) => Activated?.Invoke(this, e);
 
         private Keys _primaryKey;
         /// <summary>
@@ -124,9 +122,7 @@ namespace Blish_HUD.Input {
             CheckTrigger(GameService.Input.Keyboard.ActiveModifiers, GameService.Input.Keyboard.KeysDown);
         }
 
-        private void Reset() {
-            StopFiring();
-        }
+        private void Reset() => StopFiring();
 
         private void Fire() {
             if (this.IsTriggering) {
@@ -138,9 +134,7 @@ namespace Blish_HUD.Input {
             ManuallyTrigger();
         }
 
-        private void StopFiring() {
-            this.IsTriggering = false;
-        }
+        private void StopFiring() => this.IsTriggering = false;
 
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
             if (activeModifiers == this.ModifierKeys || _acceptedPrimaryModifierKeys.Contains(_primaryKey)) {
@@ -168,9 +162,7 @@ namespace Blish_HUD.Input {
         /// <summary>
         /// Manually triggers the actions bound to this <see cref="KeyBinding"/>.
         /// </summary>
-        public void ManuallyTrigger() {
-            OnActivated(EventArgs.Empty);
-        }
+        public void ManuallyTrigger() => OnActivated(EventArgs.Empty);
 
     }
 

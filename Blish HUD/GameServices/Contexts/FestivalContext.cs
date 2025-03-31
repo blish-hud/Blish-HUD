@@ -190,9 +190,7 @@ namespace Blish_HUD.Contexts {
             return Enumerable.Empty<Festival>();
         }
 
-        private bool FestivalIsActive(Festival festival) {
-            return _activeFestivals.Contains(festival);
-        }
+        private bool FestivalIsActive(Festival festival) => _activeFestivals.Contains(festival);
 
         /// <summary>
         /// If <see cref="ContextAvailability.Available"/>, returns

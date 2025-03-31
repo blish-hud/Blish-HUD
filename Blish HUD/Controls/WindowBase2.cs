@@ -74,9 +74,7 @@ namespace Blish_HUD.Controls {
             /* NOOP */
         }
 
-        public static IEnumerable<IWindow> GetWindows() {
-            return GameService.Graphics.SpriteScreen.GetChildrenOfType<IWindow>();
-        }
+        public static IEnumerable<IWindow> GetWindows() => GameService.Graphics.SpriteScreen.GetChildrenOfType<IWindow>();
 
         /// <summary>
         /// Returns the calculated zindex offset.  This should be added to the base zindex (typically <see cref="Screen.WINDOW_BASEZINDEX"/>) and returned as the zindex.
@@ -581,9 +579,7 @@ namespace Blish_HUD.Controls {
                                                              : this.ContentRegion.Y + _contentMargin.Y + STANDARD_MARGIN, 1024));
         }
 
-        public void BringWindowToFront() {
-            _lastWindowInteract = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
-        }
+        public void BringWindowToFront() => _lastWindowInteract = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
 
         #endregion
 
@@ -595,13 +591,9 @@ namespace Blish_HUD.Controls {
 
         private Point _contentMargin;
 
-        protected void ConstructWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion) {
-            ConstructWindow(background, windowRegion, contentRegion, new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT));
-        }
+        protected void ConstructWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion) => ConstructWindow(background, windowRegion, contentRegion, new Point(windowRegion.Width, windowRegion.Height + STANDARD_TITLEBAR_HEIGHT));
 
-        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) {
-            ConstructWindow((AsyncTexture2D)background, windowRegion, contentRegion);
-        }
+        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) => ConstructWindow((AsyncTexture2D)background, windowRegion, contentRegion);
 
         protected void ConstructWindow(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
             this.WindowBackground = background;
@@ -630,9 +622,7 @@ namespace Blish_HUD.Controls {
             this.Size = windowSize;
         }
 
-        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
-            ConstructWindow((AsyncTexture2D)background, windowRegion, contentRegion, windowSize);
-        }
+        protected void ConstructWindow(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) => ConstructWindow((AsyncTexture2D)background, windowRegion, contentRegion, windowSize);
 
         private float _windowToTextureWidthRatio;
         private float _windowToTextureHeightRatio;
@@ -703,9 +693,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void PaintWindowBackground(SpriteBatch spriteBatch) {
-            spriteBatch.DrawOnCtrl(this, this.WindowBackground, this.BackgroundDestinationBounds);
-        }
+        private void PaintWindowBackground(SpriteBatch spriteBatch) => spriteBatch.DrawOnCtrl(this, this.WindowBackground, this.BackgroundDestinationBounds);
 
         private void PaintTitleBar(SpriteBatch spriteBatch) {
             if (this.MouseOver && this.MouseOverTitleBar) {

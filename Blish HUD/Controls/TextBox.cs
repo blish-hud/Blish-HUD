@@ -54,9 +54,7 @@ namespace Blish_HUD.Controls {
             this.Size = new Point(STANDARD_CONTROLWIDTH, STANDARD_CONTROLHEIGHT);
         }
 
-        protected override void HandleEnter() {
-            OnEnterPressed(EventArgs.Empty);
-        }
+        protected override void HandleEnter() => OnEnterPressed(EventArgs.Empty);
 
         protected override void MoveLine(int delta) {
             if (delta < 0) {

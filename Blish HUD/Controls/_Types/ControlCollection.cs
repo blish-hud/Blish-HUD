@@ -23,13 +23,9 @@ namespace Blish_HUD.Controls {
                 _rwLock = rwLock;
             }
 
-            public bool MoveNext() {
-                return _inner.MoveNext();
-            }
+            public bool MoveNext() => _inner.MoveNext();
 
-            public void Reset() {
-                _inner.Reset();
-            }
+            public void Reset() => _inner.Reset();
 
             public object Current => _inner.Current;
 
@@ -67,9 +63,7 @@ namespace Blish_HUD.Controls {
             return new ControlEnumerator<T>(_innerList.GetEnumerator(), _listLock);
         }
 
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public void Add(T item) {
             if (this.Contains(item) || item == null) {
@@ -127,9 +121,7 @@ namespace Blish_HUD.Controls {
         /// Do not use.
         /// </summary>
         [Obsolete("Do not use. Throws an exception.")]
-        public void CopyTo(T[] array, int arrayIndex) {
-            throw new InvalidOperationException($"{nameof(CopyTo)} not supported.  If using LINQ, ensure you call .ToList or .ToArray directly on {nameof(ControlCollection<T>)} first.");
-        }
+        public void CopyTo(T[] array, int arrayIndex) => throw new InvalidOperationException($"{nameof(CopyTo)} not supported.  If using LINQ, ensure you call .ToList or .ToArray directly on {nameof(ControlCollection<T>)} first.");
 
         public bool Remove(T item) {
             if (!_listLock.IsWriteLockHeld) {

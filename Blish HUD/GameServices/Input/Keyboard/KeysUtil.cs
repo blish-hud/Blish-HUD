@@ -91,9 +91,7 @@ namespace Blish_HUD.Input {
         /// <summary>
         /// Returns the <see cref="ModifierKeys"/> found in an <see cref="Enumerable"/> of <see cref="Keys"/>.
         /// </summary>
-        public static ModifierKeys ModifiersFromKeys(IEnumerable<Keys> keys) {
-            return keys.Aggregate(ModifierKeys.None, (current, key) => current | ModifierKeyFromKey(key));
-        }
+        public static ModifierKeys ModifiersFromKeys(IEnumerable<Keys> keys) => keys.Aggregate(ModifierKeys.None, (current, key) => current | ModifierKeyFromKey(key));
 
         /// <summary>
         /// Returns the friendly display name of the provided <see cref="Keys"/> value.

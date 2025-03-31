@@ -32,9 +32,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             UpdateStatus();
         }
 
-        private void UpdateSettings() {
-            this.View.IgnoreModuleDependencies = this.Model.State.IgnoreDependencies;
-        }
+        private void UpdateSettings() => this.View.IgnoreModuleDependencies = this.Model.State.IgnoreDependencies;
 
         private void UpdateDependencyList() {
             var checkResults = new List<(string Name, string Status, ModuleDependencyCheckResult Result)>();
@@ -79,9 +77,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             }
         }
 
-        protected override void Unload() {
-            this.View.IgnoreModuleDependenciesChanged -= ViewOnIgnoreModuleDependenciesChanged;
-        }
+        protected override void Unload() => this.View.IgnoreModuleDependenciesChanged -= ViewOnIgnoreModuleDependenciesChanged;
 
     }
 }

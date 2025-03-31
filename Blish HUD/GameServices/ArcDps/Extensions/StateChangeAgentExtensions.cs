@@ -16,9 +16,7 @@ namespace Blish_HUD.ArcDps {
                 || state == StateChange.BreakbarPercent;
         }
 
-        public static bool DstIsAgent(this StateChange state) {
-            return state == StateChange.None || state == StateChange.AttackTarget;
-        }
+        public static bool DstIsAgent(this StateChange state) => state == StateChange.None || state == StateChange.AttackTarget;
 
         public static bool HasTime(this StateChange state) {
             return state == StateChange.None || state == StateChange.EnterCombat

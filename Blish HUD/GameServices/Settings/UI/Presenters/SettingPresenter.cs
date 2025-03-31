@@ -18,9 +18,7 @@ namespace Blish_HUD.Settings.UI.Presenters {
             return base.Load(progress);
         }
 
-        private void ModelOnSettingChanged(object sender, ValueChangedEventArgs<TSetting> e) {
-            this.View.Value = e.NewValue;
-        }
+        private void ModelOnSettingChanged(object sender, ValueChangedEventArgs<TSetting> e) => this.View.Value = e.NewValue;
 
         private void ViewOnValueChanged(object sender, ValueEventArgs<TSetting> e) {
             if (!_changeReady) {

@@ -20,9 +20,7 @@ namespace Blish_HUD.Modules.Managers {
             PrepareDirectories();
         }
 
-        internal static DirectoriesManager GetModuleInstance(ModuleManager module) {
-            return new DirectoriesManager(module.Manifest.Directories ?? new List<string>(0));
-        }
+        internal static DirectoriesManager GetModuleInstance(ModuleManager module) => new DirectoriesManager(module.Manifest.Directories ?? new List<string>(0));
 
         private void PrepareDirectories() {
             foreach (string directoryName in _directoryNames) {

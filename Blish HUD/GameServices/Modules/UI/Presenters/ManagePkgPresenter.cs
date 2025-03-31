@@ -23,11 +23,10 @@ namespace Blish_HUD.Modules.UI.Presenters {
             return base.Load(progress);
         }
 
-        private Version GetDefaultVersion() {
+        private Version GetDefaultVersion() =>
             // It seems to be a better user experience to always default to the latest for
             // those that want to quickly update.
-            return this.Model.Max(m => m.Version);
-        }
+            this.Model.Max(m => m.Version);
 
         private void SetActiveVersion(Version version) {
             _selectedVersion = this.Model.First(m => m.Version == version);
@@ -89,13 +88,9 @@ namespace Blish_HUD.Modules.UI.Presenters {
             SetActiveVersion(GetDefaultVersion());
         }
 
-        private void OnVersionSelected(object sender, ValueEventArgs<Version> e) {
-            SetActiveVersion(e.Value);
-        }
+        private void OnVersionSelected(object sender, ValueEventArgs<Version> e) => SetActiveVersion(e.Value);
 
-        private void SetActionStatus(string status) {
-            this.View.PackageActionText = status;
-        }
+        private void SetActionStatus(string status) => this.View.PackageActionText = status;
 
         private async void OnActionClicked(object sender, EventArgs e) {
             this.View.PackageActionEnabled = false;

@@ -394,9 +394,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _tokenStatusImg.Show();
         }
 
-        public void ClearApiKey() {
-            _apiKeyTextBox.Text = "";
-        }
+        public void ClearApiKey() => _apiKeyTextBox.Text = "";
 
     }
 }

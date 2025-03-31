@@ -33,16 +33,12 @@ namespace Blish_HUD.Settings {
         /// <summary>
         /// Sets the setting to be disabled or enabled in the UI.
         /// </summary>
-        public static void SetDisabled(this SettingEntry setting, bool disabled = DEFAULT_DISABLED) {
-            SetComplianceRequisite(setting, new SettingDisabledComplianceRequisite(disabled));
-        }
+        public static void SetDisabled(this SettingEntry setting, bool disabled = DEFAULT_DISABLED) => SetComplianceRequisite(setting, new SettingDisabledComplianceRequisite(disabled));
 
         /// <summary>
         /// Sets the validation function used to indicate if the value is valid for the setting when changed via the UI.
         /// </summary>
-        public static void SetValidation<T>(this SettingEntry<T> setting, Func<T, SettingValidationResult> validationFunc) {
-            SetComplianceRequisite(setting, new SettingValidationComplianceRequisite<T>(validationFunc));
-        }
+        public static void SetValidation<T>(this SettingEntry<T> setting, Func<T, SettingValidationResult> validationFunc) => SetComplianceRequisite(setting, new SettingValidationComplianceRequisite<T>(validationFunc));
 
         #endregion
 
@@ -54,9 +50,7 @@ namespace Blish_HUD.Settings {
         /// <summary>
         /// Sets the minimum and maximum <c>int</c> value a user can set the setting to from the UI.
         /// </summary>
-        public static void SetRange(this SettingEntry<int> setting, int minValue = DEFAULT_MININT, int maxValue = DEFAULT_MAXINT) {
-            SetComplianceRequisite(setting, new IntRangeRangeComplianceRequisite(minValue, maxValue));
-        }
+        public static void SetRange(this SettingEntry<int> setting, int minValue = DEFAULT_MININT, int maxValue = DEFAULT_MAXINT) => SetComplianceRequisite(setting, new IntRangeRangeComplianceRequisite(minValue, maxValue));
 
         #endregion
 
@@ -68,9 +62,7 @@ namespace Blish_HUD.Settings {
         /// <summary>
         /// Sets the minimum and maximum <c>float</c> value a user can set the setting to from the UI.
         /// </summary>
-        public static void SetRange(this SettingEntry<float> setting, float minValue = DEFAULT_MINFLOAT, float maxValue = DEFAULT_MAXFLOAT) {
-            SetComplianceRequisite(setting, new FloatRangeRangeComplianceRequisite(minValue, maxValue));
-        }
+        public static void SetRange(this SettingEntry<float> setting, float minValue = DEFAULT_MINFLOAT, float maxValue = DEFAULT_MAXFLOAT) => SetComplianceRequisite(setting, new FloatRangeRangeComplianceRequisite(minValue, maxValue));
 
         #endregion
 
@@ -79,9 +71,7 @@ namespace Blish_HUD.Settings {
         /// <summary>
         /// Limits the enum values a user can set the setting to in the UI to just the provided values.
         /// </summary>
-        public static void SetIncluded<T>(this SettingEntry<T> setting, params T[] included) where T : Enum {
-            SetComplianceRequisite(setting, new EnumInclusionComplianceRequisite<T>(included));
-        }
+        public static void SetIncluded<T>(this SettingEntry<T> setting, params T[] included) where T : Enum => SetComplianceRequisite(setting, new EnumInclusionComplianceRequisite<T>(included));
 
         /// <summary>
         /// Limits the enum values a user can set the setting to in the UI to anything except for the provided values.

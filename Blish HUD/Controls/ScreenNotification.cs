@@ -97,9 +97,7 @@ namespace Blish_HUD.Controls {
             this.Left = (Graphics.SpriteScreen.Width / 2) - (this.Size.X / 2);
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Filter;
-        }
+        protected override CaptureType CapturesInput() => CaptureType.Filter;
 
         public override void RecalculateLayout() {
             switch (_type) {

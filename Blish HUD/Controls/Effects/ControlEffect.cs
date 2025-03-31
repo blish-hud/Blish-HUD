@@ -58,19 +58,17 @@ namespace Blish_HUD.Controls.Effects {
         /// <summary>
         /// Enables the <see cref="Effect"/> on the <see cref="Control"/>.
         /// </summary>
-        public void Enable() { this.Enabled = true; }
+        public void Enable() => this.Enabled = true;
 
         /// <summary>
         /// Disables the <see cref="Effect"/> on the <see cref="Control"/>.
         /// </summary>
-        public void Disable() { this.Enabled = false; }
+        public void Disable() => this.Enabled = false;
 
         /// <summary>
         /// Enables or disables the <see cref="ControlEffect"/> depending on the value of <param name="enabled"></param>.
         /// </summary>
-        public void SetEnableState(bool enabled) {
-            this.Enabled = enabled;
-        }
+        public void SetEnableState(bool enabled) => this.Enabled = enabled;
 
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
         public virtual void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }

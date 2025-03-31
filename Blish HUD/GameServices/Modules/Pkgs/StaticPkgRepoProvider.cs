@@ -78,9 +78,7 @@ namespace Blish_HUD.Modules.Pkgs {
             }
         }
 
-        public IEnumerable<PkgManifest> GetPkgManifests() {
-            return GetPkgManifests(_activeFilters);
-        }
+        public IEnumerable<PkgManifest> GetPkgManifests() => GetPkgManifests(_activeFilters);
 
         public virtual IEnumerable<PkgManifest> GetPkgManifests(IEnumerable<Func<PkgManifest, bool>> filters) {
             return !filters.Any()
@@ -121,13 +119,9 @@ namespace Blish_HUD.Modules.Pkgs {
                                                    && m.Manifest.Version < pkgManifest.Version);
         }
 
-        public static bool FilterShowOnlyInstalled(PkgManifest pkgManifest) {
-            return GameService.Module.Modules.Any(m => string.Equals(m.Manifest.Namespace, pkgManifest.Namespace, StringComparison.OrdinalIgnoreCase));
-        }
+        public static bool FilterShowOnlyInstalled(PkgManifest pkgManifest) => GameService.Module.Modules.Any(m => string.Equals(m.Manifest.Namespace, pkgManifest.Namespace, StringComparison.OrdinalIgnoreCase));
 
-        public static bool FilterShowOnlyNotInstalled(PkgManifest pkgManifest) {
-            return !FilterShowOnlyInstalled(pkgManifest);
-        }
+        public static bool FilterShowOnlyNotInstalled(PkgManifest pkgManifest) => !FilterShowOnlyInstalled(pkgManifest);
 
     }
 }

@@ -149,9 +149,7 @@ namespace Blish_HUD {
 
         private bool _skipDraw = false;
 
-        internal void SkipDraw() {
-            _skipDraw = true;
-        }
+        internal void SkipDraw() => _skipDraw = true;
 
         protected override void Draw(GameTime gameTime) {
             if (_skipDraw) {

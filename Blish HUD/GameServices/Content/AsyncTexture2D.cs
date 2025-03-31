@@ -97,14 +97,10 @@ namespace Blish_HUD.Content {
         }
 
         /// <inheritdoc cref="DatAssetCache.GetTextureFromAssetId" />
-        public static AsyncTexture2D FromAssetId(int assetId) {
-            return GameService.Content.DatAssetCache.GetTextureFromAssetId(assetId);
-        }
+        public static AsyncTexture2D FromAssetId(int assetId) => GameService.Content.DatAssetCache.GetTextureFromAssetId(assetId);
 
         /// <inheritdoc cref="DatAssetCache.TryGetTextureFromAssetId" />
-        public static bool TryFromAssetId(int assetId, out AsyncTexture2D texture) {
-            return GameService.Content.DatAssetCache.TryGetTextureFromAssetId(assetId, out texture);
-        }
+        public static bool TryFromAssetId(int assetId, out AsyncTexture2D texture) => GameService.Content.DatAssetCache.TryGetTextureFromAssetId(assetId, out texture);
 
         public override bool Equals(object obj) {
             if (!this.HasTexture) {
@@ -122,9 +118,7 @@ namespace Blish_HUD.Content {
             return this == obj;
         }
 
-        public override int GetHashCode() {
-            return _activeTexture2D?.GetHashCode() ?? 0;
-        }
+        public override int GetHashCode() => _activeTexture2D?.GetHashCode() ?? 0;
 
         public static implicit operator Texture2D(AsyncTexture2D asyncTexture2D) {
             return asyncTexture2D._activeTexture2D;

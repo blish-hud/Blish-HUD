@@ -27,9 +27,7 @@ namespace Blish_HUD {
 
         private bool _prevIsAvailable = false;
 
-        private void HandleEvents() {
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsAvailable, this.IsAvailable, OnIsAvailableChanged);
-        }
+        private void HandleEvents() => MumbleEventImpl.CheckAndHandleEvent(ref _prevIsAvailable, this.IsAvailable, OnIsAvailableChanged);
 
         #endregion
 
@@ -90,17 +88,11 @@ namespace Blish_HUD {
 
         protected override void Initialize() { /* NOOP */ }
 
-        protected override void Load() {
-            GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
-        }
+        protected override void Load() => GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
 
-        private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
-            RefreshClient();
-        }
+        private void GameIntegrationOnGw2Started(object sender, EventArgs e) => RefreshClient();
 
-        internal void RefreshClient() {
-            this.RawClient = GetRawClient();
-        }
+        internal void RefreshClient() => this.RawClient = GetRawClient();
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;

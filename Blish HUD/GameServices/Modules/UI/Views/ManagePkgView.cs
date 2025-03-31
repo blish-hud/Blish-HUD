@@ -252,21 +252,13 @@ namespace Blish_HUD.Modules.UI.Views {
             infoButton.Click += OnMoreInfoClicked;
         }
 
-        private void OnMoreInfoClicked(object sender, MouseEventArgs e) {
-            Process.Start($"https://link.blishhud.com/moduleinfo?module={this.ModuleNamespace}");
-        }
+        private void OnMoreInfoClicked(object sender, MouseEventArgs e) => Process.Start($"https://link.blishhud.com/moduleinfo?module={this.ModuleNamespace}");
 
-        private void StatusImageOnClick(object sender, MouseEventArgs e) {
-            this.SelectedVersion = _moduleVersions.Max();
-        }
+        private void StatusImageOnClick(object sender, MouseEventArgs e) => this.SelectedVersion = _moduleVersions.Max();
 
-        private void OnActionClicked(object sender, MouseEventArgs e) {
-            this.ActionClicked?.Invoke(sender, e);
-        }
+        private void OnActionClicked(object sender, MouseEventArgs e) => this.ActionClicked?.Invoke(sender, e);
 
-        private void OnVersionSelected(object sender, ValueChangedEventArgs e) {
-            this.VersionSelected?.Invoke(sender, new ValueEventArgs<Version>(new Version(e.CurrentValue)));
-        }
+        private void OnVersionSelected(object sender, ValueChangedEventArgs e) => this.VersionSelected?.Invoke(sender, new ValueEventArgs<Version>(new Version(e.CurrentValue)));
 
     }
 }

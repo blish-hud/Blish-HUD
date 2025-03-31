@@ -31,9 +31,7 @@ namespace Blish_HUD.Debug {
             this.StartInterval();
         }
 
-        public void StartInterval() {
-            _intervalStartOffset = _sharedStopwatch.ElapsedMilliseconds;
-        }
+        public void StartInterval() => _intervalStartOffset = _sharedStopwatch.ElapsedMilliseconds;
 
         public void EndInterval() {
             _buffer.PushValue(_sharedStopwatch.ElapsedMilliseconds - _intervalStartOffset);
@@ -41,9 +39,7 @@ namespace Blish_HUD.Debug {
             _calculatedTotal = null;
         }
 
-        public float GetAverage() {
-            return _calculatedAverage ?? (_calculatedAverage = (float)GetTotal() / _buffer.InternalBuffer.Length).Value;
-        }
+        public float GetAverage() => _calculatedAverage ?? (_calculatedAverage = (float)GetTotal() / _buffer.InternalBuffer.Length).Value;
 
         public long GetTotal() {
             if (_calculatedTotal == null) {

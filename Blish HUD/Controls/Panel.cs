@@ -209,9 +209,7 @@ namespace Blish_HUD.Controls {
                                      .Ease(Glide.Ease.QuadOut);
         }
 
-        private void UpdateContentRegionBounds(object sender, EventArgs e) {
-            UpdateScrollbar();
-        }
+        private void UpdateContentRegionBounds(object sender, EventArgs e) => UpdateScrollbar();
 
         private Rectangle _layoutHeaderBounds;
         private Rectangle _layoutHeaderIconBounds;

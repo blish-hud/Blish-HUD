@@ -25,9 +25,7 @@
         }
 
         /// <inheritdoc />
-        protected override void Load() {
-            this.ConfirmReady();
-        }
+        protected override void Load() => this.ConfirmReady();
 
         #region Specific Checks
 

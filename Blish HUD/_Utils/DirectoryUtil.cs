@@ -89,13 +89,9 @@ namespace Blish_HUD {
             return null;
         }
 
-        public static string RegisterDirectory(string directory) {
-            return CreateDir(Path.Combine(BasePath, directory));
-        }
+        public static string RegisterDirectory(string directory) => CreateDir(Path.Combine(BasePath, directory));
 
-        public static string RegisterDirectory(string basePath, string directory) {
-            return CreateDir(Path.Combine(basePath, directory));
-        }
+        public static string RegisterDirectory(string basePath, string directory) => CreateDir(Path.Combine(basePath, directory));
 
     }
 

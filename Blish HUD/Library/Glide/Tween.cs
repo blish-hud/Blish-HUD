@@ -350,9 +350,7 @@ namespace Glide {
         /// <summary>
         /// Remove tweens from the tweener without calling their complete functions.
         /// </summary>
-        public void Cancel() {
-            Remover.Remove(this);
-        }
+        public void Cancel() => Remover.Remove(this);
 
         /// <summary>
         /// Assign tweens their final value and remove them from the tweener.
@@ -366,23 +364,17 @@ namespace Glide {
         /// <summary>
         /// Set tweens to pause. They won't update and their delays won't tick down.
         /// </summary>
-        public void Pause() {
-            this.Paused = true;
-        }
+        public void Pause() => this.Paused = true;
 
         /// <summary>
         /// Toggle tweens' paused value.
         /// </summary>
-        public void PauseToggle() {
-            this.Paused = !this.Paused;
-        }
+        public void PauseToggle() => this.Paused = !this.Paused;
 
         /// <summary>
         /// Resumes tweens from a paused state.
         /// </summary>
-        public void Resume() {
-            this.Paused = false;
-        }
+        public void Resume() => this.Paused = false;
         #endregion
     }
 }

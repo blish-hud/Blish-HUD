@@ -56,13 +56,13 @@ namespace Blish_HUD.Input {
             thread = null;
         }
 
-        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.RegisterHandler(handleMouseInputCallback); }
+        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) => mouseHookManager.RegisterHandler(handleMouseInputCallback);
 
-        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.UnregisterHandler(handleMouseInputCallback); }
+        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) => mouseHookManager.UnregisterHandler(handleMouseInputCallback);
 
-        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.RegisterHandler(handleKeyboardInputCallback); }
+        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) => keyboardHookManager.RegisterHandler(handleKeyboardInputCallback);
 
-        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback); }
+        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) => keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback);
 
         private void Loop() {
             using Timer timer = new Timer {
@@ -106,7 +106,7 @@ namespace Blish_HUD.Input {
             }
         }
 
-        public void Dispose() { Dispose(true); }
+        public void Dispose() => Dispose(true);
 
         #endregion
 

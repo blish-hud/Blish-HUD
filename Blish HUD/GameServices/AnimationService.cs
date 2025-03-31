@@ -18,8 +18,6 @@ namespace Blish_HUD {
 
         protected override void Unload() { /* NOOP */ }
 
-        protected override void Update(GameTime gameTime) {
-            this.Tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-        }
+        protected override void Update(GameTime gameTime) => this.Tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
     }
 }

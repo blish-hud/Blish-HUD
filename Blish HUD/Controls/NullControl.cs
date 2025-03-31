@@ -9,9 +9,7 @@ namespace Blish_HUD.Controls {
     /// </summary>
     internal class NullControl : Control {
 
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            throw new ActionNotSupportedException($"{nameof(NullControl)} should never be painted!  Do not parent this control to a container!");
-        }
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) => throw new ActionNotSupportedException($"{nameof(NullControl)} should never be painted!  Do not parent this control to a container!");
 
     }
 }

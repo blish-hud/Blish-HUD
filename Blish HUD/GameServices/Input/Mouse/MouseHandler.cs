@@ -226,18 +226,13 @@ namespace Blish_HUD.Input {
             }
         }
 
-        public void OnEnable() {
-            _recentlyEnabled = true;
-        }
+        public void OnEnable() => _recentlyEnabled = true;
 
-        public void OnDisable() {
+        public void OnDisable() =>
             // shouldn't be needed but can't hurt to tidy up a little
             _recentlyEnabled = false;
-        }
 
-        public void UnsetActiveControl() {
-            this.ActiveControl = null;
-        }
+        public void UnsetActiveControl() => this.ActiveControl = null;
 
         #region Events
 

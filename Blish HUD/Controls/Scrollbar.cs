@@ -141,9 +141,7 @@ namespace Blish_HUD.Controls {
             _lastClickTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
         }
 
-        private void MouseOnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            this.ScrollFocus = ClickFocus.None;
-        }
+        private void MouseOnLeftMouseButtonReleased(object sender, MouseEventArgs e) => this.ScrollFocus = ClickFocus.None;
 
         protected override void OnMouseWheelScrolled(MouseEventArgs e) {
             HandleWheelScroll(this, e);
@@ -221,13 +219,9 @@ namespace Blish_HUD.Controls {
                      .Tween(this, new { ScrollDistance = this.TargetScrollDistance }, 0f, overwrite: true).Ease(Ease.QuadOut);
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Mouse | CaptureType.MouseWheel;
-        }
+        protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
 
-        private void UpdateAssocContainer() {
-            this.AssociatedContainer.VerticalScrollOffset = (int)Math.Floor((_containerLowestContent - this.AssociatedContainer.ContentRegion.Height) * this.ScrollDistance);
-        }
+        private void UpdateAssocContainer() => this.AssociatedContainer.VerticalScrollOffset = (int)Math.Floor((_containerLowestContent - this.AssociatedContainer.ContentRegion.Height) * this.ScrollDistance);
 
         public override void DoUpdate(GameTime gameTime) {
             base.DoUpdate(gameTime);

@@ -13,9 +13,7 @@ namespace Blish_HUD.Modules.Managers {
             this.ModuleSettings = module.State.Settings;
         }
 
-        internal static SettingsManager GetModuleInstance(ModuleManager module) {
-            return new SettingsManager(module);
-        }
+        internal static SettingsManager GetModuleInstance(ModuleManager module) => new SettingsManager(module);
 
     }
 }

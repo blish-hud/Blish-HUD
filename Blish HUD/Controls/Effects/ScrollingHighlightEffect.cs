@@ -124,9 +124,7 @@ namespace Blish_HUD.Controls.Effects {
             }
         }
 
-        protected override void OnDisable() {
-            AssignedControlOnMouseLeft(this.AssignedControl, null);
-        }
+        protected override void OnDisable() => AssignedControlOnMouseLeft(this.AssignedControl, null);
 
         public override void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_mouseOver || _forceActive) {

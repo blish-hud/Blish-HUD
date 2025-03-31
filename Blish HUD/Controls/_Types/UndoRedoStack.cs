@@ -31,9 +31,7 @@ namespace Blish_HUD.Controls {
 
         private readonly Stack<UndoRedoRecord> _stack = new Stack<UndoRedoRecord>();
 
-        public void Reset() {
-            _stack.Clear();
-        }
+        public void Reset() => _stack.Clear();
 
         public UndoRedoRecord Pop() {
             if (_stack.Count == 0) {

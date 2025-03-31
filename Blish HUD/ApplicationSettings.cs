@@ -22,18 +22,12 @@ namespace Blish_HUD {
             InitDebug();
         }
 
-        public override void OnUserFacingException(UserFacingException e, string message) {
-            MessageBox.Show("Invalid launch option(s) specified.  See --help for available options.", "Failed to launch Blish HUD", MessageBoxButtons.OK);
-        }
+        public override void OnUserFacingException(UserFacingException e, string message) => MessageBox.Show("Invalid launch option(s) specified.  See --help for available options.", "Failed to launch Blish HUD", MessageBoxButtons.OK);
 
-        public override void OnHelpInvoked(string helpText) {
-            MessageBox.Show(helpText, "Launch Options", MessageBoxButtons.OK);
-        }
+        public override void OnHelpInvoked(string helpText) => MessageBox.Show(helpText, "Launch Options", MessageBoxButtons.OK);
 
         [Conditional("DEBUG")]
-        private void InitDebug() {
-            this.DebugEnabled = true;
-        }
+        private void InitDebug() => this.DebugEnabled = true;
 
         /*
          * d, debug     - Launches Blish HUD in debug mode.

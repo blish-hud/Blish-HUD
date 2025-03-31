@@ -60,9 +60,7 @@ namespace Blish_HUD.ArcDps {
         /// <summary>
         /// Stops the <see cref="SocketListener"/>.
         /// </summary>
-        public void Stop() {
-            _cancellationTokenSource?.Cancel();
-        }
+        public void Stop() => _cancellationTokenSource?.Cancel();
 
         /// <summary>
         /// Stops the socket from receiving any further data and closes the connection.

@@ -73,9 +73,7 @@ namespace Blish_HUD.Settings.UI.Views {
             _stringTextbox.BasicTooltipText = description;
         }
 
-        protected override void RefreshValue(string value) {
-            _stringTextbox.Text = value;
-        }
+        protected override void RefreshValue(string value) => _stringTextbox.Text = value;
 
         protected override void Unload() {
             if (_stringTextbox != null) {

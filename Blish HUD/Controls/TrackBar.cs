@@ -107,9 +107,7 @@ namespace Blish_HUD.Controls {
             Input.Mouse.LeftMouseButtonReleased += InputOnLeftMouseButtonReleased;
         }
 
-        private void InputOnLeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            this.Dragging = false;
-        }
+        private void InputOnLeftMouseButtonReleased(object sender, MouseEventArgs e) => this.Dragging = false;
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);

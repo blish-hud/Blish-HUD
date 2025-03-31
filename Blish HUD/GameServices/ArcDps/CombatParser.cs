@@ -136,29 +136,17 @@ namespace Blish_HUD.ArcDps {
             return (str, offset + (int)length);
         }
 
-        private static (ulong, int) U64(byte[] data, int offset) {
-            return (BitConverter.ToUInt64(data, offset), offset + 8);
-        }
+        private static (ulong, int) U64(byte[] data, int offset) => (BitConverter.ToUInt64(data, offset), offset + 8);
 
-        private static (uint, int) U32(byte[] data, int offset) {
-            return (BitConverter.ToUInt32(data, offset), offset + 4);
-        }
+        private static (uint, int) U32(byte[] data, int offset) => (BitConverter.ToUInt32(data, offset), offset + 4);
 
-        private static (int, int) I32(byte[] data, int offset) {
-            return (BitConverter.ToInt32(data, offset), offset + 4);
-        }
+        private static (int, int) I32(byte[] data, int offset) => (BitConverter.ToInt32(data, offset), offset + 4);
 
-        private static (ushort, int) U16(byte[] data, int offset) {
-            return (BitConverter.ToUInt16(data, offset), offset + 2);
-        }
+        private static (ushort, int) U16(byte[] data, int offset) => (BitConverter.ToUInt16(data, offset), offset + 2);
 
-        private static (byte, int) U8(byte[] data, int offset) {
-            return (data[offset], offset + 1);
-        }
+        private static (byte, int) U8(byte[] data, int offset) => (data[offset], offset + 1);
 
-        private static (bool, int) B(byte[] data, int offset) {
-            return (data[offset] != 0, offset + 1);
-        }
+        private static (bool, int) B(byte[] data, int offset) => (data[offset] != 0, offset + 1);
 
         private enum CombatMessageFlags {
 

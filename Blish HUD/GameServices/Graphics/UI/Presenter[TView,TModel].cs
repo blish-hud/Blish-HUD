@@ -22,24 +22,16 @@ namespace Blish_HUD.Graphics.UI {
         }
 
         /// <inheritdoc />
-        public async Task<bool> DoLoad(IProgress<string> progress) {
-            return await Load(progress);
-        }
+        public async Task<bool> DoLoad(IProgress<string> progress) => await Load(progress);
 
         /// <inheritdoc />
-        public void DoUpdateView() {
-            UpdateView();
-        }
+        public void DoUpdateView() => UpdateView();
 
         /// <inheritdoc />
-        public void DoUnload() {
-            Unload();
-        }
+        public void DoUnload() => Unload();
 
         /// <inheritdoc cref="IPresenter.DoLoad"/>
-        protected virtual async Task<bool> Load(IProgress<string> progress) {
-            return await Task.FromResult(true);
-        }
+        protected virtual async Task<bool> Load(IProgress<string> progress) => await Task.FromResult(true);
 
         /// <inheritdoc cref="IPresenter.DoUpdateView"/>
         protected virtual void UpdateView() { /* NOOP */ }

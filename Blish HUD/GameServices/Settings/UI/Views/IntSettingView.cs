@@ -22,9 +22,7 @@ namespace Blish_HUD.Settings.UI.Views {
             return true;
         }
 
-        protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) {
-            this.OnValueChanged(new ValueEventArgs<int>((int)e.Value));
-        }
+        protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) => this.OnValueChanged(new ValueEventArgs<int>((int)e.Value));
 
         protected override void RefreshValue(int value) {
             // Prevent us clamping the setting value before compliance is applied

@@ -20,9 +20,7 @@ namespace Blish_HUD.Modules {
 
         public event EventHandler<EventArgs> ModuleLoaded;
 
-        public void OnModuleLoaded(object _, EventArgs e) {
-            this.ModuleLoaded?.Invoke(this, e);
-        }
+        public void OnModuleLoaded(object _, EventArgs e) => this.ModuleLoaded?.Invoke(this, e);
 
         private Assembly _moduleAssembly;
 

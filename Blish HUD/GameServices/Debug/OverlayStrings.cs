@@ -16,21 +16,13 @@ namespace Blish_HUD.Debug {
 
         private readonly ConcurrentDictionary<string, Func<GameTime, string>> _texts = new ConcurrentDictionary<string, Func<GameTime, string>>();
 
-        public bool ContainsKey(string key) {
-            return _texts.ContainsKey(key);
-        }
+        public bool ContainsKey(string key) => _texts.ContainsKey(key);
 
-        public void Add(string key, Func<GameTime, string> value) {
-            _texts.TryAdd(key, value);
-        }
+        public void Add(string key, Func<GameTime, string> value) => _texts.TryAdd(key, value);
 
-        public bool TryAdd(string key, Func<GameTime, string> value) {
-            return _texts.TryAdd(key, value);
-        }
+        public bool TryAdd(string key, Func<GameTime, string> value) => _texts.TryAdd(key, value);
 
-        public bool Remove(string key) {
-            return _texts.TryRemove(key, out _);
-        }
+        public bool Remove(string key) => _texts.TryRemove(key, out _);
 
     }
 

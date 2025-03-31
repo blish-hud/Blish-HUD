@@ -42,9 +42,7 @@ namespace Blish_HUD.GameIntegration {
             BlishHud.Instance.Form.Visible = false;
         }
 
-        internal void SetShowInTaskbar(bool showInTaskbar) {
-            WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, showInTaskbar);
-        }
+        internal void SetShowInTaskbar(bool showInTaskbar) => WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, showInTaskbar);
 
         private void BuildTrayIcon() {
             string trayIconText = Strings.Common.BlishHUD;

@@ -51,9 +51,9 @@ namespace Blish_HUD.Input {
             _hook = IntPtr.Zero;
         }
 
-        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Add(handleInputCallback); }
+        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) => this.Handlers.Add(handleInputCallback);
 
-        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Remove(handleInputCallback); }
+        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) => this.Handlers.Remove(handleInputCallback);
 
         protected abstract int HookCallback(int nCode, IntPtr wParam, IntPtr lParam);
 

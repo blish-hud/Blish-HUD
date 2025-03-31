@@ -10,9 +10,7 @@ namespace Blish_HUD.Controls {
             this.Size = new Point(DRAWLENGTH, DRAWLENGTH);
         }
 
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            LoadingSpinnerUtil.DrawLoadingSpinner(this, spriteBatch, bounds);
-        }
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) => LoadingSpinnerUtil.DrawLoadingSpinner(this, spriteBatch, bounds);
 
     }
 }

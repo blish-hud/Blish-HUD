@@ -13,9 +13,7 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
 
-        protected virtual void OnCheckedChanged(CheckChangedEvent e) {
-            this.CheckedChanged?.Invoke(this, e);
-        }
+        protected virtual void OnCheckedChanged(CheckChangedEvent e) => this.CheckedChanged?.Invoke(this, e);
 
         /// <summary>
         /// The text this <see cref="Checkbox"/> should show.

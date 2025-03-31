@@ -203,6 +203,7 @@ resharper_remove_redundant_braces_highlighting=hint
 resharper_suggest_var_or_type_built_in_types_highlighting=hint
 csharp_using_directive_placement = outside_namespace:warning
 
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
 [*.{appxmanifest,asax,ascx,aspx,axaml,axml,build,config,cs,cshtml,csproj,css,dbml,discomap,dtd,htm,html,js,json,jsproj,jsx,lsproj,master,njsproj,nuspec,paml,proj,props,proto,razor,resjson,resw,resx,skin,StyleCop,targets,tasks,ts,tsx,vb,vbproj,xaml,xamlx,xml,xoml,xsd}]
 indent_style=space
 indent_size=4

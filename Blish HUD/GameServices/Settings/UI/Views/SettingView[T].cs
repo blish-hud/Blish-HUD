@@ -66,9 +66,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected abstract void BuildSetting(Container buildPanel);
 
-        public virtual bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
-            return false;
-        }
+        public virtual bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) => false;
 
         public void HandleBaseComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {

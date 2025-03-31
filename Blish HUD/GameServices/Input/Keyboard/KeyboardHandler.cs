@@ -168,7 +168,7 @@ namespace Blish_HUD.Input {
             return ProcessInput(e.EventType, e.Key);
         }
 
-        public void SetTextInputListner(Action<string> input) { _textInputDelegate = input; }
+        public void SetTextInputListner(Action<string> input) => _textInputDelegate = input;
 
         public void UnsetTextInputListner(Action<string> input) {
             if (input == _textInputDelegate) {

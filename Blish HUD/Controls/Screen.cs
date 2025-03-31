@@ -9,9 +9,7 @@
         public const int DROPDOWN_BASEINDEX = int.MaxValue - 64;
         public const int TOOLTIP_BASEZINDEX = int.MaxValue - 32;
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.None;
-        }
+        protected override CaptureType CapturesInput() => CaptureType.None;
 
     }
 }

@@ -142,9 +142,7 @@ namespace Blish_HUD {
             43916);
         }
 
-        protected override void Unload() {
-            _stopwatch.Stop();
-        }
+        protected override void Unload() => _stopwatch.Stop();
 
         protected override void Update(GameTime gameTime) {
             TimeSpan elapsed;

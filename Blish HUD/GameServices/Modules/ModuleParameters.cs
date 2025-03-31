@@ -62,13 +62,9 @@ namespace Blish_HUD.Modules {
             return builtModuleParameters;
         }
 
-        internal async Task LoadAsync() {
-            await _gw2ApiManager.RenewSubtoken();
-        }
+        internal async Task LoadAsync() => await _gw2ApiManager.RenewSubtoken();
 
-        public void Dispose() {
-            _contentsManager?.Dispose();
-        }
+        public void Dispose() => _contentsManager?.Dispose();
 
     }
 

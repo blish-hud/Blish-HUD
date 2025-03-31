@@ -54,9 +54,7 @@ namespace Blish_HUD.Input {
             _keyboardHookManager = new DebugHelperKeyboardHookManager(_debugHelperMessageService);
         }
 
-        private void Process_Exited(object sender, EventArgs e) {
-            Logger.Debug("Subprocess with id {ProcessId} has exited with exit code {ExitCode}", _process.Id, _process.ExitCode);
-        }
+        private void Process_Exited(object sender, EventArgs e) => Logger.Debug("Subprocess with id {ProcessId} has exited with exit code {ExitCode}", _process.Id, _process.ExitCode);
 
         public void Unload() {
             Logger.Debug("Unloading DebugHelper input hooks");
@@ -95,13 +93,13 @@ namespace Blish_HUD.Input {
             _isHookEnabled = false;
         }
 
-        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { _mouseHookManager.RegisterHandler(handleMouseInputCallback); }
+        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) => _mouseHookManager.RegisterHandler(handleMouseInputCallback);
 
-        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { _mouseHookManager.UnregisterHandler(handleMouseInputCallback); }
+        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) => _mouseHookManager.UnregisterHandler(handleMouseInputCallback);
 
-        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { _keyboardHookManager.RegisterHandler(handleKeyboardInputCallback); }
+        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) => _keyboardHookManager.RegisterHandler(handleKeyboardInputCallback);
 
-        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { _keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback); }
+        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) => _keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback);
 
         #region IDisposable Support
 
@@ -119,7 +117,7 @@ namespace Blish_HUD.Input {
             }
         }
 
-        public void Dispose() { Dispose(true); }
+        public void Dispose() => Dispose(true);
 
         #endregion
 

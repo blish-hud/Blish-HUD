@@ -17,13 +17,9 @@ namespace Blish_HUD {
             return croppedTexture;
         }
 
-        public static Texture2D GetRegion(this Texture2D texture2D, int x, int y, int width, int height) {
-            return GetRegion(texture2D, new Rectangle(x, y, width, height));
-        }
+        public static Texture2D GetRegion(this Texture2D texture2D, int x, int y, int width, int height) => GetRegion(texture2D, new Rectangle(x, y, width, height));
 
-        public static Texture2D Duplicate(this Texture2D texture2D) {
-            return GetRegion(texture2D, texture2D.Bounds);
-        }
+        public static Texture2D Duplicate(this Texture2D texture2D) => GetRegion(texture2D, texture2D.Bounds);
 
         public static Texture2D SetRegion(this Texture2D texture2D, Rectangle region, Color color) {
             if (texture2D == null) {
@@ -57,9 +53,7 @@ namespace Blish_HUD {
             return texture2D;
         }
 
-        public static Texture2D SetRegion(this Texture2D texture2D, int x, int y, int width, int height, Color color) {
-            return SetRegion(texture2D, new Rectangle(x, y, width, height), color);
-        }
+        public static Texture2D SetRegion(this Texture2D texture2D, int x, int y, int width, int height, Color color) => SetRegion(texture2D, new Rectangle(x, y, width, height), color);
 
     }
 }

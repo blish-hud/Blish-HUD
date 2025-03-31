@@ -27,9 +27,7 @@ namespace Blish_HUD {
 
         public event EventHandler<EventArgs> FinishedLoading;
 
-        protected virtual void OnFinishedLoading(EventArgs e) {
-            this.FinishedLoading?.Invoke(this, e);
-        }
+        protected virtual void OnFinishedLoading(EventArgs e) => this.FinishedLoading?.Invoke(this, e);
 
         protected abstract void Initialize();
         protected abstract void Load();
@@ -42,9 +40,7 @@ namespace Blish_HUD {
 
         private IServiceModule[] _serviceModules = Array.Empty<IServiceModule>();
 
-        internal void SetServiceModules(params IServiceModule[] serviceModules) {
-            _serviceModules = serviceModules ?? Array.Empty<IServiceModule>();
-        }
+        internal void SetServiceModules(params IServiceModule[] serviceModules) => _serviceModules = serviceModules ?? Array.Empty<IServiceModule>();
 
         internal void DoInitialize(BlishHud game) {
             ActiveBlishHud = game;

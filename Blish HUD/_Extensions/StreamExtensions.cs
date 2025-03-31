@@ -27,9 +27,7 @@ namespace Blish_HUD {
             dest.Position = 0;
         }
 
-        public static void CopyTo(this MemoryStream src, Stream dest) {
-            dest.Write(src.GetBuffer(), (int)src.Position, (int)(src.Length - src.Position));
-        }
+        public static void CopyTo(this MemoryStream src, Stream dest) => dest.Write(src.GetBuffer(), (int)src.Position, (int)(src.Length - src.Position));
 
         public static void CopyTo(this Stream src, MemoryStream dest) {
             if (src.CanSeek) {

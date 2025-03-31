@@ -25,9 +25,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
 
         internal abstract bool TryInternalProcess(byte[] message, out T result);
 
-        public void RegisterListener(Func<T, CancellationToken, Task> listener) {
-            listeners.Add(listener);
-        }
+        public void RegisterListener(Func<T, CancellationToken, Task> listener) => listeners.Add(listener);
 
     }
 }

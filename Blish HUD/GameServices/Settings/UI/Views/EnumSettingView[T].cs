@@ -69,9 +69,7 @@ namespace Blish_HUD.Settings.UI.Views {
             return true;
         }
 
-        private void EnumDropdownOnValueChanged(object sender, ValueChangedEventArgs e) {
-            this.OnValueChanged(new ValueEventArgs<TEnum>(e.CurrentValue.DehumanizeTo<TEnum>()));
-        }
+        private void EnumDropdownOnValueChanged(object sender, ValueChangedEventArgs e) => this.OnValueChanged(new ValueEventArgs<TEnum>(e.CurrentValue.DehumanizeTo<TEnum>()));
 
         private void UpdateSizeAndLayout() {
             this.ViewTarget.Height = _enumDropdown.Bottom;
@@ -96,9 +94,7 @@ namespace Blish_HUD.Settings.UI.Views {
             _enumDropdown.BasicTooltipText = description;
         }
 
-        protected override void RefreshValue(TEnum value) {
-            _enumDropdown.SelectedItem = value.Humanize(LetterCasing.Title);
-        }
+        protected override void RefreshValue(TEnum value) => _enumDropdown.SelectedItem = value.Humanize(LetterCasing.Title);
 
         protected override void Unload() {
             if (_enumDropdown != null) {

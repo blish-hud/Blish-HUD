@@ -25,9 +25,7 @@ namespace Blish_HUD.Content {
             return new DirectoryReader(Path.Combine(_directoryPath, subPath));
         }
 
-        public string GetPathRepresentation(string relativeFilePath = null) {
-            return Path.Combine(_directoryPath, relativeFilePath ?? "");
-        }
+        public string GetPathRepresentation(string relativeFilePath = null) => Path.Combine(_directoryPath, relativeFilePath ?? "");
 
         public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {
             foreach (string filePath in Directory.EnumerateFiles(_directoryPath, $"*{fileExtension}", SearchOption.AllDirectories)) {
@@ -36,9 +34,7 @@ namespace Blish_HUD.Content {
             }
         }
 
-        public bool FileExists(string filePath) {
-            return File.Exists(Path.Combine(_directoryPath, filePath));
-        }
+        public bool FileExists(string filePath) => File.Exists(Path.Combine(_directoryPath, filePath));
 
         public Stream GetFileStream(string filePath) {
             if (!this.FileExists(filePath)) {
@@ -62,9 +58,7 @@ namespace Blish_HUD.Content {
             return fileBuffer?.Length ?? 0;
         }
 
-        public async Task<Stream> GetFileStreamAsync(string filePath) {
-            return await Task.FromResult(this.GetFileStream(filePath));
-        }
+        public async Task<Stream> GetFileStreamAsync(string filePath) => await Task.FromResult(this.GetFileStream(filePath));
 
         public async Task<byte[]> GetFileBytesAsync(string filePath) {
             if (!FileExists(filePath)) {

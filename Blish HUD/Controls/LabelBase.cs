@@ -91,9 +91,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            DrawText(spriteBatch, bounds, _text);
-        }
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) => DrawText(spriteBatch, bounds, _text);
 
     }
 }

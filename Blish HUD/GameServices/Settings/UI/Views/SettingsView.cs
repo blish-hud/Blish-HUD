@@ -75,13 +75,9 @@ namespace Blish_HUD.Settings.UI.Views {
             UpdateBoundsLocking(_lockBounds);
         }
 
-        protected override void RefreshDisplayName(string displayName) {
-            _settingFlowPanel.Title = displayName;
-        }
+        protected override void RefreshDisplayName(string displayName) => _settingFlowPanel.Title = displayName;
 
-        protected override void RefreshDescription(string description) {
-            _settingFlowPanel.BasicTooltipText = description;
-        }
+        protected override void RefreshDescription(string description) => _settingFlowPanel.BasicTooltipText = description;
 
         protected override void RefreshValue(SettingCollection value) { /* NOOP */ }
 

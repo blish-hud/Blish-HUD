@@ -145,9 +145,7 @@ namespace Blish_HUD.Controls {
         #region Navigation
 
         [Obsolete("Using a panel for navigation is deprecated.  Please pass an IView, instead.")]
-        public override void Navigate(Panel newPanel, bool keepHistory = true) {
-            Navigate(new StaticPanelView(newPanel), keepHistory);
-        }
+        public override void Navigate(Panel newPanel, bool keepHistory = true) => Navigate(new StaticPanelView(newPanel), keepHistory);
 
         public void Navigate(IView newView, bool keepHistory = true) {
             if (!keepHistory) {
@@ -228,9 +226,7 @@ namespace Blish_HUD.Controls {
         }
 
         [Obsolete("Using a panel for tabs is deprecated.  Please pass a function which returns an IView, instead.")]
-        public void AddTab(WindowTab tab, Panel panel) {
-            AddTab(tab, () => new StaticPanelView(panel));
-        }
+        public void AddTab(WindowTab tab, Panel panel) => AddTab(tab, () => new StaticPanelView(panel));
 
         public void RemoveTab(WindowTab tab) {
             // TODO: If the last tab is for some reason removed, this will crash the application
@@ -257,9 +253,7 @@ namespace Blish_HUD.Controls {
             Invalidate();
         }
 
-        private Rectangle TabBoundsFromIndex(int index) {
-            return StandardTabBounds.OffsetBy(-TAB_WIDTH, this.ContentRegion.Y + (index * TAB_HEIGHT));
-        }
+        private Rectangle TabBoundsFromIndex(int index) => StandardTabBounds.OffsetBy(-TAB_WIDTH, this.ContentRegion.Y + (index * TAB_HEIGHT));
 
         #endregion
 

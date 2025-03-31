@@ -41,17 +41,11 @@ namespace Blish_HUD.Debug {
             }
         }
 
-        private void lblDiscordChannel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            OpenWebpage(DISCORD_JOIN_URL);
-        }
+        private void lblDiscordChannel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => OpenWebpage(DISCORD_JOIN_URL);
 
-        private void LblTroubleshootingGuide_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            OpenWebpage(this.TroubleshootingUrl);
-        }
+        private void LblTroubleshootingGuide_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => OpenWebpage(this.TroubleshootingUrl);
 
-        private static void OpenWebpage(string url) {
-            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-        }
+        private static void OpenWebpage(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 
         private bool _clickAttempted = false;
 
@@ -66,8 +60,6 @@ namespace Blish_HUD.Debug {
             _clickAttempted = true;
         }
 
-        private void LblDescription_Resize(object sender, EventArgs e) {
-            this.Height = this.LblDescription.Bottom + this.LblDescription.Top + PnlAction.Height + PnlExtraInfo.Height + 32;
-        }
+        private void LblDescription_Resize(object sender, EventArgs e) => this.Height = this.LblDescription.Bottom + this.LblDescription.Top + PnlAction.Height + PnlExtraInfo.Height + 32;
     }
 }

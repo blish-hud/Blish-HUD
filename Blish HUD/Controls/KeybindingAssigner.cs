@@ -14,9 +14,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<EventArgs> BindingChanged;
 
-        protected void OnBindingChanged(EventArgs e) {
-            this.BindingChanged?.Invoke(this, e);
-        }
+        protected void OnBindingChanged(EventArgs e) => this.BindingChanged?.Invoke(this, e);
 
         private int _nameWidth = 183;
 

@@ -133,13 +133,9 @@ namespace Blish_HUD.Modules.UI.Views {
             this.WithPresenter(new ManageModulePresenter(this, moduleManager));
         }
 
-        public void SetPermissionsView(ModulePermissionView view) {
-            _permissionView.Show(view);
-        }
+        public void SetPermissionsView(ModulePermissionView view) => _permissionView.Show(view);
 
-        public void SetDependenciesView(ModuleDependencyView view) {
-            _dependencyView.Show(view);
-        }
+        public void SetDependenciesView(ModuleDependencyView view) => _dependencyView.Show(view);
 
         public void SetSettingsView(IView view) {
             _settingMessageLabel.Hide();

@@ -37,9 +37,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             UpdateDependenciesView();
         }
 
-        private void UpdatePermissionView() {
-            this.View.SetPermissionsView(_permissionView = new ModulePermissionView(this.Model));
-        }
+        private void UpdatePermissionView() => this.View.SetPermissionsView(_permissionView = new ModulePermissionView(this.Model));
 
         private void UpdateDependenciesView() {
             if (_dependencyView != null) {
@@ -51,9 +49,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             _dependencyView.IgnoreModuleDependenciesChanged += DependencyViewOnIgnoreModuleDependenciesChanged;
         }
 
-        private void DependencyViewOnIgnoreModuleDependenciesChanged(object sender, ValueEventArgs<bool> e) {
-            InvalidateViewState(stateOptions: true);
-        }
+        private void DependencyViewOnIgnoreModuleDependenciesChanged(object sender, ValueEventArgs<bool> e) => InvalidateViewState(stateOptions: true);
 
         private void InvalidateViewState(bool staticDetails = false, bool stateDetails = false, bool stateOptions = false) {
             if (staticDetails) {
@@ -189,9 +185,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             }
         }
 
-        private void ViewOnDisableModuleClicked(object sender, EventArgs e) {
-            this.Model.Disable();
-        }
+        private void ViewOnDisableModuleClicked(object sender, EventArgs e) => this.Model.Disable();
 
         private void SubscribeToModuleRunState() {
             if (this.Model.ModuleInstance != null) {
@@ -209,13 +203,9 @@ namespace Blish_HUD.Modules.UI.Presenters {
             }
         }
 
-        private void ModuleInstanceOnModuleRunStateChanged(object sender, ModuleRunStateChangedEventArgs e) {
-            InvalidateViewState(stateDetails: true, stateOptions: true);
-        }
+        private void ModuleInstanceOnModuleRunStateChanged(object sender, ModuleRunStateChangedEventArgs e) => InvalidateViewState(stateDetails: true, stateOptions: true);
 
-        private void ModelOnModuleDisabled(object sender, EventArgs e) {
-            InvalidateViewState(stateDetails: true, stateOptions: true);
-        }
+        private void ModelOnModuleDisabled(object sender, EventArgs e) => InvalidateViewState(stateDetails: true, stateOptions: true);
 
         private bool GetModuleCanEnable() {
             // Can't enable if already enabled
@@ -269,9 +259,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             return true;
         }
 
-        protected override void Unload() {
-            UnsubscribeFromModuleRunState();
-        }
+        protected override void Unload() => UnsubscribeFromModuleRunState();
 
     }
 }

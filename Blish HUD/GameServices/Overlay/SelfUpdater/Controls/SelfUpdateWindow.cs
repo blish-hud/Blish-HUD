@@ -210,9 +210,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
                                           : _loadingSpinner.Top + (_loadingSpinner.Height / 2);
         }
 
-        private void BouncyChest_Click(object sender, Input.MouseEventArgs e) {
-            this.Show();
-        }
+        private void BouncyChest_Click(object sender, Input.MouseEventArgs e) => this.Show();
 
         protected override void OnShown(EventArgs e) {
             GameService.Overlay.BlishHudWindow.Hide();
@@ -237,9 +235,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             }
         }
 
-        public override void UpdateContainer(GameTime gameTime) {
-            this.Location = new Point((GameService.Graphics.SpriteScreen.Width / 2) - 512, (GameService.Graphics.SpriteScreen.Height / 2) - 512);
-        }
+        public override void UpdateContainer(GameTime gameTime) => this.Location = new Point((GameService.Graphics.SpriteScreen.Width / 2) - 512, (GameService.Graphics.SpriteScreen.Height / 2) - 512);
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this, _windowTexture, bounds);

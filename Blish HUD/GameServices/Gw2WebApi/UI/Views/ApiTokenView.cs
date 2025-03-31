@@ -188,13 +188,9 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             _deleteBttn.Click += DeleteRegisteredToken;
         }
 
-        public void RemoveTokenView() {
-            this.ViewTarget.Dispose();
-        }
+        public void RemoveTokenView() => this.ViewTarget.Dispose();
 
-        private void DeleteRegisteredToken(object sender, MouseEventArgs e) {
-            this.DeleteClicked?.Invoke(this, EventArgs.Empty);
-        }
+        private void DeleteRegisteredToken(object sender, MouseEventArgs e) => this.DeleteClicked?.Invoke(this, EventArgs.Empty);
 
     }
 }

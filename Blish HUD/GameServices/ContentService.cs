@@ -32,9 +32,7 @@ namespace Blish_HUD {
 
             public static readonly Color DullColor = Color.FromNonPremultiplied(150, 150, 150, 255);
 
-            public static Color Darkened(float amt) {
-                return Color.FromNonPremultiplied((int)(amt * 255), (int)(amt * 255), (int)(amt * 255), 255);
-            }
+            public static Color Darkened(float amt) => Color.FromNonPremultiplied((int)(amt * 255), (int)(amt * 255), (int)(amt * 255), 255);
 
         }
 
@@ -186,17 +184,11 @@ namespace Blish_HUD {
             return null;
         }
 
-        public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
-            return GameService.Content.ContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
-        }
+        public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) => GameService.Content.ContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
 
-        public void PurgeTextureCache(string textureName) {
-            _loadedTextures.TryRemove(textureName, out var _);
-        }
+        public void PurgeTextureCache(string textureName) => _loadedTextures.TryRemove(textureName, out var _);
 
-        public Texture2D GetTexture(string textureName) {
-            return GetTexture(textureName, Textures.Error);
-        }
+        public Texture2D GetTexture(string textureName) => GetTexture(textureName, Textures.Error);
 
         public Texture2D GetTexture(string textureName, Texture2D defaultTexture) {
             if (textureName == null) {
@@ -239,9 +231,7 @@ namespace Blish_HUD {
         /// <param name="fileId">The file id of the requested texture.</param>
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
-        public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
-            return this.DatAssetCache.GetTextureFromAssetId(int.Parse(fileId));
-        }
+        public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) => this.DatAssetCache.GetTextureFromAssetId(int.Parse(fileId));
 
         /// <summary>
         /// Retreives a texture from the Guild Wars 2 Render Service.

@@ -59,9 +59,9 @@ namespace Blish_HUD.DebugHelper.Services {
             }
         }
 
-        public void Register<T>(Action<T> callback) where T : Message { registedCallbacks.AddOrUpdate(typeof(T), t => x => callback((T)x), (t, _) => x => callback((T)x)); }
+        public void Register<T>(Action<T> callback) where T : Message => registedCallbacks.AddOrUpdate(typeof(T), t => x => callback((T)x), (t, _) => x => callback((T)x));
 
-        public void Unregister<T>() where T : Message { registedCallbacks.TryRemove(typeof(T), out _); }
+        public void Unregister<T>() where T : Message => registedCallbacks.TryRemove(typeof(T), out _);
 
         public void Send(Message message) {
             lock (outLock) {
@@ -128,7 +128,7 @@ namespace Blish_HUD.DebugHelper.Services {
             isDisposed = true;
         }
 
-        public void Dispose() { Dispose(true); }
+        public void Dispose() => Dispose(true);
 
         #endregion
 

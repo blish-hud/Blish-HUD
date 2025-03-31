@@ -21,9 +21,7 @@ namespace Blish_HUD.Entities {
             this.Camera = camera;
         }
 
-        public void AddEntity(IEntity entity) {
-            _pendingEntityAction.Enqueue((entity, true));
-        }
+        public void AddEntity(IEntity entity) => _pendingEntityAction.Enqueue((entity, true));
 
         public void AddEntities(IEnumerable<IEntity> entities) {
             foreach (var entity in entities) {
@@ -31,9 +29,7 @@ namespace Blish_HUD.Entities {
             }
         }
 
-        public void RemoveEntity(IEntity entity) {
-            _pendingEntityAction.Enqueue((entity, false));
-        }
+        public void RemoveEntity(IEntity entity) => _pendingEntityAction.Enqueue((entity, false));
 
         public void RemoveEntities(IEnumerable<IEntity> entities) {
             foreach (var entity in entities) {

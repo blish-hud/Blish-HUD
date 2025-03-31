@@ -32,13 +32,9 @@ namespace Blish_HUD.Settings {
             }
         }
 
-        protected override Type GetSettingType() {
-            return typeof(T);
-        }
+        protected override Type GetSettingType() => typeof(T);
 
-        protected override object GetSettingValue() {
-            return _value;
-        }
+        protected override object GetSettingValue() => _value;
 
         public SettingEntry() { /* NOOP */ }
 

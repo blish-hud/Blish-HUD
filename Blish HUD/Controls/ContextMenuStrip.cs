@@ -130,9 +130,7 @@ namespace Blish_HUD.Controls {
                        : yStart - _size.Y + downOffset;
         }
 
-        private void SetPositionFromOffset((Point Position, int DownOffset, int UpOffset) offset) {
-            this.Location = new Point(offset.Position.X, GetVerticalOffset(offset.Position.Y, offset.DownOffset, offset.UpOffset));
-        }
+        private void SetPositionFromOffset((Point Position, int DownOffset, int UpOffset) offset) => this.Location = new Point(offset.Position.X, GetVerticalOffset(offset.Position.Y, offset.DownOffset, offset.UpOffset));
 
         public void Show(Point position) {
             SetPositionFromOffset(_targetOffset = (position, 0, 0));
@@ -228,9 +226,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void ChildOnResized(object sender, ResizedEventArgs e) {
-            this.Invalidate();
-        }
+        private void ChildOnResized(object sender, ResizedEventArgs e) => this.Invalidate();
 
         public override void RecalculateLayout() {
             if (!_children.IsEmpty) {

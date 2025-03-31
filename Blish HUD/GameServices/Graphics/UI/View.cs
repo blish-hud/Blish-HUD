@@ -12,9 +12,7 @@
         }
 
         // BREAKME: Avoids a breaking change, but is not necessary for anything recompiled.
-        public new View WithPresenter(IPresenter presenter) {
-            return base.WithPresenter(presenter) as View;
-        }
+        public new View WithPresenter(IPresenter presenter) => base.WithPresenter(presenter) as View;
 
     }
 }

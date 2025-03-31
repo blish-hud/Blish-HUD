@@ -23,9 +23,7 @@ namespace Blish_HUD.Controls {
         #endregion
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
-        protected virtual void OnCheckedChanged(CheckChangedEvent e) {
-            this.CheckedChanged?.Invoke(this, e);
-        }
+        protected virtual void OnCheckedChanged(CheckChangedEvent e) => this.CheckedChanged?.Invoke(this, e);
 
         private string _text;
         public string Text {

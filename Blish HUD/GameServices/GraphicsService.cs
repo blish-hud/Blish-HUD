@@ -221,9 +221,7 @@ namespace Blish_HUD {
         /// Allows you to enqueue a call that will occur during the next time the update loop executes.
         /// </summary>
         /// <param name="call">A method accepting <see="GameTime" /> as a parameter.</param>
-        public void QueueMainThreadRender(Action<GraphicsDevice> call) {
-            _queuedRenders.Enqueue(call);
-        }
+        public void QueueMainThreadRender(Action<GraphicsDevice> call) => _queuedRenders.Enqueue(call);
 
         private void ScreenSizeUpdated(Point newSize) {
             // Update the SpriteScreen
@@ -358,9 +356,7 @@ namespace Blish_HUD {
         /// lend requests. Core lend requests receive priority over these requests.  Once
         /// done with the <see cref="GraphicsDevice"/> unlock it with <see cref="ReturnGraphicsDevice"/>.
         /// </summary>
-        internal GraphicsDevice LendGraphicsDevice() {
-            return LendGraphicsDevice(false);
-        }
+        internal GraphicsDevice LendGraphicsDevice() => LendGraphicsDevice(false);
 
         /// <summary>
         /// Provides exclusive and locked access to the <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/>. This
@@ -370,9 +366,7 @@ namespace Blish_HUD {
         /// via a <see langword="using"/> statement, or by calling
         /// <see cref="GraphicsDeviceContext.Dispose"/> directly.
         /// </summary>
-        public GraphicsDeviceContext LendGraphicsDeviceContext() {
-            return LendGraphicsDeviceContext(false);
-        }
+        public GraphicsDeviceContext LendGraphicsDeviceContext() => LendGraphicsDeviceContext(false);
 
         /// <summary>
         /// Provides exclusive and locked access to the <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/>. This
@@ -386,9 +380,7 @@ namespace Blish_HUD {
         /// If <see langword="true"/> then this thread will return as soon as the <see cref="GraphicsDeviceContext.GraphicsDevice"/>
         /// becomes available - ahead of all low priority lend requests.
         /// </param>
-        internal GraphicsDeviceContext LendGraphicsDeviceContext(bool highPriority) {
-            return new GraphicsDeviceContext(this, highPriority);
-        }
+        internal GraphicsDeviceContext LendGraphicsDeviceContext(bool highPriority) => new GraphicsDeviceContext(this, highPriority);
 
         /// <summary>
         /// Unlocks access to the <see cref="GraphicsDevice"/>.  You must call this after <see cref="LendGraphicsDevice"/>.

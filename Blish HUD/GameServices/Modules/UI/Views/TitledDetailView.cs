@@ -64,9 +64,7 @@ namespace Blish_HUD.Modules.UI.Views {
             BuildDetailView(_rootPanel);
         }
 
-        private void MenuButtonOnClick(object sender, MouseEventArgs e) {
-            this.Menu?.Show(_menuButton);
-        }
+        private void MenuButtonOnClick(object sender, MouseEventArgs e) => this.Menu?.Show(_menuButton);
 
         public void SetDetails(string status, DetailLevel level) {
             switch (level) {
@@ -84,9 +82,7 @@ namespace Blish_HUD.Modules.UI.Views {
             _warningIcon.Show();
         }
 
-        public void ClearDetails() {
-            _warningIcon.Hide();
-        }
+        public void ClearDetails() => _warningIcon.Hide();
 
         protected abstract void BuildDetailView(Panel buildPanel);
 

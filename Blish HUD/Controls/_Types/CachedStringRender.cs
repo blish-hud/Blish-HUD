@@ -107,9 +107,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected bool Equals(CachedStringRender other) {
-            return string.Equals(this.Text, other.Text) && Equals(this.Font, other.Font) && this.DestinationRectangle.Equals(other.DestinationRectangle) && this.Color.Equals(other.Color) && this.Wrap == other.Wrap && this.Stroke == other.Stroke && this.StrokeDistance == other.StrokeDistance && this.HorizontalAlignment == other.HorizontalAlignment && this.VerticalAlignment == other.VerticalAlignment;
-        }
+        protected bool Equals(CachedStringRender other) => string.Equals(this.Text, other.Text) && Equals(this.Font, other.Font) && this.DestinationRectangle.Equals(other.DestinationRectangle) && this.Color.Equals(other.Color) && this.Wrap == other.Wrap && this.Stroke == other.Stroke && this.StrokeDistance == other.StrokeDistance && this.HorizontalAlignment == other.HorizontalAlignment && this.VerticalAlignment == other.VerticalAlignment;
 
         public override bool Equals(object obj) {
             if (obj is null) {
@@ -157,9 +155,7 @@ namespace Blish_HUD.Controls {
             return checkCsr;
         }
 
-        public void Dispose() {
-            _cachedRender?.Dispose();
-        }
+        public void Dispose() => _cachedRender?.Dispose();
 
     }
 }

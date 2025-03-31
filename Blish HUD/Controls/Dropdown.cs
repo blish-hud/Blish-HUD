@@ -61,9 +61,7 @@ namespace Blish_HUD.Controls {
                            : dropdownLocation - new Point(0, _size.Y + 1);
             }
 
-            public static DropdownPanel ShowPanel(Dropdown assocDropdown) {
-                return new DropdownPanel(assocDropdown);
-            }
+            public static DropdownPanel ShowPanel(Dropdown assocDropdown) => new DropdownPanel(assocDropdown);
 
             private void InputOnMousedOffDropdownPanel(object sender, MouseEventArgs e) {
                 if (!this.MouseOver) {
@@ -192,9 +190,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
-        protected virtual void OnValueChanged(ValueChangedEventArgs e) {
-            this.ValueChanged?.Invoke(this, e);
-        }
+        protected virtual void OnValueChanged(ValueChangedEventArgs e) => this.ValueChanged?.Invoke(this, e);
 
         #endregion
 

@@ -28,14 +28,10 @@ namespace Blish_HUD.Controls {
         #region Events
 
         public event EventHandler<ControlActivatedEventArgs> ItemSelected;
-        protected virtual void OnItemSelected(ControlActivatedEventArgs e) {
-            this.ItemSelected?.Invoke(this, e);
-        }
+        protected virtual void OnItemSelected(ControlActivatedEventArgs e) => this.ItemSelected?.Invoke(this, e);
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
-        protected virtual void OnCheckedChanged(CheckChangedEvent e) {
-            this.CheckedChanged?.Invoke(this, e);
-        }
+        protected virtual void OnCheckedChanged(CheckChangedEvent e) => this.CheckedChanged?.Invoke(this, e);
 
         #endregion
 
@@ -216,9 +212,7 @@ namespace Blish_HUD.Controls {
             OnPropertyChanged(nameof(this.Selected));
         }
 
-        void IMenuItem.Select(MenuItem menuItem) {
-            ((IMenuItem)this).Select(menuItem, new List<IMenuItem>() { this });
-        }
+        void IMenuItem.Select(MenuItem menuItem) => ((IMenuItem)this).Select(menuItem, new List<IMenuItem>() { this });
 
         void IMenuItem.Select(MenuItem menuItem, List<IMenuItem> itemPath) {
             itemPath.Add(this);

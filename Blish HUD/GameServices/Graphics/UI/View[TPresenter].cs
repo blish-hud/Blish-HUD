@@ -61,9 +61,7 @@ namespace Blish_HUD.Graphics.UI {
             this.Unloaded?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual async Task<bool> Load(IProgress<string> progress) {
-            return await Task.FromResult(true);
-        }
+        protected virtual async Task<bool> Load(IProgress<string> progress) => await Task.FromResult(true);
 
         protected virtual void Build(Container buildPanel) { /* NOOP */ }
 

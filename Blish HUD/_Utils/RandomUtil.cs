@@ -13,9 +13,7 @@ namespace Blish_HUD {
         /// <summary>
         /// Returns a random integer that is within a specific range.
         /// </summary>
-        public static int GetRandom(int minValue, int maxValue) {
-            return _sharedRandom.Next(minValue, maxValue);
-        }
+        public static int GetRandom(int minValue, int maxValue) => _sharedRandom.Next(minValue, maxValue);
 
         /// <summary>
         /// Returns a random integer that is within a specific range from a specified seed value.

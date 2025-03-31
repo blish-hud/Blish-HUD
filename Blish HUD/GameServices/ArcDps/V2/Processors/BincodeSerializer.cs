@@ -10,15 +10,11 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
     public static class BincodeSerializer {
         public static class FloatConverter {
             public static class Float32Converter {
-                public static float Convert(BinaryReader reader) {
-                    return reader.ReadSingle();
-                }
+                public static float Convert(BinaryReader reader) => reader.ReadSingle();
             }
 
             public static class Float64Converter {
-                public static double Convert(BinaryReader reader) {
-                    return reader.ReadDouble();
-                }
+                public static double Convert(BinaryReader reader) => reader.ReadDouble();
             }
         }
 
@@ -68,9 +64,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
                     return reader.ReadSByte();
                 }
 
-                public static byte ConvertUnsigned(BinaryReader reader) {
-                    return reader.ReadByte();
-                }
+                public static byte ConvertUnsigned(BinaryReader reader) => reader.ReadByte();
             }
 
             public static class Int16Converter {
@@ -141,9 +135,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
         }
 
         public static class BoolConverter {
-            public static bool Convert(BinaryReader reader) {
-                return reader.ReadBoolean();
-            }
+            public static bool Convert(BinaryReader reader) => reader.ReadBoolean();
         }
 
         public static class CollectionConverter {

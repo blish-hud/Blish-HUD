@@ -30,13 +30,9 @@ namespace Blish_HUD.Content {
             _archive = ZipFile.OpenRead(archivePath);
         }
 
-        public IDataReader GetSubPath(string subPath) {
-            return new ZipArchiveReader(_archivePath, Path.Combine(subPath));
-        }
+        public IDataReader GetSubPath(string subPath) => new ZipArchiveReader(_archivePath, Path.Combine(subPath));
 
-        public string GetPathRepresentation(string relativeFilePath = null) {
-            return $"{_archivePath}[{Path.GetFileName(Path.Combine(_subPath, relativeFilePath ?? string.Empty))}]";
-        }
+        public string GetPathRepresentation(string relativeFilePath = null) => $"{_archivePath}[{Path.GetFileName(Path.Combine(_subPath, relativeFilePath ?? string.Empty))}]";
 
         public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {
             var validEntries = _archive.Entries.Where(e => e.Name.EndsWith($"{fileExtension}", StringComparison.OrdinalIgnoreCase)).ToList();
@@ -55,9 +51,7 @@ namespace Blish_HUD.Content {
             );
         }
 
-        private string GetUniformFileName(string filePath) {
-            return filePath.Replace(@"\", "/").Replace("//", "/").Trim();
-        }
+        private string GetUniformFileName(string filePath) => filePath.Replace(@"\", "/").Replace("//", "/").Trim();
 
         private ZipArchiveEntry GetArchiveEntry(string filePath) {
             string cleanFilePath = GetUniformFileName(Path.Combine(_subPath, filePath));
@@ -118,15 +112,11 @@ namespace Blish_HUD.Content {
 
         /// <inheritdoc />
         /// <remarks>For <see cref="ZipArchiveReader"/>, use <see cref="GetFileStream(string)"/> instead.</remarks>
-        public async Task<Stream> GetFileStreamAsync(string filePath) {
-            return await Task.FromResult(GetFileStream(filePath));
-        }
+        public async Task<Stream> GetFileStreamAsync(string filePath) => await Task.FromResult(GetFileStream(filePath));
 
         /// <inheritdoc />
         /// <remarks>For <see cref="ZipArchiveReader"/>, use <see cref="GetFileBytes(string)"/> instead.</remarks>
-        public async Task<byte[]> GetFileBytesAsync(string filePath) {
-            return await Task.FromResult(GetFileBytes(filePath));
-        }
+        public async Task<byte[]> GetFileBytesAsync(string filePath) => await Task.FromResult(GetFileBytes(filePath));
 
         public void DeleteRoot() {
             this.Dispose();
@@ -134,9 +124,7 @@ namespace Blish_HUD.Content {
             File.Delete(_archivePath);
         }
 
-        public void Dispose() {
-            _archive?.Dispose();
-        }
+        public void Dispose() => _archive?.Dispose();
 
     }
 

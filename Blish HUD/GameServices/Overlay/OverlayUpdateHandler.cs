@@ -139,9 +139,7 @@ namespace Blish_HUD.Overlay {
             }
         }
 
-        public void AcknowledgePendingReleases() {
-            this.LastAcknowledgedRelease = _availableUpdates.Select(manifest => manifest.Version).Max();
-        }
+        public void AcknowledgePendingReleases() => this.LastAcknowledgedRelease = _availableUpdates.Select(manifest => manifest.Version).Max();
 
     }
 }

@@ -12,11 +12,11 @@ namespace Blish_HUD.DebugHelper.Services {
             process.EnableRaisingEvents = true;
         }
 
-        public void Start() { process.Exited += Process_Exited; }
+        public void Start() => process.Exited += Process_Exited;
 
-        public void Stop() { process.Exited -= Process_Exited; }
+        public void Stop() => process.Exited -= Process_Exited;
 
-        private void Process_Exited(object sender, EventArgs e) { Environment.Exit(0); }
+        private void Process_Exited(object sender, EventArgs e) => Environment.Exit(0);
 
     }
 

@@ -130,9 +130,7 @@ namespace Blish_HUD {
             }
         }
 
-        internal static void SetShowInTaskbar(IntPtr winHandle, bool showInTaskbar) {
-            SetWindowParam(winHandle, showInTaskbar);
-        }
+        internal static void SetShowInTaskbar(IntPtr winHandle, bool showInTaskbar) => SetWindowParam(winHandle, showInTaskbar);
 
         internal static void SetupOverlay(IntPtr winHandle) {
             SetWindowLong(winHandle, GWL_STYLE, CS_HREDRAW | CS_VREDRAW);

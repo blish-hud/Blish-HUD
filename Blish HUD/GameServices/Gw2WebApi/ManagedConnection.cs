@@ -35,9 +35,7 @@ namespace Blish_HUD.Gw2WebApi {
             SetupListeners();
         }
 
-        private void SetupListeners() {
-            GameService.Overlay.UserLocale.SettingChanged += UserLocaleOnSettingChanged;
-        }
+        private void SetupListeners() => GameService.Overlay.UserLocale.SettingChanged += UserLocaleOnSettingChanged;
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             _internalConnection.Locale = e.NewValue;
@@ -59,8 +57,6 @@ namespace Blish_HUD.Gw2WebApi {
             return true;
         }
 
-        public bool HasApiKey() {
-            return !string.IsNullOrEmpty(_internalConnection.AccessToken);
-        }
+        public bool HasApiKey() => !string.IsNullOrEmpty(_internalConnection.AccessToken);
     }
 }

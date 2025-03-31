@@ -249,9 +249,7 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
-        private async void Gw2Proc_Gw2Started(object sender, EventArgs e) {
-            await LoadGfxSettings();
-        }
+        private async void Gw2Proc_Gw2Started(object sender, EventArgs e) => await LoadGfxSettings();
 
         public override void Unload() {
             _service.Gw2Instance.Gw2Started -= Gw2Proc_Gw2Started;

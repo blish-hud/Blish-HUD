@@ -29,17 +29,11 @@ namespace Blish_HUD.Controls {
             _children = new ControlCollection<Control>();
         }
 
-        protected virtual void OnChildAdded(ChildChangedEventArgs e) {
-            this.ChildAdded?.Invoke(this, e);
-        }
+        protected virtual void OnChildAdded(ChildChangedEventArgs e) => this.ChildAdded?.Invoke(this, e);
 
-        protected virtual void OnChildRemoved(ChildChangedEventArgs e) {
-            this.ChildRemoved?.Invoke(this, e);
-        }
+        protected virtual void OnChildRemoved(ChildChangedEventArgs e) => this.ChildRemoved?.Invoke(this, e);
 
-        protected virtual void OnContentResized(RegionChangedEventArgs e) {
-            this.ContentResized?.Invoke(this, e);
-        }
+        protected virtual void OnContentResized(RegionChangedEventArgs e) => this.ContentResized?.Invoke(this, e);
 
         protected override void OnResized(ResizedEventArgs e) {
             base.OnResized(e);
@@ -335,13 +329,9 @@ namespace Blish_HUD.Controls {
 
         #region IEnumerable Implementation
 
-        public IEnumerator<Control> GetEnumerator() {
-            return _children.GetEnumerator();
-        }
+        public IEnumerator<Control> GetEnumerator() => _children.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         #endregion
 

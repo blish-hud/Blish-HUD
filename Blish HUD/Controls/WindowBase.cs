@@ -326,9 +326,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public void BringWindowToFront() {
-            _lastInteraction = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
-        }
+        public void BringWindowToFront() => _lastInteraction = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
 
         public bool CanClose => true;
 

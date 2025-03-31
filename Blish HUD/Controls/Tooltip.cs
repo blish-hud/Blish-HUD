@@ -172,9 +172,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// Shows the tooltip at the provided <see cref="x"/> and <see cref="y"/> coordinates.
         /// </summary>
-        public void Show(int x, int y) {
-            this.Show(new Point(x, y));
-        }
+        public void Show(int x, int y) => this.Show(new Point(x, y));
 
         /// <summary>
         /// Shows the tooltip at the provided <see cref="location"/>.
