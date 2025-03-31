@@ -17,14 +17,14 @@
             static TweenerImpl() {
                 registeredLerpers = new Dictionary<Type, ConstructorInfo>();
                 var numericTypes = new Type[] {
-                    typeof(Int16),
-                    typeof(Int32),
-                    typeof(Int64),
-                    typeof(UInt16),
-                    typeof(UInt32),
-                    typeof(UInt64),
-                    typeof(Single),
-                    typeof(Double),
+                    typeof(short),
+                    typeof(int),
+                    typeof(long),
+                    typeof(ushort),
+                    typeof(uint),
+                    typeof(ulong),
+                    typeof(float),
+                    typeof(double),
                     typeof(byte)
                 };
 
