@@ -129,7 +129,10 @@ namespace Blish_HUD.Controls {
             this.LeftMouseButtonPressed += OnLeftMouseButtonPressed;
             this.LeftMouseButtonReleased += OnLeftMouseButtonReleased;
 
-            this.Disposed += delegate { _holdTimer?.Close(); _holdTimerFast?.Stop(); };
+            this.Disposed += delegate {
+                _holdTimer?.Close();
+                _holdTimerFast?.Stop();
+            };
 
             this.Size = new Point(150, 20);
         }
@@ -176,7 +179,6 @@ namespace Blish_HUD.Controls {
             } else {
                 this.MouseOverMinus = false;
                 this.MouseOverPlus = false;
-
             }
         }
 

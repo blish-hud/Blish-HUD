@@ -264,12 +264,10 @@ namespace Blish_HUD.Controls {
 
                 _layoutHeaderIconBounds = new Rectangle(_layoutHeaderBounds.Left + 3, 3, HEADER_HEIGHT - 6, HEADER_HEIGHT - 6);
                 _layoutHeaderTextBounds = new Rectangle(_layoutHeaderIconBounds.Right + 5, 0, _layoutHeaderBounds.Width - _layoutHeaderIconBounds.Width, HEADER_HEIGHT);
-
             } else {
 
                 _layoutHeaderIconBounds = Rectangle.Empty;
                 _layoutHeaderTextBounds = new Rectangle(_layoutHeaderBounds.Left + 10, 0, _layoutHeaderBounds.Width - 10, HEADER_HEIGHT);
-
             }
 
             _layoutAccordionArrowOrigin = new Vector2((float)ARROW_SIZE / 2, (float)ARROW_SIZE / 2);

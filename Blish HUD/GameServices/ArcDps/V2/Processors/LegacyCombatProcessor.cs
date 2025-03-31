@@ -9,7 +9,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
             try {
                 result = ProcessCombat(message);
                 return true;
-
             } catch (Exception) {
                 result = default;
                 return false;

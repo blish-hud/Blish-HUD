@@ -56,7 +56,6 @@ namespace Blish_HUD.GameServices.ArcDps {
 
             // hardcoded message queue size. One Collection per message type. This is done just for optimizations
             _messageQueues = new BlockingCollection<byte[]>[byte.MaxValue];
-
         }
 
         public bool IsMessageTypeAvailable(MessageType type)

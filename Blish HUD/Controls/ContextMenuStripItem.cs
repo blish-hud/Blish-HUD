@@ -123,7 +123,6 @@ namespace Blish_HUD.Controls {
                                                32,
                                                32),
                                  StandardColors.Default);
-
             } else {
                 spriteBatch.DrawOnCtrl(this,
                                  _textureBullet,

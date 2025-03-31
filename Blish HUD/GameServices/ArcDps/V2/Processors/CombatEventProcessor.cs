@@ -12,7 +12,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
                 using var binaryReader = new BincodeBinaryReader(memoryStream);
                 result = binaryReader.ParseCombatCallback();
                 return true;
-
             } catch (Exception) {
                 result = default;
                 return false;
