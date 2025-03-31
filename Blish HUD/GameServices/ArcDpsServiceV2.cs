@@ -20,7 +20,7 @@ using SharpDX;
 namespace Blish_HUD {
 
     public class ArcDpsServiceV2 : GameService {
-        private static readonly Logger Logger = Logger.GetLogger<ArcDpsServiceV2>();
+        private static readonly Logger _logger = Logger.GetLogger<ArcDpsServiceV2>();
 
         /// <summary>
         /// The timespan after which ArcDPS is treated as not responding.
@@ -177,7 +177,7 @@ namespace Blish_HUD {
 
         private void SocketErrorHandler(object sender, SocketError socketError) {
             // Socketlistener stops by itself.
-            Logger.Error("Encountered socket error: {0}", socketError.ToString());
+            _logger.Error("Encountered socket error: {0}", socketError.ToString());
 
             this.Error?.Invoke(this, socketError);
         }

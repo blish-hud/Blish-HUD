@@ -16,7 +16,7 @@ namespace Blish_HUD.DebugHelper.Services {
         private readonly Stream inStream;
         private readonly Stream outStream;
         private readonly object outLock = new object();
-        private Thread? thread;
+        private Thread thread;
         private bool stopRequested = false;
         private long lastMessageId = 0;
 

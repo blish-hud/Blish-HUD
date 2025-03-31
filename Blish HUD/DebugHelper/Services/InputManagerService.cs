@@ -18,7 +18,7 @@ namespace Blish_HUD.DebugHelper.Services {
         private readonly TTimer timeoutTimer = new TTimer(PING_TIMEOUT_BEFORE_PAUSING_HOOKS) { AutoReset = false };
         private bool stopRequested = false;
         private bool hookRequested = false;
-        private Thread? thread;
+        private Thread thread;
 
         public InputManagerService(IMessageService messageService, MouseHookService mouseHookService, KeyboardHookService keyboardHookService) {
             this.messageService = messageService;

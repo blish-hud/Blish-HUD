@@ -9,7 +9,7 @@ using EntryPoint.Exceptions;
 namespace Blish_HUD {
     [Help("Optional launch arguments that modify overlay behavior.")]
     public class ApplicationSettings : BaseCliArguments {
-        public static ApplicationSettings Instance { get; }
+        public static ApplicationSettings Instance { get; private set; }
 
         public bool CliExitEarly => this.UserFacingExceptionThrown || this.HelpInvoked;
 

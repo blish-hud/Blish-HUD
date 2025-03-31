@@ -297,7 +297,7 @@ namespace Blish_HUD.Controls {
 
         // TODO Temporary solution to avoid memory leak due to Adhesive bindings before
         // This will be replaced when the Scrollbar is converted to a stateless overlay
-        private void UpdatePanelScrollbarOnOwnPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+        private void UpdatePanelScrollbarOnOwnPropertyChanged(object sender, PropertyChangedEventArgs e) {
             switch (e.PropertyName) {
                 case "Parent":
                     _panelScrollbar.Parent = this.Parent;
