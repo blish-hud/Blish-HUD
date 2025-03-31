@@ -42,7 +42,7 @@ namespace Blish_HUD.Input {
         #endregion
 
         // TODO: Block using a stack of contexts which can independently process incoming keyboard events
-        private bool _hookGeneralBlock;
+        private readonly bool _hookGeneralBlock;
 
         /// <summary>
         /// The current state of the keyboard.

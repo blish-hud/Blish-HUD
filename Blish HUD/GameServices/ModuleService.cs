@@ -151,22 +151,21 @@ namespace Blish_HUD {
             string moduleName;
 
             using (var moduleArchive = new ZipArchive(fileData, ZipArchiveMode.Read)) {
-                using (var manifestStream = moduleArchive.GetEntry(MODULE_MANIFESTNAME)?.Open()) {
-                    if (manifestStream == null) {
-                        return;
-                    }
-
-                    string manifestContents;
-                    using (var manifestReader = new StreamReader(manifestStream)) {
-                        manifestContents = manifestReader.ReadToEnd();
-                    }
-
-                    var moduleManifest = JsonConvert.DeserializeObject<Manifest>(manifestContents);
-
-                    Logger.Info("Exporting internally packaged module {module}", moduleManifest.GetDetailedName());
-
-                    moduleName = moduleManifest.Name;
+                using var manifestStream = moduleArchive.GetEntry(MODULE_MANIFESTNAME)?.Open();
+                if (manifestStream == null) {
+                    return;
                 }
+
+                string manifestContents;
+                using (var manifestReader = new StreamReader(manifestStream)) {
+                    manifestContents = manifestReader.ReadToEnd();
+                }
+
+                var moduleManifest = JsonConvert.DeserializeObject<Manifest>(manifestContents);
+
+                Logger.Info("Exporting internally packaged module {module}", moduleManifest.GetDetailedName());
+
+                moduleName = moduleManifest.Name;
             }
 
             if (moduleName != null) {

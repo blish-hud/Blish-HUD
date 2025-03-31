@@ -68,8 +68,7 @@ namespace Blish_HUD.Content {
         private Stream LoadMetadataStream() {
             string metadataCache = Path.Combine(_assetCachePath, METADATA_FILE);
 
-            var metadataStream = Stream.Null;
-
+            Stream metadataStream;
             try {
                 // We block for this on purpose
                 byte[] rawMetadata = $"{ASSETSERV_HOST}/{METADATA_FILE}".GetBytesAsync().GetAwaiter().GetResult();

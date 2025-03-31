@@ -49,12 +49,12 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private void UpdateExtraOptionsView() {
             this.View.SettingsMenu.ClearChildren();
 
-            foreach (var option in this.Model.GetExtraOptions()) {
-                var menuItem = this.View.SettingsMenu.AddMenuItem(option.OptionName);
-                menuItem.CanCheck = option.IsToggle;
-                menuItem.Checked = option.IsChecked;
+            foreach (var (OptionName, OptionAction, IsToggle, IsChecked) in this.Model.GetExtraOptions()) {
+                var menuItem = this.View.SettingsMenu.AddMenuItem(OptionName);
+                menuItem.CanCheck = IsToggle;
+                menuItem.Checked = IsChecked;
                 menuItem.Click += delegate {
-                    option.OptionAction(menuItem.Checked);
+                    OptionAction(menuItem.Checked);
 
                     UpdatePackagesView();
                 };

@@ -85,7 +85,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             return Task.CompletedTask;
         }
 
-        public struct Player {
+        public readonly struct Player {
 
             public Player(string characterName, string accountName, uint profession, uint elite, bool self) {
                 this.CharacterName = characterName;

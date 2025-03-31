@@ -120,8 +120,8 @@ namespace Blish_HUD.Controls {
         public CounterBox() {
             _holdTimer = new Timer(HOLD_MILISECONDS);
             _holdTimerFast = new Stopwatch();
-            MinusSprite = MinusSprite ?? Content.GetTexture("minus");
-            PlusSprite = PlusSprite ?? Content.GetTexture("plus");
+            MinusSprite ??= Content.GetTexture("minus");
+            PlusSprite ??= Content.GetTexture("plus");
 
             this.MouseMoved += OnMouseMoved;
             this.MouseLeft += OnMouseLeft;

@@ -33,9 +33,7 @@ namespace Blish_HUD.Controls {
             => InitializeRectangles();
 
         protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
-            if (_hoveredTextPart != null) {
-                _hoveredTextPart.Link?.Invoke();
-            }
+            _hoveredTextPart?.Link?.Invoke();
         }
 
         private Rectangle HandleFirstTextPart(FormattedLabelPart item, string firstText) {

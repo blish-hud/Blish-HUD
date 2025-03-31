@@ -227,10 +227,9 @@ namespace Blish_HUD {
 
         internal static string GetClassNameOfWindow(IntPtr hwnd) {
             string className = "";
-            StringBuilder classText = null;
             try {
                 int cls_max_length = 1000;
-                classText = new StringBuilder("", cls_max_length + 5);
+                StringBuilder classText = new StringBuilder("", cls_max_length + 5);
                 GetClassName(hwnd, classText, cls_max_length + 2);
 
                 if (!string.IsNullOrEmpty(classText.ToString())) {

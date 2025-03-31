@@ -48,24 +48,23 @@ namespace Blish_HUD.Debug {
         /// This feature prevents us from initializing our log file or writing out our settings.
         /// </summary>
         private static void CheckControlledFolderAccessBlocking() {
-            using (var cfaRoot = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\Controlled Folder Access")) {
-                if (cfaRoot == null) {
-                    return;
-                }
+            using var cfaRoot = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\Controlled Folder Access");
+            if (cfaRoot == null) {
+                return;
+            }
 
-                if ((cfaRoot.GetValue("EnableControlledFolderAccess", 0) as int?) == 1) {
-                    try {
-                        string cfaTestFile = Path.Combine(DirectoryUtil.BasePath, ".cfa");
+            if ((cfaRoot.GetValue("EnableControlledFolderAccess", 0) as int?) == 1) {
+                try {
+                    string cfaTestFile = Path.Combine(DirectoryUtil.BasePath, ".cfa");
 
-                        File.WriteAllText(cfaTestFile, "cfa");
+                    File.WriteAllText(cfaTestFile, "cfa");
 
-                        if (File.Exists(cfaTestFile) && File.ReadAllText(cfaTestFile) == "cfa") {
-                            File.Delete(cfaTestFile);
-                        }
-                    } catch (Exception) {
-                        // The chances that this isn't CFA are pretty slim.
-                        Contingency.NotifyCfaBlocking(DirectoryUtil.BasePath);
+                    if (File.Exists(cfaTestFile) && File.ReadAllText(cfaTestFile) == "cfa") {
+                        File.Delete(cfaTestFile);
                     }
+                } catch (Exception) {
+                    // The chances that this isn't CFA are pretty slim.
+                    Contingency.NotifyCfaBlocking(DirectoryUtil.BasePath);
                 }
             }
         }

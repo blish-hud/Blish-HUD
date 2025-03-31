@@ -24,14 +24,14 @@ namespace Blish_HUD.Controls {
 
             string[] lines = _text.Split(NEWLINE);
 
-            var cursor = GetSplitIndex(_cursorIndex);
+            var (Line, Character) = GetSplitIndex(_cursorIndex);
 
-            int targetLine = cursor.Line + delta;
+            int targetLine = Line + delta;
 
             if (targetLine >= lines.Length) {
                 newIndex = _text.Length;
             } else if (targetLine >= 0) {
-                float cursorLeft = MeasureStringWidth(lines[cursor.Line].Substring(0, cursor.Character));
+                float cursorLeft = MeasureStringWidth(lines[Line].Substring(0, Character));
                 float minOffset = cursorLeft;
                 int currentIndex = 0;
 
@@ -118,36 +118,36 @@ namespace Blish_HUD.Controls {
 
             string[] lines = _text.Split(NEWLINE);
 
-            var startIndex = GetSplitIndex(selectionStart);
+            var (Line, Character) = GetSplitIndex(selectionStart);
             var endIndex = GetSplitIndex(selectionStart + selectionLength);
 
-            int lineSpans = endIndex.Line - startIndex.Line;
+            int lineSpans = endIndex.Line - Line;
 
             var regions = new Rectangle[lineSpans + 1];
 
             if (lineSpans == 0) {
-                float highlightLeftOffset = MeasureStringWidth(lines[startIndex.Line].Substring(0, startIndex.Character));
-                float highlightWidth = MeasureStringWidth(lines[startIndex.Line].Substring(startIndex.Character, selectionLength));
+                float highlightLeftOffset = MeasureStringWidth(lines[Line].Substring(0, Character));
+                float highlightWidth = MeasureStringWidth(lines[Line].Substring(Character, selectionLength));
 
                 regions[0] = new Rectangle(_textRegion.Left + (int)highlightLeftOffset - 1,
-                                           _textRegion.Top + (startIndex.Line * _font.LineHeight),
+                                           _textRegion.Top + (Line * _font.LineHeight),
                                            (int)highlightWidth,
                                            _font.LineHeight - 1);
             } else {
                 // First line
-                float firstHighlightLeftOffset = MeasureStringWidth(lines[startIndex.Line].Substring(0, startIndex.Character));
-                float firstHighlightWidth = MeasureStringWidth(lines[startIndex.Line].Substring(startIndex.Character));
+                float firstHighlightLeftOffset = MeasureStringWidth(lines[Line].Substring(0, Character));
+                float firstHighlightWidth = MeasureStringWidth(lines[Line].Substring(Character));
 
                 regions[0] = new Rectangle(_textRegion.Left + (int)firstHighlightLeftOffset - 1,
-                                           _textRegion.Top + (startIndex.Line * _font.LineHeight),
+                                           _textRegion.Top + (Line * _font.LineHeight),
                                            (int)firstHighlightWidth,
                                            _font.LineHeight - 1);
 
                 // Middle lines
-                for (int i = startIndex.Line + 1; i < endIndex.Line; i++) {
+                for (int i = Line + 1; i < endIndex.Line; i++) {
                     float fullWidth = MeasureStringWidth(lines[i]);
 
-                    regions[i - startIndex.Line] = new Rectangle(_textRegion.Left - 1,
+                    regions[i - Line] = new Rectangle(_textRegion.Left - 1,
                                                                  _textRegion.Top + (i * _font.LineHeight),
                                                                  (int)fullWidth,
                                                                  _font.LineHeight - 1);
@@ -173,17 +173,17 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle CalculateCursorRegion() {
-            var cursor = GetSplitIndex(_cursorIndex);
+            var (Line, Character) = GetSplitIndex(_cursorIndex);
 
             string[] lines = _text.Split(NEWLINE);
 
-            float cursorLeft = MeasureStringWidth(lines[cursor.Line].Substring(0, cursor.Character));
+            float cursorLeft = MeasureStringWidth(lines[Line].Substring(0, Character));
 
             var offset = Point.Zero;
 
             if (_cursorIndex > 0) {
                 offset = new Point((int)cursorLeft,
-                                   _font.LineHeight * cursor.Line);
+                                   _font.LineHeight * Line);
             }
 
             return new Rectangle(_textRegion.X + offset.X - 2,

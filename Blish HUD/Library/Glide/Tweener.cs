@@ -58,11 +58,11 @@
             }
 
 
-            private static Dictionary<Type, ConstructorInfo> registeredLerpers;
+            private static readonly Dictionary<Type, ConstructorInfo> registeredLerpers;
 
-            private ConcurrentDictionary<object, List<Tween>> tweens;
-            private ConcurrentQueue<Tween> toRemove;
-            private ConcurrentQueue<Tween> toAdd;
+            private readonly ConcurrentDictionary<object, List<Tween>> tweens;
+            private readonly ConcurrentQueue<Tween> toRemove;
+            private readonly ConcurrentQueue<Tween> toAdd;
 
             /// <summary>
             /// <para>Tweens a set of properties on an object.</para>

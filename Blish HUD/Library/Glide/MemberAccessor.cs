@@ -17,9 +17,8 @@ namespace Glide {
 
         public MemberAccessor(object target, string name, bool writeRequired = true) {
             var T = target.GetType();
-            PropertyInfo propInfo = null;
-            FieldInfo fieldInfo = null;
-
+            PropertyInfo propInfo;
+            FieldInfo fieldInfo;
             if ((propInfo = T.GetProperty(name, flags)) != null) {
                 this.MemberType = propInfo.PropertyType;
                 this.MemberName = propInfo.Name;
@@ -71,6 +70,6 @@ namespace Glide {
 
         protected Func<object, object> getMethod;
         protected Action<object, object> setMethod;
-        private static BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+        private static readonly BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
     }
 }

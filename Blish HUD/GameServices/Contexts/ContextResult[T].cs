@@ -4,7 +4,7 @@
     /// The result when querying a <see cref="Context"/>.
     /// </summary>
     /// <typeparam name="T">The type the call returns.</typeparam>
-    public struct ContextResult<T> {
+    public readonly struct ContextResult<T> {
 
         /// <summary>
         /// The value requested from the <see cref="Context"/>.

@@ -3,7 +3,7 @@
     /// <summary>
     /// Used to define a 'thickness' around each side of a rectangle.
     /// </summary>
-    public struct Thickness {
+    public readonly struct Thickness {
 
         public float Top { get; }
         public float Right { get; }

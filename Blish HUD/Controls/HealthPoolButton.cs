@@ -16,8 +16,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _text, value);
         }
         public HealthPoolButton() {
-            HealthPoolSprite = HealthPoolSprite ?? Content.GetTexture("healthpool");
-            HealthPoolPressedSprite = HealthPoolPressedSprite ?? Content.GetTexture("healthpool_pressed");
+            HealthPoolSprite ??= Content.GetTexture("healthpool");
+            HealthPoolPressedSprite ??= Content.GetTexture("healthpool_pressed");
             this.Size = new Point(111, 111); // set static bounds.
             UpdateLocation(null, null);
             Graphics.SpriteScreen.Resized += UpdateLocation;

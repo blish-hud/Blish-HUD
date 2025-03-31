@@ -145,13 +145,13 @@ namespace Blish_HUD.Overlay.UI.Views {
 
             #region "Available Updates"
 
-            var update = GameService.Overlay.OverlayUpdateHandler.GetUpdateAvailable();
+            var (Available, NewManifest) = GameService.Overlay.OverlayUpdateHandler.GetUpdateAvailable();
 
-            if (update.Available) {
+            if (Available) {
                 _ = new Label() {
                     Parent = aboutPanel,
                     Top = bottomDiscordSection.Bottom,
-                    Text = $"An update to Blish HUD v{update.NewManifest.Version} is available!",
+                    Text = $"An update to Blish HUD v{NewManifest.Version} is available!",
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Middle,
                     Left = 0,
@@ -171,7 +171,7 @@ namespace Blish_HUD.Overlay.UI.Views {
                 );
 
                 updateButton.Click += (s, e) => {
-                    GameService.Overlay.OverlayUpdateHandler.ShowReleaseSplash(update.NewManifest, false);
+                    GameService.Overlay.OverlayUpdateHandler.ShowReleaseSplash(NewManifest, false);
                 };
             } else {
                 _ = new Label() {
@@ -197,7 +197,7 @@ namespace Blish_HUD.Overlay.UI.Views {
 
             #endregion
 
-            var gw2CopyrightStatement = new Label() {
+            var gw2CopyrightStatement = new Label {
                 Font = GameService.Content.DefaultFont16,
                 Text = string.Format(Strings.GameServices.OverlayService.AboutAnetNotice, DateTime.Now.Year),
                 AutoSizeHeight = true,
@@ -205,10 +205,9 @@ namespace Blish_HUD.Overlay.UI.Views {
                 StrokeText = true,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Top,
-                Parent = aboutPanel
+                Parent = aboutPanel,
+                Bottom = aboutPanel.Height - 48
             };
-
-            gw2CopyrightStatement.Bottom = aboutPanel.Height - 48;
 
             #region "Software Licenses"
 

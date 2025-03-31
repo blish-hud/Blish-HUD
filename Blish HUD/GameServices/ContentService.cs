@@ -45,15 +45,14 @@ namespace Blish_HUD {
             public static Texture2D TransparentPixel { get; private set; }
 
             public static void Load() {
-                using (var ctx = Graphics.LendGraphicsDeviceContext(true)) {
-                    Error = Content.GetTexture(@"common\error");
+                using var ctx = Graphics.LendGraphicsDeviceContext(true);
+                Error = Content.GetTexture(@"common\error");
 
-                    Pixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
-                    Pixel.SetData(new[] { Color.White });
+                Pixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
+                Pixel.SetData(new[] { Color.White });
 
-                    TransparentPixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
-                    TransparentPixel.SetData(new[] { Color.Transparent });
-                }
+                TransparentPixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
+                TransparentPixel.SetData(new[] { Color.Transparent });
             }
         }
 
@@ -154,9 +153,8 @@ namespace Blish_HUD {
         // Used while debugging since it's easier
         private static Texture2D TextureFromFile(string filepath) {
             if (File.Exists(filepath)) {
-                using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, fileStream);
-                }
+                using var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, fileStream);
             } else {
                 return null;
             }
@@ -169,26 +167,23 @@ namespace Blish_HUD {
                 return null;
             }
 
-            using (var refFs = new FileStream(refPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read)) {
-                    var refEntry = refArchive.GetEntry(filepath);
+            using var refFs = new FileStream(refPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read);
+            var refEntry = refArchive.GetEntry(filepath);
 
-                    if (refEntry != null) {
-                        using (var textureStream = refEntry.Open()) {
-                            var textureCanSeek = new MemoryStream();
-                            textureStream.CopyTo(textureCanSeek);
+            if (refEntry != null) {
+                using var textureStream = refEntry.Open();
+                var textureCanSeek = new MemoryStream();
+                textureStream.CopyTo(textureCanSeek);
 
-                            if (GameService.Graphics == null) {
-                                return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek);
-                            } else {
-                                return TextureUtil.FromStreamPremultiplied(textureCanSeek);
-                            }
-                        }
-                    }
-
-                    return null;
+                if (GameService.Graphics == null) {
+                    return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek);
+                } else {
+                    return TextureUtil.FromStreamPremultiplied(textureCanSeek);
                 }
             }
+
+            return null;
         }
 
         public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
@@ -226,7 +221,7 @@ namespace Blish_HUD {
                 }
             }
 
-            cachedTexture = cachedTexture ?? defaultTexture;
+            cachedTexture ??= defaultTexture;
 
             _loadedTextures.TryAdd(textureName, cachedTexture);
 
@@ -234,8 +229,6 @@ namespace Blish_HUD {
         }
 
         #region Render Service
-
-        private const string RENDERSERVICE_REQUESTURL = "https://render.guildwars2.com/file/";
 
         private static readonly Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
 
@@ -272,7 +265,7 @@ namespace Blish_HUD {
         #endregion
 
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
-            string fullFontName = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{style.ToString().ToLowerInvariant()}";
+            string fullFontName = $"{font.ToString().ToLowerInvariant()}-{(int)size}-{style.ToString().ToLowerInvariant()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
                 var loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");

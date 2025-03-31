@@ -64,7 +64,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected Size2 GetTextDimensions(string text = null) {
-            text = text ?? _text;
+            text ??= _text;
 
             if (!_autoSizeWidth && _wrapText) {
                 text = DrawUtil.WrapText(_font, text, LabelRegion.X > 0 ? LabelRegion.X : _size.X);
@@ -74,7 +74,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected void DrawText(SpriteBatch spriteBatch, Rectangle bounds, string text = null) {
-            text = text ?? _text;
+            text ??= _text;
 
             if (_font == null || string.IsNullOrEmpty(text)) {
                 return;

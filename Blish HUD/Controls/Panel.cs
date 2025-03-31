@@ -285,9 +285,7 @@ namespace Blish_HUD.Controls {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
                to work correctly */
             if (this.CanScroll) {
-                if (_panelScrollbar == null) {
-                    _panelScrollbar = new Scrollbar(this);
-                }
+                _panelScrollbar ??= new Scrollbar(this);
 
                 this.PropertyChanged -= UpdatePanelScrollbarOnOwnPropertyChanged;
                 this.PropertyChanged += UpdatePanelScrollbarOnOwnPropertyChanged;

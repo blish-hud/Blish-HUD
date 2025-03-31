@@ -88,9 +88,8 @@ namespace Blish_HUD {
         }
 
         private static uint GetDpiLegacy() {
-            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero)) {
-                return (uint)g.DpiY;
-            }
+            using System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero);
+            return (uint)g.DpiY;
         }
 
         private uint GetDpiWin81() {
@@ -126,18 +125,13 @@ namespace Blish_HUD {
                 }
             }
 
-            switch (currScale) {
-                case UiSize.Small:
-                    return 0.810f;
-                case UiSize.Normal:
-                    return 0.897f;
-                case UiSize.Large:
-                    return 1f;
-                case UiSize.Larger:
-                    return 1.103f;
-            }
-
-            return 1f;
+            return currScale switch {
+                UiSize.Small => 0.810f,
+                UiSize.Normal => 0.897f,
+                UiSize.Large => 1f,
+                UiSize.Larger => 1.103f,
+                _ => 1f,
+            };
         }
 
         public float GetDpiScaleRatio() {

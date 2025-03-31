@@ -31,7 +31,6 @@ namespace Blish_HUD {
         private IArcDpsClient _arcDpsClient;
         private bool _hudIsActive;
         private Stopwatch _stopwatch;
-        private bool _subscribed;
 
 #if DEBUG
         public static long Counter => ArcDpsClient.Counter;
@@ -84,7 +83,7 @@ namespace Blish_HUD {
 
         public void RegisterMessageType<T>(int type, Func<T, CancellationToken, Task> listener)
             where T : struct {
-            Action action = () => _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            void action() => _arcDpsClient.RegisterMessageTypeListener(type, listener);
             _registerListeners.Add(action);
             if (_arcDpsClient != null) {
                 action();

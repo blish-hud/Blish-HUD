@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.Controls {
-    public struct DesignStandard {
+    public readonly struct DesignStandard {
 
         public Point Size { get; }
 

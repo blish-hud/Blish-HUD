@@ -5,14 +5,8 @@ namespace Blish_HUD.Controls.Intern {
     public static class Keyboard {
         private const uint WM_KEYDOWN = 0x0100;
         private const uint WM_KEYUP = 0x0101;
-        private const uint WM_CHAR = 0x0102;
         private const uint MAPVK_VK_TO_VSC = 0x00;
-        private const uint MAPVK_VSC_TO_VK = 0x01;
-        private const uint MAPVK_VK_TO_CHAR = 0x02;
-        private const uint MAPVK_VSC_TO_VK_EX = 0x03;
-        private const uint MAPVK_VK_TO_VSC_EX = 0x04;
-
-        private static List<VirtualKeyShort> ExtendedKeys = new List<VirtualKeyShort> {
+        private static readonly List<VirtualKeyShort> ExtendedKeys = new List<VirtualKeyShort> {
             VirtualKeyShort.INSERT,  VirtualKeyShort.HOME,   VirtualKeyShort.NEXT,
             VirtualKeyShort.DELETE,  VirtualKeyShort.END,    VirtualKeyShort.PRIOR,
             VirtualKeyShort.RMENU,   VirtualKeyShort.RSHIFT, VirtualKeyShort.RCONTROL,

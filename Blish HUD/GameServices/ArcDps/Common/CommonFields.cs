@@ -45,7 +45,7 @@ namespace Blish_HUD.ArcDps.Common {
             GameService.ArcDpsV2.Common.Activate();
         }
 
-        public struct Player {
+        public readonly struct Player {
 
             public Player(string characterName, string accountName, uint profession, uint elite, bool self) {
                 this.CharacterName = characterName;

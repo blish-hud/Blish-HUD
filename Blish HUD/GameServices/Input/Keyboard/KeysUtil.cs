@@ -43,7 +43,7 @@ namespace Blish_HUD.Input {
                 {Keys.Subtract, "Subtract (NUM)"}
             };
 
-            string CreateFriendlyName(Keys key) {
+            static string CreateFriendlyName(Keys key) {
                 string friendlyName = key.ToString();
 
                 return friendlyName.StartsWith("F")

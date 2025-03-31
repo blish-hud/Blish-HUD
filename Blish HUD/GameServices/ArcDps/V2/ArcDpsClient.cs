@@ -104,8 +104,9 @@ namespace Blish_HUD.GameServices.ArcDps {
             _linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(ct, this._cancellationTokenSource.Token);
             _linkedToken = _linkedTokenSource.Token;
             this.Client?.Dispose();
-            this.Client = new TcpClient();
-            this.Client.ReceiveBufferSize = 4096;
+            this.Client = new TcpClient {
+                ReceiveBufferSize = 4096
+            };
             this.Client.Connect(endpoint);
             _logger.Info("Connected to arcdps endpoint on: " + endpoint.ToString());
 

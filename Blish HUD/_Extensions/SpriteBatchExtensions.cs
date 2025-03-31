@@ -150,16 +150,15 @@ namespace Blish_HUD {
 
             // TODO: This does not account for vertical alignment
             if (horizontalAlignment != HorizontalAlignment.Left && (wrap || text.Contains("\n"))) {
-                using (StringReader reader = new StringReader(text)) {
-                    string line;
+                using StringReader reader = new StringReader(text);
+                string line;
 
-                    int lineHeightDiff = 0;
+                int lineHeightDiff = 0;
 
-                    while (destinationRectangle.Height - lineHeightDiff > 0 && (line = reader.ReadLine()) != null) {
-                        DrawStringOnCtrl(spriteBatch, ctrl, line, font, destinationRectangle.Add(0, lineHeightDiff, 0, -0), color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
+                while (destinationRectangle.Height - lineHeightDiff > 0 && (line = reader.ReadLine()) != null) {
+                    DrawStringOnCtrl(spriteBatch, ctrl, line, font, destinationRectangle.Add(0, lineHeightDiff, 0, -0), color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
 
-                        lineHeightDiff += font.LineHeight;
-                    }
+                    lineHeightDiff += font.LineHeight;
                 }
 
                 return;

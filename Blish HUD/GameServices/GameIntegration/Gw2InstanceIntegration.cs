@@ -363,9 +363,9 @@ namespace Blish_HUD.GameIntegration {
             this.IsInGame = GameService.Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5 && this.Gw2IsRunning;
 
             if (this.Gw2IsRunning) {
-                var updateResult = WindowUtil.UpdateOverlay(BlishHud.Instance.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
+                var (Response, Minimized, ErrorCode) = WindowUtil.UpdateOverlay(BlishHud.Instance.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
 
-                switch (updateResult.Response) {
+                switch (Response) {
                     case WindowUtil.OverlayUpdateResponse.WithFocus:
                         this.Gw2HasFocus = true;
                         break;
@@ -375,7 +375,7 @@ namespace Blish_HUD.GameIntegration {
                         break;
 
                     case WindowUtil.OverlayUpdateResponse.Errored:
-                        switch (updateResult.ErrorCode) {
+                        switch (ErrorCode) {
                             case 1400:
                                 this.Gw2Process?.Refresh();
 
@@ -396,8 +396,8 @@ namespace Blish_HUD.GameIntegration {
                         break;
                 }
 
-                if (BlishHud.Instance.Form.Visible != !updateResult.Minimized) {
-                    BlishHud.Instance.Form.Visible = !updateResult.Minimized;
+                if (BlishHud.Instance.Form.Visible != !Minimized) {
+                    BlishHud.Instance.Form.Visible = !Minimized;
                 }
             } else {
                 TryAttachToGw2();

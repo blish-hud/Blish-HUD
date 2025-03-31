@@ -68,8 +68,8 @@
                 return ContextAvailability.NotReady;
             }
 
-            var standardClient = IsStandardClientType(currentBuildId, out var _);
-            if (standardClient.IsMatch) {
+            var (IsMatch, CdnAvailability) = IsStandardClientType(currentBuildId, out var _);
+            if (IsMatch) {
                 contextResult = new ContextResult<ClientType>(ClientType.Standard);
                 return ContextAvailability.Available;
             }
@@ -80,7 +80,7 @@
                 return ContextAvailability.Available;
             }
 
-            if (standardClient.CdnAvailability == ContextAvailability.Available && chineseClient.CdnAvailability == ContextAvailability.Available) {
+            if (CdnAvailability == ContextAvailability.Available && chineseClient.CdnAvailability == ContextAvailability.Available) {
                 contextResult = new ContextResult<ClientType>(ClientType.Unknown, $"The build ID reported by the Mumble Link API ({currentBuildId}) could not be matched against a CDN provided build ID.");
                 return ContextAvailability.Failed;
             }

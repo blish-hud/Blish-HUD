@@ -32,7 +32,7 @@ namespace Blish_HUD.Controls {
 
             private double _hoverTime;
 
-            private int _startTop;
+            private readonly int _startTop;
 
             private DropdownPanel(Dropdown assocDropdown) {
                 _assocDropdown = assocDropdown;

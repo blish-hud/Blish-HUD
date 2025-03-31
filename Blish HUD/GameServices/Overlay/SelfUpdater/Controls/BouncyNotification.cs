@@ -39,7 +39,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
 
         private int _wiggleDirection = 1;
         private bool _nonOpp = false;
-        private float _rotation = 0f;
+        private readonly float _rotation = 0f;
 
         public BouncyNotification(AsyncTexture2D chestTexture, AsyncTexture2D openChestTexture = null) {
             _chestTexture = chestTexture;

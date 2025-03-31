@@ -189,9 +189,7 @@ namespace Blish_HUD.Controls {
         public override void Show() {
             this.Opacity = 0f;
 
-            if (_animFadeLifecycle == null) {
-                _animFadeLifecycle = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.1f);
-            }
+            _animFadeLifecycle ??= Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.1f);
 
             this.Parent = Graphics.SpriteScreen;
 

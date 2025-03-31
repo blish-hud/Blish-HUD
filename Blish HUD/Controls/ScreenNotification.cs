@@ -67,7 +67,6 @@ namespace Blish_HUD.Controls {
         private Tween _slideDownTween;
 
         private Rectangle _layoutMessageBounds;
-        private Rectangle _layoutIconBounds;
 
         private ScreenNotification(string message, NotificationType type = NotificationType.Info, Texture2D icon = null, int duration = DURATION_DEFAULT) {
             _message = message;

@@ -250,15 +250,11 @@ namespace Blish_HUD.Controls {
         public virtual void UpdateContainer(GameTime gameTime) { /* NOOP */ }
 
         private int GetUpdatedSizing(SizingMode sizingMode, int currentSize, int maxSize, int fillSize) {
-            switch (sizingMode) {
-                default:
-                case SizingMode.Standard:
-                    return currentSize;
-                case SizingMode.AutoSize:
-                    return maxSize;
-                case SizingMode.Fill:
-                    return fillSize;
-            }
+            return sizingMode switch {
+                SizingMode.AutoSize => maxSize,
+                SizingMode.Fill => fillSize,
+                _ => currentSize,
+            };
         }
 
         public sealed override void DoUpdate(GameTime gameTime) {

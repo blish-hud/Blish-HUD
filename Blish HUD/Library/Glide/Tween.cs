@@ -17,7 +17,7 @@ namespace Glide {
         #region Timing
         public bool Paused { get; private set; }
         private float Delay, repeatDelay;
-        private float Duration;
+        private readonly float Duration;
 
         private float Time, time;
         #endregion
@@ -26,11 +26,11 @@ namespace Glide {
         private int repeatCount;
         private MemberLerper.Behavior behavior;
 
-        private List<MemberAccessor> vars;
-        private List<MemberLerper> lerpers;
-        private List<object> start, end;
-        private Dictionary<string, int> varHash;
-        private IRemoveTweens Remover;
+        private readonly List<MemberAccessor> vars;
+        private readonly List<MemberLerper> lerpers;
+        private readonly List<object> start, end;
+        private readonly Dictionary<string, int> varHash;
+        private readonly IRemoveTweens Remover;
         /// <summary>
         /// The time remaining before the tween ends or repeats.
         /// </summary>
@@ -85,9 +85,7 @@ namespace Glide {
             if (!initialized) {
                 i = vars.Count;
                 while (i-- > 0) {
-                    if (lerperSet[i] != null) {
-                        lerperSet[i].Initialize(start[i], end[i], behavior);
-                    }
+                    lerperSet[i]?.Initialize(start[i], end[i], behavior);
                 }
                 initialized = true;
             }
@@ -143,9 +141,7 @@ namespace Glide {
             i = vars.Count;
             if (this.Target is object target) {
                 while (i-- > 0) {
-                    if (vars[i] != null) {
-                        vars[i].SetValue(target, lerperSet[i].Interpolate(t, vars[i].GetValue(target), behavior));
-                    }
+                    vars[i]?.SetValue(target, lerperSet[i].Interpolate(t, vars[i].GetValue(target), behavior));
                 }
             }
 
@@ -154,9 +150,7 @@ namespace Glide {
                 Reverse();
             }
 
-            if (update != null) {
-                update();
-            }
+            update?.Invoke();
 
             if (doComplete && complete != null) {
                 complete();
@@ -177,8 +171,7 @@ namespace Glide {
                     var property = props[i];
                     object propValue = property.GetValue(values, null);
 
-                    int index = -1;
-                    if (varHash.TryGetValue(property.Name, out index)) {
+                    if (varHash.TryGetValue(property.Name, out int index)) {
                         //	if we're already tweening this value, adjust the range
                         start[index] = propValue;
                     }
@@ -336,8 +329,7 @@ namespace Glide {
         public void Cancel(params string[] properties) {
             int canceled = 0;
             for (int i = 0; i < properties.Length; ++i) {
-                int index = 0;
-                if (!varHash.TryGetValue(properties[i], out index)) {
+                if (!varHash.TryGetValue(properties[i], out int index)) {
                     continue;
                 }
 

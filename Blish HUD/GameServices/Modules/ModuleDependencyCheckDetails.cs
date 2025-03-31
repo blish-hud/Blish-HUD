@@ -1,7 +1,7 @@
 ﻿using SemVer;
 
 namespace Blish_HUD.Modules {
-    public struct ModuleDependencyCheckDetails {
+    public readonly struct ModuleDependencyCheckDetails {
 
         public ModuleDependency Dependency { get; }
 
@@ -15,7 +15,7 @@ namespace Blish_HUD.Modules {
             this.Module = module;
         }
 
-        public string GetDisplayName() {
+        public readonly string GetDisplayName() {
             if (this.Dependency.IsBlishHud) {
                 return Strings.Common.BlishHUD;
             }

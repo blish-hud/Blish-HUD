@@ -280,42 +280,28 @@ namespace Blish_HUD {
 
 
         private CultureInfo GetCultureFromGw2Locale(Locale locale) {
-            switch (locale) {
-                case Locale.German:
-                    return CultureInfo.GetCultureInfo(7); // German (de-DE)
-                case Locale.English:
-                    return CultureInfo.GetCultureInfo(9); // English (en-US)
-                case Locale.Spanish:
-                    return CultureInfo.GetCultureInfo(10); // Spanish (es-ES)
-                case Locale.French:
-                    return CultureInfo.GetCultureInfo(12); // French (fr-FR)
-                case Locale.Korean:
-                    return CultureInfo.GetCultureInfo(18); // Korean (ko-KR)
-                case Locale.Chinese:
-                    return CultureInfo.GetCultureInfo(30724); // Chinese (zh-CN)
-            }
-
-            return CultureInfo.GetCultureInfo(9); // English (en-US)
+            return locale switch {
+                Locale.German => CultureInfo.GetCultureInfo(7),// German (de-DE)
+                Locale.English => CultureInfo.GetCultureInfo(9),// English (en-US)
+                Locale.Spanish => CultureInfo.GetCultureInfo(10),// Spanish (es-ES)
+                Locale.French => CultureInfo.GetCultureInfo(12),// French (fr-FR)
+                Locale.Korean => CultureInfo.GetCultureInfo(18),// Korean (ko-KR)
+                Locale.Chinese => CultureInfo.GetCultureInfo(30724),// Chinese (zh-CN)
+                _ => CultureInfo.GetCultureInfo(9),// English (en-US)
+            };
         }
 
         private Locale GetGw2LocaleFromCurrentUICulture() {
             string currLocale = CultureInfo.CurrentUICulture.EnglishName.Split(' ')[0];
 
-            switch (currLocale) {
-                case "Chinese":
-                    return Locale.Chinese;
-                case "French":
-                    return Locale.French;
-                case "German":
-                    return Locale.German;
-                case "Korean":
-                    return Locale.Korean;
-                case "Spanish":
-                    return Locale.Spanish;
-                case "English":
-                default:
-                    return Locale.English;
-            }
+            return currLocale switch {
+                "Chinese" => Locale.Chinese,
+                "French" => Locale.French,
+                "German" => Locale.German,
+                "Korean" => Locale.Korean,
+                "Spanish" => Locale.Spanish,
+                _ => Locale.English,
+            };
         }
 
         private void SotoFix() {
@@ -348,9 +334,8 @@ namespace Blish_HUD {
             this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Strings.Common.BlishHUD) {
                 Priority = int.MaxValue,
                 Parent = Graphics.SpriteScreen,
+                Menu = new ContextMenuStrip(GetOverlayContextMenuItems)
             };
-
-            this.BlishMenuIcon.Menu = new ContextMenuStrip(GetOverlayContextMenuItems);
 
             this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
                 this.BlishHudWindow.ToggleWindow();

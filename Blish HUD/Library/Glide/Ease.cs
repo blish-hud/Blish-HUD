@@ -159,7 +159,7 @@ namespace Glide {
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
         public static float QuintOut(float t) {
-            return (float)(((t = t - 1) * t * t * t * t) + 1);
+            return (float)(((--t) * t * t * t * t) + 1);
         }
 
         /// <summary>
