@@ -23,8 +23,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(AnimationSetting animationSetting) => animationSetting.Value;
-        public static implicit operator AnimationSetting(string value) => new AnimationSetting(value);
+        public static implicit operator string(AnimationSetting animationSetting) {
+            return animationSetting.Value;
+        }
+
+        public static implicit operator AnimationSetting(string value) {
+            return new AnimationSetting(value);
+        }
 
         public static AnimationSetting Low { get; } = new AnimationSetting(SETTING_LOW);
         public static AnimationSetting Medium { get; } = new AnimationSetting(SETTING_MEDIUM);

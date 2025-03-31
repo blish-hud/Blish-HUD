@@ -23,8 +23,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(ReflectionsSetting reflectionsSetting) => reflectionsSetting.Value;
-        public static implicit operator ReflectionsSetting(string value) => new ReflectionsSetting(value);
+        public static implicit operator string(ReflectionsSetting reflectionsSetting) {
+            return reflectionsSetting.Value;
+        }
+
+        public static implicit operator ReflectionsSetting(string value) {
+            return new ReflectionsSetting(value);
+        }
 
         public static ReflectionsSetting None { get; } = new ReflectionsSetting(SETTING_NONE);
         public static ReflectionsSetting Terrain { get; } = new ReflectionsSetting(SETTING_TERRAIN);

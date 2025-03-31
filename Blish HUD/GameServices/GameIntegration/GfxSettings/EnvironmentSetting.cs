@@ -23,8 +23,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(EnvironmentSetting environmentSetting) => environmentSetting.Value;
-        public static implicit operator EnvironmentSetting(string value) => new EnvironmentSetting(value);
+        public static implicit operator string(EnvironmentSetting environmentSetting) {
+            return environmentSetting.Value;
+        }
+
+        public static implicit operator EnvironmentSetting(string value) {
+            return new EnvironmentSetting(value);
+        }
 
         public static EnvironmentSetting Low { get; } = new EnvironmentSetting(SETTING_LOW);
         public static EnvironmentSetting Medium { get; } = new EnvironmentSetting(SETTING_MEDIUM);

@@ -23,8 +23,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(FrameLimitSetting frameLimitSetting) => frameLimitSetting.Value;
-        public static implicit operator FrameLimitSetting(string value) => new FrameLimitSetting(value);
+        public static implicit operator string(FrameLimitSetting frameLimitSetting) {
+            return frameLimitSetting.Value;
+        }
+
+        public static implicit operator FrameLimitSetting(string value) {
+            return new FrameLimitSetting(value);
+        }
 
         public static FrameLimitSetting Unlimited { get; } = new FrameLimitSetting(SETTING_UNLIMITED);
         public static FrameLimitSetting Value60 { get; } = new FrameLimitSetting(SETTING_60);

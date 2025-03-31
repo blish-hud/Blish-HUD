@@ -27,8 +27,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(ShadowsSetting shadowsSetting) => shadowsSetting.Value;
-        public static implicit operator ShadowsSetting(string value) => new ShadowsSetting(value);
+        public static implicit operator string(ShadowsSetting shadowsSetting) {
+            return shadowsSetting.Value;
+        }
+
+        public static implicit operator ShadowsSetting(string value) {
+            return new ShadowsSetting(value);
+        }
 
         public static ShadowsSetting Off { get; } = new ShadowsSetting(SETTING_OFF);
         public static ShadowsSetting Low { get; } = new ShadowsSetting(SETTING_LOW);

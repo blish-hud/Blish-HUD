@@ -27,8 +27,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(CharModelLimitSetting charModelLimitSetting) => charModelLimitSetting.Value;
-        public static implicit operator CharModelLimitSetting(string value) => new CharModelLimitSetting(value);
+        public static implicit operator string(CharModelLimitSetting charModelLimitSetting) {
+            return charModelLimitSetting.Value;
+        }
+
+        public static implicit operator CharModelLimitSetting(string value) {
+            return new CharModelLimitSetting(value);
+        }
 
         public static CharModelLimitSetting Lowest { get; } = new CharModelLimitSetting(SETTING_LOWEST);
         public static CharModelLimitSetting Low { get; } = new CharModelLimitSetting(SETTING_LOW);

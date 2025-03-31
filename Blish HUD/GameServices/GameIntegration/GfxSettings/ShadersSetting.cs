@@ -23,8 +23,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(ShadersSetting shadersSetting) => shadersSetting.Value;
-        public static implicit operator ShadersSetting(string value) => new ShadersSetting(value);
+        public static implicit operator string(ShadersSetting shadersSetting) {
+            return shadersSetting.Value;
+        }
+
+        public static implicit operator ShadersSetting(string value) {
+            return new ShadersSetting(value);
+        }
 
         public static ShadersSetting Low { get; } = new ShadersSetting(SETTING_LOW);
         public static ShadersSetting Medium { get; } = new ShadersSetting(SETTING_MEDIUM);

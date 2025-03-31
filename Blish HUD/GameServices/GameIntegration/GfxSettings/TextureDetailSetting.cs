@@ -23,8 +23,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(TextureDetailSetting textureDetailSetting) => textureDetailSetting.Value;
-        public static implicit operator TextureDetailSetting(string value) => new TextureDetailSetting(value);
+        public static implicit operator string(TextureDetailSetting textureDetailSetting) {
+            return textureDetailSetting.Value;
+        }
+
+        public static implicit operator TextureDetailSetting(string value) {
+            return new TextureDetailSetting(value);
+        }
 
         public static TextureDetailSetting Low { get; } = new TextureDetailSetting(SETTING_LOW);
         public static TextureDetailSetting Medium { get; } = new TextureDetailSetting(SETTING_MEDIUM);

@@ -23,8 +23,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(PostProcSetting postProcSetting) => postProcSetting.Value;
-        public static implicit operator PostProcSetting(string value) => new PostProcSetting(value);
+        public static implicit operator string(PostProcSetting postProcSetting) {
+            return postProcSetting.Value;
+        }
+
+        public static implicit operator PostProcSetting(string value) {
+            return new PostProcSetting(value);
+        }
 
         public static PostProcSetting Low { get; } = new PostProcSetting(SETTING_LOW);
         public static PostProcSetting Medium { get; } = new PostProcSetting(SETTING_MEDIUM);

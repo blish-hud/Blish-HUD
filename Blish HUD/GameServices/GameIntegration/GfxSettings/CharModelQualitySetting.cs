@@ -27,8 +27,13 @@
         public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(CharModelQualitySetting charModelQualitySetting) => charModelQualitySetting.Value;
-        public static implicit operator CharModelQualitySetting(string value) => new CharModelQualitySetting(value);
+        public static implicit operator string(CharModelQualitySetting charModelQualitySetting) {
+            return charModelQualitySetting.Value;
+        }
+
+        public static implicit operator CharModelQualitySetting(string value) {
+            return new CharModelQualitySetting(value);
+        }
 
         public static CharModelQualitySetting Lowest { get; } = new CharModelQualitySetting(SETTING_LOWEST);
         public static CharModelQualitySetting Low { get; } = new CharModelQualitySetting(SETTING_LOW);
