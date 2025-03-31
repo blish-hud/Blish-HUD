@@ -107,21 +107,7 @@ namespace Blish_HUD.Controls {
 
         protected bool Equals(CachedStringRender other) => string.Equals(this.Text, other.Text) && Equals(this.Font, other.Font) && this.DestinationRectangle.Equals(other.DestinationRectangle) && this.Color.Equals(other.Color) && this.Wrap == other.Wrap && this.Stroke == other.Stroke && this.StrokeDistance == other.StrokeDistance && this.HorizontalAlignment == other.HorizontalAlignment && this.VerticalAlignment == other.VerticalAlignment;
 
-        public override bool Equals(object obj) {
-            if (obj is null) {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj)) {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType()) {
-                return false;
-            }
-
-            return Equals((CachedStringRender)obj);
-        }
+        public override bool Equals(object obj) => !(obj is null) && (ReferenceEquals(this, obj) || (obj.GetType() == this.GetType() && Equals((CachedStringRender)obj)));
 
         public static CachedStringRender GetCachedStringRender(string text,
                                                                BitmapFont font,

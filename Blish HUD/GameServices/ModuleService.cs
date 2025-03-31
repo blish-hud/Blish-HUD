@@ -367,13 +367,11 @@ namespace Blish_HUD {
         }
 
         private View HandleModuleSettingMenu(MenuItem menuItem) {
-            if (!this.Modules.Any()) {
-                return new NoModulesView();
-            }
-
-            return _moduleMenus.ContainsKey(menuItem)
+            return !this.Modules.Any()
+                ? new NoModulesView()
+                : (View)(_moduleMenus.ContainsKey(menuItem)
                        ? new ManageModuleView(_moduleMenus[menuItem])
-                       : null;
+                       : null);
         }
 
         protected override void Update(GameTime gameTime) {

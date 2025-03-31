@@ -26,11 +26,7 @@ namespace Blish_HUD.Input {
                 }
             }
 
-            if (isHandled) {
-                return 1;
-            } else {
-                return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
-            }
+            return isHandled ? 1 : HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
         }
     }
 }

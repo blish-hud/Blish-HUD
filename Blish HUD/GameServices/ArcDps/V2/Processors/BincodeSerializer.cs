@@ -27,17 +27,13 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
                 public ulong ConvertUnsigned(BinaryReader reader) {
                     byte firstByte = reader.ReadByte();
 
-                    if (firstByte < 251) {
-                        return firstByte;
-                    } else if (firstByte == 251) {
-                        return reader.ReadUInt16();
-                    } else if (firstByte == 252) {
-                        return reader.ReadUInt32();
-                    } else if (firstByte == 253) {
-                        return reader.ReadUInt64();
-                    } else {
-                        throw new InvalidOperationException("Varint Encoding size was Int128");
-                    }
+                    return firstByte < 251
+                        ? firstByte
+                        : firstByte == 251
+                            ? reader.ReadUInt16()
+                            : firstByte == 252
+                                                    ? reader.ReadUInt32()
+                                                    : firstByte == 253 ? reader.ReadUInt64() : throw new InvalidOperationException("Varint Encoding size was Int128");
                 }
 
                 public long Convert(BinaryReader reader) {
@@ -45,92 +41,39 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
                     return UnZigZag(unsigned);
                 }
 
-                private long UnZigZag(ulong unsigned) {
-                    if (unsigned == 0) {
-                        return 0;
-                    } else if (unsigned % 2 == 0) {
-                        return (long)(unsigned / 2);
-                    } else {
-                        return (long)((unsigned + 1) / 2) * -1;
-                    }
-                }
+                private long UnZigZag(ulong unsigned) => unsigned == 0 ? 0 : unsigned % 2 == 0 ? (long)(unsigned / 2) : (long)((unsigned + 1) / 2) * -1;
             }
 
             public static class Int8Converter {
-                public static sbyte Convert(BinaryReader reader) {
-                    if (UseVarint) {
-                        return (sbyte)VarintEncoding.Instance.Convert(reader);
-                    }
-                    return reader.ReadSByte();
-                }
+                public static sbyte Convert(BinaryReader reader) => UseVarint ? (sbyte)VarintEncoding.Instance.Convert(reader) : reader.ReadSByte();
 
                 public static byte ConvertUnsigned(BinaryReader reader) => reader.ReadByte();
             }
 
             public static class Int16Converter {
-                public static short Convert(BinaryReader reader) {
-                    if (UseVarint) {
-                        return (short)VarintEncoding.Instance.Convert(reader);
-                    }
-                    return reader.ReadInt16();
-                }
+                public static short Convert(BinaryReader reader) => UseVarint ? (short)VarintEncoding.Instance.Convert(reader) : reader.ReadInt16();
 
-                public static ushort ConvertUnsigned(BinaryReader reader) {
-                    if (UseVarint) {
-                        return (ushort)VarintEncoding.Instance.ConvertUnsigned(reader);
-                    }
-                    return reader.ReadUInt16();
-                }
+                public static ushort ConvertUnsigned(BinaryReader reader) => UseVarint ? (ushort)VarintEncoding.Instance.ConvertUnsigned(reader) : reader.ReadUInt16();
             }
 
             public static class Int32Converter {
-                public static int Convert(BinaryReader reader) {
-                    if (UseVarint) {
-                        return (int)VarintEncoding.Instance.Convert(reader);
-                    }
-                    return reader.ReadInt32();
-                }
+                public static int Convert(BinaryReader reader) => UseVarint ? (int)VarintEncoding.Instance.Convert(reader) : reader.ReadInt32();
 
-                public static uint ConvertUnsigned(BinaryReader reader) {
-                    if (UseVarint) {
-                        return (uint)VarintEncoding.Instance.ConvertUnsigned(reader);
-                    }
-                    return reader.ReadUInt32();
-                }
+                public static uint ConvertUnsigned(BinaryReader reader) => UseVarint ? (uint)VarintEncoding.Instance.ConvertUnsigned(reader) : reader.ReadUInt32();
             }
 
             public static class Int64Converter {
-                public static long Convert(BinaryReader reader) {
-                    if (UseVarint) {
-                        return VarintEncoding.Instance.Convert(reader);
-                    }
-                    return reader.ReadInt64();
-                }
+                public static long Convert(BinaryReader reader) => UseVarint ? VarintEncoding.Instance.Convert(reader) : reader.ReadInt64();
 
-                public static ulong ConvertUnsigned(BinaryReader reader) {
-                    if (UseVarint) {
-                        return VarintEncoding.Instance.ConvertUnsigned(reader);
-                    }
-                    return reader.ReadUInt64();
-                }
+                public static ulong ConvertUnsigned(BinaryReader reader) => UseVarint ? VarintEncoding.Instance.ConvertUnsigned(reader) : reader.ReadUInt64();
             }
 
             public static class ISizeConverter {
-                public static long Convert(BinaryReader reader) {
-                    if (UseVarint) {
-                        return VarintEncoding.Instance.Convert(reader);
-                    }
-                    return reader.ReadInt64();
-                }
+                public static long Convert(BinaryReader reader) => UseVarint ? VarintEncoding.Instance.Convert(reader) : reader.ReadInt64();
             }
 
             public static class USizeConverter {
-                public static ulong Convert(BinaryReader reader) {
-                    if (UseVarint) {
-                        return VarintEncoding.Instance.ConvertUnsigned(reader);
-                    }
-                    return reader.ReadUInt64();
-                }
+                public static ulong Convert(BinaryReader reader) => UseVarint ? VarintEncoding.Instance.ConvertUnsigned(reader) : reader.ReadUInt64();
             }
         }
 

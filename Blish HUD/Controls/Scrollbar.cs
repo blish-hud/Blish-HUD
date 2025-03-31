@@ -52,13 +52,7 @@ namespace Blish_HUD.Controls {
 
         private float _targetScrollDistance;
         private float TargetScrollDistance {
-            get {
-                if (_targetScrollDistanceAnim == null) {
-                    return _scrollDistance;
-                }
-
-                return _targetScrollDistance;
-            }
+            get => _targetScrollDistanceAnim == null ? _scrollDistance : _targetScrollDistance;
             set {
                 float aVal = MathHelper.Clamp(value, 0f, 1f);
                 if (_associatedContainer != null && _targetScrollDistance != aVal) {

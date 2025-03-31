@@ -87,13 +87,7 @@ namespace Blish_HUD.Modules {
 
         #region Module Update Indicators
 
-        private bool GetUpdateIsNotAcknowledged(PkgManifest modulePkg) {
-            if (_acknowledgedUpdates.TryGetSetting(modulePkg.Namespace, out var setting) && setting is SettingEntry<string> acknowledgedModuleUpdate) {
-                return modulePkg.Version > new SemVer.Version(acknowledgedModuleUpdate.Value, true);
-            }
-
-            return true;
-        }
+        private bool GetUpdateIsNotAcknowledged(PkgManifest modulePkg) => !_acknowledgedUpdates.TryGetSetting(modulePkg.Namespace, out var setting) || !(setting is SettingEntry<string> acknowledgedModuleUpdate) || modulePkg.Version > new SemVer.Version(acknowledgedModuleUpdate.Value, true);
 
         private void RefreshUpdateIndicatorStates() {
             // TODO: Blish HUD icon should be handled in the Overlay service - this will likely have to wait for the old TabbedWindow to get replaced with the new one.

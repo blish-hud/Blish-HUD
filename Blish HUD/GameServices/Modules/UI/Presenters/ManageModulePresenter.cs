@@ -163,20 +163,12 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.View.CanDisable = GetModuleCanDisable();
         }
 
-        private AsyncTexture2D GetModuleAuthorImage() {
-            if (this.Model.Manifest.Contributors?.Count > 1) {
-                return AsyncTexture2D.FromAssetId(157112);
-            }
-
-            return AsyncTexture2D.FromAssetId(733268);
-        }
+        private AsyncTexture2D GetModuleAuthorImage() => this.Model.Manifest.Contributors?.Count > 1 ? AsyncTexture2D.FromAssetId(157112) : AsyncTexture2D.FromAssetId(733268);
 
         private string GetModuleAuthor() {
-            if (this.Model.Manifest.Contributors?.Count > 0) {
-                return string.Join(", ", this.Model.Manifest.Contributors.Select(c => c.Name));
-            }
-
-            return this.Model.Manifest.Author?.Name ?? Strings.Common.Unknown;
+            return this.Model.Manifest.Contributors?.Count > 0
+                ? string.Join(", ", this.Model.Manifest.Contributors.Select(c => c.Name))
+                : this.Model.Manifest.Author?.Name ?? Strings.Common.Unknown;
         }
 
         private void ViewOnEnableModuleClicked(object sender, EventArgs e) {
@@ -233,11 +225,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             // Can't enable if the dependencies aren't met (unless
             // ignore module dependencies has been selected)
-            if (!this.Model.DependenciesMet) {
-                return false;
-            }
-
-            return true;
+            return this.Model.DependenciesMet;
         }
 
         private bool GetModuleCanDisable() {
@@ -252,11 +240,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             }
 
             // Can't disable if the module isn't currently marked as loaded
-            if (this.Model.ModuleInstance.RunState != ModuleRunState.Loaded) {
-                return false;
-            }
-
-            return true;
+            return this.Model.ModuleInstance.RunState == ModuleRunState.Loaded;
         }
 
         protected override void Unload() => UnsubscribeFromModuleRunState();

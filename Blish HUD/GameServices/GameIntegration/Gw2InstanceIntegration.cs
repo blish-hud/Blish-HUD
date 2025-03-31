@@ -310,19 +310,15 @@ namespace Blish_HUD.GameIntegration {
         private Process GetMumbleSpecifiedGw2Process() {
             GameService.Gw2Mumble.RefreshClient();
 
-            if (GameService.Gw2Mumble.IsAvailable) {
-                return GetGw2ProcessByPID((int)GameService.Gw2Mumble.Info.ProcessId, "Mumble reported PID");
-            }
-
-            return null;
+            return GameService.Gw2Mumble.IsAvailable
+                ? GetGw2ProcessByPID((int)GameService.Gw2Mumble.Info.ProcessId, "Mumble reported PID")
+                : null;
         }
 
         private Process GetDefaultGw2ProcessById() {
-            if (ApplicationSettings.Instance.ProcessId != 0) {
-                return GetGw2ProcessByPID(ApplicationSettings.Instance.ProcessId, "PID specified by --pid");
-            }
-
-            return null;
+            return ApplicationSettings.Instance.ProcessId != 0
+                ? GetGw2ProcessByPID(ApplicationSettings.Instance.ProcessId, "PID specified by --pid")
+                : null;
         }
 
         private Process GetDefaultGw2ProcessByName() {

@@ -176,11 +176,9 @@ namespace Glide {
             }
 
             private MemberLerper CreateLerper(Type propertyType) {
-                if (!registeredLerpers.TryGetValue(propertyType, out var lerper)) {
-                    throw new Exception(string.Format("No Lerper found for type {0}.", propertyType.FullName));
-                }
-
-                return (MemberLerper)lerper.Invoke(null);
+                return !registeredLerpers.TryGetValue(propertyType, out var lerper)
+                    ? throw new Exception(string.Format("No Lerper found for type {0}.", propertyType.FullName))
+                    : (MemberLerper)lerper.Invoke(null);
             }
 
             void IRemoveTweens.Remove(Tween tween) => toRemove.Enqueue(tween);

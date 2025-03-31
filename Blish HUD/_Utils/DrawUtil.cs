@@ -85,11 +85,9 @@ namespace Blish_HUD {
         }
 
         public static string WrapText(BitmapFont spriteFont, string text, float maxLineWidth) {
-            if (string.IsNullOrEmpty(text)) {
-                return "";
-            }
-
-            return string.Join("\n", text.Split('\n').Select(s => WrapTextSegment(spriteFont, s, maxLineWidth)));
+            return string.IsNullOrEmpty(text)
+                ? ""
+                : string.Join("\n", text.Split('\n').Select(s => WrapTextSegment(spriteFont, s, maxLineWidth)));
         }
     }
 }

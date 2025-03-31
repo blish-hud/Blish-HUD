@@ -78,13 +78,7 @@ namespace Blish_HUD {
         /// <c>null</c> if no <see cref="Context"/> of that type is
         /// currently registered.
         /// </returns>
-        public TContext GetContext<TContext>() where TContext : Context {
-            if (!_registeredContexts.ContainsKey(typeof(TContext))) {
-                return null;
-            }
-
-            return _registeredContexts[typeof(TContext)] as TContext;
-        }
+        public TContext GetContext<TContext>() where TContext : Context => !_registeredContexts.ContainsKey(typeof(TContext)) ? null : _registeredContexts[typeof(TContext)] as TContext;
 
         /// <summary>
         /// Gets a registered <see cref="Context"/> by interface or base class.

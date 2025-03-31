@@ -88,11 +88,7 @@ namespace Blish_HUD.Content {
         public byte[] GetFileBytes(string filePath) {
             // We know GetFileStream returns a MemoryStream, so we don't check
             using var fileStream = GetFileStream(filePath) as MemoryStream;
-            if (fileStream != null) {
-                return fileStream.ToArray();
-            }
-
-            return null;
+            return fileStream?.ToArray();
         }
 
         public int GetFileBytes(string filePath, out byte[] fileBuffer) {

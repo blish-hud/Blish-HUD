@@ -57,13 +57,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// Returns the <see cref="Tab"/> at the provided index based on <see cref="Tab.OrderPriority"/>.
         /// </summary>
-        public Tab FromIndex(int tabIndex) {
-            if (tabIndex >= 0 && tabIndex < _tabs.Count) {
-                return _tabs[tabIndex];
-            }
-
-            return null;
-        }
+        public Tab FromIndex(int tabIndex) => tabIndex >= 0 && tabIndex < _tabs.Count ? _tabs[tabIndex] : null;
 
         public int Count => _tabs.Count;
         public bool IsReadOnly => false;

@@ -195,11 +195,9 @@ namespace Blish_HUD {
 
         public ManagedConnection GetConnection(string accessToken) {
             // Avoid caching connections without an API key
-            if (string.IsNullOrWhiteSpace(accessToken)) {
-                return new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache);
-            }
-
-            return _cachedConnections.GetOrAdd(accessToken, (token) => new ManagedConnection(token, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache));
+            return string.IsNullOrWhiteSpace(accessToken)
+                ? new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache)
+                : _cachedConnections.GetOrAdd(accessToken, (token) => new ManagedConnection(token, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache));
         }
 
         protected override void Unload() { /* NOOP */ }

@@ -174,11 +174,9 @@ namespace Blish_HUD {
                 var textureCanSeek = new MemoryStream();
                 textureStream.CopyTo(textureCanSeek);
 
-                if (GameService.Graphics == null) {
-                    return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek);
-                } else {
-                    return TextureUtil.FromStreamPremultiplied(textureCanSeek);
-                }
+                return GameService.Graphics == null
+                    ? TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek)
+                    : TextureUtil.FromStreamPremultiplied(textureCanSeek);
             }
 
             return null;

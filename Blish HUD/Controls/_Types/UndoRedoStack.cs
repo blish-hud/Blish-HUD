@@ -33,13 +33,7 @@ namespace Blish_HUD.Controls {
 
         public void Reset() => _stack.Clear();
 
-        public UndoRedoRecord Pop() {
-            if (_stack.Count == 0) {
-                return null;
-            }
-
-            return _stack.Pop();
-        }
+        public UndoRedoRecord Pop() => _stack.Count == 0 ? null : _stack.Pop();
 
         public void MakeInsert(int where, int length) {
             if (length <= 0) {

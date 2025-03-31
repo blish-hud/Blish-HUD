@@ -568,15 +568,11 @@ namespace Blish_HUD.Controls {
         /// Do not use this if you are already using <see cref="BasicTooltipText"/>.
         /// </summary>
         public Tooltip Tooltip {
-            get {
-                if (_tooltip != null && !_tooltip._disposedValue) {
-                    return _tooltip;
-                }
-
-                return !string.IsNullOrWhiteSpace(_basicTooltipText)
-                    ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
-                    : null;
-            }
+            get => _tooltip != null && !_tooltip._disposedValue
+                                         ? _tooltip
+                                         : !string.IsNullOrWhiteSpace(_basicTooltipText)
+                                         ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
+                                         : null;
             set => SetProperty(ref _tooltip, value);
         }
 
@@ -801,11 +797,9 @@ namespace Blish_HUD.Controls {
         protected float AbsoluteOpacity(bool isInternal) {
             var parent = this.Parent;
 
-            if (parent == null) {
-                return _opacity;
-            }
-
-            return isInternal
+            return parent == null
+                ? _opacity
+                : isInternal
                        ? parent.AbsoluteOpacity(true) - (1f - _opacity)
                        : MathHelper.Clamp(parent.AbsoluteOpacity(true) - (1f - _opacity), 0f, 1f);
         }

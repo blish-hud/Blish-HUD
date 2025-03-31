@@ -146,10 +146,7 @@ namespace Blish_HUD.GameIntegration {
 
         private float GetVolume() {
             float gameVol = CalculateAverageVolume();
-            if (_muteIfNoGameAudio.Value && gameVol < 0.0001f) {
-                return 0;
-            }
-            return _useGameVolume.Value ? gameVol : _volumeSetting.Value;
+            return _muteIfNoGameAudio.Value && gameVol < 0.0001f ? 0 : _useGameVolume.Value ? gameVol : _volumeSetting.Value;
         }
 
         private float CalculateAverageVolume() {

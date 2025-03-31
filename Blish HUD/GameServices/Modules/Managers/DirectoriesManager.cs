@@ -32,12 +32,6 @@ namespace Blish_HUD.Modules.Managers {
             }
         }
 
-        public string GetFullDirectoryPath(string directoryName) {
-            if (!_directoryNames.Contains(directoryName)) {
-                return null;
-            }
-
-            return _directoryPaths[directoryName];
-        }
+        public string GetFullDirectoryPath(string directoryName) => !_directoryNames.Contains(directoryName) ? null : _directoryPaths[directoryName];
     }
 }

@@ -25,15 +25,9 @@ namespace Blish_HUD.Content {
         /// <summary>
         /// The active <see cref="Texture2D"/> of the <see cref="AsyncTexture2D"/>.
         /// </summary>
-        public Texture2D Texture {
-            get {
-                if (!this.HasTexture) {
-                    throw new InvalidOperationException($"{nameof(AsyncTexture2D)} object must have a Texture.");
-                }
-
-                return _activeTexture2D;
-            }
-        }
+        public Texture2D Texture => !this.HasTexture
+                    ? throw new InvalidOperationException($"{nameof(AsyncTexture2D)} object must have a Texture.")
+                    : _activeTexture2D;
 
         /// <inheritdoc cref="Texture2D.Width"/>
         public int Width => this.HasTexture
@@ -102,21 +96,7 @@ namespace Blish_HUD.Content {
         /// <inheritdoc cref="DatAssetCache.TryGetTextureFromAssetId" />
         public static bool TryFromAssetId(int assetId, out AsyncTexture2D texture) => GameService.Content.DatAssetCache.TryGetTextureFromAssetId(assetId, out texture);
 
-        public override bool Equals(object obj) {
-            if (!this.HasTexture) {
-                return obj == null;
-            }
-
-            if (obj == null) {
-                return false;
-            }
-
-            if (obj is Texture2D tobj) {
-                return _activeTexture2D.Equals(tobj);
-            }
-
-            return this == obj;
-        }
+        public override bool Equals(object obj) => !this.HasTexture ? obj == null : obj != null && (obj is Texture2D tobj ? _activeTexture2D.Equals(tobj) : this == obj);
 
         public override int GetHashCode() => _activeTexture2D?.GetHashCode() ?? 0;
 
@@ -125,11 +105,7 @@ namespace Blish_HUD.Content {
         }
 
         public static implicit operator AsyncTexture2D(Texture2D texture2D) {
-            if (texture2D == null) {
-                return null;
-            }
-
-            return new AsyncTexture2D(texture2D);
+            return texture2D == null ? null : new AsyncTexture2D(texture2D);
         }
 
         public void Dispose() {

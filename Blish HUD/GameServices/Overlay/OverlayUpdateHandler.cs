@@ -108,13 +108,7 @@ namespace Blish_HUD.Overlay {
             }
         }
 
-        public (bool Available, CoreVersionManifest NewManifest) GetUpdateAvailable() {
-            if (this.LatestRelease.Version > Program.OverlayVersion) {
-                return (true, this.LatestRelease);
-            }
-
-            return (false, default);
-        }
+        public (bool Available, CoreVersionManifest NewManifest) GetUpdateAvailable() => this.LatestRelease.Version > Program.OverlayVersion ? ((bool Available, CoreVersionManifest NewManifest))(true, this.LatestRelease) : ((bool Available, CoreVersionManifest NewManifest))(false, default);
 
         public IEnumerable<ContextMenuStripItem> GetContextMenuItems() {
             if (this.LatestRelease.Version > Program.OverlayVersion) {

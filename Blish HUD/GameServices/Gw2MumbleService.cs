@@ -151,11 +151,7 @@ namespace Blish_HUD {
             }
 
             var m = MUMBLE_LINK_REGEX.Match(commandLine);
-            if (m.Success) {
-                return m.Groups[1].Value;
-            } else {
-                return null;
-            }
+            return m.Success ? m.Groups[1].Value : null;
         }
 
         protected override void Unload() {

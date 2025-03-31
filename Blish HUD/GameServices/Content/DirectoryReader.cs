@@ -15,11 +15,9 @@ namespace Blish_HUD.Content {
         }
 
         public IDataReader GetSubPath(string subPath) {
-            if (subPath.StartsWith(this.PhysicalPath, StringComparison.OrdinalIgnoreCase)) {
-                return new DirectoryReader(subPath);
-            }
-
-            return new DirectoryReader(Path.Combine(this.PhysicalPath, subPath));
+            return subPath.StartsWith(this.PhysicalPath, StringComparison.OrdinalIgnoreCase)
+                ? new DirectoryReader(subPath)
+                : (IDataReader)new DirectoryReader(Path.Combine(this.PhysicalPath, subPath));
         }
 
         public string GetPathRepresentation(string relativeFilePath = null) => Path.Combine(this.PhysicalPath, relativeFilePath ?? "");
@@ -33,21 +31,9 @@ namespace Blish_HUD.Content {
 
         public bool FileExists(string filePath) => File.Exists(Path.Combine(this.PhysicalPath, filePath));
 
-        public Stream GetFileStream(string filePath) {
-            if (!this.FileExists(filePath)) {
-                return null;
-            }
+        public Stream GetFileStream(string filePath) => !this.FileExists(filePath) ? null : (Stream)File.Open(Path.Combine(this.PhysicalPath, filePath), FileMode.Open);
 
-            return File.Open(Path.Combine(this.PhysicalPath, filePath), FileMode.Open);
-        }
-
-        public byte[] GetFileBytes(string filePath) {
-            if (!this.FileExists(filePath)) {
-                return null;
-            }
-
-            return File.ReadAllBytes(Path.Combine(this.PhysicalPath, filePath));
-        }
+        public byte[] GetFileBytes(string filePath) => !this.FileExists(filePath) ? null : File.ReadAllBytes(Path.Combine(this.PhysicalPath, filePath));
 
         public int GetFileBytes(string filePath, out byte[] fileBuffer) {
             fileBuffer = GetFileBytes(filePath);

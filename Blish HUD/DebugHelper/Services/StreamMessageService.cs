@@ -88,15 +88,7 @@ namespace Blish_HUD.DebugHelper.Services {
 
             bool received = fResetEvent.Wait(timeout);
             waitingMessages.TryRemove(message.Id, out _);
-            if (!received) {
-                return null;
-            }
-
-            if (!receivedMessages.TryRemove(message.Id, out var response)) {
-                return null;
-            }
-
-            return response as T;
+            return !received ? null : !receivedMessages.TryRemove(message.Id, out var response) ? null : response as T;
         }
 
         private void SetId(Message message) {

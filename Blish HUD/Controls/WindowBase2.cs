@@ -82,11 +82,9 @@ namespace Blish_HUD.Controls {
         public static int GetZIndex(IWindow thisWindow) {
             var windows = GetWindows().ToArray();
 
-            if (!windows.Contains(thisWindow)) {
-                throw new InvalidOperationException($"{nameof(thisWindow)} must be a direct child of GameService.Graphics.SpriteScreen before ZIndex can automatically be calculated.");
-            }
-
-            return Screen.WINDOW_BASEZINDEX + windows.OrderBy(window => window.TopMost)
+            return !windows.Contains(thisWindow)
+                ? throw new InvalidOperationException($"{nameof(thisWindow)} must be a direct child of GameService.Graphics.SpriteScreen before ZIndex can automatically be calculated.")
+                : Screen.WINDOW_BASEZINDEX + windows.OrderBy(window => window.TopMost)
                                                      .ThenBy(window => window.LastInteraction)
                                                      .TakeWhile(window => window != thisWindow)
                                                      .Count();

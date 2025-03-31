@@ -369,11 +369,9 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         }
 
         private string GetTokenName(string tokenName) {
-            if (string.IsNullOrWhiteSpace(tokenName)) {
-                return Strings.GameServices.Gw2ApiService.Token_NoName;
-            }
-
-            return tokenName.Truncate(MAX_KEYNAME_LENGTH, "...");
+            return string.IsNullOrWhiteSpace(tokenName)
+                ? Strings.GameServices.Gw2ApiService.Token_NoName
+                : tokenName.Truncate(MAX_KEYNAME_LENGTH, "...");
         }
 
         private void SetTokenStatus(ApiTokenStatusType tokenStatusType, string tokenStatusDescription = "") {

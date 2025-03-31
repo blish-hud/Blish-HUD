@@ -47,11 +47,7 @@ namespace Blish_HUD.DebugHelper.Services {
 
             var response = messageService.SendAndWait<KeyboardResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
 
-            if (response?.IsHandled == true) {
-                return 1;
-            } else {
-                return User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
-            }
+            return response?.IsHandled == true ? 1 : User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
         }
 
         #region IDisposable Support

@@ -160,13 +160,7 @@ namespace Blish_HUD.Input {
                 || _textInputDelegate != null;
         }
 
-        public bool HandleInput(KeyboardEventArgs e) {
-            if (_hookGeneralBlock) {
-                return true;
-            }
-
-            return ProcessInput(e.EventType, e.Key);
-        }
+        public bool HandleInput(KeyboardEventArgs e) => _hookGeneralBlock || ProcessInput(e.EventType, e.Key);
 
         public void SetTextInputListner(Action<string> input) => _textInputDelegate = input;
 
@@ -183,16 +177,11 @@ namespace Blish_HUD.Input {
             this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
         }
 
-        private bool ShouldBlockKeyEvent(Keys key) {
+        private bool ShouldBlockKeyEvent(Keys key)
             // TODO: WIN key combinations should probably completely handled by the OS
 
             // Skip keys that we wish to explicitly ignore
-            if (_hookIgnoredKeys.Contains(key)) {
-                return false;
-            }
-
-            return true;
-        }
+            => !_hookIgnoredKeys.Contains(key);
 
         internal void StageKeyBinding(KeyBinding keyBinding) {
             _stagedKeyBindingLock.EnterWriteLock();
