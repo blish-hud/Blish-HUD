@@ -45,7 +45,9 @@ namespace Blish_HUD.Controls {
         public bool CanScroll {
             get => _canScroll;
             set {
-                if (!SetProperty(ref _canScroll, value, true)) return;
+                if (!SetProperty(ref _canScroll, value, true)) {
+                    return;
+                }
 
                 UpdateScrollbar();
             }
@@ -167,7 +169,9 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc />
         public void Expand() {
-            if (!_collapsed) return;
+            if (!_collapsed) {
+                return;
+            }
 
             _collapseAnim?.CancelAndComplete();
 
@@ -184,7 +188,9 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc />
         public void Collapse() {
-            if (_collapsed) return;
+            if (_collapsed) {
+                return;
+            }
 
             // Prevent us from setting the _preCollapseHeight midtransition by accident
             if (_collapseAnim != null && _collapseAnim.Completion < 1) {
@@ -279,8 +285,9 @@ namespace Blish_HUD.Controls {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
                to work correctly */
             if (this.CanScroll) {
-                if (_panelScrollbar == null)
+                if (_panelScrollbar == null) {
                     _panelScrollbar = new Scrollbar(this);
+                }
 
                 this.PropertyChanged -= UpdatePanelScrollbarOnOwnPropertyChanged;
                 this.PropertyChanged += UpdatePanelScrollbarOnOwnPropertyChanged;

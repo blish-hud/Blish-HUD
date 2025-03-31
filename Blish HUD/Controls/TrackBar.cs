@@ -91,7 +91,10 @@ namespace Blish_HUD.Controls {
         public bool Dragging {
             get => _dragging;
             private set {
-                if (!SetProperty(ref _dragging, value)) return;
+                if (!SetProperty(ref _dragging, value)) {
+                    return;
+                }
+
                 this.IsDraggingChanged?.Invoke(this, new ValueEventArgs<bool>(value));
             }
         }

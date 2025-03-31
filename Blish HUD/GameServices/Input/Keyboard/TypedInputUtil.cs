@@ -72,7 +72,10 @@ namespace Blish_HUD.Input {
                     _lastScanCode = scanCode;
                     _lastKeyState = (byte[])keyState.Clone();
 
-                    if (isKeyDown) return "";
+                    if (isKeyDown) {
+                        return "";
+                    }
+
                     break;
                 case 0:
                     // no translation for the current state of the keyboard

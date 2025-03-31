@@ -145,7 +145,9 @@ namespace Blish_HUD.Controls.Intern {
         /// <param name="sendToSystem">Set if button message (or a combination of such) cannot be correctly interpreted by the game client.</param>
         public static void RotateWheel(int wheelDistance, bool horizontalWheel = false, int xPos = -1, int yPos = -1, bool sendToSystem = false) {
             wheelDistance = wheelDistance % WHEEL_DELTA;
-            if (wheelDistance == 0) return;
+            if (wheelDistance == 0) {
+                return;
+            }
 
             if (xPos == -1 || yPos == -1) {
                 var pos = GetPosition();

@@ -251,25 +251,35 @@ namespace Blish_HUD.Controls {
 
             _animFade.OnComplete(() => {
                 _animFade.Pause();
-                if (_opacity <= 0) this.Visible = false;
+                if (_opacity <= 0) {
+                    this.Visible = false;
+                }
             });
         }
 
         public static void UpdateWindowBaseDynamicHUDCombatState(WindowBase2 wb) {
             if (GameService.Overlay.DynamicHUDWindows == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
                 wb._savedVisibility = wb.Visible;
-                if (wb._savedVisibility) wb.Hide();
+                if (wb._savedVisibility) {
+                    wb.Hide();
+                }
             } else {
-                if (wb._savedVisibility) wb.Show();
+                if (wb._savedVisibility) {
+                    wb.Show();
+                }
             }
         }
 
         public static void UpdateWindowBaseDynamicHUDLoadingState(WindowBase2 wb) {
             if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
                 wb._savedVisibility = wb.Visible;
-                if (wb._savedVisibility) wb.Hide();
+                if (wb._savedVisibility) {
+                    wb.Hide();
+                }
             } else {
-                if (wb._savedVisibility) wb.Show();
+                if (wb._savedVisibility) {
+                    wb.Show();
+                }
             }
         }
 
@@ -305,7 +315,9 @@ namespace Blish_HUD.Controls {
         public override void Show() {
             BringWindowToFront();
 
-            if (this.Visible) return;
+            if (this.Visible) {
+                return;
+            }
 
             if (this.Id != null) {
                 // Restore position from previous session
@@ -333,7 +345,9 @@ namespace Blish_HUD.Controls {
         /// Hides the window.
         /// </summary>
         public override void Hide() {
-            if (!this.Visible) return;
+            if (!this.Visible) {
+                return;
+            }
 
             this.Dragging = false;
             _animFade.Resume();
@@ -350,7 +364,9 @@ namespace Blish_HUD.Controls {
         protected void ShowView(IView view) {
             ClearView();
 
-            if (view == null) return;
+            if (view == null) {
+                return;
+            }
 
             this.ViewState = ViewState.Loading;
 

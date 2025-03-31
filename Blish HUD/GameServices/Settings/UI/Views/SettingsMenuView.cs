@@ -57,7 +57,9 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         public void SetMenuItems(IEnumerable<MenuItem> menuItems) {
-            if (_menuSettingsList == null) return;
+            if (_menuSettingsList == null) {
+                return;
+            }
 
             var selectedMenuItem = _menuSettingsList.SelectedMenuItem;
 

@@ -29,7 +29,9 @@ namespace Blish_HUD.Controls {
         public int MenuItemHeight {
             get => _menuItemHeight;
             set {
-                if (!SetProperty(ref _menuItemHeight, value)) return;
+                if (!SetProperty(ref _menuItemHeight, value)) {
+                    return;
+                }
 
                 foreach (var childMenuItem in _children.Cast<IMenuItem>()) {
                     childMenuItem.MenuItemHeight = value;

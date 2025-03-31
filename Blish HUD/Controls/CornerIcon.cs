@@ -14,7 +14,9 @@ namespace Blish_HUD.Controls {
         public static int LeftOffset {
             get => _leftOffset;
             set {
-                if (_leftOffset == value) return;
+                if (_leftOffset == value) {
+                    return;
+                }
 
                 _leftOffset = value;
                 UpdateCornerIconPositions();
@@ -51,10 +53,14 @@ namespace Blish_HUD.Controls {
             set {
                 if (SetProperty(ref _dynamicHide, value)) {
                     Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f)).OnBegin(() => {
-                        if (this.DynamicHide) this.Visible = true;
+                        if (this.DynamicHide) {
+                            this.Visible = true;
+                        }
                     }).OnComplete(() => {
-                        if (!this.DynamicHide) this.Visible = false;
-                    });
+                        if (!this.DynamicHide) {
+        this.Visible = false;
+    }
+});
                 }
             }
         }
@@ -227,7 +233,9 @@ namespace Blish_HUD.Controls {
         // TODO: Use a shader to replace "HoverIcon"
         /// <inheritdoc />
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (_icon == null) return;
+            if (_icon == null) {
+                return;
+            }
 
             if (this.MouseOver && this.RelativeMousePosition.Y <= _standardIconBounds.Bottom && this.Enabled) {
                 spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _standardIconBounds);

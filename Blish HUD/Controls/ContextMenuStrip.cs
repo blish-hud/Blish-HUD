@@ -44,12 +44,16 @@ namespace Blish_HUD.Controls {
         private static void HandleMouseButtonPressed(object sender, MouseEventArgs e) {
             // Debounce to prevent mistakenly closing the menu immediatley after opening (or when
             // this event is triggered after the same event that triggered it to open)
-            if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastOpenTime < CLICK_DEBOUNCE) return;
+            if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastOpenTime < CLICK_DEBOUNCE) {
+                return;
+            }
 
             lock (_contextMenuStrips) {
                 WeakReference<ContextMenuStrip>[] allMenuStrips = _contextMenuStrips.ToArray();
 
-                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true } || Input.Mouse.ActiveControl is ContextMenuStrip) return;
+                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true } || Input.Mouse.ActiveControl is ContextMenuStrip) {
+                    return;
+                }
 
                 foreach (var cmsRef in allMenuStrips) {
                     if (!cmsRef.TryGetTarget(out var cms)) {
@@ -57,9 +61,13 @@ namespace Blish_HUD.Controls {
                         continue;
                     }
 
-                    if (!cms.Visible) continue;
+                    if (!cms.Visible) {
+                        continue;
+                    }
 
-                    if (!cms.MouseOver) cms.Hide();
+                    if (!cms.MouseOver) {
+                        cms.Hide();
+                    }
                 }
             }
         }

@@ -37,10 +37,12 @@ namespace Blish_HUD {
                 int length = (int)(src.Length - src.Position) + pos;
                 dest.SetLength(length);
 
-                while (pos < length)
+                while (pos < length) {
                     pos += src.Read(dest.GetBuffer(), pos, length - pos);
-            } else
+                }
+            } else {
                 src.CopyTo((Stream)dest);
+            }
         }
 
     }

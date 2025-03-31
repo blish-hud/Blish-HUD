@@ -98,7 +98,9 @@ namespace Blish_HUD {
         private static readonly object _debugLock = new object();
 
         public static void TargetDebug(string time, string level, string logger, string message) {
-            if (!Debugger.IsAttached) return;
+            if (!Debugger.IsAttached) {
+                return;
+            }
 
             const int INTERNAL_DEBUG_WRITESIZE = 4091;
 

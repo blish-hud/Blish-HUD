@@ -157,7 +157,9 @@ namespace Blish_HUD {
                 using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                     return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, fileStream);
                 }
-            } else return null;
+            } else {
+                return null;
+            }
         }
 
         private static Texture2D TextureFromFileSystem(string filepath) {
@@ -202,10 +204,13 @@ namespace Blish_HUD {
         }
 
         public Texture2D GetTexture(string textureName, Texture2D defaultTexture) {
-            if (textureName == null) return defaultTexture;
+            if (textureName == null) {
+                return defaultTexture;
+            }
 
-            if (_loadedTextures.TryGetValue(textureName, out var cachedTexture))
+            if (_loadedTextures.TryGetValue(textureName, out var cachedTexture)) {
                 return cachedTexture;
+            }
 
             if (File.Exists(textureName)) {
                 return TextureFromFile(textureName);

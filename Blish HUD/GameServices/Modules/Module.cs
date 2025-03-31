@@ -56,7 +56,9 @@ namespace Blish_HUD.Modules {
         public ModuleRunState RunState {
             get => _runState;
             private set {
-                if (_runState == value) return;
+                if (_runState == value) {
+                    return;
+                }
 
                 _runState = value;
                 OnModuleRunStateChanged(new ModuleRunStateChangedEventArgs(_runState));

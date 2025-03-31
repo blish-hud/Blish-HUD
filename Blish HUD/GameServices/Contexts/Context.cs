@@ -25,7 +25,9 @@ namespace Blish_HUD.Contexts {
         public ContextState State {
             get => _state;
             private set {
-                if (_state == value || _state == ContextState.Expired) return;
+                if (_state == value || _state == ContextState.Expired) {
+                    return;
+                }
 
                 _state = value;
 
@@ -34,7 +36,9 @@ namespace Blish_HUD.Contexts {
         }
 
         public void DoLoad() {
-            if (this.State == ContextState.Expired) return;
+            if (this.State == ContextState.Expired) {
+                return;
+            }
 
             this.State = ContextState.Loading;
 

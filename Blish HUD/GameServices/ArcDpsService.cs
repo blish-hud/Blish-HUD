@@ -79,7 +79,9 @@ namespace Blish_HUD {
             }
 
             foreach (uint skillId in skillIds) {
-                if (!_subscriptions.ContainsKey(skillId)) _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
+                if (!_subscriptions.ContainsKey(skillId)) {
+                    _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
+                }
 
                 _subscriptions[skillId].Add(func);
             }
@@ -87,7 +89,9 @@ namespace Blish_HUD {
 
         private void DispatchSkillSubscriptions(CombatCallback combatEvent, RawCombatEventArgs.CombatEventType combatEventType) {
             uint skillId = combatEvent.Event.SkillId;
-            if (!_subscriptions.ContainsKey(skillId)) return;
+            if (!_subscriptions.ContainsKey(skillId)) {
+                return;
+            }
 
             foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) {
                 action(this, ConvertFrom(combatEvent, combatEventType));

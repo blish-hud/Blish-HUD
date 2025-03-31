@@ -219,36 +219,52 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private bool GetModuleCanEnable() {
             // Can't enable if already enabled
-            if (this.Model.Enabled) return false;
+            if (this.Model.Enabled) {
+                return false;
+            }
 
             // Can't enable if the module is on the explicit
             // "incompatible" list.
-            if (GameService.Module.ModuleIsExplicitlyIncompatible(this.Model)) return false;
+            if (GameService.Module.ModuleIsExplicitlyIncompatible(this.Model)) {
+                return false;
+            }
 
             // Can't enable if module's assembly is dirty
             // (i.e. previous version of it has been loaded)
-            if (this.Model.IsModuleAssemblyStateDirty) return false;
+            if (this.Model.IsModuleAssemblyStateDirty) {
+                return false;
+            }
 
             // Can't enable if there is an instance of the
             // module already while the module is unloading
-            if (this.Model.ModuleInstance != null) return false;
+            if (this.Model.ModuleInstance != null) {
+                return false;
+            }
 
             // Can't enable if the dependencies aren't met (unless
             // ignore module dependencies has been selected)
-            if (!this.Model.DependenciesMet) return false;
+            if (!this.Model.DependenciesMet) {
+                return false;
+            }
 
             return true;
         }
 
         private bool GetModuleCanDisable() {
             // Can't disable if already disabled
-            if (!this.Model.Enabled) return false;
+            if (!this.Model.Enabled) {
+                return false;
+            }
 
             // Can't disable if the module is currently unloading
-            if (this.Model.ModuleInstance == null) return false;
+            if (this.Model.ModuleInstance == null) {
+                return false;
+            }
 
             // Can't disable if the module isn't currently marked as loaded
-            if (this.Model.ModuleInstance.RunState != ModuleRunState.Loaded) return false;
+            if (this.Model.ModuleInstance.RunState != ModuleRunState.Loaded) {
+                return false;
+            }
 
             return true;
         }

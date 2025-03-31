@@ -36,13 +36,17 @@ namespace Blish_HUD.Controls {
         }
 
         public UndoRedoRecord Pop() {
-            if (_stack.Count == 0) return null;
+            if (_stack.Count == 0) {
+                return null;
+            }
 
             return _stack.Pop();
         }
 
         public void MakeInsert(int where, int length) {
-            if (length <= 0) return;
+            if (length <= 0) {
+                return;
+            }
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Insert,
@@ -52,7 +56,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void MakeDelete(string text, int where, int length) {
-            if (length <= 0) return;
+            if (length <= 0) {
+                return;
+            }
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Delete,
@@ -63,7 +69,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void MakeReplace(string text, int where, int length, int newLength) {
-            if (length <= 0) return;
+            if (length <= 0) {
+                return;
+            }
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Replace,

@@ -27,8 +27,13 @@ namespace Blish_HUD.Library.Glide.CustomLerpers {
 
             var current = (Point)currentValue;
 
-            if (_pointRange.X != 0) current.X = (int)x;
-            if (_pointRange.Y != 0) current.Y = (int)y;
+            if (_pointRange.X != 0) {
+                current.X = (int)x;
+            }
+
+            if (_pointRange.Y != 0) {
+                current.Y = (int)y;
+            }
 
             return current;
         }

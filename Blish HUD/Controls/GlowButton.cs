@@ -115,8 +115,13 @@ namespace Blish_HUD.Controls {
                 var drawIcon = _icon;
 
                 if (_activeIcon != null) {
-                    if (!_toggleGlow && MouseOver) drawIcon = _activeIcon;
-                    if (_toggleGlow && _checked) drawIcon = _activeIcon;
+                    if (!_toggleGlow && MouseOver) {
+                        drawIcon = _activeIcon;
+                    }
+
+                    if (_toggleGlow && _checked) {
+                        drawIcon = _activeIcon;
+                    }
                 }
 
                 spriteBatch.DrawOnCtrl(this, drawIcon, bounds);

@@ -112,7 +112,9 @@ namespace Blish_HUD.Controls {
             int selectionStart = Math.Min(_selectionStart, _selectionEnd);
             int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
 
-            if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) return Array.Empty<Rectangle>();
+            if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) {
+                return Array.Empty<Rectangle>();
+            }
 
             string[] lines = _text.Split(NEWLINE);
 

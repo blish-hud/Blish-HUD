@@ -134,7 +134,9 @@ namespace Blish_HUD.Controls {
         public static Control ActiveControl {
             get => _activeControl;
             set {
-                if (_activeControl == value) return;
+                if (_activeControl == value) {
+                    return;
+                }
 
                 _activeControl = value;
 
@@ -152,7 +154,9 @@ namespace Blish_HUD.Controls {
         public static Control FocusedControl {
             get => _focusedControl;
             set {
-                if (_focusedControl == value) return;
+                if (_focusedControl == value) {
+                    return;
+                }
 
                 _focusedControl = value;
 
@@ -341,7 +345,9 @@ namespace Blish_HUD.Controls {
         public Point Location {
             get => _location;
             set {
-                if (_location == value) return;
+                if (_location == value) {
+                    return;
+                }
 
                 var previousLocation = _location;
 
@@ -350,14 +356,21 @@ namespace Blish_HUD.Controls {
                 OnPropertyChanged();
 
                 // We do this to make sure we raise PropertyChanged events for alias properties
-                if (previousLocation.Y != _location.Y)
+                if (previousLocation.Y != _location.Y) {
                     OnPropertyChanged(nameof(this.Top));
-                if (previousLocation.X != _location.X)
+                }
+
+                if (previousLocation.X != _location.X) {
                     OnPropertyChanged(nameof(this.Left));
-                if (previousLocation.Y + _size.Y != _location.Y + _size.Y)
+                }
+
+                if (previousLocation.Y + _size.Y != _location.Y + _size.Y) {
                     OnPropertyChanged(nameof(this.Bottom));
-                if (previousLocation.X + _size.X != _location.X + _size.X)
+                }
+
+                if (previousLocation.X + _size.X != _location.X + _size.X) {
                     OnPropertyChanged(nameof(this.Right));
+                }
 
                 OnMoved(new MovedEventArgs(previousLocation, _location));
             }
@@ -369,7 +382,9 @@ namespace Blish_HUD.Controls {
         public int Top {
             get => _location.Y;
             set {
-                if (_location.Y == value) return;
+                if (_location.Y == value) {
+                    return;
+                }
 
                 this.Location = new Point(_location.X, value);
             }
@@ -379,7 +394,9 @@ namespace Blish_HUD.Controls {
         public int Right {
             get => _location.X + _size.X;
             set {
-                if (value == _location.X + _size.X) return;
+                if (value == _location.X + _size.X) {
+                    return;
+                }
 
                 this.Location = new Point(value - this.Width, _location.Y);
             }
@@ -389,7 +406,9 @@ namespace Blish_HUD.Controls {
         public int Bottom {
             get => _location.Y + _size.Y;
             set {
-                if (value == _location.Y + _size.Y) return;
+                if (value == _location.Y + _size.Y) {
+                    return;
+                }
 
                 this.Location = new Point(_location.X, value - this.Height);
             }
@@ -399,7 +418,9 @@ namespace Blish_HUD.Controls {
         public int Left {
             get => _location.X;
             set {
-                if (value == _location.X) return;
+                if (value == _location.X) {
+                    return;
+                }
 
                 this.Location = new Point(value, _location.Y);
             }
@@ -415,10 +436,14 @@ namespace Blish_HUD.Controls {
         public Point Size {
             get => _size;
             set {
-                if (_size == value) return;
+                if (_size == value) {
+                    return;
+                }
 
                 // To render, the control must have positive dimensions
-                if (value.X < 0 || value.Y < 0) return;
+                if (value.X < 0 || value.Y < 0) {
+                    return;
+                }
 
                 var previousSize = _size;
 
@@ -426,14 +451,21 @@ namespace Blish_HUD.Controls {
 
                 OnPropertyChanged();
 
-                if (previousSize.Y != _size.Y)
+                if (previousSize.Y != _size.Y) {
                     OnPropertyChanged(nameof(this.Height), true);
-                if (previousSize.X != _size.X)
+                }
+
+                if (previousSize.X != _size.X) {
                     OnPropertyChanged(nameof(this.Width), true);
-                if (_location.Y + previousSize.Y != _location.Y + _size.Y)
+                }
+
+                if (_location.Y + previousSize.Y != _location.Y + _size.Y) {
                     OnPropertyChanged(nameof(this.Bottom), true);
-                if (_location.X + previousSize.X != _location.X + _size.X)
+                }
+
+                if (_location.X + previousSize.X != _location.X + _size.X) {
                     OnPropertyChanged(nameof(this.Right), true);
+                }
 
                 OnResized(new ResizedEventArgs(previousSize, _size));
 
@@ -450,7 +482,9 @@ namespace Blish_HUD.Controls {
         public int Width {
             get => _size.X;
             set {
-                if (_size.X == value) return;
+                if (_size.X == value) {
+                    return;
+                }
 
                 this.Size = new Point(value, _size.Y);
             }
@@ -463,7 +497,9 @@ namespace Blish_HUD.Controls {
         public int Height {
             get => _size.Y;
             set {
-                if (_size.Y == value) return;
+                if (_size.Y == value) {
+                    return;
+                }
 
                 this.Size = new Point(_size.X, value);
             }
@@ -520,7 +556,9 @@ namespace Blish_HUD.Controls {
             get {
                 var parent = this.Parent;
 
-                if (parent == null) return this.LocalBounds;
+                if (parent == null) {
+                    return this.LocalBounds;
+                }
 
                 var parentBounds = parent.AbsoluteBounds;
                 var parentContentRegion = parent.ContentRegion;
@@ -557,7 +595,9 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public Tooltip Tooltip {
             get {
-                if (_tooltip != null && !_tooltip._disposedValue) return _tooltip;
+                if (_tooltip != null && !_tooltip._disposedValue) {
+                    return _tooltip;
+                }
 
                 return !string.IsNullOrWhiteSpace(_basicTooltipText)
                     ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
@@ -574,7 +614,9 @@ namespace Blish_HUD.Controls {
         public string BasicTooltipText {
             get => _basicTooltipText;
             set {
-                if (!SetProperty(ref _basicTooltipText, value)) return;
+                if (!SetProperty(ref _basicTooltipText, value)) {
+                    return;
+                }
 
                 if (Control.ActiveControl == this && _tooltip != null) {
                     // In the event that the tooltip text is changed while it's
@@ -692,8 +734,9 @@ namespace Blish_HUD.Controls {
         public SpriteBatchParameters SpriteBatchParameters {
             get => _spriteBatchParameters ?? _defaultSpriteBatchParameters;
             set {
-                if (_spriteBatchParameters != _defaultSpriteBatchParameters)
+                if (_spriteBatchParameters != _defaultSpriteBatchParameters) {
                     _spriteBatchParameters = value;
+                }
             }
         }
 
@@ -717,7 +760,9 @@ namespace Blish_HUD.Controls {
 
         // TODO: This needs to be moved into the ContextMenuStrip class - the control itself shouldn't be doing this work
         private void ActivateContextMenuStrip(object sender, MouseEventArgs e) {
-            if (this.Menu == null || !this.Enabled) return;
+            if (this.Menu == null || !this.Enabled) {
+                return;
+            }
 
             this.Menu.Show(Input.Mouse.Position);
         }
@@ -786,7 +831,9 @@ namespace Blish_HUD.Controls {
         protected float AbsoluteOpacity(bool isInternal) {
             var parent = this.Parent;
 
-            if (parent == null) return _opacity;
+            if (parent == null) {
+                return _opacity;
+            }
 
             return isInternal
                        ? parent.AbsoluteOpacity(true) - (1f - _opacity)
@@ -907,8 +954,9 @@ namespace Blish_HUD.Controls {
             spriteBatch.Begin(this.SpriteBatchParameters);
 
             // Draw background
-            if (_backgroundColor != Color.Transparent)
+            if (_backgroundColor != Color.Transparent) {
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, drawBounds, _backgroundColor);
+            }
 
             if (!this.ClipsBounds) {
                 spriteBatch.GraphicsDevice.ScissorRectangle = Graphics.SpriteScreen.LocalBounds.ScaleBy(Graphics.UIScaleMultiplier);
@@ -987,7 +1035,9 @@ namespace Blish_HUD.Controls {
         #region Property Management and Binding
 
         protected bool SetProperty<T>(ref T property, T newValue, bool invalidateLayout = false, [CallerMemberName] string propertyName = null) {
-            if (Equals(property, newValue) || propertyName == null) return false;
+            if (Equals(property, newValue) || propertyName == null) {
+                return false;
+            }
 
             property = newValue;
 
@@ -999,7 +1049,9 @@ namespace Blish_HUD.Controls {
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName, bool invalidateLayout) {
-            if (string.IsNullOrEmpty(propertyName)) return;
+            if (string.IsNullOrEmpty(propertyName)) {
+                return;
+            }
 
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 

@@ -26,14 +26,18 @@ namespace Blish_HUD.DebugHelper.Services {
         }
 
         public void Start() {
-            if (thread != null) return;
+            if (thread != null) {
+                return;
+            }
 
             thread = new Thread(Loop);
             thread.Start();
         }
 
         public void Stop() {
-            if ((thread == null) || stopRequested) return;
+            if ((thread == null) || stopRequested) {
+                return;
+            }
 
             stopRequested = true;
             thread.Join();
@@ -45,11 +49,14 @@ namespace Blish_HUD.DebugHelper.Services {
         private void Loop() {
             Message message;
 
-            while (!stopRequested && ((message = Serializer.DeserializeWithLengthPrefix<Message>(inStream, PrefixStyle.Base128, 1)) != null))
+            while (!stopRequested && ((message = Serializer.DeserializeWithLengthPrefix<Message>(inStream, PrefixStyle.Base128, 1)) != null)) {
                 if (waitingMessages.TryGetValue(message.Id, out var resetEvent)) {
                     receivedMessages.TryAdd(message.Id, message);
                     resetEvent.Set();
-                } else if (registedCallbacks.TryGetValue(message.GetType(), out var callback)) callback(message);
+                } else if (registedCallbacks.TryGetValue(message.GetType(), out var callback)) {
+                    callback(message);
+                }
+            }
         }
 
         public void Register<T>(Action<T> callback) where T : Message { registedCallbacks.AddOrUpdate(typeof(T), t => x => callback((T)x), (t, _) => x => callback((T)x)); }
@@ -71,7 +78,9 @@ namespace Blish_HUD.DebugHelper.Services {
 
             lock (outLock) {
                 SetId(message);
-                if (!waitingMessages.TryAdd(message.Id, fResetEvent)) return null;
+                if (!waitingMessages.TryAdd(message.Id, fResetEvent)) {
+                    return null;
+                }
 
                 Serializer.SerializeWithLengthPrefix(outStream, message, PrefixStyle.Base128, 1);
                 outStream.Flush();
@@ -79,15 +88,21 @@ namespace Blish_HUD.DebugHelper.Services {
 
             bool received = fResetEvent.Wait(timeout);
             waitingMessages.TryRemove(message.Id, out _);
-            if (!received) return null;
+            if (!received) {
+                return null;
+            }
 
-            if (!receivedMessages.TryRemove(message.Id, out var response)) return null;
+            if (!receivedMessages.TryRemove(message.Id, out var response)) {
+                return null;
+            }
 
             return response as T;
         }
 
         private void SetId(Message message) {
-            if (message.Id != 0) return;
+            if (message.Id != 0) {
+                return;
+            }
 
             using var process = Process.GetCurrentProcess();
 
@@ -102,9 +117,14 @@ namespace Blish_HUD.DebugHelper.Services {
         private bool isDisposed = false; // To detect redundant calls
 
         protected virtual void Dispose(bool isDisposing) {
-            if (isDisposed) return;
+            if (isDisposed) {
+                return;
+            }
 
-            if (isDisposing) Stop();
+            if (isDisposing) {
+                Stop();
+            }
+
             isDisposed = true;
         }
 

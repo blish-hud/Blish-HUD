@@ -85,8 +85,9 @@ namespace Blish_HUD.Modules.Managers {
         /// <param name="soundPath">The path to the sound file.</param>
         public SoundEffect GetSound(string soundPath) {
             using (var soundStream = _reader.GetFileStream(soundPath)) {
-                if (soundStream != null)
+                if (soundStream != null) {
                     return SoundEffect.FromStream(soundStream);
+                }
             }
 
             return null;

@@ -423,7 +423,9 @@ namespace Blish_HUD {
             ctx.GraphicsDevice.Clear(Color.Transparent);
 
             // Skip rendering all elements when UI is hidden
-            if (GameService.Overlay.InterfaceHidden) return;
+            if (GameService.Overlay.InterfaceHidden) {
+                return;
+            }
 
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game and map is closed

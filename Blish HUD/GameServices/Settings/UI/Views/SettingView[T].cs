@@ -21,7 +21,9 @@ namespace Blish_HUD.Settings.UI.Views {
         public string DisplayName {
             get => _displayName;
             set {
-                if (_displayName == value) return;
+                if (_displayName == value) {
+                    return;
+                }
 
                 RefreshDisplayName(_displayName = value);
             }
@@ -30,7 +32,9 @@ namespace Blish_HUD.Settings.UI.Views {
         public string Description {
             get => _description;
             set {
-                if (_description == value) return;
+                if (_description == value) {
+                    return;
+                }
 
                 RefreshDescription(_description = value);
             }

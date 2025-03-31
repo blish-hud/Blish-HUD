@@ -37,7 +37,9 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (_texture == null) return;
+            if (_texture == null) {
+                return;
+            }
 
             // Draw the texture
             spriteBatch.DrawOnCtrl(this,

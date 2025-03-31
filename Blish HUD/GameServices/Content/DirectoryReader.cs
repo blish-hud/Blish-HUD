@@ -10,15 +10,17 @@ namespace Blish_HUD.Content {
         public string PhysicalPath => _directoryPath;
 
         public DirectoryReader(string directoryPath) {
-            if (!Directory.Exists(directoryPath))
+            if (!Directory.Exists(directoryPath)) {
                 throw new DirectoryNotFoundException($"Directory path {directoryPath} not found.");
+            }
 
             _directoryPath = directoryPath;
         }
 
         public IDataReader GetSubPath(string subPath) {
-            if (subPath.StartsWith(_directoryPath, StringComparison.OrdinalIgnoreCase))
+            if (subPath.StartsWith(_directoryPath, StringComparison.OrdinalIgnoreCase)) {
                 return new DirectoryReader(subPath);
+            }
 
             return new DirectoryReader(Path.Combine(_directoryPath, subPath));
         }
@@ -39,13 +41,17 @@ namespace Blish_HUD.Content {
         }
 
         public Stream GetFileStream(string filePath) {
-            if (!this.FileExists(filePath)) return null;
+            if (!this.FileExists(filePath)) {
+                return null;
+            }
 
             return File.Open(Path.Combine(_directoryPath, filePath), FileMode.Open);
         }
 
         public byte[] GetFileBytes(string filePath) {
-            if (!this.FileExists(filePath)) return null;
+            if (!this.FileExists(filePath)) {
+                return null;
+            }
 
             return File.ReadAllBytes(Path.Combine(_directoryPath, filePath));
         }
@@ -61,7 +67,9 @@ namespace Blish_HUD.Content {
         }
 
         public async Task<byte[]> GetFileBytesAsync(string filePath) {
-            if (!FileExists(filePath)) return null;
+            if (!FileExists(filePath)) {
+                return null;
+            }
 
             byte[] fileData;
 

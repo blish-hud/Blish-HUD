@@ -110,7 +110,9 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private bool? GetBoolSetting([CallerMemberName] string settingName = null) {
-            if (settingName == null) throw new ArgumentNullException(nameof(settingName));
+            if (settingName == null) {
+                throw new ArgumentNullException(nameof(settingName));
+            }
 
             return _settings.TryGetValue(settingName, out string result)
                        ? result == GFXS_TRUE
@@ -118,7 +120,9 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private float? GetFloatSetting([CallerMemberName] string settingName = null) {
-            if (settingName == null) throw new ArgumentNullException(nameof(settingName));
+            if (settingName == null) {
+                throw new ArgumentNullException(nameof(settingName));
+            }
 
             return _settings.TryGetValue(settingName, out string result)
                        ? InvariantUtil.TryParseFloat(result, out float floatResult)
@@ -128,7 +132,9 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private T? GetStringEnumSetting<T>(Func<string, T?> getSettingFunc, [CallerMemberName] string settingName = null) where T : struct {
-            if (settingName == null) throw new ArgumentNullException(nameof(settingName));
+            if (settingName == null) {
+                throw new ArgumentNullException(nameof(settingName));
+            }
 
             return _settings.TryGetValue(settingName, out string result)
                        ? getSettingFunc(result)

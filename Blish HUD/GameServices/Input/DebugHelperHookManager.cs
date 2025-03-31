@@ -63,13 +63,18 @@ namespace Blish_HUD.Input {
             _debugHelperMessageService.Stop();
             _pingTimer.Stop();
             Logger.Debug("Killing subprocess with id {ProcessId}", _process.Id);
-            if (!_process.HasExited) _process.Kill();
+            if (!_process.HasExited) {
+                _process.Kill();
+            }
+
             _debugHelperMessageService = null;
             _process = null;
         }
 
         public bool EnableHook() {
-            if (_isHookEnabled) return false;
+            if (_isHookEnabled) {
+                return false;
+            }
 
             Logger.Debug("Enabling DebugHelper input hooks");
 
@@ -78,7 +83,9 @@ namespace Blish_HUD.Input {
         }
 
         public void DisableHook() {
-            if (!_isHookEnabled) return;
+            if (!_isHookEnabled) {
+                return;
+            }
 
             Logger.Debug("Disabling DebugHelper input hooks");
 

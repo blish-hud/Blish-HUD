@@ -76,7 +76,9 @@ namespace Blish_HUD.Controls {
         protected void DrawText(SpriteBatch spriteBatch, Rectangle bounds, string text = null) {
             text = text ?? _text;
 
-            if (_font == null || string.IsNullOrEmpty(text)) return;
+            if (_font == null || string.IsNullOrEmpty(text)) {
+                return;
+            }
 
             if (_showShadow && !_strokeText) {
                 spriteBatch.DrawStringOnCtrl(this, text, _font, bounds.OffsetBy(1, 1), _shadowColor, _wrapText, _horizontalAlignment, _verticalAlignment);

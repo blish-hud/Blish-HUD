@@ -215,7 +215,9 @@ namespace Blish_HUD.Graphics {
         protected abstract void Update(GameTime gameTime);
 
         protected bool SetProperty<T>(ref T property, T newValue) {
-            if (Equals(property, newValue)) return false;
+            if (Equals(property, newValue)) {
+                return false;
+            }
 
             property = newValue;
 

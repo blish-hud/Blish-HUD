@@ -19,16 +19,23 @@ namespace Blish_HUD.DebugHelper.Services {
         }
 
         public void Start() {
-            if (hook == IntPtr.Zero) hook = User32.SetWindowsHookEx(HookType.WH_MOUSE_LL, hookProc, Marshal.GetHINSTANCE(typeof(MouseHookService).Module), 0);
+            if (hook == IntPtr.Zero) {
+                hook = User32.SetWindowsHookEx(HookType.WH_MOUSE_LL, hookProc, Marshal.GetHINSTANCE(typeof(MouseHookService).Module), 0);
+            }
         }
 
         public void Stop() {
-            if (hook != IntPtr.Zero) User32.UnhookWindowsHookEx(hook);
+            if (hook != IntPtr.Zero) {
+                User32.UnhookWindowsHookEx(hook);
+            }
+
             hook = IntPtr.Zero;
         }
 
         private int HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
-            if (nCode != 0) return User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
+            if (nCode != 0) {
+                return User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
+            }
 
             int eventType = (int)wParam;
             MOUSELLHOOKSTRUCT hookStruct = Marshal.PtrToStructure<MOUSELLHOOKSTRUCT>(lParam);
@@ -45,10 +52,11 @@ namespace Blish_HUD.DebugHelper.Services {
 
             MouseResponseMessage? response = messageService.SendAndWait<MouseResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
 
-            if (response?.IsHandled == true)
+            if (response?.IsHandled == true) {
                 return 1;
-            else
+            } else {
                 return User32.CallNextHookEx(HookType.WH_MOUSE_LL, nCode, wParam, lParam);
+            }
         }
 
         #region IDisposable Support
@@ -57,7 +65,10 @@ namespace Blish_HUD.DebugHelper.Services {
 
         protected virtual void Dispose(bool isDisposing) {
             if (!isDisposed) {
-                if (isDisposing) Stop();
+                if (isDisposing) {
+                    Stop();
+                }
+
                 isDisposed = true;
             }
         }

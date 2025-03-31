@@ -124,7 +124,9 @@ namespace Blish_HUD.Controls {
                     _activePanel.Parent = null;
                 }
 
-                if (value == null) return;
+                if (value == null) {
+                    return;
+                }
 
                 _activePanel = value;
 
@@ -195,25 +197,35 @@ namespace Blish_HUD.Controls {
 
             _animFade.OnComplete(() => {
                 _animFade.Pause();
-                if (_opacity <= 0) this.Visible = false;
+                if (_opacity <= 0) {
+                    this.Visible = false;
+                }
             });
         }
 
         public static void UpdateWindowBaseDynamicHUDCombatState(WindowBase wb) {
             if (GameService.Overlay.DynamicHUDWindows == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
                 wb._savedVisibility = wb.Visible;
-                if (wb._savedVisibility) wb.Hide();
+                if (wb._savedVisibility) {
+                    wb.Hide();
+                }
             } else {
-                if (wb._savedVisibility) wb.Show();
+                if (wb._savedVisibility) {
+                    wb.Show();
+                }
             }
         }
 
         public static void UpdateWindowBaseDynamicHUDLoadingState(WindowBase wb) {
             if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
                 wb._savedVisibility = wb.Visible;
-                if (wb._savedVisibility) wb.Hide();
+                if (wb._savedVisibility) {
+                    wb.Hide();
+                }
             } else {
-                if (wb._savedVisibility) wb.Show();
+                if (wb._savedVisibility) {
+                    wb.Show();
+                }
             }
         }
 
@@ -328,8 +340,9 @@ namespace Blish_HUD.Controls {
         private double _lastInteraction;
 
         public virtual void Navigate(Panel newPanel, bool keepHistory = true) {
-            if (!keepHistory)
+            if (!keepHistory) {
                 _currentNav.Clear();
+            }
 
             _currentNav.AddLast(newPanel);
 
@@ -337,8 +350,9 @@ namespace Blish_HUD.Controls {
         }
 
         public virtual void NavigateBack() {
-            if (_currentNav.Count > 1)
+            if (_currentNav.Count > 1) {
                 _currentNav.RemoveLast();
+            }
 
             this.ActivePanel = _currentNav.Last.Value;
         }
@@ -354,14 +368,19 @@ namespace Blish_HUD.Controls {
         #endregion
 
         public void ToggleWindow() {
-            if (_visible) Hide();
-            else Show();
+            if (_visible) {
+                Hide();
+            } else {
+                Show();
+            }
         }
 
         public override void Show() {
             BringWindowToFront();
 
-            if (_visible) return;
+            if (_visible) {
+                return;
+            }
 
             // Restore position from previous session
             if (this.SavesPosition && this.Id != null && _windowSettings.TryGetSetting(this.Id, out var windowPosition)) {
@@ -381,7 +400,9 @@ namespace Blish_HUD.Controls {
         }
 
         public override void Hide() {
-            if (!this.Visible) return;
+            if (!this.Visible) {
+                return;
+            }
 
             this.Dragging = false;
             _animFade.Resume();

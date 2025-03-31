@@ -28,7 +28,9 @@ namespace Blish_HUD.DebugHelper.Services {
         }
 
         public void Start() {
-            if (thread != null) return;
+            if (thread != null) {
+                return;
+            }
 
             messageService.Register<PingMessage>(HandlePing);
             timeoutTimer.Start();
@@ -38,7 +40,9 @@ namespace Blish_HUD.DebugHelper.Services {
         }
 
         public void Stop() {
-            if (thread == null) return;
+            if (thread == null) {
+                return;
+            }
 
             timeoutTimer.Stop();
             messageService.Unregister<PingMessage>();
@@ -56,8 +60,13 @@ namespace Blish_HUD.DebugHelper.Services {
             };
 
             timer.Tick += (sender, e) => {
-                if (stopRequested) Application.ExitThread();
-                if (!hookRequested) return;
+                if (stopRequested) {
+                    Application.ExitThread();
+                }
+
+                if (!hookRequested) {
+                    return;
+                }
 
                 mouseHookService.Start();
                 keyboardHookService.Start();
@@ -86,7 +95,9 @@ namespace Blish_HUD.DebugHelper.Services {
         private bool isDisposed = false; // To detect redundant calls
 
         protected virtual void Dispose(bool isDisposing) {
-            if (isDisposed) return;
+            if (isDisposed) {
+                return;
+            }
 
             if (isDisposing) {
                 Stop();

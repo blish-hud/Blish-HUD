@@ -155,13 +155,16 @@ namespace Blish_HUD {
             ///<inheritdoc/>
             [Obsolete("No longer supported here in Core.", true)]
             public async void Send(string message) {
-                if (IsBusy() || !IsTextValid(message)) return;
+                if (IsBusy() || !IsTextValid(message)) {
+                    return;
+                }
+
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
                 await ClipboardUtil.WindowsClipboardService.SetTextAsync(message)
                                    .ContinueWith(clipboardResult => {
-                                       if (clipboardResult.IsFaulted)
+                                       if (clipboardResult.IsFaulted) {
                                            Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {message}!", message);
-                                       else
+                                       } else {
                                            Task.Run(() => {
                                                Focus();
                                                Keyboard.Press(VirtualKeyShort.LCONTROL, true);
@@ -172,24 +175,32 @@ namespace Blish_HUD {
                                            }).ContinueWith(result => {
                                                if (result.IsFaulted) {
                                                    Logger.Warn(result.Exception, "Failed to send message {message}", message);
-                                               } else if (prevClipboardContent != null)
+                                               } else if (prevClipboardContent != null) {
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                               }
                                            });
+                                       }
                                    });
             }
 
             ///<inheritdoc/>
             [Obsolete("No longer supported here in Core.", true)]
             public async void Paste(string text) {
-                if (IsBusy()) return;
+                if (IsBusy()) {
+                    return;
+                }
+
                 string currentInput = await GetInputText();
-                if (!IsTextValid(currentInput + text)) return;
+                if (!IsTextValid(currentInput + text)) {
+                    return;
+                }
+
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
                 await ClipboardUtil.WindowsClipboardService.SetTextAsync(text)
                                    .ContinueWith(clipboardResult => {
-                                       if (clipboardResult.IsFaulted)
+                                       if (clipboardResult.IsFaulted) {
                                            Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {text}!", text);
-                                       else
+                                       } else {
                                            Task.Run(() => {
                                                Focus();
                                                Keyboard.Press(VirtualKeyShort.LCONTROL, true);
@@ -199,16 +210,21 @@ namespace Blish_HUD {
                                            }).ContinueWith(result => {
                                                if (result.IsFaulted) {
                                                    Logger.Warn(result.Exception, "Failed to paste {text}", text);
-                                               } else if (prevClipboardContent != null)
+                                               } else if (prevClipboardContent != null) {
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                               }
                                            });
+                                       }
                                    });
             }
 
             ///<inheritdoc/>
             [Obsolete("No longer supported here in Core.", true)]
             public async Task<string> GetInputText() {
-                if (IsBusy()) return "";
+                if (IsBusy()) {
+                    return "";
+                }
+
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
                 await Task.Run(() => {
                     Focus();
@@ -221,8 +237,10 @@ namespace Blish_HUD {
                 });
                 string inputText = await ClipboardUtil.WindowsClipboardService.GetTextAsync()
                                                       .ContinueWith(result => {
-                                                          if (prevClipboardContent != null)
+                                                          if (prevClipboardContent != null) {
                                                               ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                                          }
+
                                                           return !result.IsFaulted ? result.Result : "";
                                                       });
                 return inputText;
@@ -230,7 +248,10 @@ namespace Blish_HUD {
             ///<inheritdoc/>
             [Obsolete("No longer supported here in Core.", true)]
             public void Clear() {
-                if (IsBusy()) return;
+                if (IsBusy()) {
+                    return;
+                }
+
                 Task.Run(() => {
                     Focus();
                     Keyboard.Press(VirtualKeyShort.LCONTROL, true);

@@ -46,7 +46,9 @@ namespace Blish_HUD.Gw2WebApi {
         }
 
         public bool SetApiKey(string apiKey) {
-            if (string.Equals(_internalConnection.AccessToken, apiKey)) return false;
+            if (string.Equals(_internalConnection.AccessToken, apiKey)) {
+                return false;
+            }
 
             _internalConnection.AccessToken = apiKey;
 

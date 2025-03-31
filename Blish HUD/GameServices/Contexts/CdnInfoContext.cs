@@ -162,7 +162,9 @@ namespace Blish_HUD.Contexts {
         #endregion
 
         private ContextAvailability TryGetCdnInfo(ref CdnInfo cdnInfo, out ContextResult<CdnInfo> contextResult) {
-            if (this.State != ContextState.Ready) return NotReady(out contextResult);
+            if (this.State != ContextState.Ready) {
+                return NotReady(out contextResult);
+            }
 
             if (cdnInfo.BuildId > 0) {
                 contextResult = new ContextResult<CdnInfo>(cdnInfo);

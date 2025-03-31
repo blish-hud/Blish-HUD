@@ -120,7 +120,9 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (string.IsNullOrEmpty(_message)) return;
+            if (string.IsNullOrEmpty(_message)) {
+                return;
+            }
 
             Color messageColor = Color.White;
             Texture2D notificationBackground = null;
@@ -155,8 +157,9 @@ namespace Blish_HUD.Controls {
                     break;
             }
 
-            if (notificationBackground != null)
+            if (notificationBackground != null) {
                 spriteBatch.DrawOnCtrl(this, notificationBackground, _layoutMessageBounds);
+            }
 
             // TODO: Add back drawing icon: (something like) spriteBatch.Draw(this.Icon, new Rectangle(64, 32, 128, 128).OffsetBy(bounds.Location), Color.White);
 
@@ -195,7 +198,9 @@ namespace Blish_HUD.Controls {
             this._slideDownTween?.Cancel();
             this._slideDownTween = Animation.Tweener.Tween(this, new { Top = _targetTop }, 0.1f);
 
-            if (_opacity < 1f) return;
+            if (_opacity < 1f) {
+                return;
+            }
 
             _animFadeLifecycle = Animation.Tweener
                                           .Tween(this, new { Opacity = 0f }, 1f)

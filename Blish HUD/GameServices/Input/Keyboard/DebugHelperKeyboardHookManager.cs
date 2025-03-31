@@ -16,7 +16,9 @@ namespace Blish_HUD.Input {
             lock (((IList)this.Handlers).SyncRoot) {
                 foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
                     isHandled = handler(keyboardEventArgs);
-                    if (isHandled) break;
+                    if (isHandled) {
+                        break;
+                    }
                 }
             }
 

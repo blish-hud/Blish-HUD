@@ -35,7 +35,9 @@ namespace Blish_HUD.Modules.Managers {
         }
 
         public string GetFullDirectoryPath(string directoryName) {
-            if (!_directoryNames.Contains(directoryName)) return null;
+            if (!_directoryNames.Contains(directoryName)) {
+                return null;
+            }
 
             return _directoryPaths[directoryName];
         }

@@ -25,7 +25,9 @@ namespace Blish_HUD.Modules {
             }
 
             public override List<ModuleDependency> ReadJson(JsonReader reader, Type objectType, List<ModuleDependency> existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                if (reader.TokenType == JsonToken.Null) return null;
+                if (reader.TokenType == JsonToken.Null) {
+                    return null;
+                }
 
                 var moduleDependencyList = new List<ModuleDependency>();
 

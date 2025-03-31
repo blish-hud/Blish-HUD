@@ -38,7 +38,9 @@ namespace Blish_HUD.Controls {
         public void Show(IView newView) {
             Clear();
 
-            if (newView == null) return;
+            if (newView == null) {
+                return;
+            }
 
             ViewState = ViewState.Loading;
 

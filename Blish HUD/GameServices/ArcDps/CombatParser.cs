@@ -13,13 +13,21 @@ namespace Blish_HUD.ArcDps {
             string skillName = null;
             int offset = 2;
 
-            if ((byte)(data[1] & (byte)CombatMessageFlags.Ev) == (byte)CombatMessageFlags.Ev) (ev, offset) = ParseEv(data, offset);
+            if ((byte)(data[1] & (byte)CombatMessageFlags.Ev) == (byte)CombatMessageFlags.Ev) {
+                (ev, offset) = ParseEv(data, offset);
+            }
 
-            if ((byte)(data[1] & (byte)CombatMessageFlags.Src) == (byte)CombatMessageFlags.Src) (src, offset) = ParseAg(data, offset);
+            if ((byte)(data[1] & (byte)CombatMessageFlags.Src) == (byte)CombatMessageFlags.Src) {
+                (src, offset) = ParseAg(data, offset);
+            }
 
-            if ((byte)(data[1] & (byte)CombatMessageFlags.Dst) == (byte)CombatMessageFlags.Dst) (dst, offset) = ParseAg(data, offset);
+            if ((byte)(data[1] & (byte)CombatMessageFlags.Dst) == (byte)CombatMessageFlags.Dst) {
+                (dst, offset) = ParseAg(data, offset);
+            }
 
-            if ((byte)(data[1] & (byte)CombatMessageFlags.SkillName) == (byte)CombatMessageFlags.SkillName) (skillName, offset) = ParseString(data, offset);
+            if ((byte)(data[1] & (byte)CombatMessageFlags.SkillName) == (byte)CombatMessageFlags.SkillName) {
+                (skillName, offset) = ParseString(data, offset);
+            }
 
             ulong id = BitConverter.ToUInt64(data, offset);
             ulong revision = BitConverter.ToUInt64(data, offset + 8);

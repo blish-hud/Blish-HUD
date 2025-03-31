@@ -20,7 +20,9 @@ namespace Blish_HUD.GameIntegration {
         internal TacOIntegration(GameIntegrationService service) : base(service) { }
 
         public override void Update(GameTime gameTime) {
-            if (this.TacOIsRunning || !_service.Gw2Instance.Gw2IsRunning) return;
+            if (this.TacOIsRunning || !_service.Gw2Instance.Gw2IsRunning) {
+                return;
+            }
 
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
 

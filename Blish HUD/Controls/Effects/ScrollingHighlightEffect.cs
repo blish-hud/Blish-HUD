@@ -35,7 +35,9 @@ namespace Blish_HUD.Controls.Effects {
             set {
                 _scrollRoller = value;
 
-                if (_forceActive) return;
+                if (_forceActive) {
+                    return;
+                }
 
                 _scrollEffect.Parameters[SPARAM_ROLLER].SetValue(_scrollRoller);
             }
@@ -90,7 +92,9 @@ namespace Blish_HUD.Controls.Effects {
         }
 
         private void AssignedControlOnMouseEntered(object sender, MouseEventArgs e) {
-            if (!_enabled || _forceActive) return;
+            if (!_enabled || _forceActive) {
+                return;
+            }
 
             _scrollEffect.Parameters[SPARAM_OPACITY].SetValue(this.AssignedControl.Opacity);
 
@@ -115,8 +119,9 @@ namespace Blish_HUD.Controls.Effects {
         }
 
         protected override void OnEnable() {
-            if (this.AssignedControl.MouseOver)
+            if (this.AssignedControl.MouseOver) {
                 AssignedControlOnMouseEntered(this.AssignedControl, null);
+            }
         }
 
         protected override void OnDisable() {
@@ -124,8 +129,9 @@ namespace Blish_HUD.Controls.Effects {
         }
 
         public override void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (_mouseOver || _forceActive)
+            if (_mouseOver || _forceActive) {
                 spriteBatch.DrawOnCtrl(this.AssignedControl, ContentService.Textures.Pixel, bounds, Color.Transparent);
+            }
         }
 
     }

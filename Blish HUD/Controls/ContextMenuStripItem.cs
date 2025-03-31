@@ -97,8 +97,9 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            if (this.RelativeMousePosition.X < this.Left)
+            if (this.RelativeMousePosition.X < this.Left) {
                 this.Submenu?.Hide();
+            }
 
             base.OnMouseLeft(e);
         }

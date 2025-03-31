@@ -26,7 +26,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void Add(Tab tab) {
-            if (tab == null) throw new ArgumentNullException(nameof(tab));
+            if (tab == null) {
+                throw new ArgumentNullException(nameof(tab));
+            }
 
             if (tab.OrderPriority == 0) {
                 tab.OrderPriority = _tabs.Count;

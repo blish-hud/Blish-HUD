@@ -66,7 +66,9 @@ namespace Blish_HUD {
                 return;
             }
 
-            if (settings.CliExitEarly) return;
+            if (settings.CliExitEarly) {
+                return;
+            }
 
             EnableLogging();
 

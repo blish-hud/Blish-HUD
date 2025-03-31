@@ -43,7 +43,10 @@ namespace Glide {
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
         public static float ElasticOut(float t) {
-            if (t == 1) return 1;
+            if (t == 1) {
+                return 1;
+            }
+
             return (float)(Math.Sin(-13 * PI2 * (t + 1)) * Math.Pow(2, -10 * t) + 1);
         }
 
@@ -174,7 +177,10 @@ namespace Glide {
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
         public static float SineIn(float t) {
-            if (t == 1) return 1;
+            if (t == 1) {
+                return 1;
+            }
+
             return (float)(-Math.Cos(PI2 * t) + 1);
         }
 
@@ -203,9 +209,18 @@ namespace Glide {
         /// <returns>Eased timescale.</returns>
         public static float BounceIn(float t) {
             t = 1 - t;
-            if (t < B1) return (float)(1 - 7.5625 * t * t);
-            if (t < B2) return (float)(1 - (7.5625 * (t - B3) * (t - B3) + .75));
-            if (t < B4) return (float)(1 - (7.5625 * (t - B5) * (t - B5) + .9375));
+            if (t < B1) {
+                return (float)(1 - 7.5625 * t * t);
+            }
+
+            if (t < B2) {
+                return (float)(1 - (7.5625 * (t - B3) * (t - B3) + .75));
+            }
+
+            if (t < B4) {
+                return (float)(1 - (7.5625 * (t - B5) * (t - B5) + .9375));
+            }
+
             return (float)(1 - (7.5625 * (t - B6) * (t - B6) + .984375));
         }
 
@@ -215,9 +230,18 @@ namespace Glide {
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
         public static float BounceOut(float t) {
-            if (t < B1) return (float)(7.5625 * t * t);
-            if (t < B2) return (float)(7.5625 * (t - B3) * (t - B3) + .75);
-            if (t < B4) return (float)(7.5625 * (t - B5) * (t - B5) + .9375);
+            if (t < B1) {
+                return (float)(7.5625 * t * t);
+            }
+
+            if (t < B2) {
+                return (float)(7.5625 * (t - B3) * (t - B3) + .75);
+            }
+
+            if (t < B4) {
+                return (float)(7.5625 * (t - B5) * (t - B5) + .9375);
+            }
+
             return (float)(7.5625 * (t - B6) * (t - B6) + .984375);
         }
 
@@ -229,15 +253,33 @@ namespace Glide {
         public static float BounceInOut(float t) {
             if (t < .5) {
                 t = 1 - t * 2;
-                if (t < B1) return (float)((1 - 7.5625 * t * t) / 2);
-                if (t < B2) return (float)((1 - (7.5625 * (t - B3) * (t - B3) + .75)) / 2);
-                if (t < B4) return (float)((1 - (7.5625 * (t - B5) * (t - B5) + .9375)) / 2);
+                if (t < B1) {
+                    return (float)((1 - 7.5625 * t * t) / 2);
+                }
+
+                if (t < B2) {
+                    return (float)((1 - (7.5625 * (t - B3) * (t - B3) + .75)) / 2);
+                }
+
+                if (t < B4) {
+                    return (float)((1 - (7.5625 * (t - B5) * (t - B5) + .9375)) / 2);
+                }
+
                 return (float)((1 - (7.5625 * (t - B6) * (t - B6) + .984375)) / 2);
             }
             t = t * 2 - 1;
-            if (t < B1) return (float)((7.5625 * t * t) / 2 + .5);
-            if (t < B2) return (float)((7.5625 * (t - B3) * (t - B3) + .75) / 2 + .5);
-            if (t < B4) return (float)((7.5625 * (t - B5) * (t - B5) + .9375) / 2 + .5);
+            if (t < B1) {
+                return (float)((7.5625 * t * t) / 2 + .5);
+            }
+
+            if (t < B2) {
+                return (float)((7.5625 * (t - B3) * (t - B3) + .75) / 2 + .5);
+            }
+
+            if (t < B4) {
+                return (float)((7.5625 * (t - B5) * (t - B5) + .9375) / 2 + .5);
+            }
+
             return (float)((7.5625 * (t - B6) * (t - B6) + .984375) / 2 + .5);
         }
 
@@ -283,7 +325,10 @@ namespace Glide {
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
         public static float ExpoOut(float t) {
-            if (t == 1) return 1;
+            if (t == 1) {
+                return 1;
+            }
+
             return (float)(-Math.Pow(2, -10 * t) + 1);
         }
 
@@ -293,7 +338,10 @@ namespace Glide {
         /// <param name="t">Time elapsed.</param>
         /// <returns>Eased timescale.</returns>
         public static float ExpoInOut(float t) {
-            if (t == 1) return 1;
+            if (t == 1) {
+                return 1;
+            }
+
             return (float)(t < .5 ? Math.Pow(2, 10 * (t * 2 - 1)) / 2 : (-Math.Pow(2, -10 * (t * 2 - 1)) + 2) / 2);
         }
 
@@ -322,7 +370,10 @@ namespace Glide {
         /// <returns>Eased timescale.</returns>
         public static float BackInOut(float t) {
             t *= 2;
-            if (t < 1) return (float)(t * t * (2.70158 * t - 1.70158) / 2);
+            if (t < 1) {
+                return (float)(t * t * (2.70158 * t - 1.70158) / 2);
+            }
+
             t--;
             return (float)((1 - (--t) * (t) * (-2.70158 * t - 1.70158)) / 2 + .5);
         }

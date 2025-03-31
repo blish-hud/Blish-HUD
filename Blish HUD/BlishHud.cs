@@ -122,7 +122,10 @@ namespace Blish_HUD {
                 GameService.Module.DoUpdate(gameTime);
 
                 for (int i = 0; i < 200; i++) { // Wait ~10 seconds between checks
-                    if (GameService.GameIntegration.Gw2Instance.Gw2IsRunning || GameService.Overlay.Exiting) break;
+                    if (GameService.GameIntegration.Gw2Instance.Gw2IsRunning || GameService.Overlay.Exiting) {
+                        break;
+                    }
+
                     Thread.Sleep(50);
                     Application.DoEvents();
                 }
@@ -160,7 +163,9 @@ namespace Blish_HUD {
             GameService.Debug.TickFrameCounter(_drawLag);
             _drawLag = 0;
 
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) return;
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) {
+                return;
+            }
 
             GameService.Graphics.Render(gameTime, _basicSpriteBatch);
 

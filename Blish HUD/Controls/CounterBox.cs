@@ -18,7 +18,10 @@ namespace Blish_HUD.Controls {
         public int ValueWidth {
             get => _valueWidth;
             set {
-                if (_valueWidth == value) return;
+                if (_valueWidth == value) {
+                    return;
+                }
+
                 _valueWidth = value;
                 Invalidate();
             }
@@ -30,7 +33,10 @@ namespace Blish_HUD.Controls {
         public string Prefix {
             get => _prefix;
             set {
-                if (string.Equals(_prefix, value)) return;
+                if (string.Equals(_prefix, value)) {
+                    return;
+                }
+
                 _prefix = value;
                 Invalidate();
             }
@@ -42,7 +48,10 @@ namespace Blish_HUD.Controls {
         public string Suffix {
             get => _suffix;
             set {
-                if (string.Equals(_suffix, value)) return;
+                if (string.Equals(_suffix, value)) {
+                    return;
+                }
+
                 _suffix = value;
                 Invalidate();
             }
@@ -62,7 +71,10 @@ namespace Blish_HUD.Controls {
         public int MaxValue {
             get => _maxValue;
             set {
-                if (value < _minValue) return;
+                if (value < _minValue) {
+                    return;
+                }
+
                 _maxValue = value;
                 Invalidate();
             }
@@ -74,7 +86,10 @@ namespace Blish_HUD.Controls {
         public int MinValue {
             get => _minValue;
             set {
-                if (value > _maxValue) return;
+                if (value > _maxValue) {
+                    return;
+                }
+
                 _minValue = value;
                 Invalidate();
             }
@@ -122,7 +137,10 @@ namespace Blish_HUD.Controls {
         private bool MouseOverPlus {
             get => _mouseOverPlus;
             set {
-                if (_mouseOverPlus == value) return;
+                if (_mouseOverPlus == value) {
+                    return;
+                }
+
                 _mouseOverPlus = value;
                 Invalidate();
             }
@@ -131,7 +149,10 @@ namespace Blish_HUD.Controls {
         private bool MouseOverMinus {
             get => _mouseOverMinus;
             set {
-                if (_mouseOverMinus == value) return;
+                if (_mouseOverMinus == value) {
+                    return;
+                }
+
                 _mouseOverMinus = value;
                 Invalidate();
             }
@@ -149,8 +170,9 @@ namespace Blish_HUD.Controls {
                 this.MouseOverMinus = relPos.X < 17 && relPos.X > 0;
                 this.MouseOverPlus = relPos.X < 36 + this.ValueWidth && relPos.X > 19 + this.ValueWidth;
 
-                if (!_mouseOverMinus && !_mouseOverPlus) ResetHoldTimer();
-
+                if (!_mouseOverMinus && !_mouseOverPlus) {
+                    ResetHoldTimer();
+                }
             } else {
                 this.MouseOverMinus = false;
                 this.MouseOverPlus = false;
@@ -173,17 +195,21 @@ namespace Blish_HUD.Controls {
             _holdTimerFast.Start();
         }
         private void ChangeValue() {
-            if (_mouseOverMinus)
-                if (_exponential)
+            if (_mouseOverMinus) {
+                if (_exponential) {
                     Value /= 2;
-                else
+                } else {
                     Value -= _numerator;
+                }
+            }
 
-            if (_mouseOverPlus)
-                if (_exponential)
+            if (_mouseOverPlus) {
+                if (_exponential) {
                     Value *= 2;
-                else
+                } else {
                     Value += _numerator;
+                }
+            }
         }
         private void ResetHoldTimer() {
             _holdTimer.Stop();

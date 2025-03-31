@@ -45,7 +45,9 @@ namespace Blish_HUD.Controls {
         public int MenuItemHeight {
             get => _menuItemHeight;
             set {
-                if (!SetProperty(ref _menuItemHeight, value, true)) return;
+                if (!SetProperty(ref _menuItemHeight, value, true)) {
+                    return;
+                }
 
                 this.Height = _menuItemHeight;
 
@@ -134,7 +136,9 @@ namespace Blish_HUD.Controls {
         private bool OverSection {
             get => _overSection;
             set {
-                if (_overSection == value) return;
+                if (_overSection == value) {
+                    return;
+                }
 
                 _overSection = value;
                 OnPropertyChanged();
@@ -153,8 +157,9 @@ namespace Blish_HUD.Controls {
                 int leftSideBuilder = ICON_PADDING;
 
                 // Add space if we need to render dropdown arrow
-                if (!_children.IsEmpty)
+                if (!_children.IsEmpty) {
                     leftSideBuilder += ARROW_SIZE;
+                }
 
                 return leftSideBuilder;
             }
@@ -195,12 +200,15 @@ namespace Blish_HUD.Controls {
         #region Menu Item Selection
 
         public void Select() {
-            if (this.Selected) return;
+            if (this.Selected) {
+                return;
+            }
 
             _selectedMenuItem = this;
 
-            if (!_children.IsEmpty)
+            if (!_children.IsEmpty) {
                 throw new InvalidOperationException("MenuItems with sub-MenuItems can not be selected directly.");
+            }
 
             _scrollEffect.ForceActive = true;
 
@@ -342,7 +350,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void Expand() {
-            if (!_collapsed) return;
+            if (!_collapsed) {
+                return;
+            }
 
             _slideAnim?.CancelAndComplete();
 
@@ -358,7 +368,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void Collapse() {
-            if (_collapsed) return;
+            if (_collapsed) {
+                return;
+            }
 
             _slideAnim?.CancelAndComplete();
 
@@ -394,8 +406,9 @@ namespace Blish_HUD.Controls {
             int currentLeftSidePadding = this.LeftSidePadding;
 
             // If MenuItem has children, show dropdown arrow
-            if (!_children.IsEmpty)
+            if (!_children.IsEmpty) {
                 DrawDropdownArrow(spriteBatch);
+            }
 
             TextureRegion2D firstItemSprite = null;
 

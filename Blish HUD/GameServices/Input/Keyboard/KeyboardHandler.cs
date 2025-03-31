@@ -30,10 +30,11 @@ namespace Blish_HUD.Input {
         public event EventHandler<KeyboardEventArgs> KeyStateChanged;
 
         private void OnKeyStateChanged(KeyboardEventArgs e) {
-            if (e.EventType == KeyboardEventType.KeyDown)
+            if (e.EventType == KeyboardEventType.KeyDown) {
                 this.KeyPressed?.Invoke(this, e);
-            else
+            } else {
                 this.KeyReleased?.Invoke(this, e);
+            }
 
             this.KeyStateChanged?.Invoke(this, e);
         }
@@ -118,7 +119,9 @@ namespace Blish_HUD.Input {
             while (_inputBuffer.TryDequeue(out KeyboardEventArgs keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
                     // Avoid firing on held keys
-                    if (_keysDown.Contains(keyboardEvent.Key)) continue;
+                    if (_keysDown.Contains(keyboardEvent.Key)) {
+                        continue;
+                    }
 
                     _keysDown.Add(keyboardEvent.Key);
                 } else {
@@ -144,7 +147,9 @@ namespace Blish_HUD.Input {
 
             UpdateStates();
 
-            foreach (Keys key in passingKeys) OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
+            foreach (Keys key in passingKeys) {
+                OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
+            }
         }
 
         /// <summary>
@@ -156,7 +161,9 @@ namespace Blish_HUD.Input {
         }
 
         public bool HandleInput(KeyboardEventArgs e) {
-            if (_hookGeneralBlock) return true;
+            if (_hookGeneralBlock) {
+                return true;
+            }
 
             return ProcessInput(e.EventType, e.Key);
         }
@@ -164,7 +171,9 @@ namespace Blish_HUD.Input {
         public void SetTextInputListner(Action<string> input) { _textInputDelegate = input; }
 
         public void UnsetTextInputListner(Action<string> input) {
-            if (input == _textInputDelegate) _textInputDelegate = null;
+            if (input == _textInputDelegate) {
+                _textInputDelegate = null;
+            }
         }
 
         private void UpdateStates() {
@@ -178,7 +187,9 @@ namespace Blish_HUD.Input {
             // TODO: WIN key combinations should probably completely handled by the OS
 
             // Skip keys that we wish to explicitly ignore
-            if (_hookIgnoredKeys.Contains(key)) return false;
+            if (_hookIgnoredKeys.Contains(key)) {
+                return false;
+            }
 
             return true;
         }
@@ -204,9 +215,13 @@ namespace Blish_HUD.Input {
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
-            if (GameService.Overlay.InterfaceHidden) return false;
+            if (GameService.Overlay.InterfaceHidden) {
+                return false;
+            }
 
-            if (GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.UI.IsTextInputFocused) return false;
+            if (GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.UI.IsTextInputFocused) {
+                return false;
+            }
 
             // Handle the escape key
             if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown) {

@@ -35,7 +35,9 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void UpdateAssemblyDirtiedState() {
-            if (_viewBuiltOnce) return;
+            if (_viewBuiltOnce) {
+                return;
+            }
 
             GameService.Module.ModuleRegistered += OnModuleRegistered;
 

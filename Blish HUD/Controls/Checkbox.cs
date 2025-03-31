@@ -50,15 +50,17 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
-            if (this.Enabled)
+            if (this.Enabled) {
                 this.Checked = !this.Checked;
+            }
 
             base.OnLeftMouseButtonPressed(e);
         }
 
         protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
-            if (this.Enabled)
+            if (this.Enabled) {
                 Content.PlaySoundEffectByName(@"button-click");
+            }
 
             base.OnLeftMouseButtonReleased(e);
         }

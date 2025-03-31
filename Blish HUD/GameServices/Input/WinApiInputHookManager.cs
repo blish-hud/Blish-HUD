@@ -23,7 +23,9 @@ namespace Blish_HUD.Input {
 
 
         public virtual bool EnableHook() {
-            if (_hook != IntPtr.Zero) return true;
+            if (_hook != IntPtr.Zero) {
+                return true;
+            }
 
             Logger.Debug("Enabling");
 
@@ -36,7 +38,9 @@ namespace Blish_HUD.Input {
         }
 
         public virtual void DisableHook() {
-            if (_hook == IntPtr.Zero) return;
+            if (_hook == IntPtr.Zero) {
+                return;
+            }
 
             Logger.Debug("Disabling");
 

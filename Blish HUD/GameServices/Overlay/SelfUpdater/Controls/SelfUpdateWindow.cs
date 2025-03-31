@@ -100,8 +100,9 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             }
 
             void CreateBodyLabel(StringBuilder text) {
-                if (string.IsNullOrEmpty(text.ToString()))
+                if (string.IsNullOrEmpty(text.ToString())) {
                     return;
+                }
 
                 _ = new Label() {
                     AutoSizeHeight = true,

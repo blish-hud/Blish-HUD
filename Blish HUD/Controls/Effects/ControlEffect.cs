@@ -32,14 +32,17 @@ namespace Blish_HUD.Controls.Effects {
         public bool Enabled {
             get => _enabled;
             set {
-                if (_enabled == value) return;
+                if (_enabled == value) {
+                    return;
+                }
 
                 _enabled = value;
 
-                if (_enabled)
+                if (_enabled) {
                     OnEnable();
-                else
+                } else {
                     OnDisable();
+                }
             }
         }
 

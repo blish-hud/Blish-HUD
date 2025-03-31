@@ -55,7 +55,9 @@ namespace Blish_HUD.Input {
         public bool CursorIsVisible {
             get => _cursorIsVisible;
             set {
-                if (_cursorIsVisible == value) return;
+                if (_cursorIsVisible == value) {
+                    return;
+                }
 
                 if (!value) {
                     this.ActiveControl = null;
@@ -91,7 +93,9 @@ namespace Blish_HUD.Input {
                 };
             }
 
-            if (this.CameraDragging || !this.CursorIsVisible) return false;
+            if (this.CameraDragging || !this.CursorIsVisible) {
+                return false;
+            }
 
             _mouseEvent = mouseEventArgs;
 

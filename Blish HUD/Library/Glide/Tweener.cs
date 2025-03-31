@@ -90,7 +90,9 @@
                 toAdd.Enqueue(tween);
 
                 if (values == null) // valid in case of manual timer
+{
                     return tween;
+                }
 
                 var props = values.GetType().GetProperties();
                 for (int i = 0; i < props.Length; ++i) {
@@ -282,38 +284,47 @@
 
                     if ((behavior & Behavior.Rotation) == Behavior.Rotation) {
                         float angle = from;
-                        if ((behavior & Behavior.RotationRadians) == Behavior.RotationRadians)
+                        if ((behavior & Behavior.RotationRadians) == Behavior.RotationRadians) {
                             angle *= DEG;
+                        }
 
-                        if (angle < 0)
+                        if (angle < 0) {
                             angle = 360 + angle;
+                        }
 
                         float r = angle + range;
                         float d = r - angle;
                         float a = (float)Math.Abs(d);
 
-                        if (a >= 180) range = (360 - a) * (d > 0 ? -1 : 1);
-                        else range = d;
+                        if (a >= 180) {
+                            range = (360 - a) * (d > 0 ? -1 : 1);
+                        } else {
+                            range = d;
+                        }
                     }
                 }
 
                 public override object Interpolate(float t, object current, Behavior behavior) {
                     var value = from + range * t;
                     if ((behavior & Behavior.Rotation) == Behavior.Rotation) {
-                        if ((behavior & Behavior.RotationRadians) == Behavior.RotationRadians)
+                        if ((behavior & Behavior.RotationRadians) == Behavior.RotationRadians) {
                             value *= DEG;
+                        }
 
                         value %= 360.0f;
 
-                        if (value < 0)
+                        if (value < 0) {
                             value += 360.0f;
+                        }
 
-                        if ((behavior & Behavior.RotationRadians) == Behavior.RotationRadians)
+                        if ((behavior & Behavior.RotationRadians) == Behavior.RotationRadians) {
                             value *= RAD;
+                        }
                     }
 
-                    if ((behavior & Behavior.Round) == Behavior.Round)
+                    if ((behavior & Behavior.Round) == Behavior.Round) {
                         value = (float)Math.Round(value);
+                    }
 
                     var type = current.GetType();
                     return Convert.ChangeType(value, type);

@@ -19,7 +19,9 @@ namespace Blish_HUD.Input {
             lock (((IList)this.Handlers).SyncRoot) {
                 foreach (HandleMouseInputDelegate handler in this.Handlers) {
                     isHandled = handler(mouseEventArgs);
-                    if (isHandled) break;
+                    if (isHandled) {
+                        break;
+                    }
                 }
             }
 

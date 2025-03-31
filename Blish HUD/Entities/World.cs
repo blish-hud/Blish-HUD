@@ -73,7 +73,9 @@ namespace Blish_HUD.Entities {
         }
 
         public void Render(GraphicsDevice graphicsDevice) {
-            if (this.Camera == null) return;
+            if (this.Camera == null) {
+                return;
+            }
 
             graphicsDevice.BlendState = BlendState.AlphaBlend;
             graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;

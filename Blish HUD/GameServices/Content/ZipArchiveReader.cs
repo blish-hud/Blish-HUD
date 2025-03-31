@@ -18,8 +18,9 @@ namespace Blish_HUD.Content {
         public string PhysicalPath => _archivePath;
 
         public ZipArchiveReader(string archivePath, string subPath = "") {
-            if (!File.Exists((archivePath)))
+            if (!File.Exists((archivePath))) {
                 throw new FileNotFoundException("Archive path not found.", archivePath);
+            }
 
             _archivePath = archivePath;
             _subPath = subPath;

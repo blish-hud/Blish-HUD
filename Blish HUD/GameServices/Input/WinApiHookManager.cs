@@ -25,7 +25,9 @@ namespace Blish_HUD.Input {
         public void Unload() => DisableHook();
 
         public bool EnableHook() {
-            if (thread != null) return false;
+            if (thread != null) {
+                return false;
+            }
 
             Logger.Debug("Enabling WinAPI input hooks");
 
@@ -38,7 +40,9 @@ namespace Blish_HUD.Input {
         }
 
         public void DisableHook() {
-            if ((thread == null) || stopRequested) return;
+            if ((thread == null) || stopRequested) {
+                return;
+            }
 
             Logger.Debug("Disabling WinAPI input hooks");
 
@@ -72,7 +76,10 @@ namespace Blish_HUD.Input {
                 }
             };
 
-            if (mouseHookManager.EnableHook() && keyboardHookManager.EnableHook()) inputSuccessful = true;
+            if (mouseHookManager.EnableHook() && keyboardHookManager.EnableHook()) {
+                inputSuccessful = true;
+            }
+
             inputHookEvent.Set();
 
             timer.Start();

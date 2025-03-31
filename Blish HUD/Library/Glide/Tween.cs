@@ -108,7 +108,9 @@ namespace Glide {
             }
 
             if (running) {
-                if (Duration > 0) time += elapsed;
+                if (Duration > 0) {
+                    time += elapsed;
+                }
             } else {
                 running = true;
             }
@@ -206,8 +208,12 @@ namespace Glide {
         /// <param name="callback">The function that will be called when the tween starts, after the delay.</param>
         /// <returns>A reference to this.</returns>
         public Tween OnBegin(Action callback) {
-            if (begin == null) begin = callback;
-            else begin += callback;
+            if (begin == null) {
+                begin = callback;
+            } else {
+                begin += callback;
+            }
+
             return this;
         }
 
@@ -218,14 +224,22 @@ namespace Glide {
         /// <param name="callback">The function that will be called on tween completion.</param>
         /// <returns>A reference to this.</returns>
         public Tween OnComplete(Action callback) {
-            if (complete == null) complete = callback;
-            else complete += callback;
+            if (complete == null) {
+                complete = callback;
+            } else {
+                complete += callback;
+            }
+
             return this;
         }
 
         public Tween OnRepeat(Action callback) {
-            if (repeat == null) repeat = callback;
-            else repeat += callback;
+            if (repeat == null) {
+                repeat = callback;
+            } else {
+                repeat += callback;
+            }
+
             return this;
         }
 
@@ -235,8 +249,12 @@ namespace Glide {
         /// <param name="callback">The function to use.</param>
         /// <returns>A reference to this.</returns>
         public Tween OnUpdate(Action callback) {
-            if (update == null) update = callback;
-            else update += callback;
+            if (update == null) {
+                update = callback;
+            } else {
+                update += callback;
+            }
+
             return this;
         }
 
@@ -319,8 +337,9 @@ namespace Glide {
             var canceled = 0;
             for (int i = 0; i < properties.Length; ++i) {
                 var index = 0;
-                if (!varHash.TryGetValue(properties[i], out index))
+                if (!varHash.TryGetValue(properties[i], out index)) {
                     continue;
+                }
 
                 varHash.Remove(properties[i]);
                 vars[index] = null;
@@ -331,8 +350,9 @@ namespace Glide {
                 canceled++;
             }
 
-            if (canceled == vars.Count)
+            if (canceled == vars.Count) {
                 Cancel();
+            }
         }
 
         /// <summary>

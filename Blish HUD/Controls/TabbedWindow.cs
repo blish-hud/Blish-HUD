@@ -279,7 +279,9 @@ namespace Blish_HUD.Controls {
         public override void RecalculateLayout() {
             base.RecalculateLayout();
 
-            if (_tabs.Count == 0) return;
+            if (_tabs.Count == 0) {
+                return;
+            }
 
             var firstTabBounds = TabBoundsFromIndex(0);
             var selectedTabBounds = _tabRegions[this.SelectedTab];

@@ -21,7 +21,9 @@ namespace Blish_HUD.Input {
         protected IMessageService DebugHelperMessageService { get; }
 
         public virtual bool EnableHook() {
-            if (isEnabled) return false;
+            if (isEnabled) {
+                return false;
+            }
 
             Logger.Debug("Enabling");
 
@@ -33,7 +35,9 @@ namespace Blish_HUD.Input {
         }
 
         public virtual void DisableHook() {
-            if (!isEnabled) return;
+            if (!isEnabled) {
+                return;
+            }
 
             Logger.Debug("Disabling");
 

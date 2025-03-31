@@ -41,7 +41,10 @@ namespace Blish_HUD.Input {
         internal int WheelDelta {
             get {
                 int v = Convert.ToInt32((this.MouseData & 0xFFFF0000) >> 16);
-                if (v > SystemInformation.MouseWheelScrollDelta) v -= ushort.MaxValue + 1;
+                if (v > SystemInformation.MouseWheelScrollDelta) {
+                    v -= ushort.MaxValue + 1;
+                }
+
                 return v;
             }
         }

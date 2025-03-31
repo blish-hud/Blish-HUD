@@ -82,8 +82,10 @@ namespace Blish_HUD.Controls.Intern {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
 
-                if (ExtendedKeys.Contains(key))
+                if (ExtendedKeys.Contains(key)) {
                     lParam.extendedKey = 1;
+                }
+
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
@@ -153,8 +155,10 @@ namespace Blish_HUD.Controls.Intern {
                     transitionState = 1
                 };
 
-                if (ExtendedKeys.Contains(key))
+                if (ExtendedKeys.Contains(key)) {
                     lParam.extendedKey = 1;
+                }
+
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
         }

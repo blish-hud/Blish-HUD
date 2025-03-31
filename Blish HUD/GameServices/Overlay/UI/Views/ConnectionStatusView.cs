@@ -41,7 +41,9 @@ namespace Blish_HUD.Overlay.UI.Views {
         }
 
         protected override void OnPresenterAssigned(IConnectionStatusPresenter presenter) {
-            if (_connectionNameLabel == null || _connectionStatusImage == null) return;
+            if (_connectionNameLabel == null || _connectionStatusImage == null) {
+                return;
+            }
 
             _connectionNameLabel.Text = presenter == null
                                             ? string.Empty

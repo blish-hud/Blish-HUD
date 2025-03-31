@@ -107,7 +107,9 @@ namespace Blish_HUD.Controls {
         }
 
         private void ShowView(ITooltipView newView) {
-            if (newView == null) return;
+            if (newView == null) {
+                return;
+            }
 
             this.ViewState = ViewState.Loading;
 

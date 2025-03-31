@@ -21,7 +21,9 @@ namespace Blish_HUD.Settings {
         public T Value {
             get => _value;
             set {
-                if (object.Equals(_value, value)) return;
+                if (object.Equals(_value, value)) {
+                    return;
+                }
 
                 var prevValue = this.Value;
                 _value = value;

@@ -34,7 +34,9 @@ namespace Blish_HUD.Controls {
             set {
                 var currentTab = _selectedTab;
 
-                if (value != null && !this.Tabs.Contains(value)) return;
+                if (value != null && !this.Tabs.Contains(value)) {
+                    return;
+                }
 
                 if (SetProperty(ref _selectedTab, value, true)) {
                     OnTabChanged(new ValueChangedEventArgs<Tab>(currentTab, value));

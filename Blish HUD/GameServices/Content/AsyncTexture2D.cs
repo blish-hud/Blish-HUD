@@ -107,8 +107,13 @@ namespace Blish_HUD.Content {
         }
 
         public override bool Equals(object obj) {
-            if (!HasTexture) return obj == null;
-            if (obj == null) return false;
+            if (!HasTexture) {
+                return obj == null;
+            }
+
+            if (obj == null) {
+                return false;
+            }
 
             if (obj is Texture2D tobj) {
                 return _activeTexture2D.Equals(tobj);
@@ -126,7 +131,9 @@ namespace Blish_HUD.Content {
         }
 
         public static implicit operator AsyncTexture2D(Texture2D texture2D) {
-            if (texture2D == null) return null;
+            if (texture2D == null) {
+                return null;
+            }
 
             return new AsyncTexture2D(texture2D);
         }

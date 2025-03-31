@@ -331,7 +331,9 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private async Task UpdateTokenDetails(Task<TokenInfo> tokenTask, Task<Account> accountTask) {
             await Task.WhenAll(tokenTask, accountTask);
 
-            if (tokenTask.IsCanceled || accountTask.IsCanceled) return;
+            if (tokenTask.IsCanceled || accountTask.IsCanceled) {
+                return;
+            }
 
             if (tokenTask.Exception != null) {
                 SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);

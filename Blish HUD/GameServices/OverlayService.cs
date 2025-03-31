@@ -235,14 +235,19 @@ namespace Blish_HUD {
         /// Instructs Blish HUD to unload and exit.
         /// </summary>
         public void Exit() {
-            if (!this.BeginExit(FORCE_EXIT_TIMEOUT)) return;
+            if (!this.BeginExit(FORCE_EXIT_TIMEOUT)) {
+                return;
+            }
 
             ActiveBlishHud.Exit();
         }
 
         private bool BeginExit(int timeout) {
             lock (_exitLock) {
-                if (this.Exiting) return false;
+                if (this.Exiting) {
+                    return false;
+                }
+
                 this.Exiting = true;
             }
 
@@ -265,7 +270,9 @@ namespace Blish_HUD {
         /// Instructs Blish HUD to unload and then restart.
         /// </summary>
         public void Restart() {
-            if (!this.BeginExit(0)) return;
+            if (!this.BeginExit(0)) {
+                return;
+            }
 
             Program.RestartOnExit = true;
             ActiveBlishHud.Exit();

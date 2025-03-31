@@ -26,16 +26,25 @@ namespace Blish_HUD {
         }
 
         public static Texture2D SetRegion(this Texture2D texture2D, Rectangle region, Color color) {
-            if (texture2D == null)
+            if (texture2D == null) {
                 throw new ArgumentNullException(nameof(texture2D));
-            if (region.X < 0)
+            }
+
+            if (region.X < 0) {
                 throw new ArgumentOutOfRangeException(nameof(region.X));
-            if (region.Y < 0)
+            }
+
+            if (region.Y < 0) {
                 throw new ArgumentOutOfRangeException(nameof(region.Y));
-            if (region.Right > texture2D.Bounds.Right)
+            }
+
+            if (region.Right > texture2D.Bounds.Right) {
                 throw new ArgumentOutOfRangeException(nameof(region.Right));
-            if (region.Bottom > texture2D.Bounds.Bottom)
+            }
+
+            if (region.Bottom > texture2D.Bounds.Bottom) {
                 throw new ArgumentOutOfRangeException(nameof(region.Bottom));
+            }
 
             Color[] colorData = new Color[region.Width * region.Height];
 

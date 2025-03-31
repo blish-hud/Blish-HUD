@@ -35,7 +35,9 @@ namespace Blish_HUD.ArcDps.Common {
         ///     Activates the <see cref="CommonFields" /> service.
         /// </summary>
         public void Activate() {
-            if (_enabled) return;
+            if (_enabled) {
+                return;
+            }
 
             _enabled = true;
             GameService.ArcDpsV2.Common.PlayerAdded += player => PlayerAdded?.Invoke(new Player(player.CharacterName, player.AccountName, player.Profession, player.Elite, player.Self));

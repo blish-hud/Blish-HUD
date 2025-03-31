@@ -26,8 +26,9 @@ namespace Blish_HUD.Modules.UI.Views {
             set {
                 _editable = value;
 
-                if (_permissionFlowPanel == null || _messageLabel == null || _checkboxStates == null)
+                if (_permissionFlowPanel == null || _messageLabel == null || _checkboxStates == null) {
                     return;
+                }
 
                 ResetCheckboxStates();
             }
@@ -36,7 +37,9 @@ namespace Blish_HUD.Modules.UI.Views {
         public ModulePermissionView() { /* NOOP */ }
 
         public ModulePermissionView(ModuleManager model) {
-            if (model == null) throw new ArgumentNullException(nameof(model));
+            if (model == null) {
+                throw new ArgumentNullException(nameof(model));
+            }
 
             this.WithPresenter(new ModulePermissionPresenter(this, model));
         }
@@ -91,8 +94,9 @@ namespace Blish_HUD.Modules.UI.Views {
         private void ResetCheckboxStates() {
             var checkboxes = _permissionFlowPanel.GetChildrenOfType<Checkbox>().ToArray();
             if (Editable) {
-                for (int i = 0; i < checkboxes.Length; i++)
+                for (int i = 0; i < checkboxes.Length; i++) {
                     checkboxes[i].Enabled = _checkboxStates[i];
+                }
             } else {
                 foreach (var checkbox in checkboxes) {
                     checkbox.Enabled = false;

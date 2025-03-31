@@ -152,7 +152,9 @@ namespace Blish_HUD {
 
             using (var moduleArchive = new ZipArchive(fileData, ZipArchiveMode.Read)) {
                 using (var manifestStream = moduleArchive.GetEntry(MODULE_MANIFESTNAME)?.Open()) {
-                    if (manifestStream == null) return;
+                    if (manifestStream == null) {
+                        return;
+                    }
 
                     string manifestContents;
                     using (var manifestReader = new StreamReader(manifestStream)) {
@@ -216,8 +218,9 @@ namespace Blish_HUD {
         /// Registers a packed (.bhm) module with the <see cref="ModuleService"/>.
         /// </summary>
         public ModuleManager RegisterPackedModule(string modulePath) {
-            if (modulePath == null)
+            if (modulePath == null) {
                 throw new ArgumentNullException(nameof(modulePath));
+            }
 
             if (!File.Exists(modulePath)) {
                 Logger.Warn("Attempted to load a module {modulePath} which does not exist.", modulePath);
@@ -249,9 +252,13 @@ namespace Blish_HUD {
         /// Unregisters the module.
         /// </summary>
         public void UnregisterModule(ModuleManager moduleManager) {
-            if (moduleManager == null) throw new ArgumentNullException(nameof(moduleManager));
+            if (moduleManager == null) {
+                throw new ArgumentNullException(nameof(moduleManager));
+            }
 
-            if (!_modules.Contains(moduleManager)) return;
+            if (!_modules.Contains(moduleManager)) {
+                return;
+            }
 
             moduleManager.Disable();
 
@@ -266,8 +273,9 @@ namespace Blish_HUD {
         /// Registers an unpacked module from a folder with the <see cref="ModuleService"/>.
         /// </summary>
         private ModuleManager RegisterUnpackedModule(string moduleDir) {
-            if (moduleDir == null)
+            if (moduleDir == null) {
                 throw new ArgumentNullException(nameof(moduleDir));
+            }
 
             if (!Directory.Exists(moduleDir)) {
                 Logger.Warn("Attempted to load a module {moduleDir} which does not exist.", moduleDir);

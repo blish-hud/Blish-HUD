@@ -63,7 +63,9 @@ namespace Blish_HUD.Modules.Managers {
 
         internal async Task RenewSubtoken() {
             // If we have no consented permissions, we early exit.
-            if (_permissions == null || !_permissions.Any()) return;
+            if (_permissions == null || !_permissions.Any()) {
+                return;
+            }
 
             string responseToken = string.Empty;
 

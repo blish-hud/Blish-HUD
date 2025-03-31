@@ -47,7 +47,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void Draw(Control tabbedControl, SpriteBatch spriteBatch, Rectangle bounds, bool selected, bool hovered) {
-            if (!this.Icon.HasTexture) return;
+            if (!this.Icon.HasTexture) {
+                return;
+            }
 
             // TODO: If not enabled, draw darker to indicate it is disabled
 

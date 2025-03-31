@@ -38,7 +38,9 @@ namespace Blish_HUD.Controls {
                 if (SetProperty(ref isSelected, value)) {
                     this.Selected?.Invoke(this, EventArgs.Empty);
 
-                    if (this.Visible) Content.PlaySoundEffectByName(COLOR_CHANGE_SOUND_NAME);
+                    if (this.Visible) {
+                        Content.PlaySoundEffectByName(COLOR_CHANGE_SOUND_NAME);
+                    }
                 }
             }
         }
@@ -99,8 +101,13 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this, sprite, bounds, this.Color?.Cloth?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
 
 
-            if (this.MouseOver) spriteBatch.DrawOnCtrl(this, _spriteHover, bounds, Microsoft.Xna.Framework.Color.White);
-            if (this.IsSelected) spriteBatch.DrawOnCtrl(this, _spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White);
+            if (this.MouseOver) {
+                spriteBatch.DrawOnCtrl(this, _spriteHover, bounds, Microsoft.Xna.Framework.Color.White);
+            }
+
+            if (this.IsSelected) {
+                spriteBatch.DrawOnCtrl(this, _spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White);
+            }
         }
 
     }

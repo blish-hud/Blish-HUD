@@ -104,7 +104,9 @@ namespace Blish_HUD.GameIntegration {
         }
 
         public override void Update(GameTime gameTime) {
-            if (_gw2AudioDevices.Count == 0 || !_service.Gw2Instance.Gw2IsRunning) return;
+            if (_gw2AudioDevices.Count == 0 || !_service.Gw2Instance.Gw2IsRunning) {
+                return;
+            }
 
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
             _timeSinceAudioDeviceUpdate += gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -183,7 +185,9 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private void InitializeProcessMeterInformations() {
-            if (!_service.Gw2Instance.Gw2IsRunning) return;
+            if (!_service.Gw2Instance.Gw2IsRunning) {
+                return;
+            }
 
             _gw2AudioDevices.Clear();
             foreach (var device in _deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active)) {

@@ -15,7 +15,9 @@ namespace Blish_HUD.Settings.UI.Views {
         public bool LockBounds {
             get => _lockBounds;
             set {
-                if (_lockBounds == value) return;
+                if (_lockBounds == value) {
+                    return;
+                }
 
                 _lockBounds = value;
 
@@ -32,7 +34,9 @@ namespace Blish_HUD.Settings.UI.Views {
             : this(new SettingEntry<SettingCollection>() { Value = settings }, definedWidth) { /* NOOP */ }
 
         private void UpdateBoundsLocking(bool locked) {
-            if (_settingFlowPanel == null) return;
+            if (_settingFlowPanel == null) {
+                return;
+            }
 
             _settingFlowPanel.ShowBorder = !locked;
             _settingFlowPanel.CanCollapse = !locked;

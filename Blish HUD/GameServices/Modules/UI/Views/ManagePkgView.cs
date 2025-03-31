@@ -66,7 +66,9 @@ namespace Blish_HUD.Modules.UI.Views {
                     ? _moduleContributor
                     : throw new ViewNotBuiltException();
             set {
-                if (_authLabel == null) throw new ViewNotBuiltException();
+                if (_authLabel == null) {
+                    throw new ViewNotBuiltException();
+                }
 
                 _moduleContributor = value;
 
@@ -78,7 +80,9 @@ namespace Blish_HUD.Modules.UI.Views {
         public string ModuleDescription {
             get => _descLabel?.Text ?? throw new ViewNotBuiltException();
             set {
-                if (_descLabel == null) throw new ViewNotBuiltException();
+                if (_descLabel == null) {
+                    throw new ViewNotBuiltException();
+                }
 
                 _descLabel.Text = value;
             }
@@ -92,7 +96,9 @@ namespace Blish_HUD.Modules.UI.Views {
                     ? _moduleVersions
                     : throw new ViewNotBuiltException();
             set {
-                if (_versionDropdown == null) throw new ViewNotBuiltException();
+                if (_versionDropdown == null) {
+                    throw new ViewNotBuiltException();
+                }
 
                 _moduleVersions = value;
 
@@ -109,7 +115,9 @@ namespace Blish_HUD.Modules.UI.Views {
                     ? _selectedVersion
                     : throw new ViewNotBuiltException();
             set {
-                if (_versionDropdown == null) throw new ViewNotBuiltException();
+                if (_versionDropdown == null) {
+                    throw new ViewNotBuiltException();
+                }
 
                 _selectedVersion = value;
 
@@ -140,7 +148,9 @@ namespace Blish_HUD.Modules.UI.Views {
         public PkgVersionRelationship VersionRelationship {
             get => _versionRelationship;
             set {
-                if (_statusImage == null) throw new ViewNotBuiltException();
+                if (_statusImage == null) {
+                    throw new ViewNotBuiltException();
+                }
 
                 _versionRelationship = value;
 

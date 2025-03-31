@@ -23,7 +23,9 @@ namespace Blish_HUD.Settings.UI.Presenters {
         }
 
         private void ViewOnValueChanged(object sender, ValueEventArgs<TSetting> e) {
-            if (!_changeReady) return;
+            if (!_changeReady) {
+                return;
+            }
 
             if (this.View.ValidationFunc != null) {
                 var validationResult = this.View.ValidationFunc(e.Value);

@@ -101,7 +101,9 @@ namespace Blish_HUD.Controls {
             int selectionStart = Math.Min(_selectionStart, _selectionEnd);
             int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
 
-            if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) return Rectangle.Empty;
+            if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) {
+                return Rectangle.Empty;
+            }
 
             float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
             float highlightWidth = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));

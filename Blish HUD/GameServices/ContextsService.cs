@@ -22,7 +22,9 @@ namespace Blish_HUD {
             /// is then unregistered from the <see cref="ContextsService"/>.
             /// </summary>
             public void Expire() {
-                if (_hasExpired) return;
+                if (_hasExpired) {
+                    return;
+                }
 
                 _hasExpired = true;
 
@@ -78,7 +80,9 @@ namespace Blish_HUD {
         /// currently registered.
         /// </returns>
         public TContext GetContext<TContext>() where TContext : Context {
-            if (!_registeredContexts.ContainsKey(typeof(TContext))) return null;
+            if (!_registeredContexts.ContainsKey(typeof(TContext))) {
+                return null;
+            }
 
             return _registeredContexts[typeof(TContext)] as TContext;
         }

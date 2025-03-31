@@ -53,7 +53,9 @@ namespace Blish_HUD.Controls {
         private float _targetScrollDistance;
         private float TargetScrollDistance {
             get {
-                if (_targetScrollDistanceAnim == null) return _scrollDistance;
+                if (_targetScrollDistanceAnim == null) {
+                    return _scrollDistance;
+                }
 
                 return _targetScrollDistance;
             }
@@ -81,7 +83,9 @@ namespace Blish_HUD.Controls {
         private int ScrollbarHeight {
             get => _scrollbarHeight;
             set {
-                if (!SetProperty(ref _scrollbarHeight, value, true)) return;
+                if (!SetProperty(ref _scrollbarHeight, value, true)) {
+                    return;
+                }
 
                 // Reclamps the scrolling content
                 RecalculateScrollbarSize();
@@ -149,16 +153,23 @@ namespace Blish_HUD.Controls {
 
         private void HandleWheelScroll(object sender, MouseEventArgs e) {
             // Don't scroll if the scrollbar isn't visible
-            if (!this.Visible || _scrollbarPercent > 0.99) return;
+            if (!this.Visible || _scrollbarPercent > 0.99) {
+                return;
+            }
 
             // Avoid scrolling nested panels
             var ctrl = (Control)sender;
             while (ctrl != _associatedContainer && ctrl != null) {
-                if (ctrl is Panel) return;
+                if (ctrl is Panel) {
+                    return;
+                }
+
                 ctrl = ctrl.Parent;
             }
 
-            if (GameService.Input.Mouse.State.ScrollWheelValue == 0) return;
+            if (GameService.Input.Mouse.State.ScrollWheelValue == 0) {
+                return;
+            }
 
             float normalScroll = Math.Sign(GameService.Input.Mouse.State.ScrollWheelValue);
             ScrollAnimated((int)normalScroll * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
@@ -182,18 +193,21 @@ namespace Blish_HUD.Controls {
             if (this.ScrollFocus == ClickFocus.None) {
                 return;
             } else if (this.ScrollFocus == ClickFocus.BelowBar) {
-                if (GetScrollFocus(relMousePos) == ClickFocus.BelowBar)
+                if (GetScrollFocus(relMousePos) == ClickFocus.BelowBar) {
                     getScrollAction(clicked)(clicked ? -this.ScrollbarHeight : -SCROLL_CONT_TRACK);
+                }
             } else if (this.ScrollFocus == ClickFocus.AboveBar) {
-                if (GetScrollFocus(relMousePos) == ClickFocus.AboveBar)
+                if (GetScrollFocus(relMousePos) == ClickFocus.AboveBar) {
                     getScrollAction(clicked)(clicked ? this.ScrollbarHeight : SCROLL_CONT_TRACK);
+                }
             } else if (this.ScrollFocus == ClickFocus.UpArrow) {
                 getScrollAction(clicked)(clicked ? -SCROLL_ARROW : -SCROLL_CONT_ARROW);
             } else if (this.ScrollFocus == ClickFocus.DownArrow) {
                 getScrollAction(clicked)(clicked ? SCROLL_ARROW : SCROLL_CONT_ARROW);
             } else if (this.ScrollFocus == ClickFocus.Bar) {
-                if (clicked)
+                if (clicked) {
                     _scrollingOffset = relMousePos.Y - _barBounds.Y;
+                }
 
                 relMousePos = relMousePos - new Point(0, _scrollingOffset) - _trackBounds.Location;
                 this.ScrollDistance = relMousePos.Y / (float)(this.TrackLength - this.ScrollbarHeight);
@@ -220,10 +234,11 @@ namespace Blish_HUD.Controls {
 
             var timeDiff = gameTime.TotalGameTime.TotalMilliseconds - _lastClickTime;
 
-            if (this.ScrollFocus == ClickFocus.Bar)
+            if (this.ScrollFocus == ClickFocus.Bar) {
                 HandleClickScroll(false);
-            else if (timeDiff > 200)
+            } else if (timeDiff > 200) {
                 HandleClickScroll(false);
+            }
 
             Invalidate();
         }
@@ -246,7 +261,9 @@ namespace Blish_HUD.Controls {
         private int _containerLowestContent;
 
         private void RecalculateScrollbarSize() {
-            if (_associatedContainer == null) return;
+            if (_associatedContainer == null) {
+                return;
+            }
 
             var tempContainerChidlren = _associatedContainer.Children.ToArray();
 
@@ -271,7 +288,9 @@ namespace Blish_HUD.Controls {
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Don't show the scrollbar if there is nothing to scroll
-            if (_scrollbarPercent > 0.99) return;
+            if (_scrollbarPercent > 0.99) {
+                return;
+            }
 
             var drawTint = ScrollFocus == ClickFocus.None && this.MouseOver || (_associatedContainer != null && _associatedContainer.MouseOver)
                                ? Color.White

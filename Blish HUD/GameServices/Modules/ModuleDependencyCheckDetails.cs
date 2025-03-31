@@ -16,7 +16,9 @@ namespace Blish_HUD.Modules {
         }
 
         public string GetDisplayName() {
-            if (this.Dependency.IsBlishHud) return Strings.Common.BlishHUD;
+            if (this.Dependency.IsBlishHud) {
+                return Strings.Common.BlishHUD;
+            }
 
             return this.Module?.Manifest.Name
                 ?? this.Dependency.Namespace;

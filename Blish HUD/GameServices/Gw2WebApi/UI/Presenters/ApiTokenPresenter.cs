@@ -63,7 +63,9 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
         }
 
         private bool UpdateFromRequestTaskResult<T>(Task<T> infoTask, ref T field) {
-            if (infoTask.IsCanceled) return false;
+            if (infoTask.IsCanceled) {
+                return false;
+            }
 
             if (infoTask.Exception != null) {
                 HandleErrorLoading(infoTask.Exception);
@@ -82,7 +84,9 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
         }
 
         protected override void UpdateView() {
-            if (_tokenInfo == null) return;
+            if (_tokenInfo == null) {
+                return;
+            }
 
             this.View.TokenInfo = _tokenInfo;
             this.View.AccountInfo = _accountInfo;

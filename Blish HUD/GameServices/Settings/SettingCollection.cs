@@ -42,7 +42,9 @@ namespace Blish_HUD.Settings {
             }
 
             public override SettingCollection ReadJson(JsonReader reader, Type objectType, SettingCollection existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                if (reader.TokenType == JsonToken.Null) return null;
+                if (reader.TokenType == JsonToken.Null) {
+                    return null;
+                }
 
                 var jObj = JObject.Load(reader);
 
@@ -75,7 +77,9 @@ namespace Blish_HUD.Settings {
 
         public IReadOnlyList<SettingEntry> Entries {
             get {
-                if (!this.Loaded) Load();
+                if (!this.Loaded) {
+                    Load();
+                }
 
                 _entryLock.EnterReadLock();
                 var combinedEntries = _definedEntries.Concat(_undefinedEntries).ToList().AsReadOnly();
@@ -174,7 +178,9 @@ namespace Blish_HUD.Settings {
         }
 
         private void Load() {
-            if (_entryTokens == null) return;
+            if (_entryTokens == null) {
+                return;
+            }
 
             _entryLock.EnterWriteLock();
             _undefinedEntries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings).Where((se) => se != null).ToList();

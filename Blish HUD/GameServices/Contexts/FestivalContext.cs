@@ -205,7 +205,9 @@ namespace Blish_HUD.Contexts {
                 return ContextAvailability.Failed;
             }
 
-            if (this.State != ContextState.Ready) return NotReady(out contextResult);
+            if (this.State != ContextState.Ready) {
+                return NotReady(out contextResult);
+            }
 
             contextResult = new ContextResult<ReadOnlyCollection<Festival>>(_activeFestivals.AsReadOnly());
             return ContextAvailability.Available;
@@ -222,7 +224,9 @@ namespace Blish_HUD.Contexts {
                 return ContextAvailability.Failed;
             }
 
-            if (this.State != ContextState.Ready) return NotReady(out contextResult);
+            if (this.State != ContextState.Ready) {
+                return NotReady(out contextResult);
+            }
 
             contextResult = new ContextResult<bool>(FestivalIsActive(festival));
             return ContextAvailability.Available;

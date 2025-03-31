@@ -52,7 +52,9 @@ namespace Blish_HUD.Input {
             }
 
             foreach (Keys key in Enum.GetValues(typeof(Keys))) {
-                if (_friendlyKeyNames.ContainsKey(key)) continue;
+                if (_friendlyKeyNames.ContainsKey(key)) {
+                    continue;
+                }
 
                 // 2 = MAPVK_VK_TO_CHAR and then we mask out the dead key indicator
                 uint mappedCharCode = MapVirtualKey((uint)key, 2) & 0x0FFFFFFF;

@@ -73,7 +73,9 @@ namespace Blish_HUD.Modules {
             if (this.Enabled                                             // We're already enabled.
              || this.IsModuleAssemblyStateDirty                          // User updated the module after the old assembly had already been enabled.
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
+{
                 return false;
+            }
 
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 
@@ -117,7 +119,9 @@ namespace Blish_HUD.Modules {
         }
 
         public void Disable() {
-            if (!this.Enabled) return;
+            if (!this.Enabled) {
+                return;
+            }
 
             this.Enabled = false;
 
@@ -161,7 +165,9 @@ namespace Blish_HUD.Modules {
 
         private Assembly GetResourceAssembly(Assembly requestingAssembly, AssemblyName resourceDetails, string assemblyPath) {
             // Avoid loading resource assembly from wrong module
-            if (_moduleAssembly != requestingAssembly) return null;
+            if (_moduleAssembly != requestingAssembly) {
+                return null;
+            }
 
             // English is default — ignore it
             if (!string.Equals(resourceDetails.CultureInfo.TwoLetterISOLanguageName, "en")) {
@@ -192,7 +198,9 @@ namespace Blish_HUD.Modules {
                     return GetResourceAssembly(args.RequestingAssembly, assemblyDetails, assemblyPath);
                 }
 
-                if (!this.DataReader.FileExists(assemblyPath)) return null;
+                if (!this.DataReader.FileExists(assemblyPath)) {
+                    return null;
+                }
 
                 Logger.Debug("Requested dependency {dependency} ({assemblyName}) was found by module {module}.", args.Name, assemblyPath, this.Manifest.GetDetailedName());
 

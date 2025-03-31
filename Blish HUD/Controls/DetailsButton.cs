@@ -309,7 +309,7 @@ namespace Blish_HUD.Controls {
                     float localIconFill = (fillSpace - iconSize / 2f + 32) / 64;
 
                     // Icon above the fill
-                    if (localIconFill < 1)
+                    if (localIconFill < 1) {
                         spriteBatch.DrawOnCtrl(this,
                                                _icon,
                                                new Rectangle(
@@ -320,9 +320,10 @@ namespace Blish_HUD.Controls {
                                                             ),
                                                new Rectangle(0, 0, 64, 64 - (int)(64 * localIconFill)),
                                                Color.DarkGray * 0.4f);
+                    }
 
                     // Icon below the fill
-                    if (localIconFill > 0)
+                    if (localIconFill > 0) {
                         spriteBatch.DrawOnCtrl(
                                                this,
                                                _icon,
@@ -334,6 +335,7 @@ namespace Blish_HUD.Controls {
                                                             ),
                                                new Rectangle(0, 64 - (int)(localIconFill * 64), 64, (int)(localIconFill * 64))
                                               );
+                    }
                 }
 
                 if (_currentFill > 0) {
@@ -341,12 +343,14 @@ namespace Blish_HUD.Controls {
                     spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, (int)(iconSize - fillSpace), iconSize, (int)(fillSpace)), _fillColor * 0.3f);
 
                     // Only show the fill crest if we aren't full
-                    if (fillPercent < 0.99)
+                    if (fillPercent < 0.99) {
                         spriteBatch.DrawOnCtrl(this, _textureFillCrest, new Rectangle(0, iconSize - (int)(fillSpace), iconSize, (int)fillSpace));
+                    }
                 }
 
-                if (_showFillFraction)
+                if (_showFillFraction) {
                     spriteBatch.DrawStringOnCtrl(this, $"{_currentFill}/{_maxFill}", Content.DefaultFont14, new Rectangle(0, 0, iconSize, (int)(iconSize * 0.99f)), Color.White, false, true, 1, HorizontalAlignment.Center, VerticalAlignment.Bottom);
+                }
             } else if (_icon != null) {
                 // Draw icon without any fill effects
                 spriteBatch.DrawOnCtrl(
@@ -364,10 +368,11 @@ namespace Blish_HUD.Controls {
             }
 
             // Draw icon vignette (draw with or without the icon to keep a consistent look)
-            if (_showVignette)
+            if (_showVignette) {
                 spriteBatch.DrawOnCtrl(this,
                                        _textureVignette,
                                        new Rectangle(0, 0, iconSize, iconSize));
+            }
 
             // Draw toggle icon background
             if (_showToggleButton && _children.Any(c => c.Visible)) {

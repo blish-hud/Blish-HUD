@@ -161,7 +161,9 @@ namespace Blish_HUD.Controls {
         /// Adding a control this way does not update the <see cref="Control"/>'s <see cref="Control.Parent"/> making it unsuitable for most situations.
         /// </summary>
         public bool AddChild(Control child) {
-            if (_children.Contains(child)) return true;
+            if (_children.Contains(child)) {
+                return true;
+            }
 
             var resultingChildren = _children.ToList();
             resultingChildren.Add(child);
@@ -169,7 +171,9 @@ namespace Blish_HUD.Controls {
             var evRes = new ChildChangedEventArgs(this, child, true, resultingChildren);
             OnChildAdded(evRes);
 
-            if (evRes.Cancel) return false;
+            if (evRes.Cancel) {
+                return false;
+            }
 
             _children.Add(child);
 
@@ -183,7 +187,9 @@ namespace Blish_HUD.Controls {
         /// Removing a control this way does not update the <see cref="Control"/>'s <see cref="Control.Parent"/> making it unsuitable for most situations.
         /// </summary>
         public bool RemoveChild(Control child) {
-            if (!_children.Contains(child)) return true;
+            if (!_children.Contains(child)) {
+                return true;
+            }
 
             var resultingChildren = _children.ToList();
             resultingChildren.Remove(child);
@@ -192,7 +198,9 @@ namespace Blish_HUD.Controls {
             OnChildRemoved(evRes);
 
             // TODO: Currently if a child removal is canceled, the child control will still set their parent to null, despite still being listed as a child here
-            if (evRes.Cancel) return false;
+            if (evRes.Cancel) {
+                return false;
+            }
 
             _children.Remove(child);
 
