@@ -1,6 +1,6 @@
-﻿namespace Glide {
-    using System;
+﻿using System;
 
+namespace Glide {
     public abstract class MemberLerper {
         [Flags]
         public enum Behavior {

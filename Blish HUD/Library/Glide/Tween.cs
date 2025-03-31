@@ -1,7 +1,7 @@
-namespace Glide {
-    using System;
-    using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
+namespace Glide {
     public partial class Tween {
         [Flags]
         public enum RotationUnit {

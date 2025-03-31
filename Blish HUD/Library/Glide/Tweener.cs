@@ -1,10 +1,10 @@
-﻿namespace Glide {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
+namespace Glide {
     public class Tweener : Tween.TweenerImpl { };
 
     public partial class Tween {

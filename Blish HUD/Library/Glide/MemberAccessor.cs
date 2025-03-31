@@ -1,8 +1,8 @@
-namespace Glide {
-    using System;
-    using System.Linq.Expressions;
-    using System.Reflection;
+using System;
+using System.Linq.Expressions;
+using System.Reflection;
 
+namespace Glide {
     internal class MemberAccessor {
         public string MemberName { get; private set; }
         public Type MemberType { get; private set; }
