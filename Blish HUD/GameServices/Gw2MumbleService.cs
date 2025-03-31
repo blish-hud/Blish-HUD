@@ -150,7 +150,7 @@ namespace Blish_HUD {
                 return null;
             }
 
-            Match m = MUMBLE_LINK_REGEX.Match(commandLine);
+            var m = MUMBLE_LINK_REGEX.Match(commandLine);
             if (m.Success) {
                 return m.Groups[1].Value;
             } else {

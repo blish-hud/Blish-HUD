@@ -27,7 +27,7 @@ namespace Blish_HUD.GameIntegration {
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
 
             if (_timeSinceCheck > CHECK_INTERVAL) {
-                Process[] tacoApp = Process.GetProcessesByName(TACO_PROCESS);
+                var tacoApp = Process.GetProcessesByName(TACO_PROCESS);
 
                 this.TacOIsRunning = tacoApp.Length > 0;
 

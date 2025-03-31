@@ -235,7 +235,7 @@ namespace Blish_HUD.Controls {
             _windowBackground = background;
             _windowBackgroundOrigin = backgroundOrigin;
 
-            Rectangle tempBounds = windowBackgroundBounds ?? background.Bounds;
+            var tempBounds = windowBackgroundBounds ?? background.Bounds;
 
             _titleBarBounds = new Rectangle(0, 0, tempBounds.Width, titleBarHeight);
 

@@ -116,7 +116,7 @@ namespace Blish_HUD.Input {
                 }
             }
 
-            while (_inputBuffer.TryDequeue(out KeyboardEventArgs keyboardEvent)) {
+            while (_inputBuffer.TryDequeue(out var keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
                     // Avoid firing on held keys
                     if (_keysDown.Contains(keyboardEvent.Key)) {
@@ -142,12 +142,12 @@ namespace Blish_HUD.Input {
             // Ensure that key states don't get stuck if the
             // application focus is lost while keys were down.
 
-            Keys[] passingKeys = _keysDown.ToArray();
+            var passingKeys = _keysDown.ToArray();
             _keysDown.Clear();
 
             UpdateStates();
 
-            foreach (Keys key in passingKeys) {
+            foreach (var key in passingKeys) {
                 OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
             }
         }
@@ -177,7 +177,7 @@ namespace Blish_HUD.Input {
         }
 
         private void UpdateStates() {
-            Keys[] downArray = _keysDown.ToArray();
+            var downArray = _keysDown.ToArray();
 
             this.State = new KeyboardState(downArray);
             this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);

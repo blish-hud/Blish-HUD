@@ -178,7 +178,7 @@ namespace Blish_HUD.ArcDps {
                 // Retrieve the state object and the client socket 
                 // from the asynchronous state object.
                 var state = (SocketState)ar.AsyncState;
-                Socket socket = state.Socket;
+                var socket = state.Socket;
 
                 // Read data from the remote device.
                 int bytesRead = 0;

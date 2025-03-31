@@ -326,7 +326,7 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private Process GetDefaultGw2ProcessByName() {
-            Process[] gw2Processes = Array.Empty<Process>();
+            var gw2Processes = Array.Empty<Process>();
 
             if (ApplicationSettings.Instance.ProcessName != null) {
                 gw2Processes = Process.GetProcessesByName(ApplicationSettings.Instance.ProcessName);

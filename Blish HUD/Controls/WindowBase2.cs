@@ -80,7 +80,7 @@ namespace Blish_HUD.Controls {
         /// Returns the calculated zindex offset.  This should be added to the base zindex (typically <see cref="Screen.WINDOW_BASEZINDEX"/>) and returned as the zindex.
         /// </summary>
         public static int GetZIndex(IWindow thisWindow) {
-            IWindow[] windows = GetWindows().ToArray();
+            var windows = GetWindows().ToArray();
 
             if (!windows.Contains(thisWindow)) {
                 throw new InvalidOperationException($"{nameof(thisWindow)} must be a direct child of GameService.Graphics.SpriteScreen before ZIndex can automatically be calculated.");

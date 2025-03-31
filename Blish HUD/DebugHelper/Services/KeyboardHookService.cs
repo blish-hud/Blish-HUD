@@ -45,7 +45,7 @@ namespace Blish_HUD.DebugHelper.Services {
                 Key = key
             };
 
-            KeyboardResponseMessage? response = messageService.SendAndWait<KeyboardResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
+            var response = messageService.SendAndWait<KeyboardResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
 
             if (response?.IsHandled == true) {
                 return 1;

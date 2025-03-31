@@ -67,7 +67,7 @@ namespace Blish_HUD {
         }
 
         private uint GetDpi() {
-            Version osVersion = Environment.OSVersion.Version;
+            var osVersion = Environment.OSVersion.Version;
 
             switch (osVersion.Major, osVersion.Minor) {
                 case (6, 3):  // win8.1
@@ -94,8 +94,8 @@ namespace Blish_HUD {
 
         private uint GetDpiWin81() {
             try {
-                IntPtr hWnd = GameService.GameIntegration.Gw2Instance.Gw2WindowHandle;
-                IntPtr hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULT.MONITOR_DEFAULTTONEAREST);
+                var hWnd = GameService.GameIntegration.Gw2Instance.Gw2WindowHandle;
+                var hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULT.MONITOR_DEFAULTTONEAREST);
 
                 int hr = GetDpiForMonitor(hMonitor, MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI, out uint _, out uint dpiY);
                 Marshal.ThrowExceptionForHR(hr);
@@ -399,7 +399,7 @@ namespace Blish_HUD {
         internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
             _renderTimer.Restart();
 
-            using GraphicsDeviceContext ctx = this.LendGraphicsDeviceContext();
+            using var ctx = this.LendGraphicsDeviceContext();
 
             if (_renderTimer.ElapsedMilliseconds > 1) {
                 Logger.Debug($"Render thread stalled for {_renderTimer.ElapsedMilliseconds} ms.");
@@ -449,7 +449,7 @@ namespace Blish_HUD {
                 BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
 
             int integerDpi = (int)GetDpiScaleRatio();
-            Point scaledMinimumGameResolution = MinimumUnscaledGameResolution * new Point(integerDpi, integerDpi);
+            var scaledMinimumGameResolution = MinimumUnscaledGameResolution * new Point(integerDpi, integerDpi);
 
             this.UIScaleMultiplier = GetDpiScaleRatio()
               * GetScaleRatio(GameService.Gw2Mumble.UI.UISize)

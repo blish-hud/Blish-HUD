@@ -163,7 +163,7 @@ namespace Blish_HUD.GameIntegration {
 
         private void UpdateAudioDevice() {
             if (_deviceSetting.Value == Devices.DefaultDevice) {
-                if (TryGetDefaultAudioEndpoint(_deviceEnumerator, DataFlow.Render, Role.Multimedia, out MMDevice defaultDevice)) {
+                if (TryGetDefaultAudioEndpoint(_deviceEnumerator, DataFlow.Render, Role.Multimedia, out var defaultDevice)) {
                     this.AudioDevice = defaultDevice;
                 } else {
                     this.AudioDevice = null;

@@ -51,7 +51,7 @@ namespace Blish_HUD.Settings.UI.Views {
         public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {
                 case EnumInclusionComplianceRequisite<TEnum> enumInclusionRequisite:
-                    IEnumerable<TEnum> toRemove = _enumValues.Except(enumInclusionRequisite.IncludedValues);
+                    var toRemove = _enumValues.Except(enumInclusionRequisite.IncludedValues);
 
                     foreach (var value in toRemove) {
                         _enumDropdown.Items.Remove(value.Humanize(LetterCasing.Title));

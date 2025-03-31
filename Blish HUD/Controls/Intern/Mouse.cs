@@ -198,7 +198,7 @@ namespace Blish_HUD.Controls.Intern {
         /// Gets the cursors absolute screen position.
         /// </summary>
         public static Point GetPosition() {
-            PInvoke.GetCursorPos(out POINT lpPoint);
+            PInvoke.GetCursorPos(out var lpPoint);
             return lpPoint;
         }
         /// <summary>

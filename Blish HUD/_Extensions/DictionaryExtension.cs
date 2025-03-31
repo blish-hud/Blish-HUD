@@ -34,9 +34,9 @@ namespace Blish_HUD {
             params Dictionary<TKey, TValue>[] dictionaries)
             where T : IDictionary<TKey, TValue>, new() {
             var new_dictionary = new T();
-            foreach (IDictionary<TKey, TValue> src in
+            foreach (var src in
                 (new List<IDictionary<TKey, TValue>> { main }).Concat(dictionaries)) {
-                foreach (KeyValuePair<TKey, TValue> p in src) {
+                foreach (var p in src) {
                     new_dictionary[p.Key] = p.Value;
                 }
             }

@@ -110,7 +110,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
         private static bool TryWaitForProcessLocks() {
             bool timedout = true;
             for (int i = SINGLEPROCESS_DELAY; i > 0; i--) {
-                Process[] instances = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(FILE_EXE));
+                var instances = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(FILE_EXE));
 
                 if (instances.Length <= 1) {
                     timedout = false;

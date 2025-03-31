@@ -46,7 +46,7 @@ namespace Blish_HUD.Settings.UI.Presenters {
         }
 
         private void UpdateViewComplianceRequisite() {
-            IEnumerable<IComplianceRequisite> complianceRequisites = this.Model.GetComplianceRequisite();
+            var complianceRequisites = this.Model.GetComplianceRequisite();
 
             foreach (var complianceRequisite in complianceRequisites) {
                 if (!this.View.HandleComplianceRequisite(complianceRequisite)) {

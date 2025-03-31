@@ -38,7 +38,7 @@ namespace Blish_HUD.DebugHelper.Services {
             }
 
             int eventType = (int)wParam;
-            MOUSELLHOOKSTRUCT hookStruct = Marshal.PtrToStructure<MOUSELLHOOKSTRUCT>(lParam);
+            var hookStruct = Marshal.PtrToStructure<MOUSELLHOOKSTRUCT>(lParam);
 
             var message = new MouseEventMessage {
                 EventType = eventType,
@@ -50,7 +50,7 @@ namespace Blish_HUD.DebugHelper.Services {
                 ExtraInfo = hookStruct.extraInfo
             };
 
-            MouseResponseMessage? response = messageService.SendAndWait<MouseResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
+            var response = messageService.SendAndWait<MouseResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
 
             if (response?.IsHandled == true) {
                 return 1;

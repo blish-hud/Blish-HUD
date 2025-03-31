@@ -93,7 +93,7 @@ namespace Blish_HUD {
                 return;
             }
 
-            foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) {
+            foreach (var action in _subscriptions[skillId]) {
                 action(this, ConvertFrom(combatEvent, combatEventType));
             }
         }

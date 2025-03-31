@@ -149,7 +149,7 @@ namespace Blish_HUD.Modules {
         private static string GetModuleErrorReason(Exception ex) {
             if (ex is AggregateException ae && ae.InnerExceptions.Count > 0) {
                 var sb = new StringBuilder();
-                foreach (Exception innerException in ae.InnerExceptions) {
+                foreach (var innerException in ae.InnerExceptions) {
                     if (innerException != null) {
                         sb.AppendLine(innerException.Message);
                     }

@@ -80,7 +80,7 @@ namespace Glide {
             bool doReverse = false;
             bool doComplete = false;
 
-            MemberLerper[] lerperSet = lerpers.ToArray();
+            var lerperSet = lerpers.ToArray();
 
             if (!initialized) {
                 i = vars.Count;

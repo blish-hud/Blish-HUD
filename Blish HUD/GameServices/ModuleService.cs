@@ -344,11 +344,11 @@ namespace Blish_HUD {
         }
 
         private void UnregisterModuleMenuInSettings(ModuleManager moduleManager) {
-            foreach (KeyValuePair<MenuItem, ModuleManager> moduleMenuPair in _moduleMenus) {
+            foreach (var moduleMenuPair in _moduleMenus) {
                 if (moduleMenuPair.Value == moduleManager) {
                     _moduleMenus.Remove(moduleMenuPair.Key);
 
-                    MenuItem toSelect = moduleMenuPair.Key.Selected
+                    var toSelect = moduleMenuPair.Key.Selected
                         ? _moduleMenus.FirstOrDefault().Key ?? _rootModuleSettingsMenuItem
                         : null;
 

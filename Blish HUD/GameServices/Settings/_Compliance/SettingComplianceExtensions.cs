@@ -77,7 +77,7 @@ namespace Blish_HUD.Settings {
         /// Limits the enum values a user can set the setting to in the UI to anything except for the provided values.
         /// </summary>
         public static void SetExcluded<T>(this SettingEntry<T> setting, params T[] excluded) where T : Enum {
-            T[] values = EnumUtil.GetCachedValues<T>();
+            var values = EnumUtil.GetCachedValues<T>();
 
             SetComplianceRequisite(setting, new EnumInclusionComplianceRequisite<T>(values.Except(excluded).ToArray()));
         }

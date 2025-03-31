@@ -121,7 +121,7 @@ namespace Blish_HUD.Controls {
                 return;
             }
 
-            Color messageColor = Color.White;
+            var messageColor = Color.White;
             Texture2D notificationBackground = null;
 
             switch (_type) {

@@ -140,7 +140,7 @@ namespace Blish_HUD.GameServices.ArcDps {
             _logger.Info($"Start Legacy Receive Task for {this.Client?.Client.RemoteEndPoint?.ToString()}");
             try {
                 byte[] messageHeaderBuffer = new byte[9];
-                ArrayPool<byte> pool = ArrayPool<byte>.Shared;
+                var pool = ArrayPool<byte>.Shared;
                 while (this.Client?.Connected ?? false) {
                     ct.ThrowIfCancellationRequested();
 
@@ -177,7 +177,7 @@ namespace Blish_HUD.GameServices.ArcDps {
             _logger.Info($"Start Receive Task for {this.Client?.Client.RemoteEndPoint?.ToString()}");
             try {
                 byte[] messageHeaderBuffer = new byte[5];
-                ArrayPool<byte> pool = ArrayPool<byte>.Shared;
+                var pool = ArrayPool<byte>.Shared;
                 while (this.Client?.Connected ?? false) {
                     ct.ThrowIfCancellationRequested();
 

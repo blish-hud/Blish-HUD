@@ -368,7 +368,7 @@ namespace Blish_HUD {
         }
 
         private void HandleEnqueuedUpdates(GameTime gameTime) {
-            while (_queuedUpdates.TryDequeue(out Action<GameTime> updateCall)) {
+            while (_queuedUpdates.TryDequeue(out var updateCall)) {
                 updateCall.Invoke(gameTime);
             }
         }

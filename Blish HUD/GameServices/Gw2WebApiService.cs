@@ -119,7 +119,7 @@ namespace Blish_HUD {
         private async Task RefreshRegisteredKeys() {
             _characterRepository.Clear();
 
-            foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
+            foreach (var key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
                 await UpdateCharacterList(key);
             }
 
@@ -129,7 +129,7 @@ namespace Blish_HUD {
         #region API Management
 
         public async Task RegisterKey(string name, string apiKey) {
-            SettingEntry<string> registeredKey = _apiKeyRepository.DefineSetting(name, "");
+            var registeredKey = _apiKeyRepository.DefineSetting(name, "");
 
             registeredKey.Value = apiKey;
 
@@ -138,7 +138,7 @@ namespace Blish_HUD {
         }
 
         public async Task UnregisterKey(string apiKey) {
-            foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
+            foreach (var key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
                 if (string.Equals(apiKey, key.Value, StringComparison.InvariantCultureIgnoreCase) || key.Value.StartsWith(apiKey, StringComparison.InvariantCultureIgnoreCase)) {
                     _apiKeyRepository.UndefineSetting(key.EntryKey);
 
@@ -155,7 +155,7 @@ namespace Blish_HUD {
 
         private async Task UpdateCharacterList(SettingEntry<string> definedKey) {
             try {
-                List<string> characters = await GetCharacters(GetConnection(definedKey.Value));
+                var characters = await GetCharacters(GetConnection(definedKey.Value));
 
                 foreach (string characterId in characters) {
                     _characterRepository.AddOrUpdate(characterId, definedKey.Value, (k, o) => definedKey.Value);

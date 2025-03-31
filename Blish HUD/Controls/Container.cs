@@ -221,7 +221,7 @@ namespace Blish_HUD.Controls {
             }
 
             var children = _children.ToList();
-            IOrderedEnumerable<Control> zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
+            var zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
 
             foreach (var childControl in zSortedChildren) {
                 if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
@@ -254,7 +254,7 @@ namespace Blish_HUD.Controls {
         public sealed override void DoUpdate(GameTime gameTime) {
             UpdateContainer(gameTime);
 
-            Control[] children = _children.ToArray();
+            var children = _children.ToArray();
 
             _contentBounds = ControlUtil.GetControlBounds(children);
 

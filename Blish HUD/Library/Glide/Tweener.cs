@@ -169,14 +169,14 @@ namespace Glide {
                         tweensList = list.ToArray();
                     }
 
-                    foreach (Tween tween in tweensList) {
+                    foreach (var tween in tweensList) {
                         action(tween);
                     }
                 }
             }
 
             private MemberLerper CreateLerper(Type propertyType) {
-                if (!registeredLerpers.TryGetValue(propertyType, out ConstructorInfo lerper)) {
+                if (!registeredLerpers.TryGetValue(propertyType, out var lerper)) {
                     throw new Exception(string.Format("No Lerper found for type {0}.", propertyType.FullName));
                 }
 
@@ -186,15 +186,15 @@ namespace Glide {
             void IRemoveTweens.Remove(Tween tween) => toRemove.Enqueue(tween);
 
             private void AddAndRemove() {
-                while (toAdd.TryDequeue(out Tween tween)) {
-                    List<Tween> list = tweens.GetOrAdd(tween.Target, _ => new List<Tween>(4));
+                while (toAdd.TryDequeue(out var tween)) {
+                    var list = tweens.GetOrAdd(tween.Target, _ => new List<Tween>(4));
                     lock (list) {
                         list.Add(tween);
                     }
                 }
 
-                while (toRemove.TryDequeue(out Tween tween)) {
-                    if (tweens.TryGetValue(tween.Target, out List<Tween> list)) {
+                while (toRemove.TryDequeue(out var tween)) {
+                    if (tweens.TryGetValue(tween.Target, out var list)) {
                         lock (list) {
                             list.Remove(tween);
                         }

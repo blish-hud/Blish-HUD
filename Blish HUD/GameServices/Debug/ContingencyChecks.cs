@@ -93,12 +93,12 @@ namespace Blish_HUD.Debug {
                 string blishProfileName = scannerService.FindProfilesUsingApplication(exePath);
 
                 var errors = new List<string>();
-                foreach (KeyValuePair<ESetting, HashSet<uint>> pair in forbiddenValues) {
-                    SettingMeta settingMeta = metaService.GetSettingMeta((uint)pair.Key);
+                foreach (var pair in forbiddenValues) {
+                    var settingMeta = metaService.GetSettingMeta((uint)pair.Key);
                     uint value = settingService.GetDwordValueFromProfile(blishProfileName, (uint)pair.Key);
 
                     if (pair.Value.Contains(value)) {
-                        SettingValue<uint> settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
+                        var settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
                         string val = settingValue?.ValueName ?? value.ToString();
 
                         errors.Add(string.Format(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Error, settingMeta.SettingName, val));

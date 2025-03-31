@@ -87,7 +87,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            TextureRegion2D sprite = _possibleDrawVariations[drawVariation];
+            var sprite = _possibleDrawVariations[drawVariation];
             if (this.Size.X == this.Size.Y && this.Size.X > 24 && this.Size.X < 64) {
                 sprite = _spriteDyeChannel;
             } else if (this.Size.X > this.Size.Y) {

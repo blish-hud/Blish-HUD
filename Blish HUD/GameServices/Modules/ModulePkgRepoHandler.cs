@@ -122,7 +122,7 @@ namespace Blish_HUD.Modules {
         private void AcknowledgePendingModuleUpdates() {
             // Mark all updates as acknowledged
             foreach (var unacknowledgedModuleUpdate in this.UnacknowledgedUpdates) {
-                if (!_acknowledgedUpdates.TryGetSetting<string>(unacknowledgedModuleUpdate.Namespace, out SettingEntry<string> acknowledgementEntry)) {
+                if (!_acknowledgedUpdates.TryGetSetting<string>(unacknowledgedModuleUpdate.Namespace, out var acknowledgementEntry)) {
                     acknowledgementEntry = _acknowledgedUpdates.DefineSetting(unacknowledgedModuleUpdate.Namespace, "0.0.0");
                 }
 

@@ -90,7 +90,7 @@ namespace Blish_HUD.Controls {
         }
 
         public void Clear() {
-            T[] oldItems = this.ToArray();
+            var oldItems = this.ToArray();
 
             if (!_listLock.IsWriteLockHeld) {
                 _listLock.EnterWriteLock();
