@@ -142,7 +142,7 @@ namespace Blish_HUD {
 
         public float GetDpiScaleRatio() {
             if (this.DpiScalingMethod == DpiMethod.UseGameDpi
-                 || this.DpiScalingMethod == DpiMethod.SyncWithGame && GameIntegration.GfxSettings.DpiScaling.GetValueOrDefault()) {
+                 || (this.DpiScalingMethod == DpiMethod.SyncWithGame && GameIntegration.GfxSettings.DpiScaling.GetValueOrDefault())) {
                 uint dpi = GetDpi();
 
                 // If DPI is 0 then the window handle is likely not valid

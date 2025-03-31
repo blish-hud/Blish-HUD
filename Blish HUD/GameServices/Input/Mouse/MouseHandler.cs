@@ -101,7 +101,7 @@ namespace Blish_HUD.Input {
 
             return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased             // Never block the users input if they are releasing the left mouse button
                 && mouseEventArgs.EventType != MouseEventType.RightMouseButtonReleased            // Never block the users input if they are releasing the right mouse button
-                && (_hudFocused && !this.ActiveControl.Captures.HasFlag(CaptureType.DoNotBlock)); // If no control, or if the current control has capture forced off, then do not block
+                && _hudFocused && !this.ActiveControl.Captures.HasFlag(CaptureType.DoNotBlock); // If no control, or if the current control has capture forced off, then do not block
         }
 
         private bool HandleHookedMouseEvent(MouseEventArgs e) {

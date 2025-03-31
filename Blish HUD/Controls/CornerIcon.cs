@@ -97,7 +97,7 @@ namespace Blish_HUD.Controls {
         /// <see cref="CornerIcon"/>s are sorted by priority so that, from left to right, priority goes from the highest to lowest.
         /// </summary>
         public int Priority {
-            get => _priority ?? (_icon?.GetHashCode() ?? 0);
+            get => _priority ?? _icon?.GetHashCode() ?? 0;
             set {
                 if (SetProperty(ref _priority, value)) {
                     UpdateCornerIconPositions();

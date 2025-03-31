@@ -292,7 +292,7 @@ namespace Blish_HUD.Controls {
                 return;
             }
 
-            var drawTint = ScrollFocus == ClickFocus.None && this.MouseOver || (_associatedContainer != null && _associatedContainer.MouseOver)
+            var drawTint = (ScrollFocus == ClickFocus.None && this.MouseOver) || (_associatedContainer != null && _associatedContainer.MouseOver)
                                ? Color.White
                                : ContentService.Colors.Darkened(0.6f);
 
