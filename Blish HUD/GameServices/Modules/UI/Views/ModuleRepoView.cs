@@ -96,7 +96,7 @@ namespace Blish_HUD.Modules.UI.Views {
         }
 
         private bool PkgNeedsUpdateFilter(ViewContainer viewContainer) {
-            var pkgView = viewContainer.CurrentView as ManagePkgView;
+            _ = viewContainer.CurrentView as ManagePkgView;
 
             return true;
         }

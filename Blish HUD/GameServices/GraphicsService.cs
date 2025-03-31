@@ -207,7 +207,7 @@ namespace Blish_HUD {
                         // Exception would be from the code above, but don't update our
                         // scaling if there is an exception
                         ScreenSizeUpdated(value);
-                    } catch (SharpDXException sdxe) {
+                    } catch (SharpDXException) {
                         // If device lost, we should hopefully handle in device lost event below
                     }
                 }
