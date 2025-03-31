@@ -24,5 +24,4 @@
         /// </summary>
         Expired
     }
-
 }

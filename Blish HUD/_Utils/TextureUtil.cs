@@ -71,6 +71,5 @@ namespace Blish_HUD {
             }
             return (byte)fr;
         }
-
     }
 }

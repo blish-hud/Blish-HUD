@@ -82,6 +82,5 @@ namespace Blish_HUD.Controls.Effects {
                 spriteBatch.End();
             }
         }
-
     }
 }

@@ -110,6 +110,5 @@ namespace Blish_HUD.Controls {
 
             this.Size = LabelRegion;
         }
-
     }
 }

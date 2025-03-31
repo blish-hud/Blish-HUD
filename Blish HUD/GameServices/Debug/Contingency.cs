@@ -107,6 +107,5 @@ namespace Blish_HUD.Debug {
                               string.Format(Strings.GameServices.Debug.ContingencyMessages.CoreUpdateFailed_Description, version, message),
                               "https://link.blishhud.com/coreupdatefailed");
         }
-
     }
 }

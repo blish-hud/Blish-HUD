@@ -24,6 +24,5 @@ namespace Blish_HUD {
                                    bounds,
                                    new Rectangle(((int)(GameService.Overlay.CurrentGameTime.TotalGameTime.TotalSeconds * (64f / 3f))) % 64 * 64, 0, 64, 64));
         }
-
     }
 }

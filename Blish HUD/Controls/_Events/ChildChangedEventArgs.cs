@@ -14,5 +14,4 @@ namespace Blish_HUD.Controls {
             this.ResultingChildren = resultingChildren;
         }
     }
-
 }

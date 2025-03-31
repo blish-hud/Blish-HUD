@@ -167,7 +167,6 @@ namespace Blish_HUD.Controls {
 
                 base.DisposeControl();
             }
-
         }
 
         public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
@@ -301,6 +300,5 @@ namespace Blish_HUD.Controls {
                                               ? Color.FromNonPremultiplied(239, 240, 239, 255)
                                               : Control.StandardColors.DisabledText));
         }
-
     }
 }

@@ -13,7 +13,5 @@ namespace Blish_HUD.Graphics.UI {
         public void DoUpdateView() { /* NOOP */ }
 
         public void DoUnload() { /* NOOP */ }
-
     }
-
 }

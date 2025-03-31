@@ -400,6 +400,5 @@ namespace Blish_HUD.Controls {
             // Draw text
             spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont14, new Rectangle(iconSize + 20, 0, _size.X - iconSize - 35, this.Height - _bottomSectionHeight), Color.White, true, true);
         }
-
     }
 }

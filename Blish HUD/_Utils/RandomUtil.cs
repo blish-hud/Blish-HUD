@@ -23,6 +23,5 @@ namespace Blish_HUD {
 
             return (seededRandom.Next(minValue, maxValue), seededRandom);
         }
-
     }
 }

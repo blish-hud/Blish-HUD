@@ -41,7 +41,5 @@ namespace Blish_HUD.Input {
 
             this.DebugHelperMessageService.Send(response);
         }
-
     }
-
 }

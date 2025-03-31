@@ -44,7 +44,6 @@ namespace Blish_HUD {
                  && Equals(leftSpriteBatchParams.Effect, rightSpriteBatchParams.Effect)
                  && Equals(leftSpriteBatchParams.TransformMatrix, rightSpriteBatchParams.TransformMatrix));
         }
-
     }
 
     public static class SpriteBatchExtensions {
@@ -208,6 +207,5 @@ namespace Blish_HUD {
 
             spriteBatch.DrawString(font, text, textPos, color * absoluteOpacity);
         }
-
     }
 }

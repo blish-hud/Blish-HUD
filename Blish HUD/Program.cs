@@ -127,7 +127,5 @@ namespace Blish_HUD {
 
             Application.Run();
         }
-
     }
-
 }

@@ -229,7 +229,5 @@ namespace Blish_HUD.Contexts {
             contextResult = new ContextResult<bool>(FestivalIsActive(festival));
             return ContextAvailability.Available;
         }
-
     }
-
 }

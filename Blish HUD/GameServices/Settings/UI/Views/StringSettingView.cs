@@ -80,6 +80,5 @@ namespace Blish_HUD.Settings.UI.Views {
                 _stringTextbox.InputFocusChanged -= StringTextboxOnInputFocusChanged;
             }
         }
-
     }
 }

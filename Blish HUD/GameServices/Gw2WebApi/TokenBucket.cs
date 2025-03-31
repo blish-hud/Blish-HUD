@@ -108,6 +108,5 @@ namespace Blish_HUD.Gw2WebApi {
                 throw;
             }
         }
-
     }
 }

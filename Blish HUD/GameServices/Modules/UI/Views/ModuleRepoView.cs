@@ -110,6 +110,5 @@ namespace Blish_HUD.Modules.UI.Views {
 
             return true;
         }
-
     }
 }

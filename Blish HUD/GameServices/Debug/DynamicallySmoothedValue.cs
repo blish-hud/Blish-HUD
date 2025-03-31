@@ -68,6 +68,5 @@ namespace Blish_HUD.Debug {
 
             return _divideExpression(total, currentSize);
         }
-
     }
 }

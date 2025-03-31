@@ -68,5 +68,4 @@ namespace Blish_HUD.Gw2Mumble {
         internal void Update(GameTime gameTime) => HandleEvents();
 
     }
-
 }

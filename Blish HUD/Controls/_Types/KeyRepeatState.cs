@@ -34,6 +34,5 @@ namespace Blish_HUD.Controls {
                 _lastInterval = gameTime.TotalGameTime;
             }
         }
-
     }
 }

@@ -18,5 +18,4 @@ namespace Blish_HUD {
         public static string ToRoundedString(this Vector3 vector) => $"X: {vector.X:0,0} Y: {vector.Y:0,0} Z: {vector.Z:0,0}";
 
     }
-
 }

@@ -164,7 +164,5 @@ namespace Blish_HUD.Controls {
                                  modifierTint);
             }
         }
-
     }
-
 }

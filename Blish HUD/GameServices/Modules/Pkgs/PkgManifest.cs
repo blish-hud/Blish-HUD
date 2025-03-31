@@ -34,6 +34,5 @@ namespace Blish_HUD.Modules.Pkgs {
 
         [JsonProperty("ispreview", Required = Required.Default)]
         public bool IsPreview { get; set; }
-
     }
 }

@@ -362,6 +362,5 @@ namespace Blish_HUD.Modules.UI.Views {
             _dependencyView?.Dispose();
             _settingView?.Dispose();
         }
-
     }
 }

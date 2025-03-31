@@ -162,7 +162,5 @@ namespace Blish_HUD {
             GameService.GameIntegration.Gw2Instance.Gw2Started -= GameIntegrationOnGw2Started;
             _gw2Client.Dispose();
         }
-
     }
-
 }

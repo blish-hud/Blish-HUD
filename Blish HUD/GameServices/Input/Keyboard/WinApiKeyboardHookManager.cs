@@ -36,7 +36,5 @@ namespace Blish_HUD.Input {
                 return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
             }
         }
-
     }
-
 }

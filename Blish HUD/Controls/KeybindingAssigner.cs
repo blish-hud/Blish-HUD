@@ -141,6 +141,5 @@ namespace Blish_HUD.Controls {
                                              HorizontalAlignment.Center);
             }
         }
-
     }
 }

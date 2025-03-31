@@ -127,5 +127,4 @@ namespace Blish_HUD.Content {
         public void Dispose() => _archive?.Dispose();
 
     }
-
 }

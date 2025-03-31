@@ -182,6 +182,5 @@ namespace Blish_HUD.Overlay.SelfUpdater {
                 GameService.Overlay.Restart();
             }
         }
-
     }
 }

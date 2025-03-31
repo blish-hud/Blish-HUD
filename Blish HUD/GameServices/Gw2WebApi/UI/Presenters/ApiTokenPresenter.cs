@@ -104,6 +104,5 @@ namespace Blish_HUD.Gw2WebApi.UI.Presenters {
 
             base.Unload();
         }
-
     }
 }

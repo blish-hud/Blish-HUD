@@ -20,6 +20,5 @@ namespace Blish_HUD {
 
             return new Point(farthestRight, farthestDown);
         }
-
     }
 }

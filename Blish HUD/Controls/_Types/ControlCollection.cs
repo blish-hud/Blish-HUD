@@ -231,6 +231,5 @@ namespace Blish_HUD.Controls {
         ~ControlCollection() {
             _listLock?.Dispose();
         }
-
     }
 }

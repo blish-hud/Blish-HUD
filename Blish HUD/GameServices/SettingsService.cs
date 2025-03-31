@@ -145,6 +145,5 @@ namespace Blish_HUD {
                 }
             }
         }
-
     }
 }

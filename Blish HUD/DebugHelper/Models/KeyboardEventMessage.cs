@@ -8,7 +8,5 @@ namespace Blish_HUD.DebugHelper.Models {
         [ProtoMember(101)] public uint EventType { get; set; }
 
         [ProtoMember(102)] public int Key { get; set; }
-
     }
-
 }

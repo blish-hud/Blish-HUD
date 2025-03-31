@@ -355,6 +355,5 @@ namespace Blish_HUD.Controls {
                                    _layoutBottomSplitLineBounds,
                                    _layoutBottomSplitLineSourceBounds);
         }
-
     }
 }

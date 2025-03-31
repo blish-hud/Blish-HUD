@@ -148,6 +148,5 @@ namespace Blish_HUD.Input {
 
             return key == Keys.None ? (ModifierKeys.None, firstModifier) : (modifiers, key);
         }
-
     }
 }

@@ -53,6 +53,5 @@ namespace Blish_HUD.Settings.UI.Views {
                 _boolCheckbox.CheckedChanged -= BoolCheckboxOnCheckedChanged;
             }
         }
-
     }
 }

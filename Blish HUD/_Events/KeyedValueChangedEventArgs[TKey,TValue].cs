@@ -17,6 +17,5 @@ namespace Blish_HUD {
             this.Key = key;
             this.Value = value;
         }
-
     }
 }

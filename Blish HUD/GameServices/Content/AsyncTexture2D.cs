@@ -136,6 +136,5 @@ namespace Blish_HUD.Content {
             _stagedTexture2D?.Dispose();
             _activeTexture2D?.Dispose();
         }
-
     }
 }

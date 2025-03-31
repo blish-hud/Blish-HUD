@@ -133,5 +133,4 @@ namespace Blish_HUD.DebugHelper.Services {
         #endregion
 
     }
-
 }

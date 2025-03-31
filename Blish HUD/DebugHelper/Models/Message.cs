@@ -11,7 +11,5 @@ namespace Blish_HUD.DebugHelper.Models {
     public abstract class Message {
 
         [ProtoMember(11)] public ulong Id { get; set; }
-
     }
-
 }

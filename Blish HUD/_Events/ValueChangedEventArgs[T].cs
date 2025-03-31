@@ -28,7 +28,5 @@ namespace Blish_HUD {
             _previousValue = previousValue;
             _newValue = newValue;
         }
-
     }
-
 }

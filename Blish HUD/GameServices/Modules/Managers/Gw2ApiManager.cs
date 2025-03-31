@@ -101,5 +101,4 @@ namespace Blish_HUD.Modules.Managers {
 
         public bool HasPermission(TokenPermission permission) => _activePermissions.Contains(permission);
     }
-
 }

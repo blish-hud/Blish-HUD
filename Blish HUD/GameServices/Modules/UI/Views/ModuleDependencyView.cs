@@ -78,6 +78,5 @@ namespace Blish_HUD.Modules.UI.Views {
             // Show "No dependencies" if there are none
             _messageLabel.Visible = !(_dependencyMenuList.Visible = _dependencyMenuList.Children.Count > 0);
         }
-
     }
 }

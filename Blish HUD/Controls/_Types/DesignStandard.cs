@@ -19,6 +19,5 @@ namespace Blish_HUD.Controls {
             this.PanelOffset = panelOffset;
             this.ControlOffset = controlOffset;
         }
-
     }
 }

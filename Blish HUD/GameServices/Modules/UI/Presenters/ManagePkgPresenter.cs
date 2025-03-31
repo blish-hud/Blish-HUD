@@ -105,6 +105,5 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             SetUi();
         }
-
     }
 }

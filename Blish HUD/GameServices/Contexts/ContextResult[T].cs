@@ -46,7 +46,5 @@
         public static implicit operator T(ContextResult<T> contextResult) {
             return contextResult.Value;
         }
-
     }
-
 }

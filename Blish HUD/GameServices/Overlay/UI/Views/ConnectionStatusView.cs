@@ -65,6 +65,5 @@ namespace Blish_HUD.Overlay.UI.Views {
             _updateTimer.Elapsed -= UiUpdateTimerElapsed;
             _updateTimer.Dispose();
         }
-
     }
 }

@@ -160,6 +160,5 @@ namespace Blish_HUD.Controls {
 
             Input.Mouse.LeftMouseButtonReleased -= InputOnLeftMouseButtonReleased;
         }
-
     }
 }

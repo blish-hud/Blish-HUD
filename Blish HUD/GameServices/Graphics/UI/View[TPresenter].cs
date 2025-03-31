@@ -66,6 +66,5 @@ namespace Blish_HUD.Graphics.UI {
         protected virtual void Build(Container buildPanel) { /* NOOP */ }
 
         protected virtual void Unload() { /* NOOP */ }
-
     }
 }

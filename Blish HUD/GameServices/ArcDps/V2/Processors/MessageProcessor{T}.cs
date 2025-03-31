@@ -13,7 +13,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
             if (listeners.Count > 0 && TryInternalProcess(message, out var parsedMessage)) {
                 Task.Run(async () => await SendToListener(parsedMessage, ct));
             }
-
         }
 
         private async Task SendToListener(T Message, CancellationToken ct) {

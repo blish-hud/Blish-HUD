@@ -41,7 +41,5 @@
             this.Id = id;
             this.Revision = revision;
         }
-
     }
-
 }

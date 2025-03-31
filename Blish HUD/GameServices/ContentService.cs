@@ -274,6 +274,5 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) { /* NOOP */ }
-
     }
 }

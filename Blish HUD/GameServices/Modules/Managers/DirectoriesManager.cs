@@ -39,7 +39,5 @@ namespace Blish_HUD.Modules.Managers {
 
             return _directoryPaths[directoryName];
         }
-
     }
-
 }

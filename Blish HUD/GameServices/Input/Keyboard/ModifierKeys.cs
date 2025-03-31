@@ -24,5 +24,4 @@ namespace Microsoft.Xna.Framework.Input {
         /// </summary>
         Shift = 4
     }
-
 }

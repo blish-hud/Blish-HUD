@@ -111,6 +111,5 @@ namespace Blish_HUD.Gw2Mumble {
 
             HandleEvents();
         }
-
     }
 }

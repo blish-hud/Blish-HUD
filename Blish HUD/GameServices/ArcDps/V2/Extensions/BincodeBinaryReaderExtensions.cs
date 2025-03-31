@@ -102,5 +102,4 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Extensions {
             return default;
         }
     }
-
 }

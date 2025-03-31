@@ -80,6 +80,5 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void RefreshDescription(string description) => _settingFlowPanel.BasicTooltipText = description;
 
         protected override void RefreshValue(SettingCollection value) { /* NOOP */ }
-
     }
 }

@@ -254,6 +254,5 @@ namespace Blish_HUD.Controls {
                 CornerIcons.Remove(this);
             }
         }
-
     }
 }

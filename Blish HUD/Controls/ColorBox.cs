@@ -109,7 +109,5 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, _spriteHighlight, bounds, Microsoft.Xna.Framework.Color.White);
             }
         }
-
     }
-
 }

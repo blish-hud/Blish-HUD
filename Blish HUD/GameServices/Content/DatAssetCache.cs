@@ -39,7 +39,6 @@ namespace Blish_HUD.Content {
             public TextureReference(int sizeReference) {
                 this.SizeReference = sizeReference;
             }
-
         }
 
         private readonly string _assetCachePath;
@@ -275,6 +274,5 @@ namespace Blish_HUD.Content {
 
             return texture != null;
         }
-
     }
 }

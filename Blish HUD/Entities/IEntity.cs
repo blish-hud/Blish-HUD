@@ -9,6 +9,5 @@ namespace Blish_HUD.Entities {
         /// See example below. <code>Vector3.DistanceSquared(entity.Position, cameraPosition)</code>
         /// </summary>
         public float DrawOrder { get; }
-
     }
 }

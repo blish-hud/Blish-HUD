@@ -424,6 +424,5 @@ namespace Blish_HUD.Controls {
 
             base.DisposeControl();
         }
-
     }
 }

@@ -101,6 +101,5 @@ namespace Blish_HUD.Settings.UI.Views {
                 _enumDropdown.ValueChanged -= EnumDropdownOnValueChanged;
             }
         }
-
     }
 }

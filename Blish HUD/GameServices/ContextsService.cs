@@ -30,7 +30,6 @@ namespace Blish_HUD {
 
                 GameService.Contexts.UnregisterContext<TContext>();
             }
-
         }
 
         private readonly Dictionary<Type, Context> _registeredContexts = new Dictionary<Type, Context>();
@@ -111,6 +110,5 @@ namespace Blish_HUD {
 
         /// <inheritdoc />
         protected override void Update(GameTime gameTime) { /* NOOP */ }
-
     }
 }

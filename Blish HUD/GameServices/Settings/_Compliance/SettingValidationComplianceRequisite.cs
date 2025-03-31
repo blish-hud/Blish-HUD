@@ -9,6 +9,5 @@ namespace Blish_HUD.Settings {
         public SettingValidationComplianceRequisite(Func<T, SettingValidationResult> validationFunc) {
             this.ValidationFunc = validationFunc;
         }
-
     }
 }

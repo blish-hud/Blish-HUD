@@ -274,7 +274,5 @@ namespace Blish_HUD.Input {
 
             return false;
         }
-
     }
-
 }

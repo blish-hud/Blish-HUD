@@ -11,5 +11,4 @@ namespace Blish_HUD.Controls {
             this.CurrentValue = currentValue;
         }
     }
-
 }

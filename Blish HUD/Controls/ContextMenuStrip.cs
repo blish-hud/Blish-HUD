@@ -293,5 +293,4 @@ namespace Blish_HUD.Controls {
                                    Color.White * 0.8f);
         }
     }
-
 }

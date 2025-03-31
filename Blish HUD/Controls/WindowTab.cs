@@ -17,5 +17,4 @@ namespace Blish_HUD.Controls {
             this.Priority = priority;
         }
     }
-
 }

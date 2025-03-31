@@ -38,6 +38,5 @@ namespace Blish_HUD.Graphics.UI {
 
         /// <inheritdoc cref="IPresenter.DoUnload"/>
         protected virtual void Unload() { /* NOOP */ }
-
     }
 }

@@ -15,6 +15,5 @@ namespace Blish_HUD.GameServices {
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
 
         public virtual void Unload() { /* NOOP */ }
-
     }
 }

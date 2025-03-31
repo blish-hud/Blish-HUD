@@ -423,6 +423,5 @@ namespace Blish_HUD.GameIntegration {
                 GameService.Overlay.Restart();
             }
         }
-
     }
 }

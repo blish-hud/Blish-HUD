@@ -27,6 +27,5 @@ namespace Blish_HUD.Modules.UI.Views {
                 Process.Start("explorer.exe", $"/open, \"{DirectoryUtil.BasePath + "\\modules"}\\\"");
             };
         }
-
     }
 }

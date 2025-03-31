@@ -21,5 +21,4 @@ namespace Blish_HUD.Input {
         public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
 
     }
-
 }

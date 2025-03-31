@@ -131,6 +131,5 @@ namespace Blish_HUD.Controls.Effects {
                 spriteBatch.DrawOnCtrl(this.AssignedControl, ContentService.Textures.Pixel, bounds, Color.Transparent);
             }
         }
-
     }
 }

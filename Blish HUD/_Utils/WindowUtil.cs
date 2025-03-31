@@ -238,6 +238,5 @@ namespace Blish_HUD {
             }
             return className;
         }
-
     }
 }

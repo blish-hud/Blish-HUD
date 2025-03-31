@@ -16,7 +16,5 @@
             this.Valid = valid;
             this.InvalidMessage = invalidMessage;
         }
-
     }
-
 }

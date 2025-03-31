@@ -252,6 +252,5 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
 
             base.DisposeControl();
         }
-
     }
 }

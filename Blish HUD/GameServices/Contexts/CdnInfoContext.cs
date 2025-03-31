@@ -50,7 +50,6 @@ namespace Blish_HUD.Contexts {
                 this.Standard = standard;
                 this.Chinese = chinese;
             }
-
         }
 
         private const int TOTAL_CDN_ENDPOINTS = 2;
@@ -187,5 +186,4 @@ namespace Blish_HUD.Contexts {
         public ContextAvailability TryGetChineseCdnInfo(out ContextResult<CdnInfo> contextResult) => TryGetCdnInfo(ref _chineseCdnInfo, out contextResult);
 
     }
-
 }

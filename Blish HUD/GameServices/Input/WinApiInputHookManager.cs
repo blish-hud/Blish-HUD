@@ -58,5 +58,4 @@ namespace Blish_HUD.Input {
         protected abstract int HookCallback(int nCode, IntPtr wParam, IntPtr lParam);
 
     }
-
 }

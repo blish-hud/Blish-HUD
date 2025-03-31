@@ -204,5 +204,4 @@ namespace Blish_HUD {
             return ArcDpsBridgeVersion.None;
         }
     }
-
 }

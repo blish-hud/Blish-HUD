@@ -137,6 +137,5 @@ namespace Blish_HUD.Controls {
                 tabIndex++;
             }
         }
-
     }
 }

@@ -63,6 +63,5 @@ namespace Blish_HUD.Controls {
                                         ? Color.White
                                         : ContentService.Colors.DullColor);
         }
-
     }
 }

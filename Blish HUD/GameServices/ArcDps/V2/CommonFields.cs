@@ -119,9 +119,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             /// <see langword="True"/> if this player agent belongs to the account currently logged in on the local Guild Wars 2 instance. Otherwise <see langword="false"/>.
             /// </summary>
             public bool Self { get; }
-
         }
-
     }
-
 }

@@ -309,6 +309,5 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this, _textureBottomCap, new Rectangle((this.Width / 2) - (_textureBottomCap.Width / 2), _barBounds.Bottom - _textureBottomCap.Height + CAP_SLACK, _textureBottomCap.Width, _textureBottomCap.Height));
             spriteBatch.DrawOnCtrl(this, _textureThumb, new Rectangle((this.Width / 2) - (_textureThumb.Width / 2), _barBounds.Top + ((this.ScrollbarHeight / 2) - (_textureThumb.Height / 2)), _textureThumb.Width, _textureThumb.Height), drawTint);
         }
-
     }
 }

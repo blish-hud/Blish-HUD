@@ -223,6 +223,5 @@ namespace Blish_HUD.Graphics {
 
             return true;
         }
-
     }
 }

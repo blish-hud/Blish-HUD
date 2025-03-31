@@ -18,6 +18,5 @@ namespace Blish_HUD.Input {
             this.EventType = eventType;
             this.Key = key;
         }
-
     }
 }

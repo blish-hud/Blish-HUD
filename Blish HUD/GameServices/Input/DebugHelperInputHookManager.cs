@@ -56,5 +56,4 @@ namespace Blish_HUD.Input {
         protected abstract void DummyHookCallback(TEventMessage message);
 
     }
-
 }

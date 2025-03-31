@@ -17,7 +17,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
                 result = default;
                 return false;
             }
-
         }
     }
 }

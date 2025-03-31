@@ -25,5 +25,4 @@ namespace Blish_HUD.Debug {
         public bool Remove(string key) => _texts.TryRemove(key, out _);
 
     }
-
 }

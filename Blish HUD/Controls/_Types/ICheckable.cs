@@ -13,7 +13,6 @@ namespace Blish_HUD.Controls {
         public event EventHandler<CheckChangedEvent> CheckedChanged;
 
         public bool Checked { get; set; }
-
     }
 
     public class CheckChangedEvent : EventArgs {

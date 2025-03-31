@@ -83,5 +83,4 @@ namespace Blish_HUD.Entities {
             }
         }
     }
-
 }

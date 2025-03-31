@@ -34,6 +34,5 @@ namespace Blish_HUD.GameIntegration {
                 _timeSinceCheck = 0;
             }
         }
-
     }
 }

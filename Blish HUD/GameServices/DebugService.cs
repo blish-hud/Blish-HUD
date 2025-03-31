@@ -317,5 +317,4 @@ namespace Blish_HUD {
         #endregion
 
     }
-
 }

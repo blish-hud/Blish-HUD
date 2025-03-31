@@ -19,7 +19,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
                 result = default;
                 return false;
             }
-
         }
     }
 }

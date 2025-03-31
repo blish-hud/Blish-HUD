@@ -434,6 +434,5 @@ namespace Blish_HUD.Controls {
 
             spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont16, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight), _textColor, true, true);
         }
-
     }
 }

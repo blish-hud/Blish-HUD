@@ -16,7 +16,5 @@ namespace Blish_HUD {
 
             return cameraUp;
         }
-
     }
-
 }

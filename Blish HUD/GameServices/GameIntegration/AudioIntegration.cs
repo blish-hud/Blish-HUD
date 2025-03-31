@@ -232,6 +232,5 @@ namespace Blish_HUD.GameIntegration {
                 device.AudioDevice.Dispose();
             }
         }
-
     }
 }

@@ -125,6 +125,5 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, drawIcon, bounds);
             }
         }
-
     }
 }

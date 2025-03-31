@@ -160,6 +160,5 @@ namespace Blish_HUD.GameIntegration {
                 _trayIcon.Dispose();
             }
         }
-
     }
 }

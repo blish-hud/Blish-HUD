@@ -86,6 +86,5 @@
             contextResult = new ContextResult<ClientType>(ClientType.Unknown, $"The CDN context is either not ready or failed to load.");
             return ContextAvailability.Unavailable;
         }
-
     }
 }

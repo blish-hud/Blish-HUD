@@ -12,7 +12,5 @@ namespace Blish_HUD.Modules {
 
         [JsonProperty("url")]
         public string Url { get; private set; }
-
     }
-
 }

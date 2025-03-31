@@ -105,5 +105,4 @@ namespace Blish_HUD.Modules.Managers {
         public void Dispose() => _reader?.Dispose();
 
     }
-
 }

@@ -67,5 +67,4 @@ namespace Blish_HUD.Modules {
         public void Dispose() => _contentsManager?.Dispose();
 
     }
-
 }

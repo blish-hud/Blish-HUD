@@ -346,6 +346,5 @@ namespace Blish_HUD.Controls {
                 control.Resized -= ChangedChildOnResized;
             }
         }
-
     }
 }

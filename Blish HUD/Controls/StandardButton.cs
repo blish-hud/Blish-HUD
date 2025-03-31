@@ -181,7 +181,5 @@ namespace Blish_HUD.Controls {
             // Button Text
             DrawText(spriteBatch, _layoutTextBounds);
         }
-
     }
-
 }

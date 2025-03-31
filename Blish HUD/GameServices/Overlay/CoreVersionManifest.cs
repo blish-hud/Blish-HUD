@@ -20,6 +20,5 @@ namespace Blish_HUD.Overlay {
 
         [JsonProperty("changelog")]
         public string Changelog { get; set; }
-
     }
 }

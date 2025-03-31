@@ -59,6 +59,5 @@ namespace Blish_HUD.Gw2Mumble {
 
             _worldViewProjection = _view * _projection;
         }
-
     }
 }

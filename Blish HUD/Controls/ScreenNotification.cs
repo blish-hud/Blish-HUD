@@ -229,6 +229,5 @@ namespace Blish_HUD.Controls {
 
             nNot.Show();
         }
-
     }
 }

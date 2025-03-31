@@ -82,6 +82,5 @@ namespace Blish_HUD.Controls {
 
             DrawText(spriteBatch, new Rectangle(CHECKBOX_SIZE / 3 * 2, 0, LabelRegion.X, LabelRegion.Y));
         }
-
     }
 }

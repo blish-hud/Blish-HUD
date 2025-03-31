@@ -66,7 +66,5 @@ namespace Blish_HUD.Input {
             this.Time = time;
             this.Extra = extraInfo;
         }
-
     }
-
 }

@@ -186,7 +186,5 @@ namespace Blish_HUD.ArcDps.Models {
             this.Pad63 = pad63;
             this.Pad64 = pad64;
         }
-
     }
-
 }

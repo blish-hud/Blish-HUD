@@ -89,6 +89,5 @@ namespace Blish_HUD.Modules.UI.Presenters {
                 nPanel.Show(new ManagePkgView(pkgManifest));
             }
         }
-
     }
 }

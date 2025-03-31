@@ -81,6 +81,5 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             spriteBatch.DrawOnCtrl(this, _shineTexture, bounds.ScaleBy(1.5f).OffsetBy(bounds.Width / 2, bounds.Height / 2), null, Color.White * 0.8f, (float)GameService.Overlay.CurrentGameTime.TotalGameTime.TotalSeconds * -1.3f, _shineTexture.Bounds.Size.ToVector2() / 2);
             spriteBatch.DrawOnCtrl(this, this.MouseOver || this.ChestOpen ? this.OpenChestTexture : this.ChestTexture, bounds.OffsetBy(bounds.Width / 2, bounds.Height / 2), null, Color.White, this.ChestOpen ? 0 : _rotation * _wiggleDirection, this.ChestTexture.Texture.Bounds.Size.ToVector2() / 2);
         }
-
     }
 }

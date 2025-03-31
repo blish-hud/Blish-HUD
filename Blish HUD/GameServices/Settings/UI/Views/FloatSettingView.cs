@@ -38,6 +38,5 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _valueTrackBar.Value = value;
         }
-
     }
 }

@@ -206,8 +206,10 @@ csharp_style_expression_bodied_methods = when_on_single_line:suggestion
 csharp_style_expression_bodied_operators = false:suggestion
 csharp_style_expression_bodied_properties = true:suggestion
 csharp_style_expression_bodied_lambdas = true:suggestion
-
 csharp_style_expression_bodied_local_functions = false:suggestion
+
+csharp_style_allow_blank_lines_between_consecutive_braces_experimental = false:warning
+
 [*.{appxmanifest,asax,ascx,aspx,axaml,axml,build,config,cs,cshtml,csproj,css,dbml,discomap,dtd,htm,html,js,json,jsproj,jsx,lsproj,master,njsproj,nuspec,paml,proj,props,proto,razor,resjson,resw,resx,skin,StyleCop,targets,tasks,ts,tsx,vb,vbproj,xaml,xamlx,xml,xoml,xsd}]
 indent_style=space
 indent_size=4

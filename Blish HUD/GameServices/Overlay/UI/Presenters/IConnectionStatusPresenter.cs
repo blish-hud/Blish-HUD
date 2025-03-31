@@ -8,6 +8,5 @@ namespace Blish_HUD.Overlay.UI.Presenters {
         public bool Connected { get; }
 
         public string ConnectionDetails { get; }
-
     }
 }

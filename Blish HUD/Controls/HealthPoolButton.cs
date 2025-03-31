@@ -44,6 +44,5 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, HealthPoolPressedSprite, new Rectangle(0, 0, this.Width, this.Height), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None);
             }
         }
-
     }
 }

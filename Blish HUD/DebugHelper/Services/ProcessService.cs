@@ -19,5 +19,4 @@ namespace Blish_HUD.DebugHelper.Services {
         private void Process_Exited(object sender, EventArgs e) => Environment.Exit(0);
 
     }
-
 }

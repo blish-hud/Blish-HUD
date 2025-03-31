@@ -42,6 +42,5 @@ namespace Blish_HUD.Modules.UI.Controls {
 
             contextMenu.Show(e.MousePosition);
         }
-
     }
 }

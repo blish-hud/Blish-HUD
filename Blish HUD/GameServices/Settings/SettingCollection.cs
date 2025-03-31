@@ -63,7 +63,6 @@ namespace Blish_HUD.Settings {
                            ? new SettingCollection(isLazy, jObj[ATTR_ENTRIES]) { RenderInUi = renderInUi }
                            : new SettingCollection(isLazy) { RenderInUi = renderInUi };
             }
-
         }
 
         private JToken _entryTokens;
@@ -200,5 +199,4 @@ namespace Blish_HUD.Settings {
         #endregion
 
     }
-
 }

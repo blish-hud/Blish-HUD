@@ -81,6 +81,5 @@ namespace Blish_HUD.Settings.UI.Views {
                 _menuSettingsList.ItemSelected -= SettingsListMenuOnItemSelected;
             }
         }
-
     }
 }

@@ -91,6 +91,5 @@ namespace Blish_HUD {
 
             return string.Join("\n", text.Split('\n').Select(s => WrapTextSegment(spriteFont, s, maxLineWidth)));
         }
-
     }
 }

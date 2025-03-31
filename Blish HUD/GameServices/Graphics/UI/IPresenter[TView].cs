@@ -7,6 +7,5 @@
         /// The <see cref="IView"/> this <see cref="IPresenter{TView}"/> will be presenting to.
         /// </summary>
         public TView View { get; }
-
     }
 }

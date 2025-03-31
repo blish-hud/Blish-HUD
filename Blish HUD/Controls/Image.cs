@@ -51,6 +51,5 @@ namespace Blish_HUD.Controls {
                                    Vector2.Zero,
                                    _spriteEffects);
         }
-
     }
 }

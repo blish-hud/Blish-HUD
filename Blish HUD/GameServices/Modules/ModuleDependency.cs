@@ -93,7 +93,5 @@ namespace Blish_HUD.Modules {
             // No module could be found that matches
             return new ModuleDependencyCheckDetails(this, ModuleDependencyCheckResult.NotFound);
         }
-
     }
-
 }

@@ -13,6 +13,5 @@
         /// The actively selected tab.
         /// </summary>
         public Tab SelectedTab { get; set; }
-
     }
 }

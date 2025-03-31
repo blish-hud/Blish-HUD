@@ -52,6 +52,5 @@ namespace Blish_HUD {
             }
             return sb.ToString();
         }
-
     }
 }

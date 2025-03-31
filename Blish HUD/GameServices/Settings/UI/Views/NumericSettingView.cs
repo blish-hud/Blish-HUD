@@ -49,6 +49,5 @@ namespace Blish_HUD.Settings.UI.Views {
             _displayNameLabel.BasicTooltipText = description;
             _valueTrackBar.BasicTooltipText = description;
         }
-
     }
 }

@@ -13,6 +13,5 @@ namespace Blish_HUD {
             }
             return sw.ToString();
         }
-
     }
 }

@@ -42,6 +42,5 @@ namespace Blish_HUD {
                 src.CopyTo((Stream)dest);
             }
         }
-
     }
 }

@@ -80,6 +80,5 @@ namespace Blish_HUD.Controls {
                                          _layoutTextBounds,
                                          Color.White * 0.8f);
         }
-
     }
 }

@@ -28,6 +28,5 @@ namespace Blish_HUD {
 
             return true;
         }
-
     }
 }

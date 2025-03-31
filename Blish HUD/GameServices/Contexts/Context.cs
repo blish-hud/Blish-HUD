@@ -69,7 +69,5 @@ namespace Blish_HUD.Contexts {
         protected virtual void Load() { /* NOOP */ }
 
         protected virtual void Unload() { /* NOOP */ }
-
     }
-
 }

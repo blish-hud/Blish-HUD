@@ -29,5 +29,4 @@ namespace Blish_HUD.Controls {
         public void Deselect();
 
     }
-
 }

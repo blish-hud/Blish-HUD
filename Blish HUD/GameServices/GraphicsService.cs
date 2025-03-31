@@ -104,7 +104,6 @@ namespace Blish_HUD {
             } catch {
                 return _legacyDpi;
             }
-
         }
 
         public float GetScaleRatio(UiSize currScale) {

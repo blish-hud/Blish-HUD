@@ -8,7 +8,5 @@ namespace Blish_HUD.Controls {
         public ControlActivatedEventArgs(Control activatedControl) {
             this.ActivatedControl = activatedControl;
         }
-
     }
-
 }

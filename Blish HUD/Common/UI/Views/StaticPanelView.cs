@@ -22,6 +22,5 @@ namespace Blish_HUD.Common.UI.Views {
             _panel.WidthSizingMode = SizingMode.Fill;
             _panel.Parent = buildPanel;
         }
-
     }
 }

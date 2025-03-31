@@ -78,6 +78,5 @@ namespace Blish_HUD.Controls {
                 Data = text.Substring(where, length)
             });
         }
-
     }
 }

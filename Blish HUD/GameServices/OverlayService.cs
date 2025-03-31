@@ -386,6 +386,5 @@ namespace Blish_HUD {
                 CornerIcon.LeftOffset = offset * 36;
             }
         }
-
     }
 }

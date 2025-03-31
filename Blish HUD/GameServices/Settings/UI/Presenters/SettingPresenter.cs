@@ -68,6 +68,5 @@ namespace Blish_HUD.Settings.UI.Presenters {
             this.Model.SettingChanged -= ModelOnSettingChanged;
             this.View.ValueChanged -= ViewOnValueChanged;
         }
-
     }
 }

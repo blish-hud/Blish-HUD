@@ -52,6 +52,5 @@ namespace Blish_HUD.Debug {
 
             return _calculatedTotal.Value;
         }
-
     }
 }

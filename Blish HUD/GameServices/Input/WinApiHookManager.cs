@@ -111,5 +111,4 @@ namespace Blish_HUD.Input {
         #endregion
 
     }
-
 }

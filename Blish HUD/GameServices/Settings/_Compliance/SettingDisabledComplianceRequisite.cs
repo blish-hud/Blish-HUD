@@ -6,6 +6,5 @@
         public SettingDisabledComplianceRequisite(bool disabled) {
             this.Disabled = disabled;
         }
-
     }
 }

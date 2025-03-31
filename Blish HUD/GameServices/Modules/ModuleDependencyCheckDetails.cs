@@ -23,6 +23,5 @@ namespace Blish_HUD.Modules {
             return this.Module?.Manifest.Name
                 ?? this.Dependency.Namespace;
         }
-
     }
 }

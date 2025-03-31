@@ -12,5 +12,4 @@ namespace Blish_HUD.Controls {
             this.CurrentLocation = currentLocation;
         }
     }
-
 }

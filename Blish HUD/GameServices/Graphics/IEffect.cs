@@ -9,6 +9,5 @@ namespace Blish_HUD.Graphics {
         public EffectParameterCollection Parameters { get; }
 
         public EffectTechniqueCollection Techniques { get; }
-
     }
 }

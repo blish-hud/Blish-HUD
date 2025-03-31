@@ -272,7 +272,5 @@ namespace Blish_HUD.Modules {
 
             this.DataReader?.Dispose();
         }
-
     }
-
 }

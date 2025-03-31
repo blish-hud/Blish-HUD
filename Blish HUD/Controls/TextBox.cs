@@ -184,6 +184,5 @@ namespace Blish_HUD.Controls {
                 PaintHighlight(spriteBatch, _highlightRegion);
             }
         }
-
     }
 }

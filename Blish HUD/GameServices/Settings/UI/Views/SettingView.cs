@@ -35,6 +35,5 @@ namespace Blish_HUD.Settings.UI.Views {
 
             return null;
         }
-
     }
 }

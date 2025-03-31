@@ -82,6 +82,5 @@ namespace Blish_HUD.Content {
         }
 
         public void Dispose() { /* NOOP */ }
-
     }
 }

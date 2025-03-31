@@ -12,7 +12,5 @@ namespace Blish_HUD.Input.WinApi {
         public int Flags { get; }
         public int Time { get; }
         public IntPtr Extra { get; }
-
     }
-
 }

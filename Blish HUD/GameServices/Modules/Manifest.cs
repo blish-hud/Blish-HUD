@@ -69,5 +69,4 @@ namespace Blish_HUD.Modules {
         public virtual string GetDetailedName() => $"{this.Name} ({this.Namespace}) v{this.Version}";
 
     }
-
 }

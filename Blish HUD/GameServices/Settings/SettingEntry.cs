@@ -46,7 +46,6 @@ namespace Blish_HUD.Settings {
 
                 return entryGeneric as SettingEntry;
             }
-
         }
 
         [JsonIgnore]
@@ -89,5 +88,4 @@ namespace Blish_HUD.Settings {
 
         #endregion
     }
-
 }

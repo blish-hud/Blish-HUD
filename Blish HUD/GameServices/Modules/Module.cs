@@ -250,5 +250,4 @@ namespace Blish_HUD.Modules {
         #endregion
 
     }
-
 }

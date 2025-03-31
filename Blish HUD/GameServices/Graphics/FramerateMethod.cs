@@ -12,5 +12,4 @@ namespace Blish_HUD.Graphics {
         Unlimited = 4,
         TrueUnlimited = 5,
     }
-
 }

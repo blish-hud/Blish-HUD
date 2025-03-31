@@ -61,7 +61,5 @@ namespace Blish_HUD.Settings {
 
             return newSetting;
         }
-
     }
-
 }

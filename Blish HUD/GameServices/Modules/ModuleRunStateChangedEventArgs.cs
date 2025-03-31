@@ -9,7 +9,5 @@ namespace Blish_HUD.Modules {
         public ModuleRunStateChangedEventArgs(ModuleRunState runState) {
             this.RunState = runState;
         }
-
     }
-
 }

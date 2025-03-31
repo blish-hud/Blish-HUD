@@ -41,6 +41,5 @@ namespace Blish_HUD.Common.UI.Views {
                 _tooltipLabel.Width = MAX_WIDTH;
             }
         }
-
     }
 }

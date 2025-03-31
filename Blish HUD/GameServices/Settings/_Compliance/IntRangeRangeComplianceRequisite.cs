@@ -8,6 +8,5 @@
             this.MinValue = minValue;
             this.MaxValue = maxValue;
         }
-
     }
 }

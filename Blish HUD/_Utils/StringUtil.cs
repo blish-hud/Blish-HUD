@@ -84,6 +84,5 @@ namespace Blish_HUD {
 
             return resultStringBuilder.ToString();
         }
-
     }
 }

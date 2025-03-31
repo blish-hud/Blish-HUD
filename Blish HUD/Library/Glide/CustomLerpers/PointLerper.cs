@@ -37,6 +37,5 @@ namespace Blish_HUD.Library.Glide.CustomLerpers {
 
             return current;
         }
-
     }
 }

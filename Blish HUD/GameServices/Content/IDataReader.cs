@@ -97,5 +97,4 @@ namespace Blish_HUD.Content {
         public void DeleteRoot();
 
     }
-
 }

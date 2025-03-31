@@ -17,5 +17,4 @@
         public static float GameToWorldCoord(float gameCoord) => gameCoord * INCH_TO_METER;
 
     }
-
 }

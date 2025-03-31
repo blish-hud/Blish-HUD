@@ -156,7 +156,5 @@ namespace Blish_HUD.ArcDps {
             SkillName = 0x08
 
         }
-
     }
-
 }

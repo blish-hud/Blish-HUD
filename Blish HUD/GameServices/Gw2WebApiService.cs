@@ -218,8 +218,6 @@ namespace Blish_HUD {
                     RefreshRegisteredKeys();
                 }
             }
-
         }
-
     }
 }

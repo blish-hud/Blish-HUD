@@ -40,6 +40,5 @@ namespace Blish_HUD.Controls {
                 Show(view);
             }
         }
-
     }
 }

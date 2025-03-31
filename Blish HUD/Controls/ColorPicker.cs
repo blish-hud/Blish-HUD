@@ -132,7 +132,5 @@ namespace Blish_HUD.Controls {
 
             this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - 10 - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
         }
-
     }
-
 }

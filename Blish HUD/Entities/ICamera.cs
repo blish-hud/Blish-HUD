@@ -27,6 +27,5 @@ namespace Blish_HUD.Entities {
         /// The farthest distance that entities are rendered.
         /// </summary>
         public float FarPlaneRenderDistance { get; }
-
     }
 }

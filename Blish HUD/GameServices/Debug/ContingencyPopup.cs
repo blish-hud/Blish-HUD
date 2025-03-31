@@ -15,7 +15,6 @@ namespace Blish_HUD.Debug {
                 this.Text = text;
                 this.OnClick = onClick;
             }
-
         }
 
         private const string DISCORD_JOIN_URL = "https://link.blishhud.com/discordhelp";

@@ -11,6 +11,5 @@ namespace Blish_HUD {
         public ValueEventArgs(T value) {
             this.Value = value;
         }
-
     }
 }

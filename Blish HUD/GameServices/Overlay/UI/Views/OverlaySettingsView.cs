@@ -33,6 +33,5 @@ namespace Blish_HUD.Overlay.UI.Views {
             GetStandardPanel(rootPanel, Strings.Common.BlishHUD + " " + Strings.GameServices.GraphicsService.GraphicsSettingsSection).Show(new SettingsView(GameService.Graphics.GraphicsSettings));
             GetStandardPanel(rootPanel, Strings.Common.BlishHUD + " " + Strings.GameServices.DebugService.DebugSettingsSection).Show(new SettingsView(GameService.Debug.DebugSettings));
         }
-
     }
 }

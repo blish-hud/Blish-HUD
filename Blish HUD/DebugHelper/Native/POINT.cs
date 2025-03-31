@@ -9,5 +9,4 @@ namespace Blish_HUD.DebugHelper.Native {
         public int y;
 
     }
-
 }

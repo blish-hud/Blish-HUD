@@ -20,5 +20,4 @@ namespace Blish_HUD.DebugHelper.Services {
         public T SendAndWait<T>(Message message, TimeSpan timeout) where T : Message;
 
     }
-
 }

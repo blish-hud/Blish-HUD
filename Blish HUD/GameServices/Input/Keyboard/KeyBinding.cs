@@ -165,5 +165,4 @@ namespace Blish_HUD.Input {
         public void ManuallyTrigger() => OnActivated(EventArgs.Empty);
 
     }
-
 }

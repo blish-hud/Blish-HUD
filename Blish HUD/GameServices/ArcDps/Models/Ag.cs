@@ -50,7 +50,5 @@
             this.Self = self;
             this.Team = team;
         }
-
     }
-
 }

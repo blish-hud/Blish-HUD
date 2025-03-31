@@ -23,5 +23,4 @@ namespace Blish_HUD.Settings {
         public IView GetMenuItemView(MenuItem selectedMenuItem);
 
     }
-
 }

@@ -12,5 +12,4 @@ namespace Blish_HUD.DebugHelper.Native {
         public long extraInfo;
 
     }
-
 }
