@@ -461,8 +461,8 @@ namespace Blish_HUD.Controls {
 
             // Emblem bounds
             if (_emblem != null) {
-                _emblemDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X + STANDARD_TITLEOFFSET / 2 - _emblem.Width / 2 - STANDARD_MARGIN,
-                                                  _leftTitleBarDrawBounds.Bottom - _textureTitleBarLeft.Height / 2 - _emblem.Height / 2,
+                _emblemDrawBounds = new Rectangle(_leftTitleBarDrawBounds.X + (STANDARD_TITLEOFFSET / 2) - (_emblem.Width / 2) - STANDARD_MARGIN,
+                                                  _leftTitleBarDrawBounds.Bottom - (_textureTitleBarLeft.Height / 2) - (_emblem.Height / 2),
                                                   _emblem.Width,
                                                   _emblem.Height);
             }
@@ -658,7 +658,7 @@ namespace Blish_HUD.Controls {
             int drawHeight = (int)((this.ContentRegion.Height + _contentMargin.Y + this.ContentRegion.Y - STANDARD_TITLEBAR_HEIGHT) / _windowToTextureHeightRatio);
 
             this.BackgroundDestinationBounds = new Rectangle((int)Math.Floor(_windowLeftOffsetRatio * drawWidth),
-                                                             (int)Math.Floor(_windowTopOffsetRatio * drawHeight + STANDARD_TITLEBAR_HEIGHT),
+                                                             (int)Math.Floor((_windowTopOffsetRatio * drawHeight) + STANDARD_TITLEBAR_HEIGHT),
                                                              drawWidth,
                                                              drawHeight);
         }
@@ -699,7 +699,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, _textureBlackFade, _sidebarInactiveDrawBounds);
 
                 // Draw the splitter
-                spriteBatch.DrawOnCtrl(this, _textureSplitLine, new Rectangle(this.SidebarActiveBounds.Right - _textureSplitLine.Width / 2, this.SidebarActiveBounds.Top, _textureSplitLine.Width, _sidebarInactiveDrawBounds.Bottom - this.SidebarActiveBounds.Top));
+                spriteBatch.DrawOnCtrl(this, _textureSplitLine, new Rectangle(this.SidebarActiveBounds.Right - (_textureSplitLine.Width / 2), this.SidebarActiveBounds.Top, _textureSplitLine.Width, _sidebarInactiveDrawBounds.Bottom - this.SidebarActiveBounds.Top));
             }
         }
 

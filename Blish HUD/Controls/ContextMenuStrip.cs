@@ -246,7 +246,7 @@ namespace Blish_HUD.Controls {
                     lastChildBottom = menuItem.Bottom;
                 }
 
-                _size = new Point(maxChildWidth + BORDER_PADDING * 2,
+                _size = new Point(maxChildWidth + (BORDER_PADDING * 2),
                                   lastChildBottom + BORDER_PADDING);
 
                 foreach (var childItem in this.Children) {
@@ -260,8 +260,8 @@ namespace Blish_HUD.Controls {
                                    ContentService.Textures.Pixel,
                                    new Rectangle(BORDER_PADDING,
                                                  BORDER_PADDING,
-                                                 _size.X - BORDER_PADDING * 2,
-                                                 _size.Y - BORDER_PADDING * 2),
+                                                 _size.X - (BORDER_PADDING * 2),
+                                                 _size.Y - (BORDER_PADDING * 2)),
                                    Color.FromNonPremultiplied(33, 32, 33, 255));
 
             // Left line

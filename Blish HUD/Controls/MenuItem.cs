@@ -167,7 +167,7 @@ namespace Blish_HUD.Controls {
 
         private Rectangle FirstItemBoxRegion =>
             new Rectangle(0,
-                          this.MenuItemHeight / 2 - ICON_SIZE / 2,
+                          (this.MenuItemHeight / 2) - (ICON_SIZE / 2),
                           ICON_SIZE,
                           ICON_SIZE);
 
@@ -388,7 +388,7 @@ namespace Blish_HUD.Controls {
         private void DrawDropdownArrow(SpriteBatch spriteBatch) {
             var arrowOrigin = new Vector2((float)ARROW_SIZE / 2, (float)ARROW_SIZE / 2);
 
-            var arrowDest = new Rectangle(5 + ARROW_SIZE / 2,
+            var arrowDest = new Rectangle(5 + (ARROW_SIZE / 2),
                                           this.MenuItemHeight / 2,
                                           ARROW_SIZE,
                                           ARROW_SIZE);

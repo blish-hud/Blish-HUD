@@ -120,8 +120,8 @@ namespace Blish_HUD.Controls {
 
                 spriteBatch.DrawOnCtrl(this,
                                  Resources.Checkable.TextureRegionsCheckbox.First(cb => cb.Name == $"checkbox/cb{state}{extension}"),
-                                 new Rectangle(HORIZONTAL_PADDING + BULLET_SIZE / 2 - 16,
-                                               _size.Y / 2 - 16,
+                                 new Rectangle(HORIZONTAL_PADDING + (BULLET_SIZE / 2) - 16,
+                                               (_size.Y / 2) - 16,
                                                32,
                                                32),
                                  StandardColors.Default);
@@ -130,7 +130,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this,
                                  _textureBullet,
                                  new Rectangle(HORIZONTAL_PADDING,
-                                               _size.Y / 2 - BULLET_SIZE / 2,
+                                               (_size.Y / 2) - (BULLET_SIZE / 2),
                                                BULLET_SIZE,
                                                BULLET_SIZE),
                                  modifierTint);
@@ -160,7 +160,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this,
                                  _textureArrow,
                                  new Rectangle(_size.X - HORIZONTAL_PADDING - _textureArrow.Width,
-                                               _size.Y / 2 - _textureArrow.Height / 2,
+                                               (_size.Y / 2) - (_textureArrow.Height / 2),
                                                _textureArrow.Width,
                                                _textureArrow.Height),
                                  modifierTint);

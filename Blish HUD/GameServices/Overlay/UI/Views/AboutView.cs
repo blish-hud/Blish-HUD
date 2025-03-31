@@ -43,7 +43,7 @@ namespace Blish_HUD.Overlay.UI.Views {
 
             var heart = new Image(AsyncTexture2D.FromAssetId(156127)) {
                 Size = new Point(64, 64),
-                Location = new Point(0, lovePanel.Height / 2 - 32),
+                Location = new Point(0, (lovePanel.Height / 2) - 32),
                 Parent = lovePanel
             };
 
@@ -100,7 +100,7 @@ namespace Blish_HUD.Overlay.UI.Views {
 
             var discordBttn = new StandardButton() {
                 Text = Strings.GameServices.OverlayService.About_DiscordCallToAction_Button,
-                Left = callToAction.Left + callToAction.Width / 2 - 85,
+                Left = callToAction.Left + (callToAction.Width / 2) - 85,
                 Top = callToAction.Bottom,
                 Width = 170,
                 Parent = aboutPanel
@@ -117,8 +117,8 @@ namespace Blish_HUD.Overlay.UI.Views {
                 Opacity = 0.5f
             };
 
-            int fadeTop = discordSection.Top + discordSection.Height / 2;
-            int fadeBottom = bottomDiscordSection.Top + bottomDiscordSection.Height / 2;
+            int fadeTop = discordSection.Top + (discordSection.Height / 2);
+            int fadeBottom = bottomDiscordSection.Top + (bottomDiscordSection.Height / 2);
 
             var leftFade = new Image(AsyncTexture2D.FromAssetId(156044)) {
                 Width = bottomDiscordSection.Width / 2,
@@ -166,7 +166,7 @@ namespace Blish_HUD.Overlay.UI.Views {
                     Parent = aboutPanel
                 };
                 updateButton.Location = new Point(
-                    aboutPanel.Width / 2 - updateButton.Width / 2,
+                    (aboutPanel.Width / 2) - (updateButton.Width / 2),
                     bottomDiscordSection.Bottom + 45
                 );
 

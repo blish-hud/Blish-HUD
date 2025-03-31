@@ -130,7 +130,7 @@ namespace Blish_HUD.Controls {
                         spriteBatch.DrawOnCtrl(this,
                                                ContentService.Textures.Pixel,
                                                new Rectangle(2,
-                                                             2 + _assocDropdown.Height * index,
+                                                             2 + (_assocDropdown.Height * index),
                                                              _size.X - 12 - _textureArrow.Width,
                                                              _assocDropdown.Height - 4),
                                                new Color(45, 37, 25, 255));
@@ -290,7 +290,7 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this,
                                    (this.Enabled && this.MouseOver) ? _textureArrowActive : _textureArrow,
                                    new Rectangle(_size.X - _textureArrow.Width - 5,
-                                                 _size.Y / 2 - _textureArrow.Height / 2,
+                                                 (_size.Y / 2) - (_textureArrow.Height / 2),
                                                  _textureArrow.Width,
                                                  _textureArrow.Height));
 

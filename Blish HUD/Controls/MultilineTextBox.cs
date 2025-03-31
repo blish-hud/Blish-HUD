@@ -74,7 +74,7 @@ namespace Blish_HUD.Controls {
             int charIndex = 0;
 
             foreach (var glyph in glyphs) {
-                if (glyph.Position.X + glyph.FontRegion.Width / 2f > x) {
+                if (glyph.Position.X + (glyph.FontRegion.Width / 2f) > x) {
                     break;
                 }
 
@@ -168,8 +168,8 @@ namespace Blish_HUD.Controls {
         private Rectangle CalculateTextRegion() {
             return new Rectangle(TEXT_LEFTPADDING,
                                  TEXT_TOPPADDING,
-                                 _size.X - TEXT_LEFTPADDING * 2,
-                                 _size.Y - TEXT_TOPPADDING * 2);
+                                 _size.X - (TEXT_LEFTPADDING * 2),
+                                 _size.Y - (TEXT_TOPPADDING * 2));
         }
 
         private Rectangle CalculateCursorRegion() {

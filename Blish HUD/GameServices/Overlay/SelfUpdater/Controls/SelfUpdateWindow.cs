@@ -84,7 +84,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
                 Top = subLabel.Bottom + 17,
                 Height = 306,
                 Width = 474,
-                Left = this.ContentRegion.Width / 2 - 474 / 2,
+                Left = (this.ContentRegion.Width / 2) - (474 / 2),
                 Parent = this,
                 CanScroll = true
             };
@@ -135,7 +135,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
                 Top = _changePanel.Bottom + 32,
                 Width = 128,
                 Text = Strings.Common.Action_Update,
-                Left = this.ContentRegion.Width / 2 - 128 / 2,
+                Left = (this.ContentRegion.Width / 2) - (128 / 2),
                 Parent = this
             };
 
@@ -150,7 +150,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             };
 
             _loadingSpinner = new LoadingSpinner() {
-                Location = new Point(this.ContentRegion.Width / 2 - 32, _changePanel.Bottom - _changePanel.Height / 2 - 70),
+                Location = new Point((this.ContentRegion.Width / 2) - 32, _changePanel.Bottom - (_changePanel.Height / 2) - 70),
                 Visible = false,
                 Parent = this
             };
@@ -158,7 +158,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             _lblProgressMessage = new Label() {
                 AutoSizeHeight = true,
                 Width = _changePanel.Width,
-                Left = this.ContentRegion.Width / 2 - _changePanel.Width / 2,
+                Left = (this.ContentRegion.Width / 2) - (_changePanel.Width / 2),
                 Top = _loadingSpinner.Bottom + 6,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Top,
@@ -207,7 +207,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
 
             _lblProgressMessage.Top = _loadingSpinner.Visible
                                           ? _loadingSpinner.Bottom + 6
-                                          : _loadingSpinner.Top + _loadingSpinner.Height / 2;
+                                          : _loadingSpinner.Top + (_loadingSpinner.Height / 2);
         }
 
         private void BouncyChest_Click(object sender, Input.MouseEventArgs e) {
@@ -238,7 +238,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
         }
 
         public override void UpdateContainer(GameTime gameTime) {
-            this.Location = new Point(GameService.Graphics.SpriteScreen.Width / 2 - 512, GameService.Graphics.SpriteScreen.Height / 2 - 512);
+            this.Location = new Point((GameService.Graphics.SpriteScreen.Width / 2) - 512, (GameService.Graphics.SpriteScreen.Height / 2) - 512);
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {

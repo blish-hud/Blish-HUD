@@ -146,7 +146,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this,
                                        _textureMenuItemFade.Texture,
                                        new Rectangle(0,
-                                                     MenuItemHeight * sec - VerticalScrollOffset,
+                                                     (MenuItemHeight * sec) - VerticalScrollOffset,
                                                      _size.X,
                                                      MenuItemHeight),
                                        Color.Black * 0.7f);

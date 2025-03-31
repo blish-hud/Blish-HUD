@@ -174,7 +174,7 @@ namespace Blish_HUD {
 
             switch (horizontalAlignment) {
                 case HorizontalAlignment.Center:
-                    xPos += destinationRectangle.Width / 2 - (int)textSize.X / 2;
+                    xPos += (destinationRectangle.Width / 2) - ((int)textSize.X / 2);
                     break;
                 case HorizontalAlignment.Right:
                     xPos += destinationRectangle.Width - (int)textSize.X;
@@ -183,7 +183,7 @@ namespace Blish_HUD {
 
             switch (verticalAlignment) {
                 case VerticalAlignment.Middle:
-                    yPos += destinationRectangle.Height / 2 - (int)textSize.Y / 2;
+                    yPos += (destinationRectangle.Height / 2) - ((int)textSize.Y / 2);
                     break;
                 case VerticalAlignment.Bottom:
                     yPos += destinationRectangle.Height - (int)textSize.Y;

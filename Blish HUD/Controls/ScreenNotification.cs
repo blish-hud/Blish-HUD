@@ -78,14 +78,14 @@ namespace Blish_HUD.Controls {
             this.Opacity = 0f;
             this.Size = new Point(NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
             this.ZIndex = Screen.TOOLTIP_BASEZINDEX;
-            this.Location = new Point(Graphics.SpriteScreen.Width / 2 - this.Size.X / 2, Graphics.SpriteScreen.Height / 4 - this.Size.Y / 2);
+            this.Location = new Point((Graphics.SpriteScreen.Width / 2) - (this.Size.X / 2), (Graphics.SpriteScreen.Height / 4) - (this.Size.Y / 2));
 
             _targetTop = this.Top;
         }
 
         public override void DoUpdate(GameTime gameTime) {
             // Calculate new top location. Fixes the wrong location before blish finishes resizing.
-            int calculatedNewTop = Graphics.SpriteScreen.Height / 4 - this.Size.Y / 2;
+            int calculatedNewTop = (Graphics.SpriteScreen.Height / 4) - (this.Size.Y / 2);
             if (calculatedNewTop > _targetTop) {
                 _targetTop += calculatedNewTop;
 
@@ -95,7 +95,7 @@ namespace Blish_HUD.Controls {
                 this.Top = _targetTop;
             }
 
-            this.Left = Graphics.SpriteScreen.Width / 2 - this.Size.X / 2;
+            this.Left = (Graphics.SpriteScreen.Width / 2) - (this.Size.X / 2);
         }
 
         protected override CaptureType CapturesInput() {

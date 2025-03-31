@@ -305,7 +305,7 @@
                 }
 
                 public override object Interpolate(float t, object current, Behavior behavior) {
-                    float value = from + range * t;
+                    float value = from + (range * t);
                     if ((behavior & Behavior.Rotation) == Behavior.Rotation) {
                         if ((behavior & Behavior.RotationRadians) == Behavior.RotationRadians) {
                             value *= DEG;

@@ -19,7 +19,7 @@ namespace Blish_HUD {
             int yPos = bounds.Y;
 
             if (ha == HorizontalAlignment.Center) {
-                xPos += bounds.Width / 2 - (int)textSize.X / 2;
+                xPos += (bounds.Width / 2) - ((int)textSize.X / 2);
             }
 
             if (ha == HorizontalAlignment.Right) {
@@ -27,7 +27,7 @@ namespace Blish_HUD {
             }
 
             if (va == VerticalAlignment.Middle) {
-                yPos += bounds.Height / 2 - (int)textSize.Y / 2;
+                yPos += (bounds.Height / 2) - ((int)textSize.Y / 2);
             }
 
             if (va == VerticalAlignment.Bottom) {
@@ -44,7 +44,7 @@ namespace Blish_HUD {
             int yPos = bounds.Y;
 
             if (ha == HorizontalAlignment.Center) {
-                xPos += bounds.Width / 2 - (int)textSize.X / 2;
+                xPos += (bounds.Width / 2) - ((int)textSize.X / 2);
             }
 
             if (ha == HorizontalAlignment.Right) {
@@ -52,7 +52,7 @@ namespace Blish_HUD {
             }
 
             if (va == VerticalAlignment.Middle) {
-                yPos += bounds.Height / 2 - (int)textSize.Y / 2;
+                yPos += (bounds.Height / 2) - ((int)textSize.Y / 2);
             }
 
             if (va == VerticalAlignment.Bottom) {

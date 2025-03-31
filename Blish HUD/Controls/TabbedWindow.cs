@@ -258,7 +258,7 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle TabBoundsFromIndex(int index) {
-            return StandardTabBounds.OffsetBy(-TAB_WIDTH, ContentRegion.Y + index * TAB_HEIGHT);
+            return StandardTabBounds.OffsetBy(-TAB_WIDTH, ContentRegion.Y + (index * TAB_HEIGHT));
         }
 
         #endregion
@@ -326,7 +326,7 @@ namespace Blish_HUD.Controls {
                 bool hovered = (i == this.HoveredTabIndex);
 
                 var tabBounds = _tabRegions[tab];
-                var subBounds = new Rectangle(tabBounds.X + tabBounds.Width / 2, tabBounds.Y, TAB_WIDTH / 2, tabBounds.Height);
+                var subBounds = new Rectangle(tabBounds.X + (tabBounds.Width / 2), tabBounds.Y, TAB_WIDTH / 2, tabBounds.Height);
 
                 if (active) {
                     spriteBatch.DrawOnCtrl(this, _textureDefaultBackround,
@@ -340,8 +340,8 @@ namespace Blish_HUD.Controls {
                 }
 
                 spriteBatch.DrawOnCtrl(this, tab.Icon,
-                                 new Rectangle(TAB_WIDTH / 4 - TAB_ICON_SIZE / 2 + 2,
-                                               TAB_HEIGHT / 2 - TAB_ICON_SIZE / 2,
+                                 new Rectangle((TAB_WIDTH / 4) - (TAB_ICON_SIZE / 2) + 2,
+                                               (TAB_HEIGHT / 2) - (TAB_ICON_SIZE / 2),
                                                TAB_ICON_SIZE,
                                                TAB_ICON_SIZE).OffsetBy(subBounds.Location),
                                  active || hovered

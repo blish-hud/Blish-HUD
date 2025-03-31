@@ -55,8 +55,8 @@ namespace Blish_HUD.Controls {
 
             spriteBatch.DrawOnCtrl(tabbedControl,
                                    Icon,
-                                   new Rectangle(bounds.Right - bounds.Width / 2 - this.Icon.Texture.Width / 2,
-                                                 bounds.Bottom - bounds.Height / 2 - this.Icon.Texture.Height / 2,
+                                   new Rectangle(bounds.Right - (bounds.Width / 2) - (this.Icon.Texture.Width / 2),
+                                                 bounds.Bottom - (bounds.Height / 2) - (this.Icon.Texture.Height / 2),
                                                  this.Icon.Texture.Width,
                                                  this.Icon.Texture.Height),
                                    selected || hovered

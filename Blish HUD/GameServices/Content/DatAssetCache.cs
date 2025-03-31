@@ -149,7 +149,7 @@ namespace Blish_HUD.Content {
         }
 
         public override void Update(GameTime gameTime) {
-            _retryTokens = Math.Min(_retryTokens + gameTime.ElapsedGameTime.TotalMilliseconds / RETRY_RELOAD, RETRY_COUNT);
+            _retryTokens = Math.Min(_retryTokens + (gameTime.ElapsedGameTime.TotalMilliseconds / RETRY_RELOAD), RETRY_COUNT);
         }
 
         private static async Task<Texture2D> LoadTextureFromFileSystem(string path) {

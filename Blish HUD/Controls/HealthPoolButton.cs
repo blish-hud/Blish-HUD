@@ -36,7 +36,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateLocation(object sender, EventArgs e) {
-            this.Location = new Point((Graphics.SpriteScreen.Width / 2 - this.Width / 2), (Graphics.SpriteScreen.Height - this.Height) - BOTTOMEDGE_GAP);
+            this.Location = new Point(((Graphics.SpriteScreen.Width / 2) - (this.Width / 2)), Graphics.SpriteScreen.Height - this.Height - BOTTOMEDGE_GAP);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {

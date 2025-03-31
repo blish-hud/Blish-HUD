@@ -169,7 +169,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Text = "[Token Name]",
                 HorizontalAlignment = HorizontalAlignment.Right,
                 AutoSizeHeight = true,
-                Width = (buildPanel.Width / 4) * 3 - 30,
+                Width = (buildPanel.Width / 4 * 3) - 30,
                 Left = _tokenKeyLbl.Right + 10,
                 Bottom = _tokenKeyLbl.Bottom,
                 Visible = !_errored,

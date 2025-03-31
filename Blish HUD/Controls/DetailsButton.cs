@@ -306,15 +306,15 @@ namespace Blish_HUD.Controls {
             if (_maxFill > 0 && _showVignette) {
                 // Draw icon twice
                 if (_icon != null) {
-                    float localIconFill = (fillSpace - iconSize / 2f + 32) / 64;
+                    float localIconFill = (fillSpace - (iconSize / 2f) + 32) / 64;
 
                     // Icon above the fill
                     if (localIconFill < 1) {
                         spriteBatch.DrawOnCtrl(this,
                                                _icon,
                                                new Rectangle(
-                                                             iconSize / 2 - 64 / 2 + iconOffset,
-                                                             iconSize / 2 - 64 / 2,
+                                                             (iconSize / 2) - (64 / 2) + iconOffset,
+                                                             (iconSize / 2) - (64 / 2),
                                                              64,
                                                              64 - (int)(64 * localIconFill)
                                                             ),
@@ -328,8 +328,8 @@ namespace Blish_HUD.Controls {
                                                this,
                                                _icon,
                                                new Rectangle(
-                                                             iconSize / 2 - 64 / 2 + iconOffset,
-                                                             iconSize / 2 - 64 / 2 + (64 - (int)(localIconFill * 64)),
+                                                             (iconSize / 2) - (64 / 2) + iconOffset,
+                                                             (iconSize / 2) - (64 / 2) + (64 - (int)(localIconFill * 64)),
                                                              64,
                                                              (int)(localIconFill * 64)
                                                             ),
@@ -356,8 +356,8 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(
                                        this,
                                        _icon,
-                                       new Rectangle(iconSize / 2 - 64 / 2 + iconOffset,
-                                                     iconSize / 2 - 64 / 2,
+                                       new Rectangle((iconSize / 2) - (64 / 2) + iconOffset,
+                                                     (iconSize / 2) - (64 / 2),
                                                      64,
                                                      64)
                                       );
@@ -394,8 +394,8 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this,
                                    _textureBottomSectionSeparator,
                                    this.IconSize == DetailsIconSize.Large
-                                       ? new Rectangle(this.ContentRegion.Left, _size.Y - _bottomSectionHeight - _textureBottomSectionSeparator.Height / 2, this.ContentRegion.Width, _textureBottomSectionSeparator.Height)
-                                       : new Rectangle(0, _size.Y - _bottomSectionHeight - _textureBottomSectionSeparator.Height / 2, _size.X, _textureBottomSectionSeparator.Height));
+                                       ? new Rectangle(this.ContentRegion.Left, _size.Y - _bottomSectionHeight - (_textureBottomSectionSeparator.Height / 2), this.ContentRegion.Width, _textureBottomSectionSeparator.Height)
+                                       : new Rectangle(0, _size.Y - _bottomSectionHeight - (_textureBottomSectionSeparator.Height / 2), _size.X, _textureBottomSectionSeparator.Height));
 
             // Draw text
             spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont14, new Rectangle(iconSize + 20, 0, _size.X - iconSize - 35, this.Height - _bottomSectionHeight), Color.White, true, true);

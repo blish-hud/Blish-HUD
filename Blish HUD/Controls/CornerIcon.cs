@@ -134,7 +134,7 @@ namespace Blish_HUD.Controls {
                 }
 
                 var scaledMousePos = Input.Mouse.State.Position.ScaleToUi();
-                if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < ICON_SIZE * ICON_POSITION + LeftOffset) {
+                if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < (ICON_SIZE * ICON_POSITION) + LeftOffset) {
                     foreach (var cornerIcon in cornerIcons) {
                         cornerIcon.MouseInHouse = true;
                     }
@@ -154,10 +154,10 @@ namespace Blish_HUD.Controls {
         private static void UpdateCornerIconPositions() {
             List<CornerIcon> sortedIcons = CornerIcons.OrderByDescending((cornerIcon) => cornerIcon.Priority).ToList();
 
-            int horizontalOffset = ICON_SIZE * ICON_POSITION + LeftOffset;
+            int horizontalOffset = (ICON_SIZE * ICON_POSITION) + LeftOffset;
 
             for (int i = 0; i < CornerIcons.Count; i++) {
-                sortedIcons[i].Location = new Point(ICON_SIZE * i + horizontalOffset, 0);
+                sortedIcons[i].Location = new Point((ICON_SIZE * i) + horizontalOffset, 0);
             }
         }
 

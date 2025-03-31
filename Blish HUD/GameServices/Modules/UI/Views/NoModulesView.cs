@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 Text = Strings.GameServices.ModulesService.NoModules_OpenFolder,
                 Parent = buildPanel,
                 Width = 200,
-                Location = new Point(buildPanel.Size.X / 2 - 100, info.Bottom - 100),
+                Location = new Point((buildPanel.Size.X / 2) - 100, info.Bottom - 100),
             };
 
             openDir.Click += delegate {

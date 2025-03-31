@@ -74,7 +74,7 @@ namespace Blish_HUD.Controls {
             var glyphs = _font.GetGlyphs(_text);
 
             foreach (var glyph in glyphs) {
-                if (glyph.Position.X + glyph.FontRegion.Width / 2f > _horizontalOffset + x) {
+                if (glyph.Position.X + (glyph.FontRegion.Width / 2f) > _horizontalOffset + x) {
                     break;
                 }
 
@@ -89,12 +89,12 @@ namespace Blish_HUD.Controls {
         private Rectangle _cursorRegion = Rectangle.Empty;
 
         private Rectangle CalculateTextRegion() {
-            int verticalPadding = _size.Y / 2 - (_font.LineHeight / 2);
+            int verticalPadding = (_size.Y / 2) - (_font.LineHeight / 2);
 
             return new Rectangle(TEXT_HORIZONTALPADDING - _horizontalOffset,
                                  verticalPadding,
-                                 _size.X - TEXT_HORIZONTALPADDING * 2,
-                                 _size.Y - verticalPadding * 2);
+                                 _size.X - (TEXT_HORIZONTALPADDING * 2),
+                                 _size.Y - (verticalPadding * 2));
         }
 
         private Rectangle CalculateHighlightRegion() {
@@ -110,10 +110,10 @@ namespace Blish_HUD.Controls {
 
             switch (this.HorizontalAlignment) {
                 case HorizontalAlignment.Center:
-                    highlightLeftOffset += (this.Width - highlightWidth) / 2f - TEXT_HORIZONTALPADDING;
+                    highlightLeftOffset += ((this.Width - highlightWidth) / 2f) - TEXT_HORIZONTALPADDING;
                     break;
                 case HorizontalAlignment.Right:
-                    highlightLeftOffset += this.Width - highlightWidth - TEXT_HORIZONTALPADDING * 2;
+                    highlightLeftOffset += this.Width - highlightWidth - (TEXT_HORIZONTALPADDING * 2);
                     break;
                 default: break;
             }
@@ -129,10 +129,10 @@ namespace Blish_HUD.Controls {
 
             switch (this.HorizontalAlignment) {
                 case HorizontalAlignment.Center:
-                    textOffset += (this.Width - MeasureStringWidth(_text)) / 2f - TEXT_HORIZONTALPADDING;
+                    textOffset += ((this.Width - MeasureStringWidth(_text)) / 2f) - TEXT_HORIZONTALPADDING;
                     break;
                 case HorizontalAlignment.Right:
-                    textOffset += this.Width - MeasureStringWidth(_text) - TEXT_HORIZONTALPADDING * 2;
+                    textOffset += this.Width - MeasureStringWidth(_text) - (TEXT_HORIZONTALPADDING * 2);
                     break;
                 default: break;
             }

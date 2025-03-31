@@ -113,18 +113,18 @@ namespace Blish_HUD.Controls {
             // TODO: Ensure that these calculations are correctly placing the image in the middle and clean things up
             var textSize = GetTextDimensions();
 
-            int textLeft = (int)(_size.X / 2 - textSize.Width / 2);
+            int textLeft = (int)((_size.X / 2) - (textSize.Width / 2));
 
             if (_icon != null) {
                 if (textSize.Width > 0) {
-                    textLeft += ICON_SIZE / 2 + ICON_TEXT_OFFSET / 2;
+                    textLeft += (ICON_SIZE / 2) + (ICON_TEXT_OFFSET / 2);
                 } else {
                     textLeft += ICON_SIZE / 2;
                 }
 
                 var iconSize = _resizeIcon ? new Point(ICON_SIZE) : _icon.Texture.Bounds.Size;
 
-                _layoutIconBounds = new Rectangle(textLeft - iconSize.X - ICON_TEXT_OFFSET, _size.Y / 2 - iconSize.Y / 2, iconSize.X, iconSize.Y);
+                _layoutIconBounds = new Rectangle(textLeft - iconSize.X - ICON_TEXT_OFFSET, (_size.Y / 2) - (iconSize.Y / 2), iconSize.X, iconSize.Y);
             }
 
             _layoutTextBounds = new Rectangle(textLeft, 0, _size.X - textLeft, _size.Y);

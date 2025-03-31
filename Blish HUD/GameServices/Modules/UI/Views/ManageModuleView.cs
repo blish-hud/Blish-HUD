@@ -247,7 +247,7 @@ namespace Blish_HUD.Modules.UI.Views {
             // Enable & disable module
 
             _enableButton = new StandardButton() {
-                Location = new Point(buildPanel.Width - 192, _moduleHeaderLabel.Top + _moduleHeaderLabel.Height / 4 - StandardButton.STANDARD_CONTROL_HEIGHT / 2),
+                Location = new Point(buildPanel.Width - 192, _moduleHeaderLabel.Top + (_moduleHeaderLabel.Height / 4) - (StandardButton.STANDARD_CONTROL_HEIGHT / 2)),
                 Text = Strings.GameServices.ModulesService.ModuleManagement_EnableModule,
                 Enabled = false,
                 Parent = buildPanel
@@ -301,8 +301,8 @@ namespace Blish_HUD.Modules.UI.Views {
             // Dependencies
 
             _dependencyView = new ViewContainer() {
-                Size = new Point(_descriptionPanel.Width - _permissionView.Right - Panel.MenuStandard.ControlOffset.X / 2, _permissionView.Height),
-                Location = new Point(_permissionView.Right + Panel.MenuStandard.ControlOffset.X / 2, _permissionView.Top),
+                Size = new Point(_descriptionPanel.Width - _permissionView.Right - (Panel.MenuStandard.ControlOffset.X / 2), _permissionView.Height),
+                Location = new Point(_permissionView.Right + (Panel.MenuStandard.ControlOffset.X / 2), _permissionView.Top),
                 Parent = _collapsePanel
             };
 

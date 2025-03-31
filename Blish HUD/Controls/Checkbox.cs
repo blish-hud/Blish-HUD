@@ -46,7 +46,7 @@ namespace Blish_HUD.Controls {
         public override void RecalculateLayout() {
             base.RecalculateLayout();
 
-            _size = new Point(CHECKBOX_SIZE / 3 * 2 + LabelRegion.X, _size.Y);
+            _size = new Point((CHECKBOX_SIZE / 3 * 2) + LabelRegion.X, _size.Y);
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
@@ -78,7 +78,7 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this,
                                    sprite,
                                    new Rectangle(-9,
-                                                 this.Height / 2 - CHECKBOX_SIZE / 2,
+                                                 (this.Height / 2) - (CHECKBOX_SIZE / 2),
                                                  CHECKBOX_SIZE,
                                                  CHECKBOX_SIZE));
 

@@ -247,7 +247,7 @@ namespace Blish_HUD.Controls {
 
         public override void RecalculateLayout() {
             // Title bar bounds
-            int titleBarDrawOffset = _titleBarBounds.Y - (_textureTitleBarLeft.Height / 2 - _titleBarBounds.Height / 2);
+            int titleBarDrawOffset = _titleBarBounds.Y - ((_textureTitleBarLeft.Height / 2) - (_titleBarBounds.Height / 2));
             int titleBarRightWidth = _textureTitleBarRight.Width - COMMON_MARGIN;
 
             _layoutLeftTitleBarBounds = new Rectangle(_titleBarBounds.X, titleBarDrawOffset, Math.Min(_titleBarBounds.Width - titleBarRightWidth, _windowBackgroundBounds.Width - titleBarRightWidth), _textureTitleBarLeft.Height);

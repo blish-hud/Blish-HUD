@@ -175,7 +175,7 @@ namespace Blish_HUD.Controls.Intern {
                 };
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
             } else {
-                uint wParam = (uint)(0 | wheelDistance << 16);
+                uint wParam = (uint)(0 | (wheelDistance << 16));
                 int lParam = xPos | (yPos << 16);
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, horizontalWheel ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL, wParam, lParam);
             }

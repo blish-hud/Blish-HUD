@@ -130,7 +130,7 @@ namespace Blish_HUD.Controls {
 
             colorsPerRow = (this.Width - 10) / (this.ColorBoxSize.X + COLOR_PADDING);
 
-            this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, (this.Width - 10) - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
+            this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - 10 - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
         }
 
     }

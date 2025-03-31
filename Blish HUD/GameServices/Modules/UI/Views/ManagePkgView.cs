@@ -215,7 +215,7 @@ namespace Blish_HUD.Modules.UI.Views {
             _statusImage = new Image(AsyncTexture2D.FromAssetId(157397)) {
                 Visible = false,
                 Size = new Point(16, 16),
-                Top = _versionDropdown.Height / 2 - 8 + _versionDropdown.Top,
+                Top = (_versionDropdown.Height / 2) - 8 + _versionDropdown.Top,
                 Right = _versionDropdown.Left - 8,
                 Parent = buildPanel
             };

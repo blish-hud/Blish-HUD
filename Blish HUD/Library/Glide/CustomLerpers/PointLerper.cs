@@ -16,8 +16,8 @@ namespace Blish_HUD.Library.Glide.CustomLerpers {
         }
 
         public override object Interpolate(float t, object currentValue, Behavior behavior) {
-            float x = _pointFrom.X + _pointRange.X * t;
-            float y = _pointFrom.Y + _pointRange.Y * t;
+            float x = _pointFrom.X + (_pointRange.X * t);
+            float y = _pointFrom.Y + (_pointRange.Y * t);
 
             // Only a subtle difference since Point only supports int anyways
             if (behavior.HasFlag(Behavior.Round)) {

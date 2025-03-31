@@ -114,14 +114,14 @@ namespace Blish_HUD.Controls {
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);
             if (_layoutNubBounds.Contains(this.RelativeMousePosition) && !this.Dragging) {
-                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X - BUMPER_WIDTH / 2;
+                _dragOffset = this.RelativeMousePosition.X - _layoutNubBounds.X - (BUMPER_WIDTH / 2);
                 this.Dragging = true;
             }
         }
 
         public override void DoUpdate(GameTime gameTime) {
             if (this.Dragging) {
-                float rawValue = (this.RelativeMousePosition.X - BUMPER_WIDTH - _dragOffset) / (float)(this.Width - BUMPER_WIDTH - _textureNub.Width) * (this.MaxValue - this.MinValue) + this.MinValue;
+                float rawValue = ((this.RelativeMousePosition.X - BUMPER_WIDTH - _dragOffset) / (float)(this.Width - BUMPER_WIDTH - _textureNub.Width) * (this.MaxValue - this.MinValue)) + this.MinValue;
 
                 this.Value = GameService.Input.Keyboard.ActiveModifiers != ModifierKeys.Ctrl
                                  ? SmallStep ? rawValue : (float)Math.Round(rawValue, 0)
@@ -132,7 +132,7 @@ namespace Blish_HUD.Controls {
         private void MinMaxChanged() {
             tenIncrements.Clear();
             for (int i = 0; i < 11; i++) {
-                tenIncrements.Add((this.MaxValue - this.MinValue) * 0.1f * i + this.MinValue);
+                tenIncrements.Add(((this.MaxValue - this.MinValue) * 0.1f * i) + this.MinValue);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Blish_HUD.Controls {
             _layoutRightBumper = new Rectangle(this.Width - BUMPER_WIDTH, 0, BUMPER_WIDTH, this.Height);
 
             float valueOffset = (this.Value - this.MinValue) / (this.MaxValue - this.MinValue) * (_size.X - BUMPER_WIDTH - _textureNub.Width);
-            _layoutNubBounds = new Rectangle((int)valueOffset + BUMPER_WIDTH / 2, 0, _textureNub.Width, _textureNub.Height);
+            _layoutNubBounds = new Rectangle((int)valueOffset + (BUMPER_WIDTH / 2), 0, _textureNub.Width, _textureNub.Height);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {

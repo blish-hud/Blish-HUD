@@ -294,7 +294,7 @@ namespace Blish_HUD.Controls {
 
                 _panelScrollbar.Parent = this.Parent;
                 _panelScrollbar.Height = this.ContentRegion.Height - 20;
-                _panelScrollbar.Right = this.Right - _panelScrollbar.Width / 2;
+                _panelScrollbar.Right = this.Right - (_panelScrollbar.Width / 2);
                 _panelScrollbar.Top = this.Top + this.ContentRegion.Top + 10;
                 _panelScrollbar.Visible = this.Visible;
                 _panelScrollbar.ZIndex = this.ZIndex + 2;
@@ -316,7 +316,7 @@ namespace Blish_HUD.Controls {
                     _panelScrollbar.Height = this.ContentRegion.Height - 20;
                     break;
                 case "Right":
-                    _panelScrollbar.Right = this.Right - _panelScrollbar.Width / 2;
+                    _panelScrollbar.Right = this.Right - (_panelScrollbar.Width / 2);
                     break;
                 case "Top":
                     _panelScrollbar.Top = this.Top + this.ContentRegion.Top + 10;

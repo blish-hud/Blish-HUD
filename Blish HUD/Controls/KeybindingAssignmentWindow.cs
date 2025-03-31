@@ -177,8 +177,8 @@ namespace Blish_HUD.Controls {
             if (parent != null) {
                 _size = parent.Size;
 
-                var distanceInwards = new Point(_size.X / 2 - _normalizedWindowRegion.Width / 2,
-                                                _size.Y / 2 - _normalizedWindowRegion.Height / 2);
+                var distanceInwards = new Point((_size.X / 2) - (_normalizedWindowRegion.Width / 2),
+                                                (_size.Y / 2) - (_normalizedWindowRegion.Height / 2));
 
                 _hotkeyRegion = _normalizedHotkeyRegion.OffsetBy(distanceInwards);
                 _windowRegion = _normalizedWindowRegion.OffsetBy(distanceInwards);

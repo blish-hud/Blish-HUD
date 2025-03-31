@@ -83,7 +83,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateTabStates() {
-            this.SideBarHeight = TAB_VERTICALOFFSET + TAB_HEIGHT * this.Tabs.Count;
+            this.SideBarHeight = TAB_VERTICALOFFSET + (TAB_HEIGHT * this.Tabs.Count);
 
             this.HoveredTab = this.MouseOver && this.SidebarActiveBounds.Contains(this.RelativeMousePosition)
                                   ? this.Tabs.FromIndex((this.RelativeMousePosition.Y - this.SidebarActiveBounds.Y - TAB_VERTICALOFFSET) / TAB_HEIGHT)
@@ -103,7 +103,7 @@ namespace Blish_HUD.Controls {
 
             int tabIndex = 0;
             foreach (var tab in this.Tabs) {
-                int tabTop = this.SidebarActiveBounds.Top + TAB_VERTICALOFFSET + tabIndex * TAB_HEIGHT;
+                int tabTop = this.SidebarActiveBounds.Top + TAB_VERTICALOFFSET + (tabIndex * TAB_HEIGHT);
 
                 bool selected = tab == this.SelectedTab;
                 bool hovered = tab == this.HoveredTab;
