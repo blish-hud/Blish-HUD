@@ -51,9 +51,8 @@ namespace Blish_HUD {
         internal string ModulesDirectory => DirectoryUtil.RegisterDirectory(MODULES_DIRECTORY);
 
         private SettingEntry<List<string>> _exportedOnVersions;
-        private SettingEntry<Dictionary<string, ModuleState>> _moduleStates;
 
-        public SettingEntry<Dictionary<string, ModuleState>> ModuleStates => _moduleStates;
+        public SettingEntry<Dictionary<string, ModuleState>> ModuleStates { get; private set; }
 
         private readonly List<ModuleManager> _modules = new List<ModuleManager>();
         public IReadOnlyList<ModuleManager> Modules => _modules.ToList();
@@ -69,7 +68,7 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _moduleStates = settings.DefineSetting(MODULESTATES_CORE_SETTING, new Dictionary<string, ModuleState>());
+            this.ModuleStates = settings.DefineSetting(MODULESTATES_CORE_SETTING, new Dictionary<string, ModuleState>());
             _exportedOnVersions = settings.DefineSetting(EXPORTED_VERSION_SETTING, new List<string>());
         }
 
@@ -120,12 +119,12 @@ namespace Blish_HUD {
                 }
             }
 
-            if (!_moduleStates.Value.ContainsKey(moduleManifest.Namespace)) {
-                _moduleStates.Value.Add(moduleManifest.Namespace, new ModuleState());
+            if (!this.ModuleStates.Value.ContainsKey(moduleManifest.Namespace)) {
+                this.ModuleStates.Value.Add(moduleManifest.Namespace, new ModuleState());
             }
 
             var moduleManager = new ModuleManager(moduleManifest,
-                                                  _moduleStates.Value[moduleManifest.Namespace],
+                                                  this.ModuleStates.Value[moduleManifest.Namespace],
                                                   moduleReader);
 
             if (ModuleIsExplicitlyIncompatible(moduleManager)) {
@@ -138,7 +137,7 @@ namespace Blish_HUD {
 
             this.ModuleRegistered?.Invoke(this, new ValueEventArgs<ModuleManager>(moduleManager));
 
-            if (moduleManifest.EnabledWithoutGW2 && _moduleStates.Value[moduleManifest.Namespace].Enabled) {
+            if (moduleManifest.EnabledWithoutGW2 && this.ModuleStates.Value[moduleManifest.Namespace].Enabled) {
                 moduleManager.TryEnable();
             }
 

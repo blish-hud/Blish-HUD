@@ -10,8 +10,6 @@ namespace Blish_HUD.Gw2Mumble {
 
         private Vector3 _position = Vector3.Zero;
         private Vector3 _forward = Vector3.Forward;
-        private float _fieldOfView = 1;
-
         private Matrix _view;
         private Matrix _playerView;
         private Matrix _projection;
@@ -30,7 +28,7 @@ namespace Blish_HUD.Gw2Mumble {
         public Vector3 Forward => _forward;
 
         /// <inheritdoc cref="IGw2MumbleClient.FieldOfView"/>
-        public float FieldOfView => _fieldOfView;
+        public float FieldOfView { get; private set; } = 1;
 
         #endregion
 
@@ -50,7 +48,7 @@ namespace Blish_HUD.Gw2Mumble {
         internal void Update(GameTime gameTime) {
             _position = _service.RawClient.CameraPosition.ToXnaVector3();
             _forward = _service.RawClient.CameraFront.ToXnaVector3();
-            _fieldOfView = MathHelper.Clamp((float)_service.RawClient.FieldOfView, 0.01f, (float)Math.PI - 0.01f);
+            this.FieldOfView = MathHelper.Clamp((float)_service.RawClient.FieldOfView, 0.01f, (float)Math.PI - 0.01f);
 
             // Calculated
             _view = Matrix.CreateLookAt(_position, _position + _forward, VectorUtil.UpVectorFromCameraForward(_forward));

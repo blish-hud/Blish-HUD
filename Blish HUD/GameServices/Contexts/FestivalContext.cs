@@ -29,22 +29,19 @@ namespace Blish_HUD.Contexts {
             /// </summary>
             public static IEnumerable<Festival> All => _festivalLookup.Values;
 
-            private readonly string _name;
-            private readonly string _displayName;
-
             /// <summary>
             /// The unique identifying name of the festival.
             /// </summary>
-            public string Name => _name;
+            public string Name { get; }
 
             /// <summary>
             /// The localized display name of the festival.
             /// </summary>
-            public string DisplayName => _displayName;
+            public string DisplayName { get; }
 
             public Festival(string name, string displayName) {
-                _name = name;
-                _displayName = displayName;
+                this.Name = name;
+                this.DisplayName = displayName;
 
                 _festivalLookup.Add(name, this);
             }

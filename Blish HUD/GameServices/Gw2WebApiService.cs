@@ -41,18 +41,16 @@ namespace Blish_HUD {
 
         #region Init Cache, Connection, & Client
 
-        private ManagedConnection _anonymousConnection;
-        private ManagedConnection _privilegedConnection;
 
         private void CreateInternalConnection() {
             InitCache();
 
-            _anonymousConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
-            _privilegedConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            this.AnonymousConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            this.PrivilegedConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
         }
 
-        public ManagedConnection AnonymousConnection => _anonymousConnection;
-        internal ManagedConnection PrivilegedConnection => _privilegedConnection;
+        public ManagedConnection AnonymousConnection { get; private set; }
+        internal ManagedConnection PrivilegedConnection { get; private set; }
 
         #endregion
 
@@ -89,7 +87,7 @@ namespace Blish_HUD {
         }
 
         private async Task UpdateBaseConnection(string apiKey) {
-            if (_privilegedConnection.SetApiKey(apiKey)) {
+            if (this.PrivilegedConnection.SetApiKey(apiKey)) {
                 await Modules.Managers.Gw2ApiManager.RenewAllSubtokens();
             }
         }
@@ -169,7 +167,7 @@ namespace Blish_HUD {
 
         private async Task<List<string>> GetCharacters(ManagedConnection connection) => (await connection.Client.V2.Characters.IdsAsync()).ToList();
 
-        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) => await RequestSubtoken(_privilegedConnection, permissions, days);
+        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) => await RequestSubtoken(this.PrivilegedConnection, permissions, days);
 
         public async Task<string> RequestSubtoken(ManagedConnection connection, IEnumerable<TokenPermission> permissions, int days) {
             var tokenPermissions = permissions as TokenPermission[] ?? permissions.ToArray();

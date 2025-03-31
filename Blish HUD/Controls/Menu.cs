@@ -51,8 +51,7 @@ namespace Blish_HUD.Controls {
 
         bool IMenuItem.Selected => false;
 
-        private MenuItem _selectedMenuItem;
-        public MenuItem SelectedMenuItem => _selectedMenuItem;
+        public MenuItem SelectedMenuItem { get; private set; }
 
         void IMenuItem.Select() => throw new InvalidOperationException($"The root {nameof(this.Menu)} instance can not be selected.");
 
@@ -66,7 +65,7 @@ namespace Blish_HUD.Controls {
                 item.Deselect();
             }
 
-            _selectedMenuItem = menuItem;
+            this.SelectedMenuItem = menuItem;
 
             OnItemSelected(new ControlActivatedEventArgs(menuItem));
         }

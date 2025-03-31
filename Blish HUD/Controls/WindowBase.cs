@@ -89,7 +89,7 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _topMost, value);
         }
 
-        public double LastInteraction => _lastInteraction;
+        public double LastInteraction { get; private set; }
 
         protected bool _savesPosition;
         /// <summary>
@@ -326,7 +326,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public void BringWindowToFront() => _lastInteraction = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
+        public void BringWindowToFront() => this.LastInteraction = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
 
         public bool CanClose => true;
 
@@ -335,7 +335,6 @@ namespace Blish_HUD.Controls {
         #region Window Navigation
 
         private readonly LinkedList<Panel> _currentNav = new LinkedList<Panel>();
-        private double _lastInteraction;
 
         public virtual void Navigate(Panel newPanel, bool keepHistory = true) {
             if (!keepHistory) {

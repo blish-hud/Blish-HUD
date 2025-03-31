@@ -56,14 +56,11 @@ namespace Blish_HUD.Controls {
                 Invalidate();
             }
         }
-        private int _numerator = 1;
+
         /// <summary>
         /// The numerator by which to increment or decrement the value of this CounterBox.
         /// </summary>
-        public int Numerator {
-            get => _numerator;
-            set => _numerator = value;
-        }
+        public int Numerator { get; set; } = 1;
         private int _maxValue = 1;
         /// <summary>
         /// The maximum value of the counterbox. Cannot be lesser than MinValue, thus should be assigned BEFORE MinValue.
@@ -94,14 +91,11 @@ namespace Blish_HUD.Controls {
                 Invalidate();
             }
         }
-        private bool _exponential;
+
         /// <summary>
         /// If set, doubles the value when incrementing and halfs it when decrementing.
         /// </summary>
-        public bool Exponential {
-            get => _exponential;
-            set => _exponential = value;
-        }
+        public bool Exponential { get; set; }
         private int _value = 1;
         /// <summary>
         /// The value of the counterbox. Cannot be greater than MaxValue and not lesser than MinValue, thus should be assigned AFTER both;
@@ -198,18 +192,18 @@ namespace Blish_HUD.Controls {
         }
         private void ChangeValue() {
             if (_mouseOverMinus) {
-                if (_exponential) {
+                if (this.Exponential) {
                     this.Value /= 2;
                 } else {
-                    this.Value -= _numerator;
+                    this.Value -= this.Numerator;
                 }
             }
 
             if (_mouseOverPlus) {
-                if (_exponential) {
+                if (this.Exponential) {
                     this.Value *= 2;
                 } else {
-                    this.Value += _numerator;
+                    this.Value += this.Numerator;
                 }
             }
         }

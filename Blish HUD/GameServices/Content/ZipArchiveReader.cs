@@ -10,19 +10,17 @@ namespace Blish_HUD.Content {
     public sealed class ZipArchiveReader : IDataReader {
 
         private readonly ZipArchive _archive;
-
-        private readonly string _archivePath;
         private readonly string _subPath;
 
         private readonly Mutex _exclusiveStreamAccessMutex;
-        public string PhysicalPath => _archivePath;
+        public string PhysicalPath { get; }
 
         public ZipArchiveReader(string archivePath, string subPath = "") {
             if (!File.Exists((archivePath))) {
                 throw new FileNotFoundException("Archive path not found.", archivePath);
             }
 
-            _archivePath = archivePath;
+            this.PhysicalPath = archivePath;
             _subPath = subPath;
 
             _exclusiveStreamAccessMutex = new Mutex(false);
@@ -30,9 +28,9 @@ namespace Blish_HUD.Content {
             _archive = ZipFile.OpenRead(archivePath);
         }
 
-        public IDataReader GetSubPath(string subPath) => new ZipArchiveReader(_archivePath, Path.Combine(subPath));
+        public IDataReader GetSubPath(string subPath) => new ZipArchiveReader(this.PhysicalPath, Path.Combine(subPath));
 
-        public string GetPathRepresentation(string relativeFilePath = null) => $"{_archivePath}[{Path.GetFileName(Path.Combine(_subPath, relativeFilePath ?? string.Empty))}]";
+        public string GetPathRepresentation(string relativeFilePath = null) => $"{this.PhysicalPath}[{Path.GetFileName(Path.Combine(_subPath, relativeFilePath ?? string.Empty))}]";
 
         public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {
             var validEntries = _archive.Entries.Where(e => e.Name.EndsWith($"{fileExtension}", StringComparison.OrdinalIgnoreCase)).ToList();
@@ -121,7 +119,7 @@ namespace Blish_HUD.Content {
         public void DeleteRoot() {
             this.Dispose();
 
-            File.Delete(_archivePath);
+            File.Delete(this.PhysicalPath);
         }
 
         public void Dispose() => _archive?.Dispose();

@@ -15,25 +15,18 @@ namespace Blish_HUD.Contexts {
         /// Structured information provided by one of the asset CDNs.
         /// </summary>
         public readonly struct CdnInfo {
-
-            private readonly int _buildId;
-            private readonly int _exeFileId;
-            private readonly int _exeFileSize;
-            private readonly int _manifestFileId;
-            private readonly int _manifestFileSize;
-
-            public readonly int BuildId => _buildId;
-            public readonly int ExeFileId => _exeFileId;
-            public readonly int ExeFileSize => _exeFileSize;
-            public readonly int ManifestFileId => _manifestFileId;
-            public readonly int ManifestFileSize => _manifestFileSize;
+            public readonly int BuildId { get; }
+            public readonly int ExeFileId { get; }
+            public readonly int ExeFileSize { get; }
+            public readonly int ManifestFileId { get; }
+            public readonly int ManifestFileSize { get; }
 
             public CdnInfo(int buildId, int exeFileId, int exeFileSize, int manifestFileId, int manifestFileSize) {
-                _buildId = buildId;
-                _exeFileId = exeFileId;
-                _exeFileSize = exeFileSize;
-                _manifestFileId = manifestFileId;
-                _manifestFileSize = manifestFileSize;
+                this.BuildId = buildId;
+                this.ExeFileId = exeFileId;
+                this.ExeFileSize = exeFileSize;
+                this.ManifestFileId = manifestFileId;
+                this.ManifestFileSize = manifestFileSize;
             }
 
             public static CdnInfo Invalid => new CdnInfo(-1, -1, -1, -1, -1);

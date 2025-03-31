@@ -11,9 +11,7 @@ namespace Blish_HUD.Controls {
         private static readonly ConcurrentDictionary<int, CachedStringRender> _cachedStringRenders = new ConcurrentDictionary<int, CachedStringRender>();
         private static readonly NullControl _proxyControl = new NullControl();
 
-        private readonly AsyncTexture2D _cachedRender;
-
-        public AsyncTexture2D CachedRender => _cachedRender;
+        public AsyncTexture2D CachedRender { get; }
 
         public string Text { get; }
 
@@ -53,7 +51,7 @@ namespace Blish_HUD.Controls {
             this.HorizontalAlignment = horizontalAlignment;
             this.VerticalAlignment = verticalAlignment;
 
-            _cachedRender = new AsyncTexture2D(ContentService.Textures.TransparentPixel.Duplicate());
+            this.CachedRender = new AsyncTexture2D(ContentService.Textures.TransparentPixel.Duplicate());
         }
 
         private void InitRender(GraphicsDevice graphicsDevice) {
@@ -89,7 +87,7 @@ namespace Blish_HUD.Controls {
 
             graphicsDevice.SetRenderTarget(null);
 
-            _cachedRender.SwapTexture(cachedRenderTarget);
+            this.CachedRender.SwapTexture(cachedRenderTarget);
         }
 
         public override int GetHashCode() {
@@ -155,7 +153,7 @@ namespace Blish_HUD.Controls {
             return checkCsr;
         }
 
-        public void Dispose() => _cachedRender?.Dispose();
+        public void Dispose() => this.CachedRender?.Dispose();
 
     }
 }

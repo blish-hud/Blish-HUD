@@ -4,21 +4,18 @@ using System.Threading.Tasks;
 namespace Blish_HUD.Graphics.UI {
     public abstract class Presenter<TView, TModel> : IPresenter<TView> where TView : class, IView {
 
-        private readonly TView _view;
-        private readonly TModel _model;
-
         /// <inheritdoc cref="IPresenter{TView}.View"/>
-        public TView View => _view;
+        public TView View { get; }
 
         /// <summary>
         /// The model this <see cref="Presenter{TView,TModel}"/> will use to determine
         /// how to present to the <see cref="View"/>.
         /// </summary>
-        public TModel Model => _model;
+        public TModel Model { get; }
 
         protected Presenter(TView view, TModel model) {
-            _view = view;
-            _model = model;
+            this.View = view;
+            this.Model = model;
         }
 
         /// <inheritdoc />

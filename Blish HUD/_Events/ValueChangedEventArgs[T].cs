@@ -8,25 +8,22 @@ namespace Blish_HUD {
 
     public class ValueChangedEventArgs<T> : EventArgs {
 
-        private readonly T _previousValue;
-        private readonly T _newValue;
-
         /// <summary>
         /// The value of the property before it was changed.
         /// </summary>
-        public T PreviousValue => _previousValue;
+        public T PreviousValue => this.PrevousValue;
 
         [Obsolete("Typo.  Use 'PreviousValue' instead.")]
-        public T PrevousValue => _previousValue;
+        public T PrevousValue { get; }
 
         /// <summary>
         /// The value of the property now that it has been changed.
         /// </summary>
-        public T NewValue => _newValue;
+        public T NewValue { get; }
 
         public ValueChangedEventArgs(T previousValue, T newValue) {
-            _previousValue = previousValue;
-            _newValue = newValue;
+            this.PrevousValue = previousValue;
+            this.NewValue = newValue;
         }
     }
 }

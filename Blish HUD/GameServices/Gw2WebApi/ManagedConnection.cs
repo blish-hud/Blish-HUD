@@ -12,9 +12,7 @@ namespace Blish_HUD.Gw2WebApi {
 
         public IConnection Connection => _internalConnection;
 
-        private readonly IGw2WebApiClient _internalClient;
-
-        public IGw2WebApiClient Client => _internalClient;
+        public IGw2WebApiClient Client { get; }
 
         internal ManagedConnection(string accessToken, TokenComplianceMiddleware tokenComplianceMiddle, ICacheMethod webApiCache, ICacheMethod renderCache = null, TimeSpan? renderCacheDuration = null) {
             string ua = $"BlishHUD/{Program.OverlayVersion}";
@@ -28,7 +26,7 @@ namespace Blish_HUD.Gw2WebApi {
 
             _internalConnection.Middleware.Add(tokenComplianceMiddle);
 
-            _internalClient = new Gw2Client(_internalConnection).WebApi;
+            this.Client = new Gw2Client(_internalConnection).WebApi;
 
             Logger.Debug("Created managed Gw2Sharp connection {useragent}.", ua);
 

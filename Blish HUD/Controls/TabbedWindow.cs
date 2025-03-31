@@ -56,14 +56,13 @@ namespace Blish_HUD.Controls {
         private readonly LinkedList<IView> _currentNav = new LinkedList<IView>();
 
         private readonly Dictionary<WindowTab, Rectangle> _tabRegions = new Dictionary<WindowTab, Rectangle>();
-        private readonly Dictionary<WindowTab, Panel> _panels = new Dictionary<WindowTab, Panel>();
         private readonly Dictionary<WindowTab, Func<IView>> _views = new Dictionary<WindowTab, Func<IView>>();
         private List<WindowTab> _tabs = new List<WindowTab>();
 
         private readonly ViewContainer _activeViewContainer;
 
         // TODO: Remove public access to _panels - only kept currently as it is used by KillProof.me module (need more robust "Navigate()" call for panel history)
-        public Dictionary<WindowTab, Panel> Panels => _panels;
+        public Dictionary<WindowTab, Panel> Panels { get; } = new Dictionary<WindowTab, Panel>();
 
         public TabbedWindow() {
             var tabWindowTexture = _textureDefaultBackround;
@@ -235,7 +234,7 @@ namespace Blish_HUD.Controls {
             if (_tabs.Contains(tab)) {
                 _tabs.Remove(tab);
                 _tabRegions.Remove(tab);
-                _panels.Remove(tab);
+                this.Panels.Remove(tab);
                 _views.Remove(tab);
             }
 

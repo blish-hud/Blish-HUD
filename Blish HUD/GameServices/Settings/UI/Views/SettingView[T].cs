@@ -10,8 +10,6 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected void OnValueChanged(ValueEventArgs<TSetting> e) => this.ValueChanged?.Invoke(this, e);
 
-        private readonly int _definedWidth;
-
         private string _displayName;
         private string _description;
         private TSetting _value;
@@ -40,7 +38,7 @@ namespace Blish_HUD.Settings.UI.Views {
             }
         }
 
-        protected int DefinedWidth => _definedWidth;
+        protected int DefinedWidth { get; }
 
         public TSetting Value {
             get => _value;
@@ -48,15 +46,15 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected SettingView(SettingEntry<TSetting> setting, int definedWidth) {
-            _definedWidth = definedWidth;
+            this.DefinedWidth = definedWidth;
             _value = setting.Value;
 
             this.WithPresenter(new SettingPresenter<TSetting>(this, setting));
         }
 
         protected sealed override void Build(Container buildPanel) {
-            if (_definedWidth > 0) {
-                buildPanel.Width = _definedWidth;
+            if (this.DefinedWidth > 0) {
+                buildPanel.Width = this.DefinedWidth;
             }
 
             BuildSetting(buildPanel);
