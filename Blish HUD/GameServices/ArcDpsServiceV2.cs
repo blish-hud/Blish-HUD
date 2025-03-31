@@ -128,9 +128,7 @@ namespace Blish_HUD {
                 _arcDpsClient.Error += SocketErrorHandler;
                 _arcDpsClient.Initialize(new IPEndPoint(IPAddress.Loopback, GetPort(processId, version)), _arcDpsClientCancellationTokenSource.Token);
 
-                RegisterMessageType<ImGuiCallback>(MessageType.ImGui, async (imGuiCallback, ct) => {
-                    this.HudIsActive = imGuiCallback.NotCharacterSelectOrLoading != 0;
-                });
+                RegisterMessageType<ImGuiCallback>(MessageType.ImGui, async (imGuiCallback, ct) => this.HudIsActive = imGuiCallback.NotCharacterSelectOrLoading != 0);
             }
         }
 

@@ -36,7 +36,7 @@ namespace Blish_HUD.Debug {
             if (buttons != null) {
                 foreach (var button in buttons) {
                     var bttn = new Button { Text = button.Text, Parent = PnlAction, AutoSize = true };
-                    bttn.Click += (sender, e) => { button.OnClick(); };
+                    bttn.Click += (sender, e) => button.OnClick();
                 }
             }
         }

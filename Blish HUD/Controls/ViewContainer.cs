@@ -46,7 +46,7 @@ namespace Blish_HUD.Controls {
 
             this.CurrentView = newView;
 
-            var progressIndicator = new Progress<string>((progressReport) => { _loadingMessage = progressReport; });
+            var progressIndicator = new Progress<string>((progressReport) => _loadingMessage = progressReport);
 
             newView.Loaded += BuildView;
             newView.DoLoad(progressIndicator).ContinueWith(BuildView);

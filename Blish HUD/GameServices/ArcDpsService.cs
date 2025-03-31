@@ -118,7 +118,7 @@ namespace Blish_HUD {
             this.Common = new CommonFields();
             _stopwatch = new Stopwatch();
 #if DEBUG
-            this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
+            this.RawCombatEvent += (a, b) => Interlocked.Increment(ref Counter);
 #endif
 
             GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(GameServices.ArcDps.V2.MessageType.CombatEventArea, async (combatEvent, ct) => {
@@ -136,9 +136,7 @@ namespace Blish_HUD {
 
         protected override void Load() {
             _stopwatch.Start();
-            this.SubscribeToCombatEventId((source, combatEvent) => {
-                System.Diagnostics.Debug.WriteLine("");
-            },
+            this.SubscribeToCombatEventId((source, combatEvent) => System.Diagnostics.Debug.WriteLine(""),
             43916);
         }
 

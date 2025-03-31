@@ -170,9 +170,7 @@ namespace Blish_HUD.Overlay.UI.Views {
                     bottomDiscordSection.Bottom + 45
                 );
 
-                updateButton.Click += (s, e) => {
-                    GameService.Overlay.OverlayUpdateHandler.ShowReleaseSplash(NewManifest, false);
-                };
+                updateButton.Click += (s, e) => GameService.Overlay.OverlayUpdateHandler.ShowReleaseSplash(NewManifest, false);
             } else {
                 _ = new Label() {
                     Parent = aboutPanel,

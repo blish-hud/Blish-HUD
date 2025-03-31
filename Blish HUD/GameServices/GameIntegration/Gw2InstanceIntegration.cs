@@ -205,7 +205,7 @@ namespace Blish_HUD.GameIntegration {
             string windowClass = null;
 
             if (newProcess == null || _gw2Process.HasExited || _gw2Process.MainWindowHandle == IntPtr.Zero) {
-                BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = false; }));
+                BlishHud.Instance.Form.Invoke((MethodInvoker)(() => BlishHud.Instance.Form.Visible = false));
 
                 _gw2Process = null;
                 this.Gw2IsRunning = false;
@@ -280,7 +280,7 @@ namespace Blish_HUD.GameIntegration {
                     this.Gw2Process.EnableRaisingEvents = true;
                     this.Gw2Process.Exited += OnGw2Exit;
 
-                    BlishHud.Instance.Form.Invoke((MethodInvoker)(() => { BlishHud.Instance.Form.Visible = true; }));
+                    BlishHud.Instance.Form.Invoke((MethodInvoker)(() => BlishHud.Instance.Form.Visible = true));
                 } catch (Win32Exception ex) /* [BLISHHUD-W] */ {
                     // Observed as "Access is denied"
                     Logger.Warn(ex, "A Win32Exception was encountered while trying to monitor the Gw2 process. It might be running with different permissions.");

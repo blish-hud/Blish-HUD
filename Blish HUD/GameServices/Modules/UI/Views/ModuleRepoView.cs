@@ -81,13 +81,9 @@ namespace Blish_HUD.Modules.UI.Views {
 
             _searchbox.TextChanged += SearchboxOnTextChanged;
 
-            _restartBlishHud.Click += (sender, args) => {
-                GameService.Overlay.Restart();
-            };
+            _restartBlishHud.Click += (sender, args) => GameService.Overlay.Restart();
 
-            settingsButton.Click += (sender, args) => {
-                this.SettingsMenu.Show((Control)sender);
-            };
+            settingsButton.Click += (sender, args) => this.SettingsMenu.Show((Control)sender);
         }
 
         private void SearchboxOnTextChanged(object sender, EventArgs e) => this.RepoFlowPanel.FilterChildren<ViewContainer>(viewContainer => PkgParamFilter(viewContainer, PkgNeedsUpdateFilter, PkgSearchFilter));

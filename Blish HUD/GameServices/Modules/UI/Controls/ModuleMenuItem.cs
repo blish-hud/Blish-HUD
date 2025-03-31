@@ -29,10 +29,10 @@ namespace Blish_HUD.Modules.UI.Controls {
 
             IEnumerable<ContextMenuStripItem> GetModuleMenuItems() {
                 var enable = new ContextMenuStripItem(Strings.GameServices.ModulesService.ModuleManagement_EnableModule) { Enabled = !_module.Enabled };
-                enable.Click += (s, e) => { _module.TryEnable(); };
+                enable.Click += (s, e) => _module.TryEnable();
 
                 var disable = new ContextMenuStripItem(Strings.GameServices.ModulesService.ModuleManagement_DisableModule) { Enabled = _module.Enabled };
-                disable.Click += (s, e) => { _module.Disable(); };
+                disable.Click += (s, e) => _module.Disable();
 
                 yield return enable;
                 yield return disable;
