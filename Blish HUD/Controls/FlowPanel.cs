@@ -262,7 +262,7 @@ namespace Blish_HUD.Controls {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
-            var lastLeft = outerPadX;
+            float lastLeft = outerPadX;
 
             foreach (var child in allChildren) {
                 child.Location = new Point((int)lastLeft, (int)outerPadY);
@@ -275,7 +275,7 @@ namespace Blish_HUD.Controls {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
-            var lastLeft = this.Width - outerPadX;
+            float lastLeft = this.Width - outerPadX;
 
             foreach (var child in allChildren) {
                 child.Location = new Point((int)(lastLeft - child.Width), (int)outerPadY);
@@ -288,7 +288,7 @@ namespace Blish_HUD.Controls {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
-            var lastBottom = outerPadY;
+            float lastBottom = outerPadY;
 
             foreach (var child in allChildren) {
                 child.Location = new Point((int)outerPadX, (int)lastBottom);
@@ -301,7 +301,7 @@ namespace Blish_HUD.Controls {
             float outerPadX = _padLeftBeforeControl ? _controlPadding.X : _outerControlPadding.X;
             float outerPadY = _padTopBeforeControl ? _controlPadding.Y : _outerControlPadding.Y;
 
-            var lastTop = this.Height - outerPadY;
+            float lastTop = this.Height - outerPadY;
 
             foreach (var child in allChildren) {
                 child.Location = new Point((int)outerPadX, (int)(lastTop - child.Height));

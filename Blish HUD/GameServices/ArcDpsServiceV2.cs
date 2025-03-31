@@ -147,7 +147,7 @@ namespace Blish_HUD {
             }
 
             // +1 for V2 and +0 for V1
-            var port = pid | (1 << 14) | (1 << 15);
+            int port = pid | (1 << 14) | (1 << 15);
             if (version == ArcDpsBridgeVersion.V2) {
                 port++;
             }
@@ -188,7 +188,7 @@ namespace Blish_HUD {
 
         private ArcDpsBridgeVersion GetVersion(uint processId) {
             try {
-                var port = GetPort(processId, ArcDpsBridgeVersion.V2);
+                int port = GetPort(processId, ArcDpsBridgeVersion.V2);
                 var client = new TcpClient();
                 client.Connect(new IPEndPoint(IPAddress.Loopback, port));
                 client.Dispose();
@@ -197,7 +197,7 @@ namespace Blish_HUD {
             }
 
             try {
-                var port = GetPort(processId, ArcDpsBridgeVersion.V1);
+                int port = GetPort(processId, ArcDpsBridgeVersion.V1);
                 var client = new TcpClient();
                 client.Connect(new IPEndPoint(IPAddress.Loopback, port));
                 client.Dispose();

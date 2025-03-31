@@ -85,7 +85,7 @@ namespace Blish_HUD.Controls {
 
         public override void DoUpdate(GameTime gameTime) {
             // Calculate new top location. Fixes the wrong location before blish finishes resizing.
-            var calculatedNewTop = Graphics.SpriteScreen.Height / 4 - this.Size.Y / 2;
+            int calculatedNewTop = Graphics.SpriteScreen.Height / 4 - this.Size.Y / 2;
             if (calculatedNewTop > _targetTop) {
                 _targetTop += calculatedNewTop;
 

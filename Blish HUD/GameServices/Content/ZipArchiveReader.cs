@@ -60,7 +60,7 @@ namespace Blish_HUD.Content {
         }
 
         private ZipArchiveEntry GetArchiveEntry(string filePath) {
-            var cleanFilePath = GetUniformFileName(Path.Combine(_subPath, filePath));
+            string cleanFilePath = GetUniformFileName(Path.Combine(_subPath, filePath));
 
             foreach (var zipEntry in _archive.Entries) {
                 string cleanZipEntry = GetUniformFileName(zipEntry.FullName);

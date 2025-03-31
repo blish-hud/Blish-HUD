@@ -223,7 +223,7 @@ namespace Blish_HUD.Controls {
             } else {
                 spriteBatch.DrawOnCtrl(this, MinusSprite, new Rectangle(0, 0, 17, 17), Color.White);
             }
-            var combine = _prefix + _value + _suffix;
+            string combine = _prefix + _value + _suffix;
             spriteBatch.DrawStringOnCtrl(this, combine, Content.DefaultFont14, new Rectangle(18, 0, _valueWidth, 17), Color.White, false, true, 1, HorizontalAlignment.Center, VerticalAlignment.Middle);
 
             if (_mouseOverPlus && _pressed) {

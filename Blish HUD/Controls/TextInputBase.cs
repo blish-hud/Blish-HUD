@@ -336,7 +336,7 @@ namespace Blish_HUD.Controls {
         private bool Paste(string value) {
             DeleteSelection();
 
-            if (InsertChars(_cursorIndex, value, out var length) && length > 0) {
+            if (InsertChars(_cursorIndex, value, out int length) && length > 0) {
                 _undoStack.MakeInsert(_cursorIndex, length);
                 this.CursorIndex += length;
                 return true;

@@ -65,7 +65,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
             var unpackStream = File.OpenRead(unpackPath);
             var unpacker = new ZipArchive(unpackStream);
 
-            var applicationDir = Directory.GetCurrentDirectory();
+            string applicationDir = Directory.GetCurrentDirectory();
 
             var rootDirs = unpacker.Entries
                 .Select(entry => entry.FullName.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
@@ -76,7 +76,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
             var allFiles = unpacker.Entries.Where(entry => !string.IsNullOrWhiteSpace(entry.Name) && !string.Equals(entry.Name, FILE_EXE));
             var rootFiles = allFiles.Where(entry => !entry.FullName.Contains("/"));
 
-            foreach (var dirPath in rootDirs) {
+            foreach (string dirPath in rootDirs) {
                 if (Directory.Exists(dirPath)) {
                     Directory.Delete(dirPath, true);
                 }

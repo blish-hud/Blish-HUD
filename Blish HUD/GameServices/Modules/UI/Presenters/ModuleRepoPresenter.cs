@@ -82,7 +82,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
                                             .OrderByDescending(pkgs => {
                                                 var lastManifest = pkgs.Last();
                                                 var latestInstalledVersion = this.GetCurrentModuleVersion(lastManifest.Namespace);
-                                                var needsUpdate = latestInstalledVersion != null && latestInstalledVersion < lastManifest.Version;
+                                                bool needsUpdate = latestInstalledVersion != null && latestInstalledVersion < lastManifest.Version;
                                                 return needsUpdate;
                                             }) // Modules with update at top
                                             .ThenBy(pkgs => pkgs.Last().Name)) {

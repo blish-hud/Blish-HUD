@@ -175,7 +175,7 @@ namespace Glide {
                 var props = values.GetType().GetProperties();
                 for (int i = 0; i < props.Length; ++i) {
                     var property = props[i];
-                    var propValue = property.GetValue(values, null);
+                    object propValue = property.GetValue(values, null);
 
                     int index = -1;
                     if (varHash.TryGetValue(property.Name, out index)) {
@@ -294,8 +294,8 @@ namespace Glide {
         public Tween Reverse() {
             int i = vars.Count;
             while (i-- > 0) {
-                var s = start[i];
-                var e = end[i];
+                object s = start[i];
+                object e = end[i];
 
                 //	Set start to end and end to start
                 start[i] = e;
@@ -334,9 +334,9 @@ namespace Glide {
         /// </summary>
         /// <param name="properties"></param>
         public void Cancel(params string[] properties) {
-            var canceled = 0;
+            int canceled = 0;
             for (int i = 0; i < properties.Length; ++i) {
-                var index = 0;
+                int index = 0;
                 if (!varHash.TryGetValue(properties[i], out index)) {
                     continue;
                 }

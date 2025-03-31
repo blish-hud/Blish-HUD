@@ -82,7 +82,7 @@ namespace Blish_HUD.GameServices.ArcDps {
             while (!_linkedToken.IsCancellationRequested) {
                 _linkedToken.ThrowIfCancellationRequested();
                 Task.Delay(1).Wait();
-                foreach (var item in messageQueue.GetConsumingEnumerable()) {
+                foreach (byte[] item in messageQueue.GetConsumingEnumerable()) {
                     _linkedToken.ThrowIfCancellationRequested();
                     processor.Process(item, _linkedToken);
                     ArrayPool<byte>.Shared.Return(item);
@@ -139,7 +139,7 @@ namespace Blish_HUD.GameServices.ArcDps {
         private async Task LegacyReceive(CancellationToken ct) {
             _logger.Info($"Start Legacy Receive Task for {Client?.Client.RemoteEndPoint?.ToString()}");
             try {
-                var messageHeaderBuffer = new byte[9];
+                byte[] messageHeaderBuffer = new byte[9];
                 ArrayPool<byte> pool = ArrayPool<byte>.Shared;
                 while (Client?.Connected ?? false) {
                     ct.ThrowIfCancellationRequested();
@@ -151,8 +151,8 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                     ReadFromStream(_networkStream, messageHeaderBuffer, 9);
 
-                    var messageLength = Unsafe.ReadUnaligned<int>(ref messageHeaderBuffer[0]) - 1;
-                    var messageType = messageHeaderBuffer[8];
+                    int messageLength = Unsafe.ReadUnaligned<int>(ref messageHeaderBuffer[0]) - 1;
+                    byte messageType = messageHeaderBuffer[8];
 
                     ReadMessage(pool, messageLength, _networkStream, _messageQueues, messageType);
 #if DEBUG
@@ -176,7 +176,7 @@ namespace Blish_HUD.GameServices.ArcDps {
         private async Task Receive(CancellationToken ct) {
             _logger.Info($"Start Receive Task for {Client?.Client.RemoteEndPoint?.ToString()}");
             try {
-                var messageHeaderBuffer = new byte[5];
+                byte[] messageHeaderBuffer = new byte[5];
                 ArrayPool<byte> pool = ArrayPool<byte>.Shared;
                 while (Client?.Connected ?? false) {
                     ct.ThrowIfCancellationRequested();
@@ -188,8 +188,8 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                     ReadFromStream(_networkStream, messageHeaderBuffer, 5);
 
-                    var messageLength = Unsafe.ReadUnaligned<int>(ref messageHeaderBuffer[0]) - 1;
-                    var messageType = messageHeaderBuffer[4];
+                    int messageLength = Unsafe.ReadUnaligned<int>(ref messageHeaderBuffer[0]) - 1;
+                    byte messageType = messageHeaderBuffer[4];
 
                     ReadMessage(pool, messageLength, _networkStream, _messageQueues, messageType);
 #if DEBUG
@@ -215,7 +215,7 @@ namespace Blish_HUD.GameServices.ArcDps {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void ReadMessage(ArrayPool<byte> pool, int messageLength, Stream networkStream, BlockingCollection<byte[]>[] messageQueues, byte messageType) {
-            var messageBuffer = pool.Rent(messageLength);
+            byte[] messageBuffer = pool.Rent(messageLength);
             ReadFromStream(networkStream, messageBuffer, messageLength);
 
             if (messageQueues[messageType] != null) {
@@ -241,7 +241,7 @@ namespace Blish_HUD.GameServices.ArcDps {
                     if (_messageQueues != null) {
                         foreach (var item in _messageQueues) {
                             if (item != null) {
-                                foreach (var message in item) {
+                                foreach (byte[] message in item) {
                                     if (message != null) {
                                         ArrayPool<byte>.Shared.Return(message);
                                     }

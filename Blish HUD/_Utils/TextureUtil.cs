@@ -61,9 +61,9 @@ namespace Blish_HUD {
         }
 
         private static byte ApplyAlpha(byte color, byte alpha) {
-            var fc = color / 255.0f;
-            var fa = alpha / 255.0f;
-            var fr = (int)(255.0f * fc * fa);
+            float fc = color / 255.0f;
+            float fa = alpha / 255.0f;
+            int fr = (int)(255.0f * fc * fa);
             if (fr < 0) {
                 fr = 0;
             }

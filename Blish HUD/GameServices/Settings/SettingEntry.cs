@@ -40,7 +40,7 @@ namespace Blish_HUD.Settings {
                     return null;
                 }
 
-                var entryGeneric = Activator.CreateInstance(typeof(SettingEntry<>).MakeGenericType(entryType));
+                object entryGeneric = Activator.CreateInstance(typeof(SettingEntry<>).MakeGenericType(entryType));
 
                 serializer.Populate(jObj.CreateReader(), entryGeneric);
 

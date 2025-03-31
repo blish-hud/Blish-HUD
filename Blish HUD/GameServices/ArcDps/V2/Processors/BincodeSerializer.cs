@@ -29,7 +29,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
                 public static readonly VarintEncoding Instance = new VarintEncoding();
 
                 public ulong ConvertUnsigned(BinaryReader reader) {
-                    var firstByte = reader.ReadByte();
+                    byte firstByte = reader.ReadByte();
 
                     if (firstByte < 251) {
                         return firstByte;
@@ -45,7 +45,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
                 }
 
                 public long Convert(BinaryReader reader) {
-                    var unsigned = ConvertUnsigned(reader);
+                    ulong unsigned = ConvertUnsigned(reader);
                     return UnZigZag(unsigned);
                 }
 
@@ -150,7 +150,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
             public static class ArrayConverter {
                 // TODO: Maybe make this more performant in code generation and generate the specific count of 
                 public static IEnumerable<T> Convert<T>(BinaryReader binaryReader, Func<BinaryReader, T> converter, int size) {
-                    for (var i = 0; i < size; i++) {
+                    for (int i = 0; i < size; i++) {
                         yield return converter(binaryReader);
                     }
                 }
@@ -158,16 +158,16 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
 
             public static class StringConverter {
                 public static string Convert(BinaryReader reader) {
-                    var size = IntConverter.USizeConverter.Convert(reader);
+                    ulong size = IntConverter.USizeConverter.Convert(reader);
                     return Encoding.UTF8.GetString(reader.ReadBytes((int)size));
                 }
             }
 
             public static class VariableLengthConverter {
                 public static IEnumerable<T> Convert<T>(BinaryReader reader, Func<BinaryReader, T> converter) {
-                    var size = (int)IntConverter.USizeConverter.Convert(reader);
+                    int size = (int)IntConverter.USizeConverter.Convert(reader);
 
-                    for (var i = 0; i < size; i++) {
+                    for (int i = 0; i < size; i++) {
                         yield return converter(reader);
                     }
                 }

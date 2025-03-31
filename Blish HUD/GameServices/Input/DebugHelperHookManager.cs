@@ -22,7 +22,7 @@ namespace Blish_HUD.Input {
             Logger.Debug("Loading DebugHelper input hooks");
 
             using var currentProcess = Process.GetCurrentProcess();
-            var processFileName = currentProcess.MainModule.FileName;
+            string processFileName = currentProcess.MainModule.FileName;
 
             _process = new Process {
                 StartInfo = new ProcessStartInfo(processFileName, $"--mainprocessid {currentProcess.Id}") {

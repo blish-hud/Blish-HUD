@@ -136,7 +136,7 @@ namespace Blish_HUD {
 
             try {
                 const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
-                var filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
+                string filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
 
                 if (_audioDataReader.FileExists(filePath)) {
                     SoundEffect.FromStream(_audioDataReader.GetFileStream(filePath)).Play(GameService.GameIntegration.Audio.Volume, 0, 0);
@@ -163,7 +163,7 @@ namespace Blish_HUD {
         }
 
         private static Texture2D TextureFromFileSystem(string filepath) {
-            var refPath = RefPath;
+            string refPath = RefPath;
             if (!File.Exists(refPath)) {
                 Logger.Warn("{refFileName} is missing!  Lots of assets will be missing!", refPath);
                 return null;

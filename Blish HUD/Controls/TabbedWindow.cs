@@ -245,7 +245,7 @@ namespace Blish_HUD.Controls {
 
             _tabs = _tabs.OrderBy(t => t.Priority).ToList();
 
-            for (var tabIndex = 0; tabIndex < _tabRegions.Count; tabIndex++) {
+            for (int tabIndex = 0; tabIndex < _tabRegions.Count; tabIndex++) {
                 var curTab = _tabs[tabIndex];
                 _tabRegions[curTab] = TabBoundsFromIndex(tabIndex);
             }

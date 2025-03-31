@@ -268,7 +268,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private void ReloadApiKeys() {
             _tokensList.ClearChildren();
 
-            foreach (var key in GameService.Gw2WebApi.GetKeys()) {
+            foreach (string key in GameService.Gw2WebApi.GetKeys()) {
                 var nPanel = new ViewContainer() {
                     Size = new Point(350, 82),
                     ShowTint = true,

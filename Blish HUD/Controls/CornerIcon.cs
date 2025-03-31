@@ -58,9 +58,9 @@ namespace Blish_HUD.Controls {
                         }
                     }).OnComplete(() => {
                         if (!this.DynamicHide) {
-        this.Visible = false;
-    }
-});
+                            this.Visible = false;
+                        }
+                    });
                 }
             }
         }

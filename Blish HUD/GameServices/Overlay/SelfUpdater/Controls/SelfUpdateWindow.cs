@@ -118,7 +118,7 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
 
             var bodyBuffer = new StringBuilder();
 
-            foreach (var line in newReleaseManifest.Changelog.Split('\n')) {
+            foreach (string line in newReleaseManifest.Changelog.Split('\n')) {
                 // Section titles will start with '#'
                 if (line.StartsWith("#")) {
                     // Clear the body buffer first

@@ -232,7 +232,7 @@ namespace Blish_HUD.Controls {
         public override void DoUpdate(GameTime gameTime) {
             base.DoUpdate(gameTime);
 
-            var timeDiff = gameTime.TotalGameTime.TotalMilliseconds - _lastClickTime;
+            double timeDiff = gameTime.TotalGameTime.TotalMilliseconds - _lastClickTime;
 
             if (this.ScrollFocus == ClickFocus.Bar) {
                 HandleClickScroll(false);
@@ -244,7 +244,7 @@ namespace Blish_HUD.Controls {
         }
 
         public override void RecalculateLayout() {
-            var lastVal = _scrollbarPercent;
+            double lastVal = _scrollbarPercent;
             RecalculateScrollbarSize();
 
             if (lastVal != _scrollbarPercent && _associatedContainer != null) {
