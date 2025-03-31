@@ -53,7 +53,6 @@ namespace Glide {
                 toAdd = new ConcurrentQueue<Tween>();
             }
 
-
             private static readonly Dictionary<Type, ConstructorInfo> registeredLerpers;
 
             private readonly ConcurrentDictionary<object, List<Tween>> tweens;
@@ -223,7 +222,6 @@ namespace Glide {
             /// </summary>
             /// <param name="target">The object being tweened that you want to cancel and complete.</param>
             public void TargetCancelAndComplete(object target) => ForAllTweens(target, tw => tw.CancelAndComplete());
-
 
             /// <summary>
             /// Pause all tweens with the given target.

@@ -60,7 +60,6 @@ namespace Blish_HUD {
             this.FormHandle = this.Window.Handle;
             this.Form = Control.FromHandle(this.FormHandle).FindForm();
 
-
             this.Form.BackColor = System.Drawing.Color.Black;
             // Avoid the flash the window shows when the application launches (-32000x-32000 is where windows places minimized windows)
             this.Form.Location = new System.Drawing.Point(-32000, -32000);

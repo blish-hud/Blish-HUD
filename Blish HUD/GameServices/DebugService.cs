@@ -285,9 +285,7 @@ namespace Blish_HUD {
                                                                   () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_Description);
 
-
             this.EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
-
 
             if (ApplicationSettings.Instance.DebugEnabled) {
                 // Disable all debug setting and update description - user has manually specified --debug as launch arg

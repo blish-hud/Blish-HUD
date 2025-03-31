@@ -41,7 +41,6 @@ namespace Blish_HUD {
 
         #region Init Cache, Connection, & Client
 
-
         private void CreateInternalConnection() {
             InitCache();
 

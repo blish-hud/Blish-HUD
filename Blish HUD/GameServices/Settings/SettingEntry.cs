@@ -54,7 +54,6 @@ namespace Blish_HUD.Settings {
         [JsonIgnore]
         public Func<string> GetDisplayNameFunc { get; set; } = () => null;
 
-
         [JsonIgnore]
         public string Description => this.GetDescriptionFunc();
 

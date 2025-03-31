@@ -12,7 +12,6 @@ namespace Blish_HUD.Input {
         private readonly HookExtern.HookCallbackDelegate _hookProc; // Store the callback delegate, otherwise it might get garbage collected
         private IntPtr _hook;
 
-
         protected WinApiInputHookManager() {
             _hookProc = HookCallback;
         }
@@ -20,7 +19,6 @@ namespace Blish_HUD.Input {
         protected abstract HookType HookType { get; }
 
         protected IList<THandlerDelegate> Handlers { get; } = new SynchronizedCollection<THandlerDelegate>();
-
 
         public virtual bool EnableHook() {
             if (_hook != IntPtr.Zero) {

@@ -4,8 +4,6 @@ namespace Blish_HUD.Controls {
 
     public static class CheckableReference {
 
-
-
     }
 
     public interface ICheckable {

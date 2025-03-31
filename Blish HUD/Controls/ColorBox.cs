@@ -100,7 +100,6 @@ namespace Blish_HUD.Controls {
 
             spriteBatch.DrawOnCtrl(this, sprite, bounds, this.Color?.Cloth?.ToXnaColor() ?? Microsoft.Xna.Framework.Color.White);
 
-
             if (this.MouseOver) {
                 spriteBatch.DrawOnCtrl(this, _spriteHover, bounds, Microsoft.Xna.Framework.Color.White);
             }

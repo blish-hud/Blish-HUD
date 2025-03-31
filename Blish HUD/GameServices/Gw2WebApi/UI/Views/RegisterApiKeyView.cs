@@ -136,7 +136,6 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent = buildPanel
             };
 
-
             clearKeyBttn.Click += delegate { ClearApiKey(); };
 
             _registerKeyBttn.Click += RegisterKeyBttnClicked;

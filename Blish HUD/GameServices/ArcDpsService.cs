@@ -54,7 +54,6 @@ namespace Blish_HUD {
         [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public bool HudIsActive => GameService.ArcDpsV2.HudIsActive;
 
-
         /// <summary>
         /// The timespan after which ArcDPS is treated as not responding.
         /// </summary>

@@ -59,7 +59,6 @@ namespace Blish_HUD {
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
 
-
         private SettingEntry<DynamicHUDMethod> _dynamicHUDMenuBar;
         public DynamicHUDMethod DynamicHUDMenuBar {
             get => _dynamicHUDMenuBar.Value;
@@ -273,7 +272,6 @@ namespace Blish_HUD {
             Program.RestartOnExit = true;
             ActiveBlishHud.Exit();
         }
-
 
         private CultureInfo GetCultureFromGw2Locale(Locale locale) {
             return locale switch {

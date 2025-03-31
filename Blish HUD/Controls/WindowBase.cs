@@ -260,7 +260,6 @@ namespace Blish_HUD.Controls {
                 _layoutSubtitleBounds = _layoutLeftTitleBarBounds.OffsetBy(TITLE_OFFSET + titleTextWidth + SUBTITLE_OFFSET, 0);
             }
 
-
             // Title bar exit button bounds
             _layoutExitButtonBounds = new Rectangle(_layoutRightTitleBarBounds.Right - (COMMON_MARGIN * 2) - _textureExitButton.Width,
                                                     _layoutRightTitleBarBounds.Y + COMMON_MARGIN,

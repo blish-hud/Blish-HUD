@@ -712,7 +712,6 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-
         // TODO: Not sure if these are needed anymore since GameServices are much easier to reference now
         // Aliases to make life easier
         protected static ContentService Content => GameService.Content;

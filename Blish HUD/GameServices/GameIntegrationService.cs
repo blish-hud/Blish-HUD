@@ -64,7 +64,6 @@ namespace Blish_HUD {
         [Obsolete("Use GameIntegration.Gw2Instance.Gw2Started (0.11.0+) instead.")]
         public event EventHandler<EventArgs> Gw2Started;
 
-
         [Obsolete("Use GameIntegration.Gw2Instance.Gw2AcquiredFocus (0.11.0+) instead.")]
         public event EventHandler<EventArgs> Gw2AcquiredFocus;
 
