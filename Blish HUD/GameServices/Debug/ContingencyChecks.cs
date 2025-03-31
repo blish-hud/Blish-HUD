@@ -53,7 +53,7 @@ namespace Blish_HUD.Debug {
                     return;
                 }
 
-                if (cfaRoot.GetValue("EnableControlledFolderAccess", 0) as int? == 1) {
+                if ((cfaRoot.GetValue("EnableControlledFolderAccess", 0) as int?) == 1) {
                     try {
                         string cfaTestFile = Path.Combine(DirectoryUtil.BasePath, ".cfa");
 
