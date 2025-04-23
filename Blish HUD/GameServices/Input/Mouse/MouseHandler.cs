@@ -45,6 +45,8 @@ namespace Blish_HUD.Input {
 
         private bool _cursorIsVisible = true;
 
+        private bool _recentlyEnabled = false;
+
         /// <summary>
         /// Indicates if the hardware mouse is currently visible.  When <c>false</c>,
         /// this typically indicates that the user is rotating their camera or in action
@@ -160,20 +162,73 @@ namespace Blish_HUD.Input {
 
             // Handle mouse events blocked by the mouse hook
             if (_mouseEvent != null) {
-                if (HandleHookedMouseEvent(_mouseEvent) && this.CursorIsVisible) {
-                    GameService.Graphics.SpriteScreen.TriggerMouseInput(_mouseEvent.EventType, this.State);
+                if(_recentlyEnabled) {
+                    _recentlyEnabled = false;
+                    SimulateNonCapturePressedEvent(_mouseEvent);
                 }
 
+                HandleMouseEvent(_mouseEvent);
                 _mouseEvent = null;
             }
         }
 
+        /// <summary>
+        /// Meant to simulate missing parts of mouse events (LeftMouseButtonPressed and RightMouseButtonPressed) in case the mouse hook just got enabled. This was not an "issue" prior to a fix for issue #768 as e.g. the base control just always operated with the release event.
+        /// Now that the event handling there requires a primed state setup by the respective pressed event this logic exists to simulate said event. This saves us from having to pass down a special case flag to the handlers and aims to keep behaviour consistent since
+        /// there will always be a press and release event and not sometimes just half of it. 
+        /// </summary>
+        /// <param name="mouseEvent">Current mouse event that we need to simulate the missing part for given its one of the 2 cases we even want to handle</param>
+        private void SimulateNonCapturePressedEvent(MouseEventArgs mouseEvent) {
+            // What state keeping do we need to even mess with? (Considering public fields of this class accessed by other methods in the handler chain)
+            // no need to worry about PositionRaw as it will be the same as the simulated event
+            // no need to worry about CameraDragging as it will be the same as the simulated event
+            // ActiveControl is not changed by the mouse event so we also dont have to worry about that one either (targets of the events may choose to alter this as necessary but that is normal behaviour then)
+
+            // need to modify the State but it's basically just a copy with changed mouse button pressed states
+
+            // we don't necessarily have to check the previous mouse state here as an additional security as this can only be happening on the enable / disable chain right now
+            // -> the previous state may also be a dangling leftover so it should even be safer to ignore it
+
+            var tmpState = this.State;
+            if (mouseEvent.EventType == MouseEventType.LeftMouseButtonReleased) {
+                this.State = new MouseState(tmpState.X,
+                                            tmpState.Y,
+                                            tmpState.ScrollWheelValue,
+                                            Microsoft.Xna.Framework.Input.ButtonState.Pressed,
+                                            tmpState.MiddleButton,
+                                            tmpState.RightButton,
+                                            tmpState.XButton1,
+                                            tmpState.XButton2);
+                // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic .. (both seem to always be 0 right now?)
+                HandleMouseEvent(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed, mouseEvent.PointX, mouseEvent.PointY, mouseEvent.MouseData, mouseEvent.Flags, mouseEvent.Time, mouseEvent.Extra));
+            } else if (mouseEvent.EventType == MouseEventType.RightMouseButtonReleased) {
+                this.State = new MouseState(tmpState.X,
+                                            tmpState.Y,
+                                            tmpState.ScrollWheelValue,
+                                            tmpState.LeftButton,
+                                            tmpState.MiddleButton,
+                                            Microsoft.Xna.Framework.Input.ButtonState.Pressed,
+                                            tmpState.XButton1,
+                                            tmpState.XButton2);
+                // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic .. (both seem to always be 0 right now?)
+                HandleMouseEvent(new MouseEventArgs(MouseEventType.RightMouseButtonPressed, mouseEvent.PointX, mouseEvent.PointY, mouseEvent.MouseData, mouseEvent.Flags, mouseEvent.Time, mouseEvent.Extra));
+            }
+            this.State = tmpState;
+        }
+
+        private void HandleMouseEvent(MouseEventArgs mouseEvent) {
+            if (HandleHookedMouseEvent(mouseEvent) && this.CursorIsVisible) {
+                GameService.Graphics.SpriteScreen.TriggerMouseInput(mouseEvent.EventType, this.State);
+            }
+        }
+
         public void OnEnable() {
-            /* NOOP */
+            _recentlyEnabled = true;
         }
 
         public void OnDisable() {
-            /* NOOP */
+            // shouldn't be needed but can't hurt to tidy up a little
+            _recentlyEnabled = false;
         }
 
         public void UnsetActiveControl() {

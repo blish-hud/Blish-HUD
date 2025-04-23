@@ -359,5 +359,13 @@ namespace Blish_HUD.Modules.UI.Views {
             _moduleStateLabel.BasicTooltipText = tooltip;
         }
 
+        protected override void Unload() {
+            base.Unload();
+
+            _permissionView?.Dispose();
+            _dependencyView?.Dispose();
+            _settingView?.Dispose();
+        }
+
     }
 }

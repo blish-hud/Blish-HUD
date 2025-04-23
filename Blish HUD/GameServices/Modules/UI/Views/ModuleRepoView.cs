@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
@@ -99,12 +99,8 @@ namespace Blish_HUD.Modules.UI.Views {
         private bool PkgSearchFilter(ViewContainer viewContainer) {
             var pkgView = viewContainer.CurrentView as ManagePkgView;
 
-            var normalizedInput = _searchbox.Text.ToLowerInvariant();
-
-            var matchName = pkgView.ModuleName.ToLowerInvariant().Contains(normalizedInput);
-            var matchDescription = pkgView.ModuleDescription.ToLowerInvariant().Contains(normalizedInput);
-
-            return matchName || matchDescription;
+            var searchText = _searchbox.Text.ToLowerInvariant();
+            return pkgView.ModuleName.ToLowerInvariant().Contains(searchText) || pkgView.ModuleDescription.ToLowerInvariant().Contains(searchText);
         }
 
         private bool PkgNeedsUpdateFilter(ViewContainer viewContainer) {
