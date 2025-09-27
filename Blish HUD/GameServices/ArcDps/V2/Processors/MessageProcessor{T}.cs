@@ -13,7 +13,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
             if (listeners.Count > 0 && TryInternalProcess(message, out var parsedMessage)) {
                 Task.Run(async () => await SendToListener(parsedMessage, ct));
             }
-
         }
 
         private async Task SendToListener(T Message, CancellationToken ct) {
@@ -25,9 +24,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
 
         internal abstract bool TryInternalProcess(byte[] message, out T result);
 
-        public void RegisterListener(Func<T, CancellationToken, Task> listener) {
-            listeners.Add(listener);
-        }
+        public void RegisterListener(Func<T, CancellationToken, Task> listener) => listeners.Add(listener);
 
     }
 }

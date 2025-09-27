@@ -15,11 +15,10 @@ namespace Blish_HUD {
         /// </summary>
         /// <remarks>https://community.monogame.net/t/texture2d-fromstream-in-3-7/10973/9</remarks>
         public static Texture2D FromStreamPremultiplied(Stream stream) {
-            using (var ctx = GameService.Graphics.LendGraphicsDeviceContext()) {
-                var texture = FromStreamPremultiplied(ctx.GraphicsDevice, stream);
+            using var ctx = GameService.Graphics.LendGraphicsDeviceContext();
+            var texture = FromStreamPremultiplied(ctx.GraphicsDevice, stream);
 
-                return texture;
-            }
+            return texture;
         }
 
         /// <summary>
@@ -34,7 +33,7 @@ namespace Blish_HUD {
             try {
                 texture = Texture2D.FromStream(graphics, stream);
 
-                Color[] data = new Color[texture.Width * texture.Height];
+                var data = new Color[texture.Width * texture.Height];
                 texture.GetData(data);
 
                 for (int i = 0; i < data.Length; ++i) {
@@ -61,17 +60,18 @@ namespace Blish_HUD {
         }
 
         private static byte ApplyAlpha(byte color, byte alpha) {
-            var fc = color / 255.0f;
-            var fa = alpha / 255.0f;
-            var fr = (int)(255.0f * fc * fa);
+            float fc = color / 255.0f;
+            float fa = alpha / 255.0f;
+            int fr = (int)(255.0f * fc * fa);
             if (fr < 0) {
                 fr = 0;
             }
+
             if (fr > 255) {
                 fr = 255;
             }
+
             return (byte)fr;
         }
-
     }
 }

@@ -20,9 +20,9 @@ namespace Blish_HUD {
 
         #region Load Static
 
-        private static readonly ConcurrentDictionary<string, BitmapFont>  _loadedBitmapFonts  = new ConcurrentDictionary<string, BitmapFont>();
-        private static readonly ConcurrentDictionary<string, Texture2D>   _loadedTextures     = new ConcurrentDictionary<string, Texture2D>();
-        
+        private static readonly ConcurrentDictionary<string, BitmapFont> _loadedBitmapFonts = new ConcurrentDictionary<string, BitmapFont>();
+        private static readonly ConcurrentDictionary<string, Texture2D> _loadedTextures = new ConcurrentDictionary<string, Texture2D>();
+
         #endregion
 
         public static class Colors {
@@ -32,9 +32,7 @@ namespace Blish_HUD {
 
             public static readonly Color DullColor = Color.FromNonPremultiplied(150, 150, 150, 255);
 
-            public static Color Darkened(float amt) {
-                return Color.FromNonPremultiplied((int)(amt * 255), (int)(amt * 255), (int)(amt * 255), 255);
-            }
+            public static Color Darkened(float amt) => Color.FromNonPremultiplied((int)(amt * 255), (int)(amt * 255), (int)(amt * 255), 255);
 
         }
 
@@ -45,34 +43,33 @@ namespace Blish_HUD {
             public static Texture2D TransparentPixel { get; private set; }
 
             public static void Load() {
-                using (var ctx = Graphics.LendGraphicsDeviceContext(true)) {
-                    Error = Content.GetTexture(@"common\error");
+                using var ctx = Graphics.LendGraphicsDeviceContext(true);
+                Error = Content.GetTexture(@"common\error");
 
-                    Pixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
-                    Pixel.SetData(new[] { Color.White });
+                Pixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
+                Pixel.SetData(new[] { Color.White });
 
-                    TransparentPixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
-                    TransparentPixel.SetData(new[] { Color.Transparent });
-                }
+                TransparentPixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
+                TransparentPixel.SetData(new[] { Color.Transparent });
             }
         }
 
         private IDataReader _audioDataReader;
 
-        private BitmapFont  _defaultFont12;
-        public  BitmapFont  DefaultFont12 => _defaultFont12 ??= GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular);
+        private BitmapFont _defaultFont12;
+        public BitmapFont DefaultFont12 => _defaultFont12 ??= GetFont(FontFace.Menomonia, FontSize.Size12, FontStyle.Regular);
 
         private BitmapFont _defaultFont14;
-        public  BitmapFont DefaultFont14 => _defaultFont14 ??= GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular);
+        public BitmapFont DefaultFont14 => _defaultFont14 ??= GetFont(FontFace.Menomonia, FontSize.Size14, FontStyle.Regular);
 
         private BitmapFont _defaultFont16;
-        public  BitmapFont DefaultFont16 => _defaultFont16 ??= GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular);
+        public BitmapFont DefaultFont16 => _defaultFont16 ??= GetFont(FontFace.Menomonia, FontSize.Size16, FontStyle.Regular);
 
         private BitmapFont _defaultFont18;
-        public  BitmapFont DefaultFont18 => _defaultFont18 ??= GetFont(FontFace.Menomonia, FontSize.Size18, FontStyle.Regular);
+        public BitmapFont DefaultFont18 => _defaultFont18 ??= GetFont(FontFace.Menomonia, FontSize.Size18, FontStyle.Regular);
 
         private BitmapFont _defaultFont32;
-        public  BitmapFont DefaultFont32 => _defaultFont32 ??= GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular);
+        public BitmapFont DefaultFont32 => _defaultFont32 ??= GetFont(FontFace.Menomonia, FontSize.Size32, FontStyle.Regular);
 
         public enum FontFace {
             Menomonia
@@ -136,7 +133,7 @@ namespace Blish_HUD {
 
             try {
                 const string SOUND_EFFECT_FILE_EXTENSION = ".wav";
-                var          filePath                    = soundName + SOUND_EFFECT_FILE_EXTENSION;
+                string filePath = soundName + SOUND_EFFECT_FILE_EXTENSION;
 
                 if (_audioDataReader.FileExists(filePath)) {
                     SoundEffect.FromStream(_audioDataReader.GetFileStream(filePath)).Play(GameService.GameIntegration.Audio.Volume, 0, 0);
@@ -154,58 +151,51 @@ namespace Blish_HUD {
         // Used while debugging since it's easier
         private static Texture2D TextureFromFile(string filepath) {
             if (File.Exists(filepath)) {
-                using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, fileStream);
-                }
-            } else return null;
+                using var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, fileStream);
+            } else {
+                return null;
+            }
         }
 
         private static Texture2D TextureFromFileSystem(string filepath) {
-            var refPath = RefPath;
+            string refPath = RefPath;
             if (!File.Exists(refPath)) {
                 Logger.Warn("{refFileName} is missing!  Lots of assets will be missing!", refPath);
                 return null;
             }
 
-            using (var refFs = new FileStream(refPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                using (var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read)) {
-                    var refEntry = refArchive.GetEntry(filepath);
+            using var refFs = new FileStream(refPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var refArchive = new ZipArchive(refFs, ZipArchiveMode.Read);
+            var refEntry = refArchive.GetEntry(filepath);
 
-                    if (refEntry != null) {
-                        using (var textureStream = refEntry.Open()) {
-                            var textureCanSeek = new MemoryStream();
-                            textureStream.CopyTo(textureCanSeek);
+            if (refEntry != null) {
+                using var textureStream = refEntry.Open();
+                var textureCanSeek = new MemoryStream();
+                textureStream.CopyTo(textureCanSeek);
 
-                            if (GameService.Graphics == null) {
-                                return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek);
-                            } else {
-                                return TextureUtil.FromStreamPremultiplied(textureCanSeek);
-                            }
-                        }
-                    }
-
-                    return null;
-                }
+                return GameService.Graphics == null
+                    ? TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek)
+                    : TextureUtil.FromStreamPremultiplied(textureCanSeek);
             }
+
+            return null;
         }
 
-        public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) {
-            return GameService.Content.ContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
-        }
+        public MonoGame.Extended.TextureAtlases.TextureAtlas GetTextureAtlas(string textureAtlasName) => GameService.Content.ContentManager.Load<MonoGame.Extended.TextureAtlases.TextureAtlas>(textureAtlasName);
 
-        public void PurgeTextureCache(string textureName) {
-            _loadedTextures.TryRemove(textureName, out var _);
-        }
+        public void PurgeTextureCache(string textureName) => _loadedTextures.TryRemove(textureName, out var _);
 
-        public Texture2D GetTexture(string textureName) {
-            return GetTexture(textureName, Textures.Error);
-        }
+        public Texture2D GetTexture(string textureName) => GetTexture(textureName, Textures.Error);
 
         public Texture2D GetTexture(string textureName, Texture2D defaultTexture) {
-            if (textureName == null) return defaultTexture;
+            if (textureName == null) {
+                return defaultTexture;
+            }
 
-            if (_loadedTextures.TryGetValue(textureName, out var cachedTexture))
+            if (_loadedTextures.TryGetValue(textureName, out var cachedTexture)) {
                 return cachedTexture;
+            }
 
             if (File.Exists(textureName)) {
                 return TextureFromFile(textureName);
@@ -221,7 +211,7 @@ namespace Blish_HUD {
                 }
             }
 
-            cachedTexture = cachedTexture ?? defaultTexture;
+            cachedTexture ??= defaultTexture;
 
             _loadedTextures.TryAdd(textureName, cachedTexture);
 
@@ -229,8 +219,6 @@ namespace Blish_HUD {
         }
 
         #region Render Service
-
-        private const string RENDERSERVICE_REQUESTURL = "https://render.guildwars2.com/file/";
 
         private static readonly Regex _regexRenderServiceSignatureFileIdPair = new Regex(@"(.{40})\/(\d+)(?>\..*)?$", RegexOptions.Singleline | RegexOptions.Compiled);
 
@@ -241,9 +229,7 @@ namespace Blish_HUD {
         /// <param name="fileId">The file id of the requested texture.</param>
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
-        public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
-            return this.DatAssetCache.GetTextureFromAssetId(int.Parse(fileId));
-        }
+        public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) => this.DatAssetCache.GetTextureFromAssetId(int.Parse(fileId));
 
         /// <summary>
         /// Retreives a texture from the Guild Wars 2 Render Service.
@@ -259,7 +245,7 @@ namespace Blish_HUD {
             }
 
             string signature = splitUri.Groups[1].Value;
-            string fileId    = splitUri.Groups[2].Value;
+            string fileId = splitUri.Groups[2].Value;
 
             return GetRenderServiceTexture(signature, fileId);
         }
@@ -267,7 +253,7 @@ namespace Blish_HUD {
         #endregion
 
         public BitmapFont GetFont(FontFace font, FontSize size, FontStyle style) {
-            string fullFontName = $"{font.ToString().ToLowerInvariant()}-{((int)size).ToString()}-{style.ToString().ToLowerInvariant()}";
+            string fullFontName = $"{font.ToString().ToLowerInvariant()}-{(int)size}-{style.ToString().ToLowerInvariant()}";
 
             if (!_loadedBitmapFonts.ContainsKey(fullFontName)) {
                 var loadedFont = this.ContentManager.Load<BitmapFont>($"fonts\\{font.ToString().ToLowerInvariant()}\\{fullFontName}");
@@ -286,6 +272,5 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) { /* NOOP */ }
-
     }
 }

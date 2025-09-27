@@ -7,8 +7,8 @@ namespace Blish_HUD.GameIntegration {
 
         private static readonly Logger Logger = Logger.GetLogger<TacOIntegration>();
 
-        private const string TACO_PROCESS   = "GW2TacO";
-        private const int    CHECK_INTERVAL = 3000;
+        private const string TACO_PROCESS = "GW2TacO";
+        private const int CHECK_INTERVAL = 3000;
 
         private double _timeSinceCheck;
 
@@ -20,18 +20,19 @@ namespace Blish_HUD.GameIntegration {
         internal TacOIntegration(GameIntegrationService service) : base(service) { }
 
         public override void Update(GameTime gameTime) {
-            if (this.TacOIsRunning || !_service.Gw2Instance.Gw2IsRunning) return;
+            if (this.TacOIsRunning || !_service.Gw2Instance.Gw2IsRunning) {
+                return;
+            }
 
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
 
             if (_timeSinceCheck > CHECK_INTERVAL) {
-                Process[] tacoApp = Process.GetProcessesByName(TACO_PROCESS);
+                var tacoApp = Process.GetProcessesByName(TACO_PROCESS);
 
                 this.TacOIsRunning = tacoApp.Length > 0;
 
                 _timeSinceCheck = 0;
             }
         }
-
     }
 }

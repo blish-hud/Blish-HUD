@@ -44,12 +44,16 @@ namespace Blish_HUD.Controls {
         private static void HandleMouseButtonPressed(object sender, MouseEventArgs e) {
             // Debounce to prevent mistakenly closing the menu immediatley after opening (or when
             // this event is triggered after the same event that triggered it to open)
-            if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastOpenTime < CLICK_DEBOUNCE) return;
+            if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastOpenTime < CLICK_DEBOUNCE) {
+                return;
+            }
 
             lock (_contextMenuStrips) {
-                WeakReference<ContextMenuStrip>[] allMenuStrips = _contextMenuStrips.ToArray();
+                var allMenuStrips = _contextMenuStrips.ToArray();
 
-                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true } || Input.Mouse.ActiveControl is ContextMenuStrip) return;
+                if (Input.Mouse.ActiveControl is ContextMenuStripItem { CanCheck: true } || Input.Mouse.ActiveControl is ContextMenuStrip) {
+                    return;
+                }
 
                 foreach (var cmsRef in allMenuStrips) {
                     if (!cmsRef.TryGetTarget(out var cms)) {
@@ -57,9 +61,13 @@ namespace Blish_HUD.Controls {
                         continue;
                     }
 
-                    if (!cms.Visible) continue;
+                    if (!cms.Visible) {
+                        continue;
+                    }
 
-                    if (!cms.MouseOver) cms.Hide();
+                    if (!cms.MouseOver) {
+                        cms.Hide();
+                    }
                 }
             }
         }
@@ -122,9 +130,7 @@ namespace Blish_HUD.Controls {
                        : yStart - _size.Y + downOffset;
         }
 
-        private void SetPositionFromOffset((Point Position, int DownOffset, int UpOffset) offset) {
-            this.Location = new Point(offset.Position.X, GetVerticalOffset(offset.Position.Y, offset.DownOffset, offset.UpOffset));
-        }
+        private void SetPositionFromOffset((Point Position, int DownOffset, int UpOffset) offset) => this.Location = new Point(offset.Position.X, GetVerticalOffset(offset.Position.Y, offset.DownOffset, offset.UpOffset));
 
         public void Show(Point position) {
             SetPositionFromOffset(_targetOffset = (position, 0, 0));
@@ -147,7 +153,7 @@ namespace Blish_HUD.Controls {
         public override void Hide() {
             var children = _children.ToArray();
             foreach (var cmsiChild in children.Select(otherChild => otherChild as ContextMenuStripItem)) {
-				if (cmsiChild is { Submenu: { MouseOver: false } }) {
+                if (cmsiChild is { Submenu: { MouseOver: false } }) {
                     cmsiChild.Submenu.Hide();
                 }
             }
@@ -220,9 +226,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void ChildOnResized(object sender, ResizedEventArgs e) {
-            this.Invalidate();
-        }
+        private void ChildOnResized(object sender, ResizedEventArgs e) => this.Invalidate();
 
         public override void RecalculateLayout() {
             if (!_children.IsEmpty) {
@@ -238,7 +242,7 @@ namespace Blish_HUD.Controls {
                     lastChildBottom = menuItem.Bottom;
                 }
 
-                _size = new Point(maxChildWidth + BORDER_PADDING * 2,
+                _size = new Point(maxChildWidth + (BORDER_PADDING * 2),
                                   lastChildBottom + BORDER_PADDING);
 
                 foreach (var childItem in this.Children) {
@@ -252,8 +256,8 @@ namespace Blish_HUD.Controls {
                                    ContentService.Textures.Pixel,
                                    new Rectangle(BORDER_PADDING,
                                                  BORDER_PADDING,
-                                                 _size.X - BORDER_PADDING * 2,
-                                                 _size.Y - BORDER_PADDING * 2),
+                                                 _size.X - (BORDER_PADDING * 2),
+                                                 _size.Y - (BORDER_PADDING * 2)),
                                    Color.FromNonPremultiplied(33, 32, 33, 255));
 
             // Left line
@@ -289,5 +293,4 @@ namespace Blish_HUD.Controls {
                                    Color.White * 0.8f);
         }
     }
-
 }

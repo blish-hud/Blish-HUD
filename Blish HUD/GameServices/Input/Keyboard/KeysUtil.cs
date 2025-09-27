@@ -43,7 +43,7 @@ namespace Blish_HUD.Input {
                 {Keys.Subtract, "Subtract (NUM)"}
             };
 
-            string CreateFriendlyName(Keys key) {
+            static string CreateFriendlyName(Keys key) {
                 string friendlyName = key.ToString();
 
                 return friendlyName.StartsWith("F")
@@ -52,10 +52,12 @@ namespace Blish_HUD.Input {
             }
 
             foreach (Keys key in Enum.GetValues(typeof(Keys))) {
-                if (_friendlyKeyNames.ContainsKey(key)) continue;
+                if (_friendlyKeyNames.ContainsKey(key)) {
+                    continue;
+                }
 
                 // 2 = MAPVK_VK_TO_CHAR and then we mask out the dead key indicator
-                uint mappedCharCode = MapVirtualKey((uint) key, 2) & 0x0FFFFFFF;
+                uint mappedCharCode = MapVirtualKey((uint)key, 2) & 0x0FFFFFFF;
 
                 char mappedChar;
 
@@ -89,9 +91,7 @@ namespace Blish_HUD.Input {
         /// <summary>
         /// Returns the <see cref="ModifierKeys"/> found in an <see cref="Enumerable"/> of <see cref="Keys"/>.
         /// </summary>
-        public static ModifierKeys ModifiersFromKeys(IEnumerable<Keys> keys) {
-            return keys.Aggregate(ModifierKeys.None, (current, key) => current | ModifierKeyFromKey(key));
-        }
+        public static ModifierKeys ModifiersFromKeys(IEnumerable<Keys> keys) => keys.Aggregate(ModifierKeys.None, (current, key) => current | ModifierKeyFromKey(key));
 
         /// <summary>
         /// Returns the friendly display name of the provided <see cref="Keys"/> value.
@@ -126,14 +126,14 @@ namespace Blish_HUD.Input {
         /// </summary>
         public static (ModifierKeys, Keys) SplitToBindingPair(IEnumerable<Keys> keys) {
             var modifiers = ModifierKeys.None;
-            var key       = Keys.None;
+            var key = Keys.None;
 
             var firstModifier = Keys.None;
 
             foreach (var providedKey in keys) {
                 var modifier = ModifierKeyFromKey(providedKey);
 
-                if (modifier == ModifierKeys.None) { 
+                if (modifier == ModifierKeys.None) {
                     if (key == Keys.None) {
                         key = providedKey;
                     }
@@ -148,6 +148,5 @@ namespace Blish_HUD.Input {
 
             return key == Keys.None ? (ModifierKeys.None, firstModifier) : (modifiers, key);
         }
-
     }
 }

@@ -36,7 +36,7 @@ namespace Blish_HUD.Input {
         public Control ActiveControl {
             get => _activeControl;
             private set {
-                _hudFocused    = value != null;
+                _hudFocused = value != null;
                 _activeControl = value;
 
                 Control.ActiveControl = value;
@@ -55,7 +55,9 @@ namespace Blish_HUD.Input {
         public bool CursorIsVisible {
             get => _cursorIsVisible;
             set {
-                if (_cursorIsVisible == value) return;
+                if (_cursorIsVisible == value) {
+                    return;
+                }
 
                 if (!value) {
                     this.ActiveControl = null;
@@ -65,7 +67,7 @@ namespace Blish_HUD.Input {
             }
         }
 
-        private bool           _hudFocused;
+        private bool _hudFocused;
         private MouseEventArgs _mouseEvent;
 
         internal MouseHandler() { }
@@ -91,13 +93,15 @@ namespace Blish_HUD.Input {
                 };
             }
 
-            if (this.CameraDragging || !this.CursorIsVisible) return false;
-            
+            if (this.CameraDragging || !this.CursorIsVisible) {
+                return false;
+            }
+
             _mouseEvent = mouseEventArgs;
 
             return mouseEventArgs.EventType != MouseEventType.LeftMouseButtonReleased             // Never block the users input if they are releasing the left mouse button
                 && mouseEventArgs.EventType != MouseEventType.RightMouseButtonReleased            // Never block the users input if they are releasing the right mouse button
-                && (_hudFocused && !this.ActiveControl.Captures.HasFlag(CaptureType.DoNotBlock)); // If no control, or if the current control has capture forced off, then do not block
+                && _hudFocused && !this.ActiveControl.Captures.HasFlag(CaptureType.DoNotBlock); // If no control, or if the current control has capture forced off, then do not block
         }
 
         private bool HandleHookedMouseEvent(MouseEventArgs e) {
@@ -134,7 +138,7 @@ namespace Blish_HUD.Input {
                 return;
             }
 
-            if (CameraDragging) {
+            if (this.CameraDragging) {
                 return;
             }
 
@@ -142,9 +146,9 @@ namespace Blish_HUD.Input {
 
             var rawMouseState = Mouse.GetState();
 
-            this.State = new MouseState((int) (rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
-                                        (int) (rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
-                                        _mouseEvent?.WheelDelta ?? 0, 
+            this.State = new MouseState((int)(rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
+                                        (int)(rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
+                                        _mouseEvent?.WheelDelta ?? 0,
                                         rawMouseState.LeftButton,
                                         rawMouseState.MiddleButton,
                                         rawMouseState.RightButton,
@@ -162,7 +166,7 @@ namespace Blish_HUD.Input {
 
             // Handle mouse events blocked by the mouse hook
             if (_mouseEvent != null) {
-                if(_recentlyEnabled) {
+                if (_recentlyEnabled) {
                     _recentlyEnabled = false;
                     SimulateNonCapturePressedEvent(_mouseEvent);
                 }
@@ -213,6 +217,7 @@ namespace Blish_HUD.Input {
                 // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic .. (both seem to always be 0 right now?)
                 HandleMouseEvent(new MouseEventArgs(MouseEventType.RightMouseButtonPressed, mouseEvent.PointX, mouseEvent.PointY, mouseEvent.MouseData, mouseEvent.Flags, mouseEvent.Time, mouseEvent.Extra));
             }
+
             this.State = tmpState;
         }
 
@@ -222,18 +227,13 @@ namespace Blish_HUD.Input {
             }
         }
 
-        public void OnEnable() {
-            _recentlyEnabled = true;
-        }
+        public void OnEnable() => _recentlyEnabled = true;
 
-        public void OnDisable() {
+        public void OnDisable()
             // shouldn't be needed but can't hurt to tidy up a little
-            _recentlyEnabled = false;
-        }
+            => _recentlyEnabled = false;
 
-        public void UnsetActiveControl() {
-            this.ActiveControl = null;
-        }
+        public void UnsetActiveControl() => this.ActiveControl = null;
 
         #region Events
 
@@ -247,5 +247,4 @@ namespace Blish_HUD.Input {
         #endregion
 
     }
-
 }

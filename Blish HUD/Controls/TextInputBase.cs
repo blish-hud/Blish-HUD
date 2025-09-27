@@ -192,8 +192,8 @@ namespace Blish_HUD.Controls {
 
         /// Get state of modifier keys
         protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
-        protected bool IsCtrlDown  => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
-        protected bool IsAltDown   => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
+        protected bool IsCtrlDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
+        protected bool IsAltDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
 
         protected bool _multiline;
         protected bool _caretVisible;
@@ -201,8 +201,8 @@ namespace Blish_HUD.Controls {
         protected bool _cursorDragging;
 
         private TimeSpan _lastInvalidate;
-        private bool     _insertMode;
-        private bool     _suppressRedoStackReset;
+        private bool _insertMode;
+        private bool _suppressRedoStackReset;
 
         private readonly UndoRedoStack _undoStack = new UndoRedoStack();
         private readonly UndoRedoStack _redoStack = new UndoRedoStack();
@@ -210,20 +210,24 @@ namespace Blish_HUD.Controls {
         private readonly Dictionary<Keys, KeyRepeatState> _keyRepeatStates;
 
         public TextInputBase() {
-            _lastInvalidate  = DateTime.MinValue.TimeOfDay;
+            _lastInvalidate = DateTime.MinValue.TimeOfDay;
             _keyRepeatStates = new Dictionary<Keys, KeyRepeatState>();
         }
 
         private void OnTextInput(string value) {
             foreach (char c in value) {
-                if (_font.GetCharacterRegion(c) == null) continue;
+                if (_font.GetCharacterRegion(c) == null) {
+                    continue;
+                }
 
                 InputChar(c);
             }
         }
 
         private void DeleteChars(int index, int length) {
-            if (length <= 0) return;
+            if (length <= 0) {
+                return;
+            }
 
             SetText(_text.Substring(0, index) + _text.Substring(index + length), true);
         }
@@ -271,7 +275,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void Insert(int index, string value) {
-            if (string.IsNullOrEmpty(value)) return;
+            if (string.IsNullOrEmpty(value)) {
+                return;
+            }
 
             if (InsertChars(index, value, out int length) && length > 0) {
                 _undoStack.MakeInsert(index, length);
@@ -295,15 +301,17 @@ namespace Blish_HUD.Controls {
         }
 
         public void ReplaceAll(string value) {
-            Replace(0, 
-                    string.IsNullOrEmpty(value) 
-                        ? 0 
+            Replace(0,
+                    string.IsNullOrEmpty(value)
+                        ? 0
                         : value.Length,
                     value);
         }
 
         private bool Delete(int index, int length) {
-            if (index < 0 || index >= _text.Length || length < 0) return false;
+            if (index < 0 || index >= _text.Length || length < 0) {
+                return false;
+            }
 
             _undoStack.MakeDelete(_text, index, length);
             DeleteChars(index, length);
@@ -312,7 +320,9 @@ namespace Blish_HUD.Controls {
         }
 
         private void DeleteSelection() {
-            if (_selectionStart == _selectionEnd) return;
+            if (_selectionStart == _selectionEnd) {
+                return;
+            }
 
             int deleteStart = Math.Min(_selectionStart, _selectionEnd);
             int deleteLength = Math.Max(_selectionStart, _selectionEnd) - deleteStart;
@@ -326,7 +336,7 @@ namespace Blish_HUD.Controls {
         private bool Paste(string value) {
             DeleteSelection();
 
-            if (InsertChars(_cursorIndex, value, out var length) && length > 0) {
+            if (InsertChars(_cursorIndex, value, out int length) && length > 0) {
                 _undoStack.MakeInsert(_cursorIndex, length);
                 this.CursorIndex += length;
                 return true;
@@ -337,8 +347,12 @@ namespace Blish_HUD.Controls {
 
         private void InputChar(char value) {
             if (value == NEWLINE) {
-                if (!_multiline) return;
-            } else if (_font.GetCharacterRegion(value) == null) return;
+                if (!_multiline) {
+                    return;
+                }
+            } else if (_font.GetCharacterRegion(value) == null) {
+                return;
+            }
 
             if (_insertMode && _selectionStart == _selectionEnd && _cursorIndex < _text.Length) {
                 _undoStack.MakeReplace(_text, _cursorIndex, 1, 1);
@@ -362,7 +376,9 @@ namespace Blish_HUD.Controls {
         private void UndoRedo(UndoRedoStack undoStack, UndoRedoStack redoStack) {
             UndoRedoRecord record;
 
-            if ((record = undoStack.Pop()) == null) return;
+            if ((record = undoStack.Pop()) == null) {
+                return;
+            }
 
             try {
                 _suppressRedoStackReset = true;
@@ -405,13 +421,9 @@ namespace Blish_HUD.Controls {
             this.CursorIndex = newIndex;
         }
 
-        protected void ResetSelection() {
-            this.SelectionStart = _selectionEnd = _cursorIndex;
-        }
+        protected void ResetSelection() => this.SelectionStart = _selectionEnd = _cursorIndex;
 
-        protected void UpdateSelection() {
-            this.SelectionEnd = _cursorIndex;
-        }
+        protected void UpdateSelection() => this.SelectionEnd = _cursorIndex;
 
         protected void UpdateSelectionIfShiftDown() {
             if (this.IsShiftDown) {
@@ -425,11 +437,13 @@ namespace Blish_HUD.Controls {
 
         protected void SelectAll() {
             this.SelectionStart = 0;
-            this.SelectionEnd   = _text.Length;
+            this.SelectionEnd = _text.Length;
         }
 
         protected float MeasureStringWidth(string text) {
-            if (string.IsNullOrEmpty(text)) return 0;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
 
             var lastGlyph = _font.GetGlyphs(text).Last();
 
@@ -453,7 +467,9 @@ namespace Blish_HUD.Controls {
         }
 
         private string ProcessText(string value) {
-            if (value == null) return string.Empty;
+            if (value == null) {
+                return string.Empty;
+            }
 
             value = value.Replace("\r", string.Empty);
 
@@ -473,7 +489,9 @@ namespace Blish_HUD.Controls {
 
             value = ProcessText(value);
 
-            if (!SetProperty(ref _text, value, false, nameof(Text))) return false;
+            if (!SetProperty(ref _text, value, false, nameof(this.Text))) {
+                return false;
+            }
 
             // TODO: Update formatted text?
 
@@ -495,13 +513,13 @@ namespace Blish_HUD.Controls {
             GameService.Input.Keyboard.FocusedControl = null;
         }
 
-        public override bool GetFocusState() {
-            return Focused;
-        }
+        public override bool GetFocusState() => this.Focused;
 
         private void OnGlobalKeyboardKeyStateChanged(object sender, KeyboardEventArgs e) {
             // TODO: move this to KeyboardHandler or similar
-            if (GameService.Overlay.InterfaceHidden) return;
+            if (GameService.Overlay.InterfaceHidden) {
+                return;
+            }
 
             // Loose focus as soon as an acestor is hidden
             // TODO: this is still a keypress too late
@@ -533,16 +551,28 @@ namespace Blish_HUD.Controls {
                     HandleEnd(this.IsCtrlDown);
                     return;
                 case Keys.C:
-                    if (this.IsCtrlDown && !this.IsAltDown) HandleCopy();
+                    if (this.IsCtrlDown && !this.IsAltDown) {
+                        HandleCopy();
+                    }
+
                     return;
                 case Keys.X:
-                    if (this.IsCtrlDown && !this.IsAltDown) HandleCut();
+                    if (this.IsCtrlDown && !this.IsAltDown) {
+                        HandleCut();
+                    }
+
                     return;
                 case Keys.V:
-                    if (this.IsCtrlDown && !this.IsAltDown) HandlePaste();
+                    if (this.IsCtrlDown && !this.IsAltDown) {
+                        HandlePaste();
+                    }
+
                     return;
                 case Keys.A:
-                    if (this.IsCtrlDown && !this.IsAltDown) SelectAll();
+                    if (this.IsCtrlDown && !this.IsAltDown) {
+                        SelectAll();
+                    }
+
                     return;
                 default:
                     break;
@@ -576,10 +606,16 @@ namespace Blish_HUD.Controls {
                     HandleEnter();
                     break;
                 case Keys.Z:
-                    if (this.IsCtrlDown && !this.IsAltDown) HandleUndo();
+                    if (this.IsCtrlDown && !this.IsAltDown) {
+                        HandleUndo();
+                    }
+
                     break;
                 case Keys.Y:
-                    if (this.IsCtrlDown && !this.IsAltDown) HandleRedo();
+                    if (this.IsCtrlDown && !this.IsAltDown) {
+                        HandleRedo();
+                    }
+
                     break;
                 default:
                     break;
@@ -589,7 +625,7 @@ namespace Blish_HUD.Controls {
         protected virtual void HandleCopy() {
             if (_selectionEnd != _selectionStart) {
                 int selectStart = Math.Min(_selectionStart, _selectionEnd);
-                int selectEnd   = Math.Max(_selectionStart, _selectionEnd);
+                int selectEnd = Math.Max(_selectionStart, _selectionEnd);
 
                 string clipboardText = _text.Substring(selectStart, selectEnd - selectStart);
 
@@ -620,13 +656,9 @@ namespace Blish_HUD.Controls {
                          });
         }
 
-        protected virtual void HandleUndo() {
-            UndoRedo(_undoStack, _redoStack);
-        }
+        protected virtual void HandleUndo() => UndoRedo(_undoStack, _redoStack);
 
-        protected virtual void HandleRedo() {
-            UndoRedo(_redoStack, _undoStack);
-        }
+        protected virtual void HandleRedo() => UndoRedo(_redoStack, _undoStack);
 
         protected virtual void HandleBackspace() {
             if (_selectionStart == _selectionEnd) {
@@ -699,23 +731,21 @@ namespace Blish_HUD.Controls {
             UpdateSelectionIfShiftDown();
         }
 
-        protected virtual void HandleEnter() {
-            InputChar(NEWLINE);
-        }
+        protected virtual void HandleEnter() => InputChar(NEWLINE);
 
         protected abstract void UpdateScrolling();
 
         private void UpdateFocusState(bool focused) {
             if (focused) {
-                Input.Mouse.LeftMouseButtonPressed  += OnGlobalMouseLeftMouseButtonPressed;
+                Input.Mouse.LeftMouseButtonPressed += OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
-                Input.Keyboard.KeyStateChanged      += OnGlobalKeyboardKeyStateChanged;
+                Input.Keyboard.KeyStateChanged += OnGlobalKeyboardKeyStateChanged;
 
                 GameService.Input.Keyboard.SetTextInputListner(OnTextInput);
             } else {
-                Input.Mouse.LeftMouseButtonPressed  -= OnGlobalMouseLeftMouseButtonPressed;
+                Input.Mouse.LeftMouseButtonPressed -= OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseLeftMouseButtonReleased;
-                Input.Keyboard.KeyStateChanged      -= OnGlobalKeyboardKeyStateChanged;
+                Input.Keyboard.KeyStateChanged -= OnGlobalKeyboardKeyStateChanged;
 
                 GameService.Input.Keyboard.UnsetTextInputListner(OnTextInput);
 
@@ -725,13 +755,9 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void OnGlobalMouseLeftMouseButtonPressed(object sender, MouseEventArgs e) {
-            this.Focused = _mouseOver && _enabled;
-        }
+        private void OnGlobalMouseLeftMouseButtonPressed(object sender, MouseEventArgs e) => this.Focused = _mouseOver && _enabled;
 
-        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
-            _cursorDragging = false;
-        }
+        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) => _cursorDragging = false;
 
         public abstract int GetCursorIndexFromPosition(int x, int y);
 
@@ -767,13 +793,17 @@ namespace Blish_HUD.Controls {
         protected override void OnMouseMoved(MouseEventArgs e) {
             base.OnMouseMoved(e);
 
-            if (_cursorDragging) HandleMouseSelectionDrag(GetCursorIndexFromPosition(this.RelativeMousePosition));
+            if (_cursorDragging) {
+                HandleMouseSelectionDrag(GetCursorIndexFromPosition(this.RelativeMousePosition));
+            }
         }
 
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 
-            if (e.IsDoubleClick) HandleMouseDoubleClick();
+            if (e.IsDoubleClick) {
+                HandleMouseDoubleClick();
+            }
 
             this.Focused = true;
         }
@@ -808,7 +838,7 @@ namespace Blish_HUD.Controls {
 
                 if (_cursorMoved) {
                     _lastInvalidate = gameTime.TotalGameTime;
-                    _cursorMoved    = false;
+                    _cursorMoved = false;
                 }
 
                 // Repeat pressed keys
@@ -818,9 +848,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected override void DisposeControl() {
-            this.Focused = false;
-        }
+        protected override void DisposeControl() => this.Focused = false;
 
     }
 }

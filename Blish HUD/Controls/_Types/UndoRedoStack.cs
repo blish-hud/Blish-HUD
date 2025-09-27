@@ -31,47 +31,46 @@ namespace Blish_HUD.Controls {
 
         private readonly Stack<UndoRedoRecord> _stack = new Stack<UndoRedoRecord>();
 
-        public void Reset() {
-            _stack.Clear();
-        }
+        public void Reset() => _stack.Clear();
 
-        public UndoRedoRecord Pop() {
-            if (_stack.Count == 0) return null;
-
-            return _stack.Pop();
-        }
+        public UndoRedoRecord Pop() => _stack.Count == 0 ? null : _stack.Pop();
 
         public void MakeInsert(int where, int length) {
-            if (length <= 0) return;
+            if (length <= 0) {
+                return;
+            }
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Insert,
-                Index         = where,
-                Length        = length
+                Index = where,
+                Length = length
             });
         }
 
         public void MakeDelete(string text, int where, int length) {
-            if (length <= 0) return;
+            if (length <= 0) {
+                return;
+            }
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Delete,
-                Index         = where,
-                Length        = length,
-                Data          = text.Substring(where, length)
+                Index = where,
+                Length = length,
+                Data = text.Substring(where, length)
             });
         }
 
         public void MakeReplace(string text, int where, int length, int newLength) {
-            if (length <= 0) return;
+            if (length <= 0) {
+                return;
+            }
 
             _stack.Push(new UndoRedoRecord() {
                 OperationType = OperationType.Replace,
-                Index         = where,
-                Length        = newLength,
-                Data          = text.Substring(where, length)
+                Index = where,
+                Length = newLength,
+                Data = text.Substring(where, length)
             });
         }
-
     }
 }

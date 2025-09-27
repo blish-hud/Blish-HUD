@@ -30,10 +30,11 @@ namespace Blish_HUD.Input {
         public event EventHandler<KeyboardEventArgs> KeyStateChanged;
 
         private void OnKeyStateChanged(KeyboardEventArgs e) {
-            if (e.EventType == KeyboardEventType.KeyDown)
+            if (e.EventType == KeyboardEventType.KeyDown) {
                 this.KeyPressed?.Invoke(this, e);
-            else
+            } else {
                 this.KeyReleased?.Invoke(this, e);
+            }
 
             this.KeyStateChanged?.Invoke(this, e);
         }
@@ -41,7 +42,7 @@ namespace Blish_HUD.Input {
         #endregion
 
         // TODO: Block using a stack of contexts which can independently process incoming keyboard events
-        private bool _hookGeneralBlock;
+        private readonly bool _hookGeneralBlock;
 
         /// <summary>
         /// The current state of the keyboard.
@@ -89,11 +90,11 @@ namespace Blish_HUD.Input {
         /// A list of keys currently being pressed down.
         /// </summary>
         public IReadOnlyList<Keys> KeysDown => _keysDown.AsReadOnly();
-        
+
         private Action<string> _textInputDelegate;
 
         private readonly ReaderWriterLockSlim _stagedKeyBindingLock = new ReaderWriterLockSlim();
-        private readonly HashSet<KeyBinding>  _stagedKeyBindings    = new HashSet<KeyBinding>();
+        private readonly HashSet<KeyBinding> _stagedKeyBindings = new HashSet<KeyBinding>();
 
         internal KeyboardHandler() { }
 
@@ -107,18 +108,20 @@ namespace Blish_HUD.Input {
                 }
             }
 
-            if (FocusedControl != null) {
-                foreach (var ancestor in FocusedControl.GetAncestors()) {
+            if (this.FocusedControl != null) {
+                foreach (var ancestor in this.FocusedControl.GetAncestors()) {
                     if (ancestor.Visible == false) {
-                        FocusedControl.UnsetFocus();
+                        this.FocusedControl.UnsetFocus();
                     }
                 }
             }
 
-            while (_inputBuffer.TryDequeue(out KeyboardEventArgs keyboardEvent)) {
+            while (_inputBuffer.TryDequeue(out var keyboardEvent)) {
                 if (keyboardEvent.EventType == KeyboardEventType.KeyDown) {
                     // Avoid firing on held keys
-                    if (_keysDown.Contains(keyboardEvent.Key)) continue;
+                    if (_keysDown.Contains(keyboardEvent.Key)) {
+                        continue;
+                    }
 
                     _keysDown.Add(keyboardEvent.Key);
                 } else {
@@ -139,12 +142,14 @@ namespace Blish_HUD.Input {
             // Ensure that key states don't get stuck if the
             // application focus is lost while keys were down.
 
-            Keys[] passingKeys = _keysDown.ToArray();
+            var passingKeys = _keysDown.ToArray();
             _keysDown.Clear();
 
             UpdateStates();
 
-            foreach (Keys key in passingKeys) OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
+            foreach (var key in passingKeys) {
+                OnKeyStateChanged(new KeyboardEventArgs(KeyboardEventType.KeyUp, key));
+            }
         }
 
         /// <summary>
@@ -155,33 +160,28 @@ namespace Blish_HUD.Input {
                 || _textInputDelegate != null;
         }
 
-        public bool HandleInput(KeyboardEventArgs e) {
-            if (_hookGeneralBlock) return true;
+        public bool HandleInput(KeyboardEventArgs e) => _hookGeneralBlock || ProcessInput(e.EventType, e.Key);
 
-            return ProcessInput(e.EventType, e.Key);
-        }
-
-        public void SetTextInputListner(Action<string> input) { _textInputDelegate = input; }
+        public void SetTextInputListner(Action<string> input) => _textInputDelegate = input;
 
         public void UnsetTextInputListner(Action<string> input) {
-            if (input == _textInputDelegate) _textInputDelegate = null;
+            if (input == _textInputDelegate) {
+                _textInputDelegate = null;
+            }
         }
 
         private void UpdateStates() {
-            Keys[] downArray = _keysDown.ToArray();
+            var downArray = _keysDown.ToArray();
 
-            this.State           = new KeyboardState(downArray);
+            this.State = new KeyboardState(downArray);
             this.ActiveModifiers = KeysUtil.ModifiersFromKeys(downArray);
         }
 
-        private bool ShouldBlockKeyEvent(Keys key) {
+        private bool ShouldBlockKeyEvent(Keys key)
             // TODO: WIN key combinations should probably completely handled by the OS
 
             // Skip keys that we wish to explicitly ignore
-            if (_hookIgnoredKeys.Contains(key)) return false;
-
-            return true;
-        }
+            => !_hookIgnoredKeys.Contains(key);
 
         internal void StageKeyBinding(KeyBinding keyBinding) {
             _stagedKeyBindingLock.EnterWriteLock();
@@ -189,6 +189,7 @@ namespace Blish_HUD.Input {
                 Logger.Debug("Staging keybind {keybind}.", keyBinding.GetBindingDisplayText());
                 _stagedKeyBindings.Add(keyBinding);
             }
+
             _stagedKeyBindingLock.ExitWriteLock();
         }
 
@@ -198,21 +199,26 @@ namespace Blish_HUD.Input {
                 Logger.Debug("Unstaging keybind {keybind}.", keyBinding.GetBindingDisplayText());
                 _stagedKeyBindings.Remove(keyBinding);
             }
+
             _stagedKeyBindingLock.ExitWriteLock();
         }
 
         private bool ProcessInput(KeyboardEventType eventType, Keys key) {
             _inputBuffer.Enqueue(new KeyboardEventArgs(eventType, key));
 
-            if (GameService.Overlay.InterfaceHidden) return false;
+            if (GameService.Overlay.InterfaceHidden) {
+                return false;
+            }
 
-            if (GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.UI.IsTextInputFocused) return false;
+            if (GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.UI.IsTextInputFocused) {
+                return false;
+            }
 
             // Handle the escape key
             if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown) {
                 // Loose focus on input fields
-                if (FocusedControl != null) {
-                    FocusedControl.UnsetFocus();
+                if (this.FocusedControl != null) {
+                    this.FocusedControl.UnsetFocus();
                     return true;
                 }
 
@@ -259,7 +265,5 @@ namespace Blish_HUD.Input {
 
             return false;
         }
-
     }
-
 }

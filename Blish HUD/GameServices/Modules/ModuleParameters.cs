@@ -8,21 +8,15 @@ namespace Blish_HUD.Modules {
 
         private static readonly Logger Logger = Logger.GetLogger<ModuleParameters>();
 
-        private Manifest           _manifest;
-        private SettingsManager    _settingsManager;
-        private ContentsManager    _contentsManager;
-        private DirectoriesManager _directoriesManager;
-        private Gw2ApiManager      _gw2ApiManager;
+        public Manifest Manifest { get; private set; }
 
-        public Manifest Manifest => _manifest;
+        public SettingsManager SettingsManager { get; private set; }
 
-        public SettingsManager SettingsManager => _settingsManager;
+        public ContentsManager ContentsManager { get; private set; }
 
-        public ContentsManager ContentsManager => _contentsManager;
+        public DirectoriesManager DirectoriesManager { get; private set; }
 
-        public DirectoriesManager DirectoriesManager => _directoriesManager;
-
-        public Gw2ApiManager Gw2ApiManager => _gw2ApiManager;
+        public Gw2ApiManager Gw2ApiManager { get; private set; }
 
         internal static ModuleParameters BuildFromManifest(Manifest manifest, ModuleManager module) {
             switch (manifest.ManifestVersion) {
@@ -39,15 +33,15 @@ namespace Blish_HUD.Modules {
 
         private static ModuleParameters BuildFromManifest(ManifestV1 manifest, ModuleManager module) {
             var builtModuleParameters = new ModuleParameters {
-                _manifest = manifest,
+                Manifest = manifest,
 
-                _settingsManager    = SettingsManager.GetModuleInstance(module),
-                _contentsManager    = ContentsManager.GetModuleInstance(module),
-                _directoriesManager = DirectoriesManager.GetModuleInstance(module),
-                _gw2ApiManager      = Gw2ApiManager.GetModuleInstance(module)
+                SettingsManager = SettingsManager.GetModuleInstance(module),
+                ContentsManager = ContentsManager.GetModuleInstance(module),
+                DirectoriesManager = DirectoriesManager.GetModuleInstance(module),
+                Gw2ApiManager = Gw2ApiManager.GetModuleInstance(module)
             };
 
-            if (builtModuleParameters._gw2ApiManager == null) {
+            if (builtModuleParameters.Gw2ApiManager == null) {
                 /* Indicates a conflict of user granted permissions and module required permissions
                  * How this could happen (without manually modifying settings):
                  *  1. User approves all required permissions for a module.
@@ -62,14 +56,9 @@ namespace Blish_HUD.Modules {
             return builtModuleParameters;
         }
 
-        internal async Task LoadAsync() {
-            await _gw2ApiManager.RenewSubtoken();
-        }
+        internal async Task LoadAsync() => await this.Gw2ApiManager.RenewSubtoken();
 
-        public void Dispose() {
-            _contentsManager?.Dispose();
-        }
+        public void Dispose() => this.ContentsManager?.Dispose();
 
     }
-
 }

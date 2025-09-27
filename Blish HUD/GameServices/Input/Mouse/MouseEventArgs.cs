@@ -40,8 +40,11 @@ namespace Blish_HUD.Input {
 
         internal int WheelDelta {
             get {
-                int v                                              = Convert.ToInt32((this.MouseData & 0xFFFF0000) >> 16);
-                if (v > SystemInformation.MouseWheelScrollDelta) v -= ushort.MaxValue + 1;
+                int v = Convert.ToInt32((this.MouseData & 0xFFFF0000) >> 16);
+                if (v > SystemInformation.MouseWheelScrollDelta) {
+                    v -= ushort.MaxValue + 1;
+                }
+
                 return v;
             }
         }
@@ -56,14 +59,12 @@ namespace Blish_HUD.Input {
                                                                                            ) { }
 
         internal MouseEventArgs(MouseEventType eventType, int pointX, int pointY, int mouseData, int flags, int time, long extraInfo) : this(eventType) {
-            this.PointX    = pointX;
-            this.PointY    = pointY;
+            this.PointX = pointX;
+            this.PointY = pointY;
             this.MouseData = mouseData;
-            this.Flags     = flags;
-            this.Time      = time;
-            this.Extra     = extraInfo;
+            this.Flags = flags;
+            this.Time = time;
+            this.Extra = extraInfo;
         }
-
     }
-
 }

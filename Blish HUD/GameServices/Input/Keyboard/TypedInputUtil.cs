@@ -57,7 +57,8 @@ namespace Blish_HUD.Input {
 
                     // clear buffer because it will otherwise crash `public Rectangle AbsoluteBounds` in Control.cs
                     // see also: http://archives.miloush.net/michkap/archive/2005/01/19/355870.html
-                    while (ToUnicode(vkCode, scanCode, keyState, output, 5, 0) < 0) { /* SPIN */ }
+                    while (ToUnicode(vkCode, scanCode, keyState, output, 5, 0) < 0) { /* SPIN */
+                    }
 
                     // reinject last key because apparently when calling functions related to keyboard inputs
                     // messes up their internal states everywhere. :rolleyes:
@@ -72,14 +73,17 @@ namespace Blish_HUD.Input {
                     _lastScanCode = scanCode;
                     _lastKeyState = (byte[])keyState.Clone();
 
-                    if (isKeyDown) return "";
+                    if (isKeyDown) {
+                        return "";
+                    }
+
                     break;
                 case 0:
                     // no translation for the current state of the keyboard
                     return "";
                 case 2:
-                    // two or more characters were written to the buffer
-                    // this is most likely a dead-key that could not be combined with the current one
+                // two or more characters were written to the buffer
+                // this is most likely a dead-key that could not be combined with the current one
                 case 1:
                 default:
                     // single character was written to the buffer

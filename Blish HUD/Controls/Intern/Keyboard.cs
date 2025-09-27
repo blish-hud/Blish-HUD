@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Blish_HUD.Controls.Extern;
-namespace Blish_HUD.Controls.Intern
-{
-    public static class Keyboard
-    {
+namespace Blish_HUD.Controls.Intern {
+    public static class Keyboard {
         private const uint WM_KEYDOWN = 0x0100;
         private const uint WM_KEYUP = 0x0101;
-        private const uint WM_CHAR = 0x0102;
         private const uint MAPVK_VK_TO_VSC = 0x00;
-        private const uint MAPVK_VSC_TO_VK = 0x01;
-        private const uint MAPVK_VK_TO_CHAR = 0x02;
-        private const uint MAPVK_VSC_TO_VK_EX = 0x03;
-        private const uint MAPVK_VK_TO_VSC_EX = 0x04;
-
-        private static List<VirtualKeyShort> ExtendedKeys = new List<VirtualKeyShort> {
-            VirtualKeyShort.INSERT,  VirtualKeyShort.HOME,   VirtualKeyShort.NEXT, 
+        private static readonly List<VirtualKeyShort> ExtendedKeys = new List<VirtualKeyShort> {
+            VirtualKeyShort.INSERT,  VirtualKeyShort.HOME,   VirtualKeyShort.NEXT,
             VirtualKeyShort.DELETE,  VirtualKeyShort.END,    VirtualKeyShort.PRIOR,
             VirtualKeyShort.RMENU,   VirtualKeyShort.RSHIFT, VirtualKeyShort.RCONTROL,
             VirtualKeyShort.UP,      VirtualKeyShort.DOWN,   VirtualKeyShort.LEFT,     VirtualKeyShort.RIGHT,
@@ -27,13 +19,10 @@ namespace Blish_HUD.Controls.Intern
         /// </summary>
         /// <param name="key">Virtual Key Short</param>
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void Press(VirtualKeyShort key, bool sendToSystem = false)
-        {
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
-            {
-                Extern.Input[] nInputs;
-                if (ExtendedKeys.Contains(key)) {
-                    nInputs = new[]
+        public static void Press(VirtualKeyShort key, bool sendToSystem = false) {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
+                var nInputs = ExtendedKeys.Contains(key)
+                    ? (new[]
                     {
                         new Extern.Input
                         {
@@ -61,9 +50,8 @@ namespace Blish_HUD.Controls.Intern
                                 }
                             }
                         }
-                    };
-                } else {
-                    nInputs = new[]
+                    })
+                    : (new[]
                     {
                         new Extern.Input
                         {
@@ -77,19 +65,18 @@ namespace Blish_HUD.Controls.Intern
                                 }
                             }
                         }
-                    };
-                }
+                    });
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
-            }
-            else
-            {
+            } else {
                 uint vkCode = (uint)key;
-                ExtraKeyInfo lParam = new ExtraKeyInfo() {
+                var lParam = new ExtraKeyInfo() {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC)
                 };
 
-                if (ExtendedKeys.Contains(key))
+                if (ExtendedKeys.Contains(key)) {
                     lParam.extendedKey = 1;
+                }
+
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYDOWN, vkCode, lParam.GetInt());
             }
         }
@@ -98,13 +85,10 @@ namespace Blish_HUD.Controls.Intern
         /// </summary>
         /// <param name="key">Virtual Key Short</param>
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void Release(VirtualKeyShort key, bool sendToSystem = false)
-        {
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem)
-            {
-                Extern.Input[] nInputs;
-                if (ExtendedKeys.Contains(key)) {
-                    nInputs = new[]
+        public static void Release(VirtualKeyShort key, bool sendToSystem = false) {
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning || sendToSystem) {
+                var nInputs = ExtendedKeys.Contains(key)
+                    ? (new[]
                     {
                         new Extern.Input
                         {
@@ -132,9 +116,8 @@ namespace Blish_HUD.Controls.Intern
                                 }
                             }
                         }
-                    };
-                } else {
-                    nInputs = new[]
+                    })
+                    : (new[]
                     {
                         new Extern.Input
                         {
@@ -145,26 +128,25 @@ namespace Blish_HUD.Controls.Intern
                                 {
                                     wScan = (ScanCodeShort)PInvoke.MapVirtualKey((uint)key, MAPVK_VK_TO_VSC),
                                     wVk = key,
-                                    dwFlags = KeyEventF.KEYUP 
+                                    dwFlags = KeyEventF.KEYUP
                                 }
                             }
                         }
-                    };
-                }
+                    });
                 PInvoke.SendInput((uint)nInputs.Length, nInputs, Extern.Input.Size);
-            }
-            else
-            {
+            } else {
                 uint vkCode = (uint)key;
-                ExtraKeyInfo lParam = new ExtraKeyInfo() {
+                var lParam = new ExtraKeyInfo() {
                     scanCode = (char)PInvoke.MapVirtualKey(vkCode, MAPVK_VK_TO_VSC),
                     repeatCount = 1,
                     prevKeyState = 1,
                     transitionState = 1
                 };
-              
-                if (ExtendedKeys.Contains(key))
+
+                if (ExtendedKeys.Contains(key)) {
                     lParam.extendedKey = 1;
+                }
+
                 PInvoke.PostMessage(GameService.GameIntegration.Gw2Instance.Gw2WindowHandle, WM_KEYUP, vkCode, lParam.GetInt());
             }
         }
@@ -173,20 +155,18 @@ namespace Blish_HUD.Controls.Intern
         /// </summary>
         /// <param name="key">Virtual Key Short</param>
         /// <param name="sendToSystem">Set if key message (or a combination of such) cannot be correctly interpreted by the game client.</param>
-        public static void Stroke(VirtualKeyShort key, bool sendToSystem = false)
-        {
+        public static void Stroke(VirtualKeyShort key, bool sendToSystem = false) {
             Press(key, sendToSystem);
             Release(key, sendToSystem);
         }
     }
-    class ExtraKeyInfo
-    {
+
+    internal class ExtraKeyInfo {
         public ushort repeatCount;
         public char scanCode;
         public ushort extendedKey, prevKeyState, transitionState;
 
-        public int GetInt()
-        {
+        public int GetInt() {
             return repeatCount | (scanCode << 16) | (extendedKey << 24) |
                 (prevKeyState << 30) | (transitionState << 31);
         }

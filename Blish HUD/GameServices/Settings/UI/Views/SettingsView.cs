@@ -15,7 +15,9 @@ namespace Blish_HUD.Settings.UI.Views {
         public bool LockBounds {
             get => _lockBounds;
             set {
-                if (_lockBounds == value) return;
+                if (_lockBounds == value) {
+                    return;
+                }
 
                 _lockBounds = value;
 
@@ -32,22 +34,24 @@ namespace Blish_HUD.Settings.UI.Views {
             : this(new SettingEntry<SettingCollection>() { Value = settings }, definedWidth) { /* NOOP */ }
 
         private void UpdateBoundsLocking(bool locked) {
-            if (_settingFlowPanel == null) return;
+            if (_settingFlowPanel == null) {
+                return;
+            }
 
-            _settingFlowPanel.ShowBorder  = !locked;
+            _settingFlowPanel.ShowBorder = !locked;
             _settingFlowPanel.CanCollapse = !locked;
         }
 
         protected override void BuildSetting(Container buildPanel) {
             _settingFlowPanel = new FlowPanel() {
-                Size                = buildPanel.Size,
-                FlowDirection       = ControlFlowDirection.SingleTopToBottom,
-                ControlPadding      = new Vector2(5,  2),
+                Size = buildPanel.Size,
+                FlowDirection = ControlFlowDirection.SingleTopToBottom,
+                ControlPadding = new Vector2(5, 2),
                 OuterControlPadding = new Vector2(10, 15),
-                WidthSizingMode     = SizingMode.Fill,
-                HeightSizingMode    = SizingMode.AutoSize,
-                AutoSizePadding     = new Point(0, 15),
-                Parent              = buildPanel
+                WidthSizingMode = SizingMode.Fill,
+                HeightSizingMode = SizingMode.AutoSize,
+                AutoSizePadding = new Point(0, 15),
+                Parent = buildPanel
             };
 
             foreach (var setting in _settings.Where(s => s.SessionDefined)) {
@@ -55,9 +59,9 @@ namespace Blish_HUD.Settings.UI.Views {
 
                 if ((settingView = SettingView.FromType(setting, _settingFlowPanel.Width)) != null) {
                     _lastSettingContainer = new ViewContainer() {
-                        WidthSizingMode   = SizingMode.Fill,
-                        HeightSizingMode  = SizingMode.AutoSize,
-                        Parent            = _settingFlowPanel
+                        WidthSizingMode = SizingMode.Fill,
+                        HeightSizingMode = SizingMode.AutoSize,
+                        Parent = _settingFlowPanel
                     };
 
                     _lastSettingContainer.Show(settingView);
@@ -71,15 +75,10 @@ namespace Blish_HUD.Settings.UI.Views {
             UpdateBoundsLocking(_lockBounds);
         }
 
-        protected override void RefreshDisplayName(string displayName) {
-            _settingFlowPanel.Title = displayName;
-        }
+        protected override void RefreshDisplayName(string displayName) => _settingFlowPanel.Title = displayName;
 
-        protected override void RefreshDescription(string description) {
-            _settingFlowPanel.BasicTooltipText = description;
-        }
+        protected override void RefreshDescription(string description) => _settingFlowPanel.BasicTooltipText = description;
 
         protected override void RefreshValue(SettingCollection value) { /* NOOP */ }
-
     }
 }

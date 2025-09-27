@@ -23,6 +23,5 @@ namespace Blish_HUD.Modules.UI.Controls {
 
             spriteBatch.DrawStringOnCtrl(this, _statusText, Content.DefaultFont12, new Rectangle(bounds.X, bounds.Y, bounds.Width - 20, bounds.Height), _statusTextColor, false, true, 1, HorizontalAlignment.Right);
         }
-
     }
 }

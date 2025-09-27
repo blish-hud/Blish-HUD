@@ -4,7 +4,7 @@
     /// The result when querying a <see cref="Context"/>.
     /// </summary>
     /// <typeparam name="T">The type the call returns.</typeparam>
-    public struct ContextResult<T> {
+    public readonly struct ContextResult<T> {
 
         /// <summary>
         /// The value requested from the <see cref="Context"/>.
@@ -26,7 +26,7 @@
         /// <param name="value">The result to send back to the caller.</param>
         /// <param name="status">The summary status of the result.  This value should be UI ready.</param>
         public ContextResult(T value, string status) {
-            this.Value  = value;
+            this.Value = value;
             this.Status = status;
         }
 
@@ -39,14 +39,12 @@
         /// </summary>
         /// <param name="value">The result to send back to the caller.</param>
         public ContextResult(T value) {
-            this.Value  = value;
+            this.Value = value;
             this.Status = Strings.GameServices.ContextsService.State_Success;
         }
 
         public static implicit operator T(ContextResult<T> contextResult) {
             return contextResult.Value;
         }
-
     }
-
 }

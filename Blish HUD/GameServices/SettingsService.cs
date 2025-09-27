@@ -20,22 +20,22 @@ namespace Blish_HUD {
 
         [Obsolete]
         public delegate void SettingTypeRendererDelegate(SettingEntry setting, Panel settingPanel);
-        
+
         [JsonIgnore]
         internal JsonSerializerSettings JsonReaderSettings { get; private set; }
-        
+
         [JsonIgnore]
         private string _settingsPath;
 
         internal SettingCollection Settings { get; private set; }
 
-        private bool   _dirtySave;
+        private bool _dirtySave;
         private double _saveBuffer;
 
         protected override void Initialize() {
-            JsonReaderSettings = new JsonSerializerSettings() {
+            this.JsonReaderSettings = new JsonSerializerSettings() {
                 PreserveReferencesHandling = PreserveReferencesHandling.None,
-                TypeNameHandling           = TypeNameHandling.Auto,
+                TypeNameHandling = TypeNameHandling.Auto,
                 Converters = new List<JsonConverter>() {
                     new SettingCollection.SettingCollectionConverter(),
                     new SettingEntry.SettingEntryConverter(),
@@ -48,7 +48,9 @@ namespace Blish_HUD {
             _settingsPath = Path.Combine(DirectoryUtil.BasePath, SETTINGS_FILENAME);
 
             // If settings aren't there, generate the file
-            if (!File.Exists(_settingsPath)) PrepareSettingsFirstTime();
+            if (!File.Exists(_settingsPath)) {
+                PrepareSettingsFirstTime();
+            }
 
             LoadSettings();
         }
@@ -59,7 +61,7 @@ namespace Blish_HUD {
             try {
                 rawSettings = File.ReadAllText(_settingsPath);
 
-                this.Settings = JsonConvert.DeserializeObject<SettingCollection>(rawSettings, JsonReaderSettings) ?? new SettingCollection(false);
+                this.Settings = JsonConvert.DeserializeObject<SettingCollection>(rawSettings, this.JsonReaderSettings) ?? new SettingCollection(false);
             } catch (UnauthorizedAccessException) {
                 Blish_HUD.Debug.Contingency.NotifyFileSaveAccessDenied(_settingsPath, Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Action_ToLoadSettings);
             } catch (Exception ex) {
@@ -90,7 +92,9 @@ namespace Blish_HUD {
         }
 
         public void Save(bool forceSave = false) {
-            if (!Loaded && !forceSave) return;
+            if (!this.Loaded && !forceSave) {
+                return;
+            }
 
             if (forceSave) {
                 PerformSave();
@@ -100,7 +104,7 @@ namespace Blish_HUD {
         }
 
         private void PerformSave() {
-            string rawSettings = JsonConvert.SerializeObject(this.Settings, Formatting.Indented, JsonReaderSettings);
+            string rawSettings = JsonConvert.SerializeObject(this.Settings, Formatting.Indented, this.JsonReaderSettings);
 
             try {
                 string tempSettingsPath = $"{_settingsPath}.new";
@@ -121,20 +125,16 @@ namespace Blish_HUD {
             }
 
             _saveBuffer = 0;
-            _dirtySave  = false;
+            _dirtySave = false;
 
             Logger.Debug("Settings were saved successfully.");
         }
 
         protected override void Load() { /* NOOP */ }
 
-        internal SettingCollection RegisterRootSettingCollection(string collectionKey) {
-            return this.Settings.AddSubCollection(collectionKey, false);
-        }
+        internal SettingCollection RegisterRootSettingCollection(string collectionKey) => this.Settings.AddSubCollection(collectionKey, false);
 
-        protected override void Unload() {
-            Save(true);
-        }
+        protected override void Unload() => Save(true);
 
         protected override void Update(GameTime gameTime) {
             if (_dirtySave) {
@@ -145,6 +145,5 @@ namespace Blish_HUD {
                 }
             }
         }
-        
     }
 }

@@ -3,7 +3,7 @@ using Blish_HUD.Graphics.UI;
 
 namespace Blish_HUD.Common.UI.Views {
     public class BasicTooltipView : View, ITooltipView {
-        
+
         private const int MAX_WIDTH = 500;
 
         private readonly Label _tooltipLabel;
@@ -15,9 +15,9 @@ namespace Blish_HUD.Common.UI.Views {
 
         public BasicTooltipView(string text) {
             _tooltipLabel = new Label() {
-                ShowShadow     = true,
+                ShowShadow = true,
                 AutoSizeHeight = true,
-                AutoSizeWidth  = true
+                AutoSizeWidth = true
             };
 
             this.Text = text;
@@ -31,16 +31,15 @@ namespace Blish_HUD.Common.UI.Views {
 
         private void UpdateLabelValueAndWidth(string value) {
             // A bit of a kludge until we get proper MaxWidth and MaxHeight properties.
-            _tooltipLabel.WrapText      = false;
+            _tooltipLabel.WrapText = false;
             _tooltipLabel.AutoSizeWidth = true;
-            _tooltipLabel.Text          = value;
+            _tooltipLabel.Text = value;
 
             if (_tooltipLabel.Width > MAX_WIDTH) {
                 _tooltipLabel.AutoSizeWidth = false;
-                _tooltipLabel.WrapText      = true;
-                _tooltipLabel.Width         = MAX_WIDTH;
+                _tooltipLabel.WrapText = true;
+                _tooltipLabel.Width = MAX_WIDTH;
             }
         }
-
     }
 }

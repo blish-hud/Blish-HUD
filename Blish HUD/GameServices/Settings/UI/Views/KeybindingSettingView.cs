@@ -27,26 +27,18 @@ namespace Blish_HUD.Settings.UI.Views {
             };
 
             buildPanel.HeightSizingMode = SizingMode.AutoSize;
-            buildPanel.WidthSizingMode  = SizingMode.AutoSize;
+            buildPanel.WidthSizingMode = SizingMode.AutoSize;
 
             _keybindingAssigner.BindingChanged += KeybindingAssignerOnBindingChanged;
         }
 
-        private void KeybindingAssignerOnBindingChanged(object sender, EventArgs e) {
-            this.OnValueChanged(new ValueEventArgs<KeyBinding>(_keybindingAssigner.KeyBinding));
-        }
+        private void KeybindingAssignerOnBindingChanged(object sender, EventArgs e) => this.OnValueChanged(new ValueEventArgs<KeyBinding>(_keybindingAssigner.KeyBinding));
 
-        protected override void RefreshDisplayName(string displayName) {
-            _keybindingAssigner.KeyBindingName = displayName;
-        }
+        protected override void RefreshDisplayName(string displayName) => _keybindingAssigner.KeyBindingName = displayName;
 
-        protected override void RefreshDescription(string description) {
-            _keybindingAssigner.BasicTooltipText = description;
-        }
+        protected override void RefreshDescription(string description) => _keybindingAssigner.BasicTooltipText = description;
 
-        protected override void RefreshValue(KeyBinding value) {
-            _keybindingAssigner.KeyBinding = value;
-        }
+        protected override void RefreshValue(KeyBinding value) => _keybindingAssigner.KeyBinding = value;
 
     }
 }

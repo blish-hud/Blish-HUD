@@ -41,27 +41,27 @@ namespace Blish_HUD.Gw2Mumble {
         /// </summary>
         public event EventHandler<ValueEventArgs<UiSize>> UISizeChanged;
 
-        private void OnCompassSizeChanged(ValueEventArgs<Size>              e) => CompassSizeChanged?.Invoke(this, e);
+        private void OnCompassSizeChanged(ValueEventArgs<Size> e) => CompassSizeChanged?.Invoke(this, e);
         private void OnIsCompassRotationEnabledChanged(ValueEventArgs<bool> e) => this.IsCompassRotationEnabledChanged?.Invoke(this, e);
-        private void OnIsCompassTopRightChanged(ValueEventArgs<bool>        e) => this.IsCompassTopRightChanged?.Invoke(this, e);
-        private void OnIsTextInputFocusedChanged(ValueEventArgs<bool>       e) => IsTextInputFocusedChanged?.Invoke(this, e);
-        private void OnIsMapOpenChanged(ValueEventArgs<bool>                e) => IsMapOpenChanged?.Invoke(this, e);
-        private void OnUISizeChanged(ValueEventArgs<UiSize>                 e) => UISizeChanged?.Invoke(this, e);
+        private void OnIsCompassTopRightChanged(ValueEventArgs<bool> e) => this.IsCompassTopRightChanged?.Invoke(this, e);
+        private void OnIsTextInputFocusedChanged(ValueEventArgs<bool> e) => IsTextInputFocusedChanged?.Invoke(this, e);
+        private void OnIsMapOpenChanged(ValueEventArgs<bool> e) => IsMapOpenChanged?.Invoke(this, e);
+        private void OnUISizeChanged(ValueEventArgs<UiSize> e) => UISizeChanged?.Invoke(this, e);
 
-        private Size   _prevCompassSize              = new Size(1, 1);
-        private bool   _prevIsCompassRotationEnabled = false;
-        private bool   _prevIsCompassTopRight        = true;
-        private bool   _prevIsTextInputFocused       = false;
-        private bool   _prevIsMapOpen                = false;
-        private UiSize _prevUiSize                   = UiSize.Normal;
+        private Size _prevCompassSize = new Size(1, 1);
+        private bool _prevIsCompassRotationEnabled = false;
+        private bool _prevIsCompassTopRight = true;
+        private bool _prevIsTextInputFocused = false;
+        private bool _prevIsMapOpen = false;
+        private UiSize _prevUiSize = UiSize.Normal;
 
         private void HandleEvents() {
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevCompassSize,              this.CompassSize,              OnCompassSizeChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevCompassSize, this.CompassSize, OnCompassSizeChanged);
             MumbleEventImpl.CheckAndHandleEvent(ref _prevIsCompassRotationEnabled, this.IsCompassRotationEnabled, OnIsCompassRotationEnabledChanged);
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsCompassTopRight,        this.IsCompassTopRight,        OnIsCompassTopRightChanged);
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsTextInputFocused,       this.IsTextInputFocused,       OnIsTextInputFocusedChanged);
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsMapOpen,                this.IsMapOpen,                OnIsMapOpenChanged);
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevUiSize,                   this.UISize,                   OnUISizeChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsCompassTopRight, this.IsCompassTopRight, OnIsCompassTopRightChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsTextInputFocused, this.IsTextInputFocused, OnIsTextInputFocusedChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsMapOpen, this.IsMapOpen, OnIsMapOpenChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevUiSize, this.UISize, OnUISizeChanged);
         }
 
         #endregion
@@ -100,9 +100,7 @@ namespace Blish_HUD.Gw2Mumble {
             _service = service;
         }
 
-        internal void Update(GameTime gameTime) {
-            HandleEvents();
-        }
+        internal void Update(GameTime gameTime) => HandleEvents();
 
     }
 }

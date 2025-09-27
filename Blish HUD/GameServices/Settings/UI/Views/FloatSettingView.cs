@@ -20,7 +20,7 @@ namespace Blish_HUD.Settings.UI.Views {
                     break;
                 case SettingDisabledComplianceRequisite disabledRequisite:
                     _displayNameLabel.Enabled = !disabledRequisite.Disabled;
-                    _valueTrackBar.Enabled    = !disabledRequisite.Disabled;
+                    _valueTrackBar.Enabled = !disabledRequisite.Disabled;
                     break;
                 default:
                     return false;
@@ -28,10 +28,8 @@ namespace Blish_HUD.Settings.UI.Views {
 
             return true;
         }
-        
-        protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) {
-            this.OnValueChanged(new ValueEventArgs<float>(e.Value));
-        }
+
+        protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) => this.OnValueChanged(new ValueEventArgs<float>(e.Value));
 
         protected override void RefreshValue(float value) {
             // Prevent us clamping the setting value before compliance is applied
@@ -40,6 +38,5 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _valueTrackBar.Value = value;
         }
-
     }
 }

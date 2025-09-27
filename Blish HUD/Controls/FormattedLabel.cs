@@ -32,11 +32,7 @@ namespace Blish_HUD.Controls {
         public override void RecalculateLayout()
             => InitializeRectangles();
 
-        protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
-            if (_hoveredTextPart != null) {
-                _hoveredTextPart.Link?.Invoke();
-            }
-        }
+        protected override void OnLeftMouseButtonReleased(MouseEventArgs e) => _hoveredTextPart?.Link?.Invoke();
 
         private Rectangle HandleFirstTextPart(FormattedLabelPart item, string firstText) {
             var textSize = item.Font.MeasureString(firstText);
@@ -66,7 +62,7 @@ namespace Blish_HUD.Controls {
 
         private void InitializeRectangles() {
             // No need to initialize anything if there is no space
-            if (Width == 0 && !_autoSizeWidth) {
+            if (this.Width == 0 && !_autoSizeWidth) {
                 return;
             }
 
@@ -81,24 +77,26 @@ namespace Blish_HUD.Controls {
                         imageRectangle.Y = lastRectangle.Rectangle.Y;
                     }
 
-                    if (_wrapText && imageRectangle.X + imageRectangle.Width > Width) {
+                    if (_wrapText && imageRectangle.X + imageRectangle.Width > this.Width) {
                         var possibleLastYRectangles = _rectangles.OrderByDescending(x => x.Rectangle.Y).GroupBy(x => x.Rectangle.Y).First();
                         var lastYRectangle = possibleLastYRectangles.FirstOrDefault(x => x.Rectangle.Height != default);
                         if (lastYRectangle == default) {
                             lastYRectangle = possibleLastYRectangles.First();
                         }
+
                         imageRectangle.X = 0;
                         imageRectangle.Y = lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height;
                     }
 
                     _rectangles.Add((new RectangleWrapper(imageRectangle), item, item.PrefixImage));
                 }
+
                 var splittedText = item.Text.Split(new[] { "\n" }, StringSplitOptions.None).ToList();
-                var firstText = splittedText[0];
+                string firstText = splittedText[0];
                 var rectangle = HandleFirstTextPart(item, firstText);
-                var wrapped = false;
-                if (_wrapText && rectangle.X + rectangle.Width > Width) {
-                    var tempSplittedText = DrawUtil.WrapText(item.Font, firstText, Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.None).ToList();
+                bool wrapped = false;
+                if (_wrapText && rectangle.X + rectangle.Width > this.Width) {
+                    var tempSplittedText = DrawUtil.WrapText(item.Font, firstText, this.Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.None).ToList();
                     splittedText = new[] { string.Join("", tempSplittedText.Skip(1)) }.Concat(splittedText.Skip(1)).ToList();
                     firstText = tempSplittedText[0];
                     rectangle = HandleFirstTextPart(item, firstText);
@@ -107,10 +105,10 @@ namespace Blish_HUD.Controls {
 
                 _rectangles.Add((new RectangleWrapper(rectangle), item, firstText));
 
-                for (var i = wrapped ? 0 : 1; i < splittedText.Count; i++) {
+                for (int i = wrapped ? 0 : 1; i < splittedText.Count; i++) {
                     rectangle = HandleMultiLineText(item, splittedText[i]);
-                    if (_wrapText && rectangle.X + rectangle.Width > Width) {
-                        splittedText.InsertRange(i + 1, DrawUtil.WrapText(item.Font, splittedText[i], Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
+                    if (_wrapText && rectangle.X + rectangle.Width > this.Width) {
+                        splittedText.InsertRange(i + 1, DrawUtil.WrapText(item.Font, splittedText[i], this.Width - rectangle.X).Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
                         splittedText.RemoveAt(i);
 
                         var newRectangle = HandleMultiLineText(item, splittedText[i]);
@@ -135,12 +133,13 @@ namespace Blish_HUD.Controls {
                         imageRectangle.Y = lastRectangle.Rectangle.Y;
                     }
 
-                    if (_wrapText && imageRectangle.X + imageRectangle.Width > Width) {
+                    if (_wrapText && imageRectangle.X + imageRectangle.Width > this.Width) {
                         var possibleLastYRectangles = _rectangles.OrderByDescending(x => x.Rectangle.Y).GroupBy(x => x.Rectangle.Y).First();
                         var lastYRectangle = possibleLastYRectangles.FirstOrDefault(x => x.Rectangle.Height != default);
                         if (lastYRectangle == default) {
                             lastYRectangle = possibleLastYRectangles.First();
                         }
+
                         imageRectangle.X = 0;
                         imageRectangle.Y = lastYRectangle.Rectangle.Y + lastYRectangle.Rectangle.Height;
                     }
@@ -150,11 +149,11 @@ namespace Blish_HUD.Controls {
             }
 
             if (_autoSizeWidth) {
-                Width = _rectangles.GroupBy(x => x.Rectangle.Y).Select(x => x.Select(y => y.Rectangle.Width).Sum()).Max();
+                this.Width = _rectangles.GroupBy(x => x.Rectangle.Y).Select(x => x.Select(y => y.Rectangle.Width).Sum()).Max();
             }
 
             if (_autoSizeHeight) {
-                Height = _rectangles.GroupBy(x => x.Rectangle.Y).Select(x => x.Max(x => x.Rectangle.Height)).Sum();
+                this.Height = _rectangles.GroupBy(x => x.Rectangle.Y).Select(x => x.Max(x => x.Rectangle.Height)).Sum();
             }
 
             HandleHorizontalAlignment();
@@ -174,7 +173,7 @@ namespace Blish_HUD.Controls {
                 var maxHeightInRowRectangle = item.OrderByDescending(x => x.Rectangle.Height).First();
 
                 foreach (var rectangle in item) {
-                    var offset = maxHeightInRowRectangle.Rectangle.Height - rectangle.Rectangle.Height;
+                    int offset = maxHeightInRowRectangle.Rectangle.Height - rectangle.Rectangle.Height;
                     rectangle.Rectangle.Y += (int)Math.Floor(offset / 2.0);
                 }
             }
@@ -184,17 +183,17 @@ namespace Blish_HUD.Controls {
             if (_horizontalAlignment != HorizontalAlignment.Left) {
                 foreach (var item in _rectangles.GroupBy(x => x.Rectangle.Y)) {
                     if (_horizontalAlignment == HorizontalAlignment.Center) {
-                        var combinedWidth = item.Sum(x => x.Rectangle.Width);
-                        var firstRectangleX = (Width / 2) - (combinedWidth / 2);
+                        int combinedWidth = item.Sum(x => x.Rectangle.Width);
+                        int firstRectangleX = (this.Width / 2) - (combinedWidth / 2);
 
-                        var nextRectangleX = firstRectangleX;
+                        int nextRectangleX = firstRectangleX;
                         foreach (var rectangle in item) {
                             rectangle.Rectangle.X = nextRectangleX;
                             nextRectangleX = rectangle.Rectangle.X + rectangle.Rectangle.Width;
                         }
                     } else if (_horizontalAlignment == HorizontalAlignment.Right) {
                         var reversedOrder = item.Reverse().ToArray();
-                        var nextRectangleX = Width - reversedOrder.First().Rectangle.Width;
+                        int nextRectangleX = this.Width - reversedOrder.First().Rectangle.Width;
                         for (int i = 0; i < reversedOrder.Length; i++) {
                             reversedOrder[i].Rectangle.X = nextRectangleX;
 
@@ -210,25 +209,27 @@ namespace Blish_HUD.Controls {
         private void HandleVerticalAlignment() {
             if (_verticalAlignment == VerticalAlignment.Middle) {
                 var yGroups = _rectangles.GroupBy(x => x.Rectangle.Y).ToArray();
-                var combinedHeight = yGroups.Select(x => x.OrderByDescending(x => x.Rectangle.Height).First().Rectangle.Height).Sum();
-                var firstRectangleY = (Height / 2) - (combinedHeight / 2);
-                var nextRectangleY = firstRectangleY;
+                int combinedHeight = yGroups.Select(x => x.OrderByDescending(x => x.Rectangle.Height).First().Rectangle.Height).Sum();
+                int firstRectangleY = (this.Height / 2) - (combinedHeight / 2);
+                int nextRectangleY = firstRectangleY;
                 foreach (var item in yGroups) {
                     foreach (var rectangle in item) {
                         rectangle.Rectangle.Y = nextRectangleY;
                     }
-                    var maxHeightInRow = item.Max(x => x.Rectangle.Height);
+
+                    int maxHeightInRow = item.Max(x => x.Rectangle.Height);
                     nextRectangleY += maxHeightInRow;
                 }
             } else if (_verticalAlignment == VerticalAlignment.Bottom) {
                 var yGroups = _rectangles.GroupBy(x => x.Rectangle.Y).Reverse().ToArray();
-                var nextRectangleY = Height - yGroups.First().Max(x => x.Rectangle.Height);
+                int nextRectangleY = this.Height - yGroups.First().Max(x => x.Rectangle.Height);
                 foreach (var item in yGroups) {
-                    var maxHeightInRow = item.Max(x => x.Rectangle.Height);
+                    int maxHeightInRow = item.Max(x => x.Rectangle.Height);
 
                     foreach (var rectangle in item) {
                         rectangle.Rectangle.Y = nextRectangleY;
                     }
+
                     nextRectangleY -= maxHeightInRow;
                 }
             }
@@ -236,18 +237,18 @@ namespace Blish_HUD.Controls {
 
         public override void DoUpdate(GameTime gameTime) {
             var mousePosition = GameService.Input.Mouse.Position;
-            if (finishedInitialization && 
-                mousePosition.X > AbsoluteBounds.X && 
-                mousePosition.X < AbsoluteBounds.X + AbsoluteBounds.Width && 
-                mousePosition.Y > AbsoluteBounds.Y && 
-                mousePosition.Y < AbsoluteBounds.Y + AbsoluteBounds.Height) {
-                var hoverSet = false;
+            if (finishedInitialization &&
+                mousePosition.X > this.AbsoluteBounds.X &&
+                mousePosition.X < this.AbsoluteBounds.X + this.AbsoluteBounds.Width &&
+                mousePosition.Y > this.AbsoluteBounds.Y &&
+                mousePosition.Y < this.AbsoluteBounds.Y + this.AbsoluteBounds.Height) {
+                bool hoverSet = false;
                 foreach (var rectangle in _rectangles) {
-                    var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(AbsoluteBounds);
-                    if (rectangle.Text.Link != null && 
-                        mousePosition.X > destinationRectangle.X && 
-                        mousePosition.X < destinationRectangle.X + destinationRectangle.Width && 
-                        mousePosition.Y > destinationRectangle.Y && 
+                    var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
+                    if (rectangle.Text.Link != null &&
+                        mousePosition.X > destinationRectangle.X &&
+                        mousePosition.X < destinationRectangle.X + destinationRectangle.Width &&
+                        mousePosition.Y > destinationRectangle.Y &&
                         mousePosition.Y < destinationRectangle.Y + destinationRectangle.Height) {
                         _hoveredTextPart = rectangle.Text;
                         hoverSet = true;
@@ -267,7 +268,7 @@ namespace Blish_HUD.Controls {
                 float absoluteOpacity = this.AbsoluteOpacity();
 
                 foreach (var rectangle in _rectangles) {
-                    var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(AbsoluteBounds);
+                    var destinationRectangle = rectangle.Rectangle.Rectangle.ToBounds(this.AbsoluteBounds);
                     var textColor = rectangle.Text.TextColor;
 
                     if (_hoveredTextPart != null && rectangle.Text == _hoveredTextPart) {
@@ -304,43 +305,43 @@ namespace Blish_HUD.Controls {
             public Rectangle Rectangle { get; set; }
 
             public int X {
-                get => Rectangle.X;
+                get => this.Rectangle.X;
                 set {
-                    var rectangle = Rectangle;
+                    var rectangle = this.Rectangle;
                     rectangle.X = value;
-                    Rectangle = rectangle;
+                    this.Rectangle = rectangle;
                 }
             }
 
             public int Y {
-                get => Rectangle.Y;
+                get => this.Rectangle.Y;
                 set {
-                    var rectangle = Rectangle;
+                    var rectangle = this.Rectangle;
                     rectangle.Y = value;
-                    Rectangle = rectangle;
+                    this.Rectangle = rectangle;
                 }
             }
 
             public int Width {
-                get => Rectangle.Width;
+                get => this.Rectangle.Width;
                 set {
-                    var rectangle = Rectangle;
+                    var rectangle = this.Rectangle;
                     rectangle.Width = value;
-                    Rectangle = rectangle;
+                    this.Rectangle = rectangle;
                 }
             }
 
             public int Height {
-                get => Rectangle.Height;
+                get => this.Rectangle.Height;
                 set {
-                    var rectangle = Rectangle;
+                    var rectangle = this.Rectangle;
                     rectangle.Height = value;
-                    Rectangle = rectangle;
+                    this.Rectangle = rectangle;
                 }
             }
 
             public RectangleWrapper(Rectangle rectangle) {
-                Rectangle = rectangle;
+                this.Rectangle = rectangle;
             }
         }
     }

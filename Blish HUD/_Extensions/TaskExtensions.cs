@@ -20,6 +20,5 @@ namespace Blish_HUD {
                     }, TaskScheduler.Default);
             };
         }
-
     }
 }

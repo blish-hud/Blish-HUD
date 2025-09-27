@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Controls {
     public class BackButton : Control {
 
-        private const int BACKBUTTON_WIDTH  = 280;
+        private const int BACKBUTTON_WIDTH = 280;
         private const int BACKBUTTON_HEIGHT = 54;
 
         private const int BACKBUTTON_ICON_PADDING = 9;
@@ -67,7 +67,7 @@ namespace Blish_HUD.Controls {
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw back button
             spriteBatch.DrawOnCtrl(this, _textureBackButton, _layoutButtonIconBounds);
-            
+
             // Draw the full tab path (Tab: Subtab)
             spriteBatch.DrawStringOnCtrl(this, $"{_text}: {_navTitle}",
                                          Content.DefaultFont16,
@@ -80,6 +80,5 @@ namespace Blish_HUD.Controls {
                                          _layoutTextBounds,
                                          Color.White * 0.8f);
         }
-
     }
 }

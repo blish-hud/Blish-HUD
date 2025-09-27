@@ -6,27 +6,26 @@ namespace Blish_HUD.Entities {
         /// <summary>
         /// The camera's position.
         /// </summary>
-        Vector3 Position { get; }
+        public Vector3 Position { get; }
 
         /// <summary>
         /// The normalized vector pointing forward out of the camera.
         /// </summary>
-        Vector3 Forward { get; }
+        public Vector3 Forward { get; }
 
         /// <summary>
         /// The angle describing the camera's field of view.
         /// </summary>
-        float FieldOfView { get; }
+        public float FieldOfView { get; }
 
         /// <summary>
         /// The closest distance that entities are rendered.
         /// </summary>
-        float NearPlaneRenderDistance { get; }
+        public float NearPlaneRenderDistance { get; }
 
         /// <summary>
         /// The farthest distance that entities are rendered.
         /// </summary>
-        float FarPlaneRenderDistance { get; }
-
+        public float FarPlaneRenderDistance { get; }
     }
 }

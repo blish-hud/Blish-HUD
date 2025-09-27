@@ -3,16 +3,15 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls.Effects {
     public abstract class ControlEffect {
-        
-        protected Control AssignedControl { get; }
 
+        protected Control AssignedControl { get; }
 
         protected Vector2? _size;
         /// <summary>
         /// The size within the <see cref="Control"/> it applies to.  If not explicitly set, the size of the assigned control will be used.
         /// </summary>
         public Vector2 Size {
-            get => _size ?? AssignedControl.Size.ToVector2();
+            get => _size ?? this.AssignedControl.Size.ToVector2();
             set => _size = value;
         }
 
@@ -32,14 +31,17 @@ namespace Blish_HUD.Controls.Effects {
         public bool Enabled {
             get => _enabled;
             set {
-                if (_enabled == value) return;
+                if (_enabled == value) {
+                    return;
+                }
 
                 _enabled = value;
 
-                if (_enabled)
+                if (_enabled) {
                     OnEnable();
-                else
+                } else {
                     OnDisable();
+                }
             }
         }
 
@@ -55,19 +57,17 @@ namespace Blish_HUD.Controls.Effects {
         /// <summary>
         /// Enables the <see cref="Effect"/> on the <see cref="Control"/>.
         /// </summary>
-        public void Enable() { this.Enabled = true; }
+        public void Enable() => this.Enabled = true;
 
         /// <summary>
         /// Disables the <see cref="Effect"/> on the <see cref="Control"/>.
         /// </summary>
-        public void Disable() { this.Enabled = false; }
+        public void Disable() => this.Enabled = false;
 
         /// <summary>
         /// Enables or disables the <see cref="ControlEffect"/> depending on the value of <param name="enabled"></param>.
         /// </summary>
-        public void SetEnableState(bool enabled) {
-            this.Enabled = enabled;
-        }
+        public void SetEnableState(bool enabled) => this.Enabled = enabled;
 
         public virtual void Update(GameTime gameTime) { /* NOOP */ }
         public virtual void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
@@ -81,6 +81,5 @@ namespace Blish_HUD.Controls.Effects {
                 spriteBatch.End();
             }
         }
-
     }
 }

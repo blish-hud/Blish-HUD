@@ -18,11 +18,21 @@ namespace Blish_HUD {
             int xPos = bounds.X;
             int yPos = bounds.Y;
 
-            if (ha == HorizontalAlignment.Center) xPos += bounds.Width / 2 - (int)textSize.X / 2;
-            if (ha == HorizontalAlignment.Right) xPos += bounds.Width - (int)textSize.X;
+            if (ha == HorizontalAlignment.Center) {
+                xPos += (bounds.Width / 2) - ((int)textSize.X / 2);
+            }
 
-            if (va == VerticalAlignment.Middle) yPos += bounds.Height / 2 - (int)textSize.Y / 2;
-            if (va == VerticalAlignment.Bottom) yPos += bounds.Height - (int)textSize.Y;
+            if (ha == HorizontalAlignment.Right) {
+                xPos += bounds.Width - (int)textSize.X;
+            }
+
+            if (va == VerticalAlignment.Middle) {
+                yPos += (bounds.Height / 2) - ((int)textSize.Y / 2);
+            }
+
+            if (va == VerticalAlignment.Bottom) {
+                yPos += bounds.Height - (int)textSize.Y;
+            }
 
             sb.DrawString(sf, text, new Vector2(xPos, yPos), clr);
         }
@@ -33,21 +43,31 @@ namespace Blish_HUD {
             int xPos = bounds.X;
             int yPos = bounds.Y;
 
-            if (ha == HorizontalAlignment.Center) xPos += bounds.Width / 2 - (int)textSize.X / 2;
-            if (ha == HorizontalAlignment.Right) xPos += bounds.Width - (int)textSize.X;
+            if (ha == HorizontalAlignment.Center) {
+                xPos += (bounds.Width / 2) - ((int)textSize.X / 2);
+            }
 
-            if (va == VerticalAlignment.Middle) yPos += bounds.Height / 2 - (int)textSize.Y / 2;
-            if (va == VerticalAlignment.Bottom) yPos += bounds.Height - (int)textSize.Y;
+            if (ha == HorizontalAlignment.Right) {
+                xPos += bounds.Width - (int)textSize.X;
+            }
+
+            if (va == VerticalAlignment.Middle) {
+                yPos += (bounds.Height / 2) - ((int)textSize.Y / 2);
+            }
+
+            if (va == VerticalAlignment.Bottom) {
+                yPos += bounds.Height - (int)textSize.Y;
+            }
 
             sb.DrawString(sf, text, new Vector2(xPos, yPos), clr);
         }
 
         /// <remarks> Source: https://stackoverflow.com/a/15987581/595437 </remarks>
         private static string WrapTextSegment(BitmapFont spriteFont, string text, float maxLineWidth) {
-            string[] words      = text.Split(' ');
-            var      sb         = new StringBuilder();
-            float    lineWidth  = 0f;
-            float    spaceWidth = spriteFont.MeasureString(" ").Width;
+            string[] words = text.Split(' ');
+            var sb = new StringBuilder();
+            float lineWidth = 0f;
+            float spaceWidth = spriteFont.MeasureString(" ").Width;
 
             foreach (string word in words) {
                 Vector2 size = spriteFont.MeasureString(word);
@@ -65,10 +85,9 @@ namespace Blish_HUD {
         }
 
         public static string WrapText(BitmapFont spriteFont, string text, float maxLineWidth) {
-            if (string.IsNullOrEmpty(text)) return "";
-
-            return string.Join("\n", text.Split('\n').Select(s => WrapTextSegment(spriteFont, s, maxLineWidth)));
+            return string.IsNullOrEmpty(text)
+                ? ""
+                : string.Join("\n", text.Split('\n').Select(s => WrapTextSegment(spriteFont, s, maxLineWidth)));
         }
-
     }
 }

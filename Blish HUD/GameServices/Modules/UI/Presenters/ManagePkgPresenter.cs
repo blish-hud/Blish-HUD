@@ -23,11 +23,10 @@ namespace Blish_HUD.Modules.UI.Presenters {
             return base.Load(progress);
         }
 
-        private Version GetDefaultVersion() {
+        private Version GetDefaultVersion()
             // It seems to be a better user experience to always default to the latest for
             // those that want to quickly update.
-            return this.Model.Max(m => m.Version);
-        }
+            => this.Model.Max(m => m.Version);
 
         private void SetActiveVersion(Version version) {
             _selectedVersion = this.Model.First(m => m.Version == version);
@@ -36,18 +35,18 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void UpdateViewForVersion() {
-            this.View.ModuleName        = _selectedVersion.Name;
-            this.View.ModuleNamespace   = _selectedVersion.Namespace;
+            this.View.ModuleName = _selectedVersion.Name;
+            this.View.ModuleNamespace = _selectedVersion.Namespace;
             this.View.ModuleContributor = _selectedVersion.Contributors[0];
-            this.View.SelectedVersion   = _selectedVersion.Version;
-            this.View.IsPreviewVersion  = _selectedVersion.IsPreview;
+            this.View.SelectedVersion = _selectedVersion.Version;
+            this.View.IsPreviewVersion = _selectedVersion.IsPreview;
 
             if (_selectedVersion is PkgManifestV1 pkgv1) {
                 this.View.ModuleDescription = pkgv1.Description;
             }
 
             (_packageAction, this.View.PackageActionText) = GetPackageAction();
-            this.View.PackageActionEnabled                = _packageAction != null;
+            this.View.PackageActionEnabled = _packageAction != null;
         }
 
         private (Func<PkgManifest, ModuleManager, IProgress<string>, Task<(ModuleManager NewModule, bool Success, string Error)>> Action, string ActionText) GetPackageAction() {
@@ -69,7 +68,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         protected override void UpdateView() {
-            this.View.ActionClicked   += OnActionClicked;
+            this.View.ActionClicked += OnActionClicked;
             this.View.VersionSelected += OnVersionSelected;
 
             SetUi();
@@ -78,24 +77,18 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private void SetUi() {
             this.View.ModuleVersions = this.Model.Select(m => m.Version).OrderByDescending(v => v);
 
-            if (_existingModule != null) {
-                this.View.VersionRelationship = this.Model.Max(m => m.Version) > _existingModule.Manifest.Version
+            this.View.VersionRelationship = _existingModule != null
+                ? this.Model.Max(m => m.Version) > _existingModule.Manifest.Version
                                                     ? ManagePkgView.PkgVersionRelationship.CanUpdate
-                                                    : ManagePkgView.PkgVersionRelationship.CurrentVersion;
-            } else {
-                this.View.VersionRelationship = ManagePkgView.PkgVersionRelationship.NotInstalled;
-            }
+                                                    : ManagePkgView.PkgVersionRelationship.CurrentVersion
+                : ManagePkgView.PkgVersionRelationship.NotInstalled;
 
             SetActiveVersion(GetDefaultVersion());
         }
 
-        private void OnVersionSelected(object sender, ValueEventArgs<Version> e) {
-            SetActiveVersion(e.Value);
-        }
+        private void OnVersionSelected(object sender, ValueEventArgs<Version> e) => SetActiveVersion(e.Value);
 
-        private void SetActionStatus(string status) {
-            this.View.PackageActionText = status;
-        }
+        private void SetActionStatus(string status) => this.View.PackageActionText = status;
 
         private async void OnActionClicked(object sender, EventArgs e) {
             this.View.PackageActionEnabled = false;
@@ -110,6 +103,5 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             SetUi();
         }
-
     }
 }

@@ -9,6 +9,5 @@ namespace Blish_HUD.Settings.UI.Views {
 
             return Activator.CreateInstance(specificEnumType, setting, definedWidth) as IView;
         }
-
     }
 }

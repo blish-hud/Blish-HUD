@@ -16,8 +16,7 @@ namespace Blish_HUD.Input {
 
         public KeyboardEventArgs(KeyboardEventType eventType, Keys key) {
             this.EventType = eventType;
-            this.Key       = key;
+            this.Key = key;
         }
-
     }
 }

@@ -9,7 +9,5 @@ namespace Blish_HUD.Modules {
 
         [JsonProperty("details")]
         public string Details { get; private set; }
-
     }
-
 }

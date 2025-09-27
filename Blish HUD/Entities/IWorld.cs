@@ -3,15 +3,15 @@
 namespace Blish_HUD.Entities {
     public interface IWorld {
 
-        IEnumerable<IEntity> Entities { get; }
+        public IEnumerable<IEntity> Entities { get; }
 
-        void AddEntity(IEntity entity);
+        public void AddEntity(IEntity entity);
 
-        void AddEntities(IEnumerable<IEntity> entities);
+        public void AddEntities(IEnumerable<IEntity> entities);
 
-        void RemoveEntity(IEntity entity);
+        public void RemoveEntity(IEntity entity);
 
-        void RemoveEntities(IEnumerable<IEntity> entities);
+        public void RemoveEntities(IEnumerable<IEntity> entities);
 
     }
 }

@@ -12,10 +12,9 @@ namespace Blish_HUD.Debug {
             public Action OnClick { get; }
 
             public PopupButton(string text, Action onClick) {
-                this.Text    = text;
+                this.Text = text;
                 this.OnClick = onClick;
             }
-
         }
 
         private const string DISCORD_JOIN_URL = "https://link.blishhud.com/discordhelp";
@@ -29,29 +28,23 @@ namespace Blish_HUD.Debug {
         public ContingencyPopup(string title, string description, string troubleshootingUrl, IEnumerable<PopupButton> buttons = null) {
             InitializeComponent();
 
-            this.Text                = title;
+            this.Text = title;
             this.LblDescription.Text = description;
-            this.TroubleshootingUrl  = troubleshootingUrl;
+            this.TroubleshootingUrl = troubleshootingUrl;
 
             if (buttons != null) {
                 foreach (var button in buttons) {
                     var bttn = new Button { Text = button.Text, Parent = PnlAction, AutoSize = true };
-                    bttn.Click += (sender, e) => { button.OnClick(); };
+                    bttn.Click += (sender, e) => button.OnClick();
                 }
             }
         }
 
-        private void lblDiscordChannel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            OpenWebpage(DISCORD_JOIN_URL);
-        }
+        private void lblDiscordChannel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => OpenWebpage(DISCORD_JOIN_URL);
 
-        private void LblTroubleshootingGuide_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            OpenWebpage(this.TroubleshootingUrl);
-        }
+        private void LblTroubleshootingGuide_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => OpenWebpage(this.TroubleshootingUrl);
 
-        private static void OpenWebpage(string url) {
-            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-        }
+        private static void OpenWebpage(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 
         private bool _clickAttempted = false;
 
@@ -66,8 +59,6 @@ namespace Blish_HUD.Debug {
             _clickAttempted = true;
         }
 
-        private void LblDescription_Resize(object sender, EventArgs e) {
-            this.Height = this.LblDescription.Bottom + this.LblDescription.Top + PnlAction.Height + PnlExtraInfo.Height + 32;
-        }
+        private void LblDescription_Resize(object sender, EventArgs e) => this.Height = this.LblDescription.Bottom + this.LblDescription.Top + PnlAction.Height + PnlExtraInfo.Height + 32;
     }
 }

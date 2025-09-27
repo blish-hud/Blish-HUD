@@ -48,24 +48,23 @@ namespace Blish_HUD.Debug {
         /// This feature prevents us from initializing our log file or writing out our settings.
         /// </summary>
         private static void CheckControlledFolderAccessBlocking() {
-            using (var cfaRoot = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\Controlled Folder Access")) {
-                if (cfaRoot == null) {
-                    return;
-                }
+            using var cfaRoot = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\Controlled Folder Access");
+            if (cfaRoot == null) {
+                return;
+            }
 
-                if (cfaRoot.GetValue("EnableControlledFolderAccess", 0) as int? == 1) {
-                    try {
-                        string cfaTestFile = Path.Combine(DirectoryUtil.BasePath, ".cfa");
+            if ((cfaRoot.GetValue("EnableControlledFolderAccess", 0) as int?) == 1) {
+                try {
+                    string cfaTestFile = Path.Combine(DirectoryUtil.BasePath, ".cfa");
 
-                        File.WriteAllText(cfaTestFile, "cfa");
+                    File.WriteAllText(cfaTestFile, "cfa");
 
-                        if (File.Exists(cfaTestFile) && File.ReadAllText(cfaTestFile) == "cfa") {
-                            File.Delete(cfaTestFile);
-                        }
-                    } catch (Exception) {
-                        // The chances that this isn't CFA are pretty slim.
-                        Contingency.NotifyCfaBlocking(DirectoryUtil.BasePath);
+                    if (File.Exists(cfaTestFile) && File.ReadAllText(cfaTestFile) == "cfa") {
+                        File.Delete(cfaTestFile);
                     }
+                } catch (Exception) {
+                    // The chances that this isn't CFA are pretty slim.
+                    Contingency.NotifyCfaBlocking(DirectoryUtil.BasePath);
                 }
             }
         }
@@ -76,13 +75,13 @@ namespace Blish_HUD.Debug {
         /// </summary>
         private static void CheckNvidiaControlPanelSettings() {
             try {
-                var customSettingNames    = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
+                var customSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
                 var referenceSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.ReferenceSettingNames);
 
-                var metaService      = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
+                var metaService = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
                 var decrypterService = new DrsDecrypterService(metaService);
-                var scannerService   = new DrsScannerService(metaService, decrypterService);
-                var settingService   = new DrsSettingsService(metaService, decrypterService);
+                var scannerService = new DrsScannerService(metaService, decrypterService);
+                var settingService = new DrsSettingsService(metaService, decrypterService);
 
                 var forbiddenValues = new Dictionary<ESetting, HashSet<uint>>() {
                     [ESetting.FXAA_ENABLE_ID] = new HashSet<uint>() { 1 },
@@ -94,12 +93,12 @@ namespace Blish_HUD.Debug {
                 string blishProfileName = scannerService.FindProfilesUsingApplication(exePath);
 
                 var errors = new List<string>();
-                foreach (KeyValuePair<ESetting, HashSet<uint>> pair in forbiddenValues) {
-                    SettingMeta settingMeta = metaService.GetSettingMeta((uint)pair.Key);
+                foreach (var pair in forbiddenValues) {
+                    var settingMeta = metaService.GetSettingMeta((uint)pair.Key);
                     uint value = settingService.GetDwordValueFromProfile(blishProfileName, (uint)pair.Key);
 
                     if (pair.Value.Contains(value)) {
-                        SettingValue<uint> settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
+                        var settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
                         string val = settingValue?.ValueName ?? value.ToString();
 
                         errors.Add(string.Format(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Error, settingMeta.SettingName, val));
@@ -110,8 +109,8 @@ namespace Blish_HUD.Debug {
                     Contingency.NotifyNvidiaSettings(string.Join(Environment.NewLine, errors));
                 }
             } catch (Exception) {
-                 // we don't really care if we error here - usually means a non-nvidia system,
-                 // in which case the check is useless anyway.
+                // we don't really care if we error here - usually means a non-nvidia system,
+                // in which case the check is useless anyway.
             }
         }
 
@@ -124,8 +123,8 @@ namespace Blish_HUD.Debug {
         /// Blish HUD can't run while the game is configured this way.
         /// </summary>
         internal static void CheckForFullscreenDx9Conflict() {
-            if (GameService.GameIntegration.Gw2Instance.GraphicsApi == GameIntegration.Gw2Instance.Gw2GraphicsApi.DX9 
-             && GameService.GameIntegration.GfxSettings.ScreenMode  == GameIntegration.GfxSettings.ScreenModeSetting.Fullscreen) {
+            if (GameService.GameIntegration.Gw2Instance.GraphicsApi == GameIntegration.Gw2Instance.Gw2GraphicsApi.DX9
+             && GameService.GameIntegration.GfxSettings.ScreenMode == GameIntegration.GfxSettings.ScreenModeSetting.Fullscreen) {
                 Contingency.NotifyConflictingFullscreenSettings();
             }
         }

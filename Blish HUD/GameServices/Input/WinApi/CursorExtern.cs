@@ -13,6 +13,5 @@ namespace Blish_HUD.Input.WinApi {
             GetCursorInfo(ref pci);
             return pci;
         }
-
     }
 }

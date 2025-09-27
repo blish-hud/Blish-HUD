@@ -6,7 +6,5 @@ namespace Blish_HUD.DebugHelper.Models {
     public class KeyboardResponseMessage : Message {
 
         [ProtoMember(101)] public bool IsHandled { get; set; }
-
     }
-
 }

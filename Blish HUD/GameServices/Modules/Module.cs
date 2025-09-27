@@ -16,7 +16,7 @@ namespace Blish_HUD.Modules {
         #region Module Events
 
         public event EventHandler<ModuleRunStateChangedEventArgs> ModuleRunStateChanged;
-        public event EventHandler<EventArgs>                      ModuleLoaded;
+        public event EventHandler<EventArgs> ModuleLoaded;
 
         public event EventHandler<UnobservedTaskExceptionEventArgs> ModuleException;
 
@@ -36,9 +36,7 @@ namespace Blish_HUD.Modules {
         /// <see cref="LoadAsync"/> has completed).  You must call "base.OnModuleLoaded(e)" at the
         /// end for the <see cref="Module.ModuleLoaded"/> event to fire.
         /// </summary>
-        protected virtual void OnModuleLoaded(EventArgs e) {
-            ModuleLoaded?.Invoke(this, e);
-        }
+        protected virtual void OnModuleLoaded(EventArgs e) => ModuleLoaded?.Invoke(this, e);
 
         protected void OnModuleException(UnobservedTaskExceptionEventArgs e) {
             ModuleException?.Invoke(this, e);
@@ -56,7 +54,9 @@ namespace Blish_HUD.Modules {
         public ModuleRunState RunState {
             get => _runState;
             private set {
-                if (_runState == value) return;
+                if (_runState == value) {
+                    return;
+                }
 
                 _runState = value;
                 OnModuleRunStateChanged(new ModuleRunStateChangedEventArgs(_runState));
@@ -119,12 +119,13 @@ namespace Blish_HUD.Modules {
                             throw _loadTask.Exception;
                         }
                     } else {
-                        RunState = ModuleRunState.Loaded;
+                        this.RunState = ModuleRunState.Loaded;
                     }
+
                     break;
 
                 case TaskStatus.RanToCompletion:
-                    RunState = ModuleRunState.Loaded;
+                    this.RunState = ModuleRunState.Loaded;
                     Logger.Info("Module {module} finished loading.", ModuleParameters.Manifest.GetDetailedName());
                     break;
 
@@ -148,8 +149,8 @@ namespace Blish_HUD.Modules {
         /// <returns>A string containing the error reasons.</returns>
         private static string GetModuleErrorReason(Exception ex) {
             if (ex is AggregateException ae && ae.InnerExceptions.Count > 0) {
-                StringBuilder sb = new StringBuilder();
-                foreach (Exception innerException in ae.InnerExceptions) {
+                var sb = new StringBuilder();
+                foreach (var innerException in ae.InnerExceptions) {
                     if (innerException != null) {
                         sb.AppendLine(innerException.Message);
                     }
@@ -177,12 +178,12 @@ namespace Blish_HUD.Modules {
             Unload();
             this.RunState = ModuleRunState.Unloaded;
 
-            this.ModuleLoaded          = null;
+            this.ModuleLoaded = null;
             this.ModuleRunStateChanged = null;
-            this.ModuleException       = null;
+            this.ModuleException = null;
         }
 
-#endregion
+        #endregion
 
         #region Virtual Methods
 
@@ -203,9 +204,7 @@ namespace Blish_HUD.Modules {
         /// The <see cref="IView"/> to display in the settings area of the module when it is enabled.
         /// By default, this is a <see cref="SettingsView"/> of your module settings.
         /// </summary>
-        public virtual IView GetSettingsView() {
-            return new SettingsView(this.ModuleParameters.SettingsManager.ModuleSettings);
-        }
+        public virtual IView GetSettingsView() => new SettingsView(this.ModuleParameters.SettingsManager.ModuleSettings);
 
         /// <summary>
         /// Load content and more here. This call is asynchronous, so it is a good time to run
@@ -252,5 +251,4 @@ namespace Blish_HUD.Modules {
         #endregion
 
     }
-
 }

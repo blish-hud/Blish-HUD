@@ -24,24 +24,26 @@ namespace Blish_HUD.Overlay.UI.Views {
 
         protected override void Build(Container buildPanel) {
             _connectionStatusImage = new Image() {
-                Size     = new Point(16, 16),
-                Location = new Point(2,  2),
-                Texture  = GameService.Content.GetTexture(@"157330-cantint"),
-                Parent   = buildPanel
+                Size = new Point(16, 16),
+                Location = new Point(2, 2),
+                Texture = GameService.Content.GetTexture(@"157330-cantint"),
+                Parent = buildPanel
             };
 
             _connectionNameLabel = new Label() {
-                Size       = new Point(buildPanel.Width - 20, buildPanel.Height),
-                Location   = new Point(20,                    0),
+                Size = new Point(buildPanel.Width - 20, buildPanel.Height),
+                Location = new Point(20, 0),
                 ShowShadow = true,
-                Parent     = buildPanel
+                Parent = buildPanel
             };
 
             OnPresenterAssigned(this.Presenter);
         }
 
         protected override void OnPresenterAssigned(IConnectionStatusPresenter presenter) {
-            if (_connectionNameLabel == null || _connectionStatusImage == null) return;
+            if (_connectionNameLabel == null || _connectionStatusImage == null) {
+                return;
+            }
 
             _connectionNameLabel.Text = presenter == null
                                             ? string.Empty
@@ -63,6 +65,5 @@ namespace Blish_HUD.Overlay.UI.Views {
             _updateTimer.Elapsed -= UiUpdateTimerElapsed;
             _updateTimer.Dispose();
         }
-
     }
 }

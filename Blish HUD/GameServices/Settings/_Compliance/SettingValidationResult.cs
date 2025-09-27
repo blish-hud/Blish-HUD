@@ -13,10 +13,8 @@
         public string InvalidMessage { get; }
 
         public SettingValidationResult(bool valid, string invalidMessage = null) {
-            this.Valid          = valid;
+            this.Valid = valid;
             this.InvalidMessage = invalidMessage;
         }
-
     }
-
 }

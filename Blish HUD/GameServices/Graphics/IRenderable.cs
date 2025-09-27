@@ -3,7 +3,7 @@
 namespace Blish_HUD.Graphics {
     public interface IRenderable {
 
-        void Render(GraphicsDevice graphicsDevice);
+        public void Render(GraphicsDevice graphicsDevice);
 
     }
 }

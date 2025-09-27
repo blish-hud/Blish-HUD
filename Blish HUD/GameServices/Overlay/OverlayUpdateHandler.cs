@@ -20,7 +20,7 @@ namespace Blish_HUD.Overlay {
         private CoreVersionManifest[] _availableUpdates = Array.Empty<CoreVersionManifest>();
 
         private SettingEntry<SemVer.Version> _lastAcknowledgedUpdate;
-        private SettingEntry<bool>           _notifyOfNewReleases;
+        private SettingEntry<bool> _notifyOfNewReleases;
 
         private int _releaseLoadAttemptsRemaining = 3;
 
@@ -55,25 +55,25 @@ namespace Blish_HUD.Overlay {
 
         private void DefineOverlayUpdateSettings(SettingCollection settingCollection) {
             _lastAcknowledgedUpdate = settingCollection.DefineSetting(nameof(this.LastAcknowledgedRelease), new SemVer.Version("0.0.0"));
-            _notifyOfNewReleases    = settingCollection.DefineSetting(nameof(this.NotifyOfNewRelease),      true);
+            _notifyOfNewReleases = settingCollection.DefineSetting(nameof(this.NotifyOfNewRelease), true);
         }
 
         private void BeginLoadReleases(string versionsUrl) {
             versionsUrl.GetJsonAsync<CoreVersionManifest[]>()
                        .ContinueWith(async coreVersionManifestTask => {
-                             if (coreVersionManifestTask.Exception == null) {
-                                 HandleLoadingReleases(coreVersionManifestTask.Result);
-                             } else if (_releaseLoadAttemptsRemaining <= 0) {
-                                 Logger.Warn(coreVersionManifestTask.Exception, "Failed to load list of release versions from '{0}'.", versionsUrl);
-                             } else {
-                                 // We're gonna try again in case it was just a blip
-                                 _releaseLoadAttemptsRemaining--;
+                           if (coreVersionManifestTask.Exception == null) {
+                               HandleLoadingReleases(coreVersionManifestTask.Result);
+                           } else if (_releaseLoadAttemptsRemaining <= 0) {
+                               Logger.Warn(coreVersionManifestTask.Exception, "Failed to load list of release versions from '{0}'.", versionsUrl);
+                           } else {
+                               // We're gonna try again in case it was just a blip
+                               _releaseLoadAttemptsRemaining--;
 
-                                 await Task.Delay(1000);
+                               await Task.Delay(1000);
 
-                                 BeginLoadReleases(versionsUrl);
-                             }
-                        });
+                               BeginLoadReleases(versionsUrl);
+                           }
+                       });
         }
 
         private void HandleLoadingReleases(CoreVersionManifest[] coreVersionManifests) {
@@ -108,13 +108,7 @@ namespace Blish_HUD.Overlay {
             }
         }
 
-        public (bool Available, CoreVersionManifest NewManifest) GetUpdateAvailable() {
-            if (this.LatestRelease.Version > Program.OverlayVersion) {
-                return (true, this.LatestRelease);
-            }
-
-            return (false, default);
-        }
+        public (bool Available, CoreVersionManifest NewManifest) GetUpdateAvailable() => this.LatestRelease.Version > Program.OverlayVersion ? ((bool Available, CoreVersionManifest NewManifest))(true, this.LatestRelease) : ((bool Available, CoreVersionManifest NewManifest))(false, default);
 
         public IEnumerable<ContextMenuStripItem> GetContextMenuItems() {
             if (this.LatestRelease.Version > Program.OverlayVersion) {
@@ -139,9 +133,7 @@ namespace Blish_HUD.Overlay {
             }
         }
 
-        public void AcknowledgePendingReleases() {
-            this.LastAcknowledgedRelease = _availableUpdates.Select(manifest => manifest.Version).Max();
-        }
+        public void AcknowledgePendingReleases() => this.LastAcknowledgedRelease = _availableUpdates.Select(manifest => manifest.Version).Max();
 
     }
 }

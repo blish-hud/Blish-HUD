@@ -9,6 +9,5 @@ namespace Blish_HUD.Gw2Mumble {
                 eventRef(new ValueEventArgs<T>(currentValue));
             }
         }
-
     }
 }

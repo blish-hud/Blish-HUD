@@ -36,8 +36,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         private bool _errored;
         private bool _active;
 
-        private TokenInfo                _tokenInfo;
-        private Account                  _accountInfo;
+        private TokenInfo _tokenInfo;
+        private Account _accountInfo;
         private IApiV2ObjectList<string> _characterList;
 
         public TokenInfo TokenInfo {
@@ -67,8 +67,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
                 if (_accountNameLbl != null) {
                     _accountNameLbl.Visible = !_errored;
-                    _tokenKeyLbl.Visible    = !_errored;
-                    _tokenNameLbl.Visible   = !_errored;
+                    _tokenKeyLbl.Visible = !_errored;
+                    _tokenNameLbl.Visible = !_errored;
 
                     _failedTokenLbl.Visible = _errored;
                 }
@@ -83,7 +83,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         public void SetTokenInfo(TokenInfo tokenInfo) {
             _tokenInfo = tokenInfo;
 
-            _tokenNameLbl.Text             = _tokenInfo.Name;
+            _tokenNameLbl.Text = _tokenInfo.Name;
             _tokenNameLbl.BasicTooltipText = _tokenInfo.Name;
         }
 
@@ -94,7 +94,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             // Set flag for region
             if (_worldRegionFlags.TryGetValue(_accountInfo.World.ToString().Substring(0, 2), out var regionInfo)) {
-                _regionFlagImg.Texture          = regionInfo.Flag;
+                _regionFlagImg.Texture = regionInfo.Flag;
                 _regionFlagImg.BasicTooltipText = regionInfo.Region;
             }
 
@@ -105,7 +105,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         public void SetCharacterList(IApiV2ObjectList<string> characterList) {
             _characterList = characterList;
 
-            _tokenKeyLbl.Text             = Strings.GameServices.Gw2ApiService.AccountInfo_Character.ToQuantity(_characterList.Count);
+            _tokenKeyLbl.Text = Strings.GameServices.Gw2ApiService.AccountInfo_Character.ToQuantity(_characterList.Count);
             _tokenKeyLbl.BasicTooltipText = string.Join("\n", _characterList);
         }
 
@@ -119,82 +119,78 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
         protected override void Build(Container buildPanel) {
             _failedTokenLbl = new Label() {
-                Size                = buildPanel.Size,
+                Size = buildPanel.Size,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment   = VerticalAlignment.Middle,
+                VerticalAlignment = VerticalAlignment.Middle,
                 Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia,
                                                    ContentService.FontSize.Size14,
                                                    ContentService.FontStyle.Italic),
-                Text    = Strings.GameServices.Gw2ApiService.TokenStatus_FailedToLoad,
+                Text = Strings.GameServices.Gw2ApiService.TokenStatus_FailedToLoad,
                 Visible = _errored,
-                Parent  = buildPanel
+                Parent = buildPanel
             };
 
             _accountNameLbl = new Label() {
-                Text           = "[Account Name]",
-                Font           = GameService.Content.DefaultFont16,
-                ShowShadow     = true,
-                Location       = new Point(10, 10),
+                Text = "[Account Name]",
+                Font = GameService.Content.DefaultFont16,
+                ShowShadow = true,
+                Location = new Point(10, 10),
                 AutoSizeHeight = true,
-                Width          = buildPanel.Width - 20,
-                Visible        = !_errored,
-                Parent         = buildPanel
+                Width = buildPanel.Width - 20,
+                Visible = !_errored,
+                Parent = buildPanel
             };
 
             _regionFlagImg = new Image() {
-                Size     = new Point(16,                   16),
+                Size = new Point(16, 16),
                 Location = new Point(_accountNameLbl.Left, _accountNameLbl.Bottom + 2),
-                Parent   = buildPanel
+                Parent = buildPanel
             };
 
             _accountCommanderImg = new Image(AsyncTexture2D.FromAssetId(1234943)) {
-                Size             = new Point(16,                       16),
-                Location         = new Point(_regionFlagImg.Right + 4, _regionFlagImg.Top),
+                Size = new Point(16, 16),
+                Location = new Point(_regionFlagImg.Right + 4, _regionFlagImg.Top),
                 BasicTooltipText = Strings.GameServices.Gw2ApiService.AccountInfo_Commander,
-                Visible          = false,
-                Parent           = buildPanel
+                Visible = false,
+                Parent = buildPanel
             };
 
             _tokenKeyLbl = new Label() {
-                Text           = "[Token Key]",
+                Text = "[Token Key]",
                 AutoSizeHeight = true,
-                Width          = buildPanel.Width / 4,
-                Left           = _accountNameLbl.Left,
-                Bottom         = buildPanel.Height - 10,
-                Visible        = !_errored,
-                Parent         = buildPanel
+                Width = buildPanel.Width / 4,
+                Left = _accountNameLbl.Left,
+                Bottom = buildPanel.Height - 10,
+                Visible = !_errored,
+                Parent = buildPanel
             };
 
             _tokenNameLbl = new Label() {
-                Text                = "[Token Name]",
+                Text = "[Token Name]",
                 HorizontalAlignment = HorizontalAlignment.Right,
-                AutoSizeHeight      = true,
-                Width               = (buildPanel.Width / 4) * 3 - 30,
-                Left                = _tokenKeyLbl.Right         + 10,
-                Bottom              = _tokenKeyLbl.Bottom,
-                Visible             = !_errored,
-                Parent              = buildPanel
+                AutoSizeHeight = true,
+                Width = (buildPanel.Width / 4 * 3) - 30,
+                Left = _tokenKeyLbl.Right + 10,
+                Bottom = _tokenKeyLbl.Bottom,
+                Visible = !_errored,
+                Parent = buildPanel
             };
 
             _deleteBttn = new GlowButton() {
-                Icon             = AsyncTexture2D.FromAssetId(733269),
-                ActiveIcon       = AsyncTexture2D.FromAssetId(733270),
-                Location         = new Point(buildPanel.Width - 26, 10),
-                Size             = new Point(16,                    16),
+                Icon = AsyncTexture2D.FromAssetId(733269),
+                ActiveIcon = AsyncTexture2D.FromAssetId(733270),
+                Location = new Point(buildPanel.Width - 26, 10),
+                Size = new Point(16, 16),
                 BasicTooltipText = Strings.GameServices.Gw2ApiService.ManageApiKeys_DeleteToken,
-                Parent           = buildPanel
+                Parent = buildPanel
             };
 
             _deleteBttn.Click += DeleteRegisteredToken;
         }
 
-        public void RemoveTokenView() {
-            this.ViewTarget.Dispose();
-        }
+        public void RemoveTokenView() => this.ViewTarget.Dispose();
 
-        private void DeleteRegisteredToken(object sender, MouseEventArgs e) {
-            this.DeleteClicked?.Invoke(this, EventArgs.Empty);
-        }
+        private void DeleteRegisteredToken(object sender, MouseEventArgs e) => this.DeleteClicked?.Invoke(this, EventArgs.Empty);
 
     }
 }

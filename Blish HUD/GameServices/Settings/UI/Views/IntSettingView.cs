@@ -4,7 +4,7 @@ namespace Blish_HUD.Settings.UI.Views {
     public class IntSettingView : NumericSettingView<int> {
 
         public IntSettingView(SettingEntry<int> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
-        
+
         public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {
                 case IntRangeRangeComplianceRequisite intRangeRequisite:
@@ -13,7 +13,7 @@ namespace Blish_HUD.Settings.UI.Views {
                     break;
                 case SettingDisabledComplianceRequisite disabledRequisite:
                     _displayNameLabel.Enabled = !disabledRequisite.Disabled;
-                    _valueTrackBar.Enabled    = !disabledRequisite.Disabled;
+                    _valueTrackBar.Enabled = !disabledRequisite.Disabled;
                     break;
                 default:
                     return false;
@@ -22,9 +22,7 @@ namespace Blish_HUD.Settings.UI.Views {
             return true;
         }
 
-        protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) {
-            this.OnValueChanged(new ValueEventArgs<int>((int)e.Value));
-        }
+        protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) => this.OnValueChanged(new ValueEventArgs<int>((int)e.Value));
 
         protected override void RefreshValue(int value) {
             // Prevent us clamping the setting value before compliance is applied
@@ -33,6 +31,5 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _valueTrackBar.Value = value;
         }
-
     }
 }

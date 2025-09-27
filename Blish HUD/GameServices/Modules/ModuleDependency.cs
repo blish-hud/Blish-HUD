@@ -25,18 +25,20 @@ namespace Blish_HUD.Modules {
             }
 
             public override List<ModuleDependency> ReadJson(JsonReader reader, Type objectType, List<ModuleDependency> existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                if (reader.TokenType == JsonToken.Null) return null;
+                if (reader.TokenType == JsonToken.Null) {
+                    return null;
+                }
 
                 var moduleDependencyList = new List<ModuleDependency>();
 
-                JObject mdObj = JObject.Load(reader);
+                var mdObj = JObject.Load(reader);
 
                 foreach (var prop in mdObj) {
-                    string dependencyNamespace    = prop.Key;
+                    string dependencyNamespace = prop.Key;
                     string dependencyVersionRange = prop.Value.ToString();
 
                     moduleDependencyList.Add(new ModuleDependency() {
-                        Namespace    = dependencyNamespace,
+                        Namespace = dependencyNamespace,
                         VersionRange = new Range(dependencyVersionRange)
                     });
                 }
@@ -91,7 +93,5 @@ namespace Blish_HUD.Modules {
             // No module could be found that matches
             return new ModuleDependencyCheckDetails(this, ModuleDependencyCheckResult.NotFound);
         }
-
     }
-
 }

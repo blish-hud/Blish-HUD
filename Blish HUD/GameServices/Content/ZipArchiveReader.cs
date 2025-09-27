@@ -10,33 +10,28 @@ namespace Blish_HUD.Content {
     public sealed class ZipArchiveReader : IDataReader {
 
         private readonly ZipArchive _archive;
-
-        private readonly string _archivePath;
         private readonly string _subPath;
 
         private readonly Mutex _exclusiveStreamAccessMutex;
-        public  string PhysicalPath => _archivePath;
+        public string PhysicalPath { get; }
 
         public ZipArchiveReader(string archivePath, string subPath = "") {
-            if (!File.Exists((archivePath)))
+            if (!File.Exists((archivePath))) {
                 throw new FileNotFoundException("Archive path not found.", archivePath);
+            }
 
-            _archivePath = archivePath;
-            _subPath     = subPath;
+            this.PhysicalPath = archivePath;
+            _subPath = subPath;
 
             _exclusiveStreamAccessMutex = new Mutex(false);
 
             _archive = ZipFile.OpenRead(archivePath);
         }
 
-        public IDataReader GetSubPath(string subPath) {
-            return new ZipArchiveReader(_archivePath, Path.Combine(subPath));
-        }
-        
-        public string GetPathRepresentation(string relativeFilePath = null) {
-            return $"{_archivePath}[{Path.GetFileName(Path.Combine(_subPath, relativeFilePath ?? string.Empty))}]";
-        }
-        
+        public IDataReader GetSubPath(string subPath) => new ZipArchiveReader(this.PhysicalPath, Path.Combine(subPath));
+
+        public string GetPathRepresentation(string relativeFilePath = null) => $"{this.PhysicalPath}[{Path.GetFileName(Path.Combine(_subPath, relativeFilePath ?? string.Empty))}]";
+
         public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {
             var validEntries = _archive.Entries.Where(e => e.Name.EndsWith($"{fileExtension}", StringComparison.OrdinalIgnoreCase)).ToList();
 
@@ -47,19 +42,17 @@ namespace Blish_HUD.Content {
                 loadFileFunc.Invoke(entryStream, this);
             }
         }
-        
+
         public bool FileExists(string filePath) {
             return _archive.Entries.Any(entry =>
                 string.Equals(GetUniformFileName(entry.FullName), GetUniformFileName(Path.Combine(_subPath, filePath)), StringComparison.OrdinalIgnoreCase)
             );
         }
 
-        private string GetUniformFileName(string filePath) {
-            return filePath.Replace(@"\", "/").Replace("//", "/").Trim();
-        }
+        private string GetUniformFileName(string filePath) => filePath.Replace(@"\", "/").Replace("//", "/").Trim();
 
         private ZipArchiveEntry GetArchiveEntry(string filePath) {
-            var cleanFilePath = GetUniformFileName(Path.Combine(_subPath, filePath));
+            string cleanFilePath = GetUniformFileName(Path.Combine(_subPath, filePath));
 
             foreach (var zipEntry in _archive.Entries) {
                 string cleanZipEntry = GetUniformFileName(zipEntry.FullName);
@@ -71,7 +64,7 @@ namespace Blish_HUD.Content {
 
             return null;
         }
-        
+
         public Stream GetFileStream(string filePath) {
             ZipArchiveEntry fileEntry;
 
@@ -91,27 +84,21 @@ namespace Blish_HUD.Content {
 
             return null;
         }
-        
+
         public byte[] GetFileBytes(string filePath) {
             // We know GetFileStream returns a MemoryStream, so we don't check
-            using (var fileStream = GetFileStream(filePath) as MemoryStream) {
-                if (fileStream != null) {
-                    return fileStream.ToArray();
-                }
-            }
-
-            return null;
+            using var fileStream = GetFileStream(filePath) as MemoryStream;
+            return fileStream?.ToArray();
         }
-        
+
         public int GetFileBytes(string filePath, out byte[] fileBuffer) {
             fileBuffer = null;
 
             // We know GetFileStream returns a MemoryStream, so we don't check
-            using (var fileStream = GetFileStream(filePath) as MemoryStream) {
-                if (fileStream != null) {
-                    fileBuffer = fileStream.GetBuffer();
-                    return (int)fileStream.Length;
-                }
+            using var fileStream = GetFileStream(filePath) as MemoryStream;
+            if (fileStream != null) {
+                fileBuffer = fileStream.GetBuffer();
+                return (int)fileStream.Length;
             }
 
             return 0;
@@ -119,26 +106,19 @@ namespace Blish_HUD.Content {
 
         /// <inheritdoc />
         /// <remarks>For <see cref="ZipArchiveReader"/>, use <see cref="GetFileStream(string)"/> instead.</remarks>
-        public async Task<Stream> GetFileStreamAsync(string filePath) {
-            return await Task.FromResult(GetFileStream(filePath));
-        }
+        public async Task<Stream> GetFileStreamAsync(string filePath) => await Task.FromResult(GetFileStream(filePath));
 
         /// <inheritdoc />
         /// <remarks>For <see cref="ZipArchiveReader"/>, use <see cref="GetFileBytes(string)"/> instead.</remarks>
-        public async Task<byte[]> GetFileBytesAsync(string filePath) {
-            return await Task.FromResult(GetFileBytes(filePath));
-        }
+        public async Task<byte[]> GetFileBytesAsync(string filePath) => await Task.FromResult(GetFileBytes(filePath));
 
         public void DeleteRoot() {
             this.Dispose();
-            
-            File.Delete(_archivePath);
+
+            File.Delete(this.PhysicalPath);
         }
-        
-        public void Dispose() {
-            _archive?.Dispose();
-        }
+
+        public void Dispose() => _archive?.Dispose();
 
     }
-
 }

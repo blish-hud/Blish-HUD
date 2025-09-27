@@ -29,22 +29,19 @@ namespace Blish_HUD.Contexts {
             /// </summary>
             public static IEnumerable<Festival> All => _festivalLookup.Values;
 
-            private readonly string _name;
-            private readonly string _displayName;
-
             /// <summary>
             /// The unique identifying name of the festival.
             /// </summary>
-            public string Name => _name;
+            public string Name { get; }
 
             /// <summary>
             /// The localized display name of the festival.
             /// </summary>
-            public string DisplayName => _displayName;
+            public string DisplayName { get; }
 
             public Festival(string name, string displayName) {
-                _name = name;
-                _displayName = displayName;
+                this.Name = name;
+                this.DisplayName = displayName;
 
                 _festivalLookup.Add(name, this);
             }
@@ -190,9 +187,7 @@ namespace Blish_HUD.Contexts {
             return Enumerable.Empty<Festival>();
         }
 
-        private bool FestivalIsActive(Festival festival) {
-            return _activeFestivals.Contains(festival);
-        }
+        private bool FestivalIsActive(Festival festival) => _activeFestivals.Contains(festival);
 
         /// <summary>
         /// If <see cref="ContextAvailability.Available"/>, returns
@@ -205,7 +200,9 @@ namespace Blish_HUD.Contexts {
                 return ContextAvailability.Failed;
             }
 
-            if (this.State != ContextState.Ready) return NotReady(out contextResult);
+            if (this.State != ContextState.Ready) {
+                return NotReady(out contextResult);
+            }
 
             contextResult = new ContextResult<ReadOnlyCollection<Festival>>(_activeFestivals.AsReadOnly());
             return ContextAvailability.Available;
@@ -222,12 +219,12 @@ namespace Blish_HUD.Contexts {
                 return ContextAvailability.Failed;
             }
 
-            if (this.State != ContextState.Ready) return NotReady(out contextResult);
+            if (this.State != ContextState.Ready) {
+                return NotReady(out contextResult);
+            }
 
             contextResult = new ContextResult<bool>(FestivalIsActive(festival));
             return ContextAvailability.Available;
         }
-
     }
-
 }

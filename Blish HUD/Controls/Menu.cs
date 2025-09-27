@@ -19,9 +19,7 @@ namespace Blish_HUD.Controls {
         #region Events
 
         public event EventHandler<ControlActivatedEventArgs> ItemSelected;
-        protected virtual void OnItemSelected(ControlActivatedEventArgs e) {
-            this.ItemSelected?.Invoke(this, e);
-        }
+        protected virtual void OnItemSelected(ControlActivatedEventArgs e) => this.ItemSelected?.Invoke(this, e);
 
         #endregion
 
@@ -29,7 +27,9 @@ namespace Blish_HUD.Controls {
         public int MenuItemHeight {
             get => _menuItemHeight;
             set {
-                if (!SetProperty(ref _menuItemHeight, value)) return;
+                if (!SetProperty(ref _menuItemHeight, value)) {
+                    return;
+                }
 
                 foreach (var childMenuItem in _children.Cast<IMenuItem>()) {
                     childMenuItem.MenuItemHeight = value;
@@ -51,12 +51,9 @@ namespace Blish_HUD.Controls {
 
         bool IMenuItem.Selected => false;
 
-        private MenuItem _selectedMenuItem;
-        public MenuItem SelectedMenuItem => _selectedMenuItem;
+        public MenuItem SelectedMenuItem { get; private set; }
 
-        void IMenuItem.Select() {
-            throw new InvalidOperationException($"The root {nameof(Menu)} instance can not be selected.");
-        }
+        void IMenuItem.Select() => throw new InvalidOperationException($"The root {nameof(this.Menu)} instance can not be selected.");
 
         public void Select(MenuItem menuItem, List<IMenuItem> itemPath) {
             if (!_canSelect) {
@@ -68,18 +65,14 @@ namespace Blish_HUD.Controls {
                 item.Deselect();
             }
 
-            _selectedMenuItem = menuItem;
+            this.SelectedMenuItem = menuItem;
 
             OnItemSelected(new ControlActivatedEventArgs(menuItem));
         }
 
-        public void Select(MenuItem menuItem) {
-            menuItem.Select();
-        }
+        public void Select(MenuItem menuItem) => menuItem.Select();
 
-        void IMenuItem.Deselect() {
-            Select(null, null);
-        }
+        void IMenuItem.Deselect() => Select(null, null);
 
         protected override void OnResized(ResizedEventArgs e) {
             foreach (var childMenuItem in _children) {
@@ -108,22 +101,22 @@ namespace Blish_HUD.Controls {
                         e.ChangedChild.Top = lastItem.Bottom;
                     }
                 };
-                
+
                 e.ChangedChild.Top = lastItem.Bottom;
             }
 
-            ShouldShift = e.ResultingChildren.Any(mi => {
-                                                      MenuItem cmi = (MenuItem) mi;
+            this.ShouldShift = e.ResultingChildren.Any(mi => {
+                var cmi = (MenuItem)mi;
 
-                                                      return cmi.CanCheck || cmi.Icon != null || cmi.Children.Any();
-                                                  });
+                return cmi.CanCheck || cmi.Icon != null || cmi.Children.Any();
+            });
 
             base.OnChildAdded(e);
         }
 
         public MenuItem AddMenuItem(string text, Texture2D icon = null) {
             return new MenuItem(text) {
-                Icon   = icon,
+                Icon = icon,
                 Parent = this
             };
         }
@@ -140,13 +133,13 @@ namespace Blish_HUD.Controls {
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             // Draw items dark every other one
-            for (int sec = 0; sec < _size.Y / MenuItemHeight; sec += 2) {
+            for (int sec = 0; sec < _size.Y / this.MenuItemHeight; sec += 2) {
                 spriteBatch.DrawOnCtrl(this,
                                        _textureMenuItemFade.Texture,
                                        new Rectangle(0,
-                                                     MenuItemHeight * sec - VerticalScrollOffset,
+                                                     (this.MenuItemHeight * sec) - this.VerticalScrollOffset,
                                                      _size.X,
-                                                     MenuItemHeight),
+                                                     this.MenuItemHeight),
                                        Color.Black * 0.7f);
             }
         }

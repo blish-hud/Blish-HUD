@@ -1,7 +1,7 @@
-namespace Glide {
-    using System;
-    using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
+namespace Glide {
     public partial class Tween {
         [Flags]
         public enum RotationUnit {
@@ -17,7 +17,7 @@ namespace Glide {
         #region Timing
         public bool Paused { get; private set; }
         private float Delay, repeatDelay;
-        private float Duration;
+        private readonly float Duration;
 
         private float Time, time;
         #endregion
@@ -26,25 +26,25 @@ namespace Glide {
         private int repeatCount;
         private MemberLerper.Behavior behavior;
 
-        private List<MemberAccessor> vars;
-        private List<MemberLerper> lerpers;
-        private List<object> start, end;
-        private Dictionary<string, int> varHash;
-        private IRemoveTweens Remover;
+        private readonly List<MemberAccessor> vars;
+        private readonly List<MemberLerper> lerpers;
+        private readonly List<object> start, end;
+        private readonly Dictionary<string, int> varHash;
+        private readonly IRemoveTweens Remover;
         /// <summary>
         /// The time remaining before the tween ends or repeats.
         /// </summary>
-        public float TimeRemaining { get { return Duration - Time; } }
+        public float TimeRemaining => Duration - Time;
 
         /// <summary>
         /// A value between 0 and 1, where 0 means the tween has not been started and 1 means that it has completed.
         /// </summary>
-        public float Completion { get { return Duration > 0 ? Math.Min(Math.Max(Time / Duration, 0), 1) : 1; } }
+        public float Completion => Duration > 0 ? Math.Min(Math.Max(Time / Duration, 0), 1) : 1;
 
         /// <summary>
         /// Whether the tween is currently looping.
         /// </summary>
-        public bool Looping { get { return repeatCount != 0; } }
+        public bool Looping => repeatCount != 0;
 
         /// <summary>
         /// The object this tween targets. Will be null if the tween represents a timer.
@@ -52,7 +52,7 @@ namespace Glide {
         public object Target { get; }
 
         private Tween(object target, float duration, float delay, IRemoveTweens remover) {
-            Target = target;
+            this.Target = target;
             Duration = duration;
             Delay = delay;
             Remover = remover;
@@ -80,15 +80,14 @@ namespace Glide {
             bool doReverse = false;
             bool doComplete = false;
 
-            MemberLerper[] lerperSet = lerpers.ToArray();
+            var lerperSet = lerpers.ToArray();
 
             if (!initialized) {
                 i = vars.Count;
                 while (i-- > 0) {
-                    if (lerperSet[i] != null) {
-                        lerperSet[i].Initialize(start[i], end[i], behavior);
-                    }
+                    lerperSet[i]?.Initialize(start[i], end[i], behavior);
                 }
+
                 initialized = true;
             }
 
@@ -108,7 +107,9 @@ namespace Glide {
             }
 
             if (running) {
-                if (Duration > 0) time += elapsed;
+                if (Duration > 0) {
+                    time += elapsed;
+                }
             } else {
                 running = true;
             }
@@ -122,18 +123,21 @@ namespace Glide {
                     Delay = repeatDelay;
                     doReverse = true;
                 }
+
                 if (repeatCount <= 0) {
                     doComplete = true;
                 }
+
                 if (repeatCount == 0) {
                     Remover.Remove(this);
                 }
+
                 if (repeatCount > 0) {
                     repeatCount--;
                 }
             }
 
-            float t = Completion;
+            float t = this.Completion;
             if (ease != null) {
                 t = Math.Min(Math.Max(ease(t), 0), 1);
             }
@@ -141,9 +145,7 @@ namespace Glide {
             i = vars.Count;
             if (this.Target is object target) {
                 while (i-- > 0) {
-                    if (vars[i] != null) {
-                        vars[i].SetValue(target, lerperSet[i].Interpolate(t, vars[i].GetValue(target), behavior));
-                    }
+                    vars[i]?.SetValue(target, lerperSet[i].Interpolate(t, vars[i].GetValue(target), behavior));
                 }
             }
 
@@ -152,9 +154,7 @@ namespace Glide {
                 Reverse();
             }
 
-            if (update != null) {
-                update();
-            }
+            update?.Invoke();
 
             if (doComplete && complete != null) {
                 complete();
@@ -173,10 +173,9 @@ namespace Glide {
                 var props = values.GetType().GetProperties();
                 for (int i = 0; i < props.Length; ++i) {
                     var property = props[i];
-                    var propValue = property.GetValue(values, null);
+                    object propValue = property.GetValue(values, null);
 
-                    int index = -1;
-                    if (varHash.TryGetValue(property.Name, out index)) {
+                    if (varHash.TryGetValue(property.Name, out int index)) {
                         //	if we're already tweening this value, adjust the range
                         start[index] = propValue;
                     }
@@ -206,8 +205,12 @@ namespace Glide {
         /// <param name="callback">The function that will be called when the tween starts, after the delay.</param>
         /// <returns>A reference to this.</returns>
         public Tween OnBegin(Action callback) {
-            if (begin == null) begin = callback;
-            else begin += callback;
+            if (begin == null) {
+                begin = callback;
+            } else {
+                begin += callback;
+            }
+
             return this;
         }
 
@@ -218,14 +221,22 @@ namespace Glide {
         /// <param name="callback">The function that will be called on tween completion.</param>
         /// <returns>A reference to this.</returns>
         public Tween OnComplete(Action callback) {
-            if (complete == null) complete = callback;
-            else complete += callback;
+            if (complete == null) {
+                complete = callback;
+            } else {
+                complete += callback;
+            }
+
             return this;
         }
 
         public Tween OnRepeat(Action callback) {
-            if (repeat == null) repeat = callback;
-            else repeat += callback;
+            if (repeat == null) {
+                repeat = callback;
+            } else {
+                repeat += callback;
+            }
+
             return this;
         }
 
@@ -235,8 +246,12 @@ namespace Glide {
         /// <param name="callback">The function to use.</param>
         /// <returns>A reference to this.</returns>
         public Tween OnUpdate(Action callback) {
-            if (update == null) update = callback;
-            else update += callback;
+            if (update == null) {
+                update = callback;
+            } else {
+                update += callback;
+            }
+
             return this;
         }
 
@@ -276,8 +291,8 @@ namespace Glide {
         public Tween Reverse() {
             int i = vars.Count;
             while (i-- > 0) {
-                var s = start[i];
-                var e = end[i];
+                object s = start[i];
+                object e = end[i];
 
                 //	Set start to end and end to start
                 start[i] = e;
@@ -316,11 +331,11 @@ namespace Glide {
         /// </summary>
         /// <param name="properties"></param>
         public void Cancel(params string[] properties) {
-            var canceled = 0;
+            int canceled = 0;
             for (int i = 0; i < properties.Length; ++i) {
-                var index = 0;
-                if (!varHash.TryGetValue(properties[i], out index))
+                if (!varHash.TryGetValue(properties[i], out int index)) {
                     continue;
+                }
 
                 varHash.Remove(properties[i]);
                 vars[index] = null;
@@ -331,16 +346,15 @@ namespace Glide {
                 canceled++;
             }
 
-            if (canceled == vars.Count)
+            if (canceled == vars.Count) {
                 Cancel();
+            }
         }
 
         /// <summary>
         /// Remove tweens from the tweener without calling their complete functions.
         /// </summary>
-        public void Cancel() {
-            Remover.Remove(this);
-        }
+        public void Cancel() => Remover.Remove(this);
 
         /// <summary>
         /// Assign tweens their final value and remove them from the tweener.
@@ -354,23 +368,17 @@ namespace Glide {
         /// <summary>
         /// Set tweens to pause. They won't update and their delays won't tick down.
         /// </summary>
-        public void Pause() {
-            this.Paused = true;
-        }
+        public void Pause() => this.Paused = true;
 
         /// <summary>
         /// Toggle tweens' paused value.
         /// </summary>
-        public void PauseToggle() {
-            this.Paused = !this.Paused;
-        }
+        public void PauseToggle() => this.Paused = !this.Paused;
 
         /// <summary>
         /// Resumes tweens from a paused state.
         /// </summary>
-        public void Resume() {
-            this.Paused = false;
-        }
+        public void Resume() => this.Paused = false;
         #endregion
     }
 }

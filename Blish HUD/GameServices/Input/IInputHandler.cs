@@ -2,12 +2,11 @@
 
     public interface IInputHandler {
 
-        void Update();
+        public void Update();
 
-        void OnEnable();
+        public void OnEnable();
 
-        void OnDisable();
+        public void OnDisable();
 
     }
-
 }

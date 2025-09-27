@@ -48,7 +48,7 @@ namespace Blish_HUD.ArcDps {
 
             _cancellationTokenSource = new CancellationTokenSource();
 
-            Socket listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) {
+            var listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) {
                 ReceiveBufferSize = _bufferSize
             };
 
@@ -60,9 +60,7 @@ namespace Blish_HUD.ArcDps {
         /// <summary>
         /// Stops the <see cref="SocketListener"/>.
         /// </summary>
-        public void Stop() {
-            _cancellationTokenSource?.Cancel();
-        }
+        public void Stop() => _cancellationTokenSource?.Cancel();
 
         /// <summary>
         /// Stops the socket from receiving any further data and closes the connection.
@@ -108,7 +106,7 @@ namespace Blish_HUD.ArcDps {
         private void ConnectCallback(IAsyncResult ar) {
             try {
                 // Retrieve the socket from the state object.
-                Socket socket = (Socket)ar.AsyncState;
+                var socket = (Socket)ar.AsyncState;
 
                 // Complete the connection.
                 socket.EndConnect(ar);
@@ -179,8 +177,8 @@ namespace Blish_HUD.ArcDps {
             try {
                 // Retrieve the state object and the client socket 
                 // from the asynchronous state object.
-                SocketState state = (SocketState)ar.AsyncState;
-                Socket socket = state.Socket;
+                var state = (SocketState)ar.AsyncState;
+                var socket = state.Socket;
 
                 // Read data from the remote device.
                 int bytesRead = 0;

@@ -16,8 +16,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _text, value);
         }
         public HealthPoolButton() {
-            HealthPoolSprite = HealthPoolSprite ?? Content.GetTexture("healthpool");
-            HealthPoolPressedSprite = HealthPoolPressedSprite ?? Content.GetTexture("healthpool_pressed");
+            HealthPoolSprite ??= Content.GetTexture("healthpool");
+            HealthPoolPressedSprite ??= Content.GetTexture("healthpool_pressed");
             this.Size = new Point(111, 111); // set static bounds.
             UpdateLocation(null, null);
             Graphics.SpriteScreen.Resized += UpdateLocation;
@@ -35,9 +35,7 @@ namespace Blish_HUD.Controls {
             base.OnLeftMouseButtonReleased(e);
         }
 
-        private void UpdateLocation(object sender, EventArgs e) {
-            this.Location = new Point((Graphics.SpriteScreen.Width / 2 - this.Width / 2), (Graphics.SpriteScreen.Height - this.Height) - BOTTOMEDGE_GAP);
-        }
+        private void UpdateLocation(object sender, EventArgs e) => this.Location = new Point(((Graphics.SpriteScreen.Width / 2) - (this.Width / 2)), Graphics.SpriteScreen.Height - this.Height - BOTTOMEDGE_GAP);
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             spriteBatch.DrawOnCtrl(this, HealthPoolSprite, new Rectangle(0, 0, this.Width, this.Height), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None);
@@ -46,6 +44,5 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this, HealthPoolPressedSprite, new Rectangle(0, 0, this.Width, this.Height), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None);
             }
         }
-
     }
 }

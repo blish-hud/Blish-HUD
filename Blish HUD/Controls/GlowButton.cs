@@ -12,9 +12,7 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
 
-        private void OnChecked(CheckChangedEvent e) {
-            CheckedChanged?.Invoke(this, e);
-        }
+        private void OnChecked(CheckChangedEvent e) => CheckedChanged?.Invoke(this, e);
 
         private bool _checked = false;
         public bool Checked {
@@ -28,7 +26,7 @@ namespace Blish_HUD.Controls {
                     }
 
                     OnChecked(new CheckChangedEvent(_checked));
-                } 
+                }
             }
         }
 
@@ -115,13 +113,17 @@ namespace Blish_HUD.Controls {
                 var drawIcon = _icon;
 
                 if (_activeIcon != null) {
-                    if (!_toggleGlow && MouseOver) drawIcon = _activeIcon;
-                    if (_toggleGlow && _checked) drawIcon = _activeIcon;
+                    if (!_toggleGlow && this.MouseOver) {
+                        drawIcon = _activeIcon;
+                    }
+
+                    if (_toggleGlow && _checked) {
+                        drawIcon = _activeIcon;
+                    }
                 }
 
                 spriteBatch.DrawOnCtrl(this, drawIcon, bounds);
             }
         }
-
     }
 }

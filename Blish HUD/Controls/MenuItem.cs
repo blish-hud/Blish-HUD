@@ -13,10 +13,10 @@ namespace Blish_HUD.Controls {
     public class MenuItem : Container, IMenuItem, ICheckable, IAccordion {
 
         private const int DEFAULT_ITEM_HEIGHT = 32;
-        
+
         private const int ICON_PADDING = 10;
-        private const int ICON_SIZE    = 32;
-        
+        private const int ICON_SIZE = 32;
+
         private const int ARROW_SIZE = 16;
 
         #region Textures
@@ -28,24 +28,22 @@ namespace Blish_HUD.Controls {
         #region Events
 
         public event EventHandler<ControlActivatedEventArgs> ItemSelected;
-        protected virtual void OnItemSelected(ControlActivatedEventArgs e) {
-            this.ItemSelected?.Invoke(this, e);
-        }
+        protected virtual void OnItemSelected(ControlActivatedEventArgs e) => this.ItemSelected?.Invoke(this, e);
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
-        protected virtual void OnCheckedChanged(CheckChangedEvent e) {
-            this.CheckedChanged?.Invoke(this, e);
-        }
+        protected virtual void OnCheckedChanged(CheckChangedEvent e) => this.CheckedChanged?.Invoke(this, e);
 
         #endregion
 
         #region Properties
-        
+
         protected int _menuItemHeight = DEFAULT_ITEM_HEIGHT;
         public int MenuItemHeight {
             get => _menuItemHeight;
             set {
-                if (!SetProperty(ref _menuItemHeight, value, true)) return;
+                if (!SetProperty(ref _menuItemHeight, value, true)) {
+                    return;
+                }
 
                 this.Height = _menuItemHeight;
 
@@ -65,9 +63,7 @@ namespace Blish_HUD.Controls {
         public bool Selected => _selectedMenuItem == this;
 
         protected MenuItem _selectedMenuItem;
-        public MenuItem SelectedMenuItem {
-            get => _selectedMenuItem;
-        }
+        public MenuItem SelectedMenuItem => _selectedMenuItem;
 
         protected int _menuDepth = 0;
         protected int MenuDepth {
@@ -134,7 +130,9 @@ namespace Blish_HUD.Controls {
         private bool OverSection {
             get => _overSection;
             set {
-                if (_overSection == value) return;
+                if (_overSection == value) {
+                    return;
+                }
 
                 _overSection = value;
                 OnPropertyChanged();
@@ -153,22 +151,23 @@ namespace Blish_HUD.Controls {
                 int leftSideBuilder = ICON_PADDING;
 
                 // Add space if we need to render dropdown arrow
-                if (!_children.IsEmpty)
+                if (!_children.IsEmpty) {
                     leftSideBuilder += ARROW_SIZE;
+                }
 
                 return leftSideBuilder;
             }
         }
 
-        private Rectangle FirstItemBoxRegion =>
-            new Rectangle(0,
-                          this.MenuItemHeight / 2 - ICON_SIZE / 2,
+        private Rectangle FirstItemBoxRegion
+            => new Rectangle(0,
+                          (this.MenuItemHeight / 2) - (ICON_SIZE / 2),
                           ICON_SIZE,
                           ICON_SIZE);
 
         #endregion
 
-        private Glide.Tween                      _slideAnim;
+        private Glide.Tween _slideAnim;
         private Effects.ScrollingHighlightEffect _scrollEffect;
 
         public MenuItem() : this("", null) { /* NOOP */ }
@@ -195,12 +194,15 @@ namespace Blish_HUD.Controls {
         #region Menu Item Selection
 
         public void Select() {
-            if (this.Selected) return;
+            if (this.Selected) {
+                return;
+            }
 
             _selectedMenuItem = this;
 
-            if (!_children.IsEmpty)
+            if (!_children.IsEmpty) {
                 throw new InvalidOperationException("MenuItems with sub-MenuItems can not be selected directly.");
+            }
 
             _scrollEffect.ForceActive = true;
 
@@ -208,9 +210,7 @@ namespace Blish_HUD.Controls {
             OnPropertyChanged(nameof(this.Selected));
         }
 
-        void IMenuItem.Select(MenuItem menuItem) {
-            ((IMenuItem)this).Select(menuItem, new List<IMenuItem>() { this });
-        }
+        void IMenuItem.Select(MenuItem menuItem) => ((IMenuItem)this).Select(menuItem, new List<IMenuItem>() { this });
 
         void IMenuItem.Select(MenuItem menuItem, List<IMenuItem> itemPath) {
             itemPath.Add(this);
@@ -228,7 +228,7 @@ namespace Blish_HUD.Controls {
 
         public void Deselect() {
             bool isSelected = this.Selected;
-            _selectedMenuItem         = null;
+            _selectedMenuItem = null;
             _scrollEffect.ForceActive = false;
 
             if (isSelected) {
@@ -237,7 +237,7 @@ namespace Blish_HUD.Controls {
         }
 
         #endregion
-        
+
         public override void RecalculateLayout() {
             _scrollEffect.Size = new Vector2(_size.X, _menuItemHeight);
 
@@ -259,20 +259,17 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            if (_canCheck && this.MouseOverIconBox) { 
+            if (_canCheck && this.MouseOverIconBox) {
                 // Mouse was clicked inside of the checkbox
-                Checked = !Checked;
-
+                this.Checked = !this.Checked;
             } else if (_overSection && !_children.IsEmpty) {
                 // Mouse was clicked inside of the mainbody of the MenuItem
-                GameService.Content.PlaySoundEffectByName($"menu-click-{RandomUtil.GetRandom(1,4)}");
+                GameService.Content.PlaySoundEffectByName($"menu-click-{RandomUtil.GetRandom(1, 4)}");
                 ToggleAccordionState();
-
             } else if (_overSection && _canCheck) {
                 // Mouse was clicked inside of the mainbody of the MenuItem,
                 // but we have no children, so we toggle checkbox
-                Checked = !Checked;
-
+                this.Checked = !this.Checked;
             } else if (!_canCheck && _children.IsEmpty) {
                 // Cannot be checked and has no children, so we probably navigate views.
                 GameService.Content.PlaySoundEffectByName("menu-item-click");
@@ -287,31 +284,31 @@ namespace Blish_HUD.Controls {
 
         protected override void OnMouseMoved(MouseEventArgs e) {
             // Helps us know when the mouse is over the MenuItem itself, or actually over its children
-            OverSection = RelativeMousePosition.Y <= _menuItemHeight;
+            this.OverSection = this.RelativeMousePosition.Y <= _menuItemHeight;
 
-            if (OverSection) {
+            if (this.OverSection) {
                 _scrollEffect.Enable();
             } else {
                 _scrollEffect.Disable();
             }
 
             // Used if this menu item has its checkbox enabled
-            MouseOverIconBox = _canCheck
+            this.MouseOverIconBox = _canCheck
                             && _overSection
-                            && FirstItemBoxRegion
-                              .OffsetBy(LeftSidePadding, 0)
-                              .Contains(RelativeMousePosition);
+                            && this.FirstItemBoxRegion
+                              .OffsetBy(this.LeftSidePadding, 0)
+                              .Contains(this.RelativeMousePosition);
 
             base.OnMouseMoved(e);
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            OverSection = false;
+            this.OverSection = false;
 
             base.OnMouseLeft(e);
         }
 
-        protected override void OnChildAdded(ChildChangedEventArgs e) { 
+        protected override void OnChildAdded(ChildChangedEventArgs e) {
             if (!(e.ChangedChild is MenuItem newChild)) {
                 e.Cancel = true;
                 return;
@@ -328,21 +325,23 @@ namespace Blish_HUD.Controls {
 
             foreach (var child in allChildren.Where(c => c.Visible)) {
                 child.Location = new Point(0, lastBottom);
-                child.Width    = this.Width;
+                child.Width = this.Width;
 
                 lastBottom = child.Bottom;
             }
 
             return lastBottom;
         }
-        
+
         public bool ToggleAccordionState() {
             this.Collapsed = !_collapsed;
             return _collapsed;
         }
 
         public void Expand() {
-            if (!_collapsed) return;
+            if (!_collapsed) {
+                return;
+            }
 
             _slideAnim?.CancelAndComplete();
 
@@ -358,7 +357,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void Collapse() {
-            if (_collapsed) return;
+            if (_collapsed) {
+                return;
+            }
 
             _slideAnim?.CancelAndComplete();
 
@@ -376,7 +377,7 @@ namespace Blish_HUD.Controls {
         private void DrawDropdownArrow(SpriteBatch spriteBatch) {
             var arrowOrigin = new Vector2((float)ARROW_SIZE / 2, (float)ARROW_SIZE / 2);
 
-            var arrowDest = new Rectangle(5 + ARROW_SIZE / 2,
+            var arrowDest = new Rectangle(5 + (ARROW_SIZE / 2),
                                           this.MenuItemHeight / 2,
                                           ARROW_SIZE,
                                           ARROW_SIZE);
@@ -394,8 +395,9 @@ namespace Blish_HUD.Controls {
             int currentLeftSidePadding = this.LeftSidePadding;
 
             // If MenuItem has children, show dropdown arrow
-            if (!_children.IsEmpty)
+            if (!_children.IsEmpty) {
                 DrawDropdownArrow(spriteBatch);
+            }
 
             TextureRegion2D firstItemSprite = null;
 
@@ -429,6 +431,5 @@ namespace Blish_HUD.Controls {
 
             spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont16, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight), _textColor, true, true);
         }
-
     }
 }

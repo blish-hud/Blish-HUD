@@ -17,22 +17,20 @@ namespace Blish_HUD.Controls {
             _owner = owner;
         }
 
-        public IEnumerator<Tab> GetEnumerator() {
-            return _tabs.GetEnumerator();
-        }
+        public IEnumerator<Tab> GetEnumerator() => _tabs.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public void Add(Tab tab) {
-            if (tab == null) throw new ArgumentNullException(nameof(tab));
+            if (tab == null) {
+                throw new ArgumentNullException(nameof(tab));
+            }
 
             if (tab.OrderPriority == 0) {
                 tab.OrderPriority = _tabs.Count;
             }
 
-            _tabs = new List<Tab>(_tabs.Concat(new []{ tab }).OrderBy(t => t.OrderPriority));
+            _tabs = new List<Tab>(_tabs.Concat(new[] { tab }).OrderBy(t => t.OrderPriority));
 
             if (_tabs.Count == 1) {
                 _owner.SelectedTab = tab;
@@ -45,37 +43,23 @@ namespace Blish_HUD.Controls {
             _owner.SelectedTab = null;
         }
 
-        public bool Contains(Tab item) {
-            return _tabs.Contains(item);
-        }
+        public bool Contains(Tab item) => _tabs.Contains(item);
 
-        public void CopyTo(Tab[] array, int arrayIndex) {
-            _tabs.CopyTo(array, arrayIndex);
-        }
+        public void CopyTo(Tab[] array, int arrayIndex) => _tabs.CopyTo(array, arrayIndex);
 
-        public bool Remove(Tab tab) {
-            return _tabs.Remove(tab);
-        }
+        public bool Remove(Tab tab) => _tabs.Remove(tab);
 
         /// <summary>
         /// Returns the index of the provided <see cref="Tab"/>.  If the <see cref="Tab"/> is not within the collection, -1 is returned.
         /// </summary>
-        public int IndexOf(Tab tab) {
-            return _tabs.IndexOf(tab);
-        }
+        public int IndexOf(Tab tab) => _tabs.IndexOf(tab);
 
         /// <summary>
         /// Returns the <see cref="Tab"/> at the provided index based on <see cref="Tab.OrderPriority"/>.
         /// </summary>
-        public Tab FromIndex(int tabIndex) {
-            if (tabIndex >= 0 && tabIndex < _tabs.Count) {
-                return _tabs[tabIndex];
-            }
+        public Tab FromIndex(int tabIndex) => tabIndex >= 0 && tabIndex < _tabs.Count ? _tabs[tabIndex] : null;
 
-            return null;
-        }
-
-        public int  Count      => _tabs.Count;
+        public int Count => _tabs.Count;
         public bool IsReadOnly => false;
 
     }

@@ -1,7 +1,5 @@
-namespace Blish_HUD.Controls.Extern
-{
-    public enum VirtualKeyShort : short
-    {
+namespace Blish_HUD.Controls.Extern {
+    public enum VirtualKeyShort : short {
         ///<summary>
         ///Left mouse button
         ///</summary>

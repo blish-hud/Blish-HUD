@@ -34,7 +34,7 @@ namespace Blish_HUD.Graphics.UI {
         protected virtual void OnPresenterAssigned(TPresenter presenter) { /* NOOP */ }
 
         public async Task<bool> DoLoad(IProgress<string> progress) {
-            bool loadResult = await Presenter.DoLoad(progress)
+            bool loadResult = await this.Presenter.DoLoad(progress)
                            && await Load(progress);
 
             if (loadResult) {
@@ -51,23 +51,20 @@ namespace Blish_HUD.Graphics.UI {
 
             this.Built?.Invoke(this, EventArgs.Empty);
 
-            Presenter.DoUpdateView();
+            this.Presenter.DoUpdateView();
         }
 
         public void DoUnload() {
-            Presenter.DoUnload();
+            this.Presenter.DoUnload();
             Unload();
 
             this.Unloaded?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual async Task<bool> Load(IProgress<string> progress) {
-            return await Task.FromResult(true);
-        }
+        protected virtual async Task<bool> Load(IProgress<string> progress) => await Task.FromResult(true);
 
         protected virtual void Build(Container buildPanel) { /* NOOP */ }
 
         protected virtual void Unload() { /* NOOP */ }
-
     }
 }

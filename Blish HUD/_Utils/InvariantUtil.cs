@@ -33,5 +33,4 @@ namespace Blish_HUD {
         public static bool TryParseInt(string value, out int result) => int.TryParse(value, NumberStyles.Any, _invariantCulture, out result);
 
     }
-
 }

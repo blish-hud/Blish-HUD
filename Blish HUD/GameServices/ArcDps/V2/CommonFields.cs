@@ -38,21 +38,29 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
         ///     Activates the <see cref="CommonFields" /> service.
         /// </summary>
         public void Activate() {
-            if (_enabled) return;
+            if (_enabled) {
+                return;
+            }
 
             _enabled = true;
             GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(MessageType.CombatEventArea, CombatHandler);
         }
 
         private Task CombatHandler(CombatCallback combatEvent, CancellationToken ct) {
-            if (!Equals(combatEvent.Event, default(CombatEvent))) return Task.CompletedTask;
+            if (!Equals(combatEvent.Event, default(CombatEvent))) {
+                return Task.CompletedTask;
+            }
 
             /* notify tracking change */
-            if (combatEvent.Source.Elite != 0) return Task.CompletedTask;
+            if (combatEvent.Source.Elite != 0) {
+                return Task.CompletedTask;
+            }
 
             /* add */
             if (combatEvent.Source.Profession != 0) {
-                if (_playersInSquad.ContainsKey(combatEvent.Source.Id)) return Task.CompletedTask;
+                if (_playersInSquad.ContainsKey(combatEvent.Source.Id)) {
+                    return Task.CompletedTask;
+                }
 
                 string accountName = combatEvent.Destination.Name.StartsWith(":")
                                          ? combatEvent.Destination.Name.Substring(1)
@@ -63,17 +71,21 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
                                         combatEvent.Destination.Profession, combatEvent.Destination.Elite, combatEvent.Destination.Self != 0
                                        );
 
-                if (_playersInSquad.TryAdd(combatEvent.Source.Id, player)) this.PlayerAdded?.Invoke(player);
+                if (_playersInSquad.TryAdd(combatEvent.Source.Id, player)) {
+                    this.PlayerAdded?.Invoke(player);
+                }
             }
             /* remove */
             else {
-                if (_playersInSquad.TryRemove(combatEvent.Source.Id, out var player)) this.PlayerRemoved?.Invoke(player);
+                if (_playersInSquad.TryRemove(combatEvent.Source.Id, out var player)) {
+                    this.PlayerRemoved?.Invoke(player);
+                }
             }
 
             return Task.CompletedTask;
         }
 
-        public struct Player {
+        public readonly struct Player {
 
             public Player(string characterName, string accountName, uint profession, uint elite, bool self) {
                 this.CharacterName = characterName;
@@ -107,9 +119,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             /// <see langword="True"/> if this player agent belongs to the account currently logged in on the local Guild Wars 2 instance. Otherwise <see langword="false"/>.
             /// </summary>
             public bool Self { get; }
-
         }
-
     }
-
 }

@@ -3,7 +3,7 @@
     /// <summary>
     /// Used to define a 'thickness' around each side of a rectangle.
     /// </summary>
-    public struct Thickness {
+    public readonly struct Thickness {
 
         public float Top { get; }
         public float Right { get; }
@@ -13,14 +13,14 @@
         #region Constructors
 
         public Thickness(float topThickness, float rightThickness, float bottomThickness, float leftThickness) {
-            Top    = topThickness;
-            Right  = rightThickness;
-            Bottom = bottomThickness;
-            Left   = leftThickness;
+            this.Top = topThickness;
+            this.Right = rightThickness;
+            this.Bottom = bottomThickness;
+            this.Left = leftThickness;
         }
 
         public Thickness(float verticalThickness, float horizontalThickness) : this(verticalThickness, horizontalThickness, verticalThickness, horizontalThickness) { /* ALIAS */ }
-        public Thickness(float topThickness,      float horizontalThickness, float bottomThickness) : this(topThickness, horizontalThickness, bottomThickness, horizontalThickness) { /* ALIAS */ }
+        public Thickness(float topThickness, float horizontalThickness, float bottomThickness) : this(topThickness, horizontalThickness, bottomThickness, horizontalThickness) { /* ALIAS */ }
         public Thickness(float thickness) : this(thickness, thickness, thickness, thickness) { /* ALIAS */ }
 
         #endregion

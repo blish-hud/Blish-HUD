@@ -13,9 +13,7 @@ namespace Blish_HUD.Contexts {
         /// </summary>
         public event EventHandler<EventArgs> StateChanged;
 
-        protected void OnStateChanged(EventArgs e) {
-            this.StateChanged?.Invoke(this, e);
-        }
+        protected void OnStateChanged(EventArgs e) => this.StateChanged?.Invoke(this, e);
 
         private ContextState _state = ContextState.None;
 
@@ -25,7 +23,9 @@ namespace Blish_HUD.Contexts {
         public ContextState State {
             get => _state;
             private set {
-                if (_state == value || _state == ContextState.Expired) return;
+                if (_state == value || _state == ContextState.Expired) {
+                    return;
+                }
 
                 _state = value;
 
@@ -34,7 +34,9 @@ namespace Blish_HUD.Contexts {
         }
 
         public void DoLoad() {
-            if (this.State == ContextState.Expired) return;
+            if (this.State == ContextState.Expired) {
+                return;
+            }
 
             this.State = ContextState.Loading;
 
@@ -50,9 +52,7 @@ namespace Blish_HUD.Contexts {
         /// <summary>
         /// Called to confirm that the context is now <see cref="ContextState.Ready"/>.
         /// </summary>
-        protected void ConfirmReady() {
-            this.State = ContextState.Ready;
-        }
+        protected void ConfirmReady() => this.State = ContextState.Ready;
 
         /// <summary>
         /// If the <see cref="State"/> is not <see cref="ContextState.Ready"/> and a function is called
@@ -69,7 +69,5 @@ namespace Blish_HUD.Contexts {
         protected virtual void Load() { /* NOOP */ }
 
         protected virtual void Unload() { /* NOOP */ }
-
     }
-
 }

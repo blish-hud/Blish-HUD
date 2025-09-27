@@ -8,9 +8,9 @@ namespace Blish_HUD.Input.WinApi {
         /// <summary>
         /// The caller must set this to Marshal.SizeOf(typeof(CURSORINFO))
         /// </summary>
-        public int         CbSize;
+        public int CbSize;
         public CursorFlags Flags;
-        public IntPtr      HCursor;
-        public Point       ScreenPosition;
+        public IntPtr HCursor;
+        public Point ScreenPosition;
     }
 }

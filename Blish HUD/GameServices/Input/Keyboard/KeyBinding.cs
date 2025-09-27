@@ -16,28 +16,27 @@ namespace Blish_HUD.Input {
         /// <summary>
         /// Fires when the keys of the <see cref="KeyBinding"/> are changed.
         /// </summary>
-        public event EventHandler<EventArgs> BindingChanged; 
+        public event EventHandler<EventArgs> BindingChanged;
 
         /// <summary>
         /// Fires when the <see cref="KeyBinding"/> is triggered.
         /// </summary>
         public event EventHandler<EventArgs> Activated;
 
-        protected void OnActivated(EventArgs e) {
-            Activated?.Invoke(this, e);
-        }
+        protected void OnActivated(EventArgs e) => Activated?.Invoke(this, e);
 
         private Keys _primaryKey;
         /// <summary>
         /// The primary key in the binding.
         /// </summary>
         [JsonProperty]
-        public Keys PrimaryKey { 
+        public Keys PrimaryKey {
             get => _primaryKey;
             set {
                 if (_primaryKey == value) {
                     return;
                 }
+
                 _primaryKey = value;
                 BindingChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -55,6 +54,7 @@ namespace Blish_HUD.Input {
                 if (_modifierKeys == value) {
                     return;
                 }
+
                 _modifierKeys = value;
                 BindingChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -92,7 +92,7 @@ namespace Blish_HUD.Input {
         /// </summary>
         [JsonIgnore]
         public bool BlockSequenceFromGw2 { get; set; } = false;
-        
+
         /// <summary>
         /// Indicates if the <see cref="KeyBinding"/> is actively triggered.
         /// If triggered with <see cref="ManuallyTrigger"/>(), this
@@ -112,31 +112,31 @@ namespace Blish_HUD.Input {
 
         public KeyBinding(ModifierKeys modifierKeys, Keys primaryKey) {
             _modifierKeys = modifierKeys;
-            _primaryKey   = primaryKey;
+            _primaryKey = primaryKey;
         }
 
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
-            if (this.PrimaryKey == Keys.None 
-             || (this.IgnoreWhenInTextField && GameService.Input.Keyboard.TextFieldIsActive())) return;
+            if (this.PrimaryKey == Keys.None
+             || (this.IgnoreWhenInTextField && GameService.Input.Keyboard.TextFieldIsActive())) {
+                return;
+            }
 
             CheckTrigger(GameService.Input.Keyboard.ActiveModifiers, GameService.Input.Keyboard.KeysDown);
         }
 
-        private void Reset() {
-            StopFiring();
-        }
+        private void Reset() => StopFiring();
 
         private void Fire() {
-            if (this.IsTriggering) return;
+            if (this.IsTriggering) {
+                return;
+            }
 
             this.IsTriggering = true;
 
             ManuallyTrigger();
         }
 
-        private void StopFiring() {
-            this.IsTriggering = false;
-        }
+        private void StopFiring() => this.IsTriggering = false;
 
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
             if (activeModifiers == this.ModifierKeys || _acceptedPrimaryModifierKeys.Contains(_primaryKey)) {
@@ -164,10 +164,7 @@ namespace Blish_HUD.Input {
         /// <summary>
         /// Manually triggers the actions bound to this <see cref="KeyBinding"/>.
         /// </summary>
-        public void ManuallyTrigger() {
-            OnActivated(EventArgs.Empty);
-        }
+        public void ManuallyTrigger() => OnActivated(EventArgs.Empty);
 
     }
-
 }

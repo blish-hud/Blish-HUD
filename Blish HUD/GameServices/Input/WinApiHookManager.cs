@@ -8,15 +8,15 @@ namespace Blish_HUD.Input {
 
         private static readonly Logger Logger = Logger.GetLogger<WinApiHookManager>();
 
-        private readonly IMouseHookManager    mouseHookManager;
+        private readonly IMouseHookManager mouseHookManager;
         private readonly IKeyboardHookManager keyboardHookManager;
-        private readonly AutoResetEvent       inputHookEvent = new AutoResetEvent(false);
-        private          bool                 stopRequested  = false;
-        private          Thread               thread;
-        private          bool                 inputSuccessful = false;
+        private readonly AutoResetEvent inputHookEvent = new AutoResetEvent(false);
+        private bool stopRequested = false;
+        private Thread thread;
+        private bool inputSuccessful = false;
 
         public WinApiHookManager() {
-            mouseHookManager    = new WinApiMouseHookManager();
+            mouseHookManager = new WinApiMouseHookManager();
             keyboardHookManager = new WinApiKeyboardHookManager();
         }
 
@@ -25,7 +25,9 @@ namespace Blish_HUD.Input {
         public void Unload() => DisableHook();
 
         public bool EnableHook() {
-            if (thread != null) return false;
+            if (thread != null) {
+                return false;
+            }
 
             Logger.Debug("Enabling WinAPI input hooks");
 
@@ -38,7 +40,9 @@ namespace Blish_HUD.Input {
         }
 
         public void DisableHook() {
-            if ((thread == null) || stopRequested) return;
+            if ((thread == null) || stopRequested) {
+                return;
+            }
 
             Logger.Debug("Disabling WinAPI input hooks");
 
@@ -49,19 +53,19 @@ namespace Blish_HUD.Input {
             thread.Join();
 
             stopRequested = false;
-            thread        = null;
+            thread = null;
         }
 
-        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.RegisterHandler(handleMouseInputCallback); }
+        public void RegisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) => mouseHookManager.RegisterHandler(handleMouseInputCallback);
 
-        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) { mouseHookManager.UnregisterHandler(handleMouseInputCallback); }
+        public void UnregisterMouseHandler(HandleMouseInputDelegate handleMouseInputCallback) => mouseHookManager.UnregisterHandler(handleMouseInputCallback);
 
-        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.RegisterHandler(handleKeyboardInputCallback); }
+        public void RegisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) => keyboardHookManager.RegisterHandler(handleKeyboardInputCallback);
 
-        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) { keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback); }
+        public void UnregisterKeyboardHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback) => keyboardHookManager.UnregisterHandler(handleKeyboardInputCallback);
 
         private void Loop() {
-            using Timer timer = new Timer {
+            using var timer = new Timer {
                 Interval = 10
             };
 
@@ -72,7 +76,10 @@ namespace Blish_HUD.Input {
                 }
             };
 
-            if (mouseHookManager.EnableHook() && keyboardHookManager.EnableHook()) inputSuccessful = true;
+            if (mouseHookManager.EnableHook() && keyboardHookManager.EnableHook()) {
+                inputSuccessful = true;
+            }
+
             inputHookEvent.Set();
 
             timer.Start();
@@ -99,10 +106,9 @@ namespace Blish_HUD.Input {
             }
         }
 
-        public void Dispose() { Dispose(true); }
+        public void Dispose() => Dispose(true);
 
         #endregion
 
     }
-
 }

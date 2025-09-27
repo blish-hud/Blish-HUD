@@ -42,11 +42,11 @@ namespace Blish_HUD {
             BlishHud.Instance = this;
 
             this.ActiveGraphicsDeviceManager = new GraphicsDeviceManager(this);
-            this.ActiveGraphicsDeviceManager.PreparingDeviceSettings += delegate(object sender, PreparingDeviceSettingsEventArgs args) {
+            this.ActiveGraphicsDeviceManager.PreparingDeviceSettings += delegate (object sender, PreparingDeviceSettingsEventArgs args) {
                 args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 4;
             };
 
-            this.ActiveGraphicsDeviceManager.GraphicsProfile     = GraphicsProfile.HiDef;
+            this.ActiveGraphicsDeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             this.ActiveGraphicsDeviceManager.PreferMultiSampling = true;
 
             this.ActiveContentManager = this.Content;
@@ -55,15 +55,14 @@ namespace Blish_HUD {
 
             this.IsMouseVisible = true;
         }
-        
+
         protected override void Initialize() {
-            FormHandle = this.Window.Handle;
-            Form       = Control.FromHandle(FormHandle).FindForm();
+            this.FormHandle = this.Window.Handle;
+            this.Form = Control.FromHandle(this.FormHandle).FindForm();
 
-
-            Form.BackColor = System.Drawing.Color.Black;
+            this.Form.BackColor = System.Drawing.Color.Black;
             // Avoid the flash the window shows when the application launches (-32000x-32000 is where windows places minimized windows)
-            Form.Location = new System.Drawing.Point(-32000, -32000);
+            this.Form.Location = new System.Drawing.Point(-32000, -32000);
 
             if (!File.Exists("OpacityFix")) {
                 // Causes an issue with it showing a black box if we don't set this to true
@@ -82,7 +81,7 @@ namespace Blish_HUD {
         }
 
         protected override void LoadContent() {
-            UiRasterizer = new RasterizerState() {
+            this.UiRasterizer = new RasterizerState() {
                 ScissorTestEnable = true
             };
 
@@ -103,9 +102,9 @@ namespace Blish_HUD {
 
         protected override void UnloadContent() {
             base.UnloadContent();
-            
+
             Logger.Debug("Unloading services.");
-            
+
             // Let all of the game services have a chance to unload
             foreach (var service in GameService.All) {
                 service.DoUnload();
@@ -114,7 +113,7 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) {
-                Form.Location = new System.Drawing.Point(-32000, -32000);
+                this.Form.Location = new System.Drawing.Point(-32000, -32000);
 
                 // If gw2 isn't open so only run the essentials
                 GameService.Debug.DoUpdate(gameTime);
@@ -122,7 +121,10 @@ namespace Blish_HUD {
                 GameService.Module.DoUpdate(gameTime);
 
                 for (int i = 0; i < 200; i++) { // Wait ~10 seconds between checks
-                    if (GameService.GameIntegration.Gw2Instance.Gw2IsRunning || GameService.Overlay.Exiting) break;
+                    if (GameService.GameIntegration.Gw2Instance.Gw2IsRunning || GameService.Overlay.Exiting) {
+                        break;
+                    }
+
                     Thread.Sleep(50);
                     Application.DoEvents();
                 }
@@ -146,9 +148,7 @@ namespace Blish_HUD {
 
         private bool _skipDraw = false;
 
-        internal void SkipDraw() {
-            _skipDraw = true;
-        }
+        internal void SkipDraw() => _skipDraw = true;
 
         protected override void Draw(GameTime gameTime) {
             if (_skipDraw) {
@@ -160,14 +160,16 @@ namespace Blish_HUD {
             GameService.Debug.TickFrameCounter(_drawLag);
             _drawLag = 0;
 
-            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) return;
+            if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) {
+                return;
+            }
 
             GameService.Graphics.Render(gameTime, _basicSpriteBatch);
 
             _basicSpriteBatch.Begin();
             GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
             _basicSpriteBatch.End();
-            
+
             base.Draw(gameTime);
         }
     }

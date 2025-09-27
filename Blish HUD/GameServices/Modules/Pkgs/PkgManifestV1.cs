@@ -10,6 +10,5 @@ namespace Blish_HUD.Modules.Pkgs {
 
         [JsonProperty("description")]
         public string Description { get; set; }
-
     }
 }

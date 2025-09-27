@@ -2,9 +2,8 @@
 
     public sealed class MessageData {
 
-        public byte[]         Message;
+        public byte[] Message;
         public AsyncUserToken Token;
 
     }
-
 }

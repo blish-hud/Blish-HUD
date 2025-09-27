@@ -9,6 +9,5 @@ namespace Blish_HUD.Settings {
         public EnumInclusionComplianceRequisite(params T[] includedValues) {
             this.IncludedValues = includedValues;
         }
-
     }
 }

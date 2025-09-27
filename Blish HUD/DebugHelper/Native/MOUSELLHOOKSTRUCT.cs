@@ -6,11 +6,10 @@ namespace Blish_HUD.DebugHelper.Native {
     internal struct MOUSELLHOOKSTRUCT {
 
         public POINT pt;
-        public int   mouseData;
-        public int   flags;
-        public int   time;
-        public long  extraInfo;
+        public int mouseData;
+        public int flags;
+        public int time;
+        public long extraInfo;
 
     }
-
 }

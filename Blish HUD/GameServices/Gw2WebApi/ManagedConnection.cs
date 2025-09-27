@@ -12,9 +12,7 @@ namespace Blish_HUD.Gw2WebApi {
 
         public IConnection Connection => _internalConnection;
 
-        private readonly IGw2WebApiClient _internalClient;
-
-        public IGw2WebApiClient Client => _internalClient;
+        public IGw2WebApiClient Client { get; }
 
         internal ManagedConnection(string accessToken, TokenComplianceMiddleware tokenComplianceMiddle, ICacheMethod webApiCache, ICacheMethod renderCache = null, TimeSpan? renderCacheDuration = null) {
             string ua = $"BlishHUD/{Program.OverlayVersion}";
@@ -25,19 +23,17 @@ namespace Blish_HUD.Gw2WebApi {
                                                  renderCache,
                                                  renderCacheDuration ?? TimeSpan.MaxValue,
                                                  ua);
-            
+
             _internalConnection.Middleware.Add(tokenComplianceMiddle);
 
-            _internalClient = new Gw2Client(_internalConnection).WebApi;
+            this.Client = new Gw2Client(_internalConnection).WebApi;
 
             Logger.Debug("Created managed Gw2Sharp connection {useragent}.", ua);
 
             SetupListeners();
         }
 
-        private void SetupListeners() {
-            GameService.Overlay.UserLocale.SettingChanged += UserLocaleOnSettingChanged;
-        }
+        private void SetupListeners() => GameService.Overlay.UserLocale.SettingChanged += UserLocaleOnSettingChanged;
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             _internalConnection.Locale = e.NewValue;
@@ -46,7 +42,9 @@ namespace Blish_HUD.Gw2WebApi {
         }
 
         public bool SetApiKey(string apiKey) {
-            if (string.Equals(_internalConnection.AccessToken, apiKey)) return false;
+            if (string.Equals(_internalConnection.AccessToken, apiKey)) {
+                return false;
+            }
 
             _internalConnection.AccessToken = apiKey;
 
@@ -57,8 +55,6 @@ namespace Blish_HUD.Gw2WebApi {
             return true;
         }
 
-        public bool HasApiKey() {
-            return !string.IsNullOrEmpty(_internalConnection.AccessToken);
-        }
+        public bool HasApiKey() => !string.IsNullOrEmpty(_internalConnection.AccessToken);
     }
 }

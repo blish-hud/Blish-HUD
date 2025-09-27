@@ -37,14 +37,14 @@ namespace Blish_HUD {
 
         private static LoggingConfiguration _logConfiguration;
 
-        private const string STRUCLOG_TIME      = "${date:universalTime=false:format=HH\\:mm\\:ss.ffff K}"; // Default culture is invariant
-        private const string STRUCLOG_LEVEL     = "${level:uppercase=true:padding=-5}";
-        private const string STRUCLOG_LOGGER    = "${logger}";
-        private const string STRUCLOG_MESSAGE   = "${message}";
+        private const string STRUCLOG_TIME = "${date:universalTime=false:format=HH\\:mm\\:ss.ffff K}"; // Default culture is invariant
+        private const string STRUCLOG_LEVEL = "${level:uppercase=true:padding=-5}";
+        private const string STRUCLOG_LOGGER = "${logger}";
+        private const string STRUCLOG_MESSAGE = "${message}";
         private const string STRUCLOG_EXCEPTION = "${onexception:${newline}${exception:format=toString}${newline}}";
 
-        private const long MAX_LOG_SIZE     = 1048576; // 1 MB
-        private const int  MAX_LOG_SESSIONS = 6;
+        private const long MAX_LOG_SIZE = 1048576; // 1 MB
+        private const int MAX_LOG_SESSIONS = 6;
 
         internal static void InitDebug() {
             // Better capture thrown exceptions.
@@ -59,22 +59,22 @@ namespace Blish_HUD {
             string headerLayout = $"Blish HUD v{Program.OverlayVersion}";
 
             var logFile = new FileTarget("logfile") {
-                Layout            = $"{STRUCLOG_TIME} | {STRUCLOG_LEVEL} | {STRUCLOG_LOGGER} | {STRUCLOG_MESSAGE}{STRUCLOG_EXCEPTION}",
-                Header            = headerLayout,
-                FileNameKind      = FilePathKind.Absolute,
-                ArchiveFileKind   = FilePathKind.Absolute,
-                FileName          = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.log"),
-                MaxArchiveFiles   = MAX_LOG_SESSIONS,
-                ArchiveAboveSize  = MAX_LOG_SIZE,
-                EnableFileDelete  = true,
-                CreateDirs        = true,
-                Encoding          = Encoding.UTF8,
-                KeepFileOpen      = true
+                Layout = $"{STRUCLOG_TIME} | {STRUCLOG_LEVEL} | {STRUCLOG_LOGGER} | {STRUCLOG_MESSAGE}{STRUCLOG_EXCEPTION}",
+                Header = headerLayout,
+                FileNameKind = FilePathKind.Absolute,
+                ArchiveFileKind = FilePathKind.Absolute,
+                FileName = Path.Combine(logPath, "blishhud.${cached:${date:format=yyyyMMdd-HHmmss}}.log"),
+                MaxArchiveFiles = MAX_LOG_SESSIONS,
+                ArchiveAboveSize = MAX_LOG_SIZE,
+                EnableFileDelete = true,
+                CreateDirs = true,
+                Encoding = Encoding.UTF8,
+                KeepFileOpen = true
             };
 
             var asyncLogFile = new AsyncTargetWrapper("asynclogfile", logFile) {
-                QueueLimit        = 200,
-                OverflowAction    = AsyncTargetWrapperOverflowAction.Discard,
+                QueueLimit = 200,
+                OverflowAction = AsyncTargetWrapperOverflowAction.Discard,
                 ForceLockingQueue = false
             };
 
@@ -98,7 +98,9 @@ namespace Blish_HUD {
         private static readonly object _debugLock = new object();
 
         public static void TargetDebug(string time, string level, string logger, string message) {
-            if (!Debugger.IsAttached) return;
+            if (!Debugger.IsAttached) {
+                return;
+            }
 
             const int INTERNAL_DEBUG_WRITESIZE = 4091;
 
@@ -124,7 +126,7 @@ namespace Blish_HUD {
             LogManager.ThrowExceptions = true;
 
             var logDebug = new MethodCallTarget("logdebug") {
-                ClassName  = typeof(DebugService).AssemblyQualifiedName,
+                ClassName = typeof(DebugService).AssemblyQualifiedName,
                 MethodName = nameof(TargetDebug),
                 Parameters = {
                     new MethodCallParameter(STRUCLOG_TIME),
@@ -139,8 +141,8 @@ namespace Blish_HUD {
         }
 
         public static void UpdateLogLevel(LogLevel newLogLevel) {
-            foreach(var rule in LogManager.Configuration.LoggingRules) {
-                foreach(var target in rule.Targets) {
+            foreach (var rule in LogManager.Configuration.LoggingRules) {
+                foreach (var target in rule.Targets) {
                     rule.SetLoggingLevels(newLogLevel, LogLevel.Fatal);
                 }
             }
@@ -154,13 +156,11 @@ namespace Blish_HUD {
             }
         }
 
-        private static void ApplicationThreadException(object sender, ThreadExceptionEventArgs args) {
-            Fatal(args.Exception);
-        }
+        private static void ApplicationThreadException(object sender, ThreadExceptionEventArgs args) => Fatal(args.Exception);
 
         private static void Fatal(Exception e) {
             Input.DisableHooks();
-            
+
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
         }
 
@@ -184,9 +184,7 @@ namespace Blish_HUD {
         /// </summary>
         /// <param name="func"></param>
         [Conditional("DEBUG")]
-        public void StartTimeFunc(string func) {
-            StartTimeFunc(func, DEFAULT_DEBUGCOUNTER_SAMPLES);
-        }
+        public void StartTimeFunc(string func) => StartTimeFunc(func, DEFAULT_DEBUGCOUNTER_SAMPLES);
 
         [Conditional("DEBUG")]
         public void StartTimeFunc(string func, int length) {
@@ -198,9 +196,7 @@ namespace Blish_HUD {
         }
 
         [Conditional("DEBUG")]
-        public void StopTimeFunc(string func) {
-            _funcTimes[func].EndInterval();
-        }
+        public void StopTimeFunc(string func) => _funcTimes[func].EndInterval();
 
         [Conditional("DEBUG")]
         public void StopTimeFuncAndOutput(string func) {
@@ -217,19 +213,19 @@ namespace Blish_HUD {
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
 
-            if (EnableFPSDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
+            if (this.EnableFPSDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
                 spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.Value, 0)}", new Vector2(debugLeft, 25), Color.Red);
             }
 
-            if (EnableAdditionalDebugDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
+            if (this.EnableAdditionalDebugDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
                 int i = 0;
 
-                foreach (KeyValuePair<string, DebugCounter> timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
-                    spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + i++ * 25), Color.Orange);
+                foreach (var timedFuncPair in _funcTimes.Where(ft => ft.Value.GetAverage() > 1).OrderByDescending(ft => ft.Value.GetAverage())) {
+                    spriteBatch.DrawString(Content.DefaultFont14, $"{timedFuncPair.Key} {Math.Round(timedFuncPair.Value.GetAverage())} ms", new Vector2(debugLeft, 50 + (i++ * 25)), Color.Orange);
                 }
 
-                foreach (Func<GameTime, string> func in this.OverlayTexts.Values) {
-                    spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + i++ * 25), Color.Yellow);
+                foreach (var func in this.OverlayTexts.Values) {
+                    spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + (i++ * 25)), Color.Yellow);
                 }
             }
         }
@@ -248,7 +244,7 @@ namespace Blish_HUD {
             this.FrameCounter = new DynamicallySmoothedValue<float>(FRAME_DURATION_SAMPLES);
 
             if (!Debugger.IsAttached) {
-                Application.ThreadException                += ApplicationThreadException;
+                Application.ThreadException += ApplicationThreadException;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
             }
         }
@@ -258,53 +254,49 @@ namespace Blish_HUD {
 
             this.OverlayTexts = new OverlayStrings();
             this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.Entities.Count()}");
-            this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
-            this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
-            this.OverlayTexts.TryAdd("volume",      _ => "Average In-Game Volume: " + GameIntegration.Audio.Volume);
+            this.OverlayTexts.TryAdd("renderLate", gameTime => "Render Late: " + (gameTime.IsRunningSlowly ? "Yes" : "No"));
+            this.OverlayTexts.TryAdd("arcDps", _ => "ArcDPS Bridge: " + (ArcDps.RenderPresent ? "Yes" : "No"));
+            this.OverlayTexts.TryAdd("volume", _ => "Average In-Game Volume: " + GameIntegration.Audio.Volume);
         }
 
         protected override void Update(GameTime gameTime) {
             /* NOOP */
         }
 
-        internal void TickFrameCounter(float elapsedTime) {
-            this.FrameCounter.PushValue(1f / elapsedTime);
-        }
+        internal void TickFrameCounter(float elapsedTime) => this.FrameCounter.PushValue(1f / elapsedTime);
 
         protected override void Unload() {
             /* NOOP */
         }
 
         private void DefineSettings(SettingCollection settings) {
-            EnableDebugLogging =           settings.DefineSetting("EnableDebugLogging", 
+            this.EnableDebugLogging = settings.DefineSetting("EnableDebugLogging",
                                                                   File.Exists(DirectoryUtil.BasePath + "\\EnableDebugLogging"),
                                                                   () => Strings.GameServices.DebugService.Setting_DebugLogging_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_DebugLogging_Description);
 
-            EnableFPSDisplay =             settings.DefineSetting("EnableFPSDisplay",
+            this.EnableFPSDisplay = settings.DefineSetting("EnableFPSDisplay",
                                                                   false,
                                                                   () => Strings.GameServices.DebugService.Setting_FPSDisplay_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description);
 
-            EnableAdditionalDebugDisplay = settings.DefineSetting("EnableAdditionalDebugDisplay",
+            this.EnableAdditionalDebugDisplay = settings.DefineSetting("EnableAdditionalDebugDisplay",
                                                                   false,
                                                                   () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName,
                                                                   () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_Description);
 
-
-            EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
-
+            this.EnableDebugLogging.SettingChanged += EnableDebugLoggingOnSettingChanged;
 
             if (ApplicationSettings.Instance.DebugEnabled) {
                 // Disable all debug setting and update description - user has manually specified --debug as launch arg
-                EnableDebugLogging.SetDisabled();
-                EnableDebugLogging.GetDescriptionFunc =           () => Strings.GameServices.DebugService.Setting_DebugLogging_Description +           "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+                this.EnableDebugLogging.SetDisabled();
+                this.EnableDebugLogging.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_DebugLogging_Description + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
 
-                EnableFPSDisplay.SetDisabled();
-                EnableFPSDisplay.GetDescriptionFunc =             () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description +             "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+                this.EnableFPSDisplay.SetDisabled();
+                this.EnableFPSDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_FPSDisplay_Description + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
 
-                EnableAdditionalDebugDisplay.SetDisabled();
-                EnableAdditionalDebugDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
+                this.EnableAdditionalDebugDisplay.SetDisabled();
+                this.EnableAdditionalDebugDisplay.GetDescriptionFunc = () => Strings.GameServices.DebugService.Setting_AdditionalDebugDisplay_DisplayName + "\n" + Strings.GameServices.DebugService.Setting_Debug_Locked_Description;
             }
         }
 
@@ -323,5 +315,4 @@ namespace Blish_HUD {
         #endregion
 
     }
-
 }

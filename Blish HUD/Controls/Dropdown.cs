@@ -14,7 +14,7 @@ namespace Blish_HUD.Controls {
 
         private class DropdownPanel : Control {
 
-            private const int TOOLTIP_HOVER_DELAY    = 800;
+            private const int TOOLTIP_HOVER_DELAY = 800;
             private const int SCROLL_CLOSE_THRESHOLD = 20;
 
             private Dropdown _assocDropdown;
@@ -32,19 +32,19 @@ namespace Blish_HUD.Controls {
 
             private double _hoverTime;
 
-            private int _startTop;
+            private readonly int _startTop;
 
             private DropdownPanel(Dropdown assocDropdown) {
                 _assocDropdown = assocDropdown;
-                _size          = new Point(_assocDropdown.Width, _assocDropdown.Height * _assocDropdown.Items.Count);
-                _location      = GetPanelLocation();
-                _zIndex        = Screen.TOOLTIP_BASEZINDEX;
+                _size = new Point(_assocDropdown.Width, _assocDropdown.Height * _assocDropdown.Items.Count);
+                _location = GetPanelLocation();
+                _zIndex = Screen.TOOLTIP_BASEZINDEX;
 
                 _startTop = _location.Y;
 
                 this.Parent = Graphics.SpriteScreen;
 
-                Input.Mouse.LeftMouseButtonPressed  += InputOnMousedOffDropdownPanel;
+                Input.Mouse.LeftMouseButtonPressed += InputOnMousedOffDropdownPanel;
                 Input.Mouse.RightMouseButtonPressed += InputOnMousedOffDropdownPanel;
             }
 
@@ -52,7 +52,7 @@ namespace Blish_HUD.Controls {
                 var dropdownLocation = _assocDropdown.AbsoluteBounds.Location;
 
                 int yUnderDef = Graphics.SpriteScreen.Bottom - (dropdownLocation.Y + _assocDropdown.Height + _size.Y);
-                int yAboveDef = Graphics.SpriteScreen.Top    + (dropdownLocation.Y                         - _size.Y);
+                int yAboveDef = Graphics.SpriteScreen.Top + (dropdownLocation.Y - _size.Y);
 
                 return yUnderDef > 0 || yUnderDef > yAboveDef
                            // flip down
@@ -61,9 +61,7 @@ namespace Blish_HUD.Controls {
                            : dropdownLocation - new Point(0, _size.Y + 1);
             }
 
-            public static DropdownPanel ShowPanel(Dropdown assocDropdown) {
-                return new DropdownPanel(assocDropdown);
-            }
+            public static DropdownPanel ShowPanel(Dropdown assocDropdown) => new DropdownPanel(assocDropdown);
 
             private void InputOnMousedOffDropdownPanel(object sender, MouseEventArgs e) {
                 if (!this.MouseOver) {
@@ -130,8 +128,8 @@ namespace Blish_HUD.Controls {
                         spriteBatch.DrawOnCtrl(this,
                                                ContentService.Textures.Pixel,
                                                new Rectangle(2,
-                                                             2                     + _assocDropdown.Height * index,
-                                                             _size.X - 12          - _textureArrow.Width,
+                                                             2 + (_assocDropdown.Height * index),
+                                                             _size.X - 12 - _textureArrow.Width,
                                                              _assocDropdown.Height - 4),
                                                new Color(45, 37, 25, 255));
 
@@ -161,28 +159,27 @@ namespace Blish_HUD.Controls {
             protected override void DisposeControl() {
                 if (_assocDropdown != null) {
                     _assocDropdown._lastPanel = null;
-                    _assocDropdown            = null;
+                    _assocDropdown = null;
                 }
 
-                Input.Mouse.LeftMouseButtonPressed  -= InputOnMousedOffDropdownPanel;
+                Input.Mouse.LeftMouseButtonPressed -= InputOnMousedOffDropdownPanel;
                 Input.Mouse.RightMouseButtonPressed -= InputOnMousedOffDropdownPanel;
 
                 base.DisposeControl();
             }
-
         }
 
         public static readonly DesignStandard Standard = new DesignStandard(/*          Size */ new Point(250, 27),
-                                                                            /*   PanelOffset */ new Point(5,   2),
+                                                                            /*   PanelOffset */ new Point(5, 2),
                                                                             /* ControlOffset */ Control.ControlStandard.ControlOffset);
 
         #region Load Static
 
         private static readonly Texture2D _textureInputBox = Content.GetTexture("input-box");
 
-        private static readonly TextureRegion2D _textureArrow       = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow");
+        private static readonly TextureRegion2D _textureArrow = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow");
         private static readonly TextureRegion2D _textureArrowActive = Resources.Control.TextureAtlasControl.GetRegion("inputboxes/dd-arrow-active");
-        
+
         #endregion
 
         #region Events
@@ -192,9 +189,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
-        protected virtual void OnValueChanged(ValueChangedEventArgs e) {
-            this.ValueChanged?.Invoke(this, e);
-        }
+        protected virtual void OnValueChanged(ValueChangedEventArgs e) => this.ValueChanged?.Invoke(this, e);
 
         #endregion
 
@@ -225,7 +220,7 @@ namespace Blish_HUD.Controls {
         public bool PanelOpen => _lastPanel != null;
 
         private DropdownPanel _lastPanel = null;
-        private bool          _hadPanel  = false;
+        private bool _hadPanel = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Dropdown"/> class.
@@ -285,12 +280,12 @@ namespace Blish_HUD.Controls {
                                    new Rectangle(_size.X - 5, 0, 5, _size.Y),
                                    new Rectangle(_textureInputBox.Width - 5, 0,
                                                  5, _textureInputBox.Height));
-            
+
             // Draw dropdown arrow
             spriteBatch.DrawOnCtrl(this,
                                    (this.Enabled && this.MouseOver) ? _textureArrowActive : _textureArrow,
                                    new Rectangle(_size.X - _textureArrow.Width - 5,
-                                                 _size.Y / 2                 - _textureArrow.Height / 2,
+                                                 (_size.Y / 2) - (_textureArrow.Height / 2),
                                                  _textureArrow.Width,
                                                  _textureArrow.Height));
 
@@ -305,6 +300,5 @@ namespace Blish_HUD.Controls {
                                               ? Color.FromNonPremultiplied(239, 240, 239, 255)
                                               : Control.StandardColors.DisabledText));
         }
-
     }
 }

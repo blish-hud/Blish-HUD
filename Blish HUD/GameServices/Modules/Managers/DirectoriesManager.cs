@@ -8,7 +8,7 @@ namespace Blish_HUD.Modules.Managers {
 
         protected static readonly Logger Logger = Logger.GetLogger<DirectoriesManager>();
 
-        private readonly HashSet<string>            _directoryNames;
+        private readonly HashSet<string> _directoryNames;
         private readonly Dictionary<string, string> _directoryPaths;
 
         public IReadOnlyList<string> RegisteredDirectories => _directoryNames.ToList();
@@ -20,9 +20,7 @@ namespace Blish_HUD.Modules.Managers {
             PrepareDirectories();
         }
 
-        internal static DirectoriesManager GetModuleInstance(ModuleManager module) {
-            return new DirectoriesManager(module.Manifest.Directories ?? new List<string>(0));
-        }
+        internal static DirectoriesManager GetModuleInstance(ModuleManager module) => new DirectoriesManager(module.Manifest.Directories ?? new List<string>(0));
 
         private void PrepareDirectories() {
             foreach (string directoryName in _directoryNames) {
@@ -34,12 +32,6 @@ namespace Blish_HUD.Modules.Managers {
             }
         }
 
-        public string GetFullDirectoryPath(string directoryName) {
-            if (!_directoryNames.Contains(directoryName)) return null;
-
-            return _directoryPaths[directoryName];
-        }
-
+        public string GetFullDirectoryPath(string directoryName) => !_directoryNames.Contains(directoryName) ? null : _directoryPaths[directoryName];
     }
-
 }

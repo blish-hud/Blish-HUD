@@ -2,10 +2,8 @@
 
     public sealed class AsyncUserToken {
 
-        public int? MessageSize       { get; set; }
-        public int  DataStartOffset   { get; set; }
-        public int  NextReceiveOffset { get; set; }
-
+        public int? MessageSize { get; set; }
+        public int DataStartOffset { get; set; }
+        public int NextReceiveOffset { get; set; }
     }
-
 }

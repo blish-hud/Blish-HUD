@@ -17,11 +17,10 @@ namespace Blish_HUD.Common.UI.Views {
         }
 
         protected override void Build(Container buildPanel) {
-            _panel.Location         = Point.Zero;
+            _panel.Location = Point.Zero;
             _panel.HeightSizingMode = SizingMode.Fill;
-            _panel.WidthSizingMode  = SizingMode.Fill;
-            _panel.Parent           = buildPanel;
+            _panel.WidthSizingMode = SizingMode.Fill;
+            _panel.Parent = buildPanel;
         }
-
     }
 }

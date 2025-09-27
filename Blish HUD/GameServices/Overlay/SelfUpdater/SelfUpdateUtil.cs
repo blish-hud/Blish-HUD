@@ -14,10 +14,10 @@ namespace Blish_HUD.Overlay.SelfUpdater {
         private static readonly Logger Logger = Logger.GetLogger(typeof(SelfUpdateUtil));
 
         private const string FILE_UNPACKZIP = "unpack.zip";
-        private const string FILE_EXE       = "Blish HUD.exe";
+        private const string FILE_EXE = "Blish HUD.exe";
         private const string FILE_EXEBACKUP = FILE_EXE + "__bak";
 
-        private const int RESTART_DELAY       = 3;
+        private const int RESTART_DELAY = 3;
         private const int SINGLEPROCESS_DELAY = 10;
 
         // Files no longer used by Blish HUD which can be removed.
@@ -63,20 +63,20 @@ namespace Blish_HUD.Overlay.SelfUpdater {
             }
 
             var unpackStream = File.OpenRead(unpackPath);
-            var unpacker     = new ZipArchive(unpackStream);
+            var unpacker = new ZipArchive(unpackStream);
 
-            var applicationDir = Directory.GetCurrentDirectory();
+            string applicationDir = Directory.GetCurrentDirectory();
 
-            var rootDirs  = unpacker.Entries
+            var rootDirs = unpacker.Entries
                 .Select(entry => entry.FullName.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
                 .Where(parts => parts.Length > 1)
                 .Select(parts => parts[0] + "/")
                 .Distinct()
                 .ToList();
-            var allFiles  = unpacker.Entries.Where(entry => !string.IsNullOrWhiteSpace(entry.Name) && !string.Equals(entry.Name, FILE_EXE));
+            var allFiles = unpacker.Entries.Where(entry => !string.IsNullOrWhiteSpace(entry.Name) && !string.Equals(entry.Name, FILE_EXE));
             var rootFiles = allFiles.Where(entry => !entry.FullName.Contains("/"));
 
-            foreach (var dirPath in rootDirs) {
+            foreach (string dirPath in rootDirs) {
                 if (Directory.Exists(dirPath)) {
                     Directory.Delete(dirPath, true);
                 }
@@ -94,7 +94,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
                 string dir = Path.GetDirectoryName(file.FullName);
 
                 Directory.CreateDirectory(Path.Combine(applicationDir, dir));
-                file.ExtractToFile(Path.Combine(applicationDir,        file.FullName));
+                file.ExtractToFile(Path.Combine(applicationDir, file.FullName));
             }
 
             if (File.Exists(Path.Combine(applicationDir, FILE_EXEBACKUP))) {
@@ -110,7 +110,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
         private static bool TryWaitForProcessLocks() {
             bool timedout = true;
             for (int i = SINGLEPROCESS_DELAY; i > 0; i--) {
-                Process[] instances = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(FILE_EXE));
+                var instances = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(FILE_EXE));
 
                 if (instances.Length <= 1) {
                     timedout = false;
@@ -126,7 +126,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
         public static async Task BeginUpdate(CoreVersionManifest coreVersionManifest, IProgress<string> progress = null) {
             // Download the archive
             Logger.Info($"Downloading version v{coreVersionManifest.Version} from {coreVersionManifest.Url}...");
-            progress?.Report(string.Format(coreVersionManifest.IsPrerelease 
+            progress?.Report(string.Format(coreVersionManifest.IsPrerelease
                                                ? Strings.GameServices.OverlayService.SelfUpdate_Progress_DownloadingPrereleaseArchive
                                                : Strings.GameServices.OverlayService.SelfUpdate_Progress_DownloadingReleaseArchive,
                                            coreVersionManifest.Version));
@@ -135,10 +135,10 @@ namespace Blish_HUD.Overlay.SelfUpdater {
 
             // Verify the checksum
             progress?.Report(Strings.GameServices.OverlayService.SelfUpdate_Progress_VerifyingChecksum);
-            using var dataSha256  = System.Security.Cryptography.SHA256.Create();
-            using var unpackFile  = File.OpenRead(unpackDestination);
-            byte[]    rawChecksum = dataSha256.ComputeHash(unpackFile);
-            string    checksum    = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
+            using var dataSha256 = System.Security.Cryptography.SHA256.Create();
+            using var unpackFile = File.OpenRead(unpackDestination);
+            byte[] rawChecksum = dataSha256.ComputeHash(unpackFile);
+            string checksum = BitConverter.ToString(rawChecksum).Replace("-", string.Empty);
 
             if (!string.Equals(coreVersionManifest.Checksum, checksum, StringComparison.InvariantCultureIgnoreCase)) {
                 // Checksum does not match!  Reverting back and notifying the user.
@@ -182,6 +182,5 @@ namespace Blish_HUD.Overlay.SelfUpdater {
                 GameService.Overlay.Restart();
             }
         }
-
     }
 }

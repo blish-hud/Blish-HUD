@@ -41,10 +41,11 @@ namespace Blish_HUD.Controls {
             get => associatedColorBox;
             set {
                 if (SetProperty(ref associatedColorBox, value)) {
-                    if (colorBoxes.ContainsKey(associatedColorBox.Color)) { 
+                    if (colorBoxes.ContainsKey(associatedColorBox.Color)) {
                         colorBoxes[associatedColorBox.Color].IsSelected = true;
                     }
-                    this.SelectedColor            = this.AssociatedColorBox.Color;
+
+                    this.SelectedColor = this.AssociatedColorBox.Color;
                 }
             }
         }
@@ -62,7 +63,7 @@ namespace Blish_HUD.Controls {
 
         public ColorPicker() : base() {
             this.ShowTint = true;
-            this.Colors                   =  new ObservableCollection<Gw2Sharp.WebApi.V2.Models.Color>();
+            this.Colors = new ObservableCollection<Gw2Sharp.WebApi.V2.Models.Color>();
             this.Colors.CollectionChanged += ColorsOnCollectionChanged;
 
             this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - (COLOR_PADDING * 2) - 10, this.Height - (COLOR_PADDING * 2));
@@ -87,9 +88,9 @@ namespace Blish_HUD.Controls {
                 foreach (Gw2Sharp.WebApi.V2.Models.Color addedItem in e.NewItems) {
                     if (!colorBoxes.ContainsKey(addedItem)) {
                         var colorBox = new ColorBox() {
-                            Color  = addedItem,
+                            Color = addedItem,
                             Parent = this,
-                            Size   = this.ColorBoxSize,
+                            Size = this.ColorBoxSize,
                         };
 
                         colorBoxes[addedItem] = colorBox;
@@ -100,7 +101,7 @@ namespace Blish_HUD.Controls {
                             }
 
                             colorBox.IsSelected = true;
-                            this.SelectedColor  = colorBox.Color;
+                            this.SelectedColor = colorBox.Color;
                         };
 
                         if (this.selectedColor == addedItem) {
@@ -113,14 +114,14 @@ namespace Blish_HUD.Controls {
             // Relayout the color grid
             for (int i = 0; i < this.Colors.Count; i++) {
                 var currentColor = this.Colors[i];
-                var currentBox   = colorBoxes[currentColor];
+                var currentBox = colorBoxes[currentColor];
 
                 int horizontalPosition = i % colorsPerRow;
-                int verticalPosition   = i / colorsPerRow;
+                int verticalPosition = i / colorsPerRow;
 
                 currentBox.Location = new Point(
                                                 horizontalPosition * (currentBox.Width + COLOR_PADDING),
-                                                verticalPosition   * (currentBox.Height + COLOR_PADDING)
+                                                verticalPosition * (currentBox.Height + COLOR_PADDING)
                                                );
             }
         }
@@ -130,9 +131,7 @@ namespace Blish_HUD.Controls {
 
             colorsPerRow = (this.Width - 10) / (this.ColorBoxSize.X + COLOR_PADDING);
 
-            this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, (this.Width - 10) - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
+            this.ContentRegion = new Rectangle(COLOR_PADDING, COLOR_PADDING, this.Width - 10 - (COLOR_PADDING * 2), this.Height - (COLOR_PADDING * 2));
         }
-
     }
-
 }

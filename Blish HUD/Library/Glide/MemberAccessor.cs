@@ -1,25 +1,20 @@
-namespace Glide {
-    using System;
-    using System.Linq.Expressions;
-    using System.Reflection;
+using System;
+using System.Linq.Expressions;
+using System.Reflection;
 
+namespace Glide {
     internal class MemberAccessor {
         public string MemberName { get; private set; }
         public Type MemberType { get; private set; }
 
-        public void SetValue(object target, object value) {
-            setMethod(target, value);
-        }
+        public void SetValue(object target, object value) => setMethod(target, value);
 
-        public object GetValue(object target) {
-            return getMethod(target);
-        }
+        public object GetValue(object target) => getMethod(target);
 
         public MemberAccessor(object target, string name, bool writeRequired = true) {
             var T = target.GetType();
-            PropertyInfo propInfo = null;
-            FieldInfo fieldInfo = null;
-
+            PropertyInfo propInfo;
+            FieldInfo fieldInfo;
             if ((propInfo = T.GetProperty(name, flags)) != null) {
                 this.MemberType = propInfo.PropertyType;
                 this.MemberName = propInfo.Name;
@@ -71,6 +66,6 @@ namespace Glide {
 
         protected Func<object, object> getMethod;
         protected Action<object, object> setMethod;
-        private static BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+        private static readonly BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
     }
 }

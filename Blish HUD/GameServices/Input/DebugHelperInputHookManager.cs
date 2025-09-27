@@ -21,7 +21,9 @@ namespace Blish_HUD.Input {
         protected IMessageService DebugHelperMessageService { get; }
 
         public virtual bool EnableHook() {
-            if (isEnabled) return false;
+            if (isEnabled) {
+                return false;
+            }
 
             Logger.Debug("Enabling");
 
@@ -33,7 +35,9 @@ namespace Blish_HUD.Input {
         }
 
         public virtual void DisableHook() {
-            if (!isEnabled) return;
+            if (!isEnabled) {
+                return;
+            }
 
             Logger.Debug("Disabling");
 
@@ -43,14 +47,13 @@ namespace Blish_HUD.Input {
             isEnabled = false;
         }
 
-        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Add(handleInputCallback); }
+        public virtual void RegisterHandler(THandlerDelegate handleInputCallback) => this.Handlers.Add(handleInputCallback);
 
-        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) { this.Handlers.Remove(handleInputCallback); }
+        public virtual void UnregisterHandler(THandlerDelegate handleInputCallback) => this.Handlers.Remove(handleInputCallback);
 
         protected abstract void HookCallback(TEventMessage message);
 
         protected abstract void DummyHookCallback(TEventMessage message);
 
     }
-
 }

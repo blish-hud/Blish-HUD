@@ -18,6 +18,5 @@ namespace Blish_HUD {
 
             return _cachedEnumValues[typeof(T)].Cast<T>().ToArray();
         }
-
     }
 }

@@ -15,5 +15,4 @@ namespace Blish_HUD.DebugHelper.Native {
         public static extern bool UnhookWindowsHookEx(IntPtr hook);
 
     }
-
 }

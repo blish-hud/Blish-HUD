@@ -54,7 +54,6 @@ namespace Blish_HUD {
         [Obsolete("This class only wraps the V2 service, please use that one instead")]
         public bool HudIsActive => GameService.ArcDpsV2.HudIsActive;
 
-
         /// <summary>
         /// The timespan after which ArcDPS is treated as not responding.
         /// </summary>
@@ -79,7 +78,9 @@ namespace Blish_HUD {
             }
 
             foreach (uint skillId in skillIds) {
-                if (!_subscriptions.ContainsKey(skillId)) _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
+                if (!_subscriptions.ContainsKey(skillId)) {
+                    _subscriptions.TryAdd(skillId, new ConcurrentBag<Action<object, RawCombatEventArgs>>());
+                }
 
                 _subscriptions[skillId].Add(func);
             }
@@ -87,9 +88,11 @@ namespace Blish_HUD {
 
         private void DispatchSkillSubscriptions(CombatCallback combatEvent, RawCombatEventArgs.CombatEventType combatEventType) {
             uint skillId = combatEvent.Event.SkillId;
-            if (!_subscriptions.ContainsKey(skillId)) return;
+            if (!_subscriptions.ContainsKey(skillId)) {
+                return;
+            }
 
-            foreach (Action<object, RawCombatEventArgs> action in _subscriptions[skillId]) {
+            foreach (var action in _subscriptions[skillId]) {
                 action(this, ConvertFrom(combatEvent, combatEventType));
             }
         }
@@ -114,7 +117,7 @@ namespace Blish_HUD {
             this.Common = new CommonFields();
             _stopwatch = new Stopwatch();
 #if DEBUG
-            this.RawCombatEvent += (a, b) => { Interlocked.Increment(ref Counter); };
+            this.RawCombatEvent += (a, b) => Interlocked.Increment(ref Counter);
 #endif
 
             GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(GameServices.ArcDps.V2.MessageType.CombatEventArea, async (combatEvent, ct) => {
@@ -132,15 +135,11 @@ namespace Blish_HUD {
 
         protected override void Load() {
             _stopwatch.Start();
-            this.SubscribeToCombatEventId((source, combatEvent) => {
-                System.Diagnostics.Debug.WriteLine("");
-            },
+            this.SubscribeToCombatEventId((source, combatEvent) => System.Diagnostics.Debug.WriteLine(""),
             43916);
         }
 
-        protected override void Unload() {
-            _stopwatch.Stop();
-        }
+        protected override void Unload() => _stopwatch.Stop();
 
         protected override void Update(GameTime gameTime) {
             TimeSpan elapsed;

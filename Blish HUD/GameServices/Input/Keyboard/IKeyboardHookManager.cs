@@ -4,14 +4,13 @@
 
     internal interface IKeyboardHookManager {
 
-        bool EnableHook();
+        public bool EnableHook();
 
-        void DisableHook();
+        public void DisableHook();
 
-        void RegisterHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
+        public void RegisterHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
 
-        void UnregisterHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
+        public void UnregisterHandler(HandleKeyboardInputDelegate handleKeyboardInputCallback);
 
     }
-
 }

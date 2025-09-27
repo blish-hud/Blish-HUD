@@ -15,9 +15,9 @@ namespace Blish_HUD.Graphics {
         /// <param name="service">The graphics service instance to use.</param>
         /// <param name="highPriority">A value indicating whether to acquire a high priority instance.</param>
         internal GraphicsDeviceContext(GraphicsService service, bool highPriority) {
-            _service       = service;
-            _highPriority  = highPriority || Program.IsMainThread;
-            GraphicsDevice = _service.LendGraphicsDevice(_highPriority);
+            _service = service;
+            _highPriority = highPriority || Program.IsMainThread;
+            this.GraphicsDevice = _service.LendGraphicsDevice(_highPriority);
         }
 
         /// <summary>
@@ -28,8 +28,6 @@ namespace Blish_HUD.Graphics {
         /// <summary>
         /// Disposes of this graphics context, calling <see cref="GraphicsService.ReturnGraphicsDevice"/>
         /// </summary>
-        public void Dispose() {
-            _service.ReturnGraphicsDevice(_highPriority);
-        }
+        public void Dispose() => _service.ReturnGraphicsDevice(_highPriority);
     }
 }

@@ -44,6 +44,5 @@
                 return this.InternalBuffer[index % this.BufferLength];
             }
         }
-
     }
 }

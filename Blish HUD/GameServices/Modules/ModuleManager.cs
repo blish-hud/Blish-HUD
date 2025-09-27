@@ -20,33 +20,31 @@ namespace Blish_HUD.Modules {
 
         public event EventHandler<EventArgs> ModuleLoaded;
 
-        public void OnModuleLoaded(object _, EventArgs e) {
-            this.ModuleLoaded?.Invoke(this, e);
-        }
+        public void OnModuleLoaded(object _, EventArgs e) => this.ModuleLoaded?.Invoke(this, e);
 
         private Assembly _moduleAssembly;
-        
+
         private bool _forceAllowDependency = false;
 
         /// <summary>
         /// Indicates that the modules assembly has been loaded into memory.
         /// </summary>
         public bool AssemblyLoaded => _moduleAssembly != null;
-        
+
         /// <summary>
         /// Used to indicate if a different version of the assembly has previously
         /// been loaded preventing us from loading another of a different version.
         /// </summary>
         public bool IsModuleAssemblyStateDirty { get; private set; }
-        
+
         /// <summary>
         /// Indicates if the module is currently enabled.
         /// </summary>
         public bool Enabled { get; private set; }
 
-        public bool DependenciesMet =>
-            State.IgnoreDependencies
-         || Manifest.Dependencies.TrueForAll(d => d.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available);
+        public bool DependenciesMet
+            => this.State.IgnoreDependencies
+         || this.Manifest.Dependencies.TrueForAll(d => d.GetDependencyDetails().CheckResult == ModuleDependencyCheckResult.Available);
 
         public Manifest Manifest { get; }
 
@@ -58,8 +56,8 @@ namespace Blish_HUD.Modules {
         public Module ModuleInstance { get; private set; }
 
         internal ModuleManager(Manifest manifest, ModuleState state, IDataReader dataReader) {
-            this.Manifest   = manifest;
-            this.State      = state;
+            this.Manifest = manifest;
+            this.State = state;
             this.DataReader = dataReader;
 
             if (_dirtyNamespaces.Contains(this.Manifest.Namespace)) {
@@ -73,7 +71,9 @@ namespace Blish_HUD.Modules {
             if (this.Enabled                                             // We're already enabled.
              || this.IsModuleAssemblyStateDirty                          // User updated the module after the old assembly had already been enabled.
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
+{
                 return false;
+            }
 
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 
@@ -101,7 +101,7 @@ namespace Blish_HUD.Modules {
                             this.ModuleEnabled?.Invoke(this, EventArgs.Empty);
                         } catch (TypeLoadException ex) {
                             this.ModuleInstance = null;
-                            this.Enabled        = false;
+                            this.Enabled = false;
                             Logger.Error(ex, "Module {module} failed to load because it depended on a type which is not available in this version.  Ensure you are using the correct module and Blish HUD versions.", this.Manifest.GetDetailedName());
                         }
                     }
@@ -117,7 +117,9 @@ namespace Blish_HUD.Modules {
         }
 
         public void Disable() {
-            if (!this.Enabled) return;
+            if (!this.Enabled) {
+                return;
+            }
 
             this.Enabled = false;
 
@@ -129,7 +131,7 @@ namespace Blish_HUD.Modules {
                 this.ModuleInstance?.Dispose();
             } catch (Exception ex) {
                 Logger.GetLogger(this.ModuleInstance != null ? this.ModuleInstance.GetType() : typeof(ModuleManager)).Error(ex, "Module {module} threw an exception while unloading.", this.Manifest.GetDetailedName());
-                
+
                 if (ApplicationSettings.Instance.DebugEnabled) {
                     // To assist in debugging modules
                     throw;
@@ -137,7 +139,7 @@ namespace Blish_HUD.Modules {
             }
 
             this.ModuleInstance = null;
-            
+
             this.ModuleDisabled?.Invoke(this, EventArgs.Empty);
 
             this.State.Enabled = this.Enabled;
@@ -154,14 +156,16 @@ namespace Blish_HUD.Modules {
             string symbolsPath = assemblyPath.Replace(".dll", ".pdb");
 
             byte[] assemblyData = this.DataReader.GetFileBytes(assemblyPath);
-            byte[] symbolData   = this.DataReader.GetFileBytes(symbolsPath) ?? new byte[0];
+            byte[] symbolData = this.DataReader.GetFileBytes(symbolsPath) ?? new byte[0];
 
             return Assembly.Load(assemblyData, symbolData);
         }
 
         private Assembly GetResourceAssembly(Assembly requestingAssembly, AssemblyName resourceDetails, string assemblyPath) {
             // Avoid loading resource assembly from wrong module
-            if (_moduleAssembly != requestingAssembly) return null;
+            if (_moduleAssembly != requestingAssembly) {
+                return null;
+            }
 
             // English is default — ignore it
             if (!string.Equals(resourceDetails.CultureInfo.TwoLetterISOLanguageName, "en")) {
@@ -192,7 +196,9 @@ namespace Blish_HUD.Modules {
                     return GetResourceAssembly(args.RequestingAssembly, assemblyDetails, assemblyPath);
                 }
 
-                if (!this.DataReader.FileExists(assemblyPath)) return null;
+                if (!this.DataReader.FileExists(assemblyPath)) {
+                    return null;
+                }
 
                 Logger.Debug("Requested dependency {dependency} ({assemblyName}) was found by module {module}.", args.Name, assemblyPath, this.Manifest.GetDetailedName());
 
@@ -232,7 +238,7 @@ namespace Blish_HUD.Modules {
                 }
             }
 
-            var catalog   = new AssemblyCatalog(_moduleAssembly);
+            var catalog = new AssemblyCatalog(_moduleAssembly);
             var container = new CompositionContainer(catalog);
 
             container.ComposeExportedValue("ModuleParameters", parameters);
@@ -266,7 +272,5 @@ namespace Blish_HUD.Modules {
 
             this.DataReader?.Dispose();
         }
-
     }
-
 }

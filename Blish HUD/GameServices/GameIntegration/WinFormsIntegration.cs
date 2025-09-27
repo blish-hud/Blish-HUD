@@ -42,9 +42,7 @@ namespace Blish_HUD.GameIntegration {
             BlishHud.Instance.Form.Visible = false;
         }
 
-        internal void SetShowInTaskbar(bool showInTaskbar) {
-            WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, showInTaskbar);
-        }
+        internal void SetShowInTaskbar(bool showInTaskbar) => WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, showInTaskbar);
 
         private void BuildTrayIcon() {
             string trayIconText = Strings.Common.BlishHUD;
@@ -54,11 +52,11 @@ namespace Blish_HUD.GameIntegration {
             }
 
             this.TrayIconMenu = new ContextMenuStrip();
-            
+
             _trayIcon = new NotifyIcon() {
-                Icon             = Resources.Ico2039771,
-                Text             = trayIconText,
-                Visible          = true,
+                Icon = Resources.Ico2039771,
+                Text = trayIconText,
+                Visible = true,
                 ContextMenuStrip = this.TrayIconMenu
             };
 
@@ -67,7 +65,7 @@ namespace Blish_HUD.GameIntegration {
             _launchGw2Tsi = this.TrayIconMenu.Items.Add(Strings.GameServices.GameIntegrationService.TrayIcon_LaunchGuildWars2);
 
             _launchGw2AutoTsi.Click += delegate { LaunchGw2(true); };
-            _launchGw2Tsi.Click     += delegate { LaunchGw2(false); };
+            _launchGw2Tsi.Click += delegate { LaunchGw2(false); };
 
             _trayIcon.DoubleClick += delegate {
                 if (!_service.Gw2Instance.Gw2IsRunning) {
@@ -93,7 +91,7 @@ namespace Blish_HUD.GameIntegration {
 
             // ------- & Exit
             this.TrayIconMenu.Items.Add(new ToolStripSeparator());
-            _exitTsi = this.TrayIconMenu.Items.Add(string.Format(Strings.Common.Action_Exit,  Strings.Common.BlishHUD));
+            _exitTsi = this.TrayIconMenu.Items.Add(string.Format(Strings.Common.Action_Exit, Strings.Common.BlishHUD));
 
             _exitTsi.Click += delegate { GameService.Overlay.Exit(); };
 
@@ -133,6 +131,7 @@ namespace Blish_HUD.GameIntegration {
                 } catch (Exception ex) {
                     Logger.Warn(ex, "Failed to launch Guild Wars 2 via Steam.");
                 }
+
                 return;
             }
 
@@ -162,6 +161,5 @@ namespace Blish_HUD.GameIntegration {
                 _trayIcon.Dispose();
             }
         }
-
     }
 }

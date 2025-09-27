@@ -14,7 +14,9 @@ namespace Blish_HUD.Controls {
         public static int LeftOffset {
             get => _leftOffset;
             set {
-                if (_leftOffset == value) return;
+                if (_leftOffset == value) {
+                    return;
+                }
 
                 _leftOffset = value;
                 UpdateCornerIconPositions();
@@ -25,10 +27,10 @@ namespace Blish_HUD.Controls {
 
         private static readonly Rectangle _standardIconBounds;
 
-        private const int   ICON_POSITION = 10;
-        private const int   ICON_SIZE     = 32;
-        private const float ICON_TRANS    = 0.6f;
-        
+        private const int ICON_POSITION = 10;
+        private const int ICON_SIZE = 32;
+        private const float ICON_TRANS = 0.6f;
+
         private float _hoverTrans = ICON_TRANS;
         public float HoverTrans {
             get => this.Enabled ? _hoverTrans : ICON_TRANS;
@@ -51,9 +53,13 @@ namespace Blish_HUD.Controls {
             set {
                 if (SetProperty(ref _dynamicHide, value)) {
                     Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f)).OnBegin(() => {
-                        if (this.DynamicHide) this.Visible = true;
+                        if (this.DynamicHide) {
+                            this.Visible = true;
+                        }
                     }).OnComplete(() => {
-                        if (!this.DynamicHide) this.Visible = false;
+                        if (!this.DynamicHide) {
+                            this.Visible = false;
+                        }
                     });
                 }
             }
@@ -91,7 +97,7 @@ namespace Blish_HUD.Controls {
         /// <see cref="CornerIcon"/>s are sorted by priority so that, from left to right, priority goes from the highest to lowest.
         /// </summary>
         public int Priority {
-            get => _priority ?? (_icon?.GetHashCode() ?? 0);
+            get => _priority ?? _icon?.GetHashCode() ?? 0;
             set {
                 if (SetProperty(ref _priority, value)) {
                     UpdateCornerIconPositions();
@@ -119,7 +125,7 @@ namespace Blish_HUD.Controls {
             _standardIconBounds = new Rectangle(0, 0, ICON_SIZE, ICON_SIZE);
 
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
-            
+
             GameService.Input.Mouse.MouseMoved += (sender, e) => {
                 CornerIcon[] cornerIcons = null;
 
@@ -128,7 +134,7 @@ namespace Blish_HUD.Controls {
                 }
 
                 var scaledMousePos = Input.Mouse.State.Position.ScaleToUi();
-                if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < ICON_SIZE * ICON_POSITION + LeftOffset) {
+                if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < (ICON_SIZE * ICON_POSITION) + LeftOffset) {
                     foreach (var cornerIcon in cornerIcons) {
                         cornerIcon.MouseInHouse = true;
                     }
@@ -146,12 +152,12 @@ namespace Blish_HUD.Controls {
         }
 
         private static void UpdateCornerIconPositions() {
-            List<CornerIcon> sortedIcons = CornerIcons.OrderByDescending((cornerIcon) => cornerIcon.Priority).ToList();
+            var sortedIcons = CornerIcons.OrderByDescending((cornerIcon) => cornerIcon.Priority).ToList();
 
-            int horizontalOffset = ICON_SIZE * ICON_POSITION + LeftOffset;
+            int horizontalOffset = (ICON_SIZE * ICON_POSITION) + LeftOffset;
 
             for (int i = 0; i < CornerIcons.Count; i++) {
-                sortedIcons[i].Location = new Point(ICON_SIZE * i + horizontalOffset, 0);
+                sortedIcons[i].Location = new Point((ICON_SIZE * i) + horizontalOffset, 0);
             }
         }
 
@@ -181,7 +187,7 @@ namespace Blish_HUD.Controls {
 
         public CornerIcon() {
             this.Parent = Graphics.SpriteScreen;
-            this.Size   = new Point(ICON_SIZE, ICON_SIZE);
+            this.Size = new Point(ICON_SIZE, ICON_SIZE);
             this.DynamicHide = true;
 
             lock (CornerIcons) {
@@ -190,7 +196,7 @@ namespace Blish_HUD.Controls {
         }
 
         public CornerIcon(AsyncTexture2D icon, string iconName) : this() {
-            _icon     = icon;
+            _icon = icon;
             _iconName = iconName;
         }
 
@@ -227,7 +233,9 @@ namespace Blish_HUD.Controls {
         // TODO: Use a shader to replace "HoverIcon"
         /// <inheritdoc />
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (_icon == null) return;
+            if (_icon == null) {
+                return;
+            }
 
             if (this.MouseOver && this.RelativeMousePosition.Y <= _standardIconBounds.Bottom && this.Enabled) {
                 spriteBatch.DrawOnCtrl(this, _hoverIcon ?? _icon, _standardIconBounds);
@@ -246,6 +254,5 @@ namespace Blish_HUD.Controls {
                 CornerIcons.Remove(this);
             }
         }
-
     }
 }

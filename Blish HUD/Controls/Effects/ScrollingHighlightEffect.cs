@@ -10,11 +10,11 @@ namespace Blish_HUD.Controls.Effects {
     /// </summary>
     public class ScrollingHighlightEffect : ControlEffect {
 
-        private const string SPARAM_MASK                = "Mask";
-        private const string SPARAM_OVERLAY             = "Overlay";
-        private const string SPARAM_ROLLER              = "Roller";
-        private const string SPARAM_OPACITY             = "Opacity";
-        private const float  DEFAULT_ANIMATION_DURATION = 0.5f;
+        private const string SPARAM_MASK = "Mask";
+        private const string SPARAM_OVERLAY = "Overlay";
+        private const string SPARAM_ROLLER = "Roller";
+        private const string SPARAM_OPACITY = "Opacity";
+        private const float DEFAULT_ANIMATION_DURATION = 0.5f;
 
         #region Static Persistant Effect
 
@@ -35,7 +35,9 @@ namespace Blish_HUD.Controls.Effects {
             set {
                 _scrollRoller = value;
 
-                if (_forceActive) return;
+                if (_forceActive) {
+                    return;
+                }
 
                 _scrollEffect.Parameters[SPARAM_ROLLER].SetValue(_scrollRoller);
             }
@@ -76,7 +78,7 @@ namespace Blish_HUD.Controls.Effects {
             _scrollEffect.Parameters[SPARAM_OPACITY].SetValue(assignedControl.Opacity);
 
             assignedControl.MouseEntered += AssignedControlOnMouseEntered;
-            assignedControl.MouseLeft    += AssignedControlOnMouseLeft;
+            assignedControl.MouseLeft += AssignedControlOnMouseLeft;
         }
 
         protected override SpriteBatchParameters GetSpriteBatchParameters() {
@@ -90,7 +92,9 @@ namespace Blish_HUD.Controls.Effects {
         }
 
         private void AssignedControlOnMouseEntered(object sender, MouseEventArgs e) {
-            if (!_enabled || _forceActive) return;
+            if (!_enabled || _forceActive) {
+                return;
+            }
 
             _scrollEffect.Parameters[SPARAM_OPACITY].SetValue(this.AssignedControl.Opacity);
 
@@ -115,18 +119,17 @@ namespace Blish_HUD.Controls.Effects {
         }
 
         protected override void OnEnable() {
-            if (this.AssignedControl.MouseOver)
+            if (this.AssignedControl.MouseOver) {
                 AssignedControlOnMouseEntered(this.AssignedControl, null);
+            }
         }
 
-        protected override void OnDisable() {
-            AssignedControlOnMouseLeft(this.AssignedControl, null);
-        }
+        protected override void OnDisable() => AssignedControlOnMouseLeft(this.AssignedControl, null);
 
         public override void PaintEffect(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (_mouseOver || _forceActive)
+            if (_mouseOver || _forceActive) {
                 spriteBatch.DrawOnCtrl(this.AssignedControl, ContentService.Textures.Pixel, bounds, Color.Transparent);
+            }
         }
-
     }
 }

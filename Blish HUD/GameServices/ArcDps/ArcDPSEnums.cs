@@ -21,9 +21,7 @@ namespace Blish_HUD.ArcDps {
             Unknown
         }
 
-        internal static Activation GetActivation(byte bt) {
-            return Enum.IsDefined(typeof(Activation), bt) ? (Activation)bt : Activation.Unknown;
-        }
+        internal static Activation GetActivation(byte bt) => Enum.IsDefined(typeof(Activation), bt) ? (Activation)bt : Activation.Unknown;
 
         // Buff remove
         public enum BuffRemove : byte {
@@ -35,9 +33,7 @@ namespace Blish_HUD.ArcDps {
             Unknown
         }
 
-        internal static BuffRemove GetBuffRemove(byte bt) {
-            return Enum.IsDefined(typeof(BuffRemove), bt) ? (BuffRemove)bt : BuffRemove.Unknown;
-        }
+        internal static BuffRemove GetBuffRemove(byte bt) => Enum.IsDefined(typeof(BuffRemove), bt) ? (BuffRemove)bt : BuffRemove.Unknown;
 
         // Result
 
@@ -57,9 +53,7 @@ namespace Blish_HUD.ArcDps {
             Unknown
         }
 
-        internal static PhysicalResult GetPhysicalResult(byte bt) {
-            return Enum.IsDefined(typeof(PhysicalResult), bt) ? (PhysicalResult)bt : PhysicalResult.Unknown;
-        }
+        internal static PhysicalResult GetPhysicalResult(byte bt) => Enum.IsDefined(typeof(PhysicalResult), bt) ? (PhysicalResult)bt : PhysicalResult.Unknown;
 
         public enum ConditionResult : byte {
             ExpectedToHit = 0,
@@ -71,9 +65,7 @@ namespace Blish_HUD.ArcDps {
 
             Unknown
         }
-        internal static ConditionResult GetConditionResult(byte bt) {
-            return Enum.IsDefined(typeof(ConditionResult), bt) ? (ConditionResult)bt : ConditionResult.Unknown;
-        }
+        internal static ConditionResult GetConditionResult(byte bt) => Enum.IsDefined(typeof(ConditionResult), bt) ? (ConditionResult)bt : ConditionResult.Unknown;
 
         // State Change    
         public enum StateChange : byte {
@@ -118,9 +110,7 @@ namespace Blish_HUD.ArcDps {
             Unknown
         }
 
-        internal static StateChange GetStateChange(byte bt) {
-            return Enum.IsDefined(typeof(StateChange), bt) ? (StateChange)bt : StateChange.Unknown;
-        }
+        internal static StateChange GetStateChange(byte bt) => Enum.IsDefined(typeof(StateChange), bt) ? (StateChange)bt : StateChange.Unknown;
         // Breakbar State
 
         public enum BreakbarState {
@@ -130,9 +120,7 @@ namespace Blish_HUD.ArcDps {
             None,
             Unknown
         }
-        internal static BreakbarState GetBreakbarState(int value) {
-            return Enum.IsDefined(typeof(BreakbarState), value) ? (BreakbarState)value : BreakbarState.Unknown;
-        }
+        internal static BreakbarState GetBreakbarState(int value) => Enum.IsDefined(typeof(BreakbarState), value) ? (BreakbarState)value : BreakbarState.Unknown;
 
         // Buff Formula
 
@@ -144,9 +132,7 @@ namespace Blish_HUD.ArcDps {
             Force = 4,
             Unknown = -1,
         }
-        internal static BuffStackType GetBuffStackType(short bt) {
-            return Enum.IsDefined(typeof(BuffStackType), bt) ? (BuffStackType)bt : BuffStackType.Unknown;
-        }
+        internal static BuffStackType GetBuffStackType(short bt) => Enum.IsDefined(typeof(BuffStackType), bt) ? (BuffStackType)bt : BuffStackType.Unknown;
 
         public enum BuffAttribute : short {
             None = 0,
@@ -216,9 +202,7 @@ namespace Blish_HUD.ArcDps {
             ExperienceFromAll = -21,
             WXP = -22,
         }
-        internal static BuffAttribute GetBuffAttribute(short bt) {
-            return Enum.IsDefined(typeof(BuffAttribute), bt) ? (BuffAttribute)bt : BuffAttribute.Unknown;
-        }
+        internal static BuffAttribute GetBuffAttribute(short bt) => Enum.IsDefined(typeof(BuffAttribute), bt) ? (BuffAttribute)bt : BuffAttribute.Unknown;
 
         public enum BuffCategory : byte {
             Boon = 0,
@@ -232,9 +216,7 @@ namespace Blish_HUD.ArcDps {
             Stance = 16,
             Unknown
         }
-        internal static BuffCategory GetBuffCategory(byte bt) {
-            return Enum.IsDefined(typeof(BuffCategory), bt) ? (BuffCategory)bt : BuffCategory.Unknown;
-        }
+        internal static BuffCategory GetBuffCategory(byte bt) => Enum.IsDefined(typeof(BuffCategory), bt) ? (BuffCategory)bt : BuffCategory.Unknown;
 
         // Friend of for
 
@@ -245,9 +227,7 @@ namespace Blish_HUD.ArcDps {
             Unknown
         }
 
-        internal static IFF GetIFF(byte bt) {
-            return Enum.IsDefined(typeof(IFF), bt) ? (IFF)bt : IFF.Unknown;
-        }
+        internal static IFF GetIFF(byte bt) => Enum.IsDefined(typeof(IFF), bt) ? (IFF)bt : IFF.Unknown;
 
         // Custom ids
         private const int TwilightCastle = -1;
@@ -503,9 +483,7 @@ namespace Blish_HUD.ArcDps {
             //
             Unknown
         }
-        public static TrashID GetTrashID(int id) {
-            return Enum.IsDefined(typeof(TrashID), id) ? (TrashID)id : TrashID.Unknown;
-        }
+        public static TrashID GetTrashID(int id) => Enum.IsDefined(typeof(TrashID), id) ? (TrashID)id : TrashID.Unknown;
 
         public enum TargetID : int {
             WorldVersusWorld = 1,
@@ -571,8 +549,6 @@ namespace Blish_HUD.ArcDps {
             //
             Unknown
         }
-        public static TargetID GetTargetID(int id) {
-            return Enum.IsDefined(typeof(TargetID), id) ? (TargetID)id : TargetID.Unknown;
-        }
+        public static TargetID GetTargetID(int id) => Enum.IsDefined(typeof(TargetID), id) ? (TargetID)id : TargetID.Unknown;
     }
 }

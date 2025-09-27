@@ -14,33 +14,26 @@ namespace Blish_HUD.Contexts {
         /// <summary>
         /// Structured information provided by one of the asset CDNs.
         /// </summary>
-        public struct CdnInfo {
-
-            private readonly int _buildId;
-            private readonly int _exeFileId;
-            private readonly int _exeFileSize;
-            private readonly int _manifestFileId;
-            private readonly int _manifestFileSize;
-
-            public int BuildId          => _buildId;
-            public int ExeFileId        => _exeFileId;
-            public int ExeFileSize      => _exeFileSize;
-            public int ManifestFileId   => _manifestFileId;
-            public int ManifestFileSize => _manifestFileSize;
+        public readonly struct CdnInfo {
+            public readonly int BuildId { get; }
+            public readonly int ExeFileId { get; }
+            public readonly int ExeFileSize { get; }
+            public readonly int ManifestFileId { get; }
+            public readonly int ManifestFileSize { get; }
 
             public CdnInfo(int buildId, int exeFileId, int exeFileSize, int manifestFileId, int manifestFileSize) {
-                _buildId          = buildId;
-                _exeFileId        = exeFileId;
-                _exeFileSize      = exeFileSize;
-                _manifestFileId   = manifestFileId;
-                _manifestFileSize = manifestFileSize;
+                this.BuildId = buildId;
+                this.ExeFileId = exeFileId;
+                this.ExeFileSize = exeFileSize;
+                this.ManifestFileId = manifestFileId;
+                this.ManifestFileSize = manifestFileSize;
             }
 
             public static CdnInfo Invalid => new CdnInfo(-1, -1, -1, -1, -1);
 
         }
 
-        public struct CdnSet {
+        public readonly struct CdnSet {
 
             public CdnInfo Standard { get; }
 
@@ -48,14 +41,13 @@ namespace Blish_HUD.Contexts {
 
             public CdnSet(CdnInfo standard, CdnInfo chinese) {
                 this.Standard = standard;
-                this.Chinese  = chinese;
+                this.Chinese = chinese;
             }
-
         }
 
         private const int TOTAL_CDN_ENDPOINTS = 2;
 
-        private const string GW2_ASSETCDN_URL    = "http://assetcdn.101.arenanetworks.com/latest/101";
+        private const string GW2_ASSETCDN_URL = "http://assetcdn.101.arenanetworks.com/latest/101";
         private const string GW2_CN_ASSETCDN_URL = "http://assetcdn.111.cgw2.com/latest/111";
 
         private const string BHUD_BUILDINFO_LAMBDA = "https://l.blishhud.com/general/getbuildinfo";
@@ -71,15 +63,13 @@ namespace Blish_HUD.Contexts {
             GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
         }
 
-        protected override void Load() {
-            LoadFromLambda();
-        }
+        protected override void Load() => LoadFromLambda();
 
         private void LoadFromLambda() {
             BHUD_BUILDINFO_LAMBDA.GetJsonAsync<CdnSet>().ContinueWith(cdnSet => {
                 if (!cdnSet.IsFaulted) {
                     SetCdnInfo(ref _standardCdnInfo, cdnSet.Result.Standard);
-                    SetCdnInfo(ref _chineseCdnInfo,  cdnSet.Result.Chinese);
+                    SetCdnInfo(ref _chineseCdnInfo, cdnSet.Result.Chinese);
                 } else {
                     LoadFromCdn();
                 }
@@ -87,13 +77,11 @@ namespace Blish_HUD.Contexts {
         }
 
         private void LoadFromCdn() {
-            GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _standardCdnInfo,   cdnInfo.Result));
+            GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _standardCdnInfo, cdnInfo.Result));
             GetCdnInfoFromCdnUrl(GW2_CN_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _chineseCdnInfo, cdnInfo.Result));
         }
 
-        protected override void Unload() {
-            _loadCount = 0;
-        }
+        protected override void Unload() => _loadCount = 0;
 
         private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
             // Unload without DoUnload to avoid expiring the context
@@ -118,7 +106,7 @@ namespace Blish_HUD.Contexts {
                 parsedSuccessfully &= int.TryParse(cdnVars[2], out int exeFileSize);
                 parsedSuccessfully &= int.TryParse(cdnVars[3], out int manifestFileId);
                 parsedSuccessfully &= int.TryParse(cdnVars[4], out int manifestFileSize);
-                
+
                 if (parsedSuccessfully) {
                     return new CdnInfo(buildId, exeFileId, exeFileSize, manifestFileId, manifestFileSize);
                 }
@@ -139,9 +127,7 @@ namespace Blish_HUD.Contexts {
             }
         }
 
-        private void SetCdnInfo(ref CdnInfo cdnInfo, string result) {
-            SetCdnInfo(ref cdnInfo, ParseCdnInfo(result));
-        }
+        private void SetCdnInfo(ref CdnInfo cdnInfo, string result) => SetCdnInfo(ref cdnInfo, ParseCdnInfo(result));
 
         private async Task<string> GetCdnInfoFromCdnUrl(string cdnUrl) {
             try {
@@ -162,7 +148,9 @@ namespace Blish_HUD.Contexts {
         #endregion
 
         private ContextAvailability TryGetCdnInfo(ref CdnInfo cdnInfo, out ContextResult<CdnInfo> contextResult) {
-            if (this.State != ContextState.Ready) return NotReady(out contextResult);
+            if (this.State != ContextState.Ready) {
+                return NotReady(out contextResult);
+            }
 
             if (cdnInfo.BuildId > 0) {
                 contextResult = new ContextResult<CdnInfo>(cdnInfo);
@@ -182,18 +170,13 @@ namespace Blish_HUD.Contexts {
         /// If <see cref="ContextAvailability.Available"/>, returns
         /// <see cref="CdnInfo"/> provided by the standard asset CDN.
         /// </summary>
-        public ContextAvailability TryGetStandardCdnInfo(out ContextResult<CdnInfo> contextResult) {
-            return TryGetCdnInfo(ref _standardCdnInfo, out contextResult);
-        }
+        public ContextAvailability TryGetStandardCdnInfo(out ContextResult<CdnInfo> contextResult) => TryGetCdnInfo(ref _standardCdnInfo, out contextResult);
 
         /// <summary>
         /// If <see cref="ContextAvailability.Available"/>, returns
         /// <see cref="CdnInfo"/> provided by the Chinese asset CDN.
         /// </summary>
-        public ContextAvailability TryGetChineseCdnInfo(out ContextResult<CdnInfo> contextResult) {
-            return TryGetCdnInfo(ref _chineseCdnInfo, out contextResult);
-        }
+        public ContextAvailability TryGetChineseCdnInfo(out ContextResult<CdnInfo> contextResult) => TryGetCdnInfo(ref _chineseCdnInfo, out contextResult);
 
     }
-
 }

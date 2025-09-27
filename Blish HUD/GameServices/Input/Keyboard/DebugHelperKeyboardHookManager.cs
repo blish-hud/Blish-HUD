@@ -10,18 +10,20 @@ namespace Blish_HUD.Input {
         public DebugHelperKeyboardHookManager(IMessageService debugHelperMessageService) : base(debugHelperMessageService) { }
 
         protected override void HookCallback(KeyboardEventMessage message) {
-            KeyboardEventArgs keyboardEventArgs = new KeyboardEventArgs((KeyboardEventType)message.EventType, (Keys)message.Key);
-            bool              isHandled         = false;
+            var keyboardEventArgs = new KeyboardEventArgs((KeyboardEventType)message.EventType, (Keys)message.Key);
+            bool isHandled = false;
 
-            lock (((IList) this.Handlers).SyncRoot) {
-                foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
+            lock (((IList)this.Handlers).SyncRoot) {
+                foreach (var handler in this.Handlers) {
                     isHandled = handler(keyboardEventArgs);
-                    if (isHandled) break;
+                    if (isHandled) {
+                        break;
+                    }
                 }
             }
 
-            KeyboardResponseMessage response = new KeyboardResponseMessage {
-                Id        = message.Id,
+            var response = new KeyboardResponseMessage {
+                Id = message.Id,
                 IsHandled = isHandled
             };
 
@@ -29,14 +31,12 @@ namespace Blish_HUD.Input {
         }
 
         protected override void DummyHookCallback(KeyboardEventMessage message) {
-            KeyboardResponseMessage response = new KeyboardResponseMessage {
-                Id        = message.Id,
+            var response = new KeyboardResponseMessage {
+                Id = message.Id,
                 IsHandled = false
             };
 
             this.DebugHelperMessageService.Send(response);
         }
-
     }
-
 }

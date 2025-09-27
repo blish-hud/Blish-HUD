@@ -13,10 +13,10 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private const int CONTROL_PADDING = 5;
 
-        private const int DROPDOWN_WIDTH  = 250;
+        private const int DROPDOWN_WIDTH = 250;
         private const int DROPDOWN_HEIGHT = 27;
 
-        private Label    _displayNameLabel;
+        private Label _displayNameLabel;
         private Dropdown _enumDropdown;
 
         private TEnum[] _enumValues;
@@ -34,12 +34,12 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void BuildSetting(Container buildPanel) {
             _displayNameLabel = new Label() {
                 AutoSizeWidth = true,
-                Location      = new Point(CONTROL_PADDING, 0),
-                Parent        = buildPanel
+                Location = new Point(CONTROL_PADDING, 0),
+                Parent = buildPanel
             };
 
             _enumDropdown = new Dropdown() {
-                Size   = new Point(DROPDOWN_WIDTH, DROPDOWN_HEIGHT),
+                Size = new Point(DROPDOWN_WIDTH, DROPDOWN_HEIGHT),
                 Parent = buildPanel
             };
 
@@ -51,7 +51,7 @@ namespace Blish_HUD.Settings.UI.Views {
         public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {
                 case EnumInclusionComplianceRequisite<TEnum> enumInclusionRequisite:
-                    IEnumerable<TEnum> toRemove = _enumValues.Except(enumInclusionRequisite.IncludedValues);
+                    var toRemove = _enumValues.Except(enumInclusionRequisite.IncludedValues);
 
                     foreach (var value in toRemove) {
                         _enumDropdown.Items.Remove(value.Humanize(LetterCasing.Title));
@@ -60,7 +60,7 @@ namespace Blish_HUD.Settings.UI.Views {
                     break;
                 case SettingDisabledComplianceRequisite disabledRequisite:
                     _displayNameLabel.Enabled = !disabledRequisite.Disabled;
-                    _enumDropdown.Enabled     = !disabledRequisite.Disabled;
+                    _enumDropdown.Enabled = !disabledRequisite.Disabled;
                     break;
                 default:
                     return false;
@@ -69,17 +69,15 @@ namespace Blish_HUD.Settings.UI.Views {
             return true;
         }
 
-        private void EnumDropdownOnValueChanged(object sender, ValueChangedEventArgs e) {
-            this.OnValueChanged(new ValueEventArgs<TEnum>(e.CurrentValue.DehumanizeTo<TEnum>()));
-        }
+        private void EnumDropdownOnValueChanged(object sender, ValueChangedEventArgs e) => this.OnValueChanged(new ValueEventArgs<TEnum>(e.CurrentValue.DehumanizeTo<TEnum>()));
 
         private void UpdateSizeAndLayout() {
-            this.ViewTarget.Height   = _enumDropdown.Bottom;
+            this.ViewTarget.Height = _enumDropdown.Bottom;
             _displayNameLabel.Height = this.ViewTarget.Height;
 
             if (this.DefinedWidth > 0) {
-                _enumDropdown.Left    = _displayNameLabel.Right + CONTROL_PADDING;
-                this.ViewTarget.Width = _enumDropdown.Right     + CONTROL_PADDING;
+                _enumDropdown.Left = _displayNameLabel.Right + CONTROL_PADDING;
+                this.ViewTarget.Width = _enumDropdown.Right + CONTROL_PADDING;
             } else {
                 _enumDropdown.Location = new Point(this.ViewTarget.Width - CONTROL_PADDING - DROPDOWN_WIDTH, 0);
             }
@@ -96,15 +94,12 @@ namespace Blish_HUD.Settings.UI.Views {
             _enumDropdown.BasicTooltipText = description;
         }
 
-        protected override void RefreshValue(TEnum value) {
-            _enumDropdown.SelectedItem = value.Humanize(LetterCasing.Title);
-        }
+        protected override void RefreshValue(TEnum value) => _enumDropdown.SelectedItem = value.Humanize(LetterCasing.Title);
 
         protected override void Unload() {
             if (_enumDropdown != null) {
                 _enumDropdown.ValueChanged -= EnumDropdownOnValueChanged;
             }
         }
-
     }
 }

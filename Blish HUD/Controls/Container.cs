@@ -29,17 +29,11 @@ namespace Blish_HUD.Controls {
             _children = new ControlCollection<Control>();
         }
 
-        protected virtual void OnChildAdded(ChildChangedEventArgs e) {
-            this.ChildAdded?.Invoke(this, e);
-        }
+        protected virtual void OnChildAdded(ChildChangedEventArgs e) => this.ChildAdded?.Invoke(this, e);
 
-        protected virtual void OnChildRemoved(ChildChangedEventArgs e) {
-            this.ChildRemoved?.Invoke(this, e);
-        }
+        protected virtual void OnChildRemoved(ChildChangedEventArgs e) => this.ChildRemoved?.Invoke(this, e);
 
-        protected virtual void OnContentResized(RegionChangedEventArgs e) {
-            this.ContentResized?.Invoke(this, e);
-        }
+        protected virtual void OnContentResized(RegionChangedEventArgs e) => this.ContentResized?.Invoke(this, e);
 
         protected override void OnResized(ResizedEventArgs e) {
             base.OnResized(e);
@@ -69,7 +63,7 @@ namespace Blish_HUD.Controls {
 
         protected Point _contentBounds = Point.Zero;
         public Point ContentBounds => _contentBounds;
-        
+
         private int _verticalScrollOffset;
 
         /// <summary>
@@ -111,7 +105,7 @@ namespace Blish_HUD.Controls {
             get => _heightSizingMode;
             set => SetProperty(ref _heightSizingMode, value);
         }
-        
+
         private Point _autoSizePadding = Point.Zero;
 
         /// <summary>
@@ -161,7 +155,9 @@ namespace Blish_HUD.Controls {
         /// Adding a control this way does not update the <see cref="Control"/>'s <see cref="Control.Parent"/> making it unsuitable for most situations.
         /// </summary>
         public bool AddChild(Control child) {
-            if (_children.Contains(child)) return true;
+            if (_children.Contains(child)) {
+                return true;
+            }
 
             var resultingChildren = _children.ToList();
             resultingChildren.Add(child);
@@ -169,7 +165,9 @@ namespace Blish_HUD.Controls {
             var evRes = new ChildChangedEventArgs(this, child, true, resultingChildren);
             OnChildAdded(evRes);
 
-            if (evRes.Cancel) return false;
+            if (evRes.Cancel) {
+                return false;
+            }
 
             _children.Add(child);
 
@@ -183,7 +181,9 @@ namespace Blish_HUD.Controls {
         /// Removing a control this way does not update the <see cref="Control"/>'s <see cref="Control.Parent"/> making it unsuitable for most situations.
         /// </summary>
         public bool RemoveChild(Control child) {
-            if (!_children.Contains(child)) return true;
+            if (!_children.Contains(child)) {
+                return true;
+            }
 
             var resultingChildren = _children.ToList();
             resultingChildren.Remove(child);
@@ -192,7 +192,9 @@ namespace Blish_HUD.Controls {
             OnChildRemoved(evRes);
 
             // TODO: Currently if a child removal is canceled, the child control will still set their parent to null, despite still being listed as a child here
-            if (evRes.Cancel) return false;
+            if (evRes.Cancel) {
+                return false;
+            }
 
             _children.Remove(child);
 
@@ -211,15 +213,15 @@ namespace Blish_HUD.Controls {
         }
 
         public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
-            Control thisResult  = null;
+            Control thisResult = null;
             Control childResult = null;
 
             if (CapturesInput() != CaptureType.None) {
                 thisResult = base.TriggerMouseInput(mouseEventType, ms);
             }
 
-            List<Control>               children        = _children.ToList();
-            IOrderedEnumerable<Control> zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
+            var children = _children.ToList();
+            var zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
 
             foreach (var childControl in zSortedChildren) {
                 if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
@@ -242,34 +244,30 @@ namespace Blish_HUD.Controls {
         public virtual void UpdateContainer(GameTime gameTime) { /* NOOP */ }
 
         private int GetUpdatedSizing(SizingMode sizingMode, int currentSize, int maxSize, int fillSize) {
-            switch (sizingMode) {
-                default:
-                case SizingMode.Standard:
-                    return currentSize;
-                case SizingMode.AutoSize:
-                    return maxSize;
-                case SizingMode.Fill:
-                    return fillSize;
-            }
+            return sizingMode switch {
+                SizingMode.AutoSize => maxSize,
+                SizingMode.Fill => fillSize,
+                _ => currentSize,
+            };
         }
 
         public sealed override void DoUpdate(GameTime gameTime) {
             UpdateContainer(gameTime);
 
-            Control[] children = _children.ToArray();
+            var children = _children.ToArray();
 
             _contentBounds = ControlUtil.GetControlBounds(children);
 
             // Update our size based on the sizing mode
             var parent = this.Parent;
-            if (parent != null) { 
+            if (parent != null) {
                 this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
                                                       this.Width,
-                                                      _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
+                                                      _contentBounds.X + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
                                                       parent.ContentRegion.Width - this.Left),
                                       GetUpdatedSizing(this.HeightSizingMode,
                                                       this.Height,
-                                                      _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
+                                                      _contentBounds.Y + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
                                                       parent.ContentRegion.Height - this.Top));
             }
 
@@ -303,8 +301,8 @@ namespace Blish_HUD.Controls {
         public virtual void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) { /* NOOP */ }
 
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
-            var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
-            
+            var contentScissor = Rectangle.Intersect(scissor, this.ContentRegion.ToBounds(this.AbsoluteBounds));
+
             var zSortedChildren = _children.ToArray().OrderBy(i => i.ZIndex);
 
             // Render each visible child
@@ -331,13 +329,9 @@ namespace Blish_HUD.Controls {
 
         #region IEnumerable Implementation
 
-        public IEnumerator<Control> GetEnumerator() {
-            return _children.GetEnumerator();
-        }
+        public IEnumerator<Control> GetEnumerator() => _children.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         #endregion
 

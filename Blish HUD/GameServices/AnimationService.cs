@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD {
-    public class AnimationService:GameService {
+    public class AnimationService : GameService {
 
         public Glide.Tweener Tweener { get; private set; }
 
@@ -18,8 +18,6 @@ namespace Blish_HUD {
 
         protected override void Unload() { /* NOOP */ }
 
-        protected override void Update(GameTime gameTime) {
-            this.Tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-        }
+        protected override void Update(GameTime gameTime) => this.Tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
     }
 }

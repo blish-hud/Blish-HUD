@@ -9,46 +9,45 @@ namespace Blish_HUD {
 
     public class SpriteBatchParameters {
 
-        public SpriteSortMode    SortMode          { get; set; }
-        public BlendState        BlendState        { get; set; }
-        public SamplerState      SamplerState      { get; set; }
+        public SpriteSortMode SortMode { get; set; }
+        public BlendState BlendState { get; set; }
+        public SamplerState SamplerState { get; set; }
         public DepthStencilState DepthStencilState { get; set; }
-        public RasterizerState   RasterizerState   { get; set; }
-        public Effect            Effect            { get; set; }
-        public Matrix?           TransformMatrix   { get; set; }
+        public RasterizerState RasterizerState { get; set; }
+        public Effect Effect { get; set; }
+        public Matrix? TransformMatrix { get; set; }
 
         public SpriteBatchParameters(
-            SpriteSortMode    sortMode          = SpriteSortMode.Deferred,
-            BlendState        blendState        = null,
-            SamplerState      samplerState      = null,
+            SpriteSortMode sortMode = SpriteSortMode.Deferred,
+            BlendState blendState = null,
+            SamplerState samplerState = null,
             DepthStencilState depthStencilState = null,
-            RasterizerState   rasterizerState   = null,
-            Effect            effect            = null,
-            Matrix?           transformMatrix   = null
+            RasterizerState rasterizerState = null,
+            Effect effect = null,
+            Matrix? transformMatrix = null
         ) {
-            this.SortMode          = sortMode;
-            this.BlendState        = blendState;
-            this.SamplerState      = samplerState;
+            this.SortMode = sortMode;
+            this.BlendState = blendState;
+            this.SamplerState = samplerState;
             this.DepthStencilState = depthStencilState;
-            this.RasterizerState   = rasterizerState ?? BlishHud.Instance.UiRasterizer;
-            this.Effect            = effect;
-            this.TransformMatrix   = transformMatrix;
+            this.RasterizerState = rasterizerState ?? BlishHud.Instance.UiRasterizer;
+            this.Effect = effect;
+            this.TransformMatrix = transformMatrix;
         }
 
         public static bool ParamsEqual(SpriteBatchParameters leftSpriteBatchParams, SpriteBatchParameters rightSpriteBatchParams) {
             return Equals(leftSpriteBatchParams, rightSpriteBatchParams)
-                || (Equals(leftSpriteBatchParams.SortMode,          rightSpriteBatchParams.SortMode)
-                 && Equals(leftSpriteBatchParams.BlendState,        rightSpriteBatchParams.BlendState)
+                || (Equals(leftSpriteBatchParams.SortMode, rightSpriteBatchParams.SortMode)
+                 && Equals(leftSpriteBatchParams.BlendState, rightSpriteBatchParams.BlendState)
                  && Equals(leftSpriteBatchParams.DepthStencilState, rightSpriteBatchParams.DepthStencilState)
-                 && Equals(leftSpriteBatchParams.RasterizerState,   rightSpriteBatchParams.RasterizerState)
-                 && Equals(leftSpriteBatchParams.Effect,            rightSpriteBatchParams.Effect)
-                 && Equals(leftSpriteBatchParams.TransformMatrix,   rightSpriteBatchParams.TransformMatrix));
+                 && Equals(leftSpriteBatchParams.RasterizerState, rightSpriteBatchParams.RasterizerState)
+                 && Equals(leftSpriteBatchParams.Effect, rightSpriteBatchParams.Effect)
+                 && Equals(leftSpriteBatchParams.TransformMatrix, rightSpriteBatchParams.TransformMatrix));
         }
-
     }
 
     public static class SpriteBatchExtensions {
-        
+
         public static void Begin(this SpriteBatch spriteBatch, SpriteBatchParameters parameters) {
             spriteBatch.Begin(parameters.SortMode,
                               parameters.BlendState,
@@ -108,15 +107,15 @@ namespace Blish_HUD {
                              0);
         }
 
-        public static void DrawStringOnCtrl(this SpriteBatch    spriteBatch,
-                                            Control             ctrl,
-                                            string              text,
-                                            BitmapFont          font,
-                                            Rectangle           destinationRectangle,
-                                            Color               color,
-                                            bool                wrap                = false,
+        public static void DrawStringOnCtrl(this SpriteBatch spriteBatch,
+                                            Control ctrl,
+                                            string text,
+                                            BitmapFont font,
+                                            Rectangle destinationRectangle,
+                                            Color color,
+                                            bool wrap = false,
                                             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
-                                            VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
+                                            VerticalAlignment verticalAlignment = VerticalAlignment.Middle) {
             DrawStringOnCtrl(spriteBatch,
                              ctrl,
                              text,
@@ -130,34 +129,35 @@ namespace Blish_HUD {
                              verticalAlignment);
         }
 
-        public static void DrawStringOnCtrl(this SpriteBatch    spriteBatch,
-                                            Control             ctrl,
-                                            string              text,
-                                            BitmapFont          font,
-                                            Rectangle           destinationRectangle,
-                                            Color               color,
-                                            bool                wrap,
-                                            bool                stroke,
-                                            int                 strokeDistance      = 1,
+        public static void DrawStringOnCtrl(this SpriteBatch spriteBatch,
+                                            Control ctrl,
+                                            string text,
+                                            BitmapFont font,
+                                            Rectangle destinationRectangle,
+                                            Color color,
+                                            bool wrap,
+                                            bool stroke,
+                                            int strokeDistance = 1,
                                             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
-                                            VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
+                                            VerticalAlignment verticalAlignment = VerticalAlignment.Middle) {
 
-            if (string.IsNullOrEmpty(text)) return;
+            if (string.IsNullOrEmpty(text)) {
+                return;
+            }
 
             text = wrap ? DrawUtil.WrapText(font, text, destinationRectangle.Width) : text;
 
             // TODO: This does not account for vertical alignment
             if (horizontalAlignment != HorizontalAlignment.Left && (wrap || text.Contains("\n"))) {
-                using (StringReader reader = new StringReader(text)) {
-                    string line;
+                using var reader = new StringReader(text);
+                string line;
 
-                    int lineHeightDiff = 0;
+                int lineHeightDiff = 0;
 
-                    while (destinationRectangle.Height - lineHeightDiff > 0 && (line = reader.ReadLine()) != null) {
-                        DrawStringOnCtrl(spriteBatch, ctrl, line, font, destinationRectangle.Add(0, lineHeightDiff, 0, -0), color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
+                while (destinationRectangle.Height - lineHeightDiff > 0 && (line = reader.ReadLine()) != null) {
+                    DrawStringOnCtrl(spriteBatch, ctrl, line, font, destinationRectangle.Add(0, lineHeightDiff, 0, -0), color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
 
-                        lineHeightDiff += font.LineHeight;
-                    }
+                    lineHeightDiff += font.LineHeight;
                 }
 
                 return;
@@ -172,7 +172,7 @@ namespace Blish_HUD {
 
             switch (horizontalAlignment) {
                 case HorizontalAlignment.Center:
-                    xPos += destinationRectangle.Width / 2 - (int)textSize.X / 2;
+                    xPos += (destinationRectangle.Width / 2) - ((int)textSize.X / 2);
                     break;
                 case HorizontalAlignment.Right:
                     xPos += destinationRectangle.Width - (int)textSize.X;
@@ -181,7 +181,7 @@ namespace Blish_HUD {
 
             switch (verticalAlignment) {
                 case VerticalAlignment.Middle:
-                    yPos += destinationRectangle.Height / 2 - (int)textSize.Y / 2;
+                    yPos += (destinationRectangle.Height / 2) - ((int)textSize.Y / 2);
                     break;
                 case VerticalAlignment.Bottom:
                     yPos += destinationRectangle.Height - (int)textSize.Y;
@@ -195,18 +195,17 @@ namespace Blish_HUD {
             if (stroke) {
                 var strokePreMultiplied = Color.Black * absoluteOpacity;
 
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               -strokeDistance), strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  -strokeDistance), strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  0),               strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  strokeDistance),  strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               strokeDistance),  strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, strokeDistance),  strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, 0),               strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(0, -strokeDistance), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance, -strokeDistance), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance, 0), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance, strokeDistance), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(0, strokeDistance), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, strokeDistance), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, 0), strokePreMultiplied);
                 spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, -strokeDistance), strokePreMultiplied);
             }
 
             spriteBatch.DrawString(font, text, textPos, color * absoluteOpacity);
         }
-
     }
 }

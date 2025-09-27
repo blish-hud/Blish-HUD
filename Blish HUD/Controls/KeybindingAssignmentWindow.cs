@@ -44,10 +44,10 @@ namespace Blish_HUD.Controls {
         #endregion
 
         private readonly Rectangle _normalizedHotkeyRegion = new Rectangle(60, 80, 225, 30);
-        private readonly Rectangle _normalizedWindowRegion = new Rectangle(0,  0,  371, 200);
+        private readonly Rectangle _normalizedWindowRegion = new Rectangle(0, 0, 371, 200);
 
         private ModifierKeys _modifierKeys;
-        private Keys         _primaryKey;
+        private Keys _primaryKey;
 
         /// <summary>
         /// The current modifier key(s) assignment.
@@ -71,13 +71,13 @@ namespace Blish_HUD.Controls {
 
         public KeybindingAssignmentWindow(string assignmentName, ModifierKeys modifierKeys = ModifierKeys.None, Keys primaryKey = Keys.None) {
             _assignmentName = assignmentName;
-            _modifierKeys   = modifierKeys;
-            _primaryKey     = primaryKey;
+            _modifierKeys = modifierKeys;
+            _primaryKey = primaryKey;
 
             this.BackgroundColor = Color.Black * 0.3f;
-            this.Size            = new Point(_normalizedWindowRegion.Width, _normalizedWindowRegion.Height);
-            this.ZIndex          = int.MaxValue - 2;
-            this.Visible         = false;
+            this.Size = new Point(_normalizedWindowRegion.Width, _normalizedWindowRegion.Height);
+            this.ZIndex = int.MaxValue - 2;
+            this.Visible = false;
 
             BuildChildElements();
 
@@ -120,33 +120,33 @@ namespace Blish_HUD.Controls {
 
         private void BuildChildElements() {
             var assignInputsLbl = new Label() {
-                Text           = string.Format(Strings.GameServices.InputService.Hotkey_AssignInputsTo, _assignmentName),
-                Location       = new Point(40, 35),
-                ShowShadow     = true,
-                AutoSizeWidth  = true,
+                Text = string.Format(Strings.GameServices.InputService.Hotkey_AssignInputsTo, _assignmentName),
+                Location = new Point(40, 35),
+                ShowShadow = true,
+                AutoSizeWidth = true,
                 AutoSizeHeight = true,
-                Parent         = this
+                Parent = this
             };
 
             _unbindBttn = new StandardButton() {
-                Text     = Strings.GameServices.InputService.Hotkey_Unbind,
+                Text = Strings.GameServices.InputService.Hotkey_Unbind,
                 Location = new Point(275, 85),
-                Width    = 70,
-                Height   = 25,
-                Parent   = this
+                Width = 70,
+                Height = 25,
+                Parent = this
             };
 
             _cancelBttn = new StandardButton() {
-                Text     = Strings.Common.Action_Cancel,
+                Text = Strings.Common.Action_Cancel,
                 Location = new Point(275, 140),
-                Width    = 70,
-                Height   = 25,
-                Parent   = this
+                Width = 70,
+                Height = 25,
+                Parent = this
             };
 
             _acceptBttn = new StandardButton() {
-                Text   = Strings.Common.Action_Accept,
-                Width  = 105,
+                Text = Strings.Common.Action_Accept,
+                Width = 105,
                 Height = 25,
                 Parent = this
             };
@@ -154,7 +154,7 @@ namespace Blish_HUD.Controls {
 
             _unbindBttn.Click += delegate {
                 this.ModifierKeys = ModifierKeys.None;
-                this.PrimaryKey   = Keys.None;
+                this.PrimaryKey = Keys.None;
             };
 
             _cancelBttn.Click += delegate {
@@ -177,8 +177,8 @@ namespace Blish_HUD.Controls {
             if (parent != null) {
                 _size = parent.Size;
 
-                var distanceInwards = new Point(_size.X / 2 - _normalizedWindowRegion.Width  / 2,
-                                                _size.Y / 2 - _normalizedWindowRegion.Height / 2);
+                var distanceInwards = new Point((_size.X / 2) - (_normalizedWindowRegion.Width / 2),
+                                                (_size.Y / 2) - (_normalizedWindowRegion.Height / 2));
 
                 _hotkeyRegion = _normalizedHotkeyRegion.OffsetBy(distanceInwards);
                 _windowRegion = _normalizedWindowRegion.OffsetBy(distanceInwards);
@@ -197,7 +197,7 @@ namespace Blish_HUD.Controls {
             spriteBatch.DrawOnCtrl(this, _textureWindowTexture, _windowRegion);
 
             spriteBatch.DrawStringOnCtrl(this, _assignmentDisplayString, Content.DefaultFont16, _hotkeyRegion.OffsetBy(1, 1), Color.Black);
-            spriteBatch.DrawStringOnCtrl(this, _assignmentDisplayString, Content.DefaultFont16, _hotkeyRegion,                Color.White);
+            spriteBatch.DrawStringOnCtrl(this, _assignmentDisplayString, Content.DefaultFont16, _hotkeyRegion, Color.White);
         }
 
         protected override void DisposeControl() {
@@ -210,11 +210,10 @@ namespace Blish_HUD.Controls {
 
         // We implement IWindow to avoid other windows from reacting to our ESC input
 
-        public bool   TopMost              => true;
-        public double LastInteraction      => double.MaxValue;
-        public bool   CanClose             => false;
-        public bool   CanCloseWithEscape   => false;
-        public void   BringWindowToFront() { /* NOOP */ }
-
+        public bool TopMost => true;
+        public double LastInteraction => double.MaxValue;
+        public bool CanClose => false;
+        public bool CanCloseWithEscape => false;
+        public void BringWindowToFront() { /* NOOP */ }
     }
 }

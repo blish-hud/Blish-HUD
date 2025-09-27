@@ -9,7 +9,7 @@ namespace Blish_HUD.Controls {
 
     public class ContextMenuStripItem : Control, ICheckable {
 
-        private const int BULLET_SIZE        = 18;
+        private const int BULLET_SIZE = 18;
         private const int HORIZONTAL_PADDING = 6;
 
         private const int TEXT_LEFTPADDING = HORIZONTAL_PADDING + BULLET_SIZE + HORIZONTAL_PADDING;
@@ -18,14 +18,12 @@ namespace Blish_HUD.Controls {
 
         private readonly AsyncTexture2D _textureBullet = AsyncTexture2D.FromAssetId(155038);
 
-        private static readonly Texture2D _textureArrow  = Content.GetTexture("context-menu-strip-submenu");
+        private static readonly Texture2D _textureArrow = Content.GetTexture("context-menu-strip-submenu");
 
         #endregion
 
         public event EventHandler<CheckChangedEvent> CheckedChanged;
-        protected virtual void OnCheckedChanged(CheckChangedEvent e) {
-            this.CheckedChanged?.Invoke(this, e);
-        }
+        protected virtual void OnCheckedChanged(CheckChangedEvent e) => this.CheckedChanged?.Invoke(this, e);
 
         private string _text;
         public string Text {
@@ -54,7 +52,7 @@ namespace Blish_HUD.Controls {
                 }
             }
         }
-        
+
         public ContextMenuStripItem() {
             this.EffectBehind = new Effects.ScrollingHighlightEffect(this);
         }
@@ -65,15 +63,11 @@ namespace Blish_HUD.Controls {
 
         public override void RecalculateLayout() {
             var textSize = GameService.Content.DefaultFont14.MeasureString(_text);
-            int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
+            int nWidth = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
 
             var parent = this.Parent;
 
-            if (parent != null) {
-                this.Width = Math.Max(parent.Width - 4, nWidth);
-            } else {
-                this.Width = nWidth;
-            }
+            this.Width = parent != null ? Math.Max(parent.Width - 4, nWidth) : nWidth;
         }
 
         protected override void OnClick(MouseEventArgs e) {
@@ -97,14 +91,15 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnMouseLeft(MouseEventArgs e) {
-            if (this.RelativeMousePosition.X < this.Left)
+            if (this.RelativeMousePosition.X < this.Left) {
                 this.Submenu?.Hide();
+            }
 
             base.OnMouseLeft(e);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            var modifierTint = this.Enabled 
+            var modifierTint = this.Enabled
                                    ? this.MouseOver
                                         ? StandardColors.Tinted
                                         : StandardColors.Default
@@ -119,17 +114,16 @@ namespace Blish_HUD.Controls {
 
                 spriteBatch.DrawOnCtrl(this,
                                  Resources.Checkable.TextureRegionsCheckbox.First(cb => cb.Name == $"checkbox/cb{state}{extension}"),
-                                 new Rectangle(HORIZONTAL_PADDING + BULLET_SIZE / 2 - 16,
-                                               _size.Y / 2 - 16,
+                                 new Rectangle(HORIZONTAL_PADDING + (BULLET_SIZE / 2) - 16,
+                                               (_size.Y / 2) - 16,
                                                32,
                                                32),
                                  StandardColors.Default);
-
             } else {
                 spriteBatch.DrawOnCtrl(this,
                                  _textureBullet,
                                  new Rectangle(HORIZONTAL_PADDING,
-                                               _size.Y / 2 - BULLET_SIZE / 2,
+                                               (_size.Y / 2) - (BULLET_SIZE / 2),
                                                BULLET_SIZE,
                                                BULLET_SIZE),
                                  modifierTint);
@@ -159,13 +153,11 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawOnCtrl(this,
                                  _textureArrow,
                                  new Rectangle(_size.X - HORIZONTAL_PADDING - _textureArrow.Width,
-                                               _size.Y / 2 - _textureArrow.Height / 2,
+                                               (_size.Y / 2) - (_textureArrow.Height / 2),
                                                _textureArrow.Width,
                                                _textureArrow.Height),
                                  modifierTint);
             }
         }
-
     }
-
 }

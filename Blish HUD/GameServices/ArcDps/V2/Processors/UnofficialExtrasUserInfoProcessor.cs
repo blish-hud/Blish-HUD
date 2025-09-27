@@ -14,12 +14,10 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
                 using var binaryReader = new BincodeBinaryReader(memoryStream);
                 result = binaryReader.ParseUserInfo();
                 return true;
-
             } catch (Exception) {
                 result = default;
                 return false;
             }
-
         }
     }
 }

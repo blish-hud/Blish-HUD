@@ -10,7 +10,7 @@ namespace Blish_HUD.Controls {
 
         private const int DURATION_DEFAULT = 4;
 
-        private const int NOTIFICATION_WIDTH  = 1024;
+        private const int NOTIFICATION_WIDTH = 1024;
         private const int NOTIFICATION_HEIGHT = 256;
 
         #region Load Static
@@ -19,11 +19,11 @@ namespace Blish_HUD.Controls {
 
         private static readonly BitmapFont _fontMenomonia36Regular = Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size36, ContentService.FontStyle.Regular);
 
-        private static readonly Texture2D _textureGrayBackground  = Content.GetTexture(@"controls/notification/notification-gray");
-        private static readonly Texture2D _textureBlueBackground  = Content.GetTexture(@"controls/notification/notification-blue");
+        private static readonly Texture2D _textureGrayBackground = Content.GetTexture(@"controls/notification/notification-gray");
+        private static readonly Texture2D _textureBlueBackground = Content.GetTexture(@"controls/notification/notification-blue");
         private static readonly Texture2D _textureGreenBackground = Content.GetTexture(@"controls/notification/notification-green");
-        private static readonly Texture2D _textureRedBackground   = Content.GetTexture(@"controls/notification/notification-red");
-        
+        private static readonly Texture2D _textureRedBackground = Content.GetTexture(@"controls/notification/notification-red");
+
         #endregion
 
         public enum NotificationType {
@@ -61,31 +61,30 @@ namespace Blish_HUD.Controls {
             get => _message;
             set => SetProperty(ref _message, value);
         }
-        
+
         private Glide.Tween _animFadeLifecycle;
         private int _targetTop = 0;
         private Tween _slideDownTween;
 
         private Rectangle _layoutMessageBounds;
-        private Rectangle _layoutIconBounds;
 
         private ScreenNotification(string message, NotificationType type = NotificationType.Info, Texture2D icon = null, int duration = DURATION_DEFAULT) {
-            _message  = message;
-            _type     = type;
-            _icon     = icon;
+            _message = message;
+            _type = type;
+            _icon = icon;
             _duration = duration;
 
-            this.Opacity  = 0f;
-            this.Size     = new Point(NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
-            this.ZIndex   = Screen.TOOLTIP_BASEZINDEX;
-            this.Location = new Point(Graphics.SpriteScreen.Width / 2 - this.Size.X / 2, Graphics.SpriteScreen.Height / 4 - this.Size.Y / 2);
+            this.Opacity = 0f;
+            this.Size = new Point(NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
+            this.ZIndex = Screen.TOOLTIP_BASEZINDEX;
+            this.Location = new Point((Graphics.SpriteScreen.Width / 2) - (this.Size.X / 2), (Graphics.SpriteScreen.Height / 4) - (this.Size.Y / 2));
 
             _targetTop = this.Top;
         }
 
         public override void DoUpdate(GameTime gameTime) {
             // Calculate new top location. Fixes the wrong location before blish finishes resizing.
-            var calculatedNewTop = Graphics.SpriteScreen.Height / 4 - this.Size.Y / 2;
+            int calculatedNewTop = (Graphics.SpriteScreen.Height / 4) - (this.Size.Y / 2);
             if (calculatedNewTop > _targetTop) {
                 _targetTop += calculatedNewTop;
 
@@ -95,13 +94,11 @@ namespace Blish_HUD.Controls {
                 this.Top = _targetTop;
             }
 
-            this.Left = Graphics.SpriteScreen.Width / 2 - this.Size.X / 2;
+            this.Left = (Graphics.SpriteScreen.Width / 2) - (this.Size.X / 2);
         }
 
-        protected override CaptureType CapturesInput() {
-            return CaptureType.Filter;
-        }
-        
+        protected override CaptureType CapturesInput() => CaptureType.Filter;
+
         public override void RecalculateLayout() {
             switch (_type) {
                 case NotificationType.Info:
@@ -120,9 +117,11 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            if (string.IsNullOrEmpty(_message)) return;
+            if (string.IsNullOrEmpty(_message)) {
+                return;
+            }
 
-            Color     messageColor           = Color.White;
+            var messageColor = Color.White;
             Texture2D notificationBackground = null;
 
             switch (_type) {
@@ -155,8 +154,9 @@ namespace Blish_HUD.Controls {
                     break;
             }
 
-            if (notificationBackground != null)
+            if (notificationBackground != null) {
                 spriteBatch.DrawOnCtrl(this, notificationBackground, _layoutMessageBounds);
+            }
 
             // TODO: Add back drawing icon: (something like) spriteBatch.Draw(this.Icon, new Rectangle(64, 32, 128, 128).OffsetBy(bounds.Location), Color.White);
 
@@ -193,12 +193,14 @@ namespace Blish_HUD.Controls {
             _targetTop += distance;
 
             this._slideDownTween?.Cancel();
-            this._slideDownTween = Animation.Tweener.Tween(this, new {Top = _targetTop }, 0.1f);
+            this._slideDownTween = Animation.Tweener.Tween(this, new { Top = _targetTop }, 0.1f);
 
-            if (_opacity < 1f) return;
+            if (_opacity < 1f) {
+                return;
+            }
 
             _animFadeLifecycle = Animation.Tweener
-                                          .Tween(this, new {Opacity = 0f}, 1f)
+                                          .Tween(this, new { Opacity = 0f }, 1f)
                                           .OnComplete(Dispose);
         }
 
@@ -227,6 +229,5 @@ namespace Blish_HUD.Controls {
 
             nNot.Show();
         }
-
     }
 }

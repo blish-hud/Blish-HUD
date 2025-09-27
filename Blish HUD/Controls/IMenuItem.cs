@@ -10,24 +10,23 @@ namespace Blish_HUD.Controls {
 
     public interface IMenuItem {
 
-        event EventHandler<ControlActivatedEventArgs> ItemSelected;
+        public event EventHandler<ControlActivatedEventArgs> ItemSelected;
 
-        int MenuItemHeight { get; set; }
+        public int MenuItemHeight { get; set; }
 
-        bool Selected { get; }
+        public bool Selected { get; }
 
-        MenuItem SelectedMenuItem { get; }
+        public MenuItem SelectedMenuItem { get; }
 
-        bool ShouldShift { get; set; }
+        public bool ShouldShift { get; set; }
 
-        void Select();
+        public void Select();
 
-        void Select(MenuItem menuItem);
+        public void Select(MenuItem menuItem);
 
-        void Select(MenuItem menuItem, List<IMenuItem> itemPath);
+        public void Select(MenuItem menuItem, List<IMenuItem> itemPath);
 
-        void Deselect();
+        public void Deselect();
 
     }
-
 }

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 namespace Blish_HUD {
-    public static class DictionaryExtension
-    {
+    public static class DictionaryExtension {
         /// <summary>
         /// Merges an array of dictionaries into another dictionary, resolving dublicates if demanded.
         /// </summary>
@@ -13,14 +12,10 @@ namespace Blish_HUD {
         /// <param name="dictionaries">The array of dictionaries to merge.</param>
         public static void MergeLeft<TKey, TValue>(
             this Dictionary<TKey, TValue> main, bool update = false,
-            params Dictionary<TKey, TValue>[] dictionaries)
-        {
-            foreach (var dictionary in dictionaries)
-            {
-                foreach (var item in dictionary)
-                {
-                    if (!main.ContainsKey(item.Key) || update)
-                    {
+            params Dictionary<TKey, TValue>[] dictionaries) {
+            foreach (var dictionary in dictionaries) {
+                foreach (var item in dictionary) {
+                    if (!main.ContainsKey(item.Key) || update) {
                         main[item.Key] = item.Value;
                     }
                 }
@@ -37,16 +32,15 @@ namespace Blish_HUD {
         public static T MergeLeft<T, TKey, TValue>(
             this T main,
             params Dictionary<TKey, TValue>[] dictionaries)
-            where T : IDictionary<TKey, TValue>, new()
-        {
-            T new_dictionary = new T();
-            foreach (IDictionary<TKey, TValue> src in
+            where T : IDictionary<TKey, TValue>, new() {
+            var new_dictionary = new T();
+            foreach (var src in
                 (new List<IDictionary<TKey, TValue>> { main }).Concat(dictionaries)) {
-                foreach (KeyValuePair<TKey, TValue> p in src)
-                {
+                foreach (var p in src) {
                     new_dictionary[p.Key] = p.Value;
                 }
             }
+
             return new_dictionary;
         }
     }

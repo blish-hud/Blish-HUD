@@ -12,9 +12,9 @@ namespace Blish_HUD.Settings {
 
         public class SettingCollectionConverter : JsonConverter<SettingCollection> {
 
-            private const string ATTR_LAZY       = "Lazy";
+            private const string ATTR_LAZY = "Lazy";
             private const string ATTR_RENDERINUI = "Ui";
-            private const string ATTR_ENTRIES    = "Entries";
+            private const string ATTR_ENTRIES = "Entries";
 
             public override void WriteJson(JsonWriter writer, SettingCollection value, JsonSerializer serializer) {
                 var settingCollectionObject = new JObject();
@@ -42,11 +42,13 @@ namespace Blish_HUD.Settings {
             }
 
             public override SettingCollection ReadJson(JsonReader reader, Type objectType, SettingCollection existingValue, bool hasExistingValue, JsonSerializer serializer) {
-                if (reader.TokenType == JsonToken.Null) return null;
+                if (reader.TokenType == JsonToken.Null) {
+                    return null;
+                }
 
                 var jObj = JObject.Load(reader);
 
-                bool isLazy     = false;
+                bool isLazy = false;
                 bool renderInUi = false;
 
                 if (jObj[ATTR_LAZY] != null) {
@@ -61,7 +63,6 @@ namespace Blish_HUD.Settings {
                            ? new SettingCollection(isLazy, jObj[ATTR_ENTRIES]) { RenderInUi = renderInUi }
                            : new SettingCollection(isLazy) { RenderInUi = renderInUi };
             }
-
         }
 
         private JToken _entryTokens;
@@ -69,13 +70,15 @@ namespace Blish_HUD.Settings {
         private readonly ReaderWriterLockSlim _entryLock = new ReaderWriterLockSlim();
 
         private readonly List<SettingEntry> _definedEntries = new List<SettingEntry>();
-        private          List<SettingEntry> _undefinedEntries;
+        private List<SettingEntry> _undefinedEntries;
 
         public bool LazyLoaded { get; }
 
         public IReadOnlyList<SettingEntry> Entries {
             get {
-                if (!this.Loaded) Load();
+                if (!this.Loaded) {
+                    Load();
+                }
 
                 _entryLock.EnterReadLock();
                 var combinedEntries = _definedEntries.Concat(_undefinedEntries).ToList().AsReadOnly();
@@ -90,14 +93,14 @@ namespace Blish_HUD.Settings {
         public bool RenderInUi { get; set; }
 
         public SettingCollection(bool lazy = false) {
-            this.LazyLoaded  = lazy;
+            this.LazyLoaded = lazy;
             _entryTokens = null;
 
             _undefinedEntries = new List<SettingEntry>();
         }
 
         public SettingCollection(bool lazy, JToken entryTokens) {
-            this.LazyLoaded  = lazy;
+            this.LazyLoaded = lazy;
             _entryTokens = entryTokens;
 
             if (!this.LazyLoaded) {
@@ -114,7 +117,7 @@ namespace Blish_HUD.Settings {
 
             definedEntry.GetDisplayNameFunc = displayNameFunc ?? (() => null);
             definedEntry.GetDescriptionFunc = descriptionFunc ?? (() => null);
-            definedEntry.SessionDefined     = true;
+            definedEntry.SessionDefined = true;
 
             _entryLock.EnterWriteLock();
             _undefinedEntries.Remove(definedEntry);
@@ -126,9 +129,7 @@ namespace Blish_HUD.Settings {
         }
 
         [Obsolete("This function does not produce a localization friendly SettingEntry.")]
-        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName, string description, SettingsService.SettingTypeRendererDelegate renderer = null) {
-            return DefineSetting(entryKey, defaultValue, () => displayName, () => description);
-        }
+        public SettingEntry<TEntry> DefineSetting<TEntry>(string entryKey, TEntry defaultValue, string displayName, string description, SettingsService.SettingTypeRendererDelegate renderer = null) => DefineSetting(entryKey, defaultValue, () => displayName, () => description);
 
         public void UndefineSetting(string entryKey) {
             var entryToRemove = this[entryKey];
@@ -141,25 +142,15 @@ namespace Blish_HUD.Settings {
             }
         }
 
-        public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
-            return AddSubCollection(collectionKey, false, lazyLoaded, null);
-        }
+        public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) => AddSubCollection(collectionKey, false, lazyLoaded, null);
 
-        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) {
-            return AddSubCollection(collectionKey, renderInUi, lazyLoaded, null);
-        }
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) => AddSubCollection(collectionKey, renderInUi, lazyLoaded, null);
 
-        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, Func<string> displayNameFunc = null) {
-            return AddSubCollection(collectionKey, renderInUi, false, displayNameFunc);
-        }
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, Func<string> displayNameFunc = null) => AddSubCollection(collectionKey, renderInUi, false, displayNameFunc);
 
-        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false, Func<string> displayNameFunc = null) {
-            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }, displayNameFunc).Value;
-        }
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false, Func<string> displayNameFunc = null) => DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }, displayNameFunc).Value;
 
-        public bool ContainsSetting(string entryKey) {
-            return (this.Entries.Any(entry => string.Equals(entry.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase)));
-        }
+        public bool ContainsSetting(string entryKey) => (this.Entries.Any(entry => string.Equals(entry.EntryKey, entryKey, StringComparison.OrdinalIgnoreCase)));
 
         public bool TryGetSetting(string entryKey, out SettingEntry settingEntry) {
             settingEntry = this[entryKey];
@@ -174,7 +165,9 @@ namespace Blish_HUD.Settings {
         }
 
         private void Load() {
-            if (_entryTokens == null) return;
+            if (_entryTokens == null) {
+                return;
+            }
 
             _entryLock.EnterWriteLock();
             _undefinedEntries = JsonConvert.DeserializeObject<List<SettingEntry>>(_entryTokens.ToString(), GameService.Settings.JsonReaderSettings).Where((se) => se != null).ToList();
@@ -198,17 +191,12 @@ namespace Blish_HUD.Settings {
         #region IEnumerable
 
         /// <inheritdoc />
-        public IEnumerator<SettingEntry> GetEnumerator() {
-            return this.Entries.GetEnumerator();
-        }
+        public IEnumerator<SettingEntry> GetEnumerator() => this.Entries.GetEnumerator();
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         #endregion
 
     }
-
 }

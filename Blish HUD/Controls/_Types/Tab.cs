@@ -40,27 +40,28 @@ namespace Blish_HUD.Controls {
         /// <param name="name">The name of the tab to be displayed as a tooltip.</param>
         /// <param name="priority">The order used to determine where in order the tab will be placed.  Tabs are sorted by descending OrderPriority.</param>
         public Tab(AsyncTexture2D icon, Func<IView> view, string name = null, int? priority = null) {
-            this.Icon          = icon;
-            this.Name          = name;
+            this.Icon = icon;
+            this.Name = name;
             this.OrderPriority = priority ?? 0;
-            this.View          = view;
+            this.View = view;
         }
 
         public void Draw(Control tabbedControl, SpriteBatch spriteBatch, Rectangle bounds, bool selected, bool hovered) {
-            if (!this.Icon.HasTexture) return;
+            if (!this.Icon.HasTexture) {
+                return;
+            }
 
             // TODO: If not enabled, draw darker to indicate it is disabled
 
             spriteBatch.DrawOnCtrl(tabbedControl,
-                                   Icon,
-                                   new Rectangle(bounds.Right  - bounds.Width  / 2 - this.Icon.Texture.Width  / 2,
-                                                 bounds.Bottom - bounds.Height / 2 - this.Icon.Texture.Height / 2,
+                                   this.Icon,
+                                   new Rectangle(bounds.Right - (bounds.Width / 2) - (this.Icon.Texture.Width / 2),
+                                                 bounds.Bottom - (bounds.Height / 2) - (this.Icon.Texture.Height / 2),
                                                  this.Icon.Texture.Width,
                                                  this.Icon.Texture.Height),
                                    selected || hovered
                                         ? Color.White
                                         : ContentService.Colors.DullColor);
         }
-
     }
 }

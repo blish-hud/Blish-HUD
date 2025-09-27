@@ -38,27 +38,26 @@ namespace Blish_HUD {
         /// </summary>
         internal OverlayUpdateHandler OverlayUpdateHandler { get; private set; }
 
-        public TabbedWindow     BlishHudWindow   { get; private set; }
-        public CornerIcon       BlishMenuIcon    { get; private set; }
-        
-        public  GameTime CurrentGameTime { get; private set; } = new GameTime(TimeSpan.Zero, TimeSpan.Zero);
+        public TabbedWindow BlishHudWindow { get; private set; }
+        public CornerIcon BlishMenuIcon { get; private set; }
+
+        public GameTime CurrentGameTime { get; private set; } = new GameTime(TimeSpan.Zero, TimeSpan.Zero);
 
         internal SettingCollection OverlaySettings { get; private set; }
         internal SettingCollection DynamicHUDSettings { get; private set; }
 
-        public SettingEntry<Locale> UserLocale    { get; private set; }
-        public SettingEntry<bool>   StayInTray    { get; private set; }
-        public SettingEntry<bool>   ShowInTaskbar { get; private set; }
+        public SettingEntry<Locale> UserLocale { get; private set; }
+        public SettingEntry<bool> StayInTray { get; private set; }
+        public SettingEntry<bool> ShowInTaskbar { get; private set; }
         internal SettingEntry<KeyBinding> InteractKey { get; private set; }
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
-        public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
+        public SettingEntry<bool> CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
         internal SettingEntry<bool> ShowPreviews { get; private set; }
 
         public bool InterfaceHidden = false;
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
-
 
         private SettingEntry<DynamicHUDMethod> _dynamicHUDMenuBar;
         public DynamicHUDMethod DynamicHUDMenuBar {
@@ -95,12 +94,10 @@ namespace Blish_HUD {
         /// Allows you to enqueue a call that will occur during the next time the update loop executes.
         /// </summary>
         /// <param name="call">A method accepting <see cref="GameTime" /> as a parameter.</param>
-        public void QueueMainThreadUpdate(Action<GameTime> call) {
-            _queuedUpdates.Enqueue(call);
-        }
+        public void QueueMainThreadUpdate(Action<GameTime> call) => _queuedUpdates.Enqueue(call);
 
         protected override void Initialize() {
-            this.OverlaySettings    = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
+            this.OverlaySettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
             this.DynamicHUDSettings = Settings.RegisterRootSettingCollection(DYNAMICHUD_SETTINGS);
 
             DefineSettings(this.OverlaySettings);
@@ -126,7 +123,7 @@ namespace Blish_HUD {
         }
 
         private void DefineSettings(SettingCollection settings) {
-            this.UserLocale    =       settings.DefineSetting("AppCulture",
+            this.UserLocale = settings.DefineSetting("AppCulture",
                                                               GetGw2LocaleFromCurrentUICulture(),
                                                               () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
@@ -135,12 +132,12 @@ namespace Blish_HUD {
                                                      true,
                                                      () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,
                                                      () => Strings.GameServices.OverlayService.Setting_StayInTray_Description
-                                                         + (ApplicationSettings.Instance.StartGw2  > 0
+                                                         + (ApplicationSettings.Instance.StartGw2 > 0
                                                          || ApplicationSettings.Instance.ProcessId > 0
                                                                 ? Strings.GameServices.OverlayService.Setting_StayInTray_AppendDisabled
                                                                 : string.Empty));
 
-            this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",
+            this.ShowInTaskbar = settings.DefineSetting("ShowInTaskbar",
                                                               false,
                                                               () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_ShowInTaskbar_Description);
@@ -150,17 +147,17 @@ namespace Blish_HUD {
                                                               () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
 
-            this.InteractKey =         settings.DefineSetting(nameof(this.InteractKey),
+            this.InteractKey = settings.DefineSetting(nameof(this.InteractKey),
                                                               new KeyBinding(Keys.F),
                                                               () => Strings.GameServices.OverlayService.Setting_InteractKey_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_InteractKey_Description);
 
-            this.HideAllInterface =    settings.DefineSetting(nameof(this.HideAllInterface),
+            this.HideAllInterface = settings.DefineSetting(nameof(this.HideAllInterface),
                                                               new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.H),
                                                               () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_HideInterfaceKeybind_Description);
 
-            this.ToggleBlishWindow =   settings.DefineSetting(nameof(this.ToggleBlishWindow),
+            this.ToggleBlishWindow = settings.DefineSetting(nameof(this.ToggleBlishWindow),
                                                               new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B),
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
@@ -170,9 +167,9 @@ namespace Blish_HUD {
                                                        () => Strings.GameServices.OverlayService.Setting_ShowPreviews_DisplayName,
                                                        () => Strings.GameServices.OverlayService.Setting_ShowPreviews_Description);
 
-            this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
-            this.ToggleBlishWindow.Value.Enabled              =  true;
-            this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
+            this.ToggleBlishWindow.Value.BlockSequenceFromGw2 = true;
+            this.ToggleBlishWindow.Value.Enabled = true;
+            this.ToggleBlishWindow.Value.Activated += delegate { this.BlishHudWindow.ToggleWindow(); };
 
             // Lock 'StayInTray' if we launched Guild Wars 2 with a launch argument.
             if (ApplicationSettings.Instance.StartGw2 > 0 || ApplicationSettings.Instance.ProcessId > 0) {
@@ -183,7 +180,7 @@ namespace Blish_HUD {
             this.UserLocale.SetExcluded(Locale.Chinese);
 
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
-            this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
+            this.UserLocale.SettingChanged += UserLocaleOnSettingChanged;
 
             this.InteractKey.Value.Enabled = true;
 
@@ -218,15 +215,13 @@ namespace Blish_HUD {
             GameIntegration.WinForms.SetShowInTaskbar(GameIntegration.Gw2Instance.Gw2IsRunning && this.ShowInTaskbar.Value);
         }
 
-        private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
-            GameIntegration.WinForms.SetShowInTaskbar(e.NewValue);
-        }
+        private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) => GameIntegration.WinForms.SetShowInTaskbar(e.NewValue);
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             var culture = GetCultureFromGw2Locale(e.NewValue);
 
             CultureInfo.DefaultThreadCurrentUICulture = culture;
-            CultureInfo.CurrentUICulture              = culture;
+            CultureInfo.CurrentUICulture = culture;
 
             this.UserLocaleChanged?.Invoke(this, new ValueEventArgs<CultureInfo>(culture));
         }
@@ -235,14 +230,19 @@ namespace Blish_HUD {
         /// Instructs Blish HUD to unload and exit.
         /// </summary>
         public void Exit() {
-            if (!this.BeginExit(FORCE_EXIT_TIMEOUT)) return;
+            if (!this.BeginExit(FORCE_EXIT_TIMEOUT)) {
+                return;
+            }
 
             ActiveBlishHud.Exit();
         }
 
         private bool BeginExit(int timeout) {
             lock (_exitLock) {
-                if (this.Exiting) return false;
+                if (this.Exiting) {
+                    return false;
+                }
+
                 this.Exiting = true;
             }
 
@@ -252,63 +252,50 @@ namespace Blish_HUD {
 
             if (timeout > 0) {
                 (new Thread(() => {
-                                Thread.Sleep(timeout);
-                                Logger.Warn($"Unload took too long (longer than {timeout} ms). Forcing exit.");
-                                Environment.Exit(0);
-                            }) {IsBackground = true}).Start();
+                    Thread.Sleep(timeout);
+                    Logger.Warn($"Unload took too long (longer than {timeout} ms). Forcing exit.");
+                    Environment.Exit(0);
+                }) { IsBackground = true }).Start();
             }
 
             return true;
-        } 
-        
+        }
+
         /// <summary>
         /// Instructs Blish HUD to unload and then restart.
         /// </summary>
         public void Restart() {
-            if (!this.BeginExit(0)) return;
+            if (!this.BeginExit(0)) {
+                return;
+            }
 
             Program.RestartOnExit = true;
             ActiveBlishHud.Exit();
         }
 
-
         private CultureInfo GetCultureFromGw2Locale(Locale locale) {
-            switch (locale) {
-                case Locale.German:
-                    return CultureInfo.GetCultureInfo(7); // German (de-DE)
-                case Locale.English:
-                    return CultureInfo.GetCultureInfo(9); // English (en-US)
-                case Locale.Spanish:
-                    return CultureInfo.GetCultureInfo(10); // Spanish (es-ES)
-                case Locale.French:
-                    return CultureInfo.GetCultureInfo(12); // French (fr-FR)
-                case Locale.Korean:
-                    return CultureInfo.GetCultureInfo(18); // Korean (ko-KR)
-                case Locale.Chinese:
-                    return CultureInfo.GetCultureInfo(30724); // Chinese (zh-CN)
-            }
-
-            return CultureInfo.GetCultureInfo(9); // English (en-US)
+            return locale switch {
+                Locale.German => CultureInfo.GetCultureInfo(7),// German (de-DE)
+                Locale.English => CultureInfo.GetCultureInfo(9),// English (en-US)
+                Locale.Spanish => CultureInfo.GetCultureInfo(10),// Spanish (es-ES)
+                Locale.French => CultureInfo.GetCultureInfo(12),// French (fr-FR)
+                Locale.Korean => CultureInfo.GetCultureInfo(18),// Korean (ko-KR)
+                Locale.Chinese => CultureInfo.GetCultureInfo(30724),// Chinese (zh-CN)
+                _ => CultureInfo.GetCultureInfo(9),// English (en-US)
+            };
         }
 
         private Locale GetGw2LocaleFromCurrentUICulture() {
             string currLocale = CultureInfo.CurrentUICulture.EnglishName.Split(' ')[0];
 
-            switch (currLocale) {
-                case "Chinese":
-                    return Locale.Chinese;
-                case "French":
-                    return Locale.French;
-                case "German":
-                    return Locale.German;
-                case "Korean":
-                    return Locale.Korean;
-                case "Spanish":
-                    return Locale.Spanish;
-                case "English":
-                default:
-                    return Locale.English;
-            }
+            return currLocale switch {
+                "Chinese" => Locale.Chinese,
+                "French" => Locale.French,
+                "German" => Locale.German,
+                "Korean" => Locale.Korean,
+                "Spanish" => Locale.Spanish,
+                _ => Locale.English,
+            };
         }
 
         private void SotoFix() {
@@ -326,12 +313,12 @@ namespace Blish_HUD {
 
         private void BuildMainWindow() {
             this.BlishHudWindow = new TabbedWindow() {
-                Parent        = Graphics.SpriteScreen,
-                Title         = Strings.Common.BlishHUD,
-                Emblem        = Content.GetTexture("blishhud-emblem"),
-                Location      = new Point(256, 256),
+                Parent = Graphics.SpriteScreen,
+                Title = Strings.Common.BlishHUD,
+                Emblem = Content.GetTexture("blishhud-emblem"),
+                Location = new Point(256, 256),
                 SavesPosition = true,
-                Id            = $"{nameof(OverlayService)}_BlishHUD_38d37290-b5f9-447d-97ea-45b0b50e5f55"
+                Id = $"{nameof(OverlayService)}_BlishHUD_38d37290-b5f9-447d-97ea-45b0b50e5f55"
             };
 
             BuildSettingTab();
@@ -340,10 +327,9 @@ namespace Blish_HUD {
         private void BuildCornerIcon() {
             this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Strings.Common.BlishHUD) {
                 Priority = int.MaxValue,
-                Parent   = Graphics.SpriteScreen,
+                Parent = Graphics.SpriteScreen,
+                Menu = new ContextMenuStrip(GetOverlayContextMenuItems)
             };
-
-            this.BlishMenuIcon.Menu = new ContextMenuStrip(GetOverlayContextMenuItems);
 
             this.BlishMenuIcon.LeftMouseButtonReleased += delegate {
                 this.BlishHudWindow.ToggleWindow();
@@ -351,7 +337,7 @@ namespace Blish_HUD {
         }
 
         private IEnumerable<ContextMenuStripItem> GetOverlayContextMenuItems() {
-            return new [] {
+            return new[] {
                 this.OverlayUpdateHandler.GetContextMenuItems(),
                 GetBaseContextMenuItems()
             }.SelectMany(menus => menus);
@@ -359,9 +345,9 @@ namespace Blish_HUD {
 
         private IEnumerable<ContextMenuStripItem> GetBaseContextMenuItems() {
             var restartMenu = new ContextMenuStripItem(string.Format(Strings.Common.Action_Restart, Strings.Common.BlishHUD));
-            var exitMenu    = new ContextMenuStripItem(string.Format(Strings.Common.Action_Exit, Strings.Common.BlishHUD));
+            var exitMenu = new ContextMenuStripItem(string.Format(Strings.Common.Action_Exit, Strings.Common.BlishHUD));
             restartMenu.Click += delegate { Restart(); };
-            exitMenu.Click    += delegate { Exit(); };
+            exitMenu.Click += delegate { Exit(); };
 
             yield return restartMenu;
             yield return exitMenu;
@@ -380,7 +366,7 @@ namespace Blish_HUD {
         }
 
         private void HandleEnqueuedUpdates(GameTime gameTime) {
-            while (_queuedUpdates.TryDequeue(out Action<GameTime> updateCall)) {
+            while (_queuedUpdates.TryDequeue(out var updateCall)) {
                 updateCall.Invoke(gameTime);
             }
         }
@@ -398,6 +384,5 @@ namespace Blish_HUD {
                 CornerIcon.LeftOffset = offset * 36;
             }
         }
-
     }
 }

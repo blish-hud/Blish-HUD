@@ -13,9 +13,7 @@ namespace Blish_HUD.Gw2WebApi {
             _bucket = tokenBucket;
         }
 
-        public async Task<IWebApiResponse> OnRequestAsync(MiddlewareContext context, Func<MiddlewareContext, CancellationToken, Task<IWebApiResponse>> callNext, CancellationToken cancellationToken = new CancellationToken()) {
-            return await _bucket.ConsumeCompliant(() => callNext(context, cancellationToken)).ConfigureAwait(false);
-        }
+        public async Task<IWebApiResponse> OnRequestAsync(MiddlewareContext context, Func<MiddlewareContext, CancellationToken, Task<IWebApiResponse>> callNext, CancellationToken cancellationToken = new CancellationToken()) => await _bucket.ConsumeCompliant(() => callNext(context, cancellationToken)).ConfigureAwait(false);
 
     }
 }

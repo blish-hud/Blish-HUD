@@ -12,7 +12,7 @@ namespace Blish_HUD.Modules.Managers {
 
         private static readonly Logger Logger = Logger.GetLogger<Gw2ApiManager>();
 
-        private const int    SUBTOKEN_LIFETIME  = 7;
+        private const int SUBTOKEN_LIFETIME = 7;
         private const string SUBTOKEN_CLAIMTYPE = "permissions";
 
         private static readonly List<Gw2ApiManager> _apiManagers = new List<Gw2ApiManager>();
@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.Managers {
         internal static async Task RenewAllSubtokens() {
             Gw2ApiManager[] apiManagers;
 
-            lock(_apiManagers) {
+            lock (_apiManagers) {
                 apiManagers = _apiManagers.ToArray();
             }
 
@@ -50,20 +50,20 @@ namespace Blish_HUD.Modules.Managers {
                 _apiManagers.Add(this);
             }
 
-            _permissions       = permissions.ToHashSet();
+            _permissions = permissions.ToHashSet();
             _activePermissions = new HashSet<TokenPermission>();
-            _subtokenHandler   = new JwtSecurityTokenHandler();
+            _subtokenHandler = new JwtSecurityTokenHandler();
 
             _connection = moduleConnection;
         }
 
-        internal static Gw2ApiManager GetModuleInstance(ModuleManager module) {
-            return new Gw2ApiManager(module.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>(), GameService.Gw2WebApi.GetConnection(string.Empty));
-        }
+        internal static Gw2ApiManager GetModuleInstance(ModuleManager module) => new Gw2ApiManager(module.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>(), GameService.Gw2WebApi.GetConnection(string.Empty));
 
         internal async Task RenewSubtoken() {
             // If we have no consented permissions, we early exit.
-            if (_permissions == null || !_permissions.Any()) return;
+            if (_permissions == null || !_permissions.Any()) {
+                return;
+            }
 
             string responseToken = string.Empty;
 
@@ -97,13 +97,8 @@ namespace Blish_HUD.Modules.Managers {
         [Obsolete("HavePermissions is deprecated, please use HasPermissions (0.11.1+) instead.")]
         public bool HavePermissions(IEnumerable<TokenPermission> permissions) => HasPermissions(permissions);
 
-        public bool HasPermissions(IEnumerable<TokenPermission> permissions) {
-            return _activePermissions.IsSupersetOf(permissions);
-        }
+        public bool HasPermissions(IEnumerable<TokenPermission> permissions) => _activePermissions.IsSupersetOf(permissions);
 
-        public bool HasPermission(TokenPermission permission) {
-            return _activePermissions.Contains(permission);
-        }
+        public bool HasPermission(TokenPermission permission) => _activePermissions.Contains(permission);
     }
-
 }

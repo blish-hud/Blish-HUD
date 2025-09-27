@@ -50,11 +50,11 @@ namespace Blish_HUD {
 
         private void WireOldEvents() {
 #pragma warning disable 0612, 0618
-            this.Gw2Instance.Gw2Closed        += (sender, e) => this.Gw2Closed?.Invoke(sender, e);
-            this.Gw2Instance.Gw2Started       += (sender, e) => this.Gw2Started?.Invoke(sender, e);
+            this.Gw2Instance.Gw2Closed += (sender, e) => this.Gw2Closed?.Invoke(sender, e);
+            this.Gw2Instance.Gw2Started += (sender, e) => this.Gw2Started?.Invoke(sender, e);
             this.Gw2Instance.Gw2AcquiredFocus += (sender, e) => this.Gw2AcquiredFocus?.Invoke(sender, e);
-            this.Gw2Instance.Gw2LostFocus     += (sender, e) => this.Gw2LostFocus?.Invoke(sender, e);
-            this.Gw2Instance.IsInGameChanged  += (sender, e) => this.IsInGameChanged?.Invoke(sender, e);
+            this.Gw2Instance.Gw2LostFocus += (sender, e) => this.Gw2LostFocus?.Invoke(sender, e);
+            this.Gw2Instance.IsInGameChanged += (sender, e) => this.IsInGameChanged?.Invoke(sender, e);
 #pragma warning restore 0612, 0618
         }
 
@@ -64,7 +64,6 @@ namespace Blish_HUD {
         [Obsolete("Use GameIntegration.Gw2Instance.Gw2Started (0.11.0+) instead.")]
         public event EventHandler<EventArgs> Gw2Started;
 
-
         [Obsolete("Use GameIntegration.Gw2Instance.Gw2AcquiredFocus (0.11.0+) instead.")]
         public event EventHandler<EventArgs> Gw2AcquiredFocus;
 
@@ -73,7 +72,7 @@ namespace Blish_HUD {
 
         [Obsolete("Use GameIntegration.Gw2Instance.IsInGameChanged (0.11.0+) instead.")]
         public event EventHandler<ValueEventArgs<bool>> IsInGameChanged;
-        
+
         public IGameChat Chat { get; private set; }
 
         [Obsolete("Use GameIntegration.Gw2Instance.IsInGame (0.11.0+) instead.")]
@@ -104,16 +103,16 @@ namespace Blish_HUD {
         internal GameIntegrationService() {
             SetServiceModules(this.Gw2Instance = new Gw2InstanceIntegration(this),
                               this.GfxSettings = new GfxSettingsIntegration(this),
-                              this.ClientType  = new ClientTypeIntegration(this),
-                              this.Audio       = new AudioIntegration(this),
-                              this.TacO        = new TacOIntegration(this),
-                              this.WinForms    = new WinFormsIntegration(this));
+                              this.ClientType = new ClientTypeIntegration(this),
+                              this.Audio = new AudioIntegration(this),
+                              this.TacO = new TacOIntegration(this),
+                              this.WinForms = new WinFormsIntegration(this));
         }
 
         protected override void Initialize() {
             this.ServiceSettings = Settings.RegisterRootSettingCollection(GAMEINTEGRATION_SETTINGS);
 
-            Chat = new GameChat();
+            this.Chat = new GameChat();
         }
 
         protected override void Load() {
@@ -136,32 +135,35 @@ namespace Blish_HUD {
             /// <summary>
             /// Sends a message to the chat.
             /// </summary>
-            void Send(string message);
+            public void Send(string message);
             /// <summary>
             /// Adds a string to the input field.
             /// </summary>
-            void Paste(string text);
+            public void Paste(string text);
             /// <summary>
             /// Returns the current string in the input field.
             /// </summary>
-            Task<string> GetInputText();
+            public Task<string> GetInputText();
             /// <summary>
             /// Clears the input field.
             /// </summary>
-            void Clear();
+            public void Clear();
         }
         ///<inheritdoc/>
         private class GameChat : IGameChat {
             ///<inheritdoc/>
             [Obsolete("No longer supported here in Core.", true)]
             public async void Send(string message) {
-                if (IsBusy() || !IsTextValid(message)) return;
+                if (IsBusy() || !IsTextValid(message)) {
+                    return;
+                }
+
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
                 await ClipboardUtil.WindowsClipboardService.SetTextAsync(message)
                                    .ContinueWith(clipboardResult => {
-                                       if (clipboardResult.IsFaulted)
+                                       if (clipboardResult.IsFaulted) {
                                            Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {message}!", message);
-                                       else
+                                       } else {
                                            Task.Run(() => {
                                                Focus();
                                                Keyboard.Press(VirtualKeyShort.LCONTROL, true);
@@ -172,23 +174,32 @@ namespace Blish_HUD {
                                            }).ContinueWith(result => {
                                                if (result.IsFaulted) {
                                                    Logger.Warn(result.Exception, "Failed to send message {message}", message);
-                                               } else if (prevClipboardContent != null)
+                                               } else if (prevClipboardContent != null) {
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
-                                           }); });
+                                               }
+                                           });
+                                       }
+                                   });
             }
 
             ///<inheritdoc/>
             [Obsolete("No longer supported here in Core.", true)]
             public async void Paste(string text) {
-                if (IsBusy()) return;
+                if (IsBusy()) {
+                    return;
+                }
+
                 string currentInput = await GetInputText();
-                if (!IsTextValid(currentInput + text)) return;
+                if (!IsTextValid(currentInput + text)) {
+                    return;
+                }
+
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
                 await ClipboardUtil.WindowsClipboardService.SetTextAsync(text)
                                    .ContinueWith(clipboardResult => {
-                                       if (clipboardResult.IsFaulted)
+                                       if (clipboardResult.IsFaulted) {
                                            Logger.Warn(clipboardResult.Exception, "Failed to set clipboard text to {text}!", text);
-                                       else
+                                       } else {
                                            Task.Run(() => {
                                                Focus();
                                                Keyboard.Press(VirtualKeyShort.LCONTROL, true);
@@ -198,15 +209,21 @@ namespace Blish_HUD {
                                            }).ContinueWith(result => {
                                                if (result.IsFaulted) {
                                                    Logger.Warn(result.Exception, "Failed to paste {text}", text);
-                                               } else if (prevClipboardContent != null)
+                                               } else if (prevClipboardContent != null) {
                                                    ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
-                                           }); });
+                                               }
+                                           });
+                                       }
+                                   });
             }
 
             ///<inheritdoc/>
             [Obsolete("No longer supported here in Core.", true)]
             public async Task<string> GetInputText() {
-                if (IsBusy()) return "";
+                if (IsBusy()) {
+                    return "";
+                }
+
                 byte[] prevClipboardContent = await ClipboardUtil.WindowsClipboardService.GetAsUnicodeBytesAsync();
                 await Task.Run(() => {
                     Focus();
@@ -219,8 +236,10 @@ namespace Blish_HUD {
                 });
                 string inputText = await ClipboardUtil.WindowsClipboardService.GetTextAsync()
                                                       .ContinueWith(result => {
-                                                          if (prevClipboardContent != null)
+                                                          if (prevClipboardContent != null) {
                                                               ClipboardUtil.WindowsClipboardService.SetUnicodeBytesAsync(prevClipboardContent);
+                                                          }
+
                                                           return !result.IsFaulted ? result.Result : "";
                                                       });
                 return inputText;
@@ -228,7 +247,10 @@ namespace Blish_HUD {
             ///<inheritdoc/>
             [Obsolete("No longer supported here in Core.", true)]
             public void Clear() {
-                if (IsBusy()) return;
+                if (IsBusy()) {
+                    return;
+                }
+
                 Task.Run(() => {
                     Focus();
                     Keyboard.Press(VirtualKeyShort.LCONTROL, true);
@@ -245,17 +267,10 @@ namespace Blish_HUD {
                 Keyboard.Stroke(VirtualKeyShort.RETURN);
             }
 
-            private void Unfocus() {
-                Mouse.Click(MouseButton.LEFT, Graphics.WindowWidth / 2, 0);
-            }
+            private void Unfocus() => Mouse.Click(MouseButton.LEFT, Graphics.WindowWidth / 2, 0);
 
-            private bool IsTextValid(string text) {
-                return (text != null && text.Length < 200);
-                // More checks? (Symbols: https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset)
-            }
-            private bool IsBusy() {
-                return !GameIntegration.Gw2Instance.Gw2IsRunning || !GameIntegration.Gw2Instance.Gw2HasFocus || !GameIntegration.Gw2Instance.IsInGame;
-            }
+            private bool IsTextValid(string text) => (text != null && text.Length < 200);// More checks? (Symbols: https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset)
+            private bool IsBusy() => !GameIntegration.Gw2Instance.Gw2IsRunning || !GameIntegration.Gw2Instance.Gw2HasFocus || !GameIntegration.Gw2Instance.IsInGame;
         }
         #endregion
 

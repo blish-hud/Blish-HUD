@@ -14,9 +14,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<EventArgs> BindingChanged;
 
-        protected void OnBindingChanged(EventArgs e) {
-            this.BindingChanged?.Invoke(this, e);
-        }
+        protected void OnBindingChanged(EventArgs e) => this.BindingChanged?.Invoke(this, e);
 
         private int _nameWidth = 183;
 
@@ -57,7 +55,7 @@ namespace Blish_HUD.Controls {
             this.KeyBinding = keyBinding ?? new KeyBinding();
 
             // Configure LabelBase
-            _font       = Content.DefaultFont14;
+            _font = Content.DefaultFont14;
             _showShadow = true;
             _cacheLabel = false;
 
@@ -87,7 +85,7 @@ namespace Blish_HUD.Controls {
         }
 
         public override void RecalculateLayout() {
-            _nameRegion   = new Rectangle(0,                              0, _nameWidth,                               _size.Y);
+            _nameRegion = new Rectangle(0, 0, _nameWidth, _size.Y);
             _hotkeyRegion = new Rectangle(_nameWidth + UNIVERSAL_PADDING, 0, _size.X - _nameWidth - UNIVERSAL_PADDING, _size.Y);
         }
 
@@ -98,7 +96,7 @@ namespace Blish_HUD.Controls {
 
             newHkAssign.AssignmentAccepted += delegate {
                 _keyBinding.ModifierKeys = newHkAssign.ModifierKeys;
-                _keyBinding.PrimaryKey   = newHkAssign.PrimaryKey;
+                _keyBinding.PrimaryKey = newHkAssign.PrimaryKey;
 
                 OnBindingChanged(EventArgs.Empty);
             };
@@ -143,6 +141,5 @@ namespace Blish_HUD.Controls {
                                              HorizontalAlignment.Center);
             }
         }
-
     }
 }

@@ -11,27 +11,26 @@ namespace Blish_HUD.Input {
         protected override HookType HookType { get; } = HookType.WH_KEYBOARD_LL;
 
         protected override int HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
-            if (nCode != 0) return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
+            if (nCode != 0) {
+                return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
+            }
 
-            KeyboardEventType eventType = (KeyboardEventType)(((uint)wParam % 2) + 256); // filter out SysKeyDown & SysKeyUp
-            Keys              key       = (Keys)Marshal.ReadInt32(lParam);
+            var eventType = (KeyboardEventType)(((uint)wParam % 2) + 256); // filter out SysKeyDown & SysKeyUp
+            var key = (Keys)Marshal.ReadInt32(lParam);
 
-            KeyboardEventArgs KeyboardEventArgs = new KeyboardEventArgs(eventType, key);
-            bool              isHandled         = false;
+            var KeyboardEventArgs = new KeyboardEventArgs(eventType, key);
+            bool isHandled = false;
 
-            lock (((IList) this.Handlers).SyncRoot) {
-                foreach (HandleKeyboardInputDelegate handler in this.Handlers) {
+            lock (((IList)this.Handlers).SyncRoot) {
+                foreach (var handler in this.Handlers) {
                     isHandled = handler(KeyboardEventArgs);
-                    if (isHandled) break;
+                    if (isHandled) {
+                        break;
+                    }
                 }
             }
 
-            if (isHandled)
-                return 1;
-            else
-                return HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
+            return isHandled ? 1 : HookExtern.CallNextHookEx(this.HookType, nCode, wParam, lParam);
         }
-
     }
-
 }

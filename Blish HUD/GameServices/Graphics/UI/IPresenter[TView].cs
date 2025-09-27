@@ -6,7 +6,6 @@
         /// <summary>
         /// The <see cref="IView"/> this <see cref="IPresenter{TView}"/> will be presenting to.
         /// </summary>
-        TView View { get; }
-
+        public TView View { get; }
     }
 }

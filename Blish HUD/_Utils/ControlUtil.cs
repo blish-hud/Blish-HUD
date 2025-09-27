@@ -7,17 +7,18 @@ namespace Blish_HUD {
 
         public static Point GetControlBounds(Control[] controls) {
             int farthestRight = 0;
-            int farthestDown  = 0;
+            int farthestDown = 0;
 
             foreach (var child in controls) {
-                if (child == null) continue;
+                if (child == null) {
+                    continue;
+                }
 
                 farthestRight = Math.Max(farthestRight, child.Right);
-                farthestDown  = Math.Max(farthestDown,  child.Bottom);
+                farthestDown = Math.Max(farthestDown, child.Bottom);
             }
 
             return new Point(farthestRight, farthestDown);
         }
-
     }
 }

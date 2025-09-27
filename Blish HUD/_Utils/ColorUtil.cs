@@ -22,12 +22,11 @@ namespace Blish_HUD {
             }
 
             result = new Color((clrVal >> 16) & 0xFF,
-                               (clrVal >> 8)  & 0xFF,
-                               (clrVal >> 0)  & 0xFF,
+                               (clrVal >> 8) & 0xFF,
+                               (clrVal >> 0) & 0xFF,
                                (clrVal >> 24) & 0xFF);
 
             return true;
         }
-
     }
 }

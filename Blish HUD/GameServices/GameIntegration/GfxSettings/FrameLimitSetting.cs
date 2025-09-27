@@ -2,8 +2,8 @@
     public readonly struct FrameLimitSetting {
 
         private const string SETTING_UNLIMITED = "unlimited";
-        private const string SETTING_60        = "60";
-        private const string SETTING_30        = "30";
+        private const string SETTING_60 = "60";
+        private const string SETTING_30 = "30";
 
         private string Value { get; }
 
@@ -20,15 +20,20 @@
             };
         }
 
-        public override int  GetHashCode()      => this.Value.GetHashCode();
+        public override int GetHashCode() => this.Value.GetHashCode();
         public override bool Equals(object obj) => obj != null && obj.GetHashCode() == GetHashCode();
 
-        public static implicit operator string(FrameLimitSetting frameLimitSetting) => frameLimitSetting.Value;
-        public static implicit operator FrameLimitSetting(string value)             => new FrameLimitSetting(value);
+        public static implicit operator string(FrameLimitSetting frameLimitSetting) {
+            return frameLimitSetting.Value;
+        }
+
+        public static implicit operator FrameLimitSetting(string value) {
+            return new FrameLimitSetting(value);
+        }
 
         public static FrameLimitSetting Unlimited { get; } = new FrameLimitSetting(SETTING_UNLIMITED);
-        public static FrameLimitSetting Value60   { get; } = new FrameLimitSetting(SETTING_60);
-        public static FrameLimitSetting Value30   { get; } = new FrameLimitSetting(SETTING_30);
+        public static FrameLimitSetting Value60 { get; } = new FrameLimitSetting(SETTING_60);
+        public static FrameLimitSetting Value30 { get; } = new FrameLimitSetting(SETTING_30);
 
     }
 }

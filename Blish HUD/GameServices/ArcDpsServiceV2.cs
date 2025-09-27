@@ -20,7 +20,7 @@ using SharpDX;
 namespace Blish_HUD {
 
     public class ArcDpsServiceV2 : GameService {
-        private static readonly Logger Logger = Logger.GetLogger<ArcDpsServiceV2>();
+        private static readonly Logger _logger = Logger.GetLogger<ArcDpsServiceV2>();
 
         /// <summary>
         /// The timespan after which ArcDPS is treated as not responding.
@@ -31,7 +31,6 @@ namespace Blish_HUD {
         private IArcDpsClient _arcDpsClient;
         private bool _hudIsActive;
         private Stopwatch _stopwatch;
-        private bool _subscribed;
 
 #if DEBUG
         public static long Counter => ArcDpsClient.Counter;
@@ -78,13 +77,14 @@ namespace Blish_HUD {
             => _arcDpsClient.IsMessageTypeAvailable(type);
 
         public void RegisterMessageType<T>(MessageType type, Func<T, CancellationToken, Task> listener)
-            where T : struct {
-            RegisterMessageType<T>((int)type, listener);
-        }
+            where T : struct => RegisterMessageType<T>((int)type, listener);
 
         public void RegisterMessageType<T>(int type, Func<T, CancellationToken, Task> listener)
             where T : struct {
-            Action action = () => _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            void action() {
+                _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            }
+
             _registerListeners.Add(action);
             if (_arcDpsClient != null) {
                 action();
@@ -104,9 +104,7 @@ namespace Blish_HUD {
         /// <summary>
         /// Starts the socket listener for the arc dps bridge.
         /// </summary>
-        private void Start(object sender, ValueEventArgs<uint> value) {
-            this.Start(value.Value);
-        }
+        private void Start(object sender, ValueEventArgs<uint> value) => this.Start(value.Value);
 
         /// <summary>
         /// Starts the socket listener for the arc dps bridge.
@@ -133,9 +131,7 @@ namespace Blish_HUD {
                 _arcDpsClient.Error += SocketErrorHandler;
                 _arcDpsClient.Initialize(new IPEndPoint(IPAddress.Loopback, GetPort(processId, version)), _arcDpsClientCancellationTokenSource.Token);
 
-                RegisterMessageType<ImGuiCallback>(MessageType.ImGui, async (imGuiCallback, ct) => {
-                    this.HudIsActive = imGuiCallback.NotCharacterSelectOrLoading != 0;
-                });
+                RegisterMessageType<ImGuiCallback>(MessageType.ImGui, async (imGuiCallback, ct) => this.HudIsActive = imGuiCallback.NotCharacterSelectOrLoading != 0);
             }
         }
 
@@ -147,7 +143,7 @@ namespace Blish_HUD {
             }
 
             // +1 for V2 and +0 for V1
-            var port = pid | (1 << 14) | (1 << 15);
+            int port = pid | (1 << 14) | (1 << 15);
             if (version == ArcDpsBridgeVersion.V2) {
                 port++;
             }
@@ -181,14 +177,14 @@ namespace Blish_HUD {
 
         private void SocketErrorHandler(object sender, SocketError socketError) {
             // Socketlistener stops by itself.
-            Logger.Error("Encountered socket error: {0}", socketError.ToString());
+            _logger.Error("Encountered socket error: {0}", socketError.ToString());
 
             this.Error?.Invoke(this, socketError);
         }
 
         private ArcDpsBridgeVersion GetVersion(uint processId) {
             try {
-                var port = GetPort(processId, ArcDpsBridgeVersion.V2);
+                int port = GetPort(processId, ArcDpsBridgeVersion.V2);
                 var client = new TcpClient();
                 client.Connect(new IPEndPoint(IPAddress.Loopback, port));
                 client.Dispose();
@@ -197,7 +193,7 @@ namespace Blish_HUD {
             }
 
             try {
-                var port = GetPort(processId, ArcDpsBridgeVersion.V1);
+                int port = GetPort(processId, ArcDpsBridgeVersion.V1);
                 var client = new TcpClient();
                 client.Connect(new IPEndPoint(IPAddress.Loopback, port));
                 client.Dispose();
@@ -208,5 +204,4 @@ namespace Blish_HUD {
             return ArcDpsBridgeVersion.None;
         }
     }
-
 }

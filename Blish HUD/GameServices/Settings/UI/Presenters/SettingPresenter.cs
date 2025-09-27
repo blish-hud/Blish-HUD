@@ -13,17 +13,17 @@ namespace Blish_HUD.Settings.UI.Presenters {
 
         protected override Task<bool> Load(IProgress<string> progress) {
             this.Model.SettingChanged += ModelOnSettingChanged;
-            this.View.ValueChanged    += ViewOnValueChanged;
+            this.View.ValueChanged += ViewOnValueChanged;
 
             return base.Load(progress);
         }
 
-        private void ModelOnSettingChanged(object sender, ValueChangedEventArgs<TSetting> e) {
-            this.View.Value = e.NewValue;
-        }
+        private void ModelOnSettingChanged(object sender, ValueChangedEventArgs<TSetting> e) => this.View.Value = e.NewValue;
 
         private void ViewOnValueChanged(object sender, ValueEventArgs<TSetting> e) {
-            if (!_changeReady) return;
+            if (!_changeReady) {
+                return;
+            }
 
             if (this.View.ValidationFunc != null) {
                 var validationResult = this.View.ValidationFunc(e.Value);
@@ -46,7 +46,7 @@ namespace Blish_HUD.Settings.UI.Presenters {
         }
 
         private void UpdateViewComplianceRequisite() {
-            IEnumerable<IComplianceRequisite> complianceRequisites = this.Model.GetComplianceRequisite();
+            var complianceRequisites = this.Model.GetComplianceRequisite();
 
             foreach (var complianceRequisite in complianceRequisites) {
                 if (!this.View.HandleComplianceRequisite(complianceRequisite)) {
@@ -61,13 +61,12 @@ namespace Blish_HUD.Settings.UI.Presenters {
                                         : this.Model.EntryKey;
 
             this.View.Description = this.Model.Description;
-            this.View.Value       = this.Model.Value;
+            this.View.Value = this.Model.Value;
         }
 
         protected override void Unload() {
             this.Model.SettingChanged -= ModelOnSettingChanged;
-            this.View.ValueChanged    -= ViewOnValueChanged;
+            this.View.ValueChanged -= ViewOnValueChanged;
         }
-
     }
 }

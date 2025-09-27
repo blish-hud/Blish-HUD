@@ -26,38 +26,35 @@ namespace Blish_HUD {
         #region Cache Handling
 
         private TokenComplianceMiddleware _sharedTokenBucketMiddleware;
-        private ICacheMethod              _sharedWebCache;
-        private ICacheMethod              _sharedRenderCache;
+        private ICacheMethod _sharedWebCache;
+        private ICacheMethod _sharedRenderCache;
 
         private void InitCache() {
             var bucket = new TokenBucket(300, 5);
 
             _sharedTokenBucketMiddleware = new TokenComplianceMiddleware(bucket);
-            _sharedWebCache              = new MemoryCacheMethod();
-            _sharedRenderCache           = new MemoryCacheMethod();
+            _sharedWebCache = new MemoryCacheMethod();
+            _sharedRenderCache = new MemoryCacheMethod();
         }
 
         #endregion
 
         #region Init Cache, Connection, & Client
 
-        private ManagedConnection _anonymousConnection;
-        private ManagedConnection _privilegedConnection;
-
         private void CreateInternalConnection() {
             InitCache();
 
-            _anonymousConnection  = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
-            _privilegedConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            this.AnonymousConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
+            this.PrivilegedConnection = new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache, TimeSpan.MaxValue);
         }
 
-        public   ManagedConnection AnonymousConnection  => _anonymousConnection;
-        internal ManagedConnection PrivilegedConnection => _privilegedConnection;
+        public ManagedConnection AnonymousConnection { get; private set; }
+        internal ManagedConnection PrivilegedConnection { get; private set; }
 
         #endregion
 
-        private readonly ConcurrentDictionary<string, string>            _characterRepository = new ConcurrentDictionary<string, string>();
-        private readonly ConcurrentDictionary<string, ManagedConnection> _cachedConnections   = new ConcurrentDictionary<string, ManagedConnection>();
+        private readonly ConcurrentDictionary<string, string> _characterRepository = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, ManagedConnection> _cachedConnections = new ConcurrentDictionary<string, ManagedConnection>();
 
         private SettingCollection _apiSettings;
         private SettingCollection _apiKeyRepository;
@@ -89,7 +86,7 @@ namespace Blish_HUD {
         }
 
         private async Task UpdateBaseConnection(string apiKey) {
-            if (_privilegedConnection.SetApiKey(apiKey)) {
+            if (this.PrivilegedConnection.SetApiKey(apiKey)) {
                 await Modules.Managers.Gw2ApiManager.RenewAllSubtokens();
             }
         }
@@ -119,7 +116,7 @@ namespace Blish_HUD {
         private async Task RefreshRegisteredKeys() {
             _characterRepository.Clear();
 
-            foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
+            foreach (var key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
                 await UpdateCharacterList(key);
             }
 
@@ -129,7 +126,7 @@ namespace Blish_HUD {
         #region API Management
 
         public async Task RegisterKey(string name, string apiKey) {
-            SettingEntry<string> registeredKey = _apiKeyRepository.DefineSetting(name, "");
+            var registeredKey = _apiKeyRepository.DefineSetting(name, "");
 
             registeredKey.Value = apiKey;
 
@@ -138,7 +135,7 @@ namespace Blish_HUD {
         }
 
         public async Task UnregisterKey(string apiKey) {
-            foreach (SettingEntry<string> key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
+            foreach (var key in _apiKeyRepository.Cast<SettingEntry<string>>()) {
                 if (string.Equals(apiKey, key.Value, StringComparison.InvariantCultureIgnoreCase) || key.Value.StartsWith(apiKey, StringComparison.InvariantCultureIgnoreCase)) {
                     _apiKeyRepository.UndefineSetting(key.EntryKey);
 
@@ -151,13 +148,11 @@ namespace Blish_HUD {
             }
         }
 
-        internal string[] GetKeys() {
-            return _apiKeyRepository.Cast<SettingEntry<string>>().Select((setting) => setting.Value).ToArray();
-        }
+        internal string[] GetKeys() => _apiKeyRepository.Cast<SettingEntry<string>>().Select((setting) => setting.Value).ToArray();
 
         private async Task UpdateCharacterList(SettingEntry<string> definedKey) {
             try {
-                List<string> characters = await GetCharacters(GetConnection(definedKey.Value));
+                var characters = await GetCharacters(GetConnection(definedKey.Value));
 
                 foreach (string characterId in characters) {
                     _characterRepository.AddOrUpdate(characterId, definedKey.Value, (k, o) => definedKey.Value);
@@ -169,13 +164,9 @@ namespace Blish_HUD {
             }
         }
 
-        private async Task<List<string>> GetCharacters(ManagedConnection connection) {
-            return (await connection.Client.V2.Characters.IdsAsync()).ToList();
-        }
+        private async Task<List<string>> GetCharacters(ManagedConnection connection) => (await connection.Client.V2.Characters.IdsAsync()).ToList();
 
-        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) {
-            return await RequestSubtoken(_privilegedConnection, permissions, days);
-        }
+        internal async Task<string> RequestPrivilegedSubtoken(IEnumerable<TokenPermission> permissions, int days) => await RequestSubtoken(this.PrivilegedConnection, permissions, days);
 
         public async Task<string> RequestSubtoken(ManagedConnection connection, IEnumerable<TokenPermission> permissions, int days) {
             var tokenPermissions = permissions as TokenPermission[] ?? permissions.ToArray();
@@ -203,11 +194,9 @@ namespace Blish_HUD {
 
         public ManagedConnection GetConnection(string accessToken) {
             // Avoid caching connections without an API key
-            if (string.IsNullOrWhiteSpace(accessToken)) {
-                return new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache);
-            }
-
-            return _cachedConnections.GetOrAdd(accessToken, (token) => new ManagedConnection(token, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache));
+            return string.IsNullOrWhiteSpace(accessToken)
+                ? new ManagedConnection(string.Empty, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache)
+                : _cachedConnections.GetOrAdd(accessToken, (token) => new ManagedConnection(token, _sharedTokenBucketMiddleware, _sharedWebCache, _sharedRenderCache));
         }
 
         protected override void Unload() { /* NOOP */ }
@@ -220,12 +209,10 @@ namespace Blish_HUD {
             if (_checkFrequency > 180000) {
                 _checkFrequency = 0;
 
-                if (string.IsNullOrEmpty(PrivilegedConnection.Connection.AccessToken)) {
+                if (string.IsNullOrEmpty(this.PrivilegedConnection.Connection.AccessToken)) {
                     RefreshRegisteredKeys();
                 }
             }
-            
         }
-
     }
 }

@@ -87,20 +87,8 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Extensions {
 
         // This is used to not make an expensive reflection typeof/GetType and wasting precious time
         private static T ParseEnum<T>(byte enumByteValue, int maxValue, T unknown)
-            where T : System.Enum {
-            if (enumByteValue > maxValue) {
-                return unknown;
-            }
+            where T : System.Enum => enumByteValue > maxValue ? unknown : (T)(object)enumByteValue;
 
-            return (T)(object)enumByteValue;
-        }
-
-        private static T ParseOptional<T>(BincodeBinaryReader reader, Func<T> parse) {
-            if (reader.ReadByte() == 1) {
-                return parse();
-            }
-            return default;
-        }
+        private static T ParseOptional<T>(BincodeBinaryReader reader, Func<T> parse) => reader.ReadByte() == 1 ? parse() : default;
     }
-
 }

@@ -22,6 +22,7 @@ namespace Blish_HUD.Graphics {
                     lock (_loadedEffects) {
                         _loadedEffects.Remove(loadedEffect);
                     }
+
                     Logger.Debug("An EntityEffect was disposed of.");
 
                     continue;
@@ -215,12 +216,13 @@ namespace Blish_HUD.Graphics {
         protected abstract void Update(GameTime gameTime);
 
         protected bool SetProperty<T>(ref T property, T newValue) {
-            if (Equals(property, newValue)) return false;
+            if (Equals(property, newValue)) {
+                return false;
+            }
 
             property = newValue;
 
             return true;
         }
-
     }
 }

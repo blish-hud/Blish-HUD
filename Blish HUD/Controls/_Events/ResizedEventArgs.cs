@@ -5,12 +5,11 @@ namespace Blish_HUD.Controls {
 
     public class ResizedEventArgs : EventArgs {
         public Point PreviousSize { get; }
-        public Point CurrentSize  { get; }
+        public Point CurrentSize { get; }
 
         public ResizedEventArgs(Point previousSize, Point currentSize) {
             this.PreviousSize = previousSize;
-            this.CurrentSize  = currentSize;
+            this.CurrentSize = currentSize;
         }
     }
-
 }

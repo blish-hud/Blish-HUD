@@ -110,27 +110,27 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private bool? GetBoolSetting([CallerMemberName] string settingName = null) {
-            if (settingName == null) throw new ArgumentNullException(nameof(settingName));
-
-            return _settings.TryGetValue(settingName, out string result)
+            return settingName == null
+                ? throw new ArgumentNullException(nameof(settingName))
+                : _settings.TryGetValue(settingName, out string result)
                        ? result == GFXS_TRUE
                        : default(bool?);
         }
 
         private float? GetFloatSetting([CallerMemberName] string settingName = null) {
-            if (settingName == null) throw new ArgumentNullException(nameof(settingName));
-
-            return _settings.TryGetValue(settingName, out string result)
+            return settingName == null
+                ? throw new ArgumentNullException(nameof(settingName))
+                : _settings.TryGetValue(settingName, out string result)
                        ? InvariantUtil.TryParseFloat(result, out float floatResult)
                              ? floatResult
                              : default(float?)
                        : default;
-        }    
+        }
 
         private T? GetStringEnumSetting<T>(Func<string, T?> getSettingFunc, [CallerMemberName] string settingName = null) where T : struct {
-            if (settingName == null) throw new ArgumentNullException(nameof(settingName));
-
-            return _settings.TryGetValue(settingName, out string result)
+            return settingName == null
+                ? throw new ArgumentNullException(nameof(settingName))
+                : _settings.TryGetValue(settingName, out string result)
                        ? getSettingFunc(result)
                        : null;
         }
@@ -144,10 +144,10 @@ namespace Blish_HUD.GameIntegration {
             }
 
             _fileSystemWatcher = new FileSystemWatcher {
-                Path                  = gw2AppDataPath,
-                NotifyFilter          = NotifyFilters.LastWrite,
-                Filter                = GFXSETTINGS_NAME,
-                EnableRaisingEvents   = true,
+                Path = gw2AppDataPath,
+                NotifyFilter = NotifyFilters.LastWrite,
+                Filter = GFXSETTINGS_NAME,
+                EnableRaisingEvents = true,
                 IncludeSubdirectories = false
             };
 
@@ -243,9 +243,7 @@ namespace Blish_HUD.GameIntegration {
             }
         }
 
-        private async void Gw2Proc_Gw2Started(object sender, EventArgs e) {
-            await LoadGfxSettings();
-        }
+        private async void Gw2Proc_Gw2Started(object sender, EventArgs e) => await LoadGfxSettings();
 
         public override void Unload() {
             _service.Gw2Instance.Gw2Started -= Gw2Proc_Gw2Started;

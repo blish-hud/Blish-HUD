@@ -4,70 +4,55 @@ using System.Threading.Tasks;
 
 namespace Blish_HUD.Content {
     public sealed class DirectoryReader : IDataReader {
-
-        private readonly string _directoryPath;
-
-        public string PhysicalPath => _directoryPath;
+        public string PhysicalPath { get; }
 
         public DirectoryReader(string directoryPath) {
-            if (!Directory.Exists(directoryPath))
+            if (!Directory.Exists(directoryPath)) {
                 throw new DirectoryNotFoundException($"Directory path {directoryPath} not found.");
+            }
 
-            _directoryPath = directoryPath;
+            this.PhysicalPath = directoryPath;
         }
-        
+
         public IDataReader GetSubPath(string subPath) {
-            if (subPath.StartsWith(_directoryPath, StringComparison.OrdinalIgnoreCase))
-                return new DirectoryReader(subPath);
+            return subPath.StartsWith(this.PhysicalPath, StringComparison.OrdinalIgnoreCase)
+                ? new DirectoryReader(subPath)
+                : (IDataReader)new DirectoryReader(Path.Combine(this.PhysicalPath, subPath));
+        }
 
-            return new DirectoryReader(Path.Combine(_directoryPath, subPath));
-        }
-        
-        public string GetPathRepresentation(string relativeFilePath = null) {
-            return Path.Combine(_directoryPath, relativeFilePath ?? "");
-        }
-        
-        public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {    
-            foreach (string filePath in Directory.EnumerateFiles(_directoryPath, $"*{fileExtension}", SearchOption.AllDirectories)) {
+        public string GetPathRepresentation(string relativeFilePath = null) => Path.Combine(this.PhysicalPath, relativeFilePath ?? "");
+
+        public void LoadOnFileType(Action<Stream, IDataReader> loadFileFunc, string fileExtension = "", IProgress<string> progress = null) {
+            foreach (string filePath in Directory.EnumerateFiles(this.PhysicalPath, $"*{fileExtension}", SearchOption.AllDirectories)) {
                 progress?.Report($"Loading {Path.GetFileName(filePath)}");
                 loadFileFunc.Invoke(this.GetFileStream(filePath), this);
             }
         }
-        
-        public bool FileExists(string filePath) {
-            return File.Exists(Path.Combine(_directoryPath, filePath));
-        }
-        
-        public Stream GetFileStream(string filePath) {
-            if (!this.FileExists(filePath)) return null;
 
-            return File.Open(Path.Combine(_directoryPath, filePath), FileMode.Open);
-        }
-        
-        public byte[] GetFileBytes(string filePath) {
-            if (!this.FileExists(filePath)) return null;
+        public bool FileExists(string filePath) => File.Exists(Path.Combine(this.PhysicalPath, filePath));
 
-            return File.ReadAllBytes(Path.Combine(_directoryPath, filePath));
-        }
-        
+        public Stream GetFileStream(string filePath) => !this.FileExists(filePath) ? null : (Stream)File.Open(Path.Combine(this.PhysicalPath, filePath), FileMode.Open);
+
+        public byte[] GetFileBytes(string filePath) => !this.FileExists(filePath) ? null : File.ReadAllBytes(Path.Combine(this.PhysicalPath, filePath));
+
         public int GetFileBytes(string filePath, out byte[] fileBuffer) {
             fileBuffer = GetFileBytes(filePath);
 
             return fileBuffer?.Length ?? 0;
         }
-        
-        public async Task<Stream> GetFileStreamAsync(string filePath) {
-            return await Task.FromResult(this.GetFileStream(filePath));
-        }
-        
+
+        public async Task<Stream> GetFileStreamAsync(string filePath) => await Task.FromResult(this.GetFileStream(filePath));
+
         public async Task<byte[]> GetFileBytesAsync(string filePath) {
-            if (!FileExists(filePath)) return null;
+            if (!FileExists(filePath)) {
+                return null;
+            }
 
             byte[] fileData;
 
-            using (var fileStream = File.OpenRead(Path.Combine(_directoryPath, filePath))) {
+            using (var fileStream = File.OpenRead(Path.Combine(this.PhysicalPath, filePath))) {
                 fileData = new byte[fileStream.Length];
-                await fileStream.ReadAsync(fileData, 0, (int) fileStream.Length);
+                await fileStream.ReadAsync(fileData, 0, (int)fileStream.Length);
             }
 
             return fileData;
@@ -76,10 +61,9 @@ namespace Blish_HUD.Content {
         public void DeleteRoot() {
             this.Dispose();
 
-            Directory.Delete(_directoryPath, true);
+            Directory.Delete(this.PhysicalPath, true);
         }
 
         public void Dispose() { /* NOOP */ }
-
     }
 }

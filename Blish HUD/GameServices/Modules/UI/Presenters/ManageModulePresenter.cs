@@ -37,9 +37,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             UpdateDependenciesView();
         }
 
-        private void UpdatePermissionView() {
-            this.View.SetPermissionsView(_permissionView = new ModulePermissionView(this.Model));
-        }
+        private void UpdatePermissionView() => this.View.SetPermissionsView(_permissionView = new ModulePermissionView(this.Model));
 
         private void UpdateDependenciesView() {
             if (_dependencyView != null) {
@@ -51,9 +49,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             _dependencyView.IgnoreModuleDependenciesChanged += DependencyViewOnIgnoreModuleDependenciesChanged;
         }
 
-        private void DependencyViewOnIgnoreModuleDependenciesChanged(object sender, ValueEventArgs<bool> e) {
-            InvalidateViewState(stateOptions: true);
-        }
+        private void DependencyViewOnIgnoreModuleDependenciesChanged(object sender, ValueEventArgs<bool> e) => InvalidateViewState(stateOptions: true);
 
         private void InvalidateViewState(bool staticDetails = false, bool stateDetails = false, bool stateOptions = false) {
             if (staticDetails) {
@@ -135,7 +131,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private void DisplayStateDetails() {
             if (!GameService.Module.ModuleIsExplicitlyIncompatible(this.Model)) {
-                var runState = Model.ModuleInstance?.RunState ?? ModuleRunState.Unloaded;
+                var runState = this.Model.ModuleInstance?.RunState ?? ModuleRunState.Unloaded;
                 this.View.ModuleErrorReason = runState == ModuleRunState.FatalError ? this.Model.ModuleInstance?.ErrorReason : null;
 
                 this.View.ModuleState = runState;
@@ -167,20 +163,12 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.View.CanDisable = GetModuleCanDisable();
         }
 
-        private AsyncTexture2D GetModuleAuthorImage() {
-            if (this.Model.Manifest.Contributors?.Count > 1) {
-                return AsyncTexture2D.FromAssetId(157112);
-            }
-
-            return AsyncTexture2D.FromAssetId(733268);
-        }
+        private AsyncTexture2D GetModuleAuthorImage() => this.Model.Manifest.Contributors?.Count > 1 ? AsyncTexture2D.FromAssetId(157112) : AsyncTexture2D.FromAssetId(733268);
 
         private string GetModuleAuthor() {
-            if (this.Model.Manifest.Contributors?.Count > 0) {
-                return string.Join(", ", this.Model.Manifest.Contributors.Select(c => c.Name));
-            }
-
-            return this.Model.Manifest.Author?.Name ?? Strings.Common.Unknown;
+            return this.Model.Manifest.Contributors?.Count > 0
+                ? string.Join(", ", this.Model.Manifest.Contributors.Select(c => c.Name))
+                : this.Model.Manifest.Author?.Name ?? Strings.Common.Unknown;
         }
 
         private void ViewOnEnableModuleClicked(object sender, EventArgs e) {
@@ -189,9 +177,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             }
         }
 
-        private void ViewOnDisableModuleClicked(object sender, EventArgs e) {
-            this.Model.Disable();
-        }
+        private void ViewOnDisableModuleClicked(object sender, EventArgs e) => this.Model.Disable();
 
         private void SubscribeToModuleRunState() {
             if (this.Model.ModuleInstance != null) {
@@ -209,53 +195,55 @@ namespace Blish_HUD.Modules.UI.Presenters {
             }
         }
 
-        private void ModuleInstanceOnModuleRunStateChanged(object sender, ModuleRunStateChangedEventArgs e) {
-            InvalidateViewState(stateDetails: true, stateOptions: true);
-        }
+        private void ModuleInstanceOnModuleRunStateChanged(object sender, ModuleRunStateChangedEventArgs e) => InvalidateViewState(stateDetails: true, stateOptions: true);
 
-        private void ModelOnModuleDisabled(object sender, EventArgs e) {
-            InvalidateViewState(stateDetails: true, stateOptions: true);
-        }
+        private void ModelOnModuleDisabled(object sender, EventArgs e) => InvalidateViewState(stateDetails: true, stateOptions: true);
 
         private bool GetModuleCanEnable() {
             // Can't enable if already enabled
-            if (this.Model.Enabled) return false;
+            if (this.Model.Enabled) {
+                return false;
+            }
 
             // Can't enable if the module is on the explicit
             // "incompatible" list.
-            if (GameService.Module.ModuleIsExplicitlyIncompatible(this.Model)) return false;
+            if (GameService.Module.ModuleIsExplicitlyIncompatible(this.Model)) {
+                return false;
+            }
 
             // Can't enable if module's assembly is dirty
             // (i.e. previous version of it has been loaded)
-            if (this.Model.IsModuleAssemblyStateDirty) return false;
+            if (this.Model.IsModuleAssemblyStateDirty) {
+                return false;
+            }
 
             // Can't enable if there is an instance of the
             // module already while the module is unloading
-            if (this.Model.ModuleInstance != null) return false;
+            if (this.Model.ModuleInstance != null) {
+                return false;
+            }
 
             // Can't enable if the dependencies aren't met (unless
             // ignore module dependencies has been selected)
-            if (!this.Model.DependenciesMet) return false;
-
-            return true;
+            return this.Model.DependenciesMet;
         }
 
         private bool GetModuleCanDisable() {
             // Can't disable if already disabled
-            if (!this.Model.Enabled) return false;
+            if (!this.Model.Enabled) {
+                return false;
+            }
 
             // Can't disable if the module is currently unloading
-            if (this.Model.ModuleInstance == null) return false;
+            if (this.Model.ModuleInstance == null) {
+                return false;
+            }
 
             // Can't disable if the module isn't currently marked as loaded
-            if (this.Model.ModuleInstance.RunState != ModuleRunState.Loaded) return false;
-
-            return true;
+            return this.Model.ModuleInstance.RunState == ModuleRunState.Loaded;
         }
 
-        protected override void Unload() {
-            UnsubscribeFromModuleRunState();
-        }
+        protected override void Unload() => UnsubscribeFromModuleRunState();
 
     }
 }

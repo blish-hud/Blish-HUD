@@ -12,23 +12,25 @@ namespace Blish_HUD.DebugHelper.Services {
 
         private const int PING_TIMEOUT_BEFORE_PAUSING_HOOKS = 50;
 
-        private readonly IMessageService     messageService;
-        private readonly MouseHookService    mouseHookService;
+        private readonly IMessageService messageService;
+        private readonly MouseHookService mouseHookService;
         private readonly KeyboardHookService keyboardHookService;
-        private readonly TTimer              timeoutTimer  = new TTimer(PING_TIMEOUT_BEFORE_PAUSING_HOOKS) { AutoReset = false };
-        private          bool                stopRequested = false;
-        private          bool                hookRequested = false;
-        private          Thread?             thread;
+        private readonly TTimer timeoutTimer = new TTimer(PING_TIMEOUT_BEFORE_PAUSING_HOOKS) { AutoReset = false };
+        private bool stopRequested = false;
+        private bool hookRequested = false;
+        private Thread thread;
 
         public InputManagerService(IMessageService messageService, MouseHookService mouseHookService, KeyboardHookService keyboardHookService) {
-            this.messageService      =  messageService;
-            this.mouseHookService    =  mouseHookService;
-            this.keyboardHookService =  keyboardHookService;
-            timeoutTimer.Elapsed     += HandleTimeout;
+            this.messageService = messageService;
+            this.mouseHookService = mouseHookService;
+            this.keyboardHookService = keyboardHookService;
+            timeoutTimer.Elapsed += HandleTimeout;
         }
 
         public void Start() {
-            if (thread != null) return;
+            if (thread != null) {
+                return;
+            }
 
             messageService.Register<PingMessage>(HandlePing);
             timeoutTimer.Start();
@@ -38,7 +40,9 @@ namespace Blish_HUD.DebugHelper.Services {
         }
 
         public void Stop() {
-            if (thread == null) return;
+            if (thread == null) {
+                return;
+            }
 
             timeoutTimer.Stop();
             messageService.Unregister<PingMessage>();
@@ -47,7 +51,7 @@ namespace Blish_HUD.DebugHelper.Services {
             thread.Join();
 
             stopRequested = false;
-            thread        = null;
+            thread = null;
         }
 
         private void Loop() {
@@ -56,8 +60,13 @@ namespace Blish_HUD.DebugHelper.Services {
             };
 
             timer.Tick += (sender, e) => {
-                if (stopRequested) Application.ExitThread();
-                if (!hookRequested) return;
+                if (stopRequested) {
+                    Application.ExitThread();
+                }
+
+                if (!hookRequested) {
+                    return;
+                }
 
                 mouseHookService.Start();
                 keyboardHookService.Start();
@@ -86,7 +95,9 @@ namespace Blish_HUD.DebugHelper.Services {
         private bool isDisposed = false; // To detect redundant calls
 
         protected virtual void Dispose(bool isDisposing) {
-            if (isDisposed) return;
+            if (isDisposed) {
+                return;
+            }
 
             if (isDisposing) {
                 Stop();
@@ -96,10 +107,9 @@ namespace Blish_HUD.DebugHelper.Services {
             isDisposed = true;
         }
 
-        public void Dispose() { Dispose(true); }
+        public void Dispose() => Dispose(true);
 
         #endregion
 
     }
-
 }

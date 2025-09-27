@@ -27,7 +27,7 @@
 using System.Runtime.InteropServices;
 
 namespace Blish_HUD.Controls {
-	internal enum OperationType {
+    internal enum OperationType {
         Insert,
         Delete,
         Replace
@@ -36,8 +36,8 @@ namespace Blish_HUD.Controls {
     [StructLayout(LayoutKind.Sequential)]
     internal class UndoRedoRecord {
         public OperationType OperationType;
-        public string        Data;
-        public int           Index;
-        public int           Length;
+        public string Data;
+        public int Index;
+        public int Length;
     }
 }

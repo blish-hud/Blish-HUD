@@ -19,20 +19,16 @@ namespace Blish_HUD {
         public KeyboardHandler Keyboard { get; }
 
         internal InputService() {
-            this.Mouse    = new MouseHandler();
+            this.Mouse = new MouseHandler();
             this.Keyboard = new KeyboardHandler();
 
-            if (ApplicationSettings.Instance.DebugEnabled) {
-                _hookManager = new DebugHelperHookManager();
-            } else {
-                _hookManager = new WinApiHookManager();
-            }
+            _hookManager = ApplicationSettings.Instance.DebugEnabled ? new DebugHelperHookManager() : (IHookManager)new WinApiHookManager();
         }
 
         internal void EnableHooks() {
             if (_hookManager.EnableHook()) {
-                _hookManager.RegisterMouseHandler(Mouse.HandleInput);
-                _hookManager.RegisterKeyboardHandler(Keyboard.HandleInput);
+                _hookManager.RegisterMouseHandler(this.Mouse.HandleInput);
+                _hookManager.RegisterKeyboardHandler(this.Keyboard.HandleInput);
 
                 this.Mouse.OnEnable();
                 this.Keyboard.OnEnable();
@@ -43,8 +39,8 @@ namespace Blish_HUD {
 
         internal void DisableHooks() {
             _hookManager.DisableHook();
-            _hookManager.UnregisterMouseHandler(Mouse.HandleInput);
-            _hookManager.UnregisterKeyboardHandler(Keyboard.HandleInput);
+            _hookManager.UnregisterMouseHandler(this.Mouse.HandleInput);
+            _hookManager.UnregisterKeyboardHandler(this.Keyboard.HandleInput);
 
             this.Mouse.OnDisable();
             this.Keyboard.OnDisable();
@@ -55,8 +51,8 @@ namespace Blish_HUD {
         protected override void Load() {
             _hookManager.Load();
             GameIntegration.Gw2Instance.Gw2AcquiredFocus += (s, e) => EnableHooks();
-            GameIntegration.Gw2Instance.Gw2LostFocus     += (s, e) => DisableHooks();
-            GameIntegration.Gw2Instance.Gw2Closed        += (s, e) => DisableHooks();
+            GameIntegration.Gw2Instance.Gw2LostFocus += (s, e) => DisableHooks();
+            GameIntegration.Gw2Instance.Gw2Closed += (s, e) => DisableHooks();
         }
 
         protected override void Unload() {
@@ -65,8 +61,8 @@ namespace Blish_HUD {
         }
 
         protected override void Update(GameTime gameTime) {
-            Mouse.Update();
-            Keyboard.Update();
+            this.Mouse.Update();
+            this.Keyboard.Update();
         }
     }
 }

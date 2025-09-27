@@ -134,7 +134,9 @@ namespace Blish_HUD.Controls {
         public static Control ActiveControl {
             get => _activeControl;
             set {
-                if (_activeControl == value) return;
+                if (_activeControl == value) {
+                    return;
+                }
 
                 _activeControl = value;
 
@@ -142,9 +144,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private static void OnActiveControlChanged(ControlActivatedEventArgs e) {
-            ActiveControlChanged?.Invoke(null, e);
-        }
+        private static void OnActiveControlChanged(ControlActivatedEventArgs e) => ActiveControlChanged?.Invoke(null, e);
 
         public static event EventHandler<ControlActivatedEventArgs> FocusedControlChanged;
 
@@ -152,7 +152,9 @@ namespace Blish_HUD.Controls {
         public static Control FocusedControl {
             get => _focusedControl;
             set {
-                if (_focusedControl == value) return;
+                if (_focusedControl == value) {
+                    return;
+                }
 
                 _focusedControl = value;
 
@@ -160,9 +162,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private static void OnFocusedControlChanged(ControlActivatedEventArgs e) {
-            ActiveControlChanged?.Invoke(null, e);
-        }
+        private static void OnFocusedControlChanged(ControlActivatedEventArgs e) => ActiveControlChanged?.Invoke(null, e);
 
         #endregion
 
@@ -220,41 +220,31 @@ namespace Blish_HUD.Controls {
         /// Called when the mouse moves over the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnMouseMoved(MouseEventArgs e) {
-            this.MouseMoved?.Invoke(this, e);
-        }
+        protected virtual void OnMouseMoved(MouseEventArgs e) => this.MouseMoved?.Invoke(this, e);
 
         /// <summary>
         /// Called when a right mouse button press occurs on the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnRightMouseButtonPressed(MouseEventArgs e) {
-            this.RightMouseButtonPressed?.Invoke(this, e);
-        }
+        protected virtual void OnRightMouseButtonPressed(MouseEventArgs e) => this.RightMouseButtonPressed?.Invoke(this, e);
 
         /// <summary>
         /// Called when a right mouse button release occurs on the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnRightMouseButtonReleased(MouseEventArgs e) {
-            this.RightMouseButtonReleased?.Invoke(this, e);
-        }
+        protected virtual void OnRightMouseButtonReleased(MouseEventArgs e) => this.RightMouseButtonReleased?.Invoke(this, e);
 
         /// <summary>
         /// Called the mouse wheel is scrolled while the mouse is over the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnMouseWheelScrolled(MouseEventArgs e) {
-            this.MouseWheelScrolled?.Invoke(this, e);
-        }
+        protected virtual void OnMouseWheelScrolled(MouseEventArgs e) => this.MouseWheelScrolled?.Invoke(this, e);
 
         /// <summary>
         /// Called when the mouse enters into the bounds of the <see cref="Control"/>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnMouseEntered(MouseEventArgs e) {
-            this.MouseEntered?.Invoke(this, e);
-        }
+        protected virtual void OnMouseEntered(MouseEventArgs e) => this.MouseEntered?.Invoke(this, e);
 
         /// <summary>
         /// Called when the mouse exits from the bounds of the <see cref="Control"/>.
@@ -270,9 +260,7 @@ namespace Blish_HUD.Controls {
         /// Called when a left mouse button press occurs on the <see cref="Control"/> while <see cref="Enabled"/> is <c>true</c>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnClick(MouseEventArgs e) {
-            this.Click?.Invoke(this, e);
-        }
+        protected virtual void OnClick(MouseEventArgs e) => this.Click?.Invoke(this, e);
 
         #endregion
 
@@ -286,33 +274,25 @@ namespace Blish_HUD.Controls {
         /// Called when the value of <see cref="Visible"/> is changed to <c>true</c>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnShown(EventArgs e) {
-            this.Shown?.Invoke(this, e);
-        }
+        protected virtual void OnShown(EventArgs e) => this.Shown?.Invoke(this, e);
 
         /// <summary>
         /// Called when the value of <see cref="Visible"/> is changed to <c>false</c>.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnHidden(EventArgs e) {
-            this.Hidden?.Invoke(this, e);
-        }
+        protected virtual void OnHidden(EventArgs e) => this.Hidden?.Invoke(this, e);
 
         /// <summary>
         /// Called when the <see cref="Size"/> of the <see cref="Control"/> is changed.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnResized(ResizedEventArgs e) {
-            this.Resized?.Invoke(this, e);
-        }
+        protected virtual void OnResized(ResizedEventArgs e) => this.Resized?.Invoke(this, e);
 
         /// <summary>
         /// Called when the <see cref="Location"/> of the <see cref="Control"/> is changed.
         /// If overriding, ensure you call the base method.
         /// </summary>
-        protected virtual void OnMoved(MovedEventArgs e) {
-            this.Moved?.Invoke(this, e);
-        }
+        protected virtual void OnMoved(MovedEventArgs e) => this.Moved?.Invoke(this, e);
 
         #endregion
 
@@ -341,7 +321,9 @@ namespace Blish_HUD.Controls {
         public Point Location {
             get => _location;
             set {
-                if (_location == value) return;
+                if (_location == value) {
+                    return;
+                }
 
                 var previousLocation = _location;
 
@@ -350,14 +332,21 @@ namespace Blish_HUD.Controls {
                 OnPropertyChanged();
 
                 // We do this to make sure we raise PropertyChanged events for alias properties
-                if (previousLocation.Y != _location.Y)
+                if (previousLocation.Y != _location.Y) {
                     OnPropertyChanged(nameof(this.Top));
-                if (previousLocation.X != _location.X)
+                }
+
+                if (previousLocation.X != _location.X) {
                     OnPropertyChanged(nameof(this.Left));
-                if (previousLocation.Y + _size.Y != _location.Y + _size.Y)
+                }
+
+                if (previousLocation.Y + _size.Y != _location.Y + _size.Y) {
                     OnPropertyChanged(nameof(this.Bottom));
-                if (previousLocation.X + _size.X != _location.X + _size.X)
+                }
+
+                if (previousLocation.X + _size.X != _location.X + _size.X) {
                     OnPropertyChanged(nameof(this.Right));
+                }
 
                 OnMoved(new MovedEventArgs(previousLocation, _location));
             }
@@ -369,7 +358,9 @@ namespace Blish_HUD.Controls {
         public int Top {
             get => _location.Y;
             set {
-                if (_location.Y == value) return;
+                if (_location.Y == value) {
+                    return;
+                }
 
                 this.Location = new Point(_location.X, value);
             }
@@ -379,7 +370,9 @@ namespace Blish_HUD.Controls {
         public int Right {
             get => _location.X + _size.X;
             set {
-                if (value == _location.X + _size.X) return;
+                if (value == _location.X + _size.X) {
+                    return;
+                }
 
                 this.Location = new Point(value - this.Width, _location.Y);
             }
@@ -389,7 +382,9 @@ namespace Blish_HUD.Controls {
         public int Bottom {
             get => _location.Y + _size.Y;
             set {
-                if (value == _location.Y + _size.Y) return;
+                if (value == _location.Y + _size.Y) {
+                    return;
+                }
 
                 this.Location = new Point(_location.X, value - this.Height);
             }
@@ -399,7 +394,9 @@ namespace Blish_HUD.Controls {
         public int Left {
             get => _location.X;
             set {
-                if (value == _location.X) return;
+                if (value == _location.X) {
+                    return;
+                }
 
                 this.Location = new Point(value, _location.Y);
             }
@@ -415,10 +412,14 @@ namespace Blish_HUD.Controls {
         public Point Size {
             get => _size;
             set {
-                if (_size == value) return;
+                if (_size == value) {
+                    return;
+                }
 
                 // To render, the control must have positive dimensions
-                if (value.X < 0 || value.Y < 0) return;
+                if (value.X < 0 || value.Y < 0) {
+                    return;
+                }
 
                 var previousSize = _size;
 
@@ -426,14 +427,21 @@ namespace Blish_HUD.Controls {
 
                 OnPropertyChanged();
 
-                if (previousSize.Y != _size.Y)
+                if (previousSize.Y != _size.Y) {
                     OnPropertyChanged(nameof(this.Height), true);
-                if (previousSize.X != _size.X)
+                }
+
+                if (previousSize.X != _size.X) {
                     OnPropertyChanged(nameof(this.Width), true);
-                if (_location.Y + previousSize.Y != _location.Y + _size.Y)
+                }
+
+                if (_location.Y + previousSize.Y != _location.Y + _size.Y) {
                     OnPropertyChanged(nameof(this.Bottom), true);
-                if (_location.X + previousSize.X != _location.X + _size.X)
+                }
+
+                if (_location.X + previousSize.X != _location.X + _size.X) {
                     OnPropertyChanged(nameof(this.Right), true);
+                }
 
                 OnResized(new ResizedEventArgs(previousSize, _size));
 
@@ -450,7 +458,9 @@ namespace Blish_HUD.Controls {
         public int Width {
             get => _size.X;
             set {
-                if (_size.X == value) return;
+                if (_size.X == value) {
+                    return;
+                }
 
                 this.Size = new Point(value, _size.Y);
             }
@@ -463,7 +473,9 @@ namespace Blish_HUD.Controls {
         public int Height {
             get => _size.Y;
             set {
-                if (_size.Y == value) return;
+                if (_size.Y == value) {
+                    return;
+                }
 
                 this.Size = new Point(_size.X, value);
             }
@@ -499,11 +511,9 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _effectInFront, value);
         }
 
-        public virtual void UnsetFocus() {
-            FocusedControl = null;
-        }
+        public virtual void UnsetFocus() => FocusedControl = null;
 
-        public virtual bool GetFocusState() { return false; }
+        public virtual bool GetFocusState() => false;
 
         /// <summary>
         /// The bounds of the control, relative to the parent control.
@@ -520,9 +530,11 @@ namespace Blish_HUD.Controls {
             get {
                 var parent = this.Parent;
 
-                if (parent == null) return this.LocalBounds;
+                if (parent == null) {
+                    return this.LocalBounds;
+                }
 
-                var parentBounds        = parent.AbsoluteBounds;
+                var parentBounds = parent.AbsoluteBounds;
                 var parentContentRegion = parent.ContentRegion;
 
                 // Clean this up
@@ -556,13 +568,11 @@ namespace Blish_HUD.Controls {
         /// Do not use this if you are already using <see cref="BasicTooltipText"/>.
         /// </summary>
         public Tooltip Tooltip {
-            get {
-                if (_tooltip != null && !_tooltip._disposedValue) return _tooltip;
-
-                return !string.IsNullOrWhiteSpace(_basicTooltipText)
-                    ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
-                    : null;
-            }
+            get => _tooltip != null && !_tooltip._disposedValue
+                                         ? _tooltip
+                                         : !string.IsNullOrWhiteSpace(_basicTooltipText)
+                                         ? _tooltip = new Tooltip(new BasicTooltipView(_basicTooltipText))
+                                         : null;
             set => SetProperty(ref _tooltip, value);
         }
 
@@ -574,7 +584,9 @@ namespace Blish_HUD.Controls {
         public string BasicTooltipText {
             get => _basicTooltipText;
             set {
-                if (!SetProperty(ref _basicTooltipText, value)) return;
+                if (!SetProperty(ref _basicTooltipText, value)) {
+                    return;
+                }
 
                 if (Control.ActiveControl == this && _tooltip != null) {
                     // In the event that the tooltip text is changed while it's
@@ -681,7 +693,7 @@ namespace Blish_HUD.Controls {
 
         private int _layoutSuspendCount = 0;
         [JsonIgnore]
-        internal bool IsLayoutSuspended => Interlocked.CompareExchange(ref _layoutSuspendCount, 0, 0) != 0 || (Parent?.IsLayoutSuspended).GetValueOrDefault();
+        internal bool IsLayoutSuspended => Interlocked.CompareExchange(ref _layoutSuspendCount, 0, 0) != 0 || (this.Parent?.IsLayoutSuspended).GetValueOrDefault();
 
         [JsonIgnore]
         internal LayoutState LayoutState { get; private set; } = LayoutState.SkipDraw;
@@ -692,20 +704,20 @@ namespace Blish_HUD.Controls {
         public SpriteBatchParameters SpriteBatchParameters {
             get => _spriteBatchParameters ?? _defaultSpriteBatchParameters;
             set {
-                if (_spriteBatchParameters != _defaultSpriteBatchParameters)
+                if (_spriteBatchParameters != _defaultSpriteBatchParameters) {
                     _spriteBatchParameters = value;
+                }
             }
         }
 
         #endregion
 
-
         // TODO: Not sure if these are needed anymore since GameServices are much easier to reference now
         // Aliases to make life easier
-        protected static ContentService   Content   => GameService.Content;
-        protected static InputService     Input     => GameService.Input;
+        protected static ContentService Content => GameService.Content;
+        protected static InputService Input => GameService.Input;
         protected static AnimationService Animation => GameService.Animation;
-        protected static GraphicsService  Graphics  => GameService.Graphics;
+        protected static GraphicsService Graphics => GameService.Graphics;
 
         protected Control() {
             // TODO: This needs to get handled by the menustrip itself, not by the control
@@ -717,11 +729,13 @@ namespace Blish_HUD.Controls {
 
         // TODO: This needs to be moved into the ContextMenuStrip class - the control itself shouldn't be doing this work
         private void ActivateContextMenuStrip(object sender, MouseEventArgs e) {
-            if (this.Menu == null || !this.Enabled) return;
+            if (this.Menu == null || !this.Enabled) {
+                return;
+            }
 
             this.Menu.Show(Input.Mouse.Position);
         }
-        
+
         /// <summary>
         /// Avoid overriding <see cref="Invalidate"/> as it has the potential to be called multiple times prior to a render taking place.
         /// </summary>
@@ -738,18 +752,14 @@ namespace Blish_HUD.Controls {
         /// The layout of the <see cref="Control"/> will be suspended until
         /// <see cref="ResumeLayout"/> is called.
         /// </summary>
-        public void SuspendLayout() {
-            Interlocked.Increment(ref _layoutSuspendCount);
-        }
+        public void SuspendLayout() => Interlocked.Increment(ref _layoutSuspendCount);
 
         /// <summary>
         /// Suspends the layout of the <see cref="Control"/> until the context is
         /// disposed (i.e. when exiting a <see langword="using"/> block) and ensures
         /// correct resumption of layout in the event of exceptions.
         /// </summary>
-        public IDisposable SuspendLayoutContext() {
-            return new SuspendLayoutScope(this);
-        }
+        public IDisposable SuspendLayoutContext() => new SuspendLayoutScope(this);
 
         /// <summary>
         /// Allows the layout of the control to be calculated on the next
@@ -765,7 +775,7 @@ namespace Blish_HUD.Controls {
         private void UpdateLayout() {
             try {
                 if (Interlocked.Increment(ref this._layoutSuspendCount) == 1 &&
-                    !(Parent?.IsLayoutSuspended).GetValueOrDefault() &&
+                    !(this.Parent?.IsLayoutSuspended).GetValueOrDefault() &&
                     this.LayoutState != LayoutState.Ready) {
 
                     RecalculateLayout();
@@ -782,33 +792,29 @@ namespace Blish_HUD.Controls {
         public virtual void RecalculateLayout() {
             /* NOOP */
         }
-        
+
         protected float AbsoluteOpacity(bool isInternal) {
             var parent = this.Parent;
 
-            if (parent == null) return _opacity;
-
-            return isInternal
+            return parent == null
+                ? _opacity
+                : isInternal
                        ? parent.AbsoluteOpacity(true) - (1f - _opacity)
                        : MathHelper.Clamp(parent.AbsoluteOpacity(true) - (1f - _opacity), 0f, 1f);
         }
 
-        public float AbsoluteOpacity() {
-            return AbsoluteOpacity(false);
-        }
+        public float AbsoluteOpacity() => AbsoluteOpacity(false);
 
         /// <summary>
         /// Specifies which type of input this <see cref="Control"/> accepts, possibly blocks from other <see cref="Control"/>s, and prevents the game from seeing.
         /// </summary>
         public CaptureType Captures => CapturesInput();
-        
+
         /// <summary>
         /// Override to specify which type of input this <see cref="Control"/> accepts or intercepts.
         /// </summary>
         /// <seealso cref="Captures"/>
-        protected virtual CaptureType CapturesInput() {
-            return CaptureType.Mouse;
-        }
+        protected virtual CaptureType CapturesInput() => CaptureType.Mouse;
 
         protected void TriggerMouseEvent(MouseEventType mouseEventType) {
             switch (mouseEventType) {
@@ -849,12 +855,14 @@ namespace Blish_HUD.Controls {
                         TriggerMouseEvent(mouseEventType);
                         return this;
                     }
+
                     break;
                 case MouseEventType.MouseWheelScrolled:
                     if (inputCapture.HasFlag(CaptureType.MouseWheel) || inputCapture.HasFlag(CaptureType.Filter)) {
                         TriggerMouseEvent(mouseEventType);
                         return this;
                     }
+
                     break;
             }
 
@@ -864,16 +872,12 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// Makes the control visible.
         /// </summary>
-        public virtual void Show() {
-            this.Visible = true;
-        }
+        public virtual void Show() => this.Visible = true;
 
         /// <summary>
         /// Hides the control so that it is no longer visible.
         /// </summary>
-        public virtual void Hide() {
-            this.Visible = false;
-        }
+        public virtual void Hide() => this.Visible = false;
 
         public virtual void DoUpdate(GameTime gameTime) { /* NOOP */ }
 
@@ -905,10 +909,11 @@ namespace Blish_HUD.Controls {
             this.EffectBehind?.Draw(spriteBatch, drawBounds);
 
             spriteBatch.Begin(this.SpriteBatchParameters);
-                
+
             // Draw background
-            if (_backgroundColor != Color.Transparent)
+            if (_backgroundColor != Color.Transparent) {
                 spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, drawBounds, _backgroundColor);
+            }
 
             if (!this.ClipsBounds) {
                 spriteBatch.GraphicsDevice.ScissorRectangle = Graphics.SpriteScreen.LocalBounds.ScaleBy(Graphics.UIScaleMultiplier);
@@ -934,26 +939,26 @@ namespace Blish_HUD.Controls {
                     this.Disposed?.Invoke(this, EventArgs.Empty);
 
                     // Unassociate any subcontrols
-                    this.EffectBehind  = null;
+                    this.EffectBehind = null;
                     this.EffectInFront = null;
 
                     // Disconnect all existing event handlers
-                    this.LeftMouseButtonPressed   = null;
-                    this.LeftMouseButtonReleased  = null;
-                    this.MouseMoved               = null;
-                    this.RightMouseButtonPressed  = null;
+                    this.LeftMouseButtonPressed = null;
+                    this.LeftMouseButtonReleased = null;
+                    this.MouseMoved = null;
+                    this.RightMouseButtonPressed = null;
                     this.RightMouseButtonReleased = null;
-                    this.MouseWheelScrolled       = null;
-                    this.MouseEntered             = null;
-                    this.MouseLeft                = null;
-                    this.Click                    = null;
+                    this.MouseWheelScrolled = null;
+                    this.MouseEntered = null;
+                    this.MouseLeft = null;
+                    this.Click = null;
 
-                    this.Resized         = null;
-                    this.Moved           = null;
-                    this.Disposed        = null;
+                    this.Resized = null;
+                    this.Moved = null;
+                    this.Disposed = null;
                     this.PropertyChanged = null;
 
-                    this.Shown  = null;
+                    this.Shown = null;
                     this.Hidden = null;
 
                     // Cancel any animations that were currently running on this object
@@ -978,16 +983,17 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public void Dispose() {
+        public void Dispose()
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-        }
+            => Dispose(true);
         #endregion
 
         #region Property Management and Binding
 
         protected bool SetProperty<T>(ref T property, T newValue, bool invalidateLayout = false, [CallerMemberName] string propertyName = null) {
-            if (Equals(property, newValue) || propertyName == null) return false;
+            if (Equals(property, newValue) || propertyName == null) {
+                return false;
+            }
 
             property = newValue;
 
@@ -999,7 +1005,9 @@ namespace Blish_HUD.Controls {
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName, bool invalidateLayout) {
-            if (string.IsNullOrEmpty(propertyName)) return;
+            if (string.IsNullOrEmpty(propertyName)) {
+                return;
+            }
 
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
@@ -1008,26 +1016,22 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            OnPropertyChanged(propertyName, false);
-        }
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => OnPropertyChanged(propertyName, false);
 
         #endregion
 
         #region Helper Classes
         private readonly struct SuspendLayoutScope : IDisposable {
             private readonly Control _owner;
-            private readonly bool    _forceRecalculate;
+            private readonly bool _forceRecalculate;
 
             public SuspendLayoutScope(Control owner, bool forceRecalculate = false) {
-                _owner            = owner;
+                _owner = owner;
                 _forceRecalculate = forceRecalculate;
                 _owner.SuspendLayout();
             }
 
-            public void Dispose() {
-                _owner.ResumeLayout(_forceRecalculate);
-            }
+            public void Dispose() => _owner.ResumeLayout(_forceRecalculate);
         }
         #endregion
     }

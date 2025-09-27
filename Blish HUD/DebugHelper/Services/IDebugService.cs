@@ -2,10 +2,9 @@
 
     internal interface IDebugService {
 
-        void Start();
+        public void Start();
 
-        void Stop();
+        public void Stop();
 
     }
-
 }

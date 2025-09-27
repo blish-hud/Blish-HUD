@@ -38,6 +38,5 @@ namespace Blish_HUD.Overlay {
 
             this.RegistrarListChanged?.Invoke(this, EventArgs.Empty);
         }
-
     }
 }

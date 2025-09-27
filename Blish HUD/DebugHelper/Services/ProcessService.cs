@@ -8,16 +8,15 @@ namespace Blish_HUD.DebugHelper.Services {
         private readonly Process process;
 
         public ProcessService(int blishHudProcessId) {
-            process                     = Process.GetProcessById(blishHudProcessId);
+            process = Process.GetProcessById(blishHudProcessId);
             process.EnableRaisingEvents = true;
         }
 
-        public void Start() { process.Exited += Process_Exited; }
+        public void Start() => process.Exited += Process_Exited;
 
-        public void Stop() { process.Exited -= Process_Exited; }
+        public void Stop() => process.Exited -= Process_Exited;
 
-        private void Process_Exited(object sender, EventArgs e) { Environment.Exit(0); }
+        private void Process_Exited(object sender, EventArgs e) => Environment.Exit(0);
 
     }
-
 }

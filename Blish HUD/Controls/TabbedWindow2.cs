@@ -13,7 +13,7 @@ namespace Blish_HUD.Controls {
         private const int TAB_VERTICALOFFSET = 40;
 
         private const int TAB_HEIGHT = 50;
-        private const int TAB_WIDTH  = 84;
+        private const int TAB_WIDTH = 84;
 
         #region Load Static
 
@@ -34,7 +34,9 @@ namespace Blish_HUD.Controls {
             set {
                 var currentTab = _selectedTab;
 
-                if (value != null && !this.Tabs.Contains(value)) return;
+                if (value != null && !this.Tabs.Contains(value)) {
+                    return;
+                }
 
                 if (SetProperty(ref _selectedTab, value, true)) {
                     OnTabChanged(new ValueChangedEventArgs<Tab>(currentTab, value));
@@ -44,7 +46,7 @@ namespace Blish_HUD.Controls {
 
         private Tab HoveredTab { get; set; }
 
-        protected  virtual void OnTabChanged(ValueChangedEventArgs<Tab> e) {
+        protected virtual void OnTabChanged(ValueChangedEventArgs<Tab> e) {
             ShowView(e.NewValue?.View());
 
             if (this.Visible && e.PreviousValue != null) {
@@ -55,22 +57,22 @@ namespace Blish_HUD.Controls {
         }
 
         public TabbedWindow2(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion) {
-            this.Tabs        = new TabCollection(this);
+            this.Tabs = new TabCollection(this);
             this.ShowSideBar = true;
 
             this.ConstructWindow(background, windowRegion, contentRegion);
         }
 
-        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) : this((AsyncTexture2D) background, windowRegion, contentRegion) { /* NOOP */ }
+        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion) : this((AsyncTexture2D)background, windowRegion, contentRegion) { /* NOOP */ }
 
         public TabbedWindow2(AsyncTexture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) {
-            this.Tabs        = new TabCollection(this);
+            this.Tabs = new TabCollection(this);
             this.ShowSideBar = true;
 
             this.ConstructWindow(background, windowRegion, contentRegion, windowSize);
         }
 
-        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) : this((AsyncTexture2D) background, windowRegion, contentRegion, windowSize) { /* NOOP */ }
+        public TabbedWindow2(Texture2D background, Rectangle windowRegion, Rectangle contentRegion, Point windowSize) : this((AsyncTexture2D)background, windowRegion, contentRegion, windowSize) { /* NOOP */ }
 
         protected override void OnClick(MouseEventArgs e) {
             if (this.HoveredTab is { Enabled: true }) {
@@ -81,7 +83,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void UpdateTabStates() {
-            this.SideBarHeight = TAB_VERTICALOFFSET + TAB_HEIGHT * this.Tabs.Count;
+            this.SideBarHeight = TAB_VERTICALOFFSET + (TAB_HEIGHT * this.Tabs.Count);
 
             this.HoveredTab = this.MouseOver && this.SidebarActiveBounds.Contains(this.RelativeMousePosition)
                                   ? this.Tabs.FromIndex((this.RelativeMousePosition.Y - this.SidebarActiveBounds.Y - TAB_VERTICALOFFSET) / TAB_HEIGHT)
@@ -101,10 +103,10 @@ namespace Blish_HUD.Controls {
 
             int tabIndex = 0;
             foreach (var tab in this.Tabs) {
-                int tabTop = this.SidebarActiveBounds.Top + TAB_VERTICALOFFSET + tabIndex * TAB_HEIGHT;
+                int tabTop = this.SidebarActiveBounds.Top + TAB_VERTICALOFFSET + (tabIndex * TAB_HEIGHT);
 
                 bool selected = tab == this.SelectedTab;
-                bool hovered  = tab == this.HoveredTab;
+                bool hovered = tab == this.HoveredTab;
 
                 if (selected) {
                     var tabBounds = new Rectangle(this.SidebarActiveBounds.Left - (TAB_WIDTH - this.SidebarActiveBounds.Width) + 2,
@@ -135,6 +137,5 @@ namespace Blish_HUD.Controls {
                 tabIndex++;
             }
         }
-
     }
 }

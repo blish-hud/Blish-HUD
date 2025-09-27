@@ -1,4 +1,4 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Gw2Sharp.WebApi.V2.Models;
 using JsonSubTypes;
 using Newtonsoft.Json;
@@ -55,21 +55,18 @@ namespace Blish_HUD.Modules {
 
         protected Manifest() {
             // Ensure nothing is empty, regardless of manifest version and contents
-            this.Description    = this.Description    ?? "";
-            this.Dependencies   = this.Dependencies   ?? new List<ModuleDependency>(0);
-            this.Url            = this.Url            ?? "";
-            this.Directories    = this.Directories    ?? new List<string>(0);
-            this.ApiPermissions = this.ApiPermissions ?? new Dictionary<TokenPermission, ModuleApiPermissions>(0);
+            this.Description ??= "";
+            this.Dependencies ??= new List<ModuleDependency>(0);
+            this.Url ??= "";
+            this.Directories ??= new List<string>(0);
+            this.ApiPermissions ??= new Dictionary<TokenPermission, ModuleApiPermissions>(0);
         }
 
         /// <summary>
         /// Gets the detailed name of the module suitable for displaying in logs.
         /// [ModuleName] ([ModuleNamespace] v[ModuleVersion])
         /// </summary>
-        public virtual string GetDetailedName() {
-            return $"{this.Name} ({this.Namespace}) v{this.Version}";
-        }
+        public virtual string GetDetailedName() => $"{this.Name} ({this.Namespace}) v{this.Version}";
 
     }
-
 }

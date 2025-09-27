@@ -10,10 +10,8 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected void OnValueChanged(ValueEventArgs<TSetting> e) => this.ValueChanged?.Invoke(this, e);
 
-        private readonly int _definedWidth;
-
-        private string   _displayName;
-        private string   _description;
+        private string _displayName;
+        private string _description;
         private TSetting _value;
 
         public Func<TSetting, SettingValidationResult> ValidationFunc { get; set; }
@@ -21,7 +19,9 @@ namespace Blish_HUD.Settings.UI.Views {
         public string DisplayName {
             get => _displayName;
             set {
-                if (_displayName == value) return;
+                if (_displayName == value) {
+                    return;
+                }
 
                 RefreshDisplayName(_displayName = value);
             }
@@ -30,13 +30,15 @@ namespace Blish_HUD.Settings.UI.Views {
         public string Description {
             get => _description;
             set {
-                if (_description == value) return;
+                if (_description == value) {
+                    return;
+                }
 
                 RefreshDescription(_description = value);
             }
         }
 
-        protected int DefinedWidth => _definedWidth;
+        protected int DefinedWidth { get; }
 
         public TSetting Value {
             get => _value;
@@ -44,15 +46,15 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected SettingView(SettingEntry<TSetting> setting, int definedWidth) {
-            _definedWidth = definedWidth;
+            this.DefinedWidth = definedWidth;
             _value = setting.Value;
 
             this.WithPresenter(new SettingPresenter<TSetting>(this, setting));
         }
 
         protected sealed override void Build(Container buildPanel) {
-            if (_definedWidth > 0) {
-                buildPanel.Width = _definedWidth;
+            if (this.DefinedWidth > 0) {
+                buildPanel.Width = this.DefinedWidth;
             }
 
             BuildSetting(buildPanel);
@@ -62,9 +64,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected abstract void BuildSetting(Container buildPanel);
 
-        public virtual bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
-            return false;
-        }
+        public virtual bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) => false;
 
         public void HandleBaseComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {

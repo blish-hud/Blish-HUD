@@ -27,9 +27,7 @@ namespace Blish_HUD {
 
         private bool _prevIsAvailable = false;
 
-        private void HandleEvents() {
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsAvailable, this.IsAvailable, OnIsAvailableChanged);
-        }
+        private void HandleEvents() => MumbleEventImpl.CheckAndHandleEvent(ref _prevIsAvailable, this.IsAvailable, OnIsAvailableChanged);
 
         #endregion
 
@@ -81,26 +79,20 @@ namespace Blish_HUD {
             _gw2Client = new Gw2Client();
             RefreshClient();
 
-            this.Info            = new Info(this);
+            this.Info = new Info(this);
             this.PlayerCharacter = new PlayerCharacter(this);
-            this.PlayerCamera    = new PlayerCamera(this);
-            this.CurrentMap      = new CurrentMap(this);
-            this.UI              = new UI(this);
+            this.PlayerCamera = new PlayerCamera(this);
+            this.CurrentMap = new CurrentMap(this);
+            this.UI = new UI(this);
         }
 
         protected override void Initialize() { /* NOOP */ }
 
-        protected override void Load() {
-            GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
-        }
+        protected override void Load() => GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
 
-        private void GameIntegrationOnGw2Started(object sender, EventArgs e) {
-            RefreshClient();
-        }
+        private void GameIntegrationOnGw2Started(object sender, EventArgs e) => RefreshClient();
 
-        internal void RefreshClient() {
-            this.RawClient = GetRawClient();
-        }
+        internal void RefreshClient() => this.RawClient = GetRawClient();
 
         protected override void Update(GameTime gameTime) {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
@@ -138,7 +130,7 @@ namespace Blish_HUD {
 
         private IGw2MumbleClient GetRawClient() {
             this.CurrentMumbleMapName = GetLinkName();
-            
+
             var client = _gw2Client.Mumble[this.CurrentMumbleMapName];
             client.Update(); // We update once to at least indicate that it's alive.
 
@@ -158,19 +150,13 @@ namespace Blish_HUD {
                 return null;
             }
 
-            Match m = MUMBLE_LINK_REGEX.Match(commandLine);
-            if (m.Success) {
-                return m.Groups[1].Value;
-            } else {
-                return null;
-            }
+            var m = MUMBLE_LINK_REGEX.Match(commandLine);
+            return m.Success ? m.Groups[1].Value : null;
         }
 
         protected override void Unload() {
             GameService.GameIntegration.Gw2Instance.Gw2Started -= GameIntegrationOnGw2Started;
             _gw2Client.Dispose();
         }
-
     }
-
 }

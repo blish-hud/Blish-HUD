@@ -10,7 +10,7 @@ namespace Blish_HUD.Entities {
     public class World : IRenderable, IUpdatable, IWorld {
 
         public ICamera Camera { get; set; }
-        
+
         private readonly ConcurrentQueue<(IEntity Entity, bool IsAdded)> _pendingEntityAction = new ConcurrentQueue<(IEntity Entity, bool IsAdded)>();
 
         private readonly SynchronizedCollection<IEntity> _entities = new SynchronizedCollection<IEntity>();
@@ -21,9 +21,7 @@ namespace Blish_HUD.Entities {
             this.Camera = camera;
         }
 
-        public void AddEntity(IEntity entity) {
-            _pendingEntityAction.Enqueue((entity, true));
-        }
+        public void AddEntity(IEntity entity) => _pendingEntityAction.Enqueue((entity, true));
 
         public void AddEntities(IEnumerable<IEntity> entities) {
             foreach (var entity in entities) {
@@ -31,9 +29,7 @@ namespace Blish_HUD.Entities {
             }
         }
 
-        public void RemoveEntity(IEntity entity) {
-            _pendingEntityAction.Enqueue((entity, false));
-        }
+        public void RemoveEntity(IEntity entity) => _pendingEntityAction.Enqueue((entity, false));
 
         public void RemoveEntities(IEnumerable<IEntity> entities) {
             foreach (var entity in entities) {
@@ -73,17 +69,18 @@ namespace Blish_HUD.Entities {
         }
 
         public void Render(GraphicsDevice graphicsDevice) {
-            if (this.Camera == null) return;
+            if (this.Camera == null) {
+                return;
+            }
 
-            graphicsDevice.BlendState        = BlendState.AlphaBlend;
+            graphicsDevice.BlendState = BlendState.AlphaBlend;
             graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
-            graphicsDevice.SamplerStates[0]  = SamplerState.LinearWrap;
-            graphicsDevice.RasterizerState   = RasterizerState.CullNone;
+            graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+            graphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             foreach (var entity in GetEntities(true)) {
                 entity.Render(graphicsDevice, this, this.Camera);
             }
         }
     }
-
 }

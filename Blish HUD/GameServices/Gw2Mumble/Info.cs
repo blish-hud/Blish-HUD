@@ -24,18 +24,18 @@ namespace Blish_HUD.Gw2Mumble {
         /// </summary>
         public event EventHandler<ValueEventArgs<uint>> ProcessIdChanged;
 
-        private void OnBuildIdChanged(ValueEventArgs<int>        e) => BuildIdChanged?.Invoke(this, e);
+        private void OnBuildIdChanged(ValueEventArgs<int> e) => BuildIdChanged?.Invoke(this, e);
         private void OnIsGameFocusedChanged(ValueEventArgs<bool> e) => IsGameFocusedChanged?.Invoke(this, e);
-        private void OnProcessIdChanged(ValueEventArgs<uint>     e) => ProcessIdChanged?.Invoke(this, e);
+        private void OnProcessIdChanged(ValueEventArgs<uint> e) => ProcessIdChanged?.Invoke(this, e);
 
-        private int  _prevBuildId       = -1;
+        private int _prevBuildId = -1;
         private bool _prevIsGameFocused = false;
-        private uint _prevProcessId     = 0;
+        private uint _prevProcessId = 0;
 
         private void HandleEvents() {
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevBuildId,       this.BuildId,       OnBuildIdChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevBuildId, this.BuildId, OnBuildIdChanged);
             MumbleEventImpl.CheckAndHandleEvent(ref _prevIsGameFocused, this.IsGameFocused, OnIsGameFocusedChanged);
-            MumbleEventImpl.CheckAndHandleEvent(ref _prevProcessId,     this.ProcessId,     OnProcessIdChanged);
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevProcessId, this.ProcessId, OnProcessIdChanged);
         }
 
         #endregion
@@ -65,10 +65,7 @@ namespace Blish_HUD.Gw2Mumble {
             _service = service;
         }
 
-        internal void Update(GameTime gameTime) {
-            HandleEvents();
-        }
+        internal void Update(GameTime gameTime) => HandleEvents();
 
     }
-
 }

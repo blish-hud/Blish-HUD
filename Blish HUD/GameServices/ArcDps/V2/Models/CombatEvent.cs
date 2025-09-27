@@ -175,5 +175,4 @@
         /// </remarks>
         public byte Pad64 { get; set; }
     }
-
 }

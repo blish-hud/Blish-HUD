@@ -22,13 +22,14 @@ namespace Blish_HUD {
             /// is then unregistered from the <see cref="ContextsService"/>.
             /// </summary>
             public void Expire() {
-                if (_hasExpired) return;
+                if (_hasExpired) {
+                    return;
+                }
 
                 _hasExpired = true;
 
                 GameService.Contexts.UnregisterContext<TContext>();
             }
-
         }
 
         private readonly Dictionary<Type, Context> _registeredContexts = new Dictionary<Type, Context>();
@@ -77,11 +78,7 @@ namespace Blish_HUD {
         /// <c>null</c> if no <see cref="Context"/> of that type is
         /// currently registered.
         /// </returns>
-        public TContext GetContext<TContext>() where TContext : Context {
-            if (!_registeredContexts.ContainsKey(typeof(TContext))) return null;
-
-            return _registeredContexts[typeof(TContext)] as TContext;
-        }
+        public TContext GetContext<TContext>() where TContext : Context => !_registeredContexts.ContainsKey(typeof(TContext)) ? null : _registeredContexts[typeof(TContext)] as TContext;
 
         /// <summary>
         /// Gets a registered <see cref="Context"/> by interface or base class.
@@ -107,6 +104,5 @@ namespace Blish_HUD {
 
         /// <inheritdoc />
         protected override void Update(GameTime gameTime) { /* NOOP */ }
-
     }
 }

@@ -9,7 +9,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
             try {
                 result = ProcessCombat(message);
                 return true;
-
             } catch (Exception) {
                 result = default;
                 return false;
@@ -23,13 +22,21 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
             string skillName = null;
             int offset = 1;
 
-            if ((byte)(data[0] & (byte)CombatMessageFlags.Ev) == (byte)CombatMessageFlags.Ev) (ev, offset) = ParseEv(data, offset);
+            if ((byte)(data[0] & (byte)CombatMessageFlags.Ev) == (byte)CombatMessageFlags.Ev) {
+                (ev, offset) = ParseEv(data, offset);
+            }
 
-            if ((byte)(data[0] & (byte)CombatMessageFlags.Src) == (byte)CombatMessageFlags.Src) (src, offset) = ParseAg(data, offset);
+            if ((byte)(data[0] & (byte)CombatMessageFlags.Src) == (byte)CombatMessageFlags.Src) {
+                (src, offset) = ParseAg(data, offset);
+            }
 
-            if ((byte)(data[0] & (byte)CombatMessageFlags.Dst) == (byte)CombatMessageFlags.Dst) (dst, offset) = ParseAg(data, offset);
+            if ((byte)(data[0] & (byte)CombatMessageFlags.Dst) == (byte)CombatMessageFlags.Dst) {
+                (dst, offset) = ParseAg(data, offset);
+            }
 
-            if ((byte)(data[0] & (byte)CombatMessageFlags.SkillName) == (byte)CombatMessageFlags.SkillName) (skillName, offset) = ParseString(data, offset);
+            if ((byte)(data[0] & (byte)CombatMessageFlags.SkillName) == (byte)CombatMessageFlags.SkillName) {
+                (skillName, offset) = ParseString(data, offset);
+            }
 
             ulong id = BitConverter.ToUInt64(data, offset);
             ulong revision = BitConverter.ToUInt64(data, offset + 8);
@@ -166,29 +173,17 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
             return (str, offset + (int)length);
         }
 
-        private static (ulong, int) U64(byte[] data, int offset) {
-            return (BitConverter.ToUInt64(data, offset), offset + 8);
-        }
+        private static (ulong, int) U64(byte[] data, int offset) => (BitConverter.ToUInt64(data, offset), offset + 8);
 
-        private static (uint, int) U32(byte[] data, int offset) {
-            return (BitConverter.ToUInt32(data, offset), offset + 4);
-        }
+        private static (uint, int) U32(byte[] data, int offset) => (BitConverter.ToUInt32(data, offset), offset + 4);
 
-        private static (int, int) I32(byte[] data, int offset) {
-            return (BitConverter.ToInt32(data, offset), offset + 4);
-        }
+        private static (int, int) I32(byte[] data, int offset) => (BitConverter.ToInt32(data, offset), offset + 4);
 
-        private static (ushort, int) U16(byte[] data, int offset) {
-            return (BitConverter.ToUInt16(data, offset), offset + 2);
-        }
+        private static (ushort, int) U16(byte[] data, int offset) => (BitConverter.ToUInt16(data, offset), offset + 2);
 
-        private static (byte, int) U8(byte[] data, int offset) {
-            return (data[offset], offset + 1);
-        }
+        private static (byte, int) U8(byte[] data, int offset) => (data[offset], offset + 1);
 
-        private static (bool, int) B(byte[] data, int offset) {
-            return (data[offset] != 0, offset + 1);
-        }
+        private static (bool, int) B(byte[] data, int offset) => (data[offset] != 0, offset + 1);
 
         private enum CombatMessageFlags {
 

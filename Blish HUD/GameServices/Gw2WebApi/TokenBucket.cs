@@ -5,7 +5,7 @@ using Gw2Sharp.WebApi.Exceptions;
 namespace Blish_HUD.Gw2WebApi {
     internal class TokenBucket {
 
-        private const int REFILL_INTERVAL        = 1000;
+        private const int REFILL_INTERVAL = 1000;
         private const int FAILED_CONSUME_RETRIES = 8;
 
         /// <summary>
@@ -43,9 +43,9 @@ namespace Blish_HUD.Gw2WebApi {
         private DateTime _lastUpdate;
 
         internal TokenBucket(double maxBurst, double refillAmountPerSecond) {
-            this.MaxTokens    = maxBurst;
+            this.MaxTokens = maxBurst;
             this.RefillAmount = refillAmountPerSecond;
-            this.Tokens       = maxBurst;
+            this.Tokens = maxBurst;
 
             _lastUpdate = DateTime.Now;
         }
@@ -55,7 +55,7 @@ namespace Blish_HUD.Gw2WebApi {
                 double elapsedTime = (DateTime.Now - _lastUpdate).TotalMilliseconds / REFILL_INTERVAL;
                 _lastUpdate = DateTime.Now;
 
-                return _tokens = Math.Min(_tokens + elapsedTime * this.RefillAmount, this.MaxTokens);
+                return _tokens = Math.Min(_tokens + (elapsedTime * this.RefillAmount), this.MaxTokens);
             }
         }
 
@@ -102,12 +102,12 @@ namespace Blish_HUD.Gw2WebApi {
                             // This will only work on systems in English, but it's an ambiguous HResult and changing the UI language I think isn't worth it.
                             Debug.Contingency.NotifyHttpAccessDenied("to the Guild Wars 2 API");
                         }
+
                         break;
                 }
 
                 throw;
             }
         }
-
     }
 }

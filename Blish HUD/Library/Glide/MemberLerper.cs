@@ -1,6 +1,6 @@
-﻿namespace Glide {
-    using System;
+﻿using System;
 
+namespace Glide {
     public abstract class MemberLerper {
         [Flags]
         public enum Behavior {
@@ -15,7 +15,7 @@
         protected const float DEG = 180f / (float)Math.PI;
         protected const float RAD = (float)Math.PI / 180f;
 
-        public abstract void Initialize(Object fromValue, Object toValue, Behavior behavior);
+        public abstract void Initialize(object fromValue, object toValue, Behavior behavior);
         public abstract object Interpolate(float t, object currentValue, Behavior behavior);
     }
 }
