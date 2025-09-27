@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Blish_HUD.Controls {
-   public class Tooltip : Container, IViewContainer {
+   public class Tooltip : ReferenceCountedContainer, IViewContainer {
         
         internal const int MOUSE_VERTICAL_MARGIN = 36;
 
@@ -49,7 +49,8 @@ namespace Blish_HUD.Controls {
 
         private static void ControlOnActiveControlChanged(object sender, ControlActivatedEventArgs e) {
             foreach (var tooltip in _allTooltips) {
-                tooltip.Hide();
+                if(tooltip.Visible)
+                    tooltip.Hide();
             }
 
             if (_prevControl != null) {
@@ -248,6 +249,9 @@ namespace Blish_HUD.Controls {
 
         protected override void DisposeControl() {
             this.CurrentView?.DoUnload();
+            
+            if(_allTooltips != null && _allTooltips.Contains(this))
+                _allTooltips.Remove(this);
 
             foreach (var control in _children) {
                 control.Resized -= Invalidate;
