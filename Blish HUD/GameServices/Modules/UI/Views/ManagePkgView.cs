@@ -158,7 +158,7 @@ namespace Blish_HUD.Modules.UI.Views {
 
         public ManagePkgView() { /* NOOP */ }
 
-        public ManagePkgView(IGrouping<string, PkgManifest> model) {
+        public ManagePkgView(IOrderedEnumerable<PkgManifest> model) {
             this.WithPresenter(new ManagePkgPresenter(this, model));
         }
 

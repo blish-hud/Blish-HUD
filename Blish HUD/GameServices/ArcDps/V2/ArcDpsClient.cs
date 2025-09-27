@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -147,6 +146,7 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                     if (Client.Available == 0) {
                         await Task.Delay(1, ct);
+                        continue;
                     }
 
                     ReadFromStream(_networkStream, messageHeaderBuffer, 9);
@@ -160,6 +160,10 @@ namespace Blish_HUD.GameServices.ArcDps {
 #endif
 
                 }
+            } catch (ObjectDisposedException) {
+                // We ignore DisposedExceptions, because it is clear, that the cancellation token already got cancelled
+            } catch (OperationCanceledException) {
+                // We ignore OperationCanceledExceptions, because we dont need to handle this, we just want to quit quietly
             } catch (Exception ex) {
                 _logger.Error(ex.ToString());
                 Error?.Invoke(this, SocketError.SocketError);
@@ -179,6 +183,7 @@ namespace Blish_HUD.GameServices.ArcDps {
 
                     if (Client.Available == 0) {
                         await Task.Delay(1, ct);
+                        continue;
                     }
 
                     ReadFromStream(_networkStream, messageHeaderBuffer, 5);
@@ -195,6 +200,10 @@ namespace Blish_HUD.GameServices.ArcDps {
                 // Reconnect if the bridge closes the connection.
                 // Pass on the cancellationToken from the creator of this class
                 this.Initialize((IPEndPoint)this.Client.Client.RemoteEndPoint, this._ct);
+            } catch (ObjectDisposedException) {
+                // We ignore DisposedExceptions, because it is clear, that the cancellation token already got cancelled
+            } catch (OperationCanceledException) {
+                // We ignore OperationCanceledExceptions, because we dont need to handle this, we just want to quit quietly
             } catch (Exception ex) {
                 _logger.Error(ex.ToString());
                 Error?.Invoke(this, SocketError.SocketError);
@@ -229,10 +238,14 @@ namespace Blish_HUD.GameServices.ArcDps {
                 if (disposing) {
                     _cancellationTokenSource.Cancel();
                     Client?.Dispose();
-                    foreach (var item in _messageQueues) {
-                        if (item.Count != 0) {
-                            foreach (var message in item) {
-                                ArrayPool<byte>.Shared.Return(message);
+                    if (_messageQueues != null) {
+                        foreach (var item in _messageQueues) {
+                            if (item != null) {
+                                foreach (var message in item) {
+                                    if (message != null) {
+                                        ArrayPool<byte>.Shared.Return(message);
+                                    }
+                                }
                             }
                         }
                     }

@@ -97,7 +97,8 @@ namespace Blish_HUD.Modules.UI.Views {
         private bool PkgSearchFilter(ViewContainer viewContainer) {
             var pkgView = viewContainer.CurrentView as ManagePkgView;
 
-            return pkgView.ModuleName.ToLowerInvariant().Contains(_searchbox.Text.ToLowerInvariant());
+            var searchText = _searchbox.Text.ToLowerInvariant();
+            return pkgView.ModuleName.ToLowerInvariant().Contains(searchText) || pkgView.ModuleDescription.ToLowerInvariant().Contains(searchText);
         }
 
         private bool PkgNeedsUpdateFilter(ViewContainer viewContainer) {

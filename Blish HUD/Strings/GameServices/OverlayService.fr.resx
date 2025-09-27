@@ -180,7 +180,7 @@ Guild Wars 2 et Blish HUD.</value>
     <value>MumbleLink</value>
   </data>
   <data name="SelfUpdate_ChangesInVersion" xml:space="preserve">
-    <value>Changements de la v[0}</value>
+    <value>Changements de la v{0}</value>
   </data>
   <data name="SelfUpdate_NewUpdateAvailable" xml:space="preserve">
     <value>Nouvelle version disponible</value>
@@ -204,7 +204,7 @@ Guild Wars 2 et Blish HUD.</value>
     <value>Redémarrage...</value>
   </data>
   <data name="SelfUpdate_Progress_RestartingIn" xml:space="preserve">
-    <value>Redémarrage dans [0}...</value>
+    <value>Redémarrage dans {0}...</value>
   </data>
   <data name="SelfUpdate_Progress_VerifyingChecksum" xml:space="preserve">
     <value>Vérification de la somme de contrôle...</value>
