@@ -41,7 +41,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
             if (_enabled) return;
 
             _enabled = true;
-            GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(MessageType.CombatEventArea, CombatHandler);
+            GameService.ArcDpsV2.RegisterMessageType<CombatCallback>(new ArcDpsMessageListener<CombatCallback>(MessageType.CombatEventArea, CombatHandler));
         }
 
         private Task CombatHandler(CombatCallback combatEvent, CancellationToken ct) {

@@ -8,7 +8,6 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras;
 using Blish_HUD.GameServices.ArcDps.V2;
 using Blish_HUD.GameServices.ArcDps.V2.Processors;
 
@@ -48,10 +47,11 @@ namespace Blish_HUD.GameServices.ArcDps {
                 _processors.Add((int)MessageType.CombatEventArea, new LegacyCombatProcessor());
                 _processors.Add((int)MessageType.CombatEventLocal, new LegacyCombatProcessor());
             } else {
-                _processors.Add((int)MessageType.CombatEventArea, new CombatEventProcessor());
+                _processors.Add((int)MessageType.CombatEventArea,  new CombatEventProcessor());
                 _processors.Add((int)MessageType.CombatEventLocal, new CombatEventProcessor());
-                _processors.Add((int)MessageType.UserInfo, new UnofficialExtrasUserInfoProcessor());
-                _processors.Add((int)MessageType.ChatMessage, new UnofficialExtrasMessageInfoProcessor());
+                _processors.Add((int)MessageType.UserInfo,         new UnofficialExtrasUserInfoProcessor());
+                _processors.Add((int)MessageType.SquadMessage,     new UnofficialExtrasSquadMessageInfoProcessor());
+                _processors.Add((int)MessageType.NpcMessage,       new UnofficialExtrasNpcMessageInfoProcessor());
             }
 
             // hardcoded message queue size. One Collection per message type. This is done just for optimizations
@@ -62,14 +62,14 @@ namespace Blish_HUD.GameServices.ArcDps {
         public bool IsMessageTypeAvailable(MessageType type)
             => this._processors.ContainsKey((int)type);
 
-        public void RegisterMessageTypeListener<T>(int type, Func<T, CancellationToken, Task> listener)
+        public void RegisterMessageTypeListener<T>(IArcDpsMessageListener<T> listener)
             where T : struct {
-            var processor = (MessageProcessor<T>)_processors[type];
-            if (_messageQueues[type] == null) {
-                _messageQueues[type] = new BlockingCollection<byte[]>();
+            var processor = (MessageProcessor<T>)_processors[(int)listener.MessageType];
+            if (_messageQueues[(int)listener.MessageType] == null) {
+                _messageQueues[(int)listener.MessageType] = new BlockingCollection<byte[]>();
 
                 try {
-                    Task.Run(() => ProcessMessage(processor, _messageQueues[type]));
+                    Task.Run(() => ProcessMessage(processor, _messageQueues[(int)listener.MessageType]));
                 } catch (OperationCanceledException) {
                     // NOP
                 }
