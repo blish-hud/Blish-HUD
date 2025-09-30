@@ -17,7 +17,7 @@ namespace Blish_HUD.GameServices.ArcDps.V2.Processors {
         }
 
         private async Task SendToListener(T Message, CancellationToken ct) {
-            foreach (var listener in listeners) {
+            foreach (var listener in listeners.ToArray()) {
                 ct.ThrowIfCancellationRequested();
                 await listener.HandleAsync(Message, ct);
             }
