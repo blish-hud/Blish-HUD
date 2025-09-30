@@ -1,17 +1,21 @@
 name: PR
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - 'gh-readonly-queue/*'
 
 jobs:
   build:
     name: Build
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v5
         with:
           submodules: 'true'
           fetch-depth: 0
-      - uses: microsoft/setup-msbuild@v1.1
+      - uses: microsoft/setup-msbuild@v2
 
       - name: Ensure dotnet 3.1 is available
         shell: powershell
@@ -23,11 +27,11 @@ jobs:
         shell: powershell
         run: |
           set-Content -Path 'Blish HUD/Properties/AssemblyVersionInfo.cs' -Value 'using System.Reflection;'
-      - uses: gittools/actions/gitversion/setup@v0.9.15
+      - uses: gittools/actions/gitversion/setup@v3
         with:
           versionSpec: '5.x'
 
-      - uses: gittools/actions/gitversion/execute@v0.9.15
+      - uses: gittools/actions/gitversion/execute@v3
         id: gitversion
         with:
           updateAssemblyInfo: true
