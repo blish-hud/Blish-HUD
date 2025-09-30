@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Common.UI.Views;
@@ -19,7 +18,27 @@ namespace Blish_HUD.Controls {
 
         private static Thickness _contentEdgeBuffer;
 
-        private static ControlCollection<Tooltip> _allTooltips;
+        private static readonly WeakReference<Tooltip> _currentTooltip = new WeakReference<Tooltip>(null);
+
+        private static void SetCurrent(Tooltip t) {
+            lock (_currentTooltip) {
+                if (_currentTooltip.TryGetTarget(out Tooltip current)
+                    && !ReferenceEquals(t, current)) {
+                    current.Hide();
+                }
+
+                _currentTooltip.SetTarget(t);
+            }
+        }
+
+        private static void ClearIfCurrent(Tooltip t) {
+            lock (_currentTooltip) {
+                if (_currentTooltip.TryGetTarget(out Tooltip current)
+                    && ReferenceEquals(t, current)) {
+                    _currentTooltip.SetTarget(null);
+                }
+            }
+        }
 
         private static Texture2D _textureTooltip;
 
@@ -27,8 +46,6 @@ namespace Blish_HUD.Controls {
             _contentEdgeBuffer = new Thickness(4, 4, 3, 6);
 
             _textureTooltip = Content.GetTexture("tooltip");
-
-            _allTooltips = new ControlCollection<Tooltip>();
 
             ActiveControlChanged   += ControlOnActiveControlChanged;
             Input.Mouse.MouseMoved += HandleMouseMoved;
@@ -48,9 +65,7 @@ namespace Blish_HUD.Controls {
         private static Control _prevControl;
 
         private static void ControlOnActiveControlChanged(object sender, ControlActivatedEventArgs e) {
-            foreach (var tooltip in _allTooltips) {
-                tooltip.Hide();
-            }
+            SetCurrent(null);
 
             if (_prevControl != null) {
                 _prevControl.Hidden   -= ActivatedControlOnHidden;
@@ -66,9 +81,7 @@ namespace Blish_HUD.Controls {
         }
 
         private static void ActivatedControlOnHidden(object sender, EventArgs e) {
-            foreach (var tooltip in _allTooltips) {
-                tooltip.Hide();
-            }
+            SetCurrent(null);
         }
 
         private static void UpdateTooltipPosition(Tooltip tooltip) {
@@ -98,8 +111,6 @@ namespace Blish_HUD.Controls {
 
             this.Padding = new Thickness(PADDING);
             this.Visible = false;
-
-            _allTooltips.Add(this);
         }
 
         public Tooltip(ITooltipView tooltipView) : this() {
@@ -186,6 +197,7 @@ namespace Blish_HUD.Controls {
         /// <inheritdoc />
         public override void Show() {
             this.Opacity = 0f;
+            SetCurrent(this);
 
             if (_animFadeLifecycle == null) {
                 _animFadeLifecycle = Animation.Tweener.Tween(this, new {Opacity = 1f}, 0.1f);
@@ -247,6 +259,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void DisposeControl() {
+            ClearIfCurrent(this);
             this.CurrentView?.DoUnload();
 
             foreach (var control in _children) {
