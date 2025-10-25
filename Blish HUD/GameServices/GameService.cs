@@ -20,7 +20,8 @@ namespace Blish_HUD {
             ArcDpsV2          = new ArcDpsServiceV2(), // This needs to be initialized bf the V1
             ArcDps          = new ArcDpsService(),
             Contexts        = new ContextsService(),
-            Module          = new ModuleService()
+            Module          = new ModuleService(),
+            HeadlessRender  = new HeadlessRenderService(),
         };
 
         public static IReadOnlyList<GameService> All => _allServices;
@@ -97,6 +98,7 @@ namespace Blish_HUD {
         public static readonly ArcDpsServiceV2        ArcDpsV2;
         public static readonly ContextsService        Contexts;
         public static readonly ModuleService          Module;
+        public static readonly HeadlessRenderService  HeadlessRender;
 
         #endregion
 

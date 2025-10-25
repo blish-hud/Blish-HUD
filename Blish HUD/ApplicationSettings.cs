@@ -157,6 +157,15 @@ namespace Blish_HUD {
         ]
         public bool UnlockFps { get; private set; }
 
+        public const string OPTION_HEADLESS = "headless";
+        /// <summary>
+        /// (EXPERIMENTAL) Runs in headless mode, to be used with an in-game plugin for rendering.
+        /// </summary>
+        [
+            Option(OPTION_HEADLESS, 'H'),
+            Help("(EXPERIMENTAL) Runs in headless mode, to be used with an in-game plugin for rendering.")
+        ]
+        public bool Headless { get; private set; }
         #endregion
 
         #region Debug

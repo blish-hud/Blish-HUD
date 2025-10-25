@@ -171,6 +171,17 @@ namespace Blish_HUD {
         public int WindowWidth  => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Width;
         public int WindowHeight => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Height;
 
+        public class RenderEventArgs: EventArgs {
+            public GraphicsDevice Device;
+
+            public RenderEventArgs(GraphicsDevice device) {
+                Device = device;
+            }
+        }
+
+        public event EventHandler<RenderEventArgs> BeforeRender;
+        public event EventHandler<RenderEventArgs> AfterRender;
+
         public  float AspectRatio { get; private set; }
 
         public SettingCollection GraphicsSettings { get; private set; }
@@ -319,7 +330,7 @@ namespace Blish_HUD {
             if (frameRateLookup.TryGetValue(e.NewValue, out var settings)) {
                 BlishHud.Instance.IsFixedTimeStep = settings.IsFixedTimeStep;
                 BlishHud.Instance.TargetElapsedTime = settings.TargetElapsedTime;
-                if (settings.VSync != currentVsync) {
+                if (settings.VSync != currentVsync && !BlishHud.Instance.IsHeadless) { // we can't vsync on an offscreen surface
                     GraphicsDeviceManager.SynchronizeWithVerticalRetrace = settings.VSync;
                     GraphicsDeviceManager.ApplyChanges();
                 }
@@ -420,39 +431,52 @@ namespace Blish_HUD {
             if (_renderTimer.ElapsedMilliseconds > 1) {
                 Logger.Debug($"Render thread stalled for {_renderTimer.ElapsedMilliseconds} ms.");
             }
+            var device = ctx.GraphicsDevice;
 
-            ctx.GraphicsDevice.Clear(Color.Transparent);
+            var evt = new RenderEventArgs(device);
+            this.BeforeRender?.Invoke(this, evt);
+
+            device.Clear(Color.Transparent);
 
             // Skip rendering all elements when UI is hidden
-            if (GameService.Overlay.InterfaceHidden) return;
+            if (!GameService.Overlay.InterfaceHidden) {
 
-            GameService.Debug.StartTimeFunc("3D objects");
-            // Only draw 3D elements if we are in game and map is closed
-            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
-                this.World.Render(ctx.GraphicsDevice);
-            }
-            GameService.Debug.StopTimeFunc("3D objects");
-
-            // Slightly better scaling (text is a bit more legible)
-            ctx.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
-
-            GameService.Debug.StartTimeFunc("UI Elements");
-
-            if (this.SpriteScreen != null && this.SpriteScreen.Visible) {
-                this.SpriteScreen.Draw(spriteBatch, this.SpriteScreen.LocalBounds, this.SpriteScreen.LocalBounds);
-            }
-
-            GameService.Debug.StopTimeFunc("UI Elements");
-
-            GameService.Debug.StartTimeFunc("Render Queue");
-            for (int i = MIN_QUEUED_RENDERS; i > 0 && _queuedRenders.TryDequeue(out var renderCall); i--) {
-                renderCall.Invoke(ctx.GraphicsDevice);
-
-                if (_renderTimer.ElapsedMilliseconds < TARGET_MAX_FRAMETIME) {
-                    i++;
+                GameService.Debug.StartTimeFunc("3D objects");
+                // Only draw 3D elements if we are in game and map is closed
+                if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
+                    this.World.Render(device);
                 }
-            }
-            GameService.Debug.StopTimeFunc("Render Queue");
+                GameService.Debug.StopTimeFunc("3D objects");
+
+                // Slightly better scaling (text is a bit more legible)
+                device.SamplerStates[0] = SamplerState.PointClamp;
+
+                GameService.Debug.StartTimeFunc("UI Elements");
+
+                if (this.SpriteScreen != null && this.SpriteScreen.Visible) {
+                    this.SpriteScreen.Draw(spriteBatch, this.SpriteScreen.LocalBounds, this.SpriteScreen.LocalBounds);
+                }
+
+                GameService.Debug.StopTimeFunc("UI Elements");
+
+                GameService.Debug.StartTimeFunc("Render Queue");
+                for (int i = MIN_QUEUED_RENDERS; i > 0 && _queuedRenders.TryDequeue(out var renderCall); i--) {
+                    renderCall.Invoke(device);
+
+                    if (_renderTimer.ElapsedMilliseconds < TARGET_MAX_FRAMETIME) {
+                        i++;
+                    }
+                }
+                GameService.Debug.StopTimeFunc("Render Queue");
+
+                GameService.Debug.StartTimeFunc("Debug overlay");
+                GameService.Debug.DrawDebugOverlay(spriteBatch, gameTime);
+                GameService.Debug.StopTimeFunc("Debug overlay");
+
+                device.Flush();
+            };
+
+            this.AfterRender?.Invoke(this, evt);
         }
 
         protected override void Load() { /* NOOP */ }

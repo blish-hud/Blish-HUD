@@ -224,6 +224,8 @@ namespace Blish_HUD {
         public void DrawDebugOverlay(SpriteBatch spriteBatch, GameTime gameTime) {
             int debugLeft = Graphics.WindowWidth - 600;
 
+            spriteBatch.Begin();
+
             if (EnableFPSDisplay.Value || ApplicationSettings.Instance.DebugEnabled) {
                 spriteBatch.DrawString(Content.DefaultFont14, $"FPS: {Math.Round(Debug.FrameCounter.Value, 0)}", new Vector2(debugLeft, 25), Color.Red);
             }
@@ -239,6 +241,8 @@ namespace Blish_HUD {
                     spriteBatch.DrawString(Content.DefaultFont14, func(gameTime), new Vector2(debugLeft, 50 + i++ * 25), Color.Yellow);
                 }
             }
+
+            spriteBatch.End();
         }
 
         #endregion
@@ -268,6 +272,7 @@ namespace Blish_HUD {
             this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("volume",      _ => "Average In-Game Volume: " + GameIntegration.Audio.Volume);
+            this.OverlayTexts.TryAdd("headless", _ => "Headless: " + (BlishHud.Instance.IsHeadless ? "Yes" : "No"));
         }
 
         protected override void Update(GameTime gameTime) {

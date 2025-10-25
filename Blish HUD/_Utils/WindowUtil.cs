@@ -186,7 +186,7 @@ namespace Blish_HUD {
                     Logger.Debug("GW2 is no longer the active window.");
 
                     var nextHandle = GetWindow(gw2WindowHandle, GW.HWNDPREV);
-                    if (nextHandle != IntPtr.Zero && nextHandle != winHandle) {
+                    if (winHandle != IntPtr.Zero && nextHandle != IntPtr.Zero && nextHandle != winHandle) {
                         SetWindowPos(winHandle, nextHandle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
                     }
                 }
@@ -210,7 +210,9 @@ namespace Blish_HUD {
                     pos.Height
                 );
 
-                SetWindowPos(winHandle, HWND_TOPMOST, clientRect.Left + screenPoint.X, clientRect.Top + screenPoint.Y, clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top, 0);
+                if (winHandle != IntPtr.Zero) {
+                    SetWindowPos(winHandle, HWND_TOPMOST, clientRect.Left + screenPoint.X, clientRect.Top + screenPoint.Y, clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top, 0);
+                }
 
                 var marg = new Margins {
                     cxLeftWidth    = 0,
@@ -219,7 +221,9 @@ namespace Blish_HUD {
                     cyBottomHeight = clientRect.Bottom
                 };
 
-                DwmExtendFrameIntoClientArea(winHandle, ref marg);
+                if (winHandle != IntPtr.Zero) {
+                    DwmExtendFrameIntoClientArea(winHandle, ref marg);
+                }
             }
 
             return (OverlayUpdateResponse.WithFocus, screenPoint.X == MINIMIZED_POS, 0);

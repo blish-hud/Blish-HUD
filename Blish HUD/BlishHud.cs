@@ -38,6 +38,8 @@ namespace Blish_HUD {
         // Primarily used to draw debug text
         private SpriteBatch _basicSpriteBatch;
 
+        internal bool IsHeadless = false;
+
         public BlishHud() {
             BlishHud.Instance = this;
 
@@ -163,10 +165,6 @@ namespace Blish_HUD {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) return;
 
             GameService.Graphics.Render(gameTime, _basicSpriteBatch);
-
-            _basicSpriteBatch.Begin();
-            GameService.Debug.DrawDebugOverlay(_basicSpriteBatch, gameTime);
-            _basicSpriteBatch.End();
             
             base.Draw(gameTime);
         }

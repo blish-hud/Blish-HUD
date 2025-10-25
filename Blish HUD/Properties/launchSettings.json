@@ -3,6 +3,10 @@
     "Blish HUD": {
       "commandName": "Project"
     },
+    "Headless": {
+      "commandName": "Project",
+      "commandLineArgs": "--headless"
+    },
     "PowerShell HUD": {
       "commandName": "Project",
       "commandLineArgs": "-p powershell -w ConsoleWindowClass"

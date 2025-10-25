@@ -361,7 +361,8 @@ namespace Blish_HUD.GameIntegration {
             this.IsInGame = GameService.Gw2Mumble.TimeSinceTick.TotalSeconds <= 0.5 && this.Gw2IsRunning;
 
             if (this.Gw2IsRunning) {
-                var updateResult = WindowUtil.UpdateOverlay(BlishHud.Instance.FormHandle, this.Gw2WindowHandle, this.Gw2HasFocus);
+                var handle = BlishHud.Instance.IsHeadless ? IntPtr.Zero : BlishHud.Instance.FormHandle;
+                var updateResult = WindowUtil.UpdateOverlay(handle, this.Gw2WindowHandle, this.Gw2HasFocus);
 
                 switch (updateResult.Response) {
                     case WindowUtil.OverlayUpdateResponse.WithFocus:

@@ -68,6 +68,7 @@ namespace Blish_HUD.Controls {
 
             _proxyControl.Size = this.DestinationRectangle.Size;
 
+            var targets = graphicsDevice.GetRenderTargets();
             graphicsDevice.SetRenderTarget(cachedRenderTarget);
 
             using (var spriteBatch = new SpriteBatch(graphicsDevice)) {
@@ -87,7 +88,7 @@ namespace Blish_HUD.Controls {
                 spriteBatch.End();
             }
 
-            graphicsDevice.SetRenderTarget(null);
+            graphicsDevice.SetRenderTargets(targets);
 
             _cachedRender.SwapTexture(cachedRenderTarget);
         }
