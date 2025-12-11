@@ -373,24 +373,6 @@ namespace Blish_HUD.GameIntegration {
                         break;
 
                     case WindowUtil.OverlayUpdateResponse.Errored:
-                        switch (updateResult.ErrorCode) {
-                            case 1400:
-                                this.Gw2Process?.Refresh();
-                                
-                                if (this.Gw2Process == null || this.Gw2Process.MainWindowHandle == IntPtr.Zero) {
-                                    // Guild Wars 2 most likely closed
-                                    goto case -1;
-                                }
-
-                                break;
-                            case -1:
-                            default:
-                                this.Gw2Process = null;
-                                if (GameService.Overlay.ShowInTaskbar.Value) {
-                                    WindowUtil.SetShowInTaskbar(BlishHud.Instance.FormHandle, false);
-                                }
-                                break;
-                        }
                         break;
                 }
 
