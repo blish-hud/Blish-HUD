@@ -43,7 +43,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Blish HUD ${{ steps.gitversion.outputs.semVer }}
+          name: Blish HUD
           path: Blish HUD/bin/x64/Release/net472
 
       - name: Run dotnet pack
