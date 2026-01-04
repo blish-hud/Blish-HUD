@@ -6,11 +6,11 @@ namespace Blish_HUD.Settings.UI.Views {
     public abstract class NumericSettingView<T> : SettingView<T>
         where T : IComparable<T> {
         
-        private const int CONTROL_PADDING = 5;
+        protected const int CONTROL_PADDING = 5;
 
         private const int TRACKBAR_WIDTH  = 277;
         private const int TRACKBAR_HEIGHT = 16;
-        
+
         protected Label    _displayNameLabel;
         protected TrackBar _valueTrackBar;
 

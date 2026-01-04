@@ -140,7 +140,8 @@ namespace Blish_HUD {
                                             bool                stroke,
                                             int                 strokeDistance      = 1,
                                             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
-                                            VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
+                                            VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle,
+                                            Rectangle?          clippingRectangle   = null) {
 
             if (string.IsNullOrEmpty(text)) return;
 
@@ -154,7 +155,7 @@ namespace Blish_HUD {
                     int lineHeightDiff = 0;
 
                     while (destinationRectangle.Height - lineHeightDiff > 0 && (line = reader.ReadLine()) != null) {
-                        DrawStringOnCtrl(spriteBatch, ctrl, line, font, destinationRectangle.Add(0, lineHeightDiff, 0, -0), color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment);
+                        DrawStringOnCtrl(spriteBatch, ctrl, line, font, destinationRectangle.Add(0, lineHeightDiff, 0, -0), color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment, clippingRectangle);
 
                         lineHeightDiff += font.LineHeight;
                     }
@@ -164,6 +165,8 @@ namespace Blish_HUD {
             }
 
             Vector2 textSize = font.MeasureString(text);
+
+            clippingRectangle = clippingRectangle?.ToBounds(ctrl.AbsoluteBounds);
 
             destinationRectangle = destinationRectangle.ToBounds(ctrl.AbsoluteBounds);
 
@@ -195,17 +198,17 @@ namespace Blish_HUD {
             if (stroke) {
                 var strokePreMultiplied = Color.Black * absoluteOpacity;
 
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               -strokeDistance), strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  -strokeDistance), strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  0),               strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  strokeDistance),  strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               strokeDistance),  strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, strokeDistance),  strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, 0),               strokePreMultiplied);
-                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, -strokeDistance), strokePreMultiplied);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               -strokeDistance), strokePreMultiplied, clippingRectangle);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  -strokeDistance), strokePreMultiplied, clippingRectangle);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  0),               strokePreMultiplied, clippingRectangle);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(strokeDistance,  strokeDistance),  strokePreMultiplied, clippingRectangle);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(0,               strokeDistance),  strokePreMultiplied, clippingRectangle);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, strokeDistance),  strokePreMultiplied, clippingRectangle);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, 0),               strokePreMultiplied, clippingRectangle);
+                spriteBatch.DrawString(font, text, textPos.OffsetBy(-strokeDistance, -strokeDistance), strokePreMultiplied, clippingRectangle);
             }
 
-            spriteBatch.DrawString(font, text, textPos, color * absoluteOpacity);
+            spriteBatch.DrawString(font, text, textPos, color * absoluteOpacity, clippingRectangle);
         }
 
     }
