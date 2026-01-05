@@ -51,6 +51,8 @@ namespace Blish_HUD.Controls {
 
         private float _incrementAmount = 0.1f;
 
+        private string _formatString = "G"; // Default general format
+
         public FloatInput() {
             Width = 150;
             Height = SpinnerButtonHeight * 2;
@@ -58,6 +60,16 @@ namespace Blish_HUD.Controls {
         }
 
         public event EventHandler<EventArgs>? ValueChanged;
+
+        /// <summary>
+        /// Gets or sets the format string used to display the value.
+        /// Examples: "0.00" for 2 decimal places, "0.0" for 1 decimal place, "G" for general format.
+        /// This only affects display, not the stored value.
+        /// </summary>
+        public string FormatString {
+            get => _formatString;
+            set => SetProperty(ref _formatString, value ?? "G");
+        }
 
         /// <summary>
         /// Gets or sets the increment/decrement amount for spinner buttons and scroll wheel.
@@ -79,7 +91,7 @@ namespace Blish_HUD.Controls {
                     value = MaxValue;
                 }
 
-                string text = value.ToString(NumberFormatInfo.InvariantInfo);
+                string text = value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
                 if (Text != text) {
                     Text = text;
                     OnValueChanged();
@@ -402,7 +414,7 @@ namespace Blish_HUD.Controls {
         protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
             base.OnInputFocusChanged(e);
             if (!e.Value) {
-                Text = Value.ToString(NumberFormatInfo.InvariantInfo);
+                Text = Value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
                 _horizontalOffset = 0;
                 Invalidate();
             }

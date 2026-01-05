@@ -49,6 +49,8 @@ namespace Blish_HUD.Controls {
 
         private int _maxValue = int.MaxValue;
 
+        private string _formatString = "G"; // Default general format
+
         public NumberInput() {
             Width = 150;
             Height = SpinnerButtonHeight * 2;
@@ -56,6 +58,16 @@ namespace Blish_HUD.Controls {
         }
 
         public event EventHandler<EventArgs>? ValueChanged;
+
+        /// <summary>
+        /// Gets or sets the format string used to display the value.
+        /// Examples: "N0" for thousands separator, "D4" for 4 digit padding, "G" for general format.
+        /// This only affects display, not the stored value.
+        /// </summary>
+        public string FormatString {
+            get => _formatString;
+            set => SetProperty(ref _formatString, value ?? "G");
+        }
 
         public int Value {
             get => int.TryParse(Text, out int value) ? value : 0;
@@ -66,7 +78,7 @@ namespace Blish_HUD.Controls {
                     value = MaxValue;
                 }
 
-                string text = value.ToString(NumberFormatInfo.InvariantInfo);
+                string text = value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
                 if (Text != text) {
                     Text = text;
                     OnValueChanged();
@@ -387,7 +399,7 @@ namespace Blish_HUD.Controls {
         protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
             base.OnInputFocusChanged(e);
             if (!e.Value) {
-                Text = Value.ToString(NumberFormatInfo.InvariantInfo);
+                Text = Value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
                 _horizontalOffset = 0;
                 Invalidate();
             }
