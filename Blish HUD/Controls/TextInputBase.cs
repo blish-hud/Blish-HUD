@@ -74,7 +74,7 @@ namespace Blish_HUD.Controls {
             CursorIndexChanged?.Invoke(this, e);
         }
 
-        protected void OnInputFocusChanged(ValueEventArgs<bool> e) {
+        protected virtual void OnInputFocusChanged(ValueEventArgs<bool> e) {
             UpdateFocusState(e.Value);
 
             InputFocusChanged?.Invoke(this, e);
