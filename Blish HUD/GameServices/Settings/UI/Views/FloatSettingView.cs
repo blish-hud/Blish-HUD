@@ -20,6 +20,7 @@ namespace Blish_HUD.Settings.UI.Views {
                 Left            = 185,
                 Top             = (_valueTrackBar.Height - 32) / 2, // Center with trackbar (32 is FloatInput height)
                 IncrementAmount = 0.01f,
+                FormatString    = "F2",
                 Parent          = buildPanel
             };
 
