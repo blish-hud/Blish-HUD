@@ -1,3 +1,4 @@
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -19,10 +20,10 @@ namespace Blish_HUD.Controls {
         private const int SpinnerButtonHeight = 16;
 
         // Points up
-        private static readonly Texture2D SpinnerSprite = Content.GetTexture("spinner");
+        private static readonly AsyncTexture2D SpinnerSprite = AsyncTexture2D.FromAssetId(517181);
 
         // Points up
-        private static readonly Texture2D SpinnerGlowSprite = Content.GetTexture("spinner-glow");
+        private static readonly AsyncTexture2D SpinnerGlowSprite = AsyncTexture2D.FromAssetId(517182);
 
         private static readonly Texture2D TextBoxSprite = Content.GetTexture("textbox");
 
