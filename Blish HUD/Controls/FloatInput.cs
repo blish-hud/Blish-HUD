@@ -53,7 +53,6 @@ namespace Blish_HUD.Controls {
         public FloatInput() {
             Width = 150;
             Height = SpinnerButtonHeight * 2;
-            TextChanged += OnTextChanged;
             InputFocusChanged += OnInputFocusChanged;
             Input.Mouse.MouseWheelScrolled += OnGlobalMouseWheelScrolled;
         }
@@ -408,7 +407,8 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void OnTextChanged(object sender, EventArgs e) {
+        protected override void OnTextChanged(ValueChangedEventArgs<string> e) {
+            base.OnTextChanged(e);
             if (string.IsNullOrEmpty(_text)) {
                 return;
             }
