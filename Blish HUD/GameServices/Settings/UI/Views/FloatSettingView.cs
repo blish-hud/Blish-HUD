@@ -4,7 +4,7 @@ using Blish_HUD.Controls;
 namespace Blish_HUD.Settings.UI.Views {
     public class FloatSettingView : NumericSettingView<float> {
 
-        protected const int INPUT_WIDTH = 120;
+        protected const int INPUT_WIDTH = 80;
 
         private FloatInput _floatInput;
 
@@ -17,14 +17,14 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _floatInput = new FloatInput() {
                 Width           = INPUT_WIDTH,
-                Left            = 185,
-                Top             = (_valueTrackBar.Height - 32) / 2, // Center with trackbar (32 is FloatInput height)
+                Left            = TRACKBAR_LEFT,
                 IncrementAmount = 0.01f,
                 FormatString    = "F2",
                 Parent          = buildPanel
             };
 
-            _valueTrackBar.Left += INPUT_WIDTH + CONTROL_PADDING;
+            _valueTrackBar.Top  = (_floatInput.Height - _valueTrackBar.Height) / 2; // Center with number input
+            _valueTrackBar.Left = _floatInput.Right + CONTROL_PADDING;
 
             _floatInput.ValueChanged += HandleFloatInputChanged;
         }
