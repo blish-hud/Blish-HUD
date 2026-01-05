@@ -4,7 +4,7 @@ using System;
 namespace Blish_HUD.Settings.UI.Views {
     public class IntSettingView : NumericSettingView<int> {
 
-        protected const int INPUT_WIDTH = 120;
+        protected const int INPUT_WIDTH = 80;
 
         private bool _isUpdating = false;
         private NumberInput _numberInput;
@@ -16,12 +16,12 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _numberInput = new NumberInput() {
                 Width  = INPUT_WIDTH,
-                Left   = 185,
-                Top    = (_valueTrackBar.Height - 32) / 2, // Center with trackbar (32 is NumberInput height)
+                Left   = TRACKBAR_LEFT,
                 Parent = buildPanel
             };
 
-            _valueTrackBar.Left += INPUT_WIDTH + CONTROL_PADDING;
+            _valueTrackBar.Top  = (_numberInput.Height - _valueTrackBar.Height) / 2; // Center with number input
+            _valueTrackBar.Left = _numberInput.Right + CONTROL_PADDING;
 
             _numberInput.ValueChanged += HandleNumberInputChanged;
         }

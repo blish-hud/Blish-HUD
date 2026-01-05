@@ -399,7 +399,7 @@ namespace Blish_HUD.Controls {
         protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
             base.OnInputFocusChanged(e);
             if (!e.Value) {
-                Text = Value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
+                Text = Value.ToString(NumberFormatInfo.InvariantInfo);
                 _horizontalOffset = 0;
                 Invalidate();
             }

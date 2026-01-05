@@ -7,9 +7,9 @@ namespace Blish_HUD.Settings.UI.Views {
         where T : IComparable<T> {
         
         protected const int CONTROL_PADDING = 5;
-
-        private const int TRACKBAR_WIDTH  = 277;
-        private const int TRACKBAR_HEIGHT = 16;
+        protected const int TRACKBAR_LEFT   = 185;
+        protected const int TRACKBAR_WIDTH  = 277;
+        protected const int TRACKBAR_HEIGHT = 16;
 
         protected Label    _displayNameLabel;
         protected TrackBar _valueTrackBar;
@@ -25,7 +25,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _valueTrackBar = new TrackBar() {
                 Size   = new Point(TRACKBAR_WIDTH, TRACKBAR_HEIGHT),
-                Left   = 185,
+                Left   = TRACKBAR_LEFT,
                 Parent = buildPanel
             };
 
