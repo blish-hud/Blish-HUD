@@ -16,6 +16,8 @@ namespace Blish_HUD.Settings.UI.Views {
             _numberInput = new NumberInput() {
                 Width  = INPUT_WIDTH,
                 Left   = TRACKBAR_LEFT,
+                MinValue = (int)_valueTrackBar.MinValue,
+                MaxValue = (int)_valueTrackBar.MaxValue,
                 Parent = buildPanel
             };
 
