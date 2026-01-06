@@ -286,8 +286,8 @@ namespace Blish_HUD.Controls {
                     UnsetFocus();
                     break;
                 case NumberInputAction.None:
-                    break;
                 default:
+                    base.OnLeftMouseButtonReleased(e);
                     break;
             }
 
@@ -296,6 +296,7 @@ namespace Blish_HUD.Controls {
 
         protected override void OnClick(MouseEventArgs e) {
             SelectAll();
+            Invalidate();
             base.OnClick(e);
         }
 
