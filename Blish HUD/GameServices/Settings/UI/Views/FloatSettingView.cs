@@ -18,6 +18,7 @@ namespace Blish_HUD.Settings.UI.Views {
             _floatInput = new FloatInput() {
                 Width           = INPUT_WIDTH,
                 Left            = TRACKBAR_LEFT,
+                ClipsBounds     = false, // bit of a hack to allow overflowing text for large numbers
                 MinValue        = _valueTrackBar.MinValue,
                 MaxValue        = _valueTrackBar.MaxValue,
                 IncrementAmount = 0.01f,

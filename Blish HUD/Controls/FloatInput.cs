@@ -91,6 +91,7 @@ namespace Blish_HUD.Controls {
                 string text = value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
                 if (Text != text) {
                     Text = text;
+                    Invalidate();
                     OnValueChanged();
                 }
             }
@@ -153,18 +154,21 @@ namespace Blish_HUD.Controls {
 
             _cursorRectangle = CursorRectangle();
 
-            base.RecalculateLayout();
 
             Rectangle TextBoxRectangle() {
-                return new Rectangle(0, 0, Width - SpinnerWidth, Height);
+                int defaultWidth = Width - SpinnerWidth;
+                int textWidth = (int)_font.MeasureString(_text).Width + (TextPaddingX * 2);
+                int requiredWidth = Math.Max(defaultWidth, textWidth);
+                int x = defaultWidth - requiredWidth;
+                return new Rectangle(x, 0, requiredWidth, Height);
             }
 
             Rectangle TextRectangle() {
                 int verticalPadding = (Height / 2) - (_font.LineHeight / 2);
                 return new Rectangle(
-                    TextPaddingX,
+                    _textBoxRectangle.X + TextPaddingX,
                     verticalPadding,
-                    Width - SpinnerWidth - (TextPaddingX * 2),
+                    _textBoxRectangle.Width - (TextPaddingX * 2),
                     Height - (verticalPadding * 2)
                 );
             }
