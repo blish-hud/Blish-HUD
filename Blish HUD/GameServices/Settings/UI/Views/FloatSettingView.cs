@@ -32,11 +32,6 @@ namespace Blish_HUD.Settings.UI.Views {
             _floatInput.ValueChanged += HandleFloatInputChanged;
         }
 
-        private void HandleFloatInputChanged(object sender, EventArgs e) {
-            _valueTrackBar.Value = _floatInput.Value;
-            this.OnValueChanged(new ValueEventArgs<float>(_floatInput.Value));
-        }
-
         public override bool HandleComplianceRequisite(IComplianceRequisite complianceRequisite) {
             switch (complianceRequisite) {
                 case FloatRangeRangeComplianceRequisite floatRangeRequisite:
@@ -60,6 +55,11 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) {
             _floatInput.Value = e.Value;
             this.OnValueChanged(new ValueEventArgs<float>(e.Value));
+        }
+
+        private void HandleFloatInputChanged(object sender, EventArgs e) {
+            _valueTrackBar.Value = _floatInput.Value;
+            this.OnValueChanged(new ValueEventArgs<float>(_floatInput.Value));
         }
 
         protected override void RefreshValue(float value) {
