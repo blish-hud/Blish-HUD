@@ -275,8 +275,8 @@ namespace Blish_HUD.Controls {
                     UnsetFocus();
                     break;
                 case NumberInputAction.None:
-                    break;
                 default:
+                    base.OnLeftMouseButtonReleased(e);
                     break;
             }
 
