@@ -6,7 +6,6 @@ namespace Blish_HUD.Settings.UI.Views {
 
         protected const int INPUT_WIDTH = 80;
 
-        private bool _isUpdating = false;
         private NumberInput _numberInput;
 
         public IntSettingView(SettingEntry<int> setting, int definedWidth = -1) : base(setting, definedWidth) { /* NOOP */ }
@@ -47,28 +46,16 @@ namespace Blish_HUD.Settings.UI.Views {
         }
 
         protected override void HandleTrackBarChanged(object sender, ValueEventArgs<float> e) {
-            if (_isUpdating) return;
-            
-            _isUpdating = true;
             _numberInput.Value = (int)e.Value;
-            _isUpdating = false;
-            
             this.OnValueChanged(new ValueEventArgs<int>((int)e.Value));
         }
 
         private void HandleNumberInputChanged(object sender, EventArgs e) {
-            if (_isUpdating) return;
-            
-            _isUpdating = true;
             _valueTrackBar.Value = _numberInput.Value;
-            _isUpdating = false;
-            
             this.OnValueChanged(new ValueEventArgs<int>(_numberInput.Value));
         }
 
         protected override void RefreshValue(int value) {
-            _isUpdating = true;
-            
             // Prevent us clamping the setting value before compliance is applied
             _valueTrackBar.MinValue = Math.Min(_valueTrackBar.MinValue, value);
             _valueTrackBar.MaxValue = Math.Max(_valueTrackBar.MaxValue, value);
@@ -77,8 +64,6 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _valueTrackBar.Value = value;
             _numberInput.Value   = value;
-            
-            _isUpdating = false;
         }
 
         protected override void RefreshDescription(string description) {
