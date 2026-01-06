@@ -162,9 +162,9 @@ namespace Blish_HUD.Controls {
             Rectangle TextRectangle() {
                 int verticalPadding = (Height / 2) - (_font.LineHeight / 2);
                 return new Rectangle(
-                    _horizontalOffset - TextPaddingX,
+                    TextPaddingX,
                     verticalPadding,
-                    Width - SpinnerWidth,
+                    Width - SpinnerWidth - (TextPaddingX * 2),
                     Height - (verticalPadding * 2)
                 );
             }
