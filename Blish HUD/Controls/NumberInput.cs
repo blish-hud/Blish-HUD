@@ -11,8 +11,6 @@ using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
 namespace Blish_HUD.Controls {
 
     public class NumberInput : TextInputBase {
-        public event EventHandler<EventArgs>? EnterPressed;
-
         private const int TextPaddingX = 10;
 
         private const int SpinnerWidth = 32;
@@ -79,7 +77,7 @@ namespace Blish_HUD.Controls {
                 }
 
                 string text = value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
-                if (Text != text) {
+                if (!string.Equals(Text, text, StringComparison.Ordinal)) {
                     Text = text;
                     Invalidate();
                     OnValueChanged();
@@ -289,12 +287,56 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void HandleEnter() {
-            OnEnterPressed();
+            UnsetFocus();
         }
 
-        protected virtual void OnEnterPressed() {
-            UnsetFocus();
-            EnterPressed?.Invoke(this, EventArgs.Empty);
+        protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
+            base.OnInputFocusChanged(e);
+            if (!e.Value) {
+                ApplyTextAsValue();
+                _horizontalOffset = 0;
+                Invalidate();
+            }
+        }
+
+        private void OnValueChanged() {
+            ValueChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnGlobalMouseWheelScrolled(object sender, MouseEventArgs e) {
+            if (MouseOver) {
+                if (Input.Mouse.State.ScrollWheelValue > 0) {
+                    Value++;
+                } else {
+                    Value--;
+                }
+            }
+        }
+
+        private void ApplyTextAsValue() {
+            if (string.IsNullOrEmpty(_text)) {
+                return;
+            }
+
+            StringBuilder numericBuilder = new StringBuilder(_text.Length);
+            ReadOnlySpan<char> input = _text.AsSpan();
+            foreach (char c in input) {
+                if (numericBuilder.Length == 0) {
+                    if (c == '+' || c == '-') {
+                        _ = numericBuilder.Append(c);
+                    }
+                }
+
+                if (c >= '0' && c <= '9') {
+                    _ = numericBuilder.Append(c);
+                }
+            }
+
+            if (int.TryParse(numericBuilder.ToString(), out int value)) {
+                Value = value;
+                Invalidate();
+                OnValueChanged();
+            }
         }
 
         /// <remarks>
@@ -397,55 +439,6 @@ namespace Blish_HUD.Controls {
             ValueChanged = null;
             Input.Mouse.MouseWheelScrolled -= OnGlobalMouseWheelScrolled;
             base.DisposeControl();
-        }
-
-        protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
-            base.OnInputFocusChanged(e);
-            if (!e.Value) {
-                Text = Value.ToString(NumberFormatInfo.InvariantInfo);
-                _horizontalOffset = 0;
-                Invalidate();
-            }
-        }
-
-        protected override void OnTextChanged(ValueChangedEventArgs<string> e) {
-            base.OnTextChanged(e);
-            if (string.IsNullOrEmpty(_text)) {
-                return;
-            }
-
-            StringBuilder numericBuilder = new StringBuilder(_text.Length);
-            ReadOnlySpan<char> input = _text.AsSpan();
-            foreach (char c in input) {
-                if (numericBuilder.Length == 0) {
-                    if (c == '+' || c == '-') {
-                        _ = numericBuilder.Append(c);
-                    }
-                }
-
-                if (c >= '0' && c <= '9') {
-                    _ = numericBuilder.Append(c);
-                }
-            }
-
-            if (int.TryParse(numericBuilder.ToString(), out int value)) {
-                Value = value;
-                OnValueChanged();
-            }
-        }
-
-        private void OnValueChanged() {
-            ValueChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnGlobalMouseWheelScrolled(object sender, MouseEventArgs e) {
-            if (MouseOver) {
-                if (Input.Mouse.State.ScrollWheelValue > 0) {
-                    Value++;
-                } else {
-                    Value--;
-                }
-            }
         }
 
         private enum NumberInputAction {
