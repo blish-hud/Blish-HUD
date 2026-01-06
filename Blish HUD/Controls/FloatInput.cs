@@ -82,12 +82,9 @@ namespace Blish_HUD.Controls {
         public float Value {
             get => InvariantUtil.TryParseFloat(Text, out float value) ? value : 0f;
             set {
-                const float epsilon = 1e-6f; // Use a small epsilon for floating-point comparison
-                
-                // Snap to boundary if within epsilon, otherwise clamp if outside bounds
-                if (value <= MinValue + epsilon) {
+                if (value < MinValue) {
                     value = MinValue;
-                } else if (value >= MaxValue - epsilon) {
+                } else if (value > MaxValue) {
                     value = MaxValue;
                 }
 
@@ -102,9 +99,8 @@ namespace Blish_HUD.Controls {
         public float MinValue {
             get => _minValue;
             set {
-                const float epsilon = 1e-6f; // Use a small epsilon for floating-point comparison
                 _minValue = value;
-                if (Value <= value + epsilon) {
+                if (Value < value) {
                     Value = value;
                 }
             }
@@ -113,9 +109,8 @@ namespace Blish_HUD.Controls {
         public float MaxValue {
             get => _maxValue;
             set {
-                const float epsilon = 1e-6f; // Use a small epsilon for floating-point comparison
                 _maxValue = value;
-                if (Value >= value - epsilon) {
+                if (Value > value) {
                     Value = value;
                 }
             }
@@ -448,7 +443,6 @@ namespace Blish_HUD.Controls {
 
             if (InvariantUtil.TryParseFloat(numericBuilder.ToString(), out float value)) {
                 Value = value;
-                OnValueChanged();
             }
         }
 
