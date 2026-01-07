@@ -39,6 +39,8 @@ namespace Blish_HUD.Settings.UI.Views {
                     _valueTrackBar.MaxValue = floatRangeRequisite.MaxValue;
                     _floatInput.MinValue = floatRangeRequisite.MinValue;
                     _floatInput.MaxValue = floatRangeRequisite.MaxValue;
+                    _floatInput.IncrementAmount = floatRangeRequisite.IncrementAmount;
+                    _floatInput.FormatString = floatRangeRequisite.GetFormatString();
                     break;
                 case SettingDisabledComplianceRequisite disabledRequisite:
                     _displayNameLabel.Enabled = !disabledRequisite.Disabled;
