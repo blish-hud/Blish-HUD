@@ -21,8 +21,8 @@ namespace Blish_HUD.Settings.UI.Views {
                 ClipsBounds     = false, // bit of a hack to allow overflowing text for large numbers
                 MinValue        = _valueTrackBar.MinValue,
                 MaxValue        = _valueTrackBar.MaxValue,
-                IncrementAmount = 0.01f,
-                FormatString    = "F2",
+                IncrementAmount = 0.01f, // Default increment, will be overridden by compliance if applicable
+                FormatString    = "F2",  // Default format, will be overridden by compliance if applicable
                 Parent          = buildPanel
             };
 
