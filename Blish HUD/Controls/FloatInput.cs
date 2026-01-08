@@ -51,6 +51,8 @@ namespace Blish_HUD.Controls {
 
         private string _formatString = "G"; // Default general format
 
+        private float _originalValue;
+
         public FloatInput() {
             Width = 150;
             Height = SpinnerButtonHeight * 2;
@@ -292,6 +294,7 @@ namespace Blish_HUD.Controls {
             _action = NumberInputAction.None;
         }
 
+
         protected override void HandleEnter() {
             UnsetFocus();
         }
@@ -299,6 +302,7 @@ namespace Blish_HUD.Controls {
         protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
             base.OnInputFocusChanged(e);
             if (e.Value) {
+                _originalValue = Value;
                 SelectAll();
                 Invalidate();
             } else {
@@ -323,34 +327,12 @@ namespace Blish_HUD.Controls {
         }
 
         private void ApplyTextAsValue() {
-            if (string.IsNullOrEmpty(_text)) {
-                return;
-            }
-
-            StringBuilder numericBuilder = new StringBuilder(_text.Length);
-            ReadOnlySpan<char> input = _text.AsSpan();
-            bool hasDecimal = false;
-
-            foreach (char c in input) {
-                if (numericBuilder.Length == 0) {
-                    if (c == '+' || c == '-') {
-                        _ = numericBuilder.Append(c);
-                        continue;
-                    }
-                }
-
-                if (c >= '0' && c <= '9') {
-                    _ = numericBuilder.Append(c);
-                } else if (c == '.' && !hasDecimal) {
-                    _ = numericBuilder.Append(c);
-                    hasDecimal = true;
-                }
-            }
-
-            if (InvariantUtil.TryParseFloat(numericBuilder.ToString(), out float value)) {
+            if (InvariantUtil.TryParseFloat(_text, out float value)) {
                 Value = value;
                 Invalidate();
                 OnValueChanged();
+            } else {
+                Value = _originalValue;
             }
         }
 
