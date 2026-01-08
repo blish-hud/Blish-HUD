@@ -292,19 +292,16 @@ namespace Blish_HUD.Controls {
             _action = NumberInputAction.None;
         }
 
-        protected override void OnClick(MouseEventArgs e) {
-            SelectAll();
-            Invalidate();
-            base.OnClick(e);
-        }
-
         protected override void HandleEnter() {
             UnsetFocus();
         }
 
         protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
             base.OnInputFocusChanged(e);
-            if (!e.Value) {
+            if (e.Value) {
+                SelectAll();
+                Invalidate();
+            } else {
                 ApplyTextAsValue();
                 _horizontalOffset = 0;
                 Invalidate();
