@@ -134,8 +134,13 @@ namespace Blish_HUD {
                 }
             };
 
-            _logConfiguration.AddTarget(logDebug);
-            _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, logDebug);
+            // MethodCallTarget is synchronous and also quite slow, wrap it in an async target to avoid blocking the main thread
+            var asyncDebug = new AsyncTargetWrapper("asyncdebug", logDebug) {
+                ForceLockingQueue = false
+            };
+
+            _logConfiguration.AddTarget(asyncDebug);
+            _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, asyncDebug);
         }
 
         public static void UpdateLogLevel(LogLevel newLogLevel) {
