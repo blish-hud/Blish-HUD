@@ -127,7 +127,8 @@ namespace Blish_HUD {
                              false,
                              1,
                              horizontalAlignment,
-                             verticalAlignment);
+                             verticalAlignment,
+                             clippingRectangle: null);
         }
 
         public static void DrawStringOnCtrl(this SpriteBatch    spriteBatch,
@@ -140,8 +141,33 @@ namespace Blish_HUD {
                                             bool                stroke,
                                             int                 strokeDistance      = 1,
                                             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
-                                            VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle,
-                                            Rectangle?          clippingRectangle   = null) {
+                                            VerticalAlignment   verticalAlignment   = VerticalAlignment.Middle) {
+            DrawStringOnCtrl(spriteBatch,
+                             ctrl,
+                             text,
+                             font,
+                             destinationRectangle,
+                             color,
+                             wrap,
+                             false,
+                             1,
+                             horizontalAlignment,
+                             verticalAlignment,
+                             clippingRectangle: null);
+        }
+
+        public static void DrawStringOnCtrl(this SpriteBatch    spriteBatch,
+                                            Control             ctrl,
+                                            string              text,
+                                            BitmapFont          font,
+                                            Rectangle           destinationRectangle,
+                                            Color               color,
+                                            bool                wrap,
+                                            bool                stroke,
+                                            int                 strokeDistance,
+                                            HorizontalAlignment horizontalAlignment,
+                                            VerticalAlignment   verticalAlignment,
+                                            Rectangle?          clippingRectangle) {
 
             if (string.IsNullOrEmpty(text)) return;
 
