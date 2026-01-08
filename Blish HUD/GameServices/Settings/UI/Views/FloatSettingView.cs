@@ -26,8 +26,9 @@ namespace Blish_HUD.Settings.UI.Views {
                 Parent          = buildPanel
             };
 
-            _valueTrackBar.Top  = (_floatInput.Height - _valueTrackBar.Height) / 2; // Center with number input
-            _valueTrackBar.Left = _floatInput.Right + CONTROL_PADDING;
+            _valueTrackBar.Top    = (_floatInput.Height - _valueTrackBar.Height) / 2; // Center with number input
+            _valueTrackBar.Left   = _floatInput.Right + CONTROL_PADDING;
+            _valueTrackBar.Width -= _floatInput.Width + CONTROL_PADDING;
 
             _floatInput.ValueChanged += HandleFloatInputChanged;
         }
