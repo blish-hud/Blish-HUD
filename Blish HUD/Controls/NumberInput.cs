@@ -282,7 +282,11 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
-            SelectAll();
+            if (!Focused) {
+                SelectAll();
+                Invalidate();
+            }
+
             base.OnClick(e);
         }
 
@@ -292,7 +296,10 @@ namespace Blish_HUD.Controls {
 
         protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
             base.OnInputFocusChanged(e);
-            if (!e.Value) {
+            if (e.Value) {
+                SelectAll();
+                Invalidate();
+            } else {
                 ApplyTextAsValue();
                 _horizontalOffset = 0;
                 Invalidate();
