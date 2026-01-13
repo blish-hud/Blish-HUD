@@ -118,11 +118,17 @@ namespace Blish_HUD.Controls {
             this.Width = CONTROL_WIDTH;
 
             Input.Mouse.LeftMouseButtonReleased += MouseOnLeftMouseButtonReleased;
-
             _associatedContainer.MouseWheelScrolled += HandleWheelScroll;
         }
 
         private double _lastClickTime;
+
+        protected override void DisposeControl() {
+            base.DisposeControl();
+
+            Input.Mouse.LeftMouseButtonReleased -= MouseOnLeftMouseButtonReleased;
+            _associatedContainer.MouseWheelScrolled -= HandleWheelScroll;
+        }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             base.OnLeftMouseButtonPressed(e);

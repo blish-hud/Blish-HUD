@@ -3,13 +3,13 @@ using Blish_HUD.Contexts;
 using Blish_HUD.GameServices;
 
 namespace Blish_HUD.GameIntegration {
-    public class ClientTypeIntegration : ServiceModule<GameIntegrationService> {
+    public sealed class ClientTypeIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<ClientTypeIntegration>();
 
         public Gw2ClientContext.ClientType ClientType { get; private set; } = Gw2ClientContext.ClientType.Unknown;
 
-        public ClientTypeIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+        internal ClientTypeIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
             GameService.Gw2Mumble.Info.BuildIdChanged += delegate { DetectClientType(); };

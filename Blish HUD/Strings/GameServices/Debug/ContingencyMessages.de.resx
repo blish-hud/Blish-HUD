@@ -176,4 +176,29 @@ Wenn du ein Antivirus Programm oder eine Firewall verwendest, dann füge Blish H
   <data name="CoreUpdateFailed_Description_Timeout" xml:space="preserve">
     <value>Eine weitere Instanz von Blish HUD läuft bereits. Bitte schließe diese und versuche dann erneut Blish HUD zu aktualisieren.</value>
   </data>
+  <data name="NvidiaSettings_Description" xml:space="preserve">
+    <value>Eine Ihrer NVIDIA-Einstellungen wurde auf eine Weise geändert, die nicht mit Blish HUD kompatibel ist (Blish HUD wird einen schwarzen Hintergrund haben).
+
+Diese Einstellungen müssen auf die Standardeinstellungen zurückgesetzt werden:
+{0}
+
+Siehe den verlinkten Fehlerbehebungsleitfaden für weitere Informationen zur Behebung dieses Problems.</value>
+  </data>
+  <data name="NvidiaSettings_Error" xml:space="preserve">
+    <value>'{0}' sollte nicht '{1}' sein</value>
+  </data>
+  <data name="NvidiaSettings_OpenControlPanelAction" xml:space="preserve">
+    <value>NVIDIA-Systemsteuerung öffnen</value>
+  </data>
+  <data name="NvidiaSettings_Title" xml:space="preserve">
+    <value>Inkompatible NVIDIA-Einstellungen</value>
+  </data>
+  <data name="CfaBlocking_Description" xml:space="preserve">
+    <value>Blish HUD wurde aktiv daran gehindert, in '{0}' zu speichern, was auf die Kontrollierte Ordnerzugriff-Funktion von Windows zurückzuführen zu sein scheint.
+
+Bitte erlauben Sie Blish HUD ausdrücklich in Ihren Einstellungen für den Kontrollierten Ordnerzugriff oder beachten Sie den unten verlinkten Fehlerbehebungsleitfaden.</value>
+  </data>
+  <data name="CfaBlocking_Title" xml:space="preserve">
+    <value>Blish HUD Blockiert!</value>
+  </data>
 </root>

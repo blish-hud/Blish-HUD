@@ -220,7 +220,7 @@
     <value>Einstellungen werden angezeigt sobald das Modul aktiviert ist</value>
   </data>
   <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
-    <value>Modul Version ist zu alt</value>
+    <value>Modulversion ist inkompatibel</value>
   </data>
   <data name="NoModules_Info" xml:space="preserve">
     <value>Du hast aktuell keine Module.
@@ -261,5 +261,11 @@ Lade einige herunter und platziere sie im Modulverzeichnis.</value>
   </data>
   <data name="PkgManagement_Update" xml:space="preserve">
     <value>Update</value>
+  </data>
+  <data name="PkgManagement_MoreInfo" xml:space="preserve">
+    <value>Mehr Info</value>
+  </data>
+  <data name="ApiPermission_NotEditable" xml:space="preserve">
+    <value>Berechtigungen können nur bearbeitet werden, wenn das Modul deaktiviert ist.</value>
   </data>
 </root>

@@ -126,4 +126,7 @@
   <data name="TrayIcon_OpenSettingsFolder" xml:space="preserve">
     <value>Open settings folder</value>
   </data>
+  <data name="TrayIcon_OpenProgramDataFolder" xml:space="preserve">
+    <value>Open ProgramData folder</value>
+  </data>
 </root>

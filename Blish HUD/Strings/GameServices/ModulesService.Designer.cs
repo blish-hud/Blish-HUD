@@ -79,6 +79,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Permissions may only be edited, when the module is disabled..
+        /// </summary>
+        internal static string ApiPermission_NotEditable {
+            get {
+                return ResourceManager.GetString("ApiPermission_NotEditable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Optional.
         /// </summary>
         internal static string ApiPermission_Optional {
@@ -322,7 +331,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Module Version Is Too Old.
+        ///   Looks up a localized string similar to Module Version Is Incompatible.
         /// </summary>
         internal static string ModuleState_Custom_ExplicitlyIncompatible {
             get {
@@ -454,6 +463,15 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string PkgManagement_ModulesNeedRestart {
             get {
                 return ResourceManager.GetString("PkgManagement_ModulesNeedRestart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More Info.
+        /// </summary>
+        internal static string PkgManagement_MoreInfo {
+            get {
+                return ResourceManager.GetString("PkgManagement_MoreInfo", resourceCulture);
             }
         }
         

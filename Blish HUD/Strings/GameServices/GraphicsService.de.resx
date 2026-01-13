@@ -121,19 +121,13 @@
     <value>Grafikoptionen</value>
   </data>
   <data name="Setting_FramerateLimiter_Locked_Description" xml:space="preserve">
-    <value>(Deaktiviert, da Blish HUD mit --maxfps gestartet wurde)</value>
+    <value>(Deaktiviert, da Blish HUD mit --maxfps/--unlockfps gestartet wurde)</value>
   </data>
   <data name="Setting_FramerateLimiter_DisplayName" xml:space="preserve">
     <value>FPS-Limitierung</value>
   </data>
   <data name="Setting_FramerateLimiter_Description" xml:space="preserve">
     <value>Diese Methode bestimmte die Bildrate mit der Blish HUD ausgeführt wird.</value>
-  </data>
-  <data name="Setting_Vsync_DisplayName" xml:space="preserve">
-    <value>Vertikale Synchronisierung</value>
-  </data>
-  <data name="Setting_Vsync_Description" xml:space="preserve">
-    <value>Passt die Bildfrequenz von Blish HUD an die Bildwiederholungsrate des Monitors an. Hilft Artefakte aufzulösen, kann aber zu künstlich niedriger Bildwiederholungsrate führen.</value>
   </data>
   <data name="Setting_SmoothCharacterPosition_DisplayName" xml:space="preserve">
     <value>Weiche Charakterposition</value>

@@ -14,6 +14,11 @@ namespace Blish_HUD.Modules.UI.Presenters {
         protected override Task<bool> Load(IProgress<string> progress) {
             this.View.PermissionStateChanged += ViewOnPermissionStateChanged;
 
+            this.Model.ModuleEnabled += ModelOnModuleEnabled;
+            this.Model.ModuleDisabled += ModelOnModuleDisabled;
+
+            this.View.Editable = !this.Model.Enabled;
+
             return base.Load(progress);
         }
 
@@ -33,6 +38,16 @@ namespace Blish_HUD.Modules.UI.Presenters {
             GameService.Settings.Save();
         }
 
+        private void ModelOnModuleEnabled(object sender, EventArgs e) {
+            this.View.Editable = false;
+            UpdateStatus();
+        }
+
+        private void ModelOnModuleDisabled(object sender, EventArgs e) {
+            this.View.Editable = true;
+            UpdateStatus();
+        }
+
         protected override void UpdateView() {
             UpdatePermissionList();
             UpdateStatus();
@@ -47,8 +62,19 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void UpdateStatus() {
-            // Unused at this time
+            if (this.Model.Enabled && this.Model.Manifest.ApiPermissions.Any()) {
+                this.View.SetDetails(Strings.GameServices.ModulesService.ApiPermission_NotEditable,
+                                     TitledDetailView.DetailLevel.Info);
+            } else {
+                this.View.ClearDetails();
+            }
         }
 
+        protected override void Unload() {
+            this.View.PermissionStateChanged -= ViewOnPermissionStateChanged;
+
+            this.Model.ModuleEnabled -= ModelOnModuleEnabled;
+            this.Model.ModuleDisabled -= ModelOnModuleDisabled;
+        }
     }
 }

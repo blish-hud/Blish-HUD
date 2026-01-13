@@ -40,10 +40,25 @@ namespace Blish_HUD.Contexts {
 
         }
 
+        public struct CdnSet {
+
+            public CdnInfo Standard { get; }
+
+            public CdnInfo Chinese { get; }
+
+            public CdnSet(CdnInfo standard, CdnInfo chinese) {
+                this.Standard = standard;
+                this.Chinese  = chinese;
+            }
+
+        }
+
         private const int TOTAL_CDN_ENDPOINTS = 2;
 
         private const string GW2_ASSETCDN_URL    = "http://assetcdn.101.arenanetworks.com/latest/101";
         private const string GW2_CN_ASSETCDN_URL = "http://assetcdn.111.cgw2.com/latest/111";
+
+        private const string BHUD_BUILDINFO_LAMBDA = "https://l.blishhud.com/general/getbuildinfo";
 
         private CdnInfo _standardCdnInfo;
         private CdnInfo _chineseCdnInfo;
@@ -56,13 +71,26 @@ namespace Blish_HUD.Contexts {
             GameService.GameIntegration.Gw2Instance.Gw2Started += GameIntegrationOnGw2Started;
         }
 
-        /// <inheritdoc />
         protected override void Load() {
-            GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith((cdnInfo) => SetCdnInfo(ref _standardCdnInfo,   cdnInfo.Result));
-            GetCdnInfoFromCdnUrl(GW2_CN_ASSETCDN_URL).ContinueWith((cdnInfo) => SetCdnInfo(ref _chineseCdnInfo, cdnInfo.Result));
+            LoadFromLambda();
         }
 
-        /// <inheritdoc />
+        private void LoadFromLambda() {
+            BHUD_BUILDINFO_LAMBDA.GetJsonAsync<CdnSet>().ContinueWith(cdnSet => {
+                if (!cdnSet.IsFaulted) {
+                    SetCdnInfo(ref _standardCdnInfo, cdnSet.Result.Standard);
+                    SetCdnInfo(ref _chineseCdnInfo,  cdnSet.Result.Chinese);
+                } else {
+                    LoadFromCdn();
+                }
+            });
+        }
+
+        private void LoadFromCdn() {
+            GetCdnInfoFromCdnUrl(GW2_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _standardCdnInfo,   cdnInfo.Result));
+            GetCdnInfoFromCdnUrl(GW2_CN_ASSETCDN_URL).ContinueWith(cdnInfo => SetCdnInfo(ref _chineseCdnInfo, cdnInfo.Result));
+        }
+
         protected override void Unload() {
             _loadCount = 0;
         }
@@ -103,12 +131,16 @@ namespace Blish_HUD.Contexts {
             return CdnInfo.Invalid;
         }
 
-        private void SetCdnInfo(ref CdnInfo cdnInfo, string result) {
-            cdnInfo = ParseCdnInfo(result);
+        private void SetCdnInfo(ref CdnInfo cdnInfo, CdnInfo result) {
+            cdnInfo = result;
 
             if (++_loadCount >= TOTAL_CDN_ENDPOINTS) {
                 ConfirmReady();
             }
+        }
+
+        private void SetCdnInfo(ref CdnInfo cdnInfo, string result) {
+            SetCdnInfo(ref cdnInfo, ParseCdnInfo(result));
         }
 
         private async Task<string> GetCdnInfoFromCdnUrl(string cdnUrl) {

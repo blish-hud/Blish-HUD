@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Text;
+using Blish_HUD.Content;
 
 namespace Blish_HUD.Overlay.SelfUpdater.Controls {
     internal class SelfUpdateWindow : Container {
@@ -56,7 +57,9 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
                 AutoSizeHeight      = true,
                 Height              = 82,
                 Top                 = blishHudHero.Bottom,
-                Text                = Strings.GameServices.OverlayService.SelfUpdate_NewUpdateAvailable,
+                Text                = newReleaseManifest.IsPrerelease 
+                                          ? Strings.GameServices.OverlayService.SelfUpdate_NewPrereleaseAvailable
+                                          : Strings.GameServices.OverlayService.SelfUpdate_NewUpdateAvailable,
                 Font                = GameService.Content.DefaultFont32,
                 StrokeText          = true,
                 VerticalAlignment   = VerticalAlignment.Middle,
@@ -136,8 +139,8 @@ namespace Blish_HUD.Overlay.SelfUpdater.Controls {
             };
 
             _bttnSkip = new GlowButton() {
-                Icon             = GameService.Content.GetTexture("common/605017"),
-                ActiveIcon       = GameService.Content.GetTexture("common/605016"),
+                Icon             = AsyncTexture2D.FromAssetId(605017),
+                ActiveIcon       = AsyncTexture2D.FromAssetId(605016),
                 Top              = _bttnUpdate.Top   - 3,
                 Left             = _bttnUpdate.Right + 4,
                 Size             = new Point(32, 32),

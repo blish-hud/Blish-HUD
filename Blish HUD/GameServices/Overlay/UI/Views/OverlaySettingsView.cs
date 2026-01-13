@@ -28,10 +28,10 @@ namespace Blish_HUD.Overlay.UI.Views {
         }
 
         private void BuildOverlaySettings(Panel rootPanel) {
-            GetStandardPanel(rootPanel, Strings.GameServices.OverlayService.OverlaySettingsSection).Show(new SettingsView(GameService.Overlay.OverlaySettings));
-            GetStandardPanel(rootPanel, Strings.GameServices.OverlayService.OverlayDynamicHUDSection).Show(new SettingsView(GameService.Overlay.DynamicHUDSettings));
-            GetStandardPanel(rootPanel, Strings.GameServices.GraphicsService.GraphicsSettingsSection).Show(new SettingsView(GameService.Graphics.GraphicsSettings));
-            GetStandardPanel(rootPanel, Strings.GameServices.DebugService.DebugSettingsSection).Show(new SettingsView(GameService.Debug.DebugSettings));
+            GetStandardPanel(rootPanel, Strings.Common.BlishHUD + " " + Strings.GameServices.OverlayService.OverlaySettingsSection).Show(new SettingsView(GameService.Overlay.OverlaySettings));
+            GetStandardPanel(rootPanel, Strings.Common.BlishHUD + " " + Strings.GameServices.OverlayService.OverlayDynamicHUDSection).Show(new SettingsView(GameService.Overlay.DynamicHUDSettings));
+            GetStandardPanel(rootPanel, Strings.Common.BlishHUD + " " + Strings.GameServices.GraphicsService.GraphicsSettingsSection).Show(new SettingsView(GameService.Graphics.GraphicsSettings));
+            GetStandardPanel(rootPanel, Strings.Common.BlishHUD + " " + Strings.GameServices.DebugService.DebugSettingsSection).Show(new SettingsView(GameService.Debug.DebugSettings));
         }
 
     }

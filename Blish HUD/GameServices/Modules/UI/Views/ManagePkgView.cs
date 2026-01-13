@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Graphics.UI.Exceptions;
@@ -121,12 +123,12 @@ namespace Blish_HUD.Modules.UI.Views {
                     _statusImage.Visible      = false;
                     break;
                 case PkgVersionRelationship.CanUpdate:
-                    _statusImage.Texture          = GameService.Content.GetTexture("common/157397");
+                    _statusImage.Texture          = AsyncTexture2D.FromAssetId(157397);
                     _statusImage.BasicTooltipText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageRelationship_CanUpdate;
                     _statusImage.Visible          = true;
                     break;
                 case PkgVersionRelationship.CurrentVersion:
-                    _statusImage.Texture          = GameService.Content.GetTexture("common/157330");
+                    _statusImage.Texture          = AsyncTexture2D.FromAssetId(157330);
                     _statusImage.BasicTooltipText = Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepo_PackageRelationship_CurrentVersion;
                     _statusImage.Visible          = true;
                     break;
@@ -156,7 +158,7 @@ namespace Blish_HUD.Modules.UI.Views {
 
         public ManagePkgView() { /* NOOP */ }
 
-        public ManagePkgView(IGrouping<string, PkgManifest> model) {
+        public ManagePkgView(IOrderedEnumerable<PkgManifest> model) {
             this.WithPresenter(new ManagePkgPresenter(this, model));
         }
 
@@ -200,7 +202,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent  = buildPanel
             };
 
-            _statusImage = new Image(GameService.Content.GetTexture("common/157397")) {
+            _statusImage = new Image(AsyncTexture2D.FromAssetId(157397)) {
                 Visible = false,
                 Size    = new Point(16, 16),
                 Top     = _versionDropdown.Height / 2 - 8 + _versionDropdown.Top,
@@ -215,19 +217,33 @@ namespace Blish_HUD.Modules.UI.Views {
                 Parent = buildPanel
             };
 
+            var infoButton = new StandardButton() {
+                Width  = _actionButton.Width,
+                Right  = _actionButton.Right,
+                Top    = _actionButton.Bottom + 3,
+                Text   = Strings.GameServices.ModulesService.PkgManagement_MoreInfo,
+                Parent = buildPanel
+            };
+
             _descLabel = new Label() {
                 WrapText          = true,
                 Font              = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size12, ContentService.FontStyle.Regular),
                 Location          = new Point(_nameLabel.Left,                                    _nameLabel.Bottom + 4),
-                Size              = new Point(548 /* _actionButton.Left - _nameLabel.Left * 2 */, buildPanel.Height - _nameLabel.Bottom - 8),
+                AutoSizeHeight    = true,
+                Width             = 548,
                 Parent            = buildPanel,
                 VerticalAlignment = VerticalAlignment.Top,
-                AutoSizeHeight    = true
             };
 
             _statusImage.Click            += StatusImageOnClick;
             _actionButton.Click           += OnActionClicked;
             _versionDropdown.ValueChanged += OnVersionSelected;
+
+            infoButton.Click += OnMoreInfoClicked;
+        }
+
+        private void OnMoreInfoClicked(object sender, MouseEventArgs e) {
+            Process.Start($"https://link.blishhud.com/moduleinfo?module={this.ModuleNamespace}");
         }
 
         private void StatusImageOnClick(object sender, MouseEventArgs e) {

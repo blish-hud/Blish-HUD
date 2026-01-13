@@ -2,13 +2,13 @@
 
     public static class WorldUtil {
 
-        private const float INCH_TO_METER = 0.0254f;
+        private const float METER_TO_INCH = 39.37f;
 
         /// <summary>
         /// Converts a world (meters) coordinate to game (inches) coordinate.
         /// </summary>
         public static float WorldToGameCoord(float worldCoord) {
-            return worldCoord / INCH_TO_METER;
+            return worldCoord * METER_TO_INCH;
         }
 
         /// <summary>
@@ -17,7 +17,7 @@
         /// World coordinates are GW2 coordinates.  Game coordinates are Blish HUD coordinates.
         /// </summary>
         public static float GameToWorldCoord(float gameCoord) {
-            return gameCoord * INCH_TO_METER;
+            return gameCoord / METER_TO_INCH;
         }
 
     }

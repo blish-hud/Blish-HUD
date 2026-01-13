@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <Platforms>x64</Platforms>
@@ -30,6 +30,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(VERSIONED_BUILD)'==''">
@@ -229,21 +230,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Adhesive" Version="2.0.1-alpha" PrivateAssets="all" />
+    <ProjectReference Include="..\nspector\nspector.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AsyncClipboardService" Version="[1.7.1]" />
-    <PackageReference Include="Costura.Fody" Version="4.1.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="DynamicLanguageRuntime" Version="1.2.2" PrivateAssets="all" />
+    <PackageReference Include="DynamicLanguageRuntime" Version="1.3.2" PrivateAssets="all" />
     <PackageReference Include="EntryPoint" Version="1.3.0" PrivateAssets="all" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" PrivateAssets="all" />
-    <PackageReference Include="Fody" Version="6.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Gapotchenko.FX.Diagnostics.Process" Version="2021.1.5" />
-    <PackageReference Include="Gw2Sharp" Version="1.7.0" />
+    <PackageReference Include="Gapotchenko.FX.Diagnostics.Process" Version="2022.2.7" PrivateAssets="all" />
+    <PackageReference Include="Gw2Sharp" Version="1.7.4" />
     <PackageReference Include="Humanizer.Core.de" Version="2.6.2" PrivateAssets="all" />
     <PackageReference Include="Humanizer.Core.es" Version="2.6.2" PrivateAssets="all" />
     <PackageReference Include="Humanizer.Core.fr" Version="2.6.2" PrivateAssets="all" />
@@ -256,24 +252,26 @@
     <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="[13.0.1]" />
     <PackageReference Include="NLog" Version="4.6.7" PrivateAssets="all" />
-    <PackageReference Include="Octokit" Version="0.32.0" PrivateAssets="all" />
-    <PackageReference Include="Ookii.Dialogs.WinForms" Version="4.0.0" />
     <PackageReference Include="SemanticVersioning" Version="1.2.2" PrivateAssets="all" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" PrivateAssets="all" />
     <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
-    <PackageReference Include="protobuf-net" Version="3.0.101" />
+    <PackageReference Include="protobuf-net" Version="3.0.101" PrivateAssets="all" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Windows.Forms" />
+    <PackageReference Include="Costura.Fody" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; compile; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <Target Name="BuildRef" AfterTargets="Build">
     <!-- Build ref.dat -->
     <ZipDirectory SourceDirectory="$(ProjectDir)ref" DestinationFile="$(OutDir)/ref.dat" Overwrite="true" />
   </Target>
-  
+
   <Target Name="CleanRef" AfterTargets="Clean">
     <!-- Clean custom output files -->
     <Delete Files="$(OutDir)/ref.dat" />
@@ -285,5 +283,15 @@
       <Content Update="$(ProjectDir)Content\bin\**" Pack="False" />
     </ItemGroup>
   </Target>
+    
+  <Target Name="CombineLicenses" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <LicenseFiles Include="..\LICENSE" Name="Blish HUD" />
+      <LicenseFiles Include="..\thirdparty\nvidiaProfileInspector\LICENSE" Name="nvidiaProfileInspector" />
 
+      <LicenseFileLines Include="%0d%0a%0d%0a%(LicenseFiles.Name)%0d%0a%0d%0a$([System.IO.File]::ReadAllText(%(LicenseFiles.Identity)))" />
+    </ItemGroup>
+      
+    <WriteLinesToFile File="$(BaseIntermediateOutputPath)\ThirdPartySoftware.txt" Lines="@(LicenseFileLines)" Overwrite="true" />
+  </Target>
 </Project>

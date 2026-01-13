@@ -12,6 +12,7 @@ using Blish_HUD.Controls.Effects;
 using Blish_HUD.Input;
 using Newtonsoft.Json;
 using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
+using System.Threading;
 
 namespace Blish_HUD.Controls {
 
@@ -149,11 +150,11 @@ namespace Blish_HUD.Controls {
 
         private static Control _focusedControl;
         public static Control FocusedControl {
-            get => _activeControl;
+            get => _focusedControl;
             set {
-                if (_activeControl == value) return;
+                if (_focusedControl == value) return;
 
-                _activeControl = value;
+                _focusedControl = value;
 
                 OnFocusedControlChanged(new ControlActivatedEventArgs(_focusedControl));
             }
@@ -184,16 +185,27 @@ namespace Blish_HUD.Controls {
         /// <remarks>Fires after <see cref="LeftMouseButtonReleased"/> fires.</remarks>
         public event EventHandler<MouseEventArgs> Click;
 
+        /// <summary>
+        /// Called when a left mouse button press occurs on the <see cref="Control"/>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnLeftMouseButtonPressed(MouseEventArgs e) {
             this.LeftMouseButtonPressed?.Invoke(this, e);
+
+            _clickPrimed = true;
         }
 
         private double _lastClickTime = 0;
+        private bool _clickPrimed = false;
 
+        /// <summary>
+        /// Called when a left mouse button release occurs on the <see cref="Control"/>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnLeftMouseButtonReleased(MouseEventArgs e) {
             this.LeftMouseButtonReleased?.Invoke(this, e);
-            
-            if (_enabled) {
+
+            if (_enabled && _clickPrimed) {
                 // Distinguish click from double-click
                 if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastClickTime < SystemInformation.DoubleClickTime) {
                     OnClick(new MouseEventArgs(e.EventType, true));
@@ -204,30 +216,60 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Called when the mouse moves over the <see cref="Control"/>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnMouseMoved(MouseEventArgs e) {
             this.MouseMoved?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Called when a right mouse button press occurs on the <see cref="Control"/>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnRightMouseButtonPressed(MouseEventArgs e) {
             this.RightMouseButtonPressed?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Called when a right mouse button release occurs on the <see cref="Control"/>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnRightMouseButtonReleased(MouseEventArgs e) {
             this.RightMouseButtonReleased?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Called the mouse wheel is scrolled while the mouse is over the <see cref="Control"/>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnMouseWheelScrolled(MouseEventArgs e) {
             this.MouseWheelScrolled?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Called when the mouse enters into the bounds of the <see cref="Control"/>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnMouseEntered(MouseEventArgs e) {
             this.MouseEntered?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Called when the mouse exits from the bounds of the <see cref="Control"/>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnMouseLeft(MouseEventArgs e) {
             this.MouseLeft?.Invoke(this, e);
+
+            _clickPrimed = false;
         }
 
+        /// <summary>
+        /// Called when a left mouse button press occurs on the <see cref="Control"/> while <see cref="Enabled"/> is <c>true</c>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnClick(MouseEventArgs e) {
             this.Click?.Invoke(this, e);
         }
@@ -240,18 +282,34 @@ namespace Blish_HUD.Controls {
         public event EventHandler<MovedEventArgs> Moved;
         public event EventHandler<EventArgs> Disposed;
 
+        /// <summary>
+        /// Called when the value of <see cref="Visible"/> is changed to <c>true</c>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnShown(EventArgs e) {
             this.Shown?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Called when the value of <see cref="Visible"/> is changed to <c>false</c>.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnHidden(EventArgs e) {
             this.Hidden?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Called when the <see cref="Size"/> of the <see cref="Control"/> is changed.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnResized(ResizedEventArgs e) {
             this.Resized?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Called when the <see cref="Location"/> of the <see cref="Control"/> is changed.
+        /// If overriding, ensure you call the base method.
+        /// </summary>
         protected virtual void OnMoved(MovedEventArgs e) {
             this.Moved?.Invoke(this, e);
         }
@@ -259,6 +317,9 @@ namespace Blish_HUD.Controls {
         #endregion
 
         protected bool _mouseOver = false;
+        /// <summary>
+        /// Indicates that the mouse cursor is actively over the control.
+        /// </summary>
         [JsonIgnore]
         public bool MouseOver {
             get => _mouseOver;
@@ -274,6 +335,9 @@ namespace Blish_HUD.Controls {
         }
 
         protected Point _location;
+        /// <summary>
+        /// Indicates the location of the <see cref="Control"/> relative to its <see cref="Parent"/>.
+        /// </summary>
         public Point Location {
             get => _location;
             set {
@@ -342,7 +406,7 @@ namespace Blish_HUD.Controls {
         }
 
         #endregion
-        
+
         protected Point _size = new Point(40, 20);
         /// <summary>
         /// The size of the control.  Both the X and Y component must be greater than 0.
@@ -379,6 +443,9 @@ namespace Blish_HUD.Controls {
 
         #region Size aliases
 
+        /// <summary>
+        /// The width of the <see cref="Control"/>.
+        /// </summary>
         [JsonIgnore]
         public int Width {
             get => _size.X;
@@ -389,6 +456,9 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// The height of the <see cref="Control"/>.
+        /// </summary>
         [JsonIgnore]
         public int Height {
             get => _size.Y;
@@ -401,7 +471,15 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
-        public bool ClipsBounds { get; set; } = true;
+        private bool _clipsBounds = true;
+        /// <summary>
+        /// If <c>true</c>, the control's render is clipped to the <see cref="Container.ContentRegion"/> of its <see cref="Parent"/>.
+        /// <br/><br/>Default: true
+        /// </summary>
+        public bool ClipsBounds {
+            get => _clipsBounds;
+            set => SetProperty(ref _clipsBounds, value);
+        }
 
         private ControlEffect _effectBehind;
         /// <summary>
@@ -457,6 +535,9 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// The position of the mouse cursor relative to the local bounds of this <see cref="Control"/>.
+        /// </summary>
         [JsonIgnore]
         public Point RelativeMousePosition => Input.Mouse.Position - this.AbsoluteBounds.Location;
 
@@ -503,7 +584,7 @@ namespace Blish_HUD.Controls {
                     if (_tooltip.CurrentView is BasicTooltipView tooltipView && !string.IsNullOrWhiteSpace(value)) {
                         tooltipView.Text = value;
                         return;
-                    }    
+                    }
                 }
 
                 _tooltip?.Hide();
@@ -512,18 +593,27 @@ namespace Blish_HUD.Controls {
         }
 
         protected float _opacity = 1f;
+        /// <summary>
+        /// The opacity of the <see cref="Control"/>.
+        /// </summary>
         public float Opacity {
             get => _opacity;
             set => SetProperty(ref _opacity, value);
         }
 
         protected bool _visible = true;
+        /// <summary>
+        /// Indicates if the control is allowed to render or not.
+        /// </summary>
         public bool Visible {
             get => _visible;
             set {
                 if (SetProperty(ref _visible, value)) {
-                    if (_visible) OnShown(EventArgs.Empty);
-                    else OnHidden(EventArgs.Empty);
+                    if (_visible) {
+                        OnShown(EventArgs.Empty);
+                    } else {
+                        OnHidden(EventArgs.Empty);
+                    }
                 }
             }
         }
@@ -535,6 +625,9 @@ namespace Blish_HUD.Controls {
         }
 
         private Container _parent;
+        /// <summary>
+        /// The <see cref="Container"/> that this <see cref="Control"/> resides within.
+        /// </summary>
         public Container Parent {
             get => _parent;
             set {
@@ -553,18 +646,31 @@ namespace Blish_HUD.Controls {
         }
 
         protected int _zIndex = 5;
+        /// <summary>
+        /// Used to determine the render order of controls within a <see cref="Container"/> and when handling input.
+        /// Higher values will be rendered later (causing them to be shown on top of other controls) and have priority for input.
+        /// <br/><br/>Default: 5
+        /// </summary>
         public virtual int ZIndex {
             get => _zIndex;
             set => SetProperty(ref _zIndex, value);
         }
 
         protected bool _enabled = true;
+        /// <summary>
+        /// If <c>true</c>, the <see cref="Control"/> can accept user input.
+        /// <br/><br/>Default: true
+        /// </summary>
         public bool Enabled {
             get => _enabled;
             set => SetProperty(ref _enabled, value);
         }
 
         protected Color _backgroundColor = Color.Transparent;
+        /// <summary>
+        /// The <see cref="Color"/> rendered behind the <see cref="Control"/>.
+        /// <br/><br/>Default: <see cref="Color.Transparent"/>
+        /// </summary>
         [JsonIgnore]
         public Color BackgroundColor {
             get => _backgroundColor;
@@ -573,7 +679,9 @@ namespace Blish_HUD.Controls {
 
         #region Render Properties
 
-        private bool _layoutSuspended = false;
+        private int _layoutSuspendCount = 0;
+        [JsonIgnore]
+        internal bool IsLayoutSuspended => Interlocked.CompareExchange(ref _layoutSuspendCount, 0, 0) != 0 || (Parent?.IsLayoutSuspended).GetValueOrDefault();
 
         [JsonIgnore]
         internal LayoutState LayoutState { get; private set; } = LayoutState.SkipDraw;
@@ -624,11 +732,23 @@ namespace Blish_HUD.Controls {
         }
 
         /// <summary>
+        /// Prefer <see cref="SuspendLayoutContext"/> if possible, as this ensures
+        /// layout is resumed in all circumstances.
+        /// <br/>
         /// The layout of the <see cref="Control"/> will be suspended until
         /// <see cref="ResumeLayout"/> is called.
         /// </summary>
         public void SuspendLayout() {
-            _layoutSuspended = true;
+            Interlocked.Increment(ref _layoutSuspendCount);
+        }
+
+        /// <summary>
+        /// Suspends the layout of the <see cref="Control"/> until the context is
+        /// disposed (i.e. when exiting a <see langword="using"/> block) and ensures
+        /// correct resumption of layout in the event of exceptions.
+        /// </summary>
+        public IDisposable SuspendLayoutContext() {
+            return new SuspendLayoutScope(this);
         }
 
         /// <summary>
@@ -637,21 +757,22 @@ namespace Blish_HUD.Controls {
         /// </summary>
         /// <param name="forceRecalculate">If <c>true</c>, will force the layout to update now instead of on the next invalidation.</param>
         public void ResumeLayout(bool forceRecalculate = false) {
-            _layoutSuspended = false;
-
-            if (forceRecalculate) {
+            if (Interlocked.Decrement(ref _layoutSuspendCount) == 0 && forceRecalculate) {
                 UpdateLayout();
             }
         }
 
         private void UpdateLayout() {
-            if (this.LayoutState != LayoutState.Ready && !_layoutSuspended) {
-                SuspendLayout();
+            try {
+                if (Interlocked.Increment(ref this._layoutSuspendCount) == 1 &&
+                    !(Parent?.IsLayoutSuspended).GetValueOrDefault() &&
+                    this.LayoutState != LayoutState.Ready) {
 
-                RecalculateLayout();
-                this.LayoutState = LayoutState.Ready;
-
-                ResumeLayout();
+                    RecalculateLayout();
+                    this.LayoutState = LayoutState.Ready;
+                }
+            } finally {
+                Interlocked.Decrement(ref this._layoutSuspendCount);
             }
         }
 
@@ -773,7 +894,7 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// Draw the control.
         /// </summary>
-        /// <param name="bounds">The draw region of the control.  Anything outside of this region will be clipped.  If this control is the child of a container, it could potentially be clipped even further by <see cref="spriteBatch.GraphicsDevice.ScissorRectangle" />.</param>
+        /// <param name="bounds">The draw region of the control.  Anything outside of this region will be clipped.  If this control is the child of a container, it could potentially be clipped even further by <see cref="GraphicsDevice.ScissorRectangle" />.</param>
         protected abstract void Paint(SpriteBatch spriteBatch, Rectangle bounds);
 
         public virtual void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor) {
@@ -825,10 +946,15 @@ namespace Blish_HUD.Controls {
                     this.MouseWheelScrolled       = null;
                     this.MouseEntered             = null;
                     this.MouseLeft                = null;
+                    this.Click                    = null;
 
-                    this.Resized  = null;
-                    this.Moved    = null;
-                    this.Disposed = null;
+                    this.Resized         = null;
+                    this.Moved           = null;
+                    this.Disposed        = null;
+                    this.PropertyChanged = null;
+
+                    this.Shown  = null;
+                    this.Hidden = null;
 
                     // Cancel any animations that were currently running on this object
                     Animation.Tweener.TargetCancel(this);
@@ -888,5 +1014,21 @@ namespace Blish_HUD.Controls {
 
         #endregion
 
+        #region Helper Classes
+        private readonly struct SuspendLayoutScope : IDisposable {
+            private readonly Control _owner;
+            private readonly bool    _forceRecalculate;
+
+            public SuspendLayoutScope(Control owner, bool forceRecalculate = false) {
+                _owner            = owner;
+                _forceRecalculate = forceRecalculate;
+                _owner.SuspendLayout();
+            }
+
+            public void Dispose() {
+                _owner.ResumeLayout(_forceRecalculate);
+            }
+        }
+        #endregion
     }
 }

@@ -13,7 +13,7 @@ using Flurl.Http;
 using Humanizer;
 
 namespace Blish_HUD.Modules {
-    public class ModulePkgRepoHandler : ServiceModule<ModuleService> {
+    public sealed class ModulePkgRepoHandler : ServiceModule<ModuleService> {
 
         private static readonly Logger Logger = Logger.GetLogger<ModulePkgRepoHandler>();
 
@@ -54,7 +54,7 @@ namespace Blish_HUD.Modules {
         private MenuItem         _repoMenuItem;
         private IPkgRepoProvider _defaultRepoProvider;
 
-        public ModulePkgRepoHandler(ModuleService service) : base(service) { /* NOOP */ }
+        internal ModulePkgRepoHandler(ModuleService service) : base(service) { /* NOOP */ }
         
         public override void Load() {
             DefineModuleRepoSettings(GameService.Settings.RegisterRootSettingCollection(REPO_SETTINGS));

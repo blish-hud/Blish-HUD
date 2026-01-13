@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using System;
+using System.IO;
 
 namespace Blish_HUD.Modules.Managers {
     public class ContentsManager : IDisposable {
@@ -20,7 +20,7 @@ namespace Blish_HUD.Modules.Managers {
             Logger.Debug("New {contentsManagerName} instance utilizing a {dataReaderType} data reader.", nameof(ContentsManager), _reader.GetType().FullName);
         }
 
-        public static ContentsManager GetModuleInstance(ModuleManager module) {
+        internal static ContentsManager GetModuleInstance(ModuleManager module) {
             return new ContentsManager(module.DataReader.GetSubPath(REF_NAME));
         }
 
@@ -92,10 +92,6 @@ namespace Blish_HUD.Modules.Managers {
             return null;
         }
 
-        /// <summary>
-        /// [NOT IMPLEMENTED] Loads a <see cref="BitmapFont"/> from a file.
-        /// </summary>
-        /// <param name="fontPath">The path to the font file.</param>
         public BitmapFont GetBitmapFont(string fontPath) {
             throw new NotImplementedException();
         }

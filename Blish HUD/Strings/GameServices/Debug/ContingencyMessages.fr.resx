@@ -138,7 +138,7 @@ Relancez Blish HUD en tant qu'administrateur, ou relancez Guild Wars 2 sans le m
     <value>Blish HUD a besoin d'être re-extrait !</value>
   </data>
   <data name="MissingRef_Description" xml:space="preserve">
-    <value>Blish HUD a été incapable de localiser le fichier ref.dat. Quand vous téléchargez Blish HUD, faites attention à bien extraire tous les fichiers du zip et que tous les fichiers soient bien dans le même dossier que Blish HUD.exe</value>
+    <value>Blish HUD a été incapable de localiser le fichier ref.dat. Quand vous téléchargez Blish HUD, faites attention à bien extraire tous les fichiers du zip et que tous les fichiers soient bien dans le même dossier que Blish HUD.exe.</value>
   </data>
   <data name="FileSaveAccessDenied_Title" xml:space="preserve">
     <value>Blish HUD a été bloqué lors de la sauvegarde de données !</value>
@@ -175,5 +175,30 @@ Si vous avez un anti-virus ou utilisez un pare-feu tiers, merci de vérifier que
   </data>
   <data name="CoreUpdateFailed_Description_Timeout" xml:space="preserve">
     <value>Il y a d'autres instances de Blish HUD de lancée. Merci de fermer les autres instances avant de relancer Blish HUD pour finir la mise à jour.</value>
+  </data>
+  <data name="NvidiaSettings_Error" xml:space="preserve">
+    <value>'{0}' ne devrait pas être '{1}'</value>
+  </data>
+  <data name="NvidiaSettings_Description" xml:space="preserve">
+    <value>Un de vos paramètres NVIDIA a été modifié de manière incompatible avec Blish HUD (Blish HUD aura un fond noir).
+
+Ces paramètres doivent être réinitialisés par défaut :
+{0}
+
+Consultez le guide de dépannage lié pour plus d'informations sur la façon de résoudre ce problème.</value>
+  </data>
+  <data name="NvidiaSettings_OpenControlPanelAction" xml:space="preserve">
+    <value>Ouvrir le panneau de contrôle NVIDIA</value>
+  </data>
+  <data name="NvidiaSettings_Title" xml:space="preserve">
+    <value>Paramètres NVIDIA Incompatibles</value>
+  </data>
+  <data name="CfaBlocking_Description" xml:space="preserve">
+    <value>Blish HUD a été bloqué activement pour enregistrer dans '{0}' par ce qui semble être la fonctionnalité d'accès aux dossiers contrôlés de Windows.
+
+Veuillez autoriser explicitement Blish HUD dans vos paramètres d'accès aux dossiers contrôlés ou consultez le guide de dépannage ci-dessous.</value>
+  </data>
+  <data name="CfaBlocking_Title" xml:space="preserve">
+    <value>Blish HUD Bloqué !</value>
   </data>
 </root>

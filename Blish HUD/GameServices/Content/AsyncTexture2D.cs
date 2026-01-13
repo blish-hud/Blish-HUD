@@ -18,6 +18,11 @@ namespace Blish_HUD.Content {
         public bool HasTexture => _activeTexture2D != null;
 
         /// <summary>
+        /// <c>true</c>, if the <see cref="AsyncTexture2D"/> has had a texture assigned to it (other than a provided default texture).
+        /// </summary>
+        public bool HasSwapped { get; private set; }
+
+        /// <summary>
         /// The active <see cref="Texture2D"/> of the <see cref="AsyncTexture2D"/>.
         /// </summary>
         public Texture2D Texture {
@@ -29,7 +34,27 @@ namespace Blish_HUD.Content {
                 return _activeTexture2D;
             }
         }
-        
+
+        /// <inheritdoc cref="Texture2D.Width"/>
+        public int Width => this.HasTexture 
+                                ? _activeTexture2D.Width 
+                                : throw new InvalidOperationException($"{nameof(AsyncTexture2D)} object must have a Texture.");
+
+        /// <inheritdoc cref="Texture2D.Height"/>
+        public int Height => this.HasTexture
+                                 ? _activeTexture2D.Height
+                                 : throw new InvalidOperationException($"{nameof(AsyncTexture2D)} object must have a Texture.");
+
+        /// <inheritdoc cref="Texture2D.Bounds"/>
+        public Rectangle Bounds => this.HasTexture
+                                       ? _activeTexture2D.Bounds
+                                       : throw new InvalidOperationException($"{nameof(AsyncTexture2D)} object must have a Texture.");
+
+        /// <inheritdoc cref="Texture2D.IsDisposed"/>
+        public bool IsDisposed => this.HasTexture
+                                       ? _activeTexture2D.IsDisposed
+                                       : throw new InvalidOperationException($"{nameof(AsyncTexture2D)} object must have a Texture.");
+
         /// <summary>
         /// Occurs when the <see cref="Texture"/> of the <see cref="AsyncTexture2D"/> is replaced.
         /// </summary>
@@ -50,23 +75,37 @@ namespace Blish_HUD.Content {
         }
 
         /// <summary>
-        /// Replaces the <see cref="Texture"/> of the <see cref="AsyncTexture2D"/> with the texture provided in <param name="newTexture"/> on the next game cycle loop.
+        /// Replaces the <see cref="Texture"/> of the <see cref="AsyncTexture2D"/> with the texture provided in <param name="newTexture"/> on the main thread.
         /// </summary>
         /// <param name="newTexture">The new texture to assign.</param>
         public void SwapTexture(Texture2D newTexture) {
             _stagedTexture2D = newTexture;
 
-            GameService.Overlay.QueueMainThreadUpdate(this.ApplyTextureSwap);
+            if (Program.IsMainThread) {
+                ApplyTextureSwap(null);
+            } else {
+                GameService.Overlay.QueueMainThreadUpdate(this.ApplyTextureSwap);
+            }
         }
 
         private void ApplyTextureSwap(GameTime gameTime) {
-            Texture2D previousTexture2D = _activeTexture2D;
+            var previousTexture2D = _activeTexture2D;
             _activeTexture2D = _stagedTexture2D;
+            this.HasSwapped  = true;
             _stagedTexture2D = null;
             this.TextureSwapped?.Invoke(this, new ValueChangedEventArgs<Texture2D>(previousTexture2D, _activeTexture2D));
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="DatAssetCache.GetTextureFromAssetId" />
+        public static AsyncTexture2D FromAssetId(int assetId) {
+            return GameService.Content.DatAssetCache.GetTextureFromAssetId(assetId);
+        }
+
+        /// <inheritdoc cref="DatAssetCache.TryGetTextureFromAssetId" />
+        public static bool TryFromAssetId(int assetId, out AsyncTexture2D texture) {
+            return GameService.Content.DatAssetCache.TryGetTextureFromAssetId(assetId, out texture);
+        }
+
         public override bool Equals(object obj) {
             if (!HasTexture) return obj == null;
             if (obj == null) return false;
@@ -78,7 +117,6 @@ namespace Blish_HUD.Content {
             return this == obj;
         }
 
-        /// <inheritdoc />
         public override int GetHashCode() {
             return _activeTexture2D?.GetHashCode() ?? 0;
         }
@@ -93,7 +131,6 @@ namespace Blish_HUD.Content {
             return new AsyncTexture2D(texture2D);
         }
 
-        /// <inheritdoc />
         public void Dispose() {
             _stagedTexture2D?.Dispose();
             _activeTexture2D?.Dispose();

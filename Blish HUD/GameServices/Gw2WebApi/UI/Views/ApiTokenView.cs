@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Input;
@@ -12,12 +13,12 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Blish_HUD.Gw2WebApi.UI.Views {
     public class ApiTokenView : View {
 
-        private readonly Dictionary<string, (string Region, Texture2D Flag)> _worldRegionFlags = new Dictionary<string, (string Region, Texture2D Flag)>() {
-            { "10", (Strings.GameServices.Gw2ApiService.TokenRegion_NorthAmerica, GameService.Content.GetTexture(@"common/784343")) },
-            { "20", (Strings.GameServices.Gw2ApiService.TokenRegion_Europe, GameService.Content.GetTexture(@"common/784346")) },
-            { "21", (Strings.GameServices.Gw2ApiService.TokenRegion_France, GameService.Content.GetTexture(@"common/784345")) },
-            { "22", (Strings.GameServices.Gw2ApiService.TokenRegion_Germany, GameService.Content.GetTexture(@"common/784342")) },
-            { "23", (Strings.GameServices.Gw2ApiService.TokenRegion_Spain, GameService.Content.GetTexture(@"common/784344")) }
+        private readonly Dictionary<string, (string Region, AsyncTexture2D Flag)> _worldRegionFlags = new Dictionary<string, (string Region, AsyncTexture2D Flag)>() {
+            { "10", (Strings.GameServices.Gw2ApiService.TokenRegion_NorthAmerica, AsyncTexture2D.FromAssetId(784343)) },
+            { "20", (Strings.GameServices.Gw2ApiService.TokenRegion_Europe,       AsyncTexture2D.FromAssetId(784346)) },
+            { "21", (Strings.GameServices.Gw2ApiService.TokenRegion_France,       AsyncTexture2D.FromAssetId(784345)) },
+            { "22", (Strings.GameServices.Gw2ApiService.TokenRegion_Germany,      AsyncTexture2D.FromAssetId(784342)) },
+            { "23", (Strings.GameServices.Gw2ApiService.TokenRegion_Spain,        AsyncTexture2D.FromAssetId(784344)) }
         };
 
         public event EventHandler<EventArgs> DeleteClicked;
@@ -146,7 +147,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent   = buildPanel
             };
 
-            _accountCommanderImg = new Image(GameService.Content.GetTexture("common/1234943")) {
+            _accountCommanderImg = new Image(AsyncTexture2D.FromAssetId(1234943)) {
                 Size             = new Point(16,                       16),
                 Location         = new Point(_regionFlagImg.Right + 4, _regionFlagImg.Top),
                 BasicTooltipText = Strings.GameServices.Gw2ApiService.AccountInfo_Commander,
@@ -176,8 +177,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             };
 
             _deleteBttn = new GlowButton() {
-                Icon             = GameService.Content.GetTexture("common/733269"),
-                ActiveIcon       = GameService.Content.GetTexture("common/733270"),
+                Icon             = AsyncTexture2D.FromAssetId(733269),
+                ActiveIcon       = AsyncTexture2D.FromAssetId(733270),
                 Location         = new Point(buildPanel.Width - 26, 10),
                 Size             = new Point(16,                    16),
                 BasicTooltipText = Strings.GameServices.Gw2ApiService.ManageApiKeys_DeleteToken,

@@ -13,6 +13,8 @@ namespace Blish_HUD.GameIntegration {
     public sealed class AudioIntegration : ServiceModule<GameIntegrationService> {
         private static readonly Logger Logger = Logger.GetLogger<AudioIntegration>();
 
+        public event EventHandler<ValueEventArgs<float>> VolumeChanged;
+
         public enum Devices {
             [Description("GW2 Output Device")]
             Gw2OutputDevice,
@@ -21,6 +23,7 @@ namespace Blish_HUD.GameIntegration {
 
         private const    string                APPLICATION_SETTINGS         = "OverlayConfiguration";
         private const    string                USEGAMEVOLUME_SETTINGS       = "GameVolume";
+        private const    string                MUTEIFNOGAMEAUDIO_SETTINGS   = "MuteIfNoGameAudio";
         private const    string                VOLUME_SETTINGS              = "Volume";
         private const    string                DEVICE_SETTINGS              = "OutputDevice";
         private const    int                   CHECK_INTERVAL               = 250;
@@ -32,22 +35,30 @@ namespace Blish_HUD.GameIntegration {
         private          SettingEntry<bool>    _useGameVolume;
         private          SettingEntry<Devices> _deviceSetting;
         private          SettingEntry<float>   _volumeSetting;
+        private          SettingEntry<bool>    _muteIfNoGameAudio;
 
-        private readonly AudioEndpointNotificationReceiver _audioEndpointNotificationReceiver;
+        private readonly AudioEndpointNotificationReceiver                                    _audioEndpointNotificationReceiver;
         private readonly List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)> _gw2AudioDevices = new List<(MMDevice AudioDevice, AudioMeterInformation MeterInformation)>();
 
         private double _timeSinceCheck             = 0;
         private double _timeSinceAudioDeviceUpdate = 0;
 
         private float? _volume;
-
         /// <summary>
         /// This either provides  an estimated volume level for the application
         /// based on the volumes levels exhibited by the game
         /// or
         /// the set volume in settings.
         /// </summary>
-        public float Volume => _volume ??= GetVolume();
+        public float Volume {
+            get => _volume ??= GetVolume();
+            private set {
+                if (Math.Abs(_volume.GetValueOrDefault() - value) > 0.0001f) {
+                    VolumeChanged?.Invoke(this, new ValueEventArgs<float>(value));
+                }
+                _volume = value;
+            }
+        }
 
         /// <summary>
         /// Current used AudioDevice. This either the same as GW2 is using
@@ -55,15 +66,23 @@ namespace Blish_HUD.GameIntegration {
         /// </summary>
         public MMDevice AudioDevice { get; private set; }
 
-        public AudioIntegration(GameIntegrationService service) : base(service) {
+        internal AudioIntegration(GameIntegrationService service) : base(service) {
             _audioEndpointNotificationReceiver = new AudioEndpointNotificationReceiver();
             _deviceEnumerator = new MMDeviceEnumerator();
         }
 
         public override void Load() {
             var audioSettings = GameService.Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
-            _useGameVolume = audioSettings.DefineSetting(USEGAMEVOLUME_SETTINGS, true, () => Strings.GameServices.OverlayService.Setting_UseGameVolume_DisplayName, () => Strings.GameServices.OverlayService.Setting_UseGameVolume_Description);
-            _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2, () => Strings.GameServices.OverlayService.Setting_Volume_DisplayName, () => Strings.GameServices.OverlayService.Setting_Volume_Description);
+            _useGameVolume = audioSettings.DefineSetting(USEGAMEVOLUME_SETTINGS, true, 
+                                                         () => Strings.GameServices.OverlayService.Setting_UseGameVolume_DisplayName, 
+                                                         () => Strings.GameServices.OverlayService.Setting_UseGameVolume_Description);
+            _volumeSetting = audioSettings.DefineSetting(VOLUME_SETTINGS, MAX_VOLUME / 2, 
+                                                         () => Strings.GameServices.OverlayService.Setting_Volume_DisplayName, 
+                                                         () => Strings.GameServices.OverlayService.Setting_Volume_Description);
+            _muteIfNoGameAudio = audioSettings.DefineSetting(MUTEIFNOGAMEAUDIO_SETTINGS, true, 
+                                                             () => Strings.GameServices.OverlayService.Setting_MuteIfNoGameAudio_DisplayName,
+                                                             () => Strings.GameServices.OverlayService.Setting_MuteIfNoGameAudio_Description);
+            
             _volumeSetting.SetRange(0.0f, MAX_VOLUME);
 
             _deviceSetting = audioSettings.DefineSetting(DEVICE_SETTINGS, Devices.Gw2OutputDevice, () => Strings.GameServices.OverlayService.Setting_AudioDevice_DisplayName, () => Strings.GameServices.OverlayService.Setting_AudioDevice_Description + " (This setting is temporarily disabled in this version)");
@@ -113,7 +132,7 @@ namespace Blish_HUD.GameIntegration {
                     Logger.Debug(e, "Getting meter volume failed.");
                 }
 
-                _volume = null;
+                this.Volume = GetVolume();
             }
 
             if (_timeSinceAudioDeviceUpdate > AUDIO_DEVICE_UPDATE_INTERVAL) {
@@ -124,11 +143,11 @@ namespace Blish_HUD.GameIntegration {
         }
 
         private float GetVolume() {
-            if (_useGameVolume.Value) {
-                return CalculateAverageVolume();
+            float gameVol = CalculateAverageVolume();
+            if (_muteIfNoGameAudio.Value && gameVol < 0.0001f) {
+                return 0;
             }
-
-            return _volumeSetting.Value;
+            return _useGameVolume.Value ? gameVol : _volumeSetting.Value;
         }
 
         private float CalculateAverageVolume() {

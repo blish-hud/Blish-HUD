@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Glide;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
@@ -63,6 +64,7 @@ namespace Blish_HUD.Controls {
         
         private Glide.Tween _animFadeLifecycle;
         private int _targetTop = 0;
+        private Tween _slideDownTween;
 
         private Rectangle _layoutMessageBounds;
         private Rectangle _layoutIconBounds;
@@ -80,7 +82,22 @@ namespace Blish_HUD.Controls {
 
             _targetTop = this.Top;
         }
-        
+
+        public override void DoUpdate(GameTime gameTime) {
+            // Calculate new top location. Fixes the wrong location before blish finishes resizing.
+            var calculatedNewTop = Graphics.SpriteScreen.Height / 4 - this.Size.Y / 2;
+            if (calculatedNewTop > _targetTop) {
+                _targetTop += calculatedNewTop;
+
+                this._slideDownTween?.Cancel();
+                // Can't cancel a Tween inside Update loop and manually setting the Tween property as the tween will override it after current Update has finished and cancel afterwards.
+                GameService.Animation.Tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds); // Force above tween to be canceled before next Update loop.
+                this.Top = _targetTop;
+            }
+
+            this.Left = Graphics.SpriteScreen.Width / 2 - this.Size.X / 2;
+        }
+
         protected override CaptureType CapturesInput() {
             return CaptureType.Filter;
         }
@@ -175,7 +192,8 @@ namespace Blish_HUD.Controls {
         private void SlideDown(int distance) {
             _targetTop += distance;
 
-            Animation.Tweener.Tween(this, new {Top = _targetTop}, 0.1f);
+            this._slideDownTween?.Cancel();
+            this._slideDownTween = Animation.Tweener.Tween(this, new {Top = _targetTop }, 0.1f);
 
             if (_opacity < 1f) return;
 
@@ -186,6 +204,9 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc />
         protected override void DisposeControl() {
+            this._slideDownTween?.Cancel();
+            this._slideDownTween = null;
+
             _activeScreenNotifications.Remove(this);
 
             base.DisposeControl();

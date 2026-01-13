@@ -17,7 +17,7 @@ namespace Blish_HUD.Graphics {
         internal GraphicsDeviceContext(GraphicsService service, bool highPriority) {
             _service       = service;
             _highPriority  = highPriority || Program.IsMainThread;
-            GraphicsDevice = _service.LendGraphicsDevice(highPriority);
+            GraphicsDevice = _service.LendGraphicsDevice(_highPriority);
         }
 
         /// <summary>

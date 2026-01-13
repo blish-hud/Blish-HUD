@@ -126,14 +126,8 @@
   <data name="Setting_FramerateLimiter_Description" xml:space="preserve">
     <value>La méthode utilisée pour déterminer la fréquence d'image que Blish HUD devrait utiliser.</value>
   </data>
-  <data name="Setting_Vsync_DisplayName" xml:space="preserve">
-    <value>Activer la synchronisation verticale</value>
-  </data>
-  <data name="Setting_Vsync_Description" xml:space="preserve">
-    <value>Activer la synchronisation verticale limite la fréquence d'images de Blish HUD au taux de raffraîchissement de l'écran pour empêcher les problèmes de coupure d'image.</value>
-  </data>
   <data name="Setting_FramerateLimiter_Locked_Description" xml:space="preserve">
-    <value>(Désactivé car Blish HUD a été lancé avec le paramètre --maxfps)</value>
+    <value>(Désactivé car Blish HUD a été lancé avec le paramètre --maxfps/--unlockfps)</value>
   </data>
   <data name="Setting_SmoothCharacterPosition_DisplayName" xml:space="preserve">
     <value>Position du personnage lissée</value>

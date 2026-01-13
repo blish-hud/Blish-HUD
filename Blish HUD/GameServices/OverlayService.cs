@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using Blish_HUD.Content;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics;
@@ -84,6 +85,8 @@ namespace Blish_HUD {
 
         private readonly object _exitLock = new object();
 
+        private bool _sotoIsLive = false;
+
         internal OverlayService() {
             SetServiceModules(this.OverlayUpdateHandler = new OverlayUpdateHandler(this));
         }
@@ -112,12 +115,12 @@ namespace Blish_HUD {
             this.SettingsTab = new OverlaySettingsTab(this);
 
             // About
-            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection, GameService.Content.GetTexture("440023")),
+            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection, AsyncTexture2D.FromAssetId(440023)),
                                                  (m) => new AboutView(),
                                                  int.MinValue);
 
             // Overlay Settings
-            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, GameService.Content.GetTexture("156736")),
+            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, AsyncTexture2D.FromAssetId(156736)),
                                                  (m) => new OverlaySettingsView(),
                                                  int.MaxValue - 12);
         }
@@ -128,10 +131,14 @@ namespace Blish_HUD {
                                                               () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
 
-            this.StayInTray    =       settings.DefineSetting("StayInTray",
-                                                              true,
-                                                              () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,
-                                                              () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
+            this.StayInTray = settings.DefineSetting("StayInTray",
+                                                     true,
+                                                     () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,
+                                                     () => Strings.GameServices.OverlayService.Setting_StayInTray_Description
+                                                         + (ApplicationSettings.Instance.StartGw2  > 0
+                                                         || ApplicationSettings.Instance.ProcessId > 0
+                                                                ? Strings.GameServices.OverlayService.Setting_StayInTray_AppendDisabled
+                                                                : string.Empty));
 
             this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",
                                                               false,
@@ -168,7 +175,7 @@ namespace Blish_HUD {
             this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
 
             // Lock 'StayInTray' if we launched Guild Wars 2 with a launch argument.
-            if (ApplicationSettings.Instance.StartGw2 > 0) {
+            if (ApplicationSettings.Instance.StartGw2 > 0 || ApplicationSettings.Instance.ProcessId > 0) {
                 this.StayInTray.SetDisabled();
             }
 
@@ -304,7 +311,15 @@ namespace Blish_HUD {
             }
         }
 
+        private void SotoFix() {
+            // TODO: We will eventually want to change this so that we detect if the active player has at least one level 80 - we use this to move the icon over one more.
+            if (DateTime.UtcNow.Date >= new DateTime(2023, 8, 22, 0, 0, 0, DateTimeKind.Utc)) {
+                _sotoIsLive = true;
+            }
+        }
+
         protected override void Load() {
+            SotoFix();
             BuildMainWindow();
             BuildCornerIcon();
         }
@@ -354,7 +369,7 @@ namespace Blish_HUD {
 
         private void BuildSettingTab() {
             this.BlishHudWindow.AddTab(Strings.GameServices.SettingsService.SettingsTab,
-                                       Content.GetTexture("155052"),
+                                       AsyncTexture2D.FromAssetId(155052),
                                        () => new SettingsMenuView(this.SettingsTab),
                                        int.MaxValue - 10);
         }
@@ -377,7 +392,8 @@ namespace Blish_HUD {
 
             if (GameIntegration.Gw2Instance.IsInGame) {
                 int offset = /* Offset +1 if Chinese client */ (GameIntegration.ClientType.ClientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
-                           + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
+                           + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0)
+                           + /* Offset +1 if SOTO released  */ (_sotoIsLive ? 1 : 0);
 
                 CornerIcon.LeftOffset = offset * 36;
             }

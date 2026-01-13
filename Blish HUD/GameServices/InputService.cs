@@ -18,7 +18,7 @@ namespace Blish_HUD {
         /// </summary>
         public KeyboardHandler Keyboard { get; }
 
-        public InputService() {
+        internal InputService() {
             this.Mouse    = new MouseHandler();
             this.Keyboard = new KeyboardHandler();
 

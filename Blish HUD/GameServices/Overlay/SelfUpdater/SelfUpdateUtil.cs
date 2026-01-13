@@ -67,13 +67,16 @@ namespace Blish_HUD.Overlay.SelfUpdater {
 
             var applicationDir = Directory.GetCurrentDirectory();
 
-            var rootDirs  = unpacker.Entries.Where(entry => string.IsNullOrWhiteSpace(entry.Name)  && entry.FullName.IndexOf('/') == entry.FullName.Length - 1);
+            var rootDirs  = unpacker.Entries
+                .Select(entry => entry.FullName.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+                .Where(parts => parts.Length > 1)
+                .Select(parts => parts[0] + "/")
+                .Distinct()
+                .ToList();
             var allFiles  = unpacker.Entries.Where(entry => !string.IsNullOrWhiteSpace(entry.Name) && !string.Equals(entry.Name, FILE_EXE));
             var rootFiles = allFiles.Where(entry => !entry.FullName.Contains("/"));
 
-            foreach (var dir in rootDirs) {
-                string dirPath = Path.Combine(applicationDir, dir.FullName);
-
+            foreach (var dirPath in rootDirs) {
                 if (Directory.Exists(dirPath)) {
                     Directory.Delete(dirPath, true);
                 }
@@ -109,7 +112,7 @@ namespace Blish_HUD.Overlay.SelfUpdater {
             for (int i = SINGLEPROCESS_DELAY; i > 0; i--) {
                 Process[] instances = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(FILE_EXE));
 
-                if (instances.Length == 1) {
+                if (instances.Length <= 1) {
                     timedout = false;
                     continue;
                 }
