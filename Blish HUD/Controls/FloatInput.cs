@@ -24,7 +24,7 @@ namespace Blish_HUD.Controls {
         }
 
         public float Value {
-            get => InvariantUtil.TryParseFloat(Text, out float value) ? value : 0f;
+            get => float.TryParse(Text, out float value) ? value : 0f;
             set {
                 if (value < MinValue) {
                     value = MinValue;
@@ -32,7 +32,7 @@ namespace Blish_HUD.Controls {
                     value = MaxValue;
                 }
 
-                string text = value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
+                string text = value.ToString(_formatString, NumberFormatInfo.CurrentInfo);
                 if (!string.Equals(Text, text, StringComparison.Ordinal)) {
                     Text = text;
                     Invalidate();
@@ -74,7 +74,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void ApplyTextAsValue() {
-            if (InvariantUtil.TryParseFloat(_text, out float value)) {
+            if (float.TryParse(_text, out float value)) {
                 Value = value;
                 Invalidate();
                 OnValueChanged();

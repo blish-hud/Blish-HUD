@@ -22,7 +22,7 @@ namespace Blish_HUD.Controls {
                     value = MaxValue;
                 }
 
-                string text = value.ToString(_formatString, NumberFormatInfo.InvariantInfo);
+                string text = value.ToString(_formatString, NumberFormatInfo.CurrentInfo);
                 if (!string.Equals(Text, text, StringComparison.Ordinal)) {
                     Text = text;
                     Invalidate();
