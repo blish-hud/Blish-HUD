@@ -16,7 +16,6 @@ namespace Blish_HUD.Settings.UI.Views {
             _numberInput = new NumberInput() {
                 Width       = INPUT_WIDTH,
                 Left        = TRACKBAR_LEFT,
-                ClipsBounds = false, // bit of a hack to allow overflowing text for large numbers
                 MinValue    = (int)_valueTrackBar.MinValue,
                 MaxValue    = (int)_valueTrackBar.MaxValue,
                 Parent      = buildPanel
