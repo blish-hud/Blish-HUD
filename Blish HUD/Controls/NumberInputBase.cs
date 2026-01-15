@@ -243,6 +243,12 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnMouseMoved(MouseEventArgs e) {
+            if (!Enabled) {
+                _glow = NumberInputSpinnerGlow.None;
+                base.OnMouseMoved(e);
+                return;
+            }
+
             bool mouseOverSpinner = e.MousePosition.X > AbsoluteBounds.Right - SpinnerWidth;
             bool mouseOverUpButton = mouseOverSpinner && e.MousePosition.Y < AbsoluteBounds.Top + SpinnerButtonHeight;
             _glow = (mouseOverSpinner, mouseOverUpButton) switch {
@@ -319,6 +325,10 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
+            if (!Enabled) {
+                return;
+            }
+
             if (e.MousePosition.X > AbsoluteBounds.Right - SpinnerWidth) {
                 UnsetFocus();
                 Content.PlaySoundEffectByName(@"button-click");
@@ -331,6 +341,11 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
+            if (!Enabled) {
+                _action = NumberInputAction.None;
+                return;
+            }
+
             switch (_action) {
                 case NumberInputAction.Increment:
                     IncrementValue();
@@ -350,6 +365,10 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnClick(MouseEventArgs e) {
+            if (!Enabled) {
+                return;
+            }
+
             if (!Focused) {
                 SelectAll();
                 Invalidate();
@@ -376,7 +395,7 @@ namespace Blish_HUD.Controls {
         }
 
         private void OnGlobalMouseWheelScrolled(object sender, MouseEventArgs e) {
-            if (MouseOver) {
+            if (MouseOver && Enabled) {
                 HandleMouseWheelScrolled(Input.Mouse.State.ScrollWheelValue);
             }
         }
