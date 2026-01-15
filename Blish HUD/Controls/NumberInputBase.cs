@@ -82,8 +82,10 @@ namespace Blish_HUD.Controls {
         /// <summary>
         /// Called when the mouse wheel is scrolled over the control.
         /// </summary>
+        /// <param name="scrollDelta">The scroll wheel delta value.</param>
         protected abstract void HandleMouseWheelScrolled(int scrollDelta);
 
+        /// <inheritdoc />
         public override void DoUpdate(GameTime gameTime) {
             switch (_action) {
                 case NumberInputAction.Increment:
@@ -112,6 +114,7 @@ namespace Blish_HUD.Controls {
             base.DoUpdate(gameTime);
         }
 
+        /// <inheritdoc />
         public override void RecalculateLayout() {
             // Layout zones (left to right):
             // |<-- Text Area (can overflow) -->|<-- Padding -->|<-- Spinner -->|
@@ -225,6 +228,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <inheritdoc />
         public override int GetCursorIndexFromPosition(int x, int y) {
             float textStart = Width - _font.MeasureString(Text).Width - TextPaddingX - SpinnerWidth;
 
@@ -242,6 +246,7 @@ namespace Blish_HUD.Controls {
             return charIndex;
         }
 
+        /// <inheritdoc />
         protected override void OnMouseMoved(MouseEventArgs e) {
             if (!Enabled) {
                 _glow = NumberInputSpinnerGlow.None;
@@ -260,15 +265,18 @@ namespace Blish_HUD.Controls {
             base.OnMouseMoved(e);
         }
 
+        /// <inheritdoc />
         protected override void OnMouseLeft(MouseEventArgs e) {
             _glow = NumberInputSpinnerGlow.None;
             base.OnMouseLeft(e);
         }
 
+        /// <inheritdoc />
         protected override void MoveLine(int delta) {
             // Not applicable for single-line numeric input
         }
 
+        /// <inheritdoc />
         protected override void UpdateScrolling() {
             // Don't scroll when not focused - offset should remain at 0
             if (!_focused || _text.Length == 0) {
@@ -324,6 +332,7 @@ namespace Blish_HUD.Controls {
             Invalidate();
         }
 
+        /// <inheritdoc />
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
             if (!Enabled) {
                 return;
@@ -340,6 +349,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <inheritdoc />
         protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
             if (!Enabled) {
                 _action = NumberInputAction.None;
@@ -364,6 +374,7 @@ namespace Blish_HUD.Controls {
             _action = NumberInputAction.None;
         }
 
+        /// <inheritdoc />
         protected override void OnClick(MouseEventArgs e) {
             if (!Enabled) {
                 return;
@@ -377,10 +388,12 @@ namespace Blish_HUD.Controls {
             base.OnClick(e);
         }
 
+        /// <inheritdoc />
         protected override void HandleEnter() {
             UnsetFocus();
         }
 
+        /// <inheritdoc />
         protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
             base.OnInputFocusChanged(e);
             if (e.Value) {
@@ -400,20 +413,30 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Renders the text content within the specified region, supporting optional clipping.
+        /// </summary>
         /// <remarks>
-        /// Direct copy of <see cref="TextInputBase.PaintText(SpriteBatch, Rectangle, HorizontalAlignment)"/>
-        /// that also exposes the clippingRectangle parameter of
-        /// <see cref="MonoGame.Extended.BitmapFontExtensions.DrawString(SpriteBatch, BitmapFont, string, Vector2, Color, Rectangle?)"/>.
+        /// This method extends <see cref="TextInputBase.PaintText(SpriteBatch, Rectangle, HorizontalAlignment)"/>
+        /// by adding an optional clipping rectangle parameter.
         /// </remarks>
+        /// <param name="spriteBatch">The sprite batch used for drawing.</param>
+        /// <param name="textRegion">The region where the text should be rendered.</param>
+        /// <param name="horizontalAlignment">The horizontal alignment of the text within the region.</param>
+        /// <param name="clippingRectangle">An optional rectangle to clip the rendered text.</param>
         protected virtual void PaintText(SpriteBatch spriteBatch, Rectangle textRegion, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, Rectangle? clippingRectangle = null) {
+            // Draw the placeholder text
+            // (not currently used as number input always has a non-nullable value, but included for completeness)
             if (!_focused && _text.Length == 0) {
                 spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, textRegion, Color.LightGray, false, false, 0, horizontalAlignment, VerticalAlignment.Top, clippingRectangle);
             }
 
+            // Draw the text
             var textColor = Enabled ? _foreColor : StandardColors.DisabledText;
             spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, textColor, false, false, 0, horizontalAlignment, VerticalAlignment.Top, clippingRectangle);
         }
 
+        /// <inheritdoc />
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             #region Text
 
@@ -502,6 +525,7 @@ namespace Blish_HUD.Controls {
             #endregion Spinner
         }
 
+        /// <inheritdoc />
         protected override void DisposeControl() {
             Input.Mouse.MouseWheelScrolled -= OnGlobalMouseWheelScrolled;
             base.DisposeControl();
