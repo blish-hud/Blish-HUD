@@ -15,14 +15,6 @@ namespace Blish_HUD.Controls {
 
         public event EventHandler<EventArgs>? ValueChanged;
 
-        /// <summary>
-        /// Gets or sets the increment/decrement amount for spinner buttons and scroll wheel.
-        /// </summary>
-        public float IncrementAmount {
-            get => _incrementAmount;
-            set => SetProperty(ref _incrementAmount, value);
-        }
-
         public float Value {
             get => float.TryParse(Text, out float value) ? value : 0f;
             set {
@@ -59,6 +51,14 @@ namespace Blish_HUD.Controls {
                     Value = value;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the increment/decrement amount for spinner buttons and scroll wheel.
+        /// </summary>
+        public float IncrementAmount {
+            get => _incrementAmount;
+            set => SetProperty(ref _incrementAmount, value);
         }
 
         protected override void IncrementValue() {
