@@ -3,6 +3,9 @@ using System.Globalization;
 
 namespace Blish_HUD.Controls {
 
+    /// <summary>
+    /// A numeric input control for floating-point values with spinner buttons and scroll wheel support.
+    /// </summary>
     public class FloatInput : NumberInputBase {
 
         private float _minValue = float.MinValue;
@@ -13,8 +16,15 @@ namespace Blish_HUD.Controls {
 
         private float _originalValue;
 
+        /// <summary>
+        /// Occurs when the <see cref="Value"/> property changes.
+        /// </summary>
         public event EventHandler<EventArgs>? ValueChanged;
 
+        /// <summary>
+        /// Gets or sets the current floating-point value.
+        /// The value is clamped between <see cref="MinValue"/> and <see cref="MaxValue"/>.
+        /// </summary>
         public float Value {
             get => float.TryParse(Text, out float value) ? value : 0f;
             set {
@@ -33,6 +43,10 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Gets or sets the minimum allowed value.
+        /// If the current <see cref="Value"/> is less than this, it will be clamped.
+        /// </summary>
         public float MinValue {
             get => _minValue;
             set {
@@ -43,6 +57,10 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Gets or sets the maximum allowed value.
+        /// If the current <see cref="Value"/> is greater than this, it will be clamped.
+        /// </summary>
         public float MaxValue {
             get => _maxValue;
             set {
@@ -61,18 +79,22 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _incrementAmount, value);
         }
 
+        /// <inheritdoc />
         protected override void IncrementValue() {
             Value += _incrementAmount;
         }
 
+        /// <inheritdoc />
         protected override void DecrementValue() {
             Value -= _incrementAmount;
         }
 
+        /// <inheritdoc />
         protected override void StoreOriginalValue() {
             _originalValue = Value;
         }
 
+        /// <inheritdoc />
         protected override void ApplyTextAsValue() {
             if (float.TryParse(_text, out float value)) {
                 Value = value;
@@ -83,6 +105,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <inheritdoc />
         protected override void HandleMouseWheelScrolled(int scrollDelta) {
             if (scrollDelta > 0) {
                 Value += _incrementAmount;
@@ -95,6 +118,7 @@ namespace Blish_HUD.Controls {
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <inheritdoc />
         protected override void DisposeControl() {
             ValueChanged = null;
             base.DisposeControl();
