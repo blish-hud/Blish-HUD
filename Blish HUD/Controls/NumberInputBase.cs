@@ -410,7 +410,8 @@ namespace Blish_HUD.Controls {
                 spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, textRegion, Color.LightGray, false, false, 0, horizontalAlignment, VerticalAlignment.Top, clippingRectangle);
             }
 
-            spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, _foreColor, false, false, 0, horizontalAlignment, VerticalAlignment.Top, clippingRectangle);
+            var textColor = Enabled ? _foreColor : StandardColors.DisabledText;
+            spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, textColor, false, false, 0, horizontalAlignment, VerticalAlignment.Top, clippingRectangle);
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
@@ -437,6 +438,7 @@ namespace Blish_HUD.Controls {
             #region Spinner
 
             Rectangle buttonsRectangle = new Rectangle(bounds.Right - SpinnerWidth, 0, SpinnerWidth, SpinnerButtonHeight * 2);
+            var spinnerTint = Enabled ? Color.White : StandardColors.DisabledText;
             switch ((hoverButton: _glow, pressedButton: _action)) {
                 case (NumberInputSpinnerGlow.Up, NumberInputAction.None):
                     spriteBatch.DrawOnCtrl(
@@ -450,7 +452,7 @@ namespace Blish_HUD.Controls {
                         SpinnerSprite,
                         buttonsRectangle,
                         null,
-                        Color.White,
+                        spinnerTint,
                         0,
                         Vector2.Zero,
                         SpriteEffects.FlipVertically
@@ -460,14 +462,16 @@ namespace Blish_HUD.Controls {
                     spriteBatch.DrawOnCtrl(
                         this,
                         SpinnerSprite,
-                        buttonsRectangle
+                        buttonsRectangle,
+                        null,
+                        spinnerTint
                     );
                     spriteBatch.DrawOnCtrl(
                         this,
                         SpinnerGlowSprite,
                         buttonsRectangle,
                         null,
-                        Color.White,
+                        spinnerTint,
                         0,
                         Vector2.Zero,
                         SpriteEffects.FlipVertically
@@ -477,7 +481,9 @@ namespace Blish_HUD.Controls {
                     spriteBatch.DrawOnCtrl(
                         this,
                         SpinnerSprite,
-                        buttonsRectangle
+                        buttonsRectangle,
+                        null,
+                        spinnerTint
                     );
 
                     spriteBatch.DrawOnCtrl(
@@ -485,7 +491,7 @@ namespace Blish_HUD.Controls {
                         SpinnerSprite,
                         buttonsRectangle,
                         null,
-                        Color.White,
+                        spinnerTint,
                         0,
                         Vector2.Zero,
                         SpriteEffects.FlipVertically
