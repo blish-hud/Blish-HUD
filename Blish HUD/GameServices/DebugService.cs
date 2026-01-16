@@ -97,8 +97,23 @@ namespace Blish_HUD {
 
         private static readonly object _debugLock = new object();
 
-        public static void TargetDebug(string time, string level, string logger, string message) {
+        public static void TargetDebug(LogEventInfo logEvent, object[] parameters) {
             if (!Debugger.IsAttached) return;
+
+            string time = logEvent.TimeStamp.ToLocalTime().ToString("HH:mm:ss.ffff K");
+
+            // Use switch to return string constants for known log levels, avoiding string allocations
+            string level = logEvent.Level.Ordinal switch {
+                0 => "TRACE",
+                1 => "DEBUG",
+                2 => "INFO ",
+                3 => "WARN ",
+                4 => "ERROR",
+                5 => "FATAL",
+                _ => logEvent.Level.Name.ToUpperInvariant().PadRight(5)
+            };
+            string logger = logEvent.LoggerName;
+            string message = logEvent.FormattedMessage;
 
             const int INTERNAL_DEBUG_WRITESIZE = 4091;
 
@@ -123,18 +138,9 @@ namespace Blish_HUD {
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
             LogManager.ThrowExceptions = true;
 
-            var logDebug = new MethodCallTarget("logdebug") {
-                ClassName  = typeof(DebugService).AssemblyQualifiedName,
-                MethodName = nameof(TargetDebug),
-                Parameters = {
-                    new MethodCallParameter(STRUCLOG_TIME),
-                    new MethodCallParameter(STRUCLOG_LEVEL),
-                    new MethodCallParameter(STRUCLOG_LOGGER),
-                    new MethodCallParameter(STRUCLOG_MESSAGE)
-                }
-            };
+            var logDebug = new MethodCallTarget("logdebug", TargetDebug);
 
-            // MethodCallTarget is synchronous and also quite slow, wrap it in an async target to avoid blocking the main thread
+            // MethodCallTarget is synchronous, wrap it in an async target to avoid blocking the main thread
             var asyncDebug = new AsyncTargetWrapper("asyncdebug", logDebug) {
                 ForceLockingQueue = false
             };
