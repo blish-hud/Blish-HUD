@@ -100,7 +100,7 @@ namespace Blish_HUD {
         public static void TargetDebug(LogEventInfo logEvent, object[] parameters) {
             if (!Debugger.IsAttached) return;
 
-            string time = logEvent.TimeStamp.ToLocalTime().ToString("HH:mm:ss.ffff K");
+            DateTime localTime = logEvent.TimeStamp.ToLocalTime();
 
             // Use switch to return string constants for known log levels, avoiding string allocations
             string level = logEvent.Level.Ordinal switch {
@@ -118,7 +118,7 @@ namespace Blish_HUD {
             const int INTERNAL_DEBUG_WRITESIZE = 4091;
 
             lock (_debugLock) {
-                string outEntry = $"{time} | {level} | {logger} | {message}\r\n";
+                string outEntry = $"{localTime:HH:mm:ss.ffff K} | {level} | {logger} | {message}\r\n";
 
                 // Messages that are too large can cause issues for various debuggers
                 if (outEntry.Length >= INTERNAL_DEBUG_WRITESIZE) {
