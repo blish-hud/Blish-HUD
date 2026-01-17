@@ -95,8 +95,6 @@ namespace Blish_HUD {
             Logger = Logger.GetLogger<DebugService>();
         }
 
-        private static readonly object _debugLock = new object();
-
         public static void TargetDebug(LogEventInfo logEvent, object[] parameters) {
             if (!Debugger.IsAttached) return;
 
@@ -117,21 +115,19 @@ namespace Blish_HUD {
 
             const int INTERNAL_DEBUG_WRITESIZE = 4091;
 
-            lock (_debugLock) {
-                string outEntry = $"{localTime:HH:mm:ss.ffff K} | {level} | {logger} | {message}\r\n";
+            string outEntry = $"{localTime:HH:mm:ss.ffff K} | {level} | {logger} | {message}\r\n";
 
-                // Messages that are too large can cause issues for various debuggers
-                if (outEntry.Length >= INTERNAL_DEBUG_WRITESIZE) {
-                    int offset;
+            // Messages that are too large can cause issues for various debuggers
+            if (outEntry.Length >= INTERNAL_DEBUG_WRITESIZE) {
+                int offset;
 
-                    for (offset = 0; offset < outEntry.Length - INTERNAL_DEBUG_WRITESIZE; offset += INTERNAL_DEBUG_WRITESIZE) {
-                        Debugger.Log(0, null, outEntry.Substring(offset, INTERNAL_DEBUG_WRITESIZE));
-                    }
-
-                    Debugger.Log(0, null, outEntry.Substring(offset));
-                } else {
-                    Debugger.Log(0, null, outEntry);
+                for (offset = 0; offset < outEntry.Length - INTERNAL_DEBUG_WRITESIZE; offset += INTERNAL_DEBUG_WRITESIZE) {
+                    Debugger.Log(0, null, outEntry.Substring(offset, INTERNAL_DEBUG_WRITESIZE));
                 }
+
+                Debugger.Log(0, null, outEntry.Substring(offset));
+            } else {
+                Debugger.Log(0, null, outEntry);
             }
         }
 
