@@ -13,8 +13,8 @@ namespace Blish_HUD.Settings.UI.Views {
 
         private const int CONTROL_PADDING = 5;
 
-        private const int DROPDOWN_WIDTH  = 310;
-        private const int DROPDOWN_HEIGHT = 27;
+        private const int DROPDOWN_WIDTH  = 280;
+        private const int DROPDOWN_HEIGHT = 32;
 
         private Label    _displayNameLabel;
         private Dropdown _enumDropdown;
@@ -78,8 +78,8 @@ namespace Blish_HUD.Settings.UI.Views {
             _displayNameLabel.Height = this.ViewTarget.Height;
 
             if (this.DefinedWidth > 0) {
-                if (_displayNameLabel.Right + CONTROL_PADDING <= 185) {
-                    _enumDropdown.Left = 185;
+                if (_displayNameLabel.Right + CONTROL_PADDING <= 220) {
+                    _enumDropdown.Left = 220;
                 } else {
                     _enumDropdown.Left = _displayNameLabel.Right + CONTROL_PADDING;
                 }

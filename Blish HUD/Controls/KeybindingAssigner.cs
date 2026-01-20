@@ -7,7 +7,7 @@ namespace Blish_HUD.Controls {
     public class KeybindingAssigner : LabelBase {
 
         private const int UNIVERSAL_PADDING = 2;
-        private const int DEFAULT_LABEL_WIDTH = 183;
+        private const int DEFAULT_LABEL_WIDTH = 220;
 
         /// <summary>
         /// Fires when the keybinding on the assigned <see cref="KeyBinding"/> is updated
@@ -19,7 +19,7 @@ namespace Blish_HUD.Controls {
             this.BindingChanged?.Invoke(this, e);
         }
 
-        private int _nameWidth = 183;
+        private int _nameWidth = 220;
 
         /// <summary>
         /// The width of the name area of the <see cref="KeybindingAssigner"/>.
@@ -62,7 +62,7 @@ namespace Blish_HUD.Controls {
             _showShadow = true;
             _cacheLabel = false;
 
-            this.Size = new Point(340, 16);
+            this.Size = new Point(380, 20);
         }
 
         public KeybindingAssigner() : this(null) { /* NOOP */ }
