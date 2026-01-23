@@ -117,8 +117,7 @@ namespace Blish_HUD.Controls {
         /// <inheritdoc />
         public override void RecalculateLayout() {
             // Layout zones (left to right):
-            // |<-- Text Area (can overflow) -->|<-- Padding -->|<-- Spinner -->|
-            // |          _textBoxRectangle                     |  SpinnerWidth  |
+            // | (empty space) | _textBoxRectangle | SpinnerWidth |
             //
             // _horizontalOffset: shifts the text view when cursor moves
             //   - Negative offset = text shifted right, revealing left overflow
@@ -134,11 +133,16 @@ namespace Blish_HUD.Controls {
 
             Rectangle TextBoxRectangle() {
                 // The visible textbox background area (clipping region for text)
-                // - X: 0 (left edge of control)
+                // - X: aligned to the right against the spinner
                 // - Y: 0 (top edge of control)
-                // - Width: control width minus spinner
+                // - Width: the smallest between the available width and the text width with padding
                 // - Height: full control height
-                return new Rectangle(0, 0, Width - SpinnerWidth, Height);
+
+                int maxWidth = Width - SpinnerWidth;
+                int textWidth = (int)_font.MeasureString(_text).Width + TextPaddingX * 2;
+                int finalWidth = Math.Min(maxWidth, textWidth);
+
+                return new Rectangle(maxWidth - finalWidth, 0, finalWidth, Height);
             }
 
             Rectangle TextRectangle() {
@@ -161,7 +165,7 @@ namespace Blish_HUD.Controls {
                 // Vertical centering
                 int verticalPadding = (Height / 2) - (_font.LineHeight / 2);
 
-                return new Rectangle(0, verticalPadding, textRightEdge, _font.LineHeight);
+                return new Rectangle(_textBoxRectangle.X, verticalPadding, textRightEdge, _font.LineHeight);
             }
 
             Rectangle CursorRectangle() {
