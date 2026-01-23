@@ -97,6 +97,7 @@ namespace Blish_HUD.Modules.Managers {
         /// </summary>
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="fontSize">Size of the font.</param>
+        /// <param name="ranges">The character ranges to use.</param>
         /// <param name="textureSize">Size of the <see cref="SpriteFont.Texture"/>.<br/>A greater <c>fontSize</c> results in bigger glyphs which may require more texture space.</param>
         public SpriteFont GetSpriteFont(string fontPath, int fontSize, Gw2FontRanges ranges = Gw2FontRanges.Default, int textureSize = 1392) {
             if (fontSize <= 0) {
@@ -128,10 +129,11 @@ namespace Blish_HUD.Modules.Managers {
         /// </summary>
         /// <param name="fontPath">The path to the TTF font file.</param>
         /// <param name="fontSize">Size of the font.</param>
+        /// <param name="ranges">The character ranges to use.</param>
         /// <param name="lineHeight">Sets the line height. By default, <see cref="SpriteFont.LineSpacing"/> will be used.</param>
         /// <param name="textureSize">Size of the <see cref="SpriteFont.Texture"/>.<br/>A greater <c>fontSize</c> results in bigger glyphs which may require more texture space.</param>
-        public BitmapFontEx GetBitmapFont(string fontPath, int fontSize, int lineHeight = 0, int textureSize = 1392) {
-            return GetSpriteFont(fontPath, fontSize, textureSize)?.ToBitmapFont(lineHeight);
+        public BitmapFontEx GetBitmapFont(string fontPath, int fontSize, Gw2FontRanges ranges = Gw2FontRanges.Default, int lineHeight = 0, int textureSize = 1392) {
+            return GetSpriteFont(fontPath, fontSize, Gw2FontRanges.Default, textureSize)?.ToBitmapFont(lineHeight);
         }
 
         /// <summary>
