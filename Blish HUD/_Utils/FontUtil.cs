@@ -1,12 +1,11 @@
 ﻿using SpriteFontPlus;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+
 namespace Blish_HUD {
     [Flags]
     public enum Gw2FontRanges {
         None = 0,
-
         BasicLatin            = 1 << 0,
         Latin1Supplement      = 1 << 1,
         LatinExtendedA        = 1 << 2,
