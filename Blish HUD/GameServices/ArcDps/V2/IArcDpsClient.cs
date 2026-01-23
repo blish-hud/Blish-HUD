@@ -19,6 +19,6 @@ namespace Blish_HUD.GameServices.ArcDps.V2 {
         
         bool IsMessageTypeAvailable(MessageType type);
         
-        void RegisterMessageTypeListener<T>(int type, Func<T, CancellationToken, Task> listener) where T : struct;
+        void RegisterMessageTypeListener<T>(IArcDpsMessageListener<T> listener) where T : struct;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras {
-    public struct ChatMessageInfo {
+namespace Blish_HUD.GameServices.ArcDps.V2.Models.UnofficialExtras {
+    public struct SquadMessageInfo {
         public uint ChannelId { get; set; }
 
         public ChannelType ChannelType { get; set; }

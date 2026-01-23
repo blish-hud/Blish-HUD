@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Blish_HUD.ArcDps;
 using Blish_HUD.GameServices.ArcDps;
-using Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras;
 using Blish_HUD.GameServices.ArcDps.V2;
-using Blish_HUD.GameServices.ArcDps.V2.Extensions;
 using Blish_HUD.GameServices.ArcDps.V2.Models;
-using Blish_HUD.GameServices.ArcDps.V2.Processors;
 using Microsoft.Xna.Framework;
-using SharpDX;
 
 namespace Blish_HUD {
 
@@ -77,18 +70,25 @@ namespace Blish_HUD {
         public bool IsMessageTypeAvailable(MessageType type)
             => _arcDpsClient.IsMessageTypeAvailable(type);
 
-        public void RegisterMessageType<T>(MessageType type, Func<T, CancellationToken, Task> listener)
+        public void RegisterMessageType<T>(IArcDpsMessageListener<T> listener)
             where T : struct {
-            RegisterMessageType<T>((int)type, listener);
-        }
-
-        public void RegisterMessageType<T>(int type, Func<T, CancellationToken, Task> listener)
-            where T : struct {
-            Action action = () => _arcDpsClient.RegisterMessageTypeListener(type, listener);
+            Action action = () => _arcDpsClient.RegisterMessageTypeListener(listener);
             _registerListeners.Add(action);
             if (_arcDpsClient != null) {
                 action();
             }
+        }
+
+        [Obsolete("Use RegisterMessageType<T>(IArcDpsMessageListener<T> listener) instead")]
+        public void RegisterMessageType<T>(MessageType messageType, Func<T, CancellationToken, Task> listener)
+            where T : struct {
+            RegisterMessageType(new ArcDpsMessageListener<T>(messageType, listener));
+        }
+
+        [Obsolete("Use RegisterMessageType<T>(IArcDpsMessageListener<T> listener) instead")]
+        public void RegisterMessageType<T>(int messageType, Func<T, CancellationToken, Task> listener) 
+            where T : struct {
+            RegisterMessageType(new ArcDpsMessageListener<T>((MessageType)messageType, listener));
         }
 
         protected override void Initialize() {
@@ -133,9 +133,9 @@ namespace Blish_HUD {
                 _arcDpsClient.Error += SocketErrorHandler;
                 _arcDpsClient.Initialize(new IPEndPoint(IPAddress.Loopback, GetPort(processId, version)), _arcDpsClientCancellationTokenSource.Token);
 
-                RegisterMessageType<ImGuiCallback>(MessageType.ImGui, async (imGuiCallback, ct) => {
+                RegisterMessageType(new ArcDpsMessageListener<ImGuiCallback>(MessageType.ImGui, async (imGuiCallback, ct) => {
                     this.HudIsActive = imGuiCallback.NotCharacterSelectOrLoading != 0;
-                });
+                }));
             }
         }
 

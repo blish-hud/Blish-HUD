@@ -113,6 +113,8 @@ namespace Blish_HUD.Modules {
             this.State.Enabled = this.Enabled;
             GameService.Settings.Save();
 
+            GameService.Module.SortMenuItems();
+
             return this.Enabled;
         }
 
@@ -142,6 +144,8 @@ namespace Blish_HUD.Modules {
 
             this.State.Enabled = this.Enabled;
             GameService.Settings.Save();
+
+            GameService.Module.SortMenuItems();
         }
 
         public void DeleteModule() {
