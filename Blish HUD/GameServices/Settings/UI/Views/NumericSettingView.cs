@@ -8,7 +8,7 @@ namespace Blish_HUD.Settings.UI.Views {
         
         protected const int CONTROL_PADDING = 5;
         protected const int TRACKBAR_LEFT   = 185;
-        protected const int TRACKBAR_WIDTH  = 277;
+        protected const int TRACKBAR_WIDTH  = 247;
         protected const int TRACKBAR_HEIGHT = 16;
 
         protected Label    _displayNameLabel;
