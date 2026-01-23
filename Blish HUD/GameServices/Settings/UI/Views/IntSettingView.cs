@@ -4,7 +4,7 @@ using System;
 namespace Blish_HUD.Settings.UI.Views {
     public class IntSettingView : NumericSettingView<int> {
 
-        protected const int INPUT_WIDTH = 80;
+        protected const int INPUT_WIDTH = 110;
 
         private NumberInput _numberInput;
 
