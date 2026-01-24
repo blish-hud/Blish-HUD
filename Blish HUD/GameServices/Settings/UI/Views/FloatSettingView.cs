@@ -4,7 +4,7 @@ using Blish_HUD.Controls;
 namespace Blish_HUD.Settings.UI.Views {
     public class FloatSettingView : NumericSettingView<float> {
 
-        protected const int INPUT_WIDTH = 110;
+        protected const int INPUT_WIDTH = 100;
 
         private FloatInput _floatInput;
 
