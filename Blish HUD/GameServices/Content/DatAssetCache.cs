@@ -86,12 +86,12 @@ namespace Blish_HUD.Content {
 
         private void EarlyLoad() {
             string metadataCache = Path.Combine(_assetCachePath, METADATA_FILE);
-            var metadataStream = Stream.Null;
 
             // Check if metadata cache exists locally
             if (File.Exists(metadataCache)) {
-                // Open local file and kick off background update
-                metadataStream = File.Open(metadataCache, FileMode.Open, FileAccess.Read, FileShare.Read);
+                // Open local file and run background update
+                using Stream localMetadataStream = File.Open(metadataCache, FileMode.Open, FileAccess.Read, FileShare.Read);
+                ProcessMetadataStream(localMetadataStream);
                 Logger.Info("Local metadata loaded, trying background update");
 
                 _ = Task.Run(async () =>
@@ -103,23 +103,26 @@ namespace Blish_HUD.Content {
                     }
                 });
             } else {
-                // No cache - wait for the download
+                // No local cache - wait for the download
                 Logger.Warn("Local metadata not found, downloading");
-                metadataStream = LoadMetadataStream().GetAwaiter().GetResult();
+                using Stream metadataStream = LoadMetadataStream().GetAwaiter().GetResult();
+                ProcessMetadataStream(metadataStream);
             }
+        }
 
+        private void ProcessMetadataStream(Stream metadataStream) {
             if (metadataStream.Length == 0) {
                 Logger.Warn("Failed to load asset metadata.  Textures won't be loaded.");
 
-                _textureReferences   = new Dictionary<int, TextureReference>(0);
-                _textureSizes        = Array.Empty<Point>();
+                _textureReferences = new Dictionary<int, TextureReference>(0);
+                _textureSizes = Array.Empty<Point>();
                 _transparentTextures = Array.Empty<Texture2D>();
 
                 return;
             }
 
-            using var gzipStream     = new GZipStream(metadataStream, CompressionMode.Decompress);
-            using var parser         = new BinaryReader(gzipStream);
+            using var gzipStream = new GZipStream(metadataStream, CompressionMode.Decompress);
+            using var parser = new BinaryReader(gzipStream);
 
             // BinaryReader to keep things fairly readable
 
@@ -127,14 +130,14 @@ namespace Blish_HUD.Content {
 
             int sizeCount = parser.ReadInt32();
 
-            _textureSizes        = new Point[sizeCount];
+            _textureSizes = new Point[sizeCount];
             _transparentTextures = new Texture2D[sizeCount];
 
             for (int sizeIndex = 0; sizeIndex < sizeCount; sizeIndex++) {
-                int width  = parser.ReadInt32();
+                int width = parser.ReadInt32();
                 int height = parser.ReadInt32();
 
-                _textureSizes[sizeIndex]        = new Point(width, height);
+                _textureSizes[sizeIndex] = new Point(width, height);
                 _transparentTextures[sizeIndex] = new Texture2D(BlishHud.Instance.GraphicsDevice /* This is safe since we're loading early on the main thread */, width, height);
                 _transparentTextures[sizeIndex].SetData(Enumerable.Repeat(Color.Transparent, width * height).ToArray());
 
