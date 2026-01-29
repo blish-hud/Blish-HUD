@@ -65,31 +65,48 @@ namespace Blish_HUD.Content {
             return Stream.Null;
         }
 
-        private Stream LoadMetadataStream() {
+        private async Task<Stream> LoadMetadataStream() {
             string metadataCache = Path.Combine(_assetCachePath, METADATA_FILE);
 
             var metadataStream = Stream.Null;
 
             try {
                 // We block for this on purpose
-                byte[] rawMetadata = $"{ASSETSERV_HOST}/{METADATA_FILE}".GetBytesAsync().GetAwaiter().GetResult();
+                byte[] rawMetadata = await $"{ASSETSERV_HOST}/{METADATA_FILE}".GetBytesAsync();
 
                 File.WriteAllBytes(metadataCache, rawMetadata);
                 metadataStream = new MemoryStream(rawMetadata);
+                Logger.Info("Metadata update successful");
             } catch (Exception ex) {
-                Logger.Warn(ex, "Failed to load asset metadata.  Will attempt to load from local cache instead");
-                metadataStream = File.Exists(metadataCache)
-                                     // Use the last one successfully downloaded
-                                     ? File.Open(metadataCache, FileMode.Open, FileAccess.Read, FileShare.Read)
-                                     // Yikes, use the one we ship with
-                                     : LoadFallbackMetadataStream(); 
+                Logger.Warn(ex, "Failed to load asset metadata.");
             }
 
             return metadataStream;
         }
 
         private void EarlyLoad() {
-            using var metadataStream = LoadMetadataStream();
+            string metadataCache = Path.Combine(_assetCachePath, METADATA_FILE);
+            var metadataStream = Stream.Null;
+
+            // Check if metadata cache exists locally
+            if (File.Exists(metadataCache)) {
+                // Open local file and kick off background update
+                metadataStream = File.Open(metadataCache, FileMode.Open, FileAccess.Read, FileShare.Read);
+                Logger.Info("Local metadata loaded, trying background update");
+
+                _ = Task.Run(async () =>
+                {
+                    try {
+                        using var _ = await LoadMetadataStream().ConfigureAwait(false);
+                    } catch (Exception ex) {
+                        Logger.Warn(ex, "Background metadata refresh failed");
+                    }
+                });
+            } else {
+                // No cache - wait for the download
+                Logger.Warn("Local metadata not found, downloading");
+                metadataStream = LoadMetadataStream().GetAwaiter().GetResult();
+            }
 
             if (metadataStream.Length == 0) {
                 Logger.Warn("Failed to load asset metadata.  Textures won't be loaded.");
