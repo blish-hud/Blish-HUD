@@ -65,13 +65,12 @@ namespace Blish_HUD.Content {
             return Stream.Null;
         }
 
-        private async Task<Stream> LoadMetadataStream() {
+        private async Task<Stream> DownloadMetadata() {
             string metadataCache = Path.Combine(_assetCachePath, METADATA_FILE);
 
             var metadataStream = Stream.Null;
 
             try {
-                // We block for this on purpose
                 byte[] rawMetadata = await $"{ASSETSERV_HOST}/{METADATA_FILE}".GetBytesAsync();
 
                 File.WriteAllBytes(metadataCache, rawMetadata);
@@ -97,7 +96,7 @@ namespace Blish_HUD.Content {
                 _ = Task.Run(async () =>
                 {
                     try {
-                        using var _ = await LoadMetadataStream().ConfigureAwait(false);
+                        using var _ = await DownloadMetadata().ConfigureAwait(false);
                     } catch (Exception ex) {
                         Logger.Warn(ex, "Background metadata refresh failed");
                     }
@@ -105,7 +104,7 @@ namespace Blish_HUD.Content {
             } else {
                 // No local cache - wait for the download
                 Logger.Warn("Local metadata not found, downloading");
-                using Stream metadataStream = LoadMetadataStream().GetAwaiter().GetResult();
+                using Stream metadataStream = DownloadMetadata().GetAwaiter().GetResult();
                 ProcessMetadataStream(metadataStream);
             }
         }
