@@ -338,7 +338,7 @@ namespace Blish_HUD {
         }
 
         private void BuildCornerIcon() {
-            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Strings.Common.BlishHUD) {
+            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), $"{Strings.Common.BlishHUD}\n\nMouse 2: {Strings.Common.Hint_MoreOptions}") {
                 Priority = int.MaxValue,
                 Parent   = Graphics.SpriteScreen,
             };
