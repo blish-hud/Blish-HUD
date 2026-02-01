@@ -190,7 +190,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int Length => _text.Length;
 
-        /// Get state of modifier keys
+        // Get state of modifier keys
         protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
         protected bool IsCtrlDown  => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
         protected bool IsAltDown   => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
@@ -437,16 +437,28 @@ namespace Blish_HUD.Controls {
         }
 
         protected int GetClosestLeftWordBoundary(int index) {
-            while (index > 0 && (index - 1 >= _text.Length || !WordSeperators.Contains(_text[index - 1]))) {
-                --index;
+            // Walk through any contiguous whitespace to the left of the cursor
+            while (index > 0 && char.IsWhiteSpace(_text[index - 1])) {
+                index--;
+            }
+
+            // Now search for the word boundary
+            while (index > 0 && !WordSeperators.Contains(_text[index - 1])) {
+                index--;
             }
 
             return index;
         }
 
         protected int GetClosestRightWordBoundary(int index) {
+            // Walk through any contiguous whitespace to the right of the cursor
+            while (index < _text.Length && char.IsWhiteSpace(_text[index])) {
+                index++;
+            }
+
+            // Now search for the word boundary
             while (index < _text.Length && !WordSeperators.Contains(_text[index])) {
-                ++index;
+                index++;
             }
 
             return index;
@@ -630,7 +642,14 @@ namespace Blish_HUD.Controls {
 
         protected virtual void HandleBackspace() {
             if (_selectionStart == _selectionEnd) {
-                if (Delete(_cursorIndex - 1, 1)) {
+                if (this.IsCtrlDown) {
+                    int deleteToIndex = GetClosestLeftWordBoundary(_cursorIndex);
+
+                    if (Delete(deleteToIndex, _cursorIndex - deleteToIndex)) {
+                        UserSetCursorIndex(deleteToIndex);
+                        ResetSelection();
+                    }
+                } else if (Delete(_cursorIndex - 1, 1)) {
                     UserSetCursorIndex(_cursorIndex - 1);
                     ResetSelection();
                 }
@@ -641,7 +660,17 @@ namespace Blish_HUD.Controls {
 
         protected virtual void HandleDelete() {
             if (_selectionStart == _selectionEnd) {
-                Delete(_cursorIndex, 1);
+                if (this.IsCtrlDown) {
+                    int deleteToIndex = GetClosestRightWordBoundary(_cursorIndex);
+
+                    //if (deleteToIndex == _cursorIndex && _cursorIndex < _text.Length) {
+                    //    deleteToIndex = GetClosestRightWordBoundary(_cursorIndex + 1);
+                    //}
+
+                    Delete(_cursorIndex, deleteToIndex - _cursorIndex);
+                } else {
+                    Delete(_cursorIndex, 1);
+                }
             } else {
                 DeleteSelection();
             }
