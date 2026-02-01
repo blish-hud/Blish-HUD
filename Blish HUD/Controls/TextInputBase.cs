@@ -663,10 +663,6 @@ namespace Blish_HUD.Controls {
                 if (this.IsCtrlDown) {
                     int deleteToIndex = GetClosestRightWordBoundary(_cursorIndex);
 
-                    //if (deleteToIndex == _cursorIndex && _cursorIndex < _text.Length) {
-                    //    deleteToIndex = GetClosestRightWordBoundary(_cursorIndex + 1);
-                    //}
-
                     Delete(_cursorIndex, deleteToIndex - _cursorIndex);
                 } else {
                     Delete(_cursorIndex, 1);
