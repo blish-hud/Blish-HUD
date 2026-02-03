@@ -38,6 +38,22 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _hideBackground, value);
         }
 
+        /// <summary>
+        /// <inheritdoc cref="TextInputBase._masked"/>
+        /// </summary>
+        public bool Masked {
+            get => _masked;
+            set => SetProperty(ref _masked, value, true);
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="TextInputBase._maskingChar"/>
+        /// </summary>
+        public char MaskingChar {
+            get => _maskingChar;
+            set => SetProperty(ref _maskingChar, value, true);
+        }
+
         protected virtual void OnEnterPressed(EventArgs e) {
             this.Focused = false;
 
@@ -98,13 +114,15 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle CalculateHighlightRegion() {
+            var text = this.DisplayText;
+
             int selectionStart  = Math.Min(_selectionStart, _selectionEnd);
             int selectionLength = Math.Abs(_selectionStart - _selectionEnd);
 
-            if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) return Rectangle.Empty;
+            if (selectionLength <= 0 || selectionStart + selectionLength > text.Length) return Rectangle.Empty;
 
-            float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
-            float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
+            float highlightLeftOffset = MeasureStringWidth(text.Substring(0, selectionStart));
+            float highlightWidth      = MeasureStringWidth(text.Substring(selectionStart, selectionLength));
 
             switch (this.HorizontalAlignment)
             {
@@ -124,14 +142,15 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle CalculateCursorRegion() {
-            float textOffset = MeasureStringWidth(_text.Substring(0, _cursorIndex));
+            var text = this.DisplayText;
+            float textOffset = MeasureStringWidth(text.Substring(0, _cursorIndex));
 
             switch (this.HorizontalAlignment) {
                 case HorizontalAlignment.Center:
-                    textOffset += (this.Width - MeasureStringWidth(_text)) / 2f - TEXT_HORIZONTALPADDING;
+                    textOffset += (this.Width - MeasureStringWidth(text)) / 2f - TEXT_HORIZONTALPADDING;
                     break;
                 case HorizontalAlignment.Right:
-                    textOffset += this.Width - MeasureStringWidth(_text) - TEXT_HORIZONTALPADDING * 2;
+                    textOffset += this.Width - MeasureStringWidth(text) - TEXT_HORIZONTALPADDING * 2;
                     break;
                 default: break;
             }

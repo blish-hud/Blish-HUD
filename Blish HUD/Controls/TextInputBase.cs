@@ -92,6 +92,10 @@ namespace Blish_HUD.Controls {
 
         protected int _maxLength = int.MaxValue;
 
+        public string DisplayText => this._masked
+                ? new string (this._maskingChar, this._text.Length) 
+                : this.Text;
+
         /// <summary>
         /// Gets or sets the maximum character length of the control.
         /// </summary>
@@ -189,6 +193,16 @@ namespace Blish_HUD.Controls {
         /// Gets the length of the text.
         /// </summary>
         public int Length => _text.Length;
+
+        /// <summary>
+        /// Gets or sets if the input should be shown as masked. Copying the content will be disabled.
+        /// </summary>
+        protected bool _masked;
+
+        /// <summary>
+        /// Gets or sets the character used for the masking.
+        /// </summary>
+        protected char _maskingChar = '*';
 
         /// Get state of modifier keys
         protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
@@ -587,6 +601,8 @@ namespace Blish_HUD.Controls {
         }
 
         protected virtual void HandleCopy() {
+            if (this._masked) return;
+
             if (_selectionEnd != _selectionStart) {
                 int selectStart = Math.Min(_selectionStart, _selectionEnd);
                 int selectEnd   = Math.Max(_selectionStart, _selectionEnd);
@@ -603,6 +619,8 @@ namespace Blish_HUD.Controls {
         }
 
         protected virtual void HandleCut() {
+            if (this._masked) return;
+
             HandleCopy();
             DeleteSelection();
         }
@@ -785,7 +803,7 @@ namespace Blish_HUD.Controls {
             }
 
             // Draw the text
-            spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, _foreColor, false, false, 0, horizontalAlignment, VerticalAlignment.Top);
+            spriteBatch.DrawStringOnCtrl(this, this.DisplayText, _font, textRegion, _foreColor, false, false, 0, horizontalAlignment, VerticalAlignment.Top);
         }
 
         protected void PaintHighlight(SpriteBatch spriteBatch, Rectangle highlightRegion) {
