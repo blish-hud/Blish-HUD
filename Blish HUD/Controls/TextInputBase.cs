@@ -90,6 +90,14 @@ namespace Blish_HUD.Controls {
             set => SetText(value, false);
         }
 
+        protected string _displayText = string.Empty;
+
+        /// <summary>
+        /// The displayed text. Inheriting classes may process the
+        /// <see cref="Text"/> via <see cref="ProcessDisplayText(string)"/>.
+        /// </summary>
+        public string DisplayText => _displayText;
+
         protected int _maxLength = int.MaxValue;
 
         /// <summary>
@@ -485,9 +493,19 @@ namespace Blish_HUD.Controls {
                 _redoStack.Reset();
             }
 
+            _displayText = ProcessDisplayText(value);
+
             OnTextChanged(new ValueChangedEventArgs<string>(prevText, value));
 
             return true;
+        }
+
+        /// <summary>
+        /// Processes the <see cref="Text"/> before it is displayed. Result will be
+        /// used to set <see cref="DisplayText"/>.
+        /// </summary>
+        protected virtual string ProcessDisplayText(string value) {
+            return value;
         }
 
         public override void UnsetFocus() {
@@ -785,7 +803,7 @@ namespace Blish_HUD.Controls {
             }
 
             // Draw the text
-            spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, _foreColor, false, false, 0, horizontalAlignment, VerticalAlignment.Top);
+            spriteBatch.DrawStringOnCtrl(this, _displayText, _font, textRegion, _foreColor, false, false, 0, horizontalAlignment, VerticalAlignment.Top);
         }
 
         protected void PaintHighlight(SpriteBatch spriteBatch, Rectangle highlightRegion) {
