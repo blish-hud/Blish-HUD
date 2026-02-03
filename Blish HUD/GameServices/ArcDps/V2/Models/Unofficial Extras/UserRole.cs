@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras {
+﻿namespace Blish_HUD.GameServices.ArcDps.V2.Models.UnofficialExtras {
     public enum UserRole : byte {
         SquadLeader = 0,
         Lieutenant = 1,

@@ -24,6 +24,12 @@ namespace Blish_HUD.Controls {
 
         private const int STANDARD_MARGIN = 16; // Standard margin used to space the "X" button, etc.
 
+        /// <summary>
+        /// Returns the title offset based on whether an emblem is present.
+        /// Uses STANDARD_MARGIN when no emblem to avoid large gap at the left.
+        /// </summary>
+        private int TitleOffset => _emblem != null ? STANDARD_TITLEOFFSET : STANDARD_MARGIN;
+
         private const int SIDEBAR_WIDTH  = 46;
         private const int SIDEBAR_OFFSET = 3; // Used to account for the small edge of transparency at the bottom of the titlebar and between the sidebar and the window background
 
@@ -440,7 +446,7 @@ namespace Blish_HUD.Controls {
             if (!string.IsNullOrWhiteSpace(this.Title) && !string.IsNullOrWhiteSpace(this.Subtitle)) {
                 int titleTextWidth = (int) Content.DefaultFont32.MeasureString(this.Title).Width;
 
-                _subtitleDrawBounds = _leftTitleBarDrawBounds.OffsetBy(STANDARD_TITLEOFFSET + titleTextWidth + STANDARD_SUBTITLEOFFSET, 0);
+                _subtitleDrawBounds = _leftTitleBarDrawBounds.OffsetBy(TitleOffset + titleTextWidth + STANDARD_SUBTITLEOFFSET, 0);
             }
 
             // Emblem bounds
@@ -703,7 +709,7 @@ namespace Blish_HUD.Controls {
 
         private void PaintTitleText(SpriteBatch spriteBatch) {
             if (!string.IsNullOrWhiteSpace(this.Title)) {
-                spriteBatch.DrawStringOnCtrl(this, this.Title, Content.DefaultFont32, _leftTitleBarDrawBounds.OffsetBy(STANDARD_TITLEOFFSET, 0), ContentService.Colors.ColonialWhite);
+                spriteBatch.DrawStringOnCtrl(this, this.Title, Content.DefaultFont32, _leftTitleBarDrawBounds.OffsetBy(TitleOffset, 0), ContentService.Colors.ColonialWhite);
 
                 if (!string.IsNullOrWhiteSpace(this.Subtitle)) {
                     spriteBatch.DrawStringOnCtrl(this, this.Subtitle, Content.DefaultFont16, _subtitleDrawBounds, Color.White);

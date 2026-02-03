@@ -5,19 +5,17 @@ using System;
 using System.IO;
 
 namespace Blish_HUD.GameServices.ArcDps.V2 {
-    internal class UnofficialExtrasUserInfoProcessor : MessageProcessor<UserInfo> {
-        internal override bool TryInternalProcess(byte[] message, out UserInfo result) {
+    internal class UnofficialExtrasSquadMessageInfoProcessor : MessageProcessor<SquadMessageInfo> {
+        internal override bool TryInternalProcess(byte[] message, out SquadMessageInfo result) {
             try {
                 using var memoryStream = new MemoryStream(message);
                 using var binaryReader = new BincodeBinaryReader(memoryStream);
-                result = binaryReader.ParseUserInfo();
+                result = binaryReader.ParseSquadMessageInfo();
                 return true;
-
             } catch (Exception) {
                 result = default;
                 return false;
             }
-
         }
     }
 }

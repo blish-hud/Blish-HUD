@@ -64,12 +64,20 @@ namespace Blish_HUD.Settings {
 
         private const float DEFAULT_MINFLOAT = 0f;
         private const float DEFAULT_MAXFLOAT = 100f;
+        private const float DEFAULT_INCREMENTAMOUNT = 0.01f;
 
         /// <summary>
         /// Sets the minimum and maximum <c>float</c> value a user can set the setting to from the UI.
         /// </summary>
         public static void SetRange(this SettingEntry<float> setting, float minValue = DEFAULT_MINFLOAT, float maxValue = DEFAULT_MAXFLOAT) {
-            SetComplianceRequisite(setting, new FloatRangeRangeComplianceRequisite(minValue, maxValue));
+            SetComplianceRequisite(setting, new FloatRangeRangeComplianceRequisite(minValue, maxValue, DEFAULT_INCREMENTAMOUNT));
+        }
+
+        /// <summary>
+        /// Sets the minimum and maximum <c>float</c> value a user can set the setting to from the UI.
+        /// </summary>
+        public static void SetRange(this SettingEntry<float> setting, float minValue = DEFAULT_MINFLOAT, float maxValue = DEFAULT_MAXFLOAT, float incrementAmount = DEFAULT_INCREMENTAMOUNT) {
+            SetComplianceRequisite(setting, new FloatRangeRangeComplianceRequisite(minValue, maxValue, incrementAmount));
         }
 
         #endregion

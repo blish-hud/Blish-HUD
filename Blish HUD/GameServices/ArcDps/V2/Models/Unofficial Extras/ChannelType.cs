@@ -1,4 +1,4 @@
-﻿namespace Blish_HUD.GameServices.ArcDps.Models.UnofficialExtras {
+﻿namespace Blish_HUD.GameServices.ArcDps.V2.Models.UnofficialExtras {
     public enum ChannelType : byte {
         Party = 0,
         Squad = 1,
