@@ -77,7 +77,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int VerticalScrollOffset {
             get => _verticalScrollOffset;
-            set => SetProperty(ref _verticalScrollOffset, value);
+            set { 
+                if (SetProperty(ref _verticalScrollOffset, value) && this.MouseOver) {
+                    Input.Mouse.RecalculateActiveControl();
+                } 
+            }
         }
 
         private int _horizontalScrollOffset;
@@ -87,7 +91,11 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int HorizontalScrollOffset {
             get => _horizontalScrollOffset;
-            set => SetProperty(ref _horizontalScrollOffset, value);
+            set {
+                if (SetProperty(ref _horizontalScrollOffset, value) && this.MouseOver) {
+                    Input.Mouse.RecalculateActiveControl();
+                }
+            }
         }
 
         private SizingMode _widthSizingMode = SizingMode.Standard;
