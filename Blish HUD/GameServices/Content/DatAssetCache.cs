@@ -68,19 +68,18 @@ namespace Blish_HUD.Content {
         private async Task<Stream> DownloadMetadata() {
             string metadataCache = Path.Combine(_assetCachePath, METADATA_FILE);
 
-            var metadataStream = Stream.Null;
-
             try {
                 byte[] rawMetadata = await $"{ASSETSERV_HOST}/{METADATA_FILE}".GetBytesAsync();
 
                 File.WriteAllBytes(metadataCache, rawMetadata);
-                metadataStream = new MemoryStream(rawMetadata);
-                Logger.Info("Metadata update successful");
-            } catch (Exception ex) {
-                Logger.Warn(ex, "Failed to load asset metadata.");
-            }
+                Logger.Debug("Metadata update successful");
 
-            return metadataStream;
+                return new MemoryStream(rawMetadata);
+            } catch (Exception ex) {
+                Logger.Info(ex, "Failed to load asset metadata.");
+
+                return Stream.Null;
+            }
         }
 
         private void EarlyLoad() {
@@ -91,14 +90,14 @@ namespace Blish_HUD.Content {
                 // Open local file and run background update
                 using Stream localMetadataStream = File.Open(metadataCache, FileMode.Open, FileAccess.Read, FileShare.Read);
                 ProcessMetadataStream(localMetadataStream);
-                Logger.Info("Local metadata loaded, trying background update");
+                Logger.Debug("Local metadata loaded, trying background update");
 
                 _ = Task.Run(async () =>
                 {
                     try {
                         using var _ = await DownloadMetadata().ConfigureAwait(false);
                     } catch (Exception ex) {
-                        Logger.Warn(ex, "Background metadata refresh failed");
+                        Logger.Info(ex, "Background metadata refresh failed");
                     }
                 });
             } else {
@@ -111,7 +110,7 @@ namespace Blish_HUD.Content {
 
         private void ProcessMetadataStream(Stream metadataStream) {
             if (metadataStream.Length == 0) {
-                Logger.Warn("Failed to load asset metadata.  Textures won't be loaded.");
+                Logger.Info("Failed to load asset metadata. Textures won't be loaded.");
 
                 _textureReferences = new Dictionary<int, TextureReference>(0);
                 _textureSizes = Array.Empty<Point>();
