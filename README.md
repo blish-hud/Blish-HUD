@@ -34,7 +34,7 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 
 #### Prerequisites
 
-- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
+- [Visual Studio 2022 / 2026](https://visualstudio.microsoft.com/vs/) (Community Edition is fine)
 - Individual Components that need to be installed in Visual Studio via the Visual Studio Installer:
   - .NET Core 3.1 Runtime 
   - .NET Framework 4.7.2 SDK
@@ -44,9 +44,11 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 #### Instructions
 
 1.  Clone the repo: `git clone -v --recurse-submodules --progress  https://github.com/blish-hud/Blish-HUD.git`
-2.  Launch the project solution (.sln file) in Visual Studio 2022.
-3.  In the Solution Explorer right click on the solution icon. In the context menu click "Restore NuGet Packages".
-4.  Right click the solution icon again and click "Build Solution". 
+2.  Launch the project solution (.sln file) in Visual Studio.
+3.  Open menu: `Tools` -> `NuGet Package Manager` -> `Package Manager Settings`
+4.  Go to `Package Sources` and check if `nuget.org` is available. If not, add a new one with name `nuget.org` and source `https://api.nuget.org/v3/index.json`
+3.  In the `Solution Explorer` on the right click on the solution icon. In the context menu click `Restore NuGet Packages`.
+4.  Right click the solution icon again and click `Build Solution`. 
 
 ### Module Development
 
