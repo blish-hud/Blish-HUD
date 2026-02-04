@@ -74,11 +74,12 @@ namespace Blish_HUD.Controls {
             int charIndex = 0;
 
             foreach (var glyph in glyphs) {
-                if (glyph.Position.X + glyph.FontRegion.Width / 2f > x) {
+                if (glyph.FontRegion != null
+                    && (glyph.Position.X + glyph.FontRegion.Width / 2f > x)) {
                     break;
                 }
 
-                charIndex++;
+                charIndex += StringUtil.GetUtf16CharCountFromUtf32(glyph.Character);
             }
 
             for (int i = 0; i < predictedLine; i++) {
@@ -93,13 +94,18 @@ namespace Blish_HUD.Controls {
         private Rectangle   _cursorRegion     = Rectangle.Empty;
 
         private (int Line, int Character) GetSplitIndex(int index) {
+            string text = _text;
+
             int lineIndex = 0;
             int charIndex = 0;
 
             for (int i = 0; i < index; i++) {
                 charIndex++;
 
-                if (_text[i] == NEWLINE) {
+                if (char.IsSurrogatePair(text, i)) {
+                    i++;
+                    charIndex++;
+                } else if (text[i] == NEWLINE) {
                     lineIndex++;
                     charIndex = 0;
                 }
