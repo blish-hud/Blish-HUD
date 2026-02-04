@@ -142,7 +142,7 @@ namespace Blish_HUD.Controls {
                 int textWidth = (int)_font.MeasureString(_text).Width + TextPaddingX * 2;
                 int finalWidth = Math.Min(maxWidth, textWidth);
 
-                return new Rectangle(maxWidth - finalWidth, 0, finalWidth, Height);
+                return new Rectangle(0, 0, finalWidth, Height);
             }
 
             Rectangle TextRectangle() {
@@ -445,19 +445,17 @@ namespace Blish_HUD.Controls {
             #region Text
 
             if (Focused) {
-                spriteBatch.DrawOnCtrl(
-                    this,
-                    TextBoxSprite,
-                    _textBoxRectangle
-                );
-
                 if (_highlightRectangle.IsEmpty) {
                     PaintCursor(spriteBatch, _cursorRectangle);
-                } else {
-                    PaintHighlight(spriteBatch, _highlightRectangle);
                 }
             }
 
+            spriteBatch.DrawOnCtrl(
+                this,
+                TextBoxSprite,
+                _textBoxRectangle
+            );
+            PaintHighlight(spriteBatch, _highlightRectangle);
             PaintText(spriteBatch, _textRectangle, HorizontalAlignment.Right, _textBoxRectangle);
 
             #endregion Text
