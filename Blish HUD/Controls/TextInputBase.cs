@@ -429,11 +429,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected float MeasureStringWidth(string text) {
-            if (string.IsNullOrEmpty(text)) return 0;
-
-            var lastGlyph = _font.GetGlyphs(text).Last();
-
-            return lastGlyph.Position.X + (lastGlyph.FontRegion?.Width ?? 0);
+            return _font.MeasureStringLogical(text).X;
         }
 
         protected int GetClosestLeftWordBoundary(int index) {

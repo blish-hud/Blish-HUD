@@ -117,7 +117,7 @@ namespace Blish_HUD.Controls {
                 default: break;
             }
 
-            return new Rectangle(_textRegion.Left + (int)highlightLeftOffset - 1,
+            return new Rectangle(_textRegion.Left + (int)highlightLeftOffset,
                                  _textRegion.Y,
                                  (int)highlightWidth,
                                  _font.LineHeight - 1);
@@ -136,7 +136,7 @@ namespace Blish_HUD.Controls {
                 default: break;
             }
 
-            return new Rectangle(_textRegion.X + (int)textOffset - 2,
+            return new Rectangle(_textRegion.X + (int)textOffset,
                                  _textRegion.Y + 2,
                                  2,
                                  _font.LineHeight - 4);
