@@ -85,27 +85,25 @@ namespace Blish_HUD.Content {
         private void EarlyLoad() {
             string metadataCache = Path.Combine(_assetCachePath, METADATA_FILE);
 
-            // Check if metadata cache exists locally
+            // Use either existing metadata cache or fallback to ref.dat
             if (File.Exists(metadataCache)) {
-                // Open local file and run background update
                 using Stream localMetadataStream = File.Open(metadataCache, FileMode.Open, FileAccess.Read, FileShare.Read);
                 ProcessMetadataStream(localMetadataStream);
                 Logger.Debug("Local metadata loaded, trying background update");
-
-                _ = Task.Run(async () =>
-                {
-                    try {
-                        using var _ = await DownloadMetadata().ConfigureAwait(false);
-                    } catch (Exception ex) {
-                        Logger.Info(ex, "Background metadata refresh failed");
-                    }
-                });
             } else {
-                // No local cache - wait for the download
-                Logger.Warn("Local metadata not found, downloading");
-                using Stream metadataStream = DownloadMetadata().GetAwaiter().GetResult();
+                using Stream metadataStream = LoadFallbackMetadataStream();
                 ProcessMetadataStream(metadataStream);
+                Logger.Debug("Falling back to ref.dat, trying background update");
             }
+
+            // Try background update of metadata cache
+            _ = Task.Run(async () => {
+                try {
+                    using var _ = await DownloadMetadata().ConfigureAwait(false);
+                } catch (Exception ex) {
+                    Logger.Info(ex, "Background metadata refresh failed");
+                }
+            });
         }
 
         private void ProcessMetadataStream(Stream metadataStream) {
