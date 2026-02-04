@@ -173,6 +173,16 @@ namespace Blish_HUD.Input {
         }
 
         /// <summary>
+        /// Forces a re-evaluation of the current mouse state against the UI.
+        /// Useful when UI elements move (like scrolling) without the mouse moving.
+        /// </summary>
+        public void RecalculateActiveControl() {
+            if (this.CursorIsVisible) {
+                this.ActiveControl = GameService.Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseMoved, this.State);
+            }
+        }
+
+        /// <summary>
         /// Meant to simulate missing parts of mouse events (LeftMouseButtonPressed and RightMouseButtonPressed) in case the mouse hook just got enabled. This was not an "issue" prior to a fix for issue #768 as e.g. the base control just always operated with the release event.
         /// Now that the event handling there requires a primed state setup by the respective pressed event this logic exists to simulate said event. This saves us from having to pass down a special case flag to the handlers and aims to keep behaviour consistent since
         /// there will always be a press and release event and not sometimes just half of it. 

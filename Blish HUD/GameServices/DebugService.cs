@@ -95,46 +95,48 @@ namespace Blish_HUD {
             Logger = Logger.GetLogger<DebugService>();
         }
 
-        private static readonly object _debugLock = new object();
-
-        public static void TargetDebug(string time, string level, string logger, string message) {
+        public static void TargetDebug(LogEventInfo logEvent, object[] parameters) {
             if (!Debugger.IsAttached) return;
+
+            DateTime localTime = logEvent.TimeStamp.ToLocalTime();
+
+            // Use switch to return string constants for known log levels, avoiding string allocations
+            string level = logEvent.Level.Ordinal switch {
+                0 => "TRACE",
+                1 => "DEBUG",
+                2 => "INFO ",
+                3 => "WARN ",
+                4 => "ERROR",
+                5 => "FATAL",
+                _ => logEvent.Level.Name.ToUpperInvariant().PadRight(5)
+            };
+            string logger = logEvent.LoggerName;
+            string message = logEvent.FormattedMessage;
 
             const int INTERNAL_DEBUG_WRITESIZE = 4091;
 
-            lock (_debugLock) {
-                string outEntry = $"{time} | {level} | {logger} | {message}\r\n";
+            string outEntry = $"{localTime:HH:mm:ss.ffff K} | {level} | {logger} | {message}\r\n";
 
-                // Messages that are too large can cause issues for various debuggers
-                if (outEntry.Length >= INTERNAL_DEBUG_WRITESIZE) {
-                    int offset;
+            // Messages that are too large can cause issues for various debuggers
+            if (outEntry.Length >= INTERNAL_DEBUG_WRITESIZE) {
+                int offset;
 
-                    for (offset = 0; offset < outEntry.Length - INTERNAL_DEBUG_WRITESIZE; offset += INTERNAL_DEBUG_WRITESIZE) {
-                        Debugger.Log(0, null, outEntry.Substring(offset, INTERNAL_DEBUG_WRITESIZE));
-                    }
-
-                    Debugger.Log(0, null, outEntry.Substring(offset));
-                } else {
-                    Debugger.Log(0, null, outEntry);
+                for (offset = 0; offset < outEntry.Length - INTERNAL_DEBUG_WRITESIZE; offset += INTERNAL_DEBUG_WRITESIZE) {
+                    Debugger.Log(0, null, outEntry.Substring(offset, INTERNAL_DEBUG_WRITESIZE));
                 }
+
+                Debugger.Log(0, null, outEntry.Substring(offset));
+            } else {
+                Debugger.Log(0, null, outEntry);
             }
         }
 
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
             LogManager.ThrowExceptions = true;
 
-            var logDebug = new MethodCallTarget("logdebug") {
-                ClassName  = typeof(DebugService).AssemblyQualifiedName,
-                MethodName = nameof(TargetDebug),
-                Parameters = {
-                    new MethodCallParameter(STRUCLOG_TIME),
-                    new MethodCallParameter(STRUCLOG_LEVEL),
-                    new MethodCallParameter(STRUCLOG_LOGGER),
-                    new MethodCallParameter(STRUCLOG_MESSAGE)
-                }
-            };
+            var logDebug = new MethodCallTarget("logdebug", TargetDebug);
 
-            // MethodCallTarget is synchronous and also quite slow, wrap it in an async target to avoid blocking the main thread
+            // MethodCallTarget is synchronous, wrap it in an async target to avoid blocking the main thread
             var asyncDebug = new AsyncTargetWrapper("asyncdebug", logDebug) {
                 ForceLockingQueue = false
             };

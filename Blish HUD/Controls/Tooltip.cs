@@ -51,7 +51,7 @@ namespace Blish_HUD.Controls {
             Input.Mouse.MouseMoved += HandleMouseMoved;
         }
 
-        private static void HandleMouseMoved(object sender, MouseEventArgs e) {
+        private static void ShowOrUpdateTooltip() {
             if (ActiveControl?.Tooltip != null && GameService.Input.Mouse.CursorIsVisible) {
                 ActiveControl.Tooltip.CurrentControl = ActiveControl;
                 UpdateTooltipPosition(ActiveControl.Tooltip);
@@ -60,6 +60,10 @@ namespace Blish_HUD.Controls {
                     ActiveControl.Tooltip.Show();
                 }
             }
+        }
+
+        private static void HandleMouseMoved(object sender, MouseEventArgs e) {
+            ShowOrUpdateTooltip();
         }
 
         private static Control _prevControl;
@@ -77,6 +81,8 @@ namespace Blish_HUD.Controls {
             if (_prevControl != null) {
                 e.ActivatedControl.Hidden   += ActivatedControlOnHidden;
                 e.ActivatedControl.Disposed += ActivatedControlOnHidden;
+
+                ShowOrUpdateTooltip();
             }
         }
 
