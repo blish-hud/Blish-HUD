@@ -326,14 +326,27 @@ namespace Blish_HUD {
 
         private          MenuItem                            _rootModuleSettingsMenuItem;
         private readonly Dictionary<MenuItem, ModuleManager> _moduleMenus = new Dictionary<MenuItem, ModuleManager>();
+
+        private IOrderedEnumerable<KeyValuePair<MenuItem, ModuleManager>> GetSortedMenuItems() {
+            return _moduleMenus.OrderByDescending(c => c.Value.Enabled).ThenBy(c => c.Value.Manifest.Name);
+        }
+
+        internal void SortMenuItems() {
+            _rootModuleSettingsMenuItem.ClearChildren();
+
+            foreach (var menuItemPair in this.GetSortedMenuItems()) {
+                menuItemPair.Key.Parent = _rootModuleSettingsMenuItem;
+            }
+        }
         
         private void RegisterModuleMenuInSettings(ModuleManager moduleManager) {
             var moduleMi = new ModuleMenuItem(moduleManager) {
-                BasicTooltipText = moduleManager.Manifest.Description,
-                Parent           = _rootModuleSettingsMenuItem
+                BasicTooltipText = moduleManager.Manifest.Description
             };
 
             _moduleMenus.Add(moduleMi, moduleManager);
+
+            this.SortMenuItems();
         }
 
         private void UnregisterModuleMenuInSettings(ModuleManager moduleManager) {
@@ -342,7 +355,7 @@ namespace Blish_HUD {
                     _moduleMenus.Remove(moduleMenuPair.Key);
 
                     MenuItem toSelect = moduleMenuPair.Key.Selected
-                        ? _moduleMenus.FirstOrDefault().Key ?? _rootModuleSettingsMenuItem
+                        ? this.GetSortedMenuItems().FirstOrDefault().Key ?? _rootModuleSettingsMenuItem
                         : null;
 
                     moduleMenuPair.Key.Parent = null;
