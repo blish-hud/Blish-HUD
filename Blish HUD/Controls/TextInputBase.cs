@@ -473,13 +473,26 @@ namespace Blish_HUD.Controls {
         }
 
         protected int GetClosestLeftWordNavigationBoundary(int index) {
+            if (index <= 0) return 0;
+
             // Walk through any contiguous whitespace to the left of the cursor
             while (index > 0 && char.IsWhiteSpace(_text[index - 1])) {
                 index--;
             }
 
-            // Now search for the word boundary
-            while (index > 0 && !WordSeperators.Contains(_text[index - 1])) {
+            if (index == 0) return 0;
+
+            // Determine if we're working with a block of word characters or seperator characters
+            bool targetIsSeparator = WordSeperators.Contains(_text[index - 1]);
+
+            // Keep walking backwards as long as the character type matches the target type
+            while (index > 0) {
+                bool currentIsSeparator = WordSeperators.Contains(_text[index - 1]);
+
+                if (currentIsSeparator != targetIsSeparator) {
+                    break;
+                }
+
                 index--;
             }
 
@@ -487,13 +500,26 @@ namespace Blish_HUD.Controls {
         }
 
         protected int GetClosestRightWordNavigationBoundary(int index) {
+            if (index >= _text.Length) return _text.Length;
+
             // Walk through any contiguous whitespace to the right of the cursor
             while (index < _text.Length && char.IsWhiteSpace(_text[index])) {
                 index++;
             }
 
-            // Now search for the word boundary
-            while (index < _text.Length && !WordSeperators.Contains(_text[index])) {
+            if (index >= _text.Length) return _text.Length;
+
+            // Determine if we're working with a block of word characters or seperator characters
+            bool targetIsSeparator = WordSeperators.Contains(_text[index]);
+
+            // Keep walking forwards as long as the character type matches the target type
+            while (index < _text.Length) {
+                bool currentIsSeparator = WordSeperators.Contains(_text[index]);
+
+                if (currentIsSeparator != targetIsSeparator) {
+                    break;
+                }
+
                 index++;
             }
 
