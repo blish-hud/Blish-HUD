@@ -406,7 +406,8 @@ namespace Blish_HUD.Controls {
         }
 
         protected void ResetSelection() {
-            this.SelectionStart = _selectionEnd = _cursorIndex;
+            this.SelectionEnd = _cursorIndex;
+            this.SelectionStart = _cursorIndex;
         }
 
         protected void UpdateSelection() {
@@ -748,7 +749,10 @@ namespace Blish_HUD.Controls {
             int newIndex = _cursorIndex - 1;
 
             if (ctrlDown) {
-                newIndex = GetClosestLeftWordNavigationBoundary(newIndex);
+                newIndex = GetClosestLeftWordNavigationBoundary(_cursorIndex);
+            } else if (_selectionStart != _selectionEnd && !this.IsShiftDown) {
+                // Collapse the selection to the left side
+                newIndex = Math.Min(_selectionStart, _selectionEnd);
             }
 
             UserSetCursorIndex(newIndex);
@@ -759,7 +763,10 @@ namespace Blish_HUD.Controls {
             int newIndex = _cursorIndex + 1;
 
             if (ctrlDown) {
-                newIndex = GetClosestRightWordNavigationBoundary(newIndex);
+                newIndex = GetClosestRightWordNavigationBoundary(_cursorIndex);
+            } else if (_selectionStart != _selectionEnd && !this.IsShiftDown) {
+                // Collapse the selection to the right side
+                newIndex = Math.Max(_selectionStart, _selectionEnd);
             }
 
             UserSetCursorIndex(newIndex);
