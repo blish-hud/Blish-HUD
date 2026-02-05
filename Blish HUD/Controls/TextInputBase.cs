@@ -773,7 +773,7 @@ namespace Blish_HUD.Controls {
                 // Collapse the selection to the left side
                 newIndex = Math.Min(_selectionStart, _selectionEnd);
             } else {
-                newIndex = GetClosestLeftCharacterBoundary(_cursorIndex);
+                newIndex = GetClosestLeftCharacterBoundary(_cursorIndex - 1);
             }
 
             UserSetCursorIndex(newIndex);
@@ -789,7 +789,7 @@ namespace Blish_HUD.Controls {
                 // Collapse the selection to the right side
                 newIndex = Math.Max(_selectionStart, _selectionEnd);
             } else {
-                newIndex = GetClosestRightCharacterBoundary(_cursorIndex);
+                newIndex = GetClosestRightCharacterBoundary(_cursorIndex + 1);
             }
 
             UserSetCursorIndex(newIndex);
