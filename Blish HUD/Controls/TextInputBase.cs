@@ -436,7 +436,43 @@ namespace Blish_HUD.Controls {
             return lastGlyph.Position.X + (lastGlyph.FontRegion?.Width ?? 0);
         }
 
-        protected int GetClosestLeftWordBoundary(int index) {
+        protected int GetClosestLeftWordSelectionBoundary(int index) {
+            string text = _text;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
+
+            index = MathHelper.Clamp(index, 0, text.Length - 1);
+            bool startWasInWord = !WordSeperators.Contains(text[index]);
+
+            while (index-- > 0) {
+                if (!WordSeperators.Contains(text[index]) != startWasInWord) {
+                    break;
+                }
+            }
+
+            return ++index;
+        }
+
+        protected int GetClosestRightWordSelectionBoundary(int index) {
+            string text = _text;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
+
+            index = MathHelper.Clamp(index, 0, text.Length - 1);
+            bool startWasInWord = !WordSeperators.Contains(text[index]);
+
+            while (++index < text.Length) {
+                if (!WordSeperators.Contains(text[index]) != startWasInWord) {
+                    break;
+                }
+            }
+
+            return index;
+        }
+
+        protected int GetClosestLeftWordNavigationBoundary(int index) {
             // Walk through any contiguous whitespace to the left of the cursor
             while (index > 0 && char.IsWhiteSpace(_text[index - 1])) {
                 index--;
@@ -450,7 +486,7 @@ namespace Blish_HUD.Controls {
             return index;
         }
 
-        protected int GetClosestRightWordBoundary(int index) {
+        protected int GetClosestRightWordNavigationBoundary(int index) {
             // Walk through any contiguous whitespace to the right of the cursor
             while (index < _text.Length && char.IsWhiteSpace(_text[index])) {
                 index++;
@@ -462,6 +498,16 @@ namespace Blish_HUD.Controls {
             }
 
             return index;
+        }
+
+        [Obsolete("Use GetClosestLeftWordSelectionBoundary or GetClosestLeftWordNavigationBoundary instead.")]
+        protected int GetClosestLeftWordBoundary(int index) {
+            return GetClosestLeftWordSelectionBoundary(index);
+        }
+
+        [Obsolete("Use GetClosestRightWordSelectionBoundary or GetClosestRightWordNavigationBoundary instead.")]
+        protected int GetClosestRightWordBoundary(int index) {
+            return GetClosestRightWordSelectionBoundary(index);
         }
 
         private string ProcessText(string value) {
@@ -643,7 +689,7 @@ namespace Blish_HUD.Controls {
         protected virtual void HandleBackspace() {
             if (_selectionStart == _selectionEnd) {
                 if (this.IsCtrlDown) {
-                    int deleteToIndex = GetClosestLeftWordBoundary(_cursorIndex);
+                    int deleteToIndex = GetClosestLeftWordNavigationBoundary(_cursorIndex);
 
                     if (Delete(deleteToIndex, _cursorIndex - deleteToIndex)) {
                         UserSetCursorIndex(deleteToIndex);
@@ -661,7 +707,7 @@ namespace Blish_HUD.Controls {
         protected virtual void HandleDelete() {
             if (_selectionStart == _selectionEnd) {
                 if (this.IsCtrlDown) {
-                    int deleteToIndex = GetClosestRightWordBoundary(_cursorIndex);
+                    int deleteToIndex = GetClosestRightWordNavigationBoundary(_cursorIndex);
 
                     Delete(_cursorIndex, deleteToIndex - _cursorIndex);
                 } else {
@@ -676,7 +722,7 @@ namespace Blish_HUD.Controls {
             int newIndex = _cursorIndex - 1;
 
             if (ctrlDown) {
-                newIndex = GetClosestLeftWordBoundary(newIndex);
+                newIndex = GetClosestLeftWordNavigationBoundary(newIndex);
             }
 
             UserSetCursorIndex(newIndex);
@@ -687,7 +733,7 @@ namespace Blish_HUD.Controls {
             int newIndex = _cursorIndex + 1;
 
             if (ctrlDown) {
-                newIndex = GetClosestRightWordBoundary(newIndex);
+                newIndex = GetClosestRightWordNavigationBoundary(newIndex);
             }
 
             UserSetCursorIndex(newIndex);
@@ -769,8 +815,8 @@ namespace Blish_HUD.Controls {
 
         protected void HandleMouseDoubleClick() {
             if (_cursorIndex == _prevCursorIndex) {
-                this.SelectionStart = GetClosestLeftWordBoundary(_cursorIndex);
-                this.SelectionEnd = GetClosestRightWordBoundary(_cursorIndex);
+                this.SelectionStart = GetClosestLeftWordSelectionBoundary(_cursorIndex);
+                this.SelectionEnd = GetClosestRightWordSelectionBoundary(_cursorIndex);
             }
         }
 
