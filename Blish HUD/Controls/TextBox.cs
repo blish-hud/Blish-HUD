@@ -104,7 +104,7 @@ namespace Blish_HUD.Controls {
             if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) return Rectangle.Empty;
 
             float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
-            float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
+            float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength)) + 1;
 
             switch (this.HorizontalAlignment)
             {
