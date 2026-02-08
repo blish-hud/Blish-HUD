@@ -76,7 +76,7 @@ namespace Blish_HUD.Content {
 
                 return new MemoryStream(rawMetadata);
             } catch (Exception ex) {
-                Logger.Info(ex, "Failed to load asset metadata.");
+                Logger.Warn(ex, "Failed to load asset metadata.");
 
                 return Stream.Null;
             }
@@ -101,14 +101,14 @@ namespace Blish_HUD.Content {
                 try {
                     using var _ = await DownloadMetadata().ConfigureAwait(false);
                 } catch (Exception ex) {
-                    Logger.Info(ex, "Background metadata refresh failed");
+                    Logger.Warn(ex, "Background metadata refresh failed");
                 }
             });
         }
 
         private void ProcessMetadataStream(Stream metadataStream) {
             if (metadataStream.Length == 0) {
-                Logger.Info("Failed to load asset metadata. Textures won't be loaded.");
+                Logger.Warn("Failed to load asset metadata. Textures won't be loaded.");
 
                 _textureReferences = new Dictionary<int, TextureReference>(0);
                 _textureSizes = Array.Empty<Point>();
