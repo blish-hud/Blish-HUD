@@ -131,38 +131,38 @@ namespace Blish_HUD.Controls {
 
             if (lineSpans == 0) {
                 float highlightLeftOffset = MeasureStringWidth(lines[startIndex.Line].Substring(0, startIndex.Character));
-                float highlightWidth      = MeasureStringWidth(lines[startIndex.Line].Substring(startIndex.Character, selectionLength));
+                float highlightWidth      = MeasureStringWidth(lines[startIndex.Line].Substring(startIndex.Character, selectionLength)) + 1;
 
-                regions[0] = new Rectangle(_textRegion.Left + (int)highlightLeftOffset - 1,
+                regions[0] = new Rectangle(_textRegion.Left + (int)highlightLeftOffset,
                                            _textRegion.Top + (startIndex.Line * _font.LineHeight),
                                            (int)highlightWidth,
                                            _font.LineHeight - 1);
             } else {
                 // First line
                 float firstHighlightLeftOffset = MeasureStringWidth(lines[startIndex.Line].Substring(0, startIndex.Character));
-                float firstHighlightWidth      = MeasureStringWidth(lines[startIndex.Line].Substring(startIndex.Character));
+                float firstHighlightWidth      = MeasureStringWidth(lines[startIndex.Line].Substring(startIndex.Character)) + 1;
 
-                regions[0] = new Rectangle(_textRegion.Left + (int) firstHighlightLeftOffset - 1,
+                regions[0] = new Rectangle(_textRegion.Left + (int) firstHighlightLeftOffset,
                                            _textRegion.Top  + (startIndex.Line * _font.LineHeight),
-                                           (int) firstHighlightWidth,
+                                           (int)firstHighlightWidth,
                                            _font.LineHeight - 1);
 
                 // Middle lines
                 for (int i = startIndex.Line + 1; i < endIndex.Line; i++) {
-                    float fullWidth = MeasureStringWidth(lines[i]);
+                    float fullWidth = MeasureStringWidth(lines[i]) + 1;
 
-                    regions[i - startIndex.Line] = new Rectangle(_textRegion.Left - 1,
+                    regions[i - startIndex.Line] = new Rectangle(_textRegion.Left,
                                                                  _textRegion.Top  + (i * _font.LineHeight),
-                                                                 (int) fullWidth,
+                                                                 (int)fullWidth,
                                                                  _font.LineHeight - 1);
                 }
 
                 // Last line
-                float lastHighlightWidth = MeasureStringWidth(lines[endIndex.Line].Substring(0, endIndex.Character));
+                float lastHighlightWidth = MeasureStringWidth(lines[endIndex.Line].Substring(0, endIndex.Character)) + 1;
 
-                regions[lineSpans] = new Rectangle(_textRegion.Left - 1,
+                regions[lineSpans] = new Rectangle(_textRegion.Left,
                                                    _textRegion.Top  + (endIndex.Line * _font.LineHeight),
-                                                   (int) lastHighlightWidth,
+                                                   (int)lastHighlightWidth,
                                                    _font.LineHeight - 1);
             }
 
@@ -190,7 +190,7 @@ namespace Blish_HUD.Controls {
                                    _font.LineHeight * cursor.Line);
             }
 
-            return new Rectangle(_textRegion.X + offset.X - 2,
+            return new Rectangle(_textRegion.X + offset.X,
                                  _textRegion.Y + offset.Y + 2,
                                  2,
                                  _font.LineHeight - 4);
