@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,16 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Action_Accept" xml:space="preserve">
-    <value>Aceptar</value>
-  </data>
-  <data name="Action_Cancel" xml:space="preserve">
-    <value>Cancelar</value>
-  </data>
-  <data name="BlishHUD" xml:space="preserve">
-    <value>Blish HUD</value>
-  </data>
-  <data name="Hint_MoreOptions" xml:space="preserve">
-    <value>Más opciones</value>
+  <data name="Input_Mouse2" xml:space="preserve">
+    <value>Ratón 2</value>
   </data>
 </root>
