@@ -123,9 +123,6 @@
   <data name="Action_Cancel" xml:space="preserve">
     <value>Annuler</value>
   </data>
-  <data name="Unknown" xml:space="preserve">
-    <value>Inconnue</value>
-  </data>
   <data name="Action_Exit" xml:space="preserve">
     <value>Quitter {0}</value>
   </data>
@@ -134,6 +131,9 @@
   </data>
   <data name="Options" xml:space="preserve">
     <value>Options</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Inconnue</value>
   </data>
   <data name="Action_Clear" xml:space="preserve">
     <value>Effacer</value>
@@ -144,8 +144,8 @@
   <data name="Action_Restart" xml:space="preserve">
     <value>Redémarrer {0}</value>
   </data>
-  <data name="Action_Retry" xml:space="preserve">
-    <value>Réessayer</value>
+  <data name="PlaceholderSearch" xml:space="preserve">
+    <value>Rechercher...</value>
   </data>
   <data name="Action_Update" xml:space="preserve">
     <value>Mettre à jour</value>
@@ -153,10 +153,34 @@
   <data name="Action_UpdateLater" xml:space="preserve">
     <value>Mettre à jour plus tard</value>
   </data>
-  <data name="PlaceholderSearch" xml:space="preserve">
-    <value>Rechercher...</value>
+  <data name="Action_Retry" xml:space="preserve">
+    <value>Réessayer</value>
   </data>
   <data name="Hint_MoreOptions" xml:space="preserve">
     <value>Plus d'options</value>
+  </data>
+  <data name="Action_Confirm" xml:space="preserve">
+    <value>Confirmer</value>
+  </data>
+  <data name="Action_Yes" xml:space="preserve">
+    <value>Oui</value>
+  </data>
+  <data name="Action_No" xml:space="preserve">
+    <value>Non</value>
+  </data>
+  <data name="Action_Ignore" xml:space="preserve">
+    <value>Ignorer</value>
+  </data>
+  <data name="Action_Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="Action_Apply" xml:space="preserve">
+    <value>Appliquer</value>
+  </data>
+  <data name="Action_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Action_Decline" xml:space="preserve">
+    <value>Refuser</value>
   </data>
 </root>
