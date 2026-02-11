@@ -35,9 +35,8 @@ namespace Blish_HUD.Controls {
             Present
         }
 
-        private Texture2D _bgTexture;
-        private Texture2D _icons;
-        private BitmapFont _font;
+        private static Texture2D _bgTexture;
+        private static Texture2D _icons;
 
         private AsyncTexture2D _icon;
         private AsyncTexture2D _customIcon;
@@ -52,24 +51,25 @@ namespace Blish_HUD.Controls {
 
         private readonly Action<DialogButton> _callback;
 
-        private readonly string _text;
+        private readonly FormattedLabel _label;
         private readonly DialogButton _enterButton;
         private readonly DialogButton _escapeButton;
 
 
-        private ScreenPrompt(string text, DialogButton buttons, Action<DialogButton> callback = null, DialogIcon icon = DialogIcon.None, AsyncTexture2D customIcon = null, DialogButton enterButton = DialogButton.None, DialogButton escapeButton = DialogButton.None) {
-            _text       = text;
+        private ScreenPrompt(FormattedLabelBuilder label, DialogButton buttons, Action<DialogButton> callback = null, DialogIcon icon = DialogIcon.None, AsyncTexture2D customIcon = null, DialogButton enterButton = DialogButton.None, DialogButton escapeButton = DialogButton.None) {
+
+            if (!IsValidDialog(label, buttons, out var errorMessage)) {
+                throw new ArgumentException(errorMessage);
+            }
+
+            _label = label.SetWidth(350).AutoSizeHeight().Wrap().Build();
+            _label.Parent = this;
             _customIcon = customIcon;
             _iconMargin = new Point(9, 8);
-            _font       = GameService.Content.DefaultFont18;
             _buttons    = new Dictionary<DialogButton, StandardButton>();
             foreach (DialogButton button in Enum.GetValues(typeof(DialogButton))) {
                 if (button == DialogButton.None) continue;
-                if (buttons.HasFlag(button)) _buttons.Add(button, null); // Each key will be assigned a button instance in CreateButtons().
-            }
-
-            if (!IsValidDialog(out var errorMessage)) {
-                throw new ArgumentException(errorMessage);
+                if ((buttons & button) == button) _buttons.Add(button, null); // Each key will be assigned a button instance in CreateButtons().
             }
 
             _enterButton = enterButton;
@@ -82,13 +82,26 @@ namespace Blish_HUD.Controls {
             GameService.Input.Keyboard.KeyPressed += OnKeyPressed;
         }
 
+        private bool IsValidDialog(FormattedLabelBuilder label, DialogButton buttons, out string errorMessage) {
+            errorMessage = string.Empty;
+            var noButtons = buttons == DialogButton.None;
+            if (noButtons) {
+                errorMessage += "Prompt dialog must have at least one button. ";
+            }
+            var noText = label == null;
+            if (noText) {
+                errorMessage += "Prompt dialog must have text content.";
+            }
+            return string.IsNullOrEmpty(errorMessage);
+        }
+
         private void LoadTextures() {
-            _bgTexture = GameService.Content.GetTexture(@"controls/prompt/156003");
+            _bgTexture ??= GameService.Content.GetTexture(@"controls/prompt/156003");
+            _icons ??= GameService.Content.GetTexture(@"controls/prompt/154985");
         }
 
         private void LoadIcon(DialogIcon icon) {
             if (icon == DialogIcon.None) return;
-            _icons = GameService.Content.GetTexture(@"controls/prompt/154985");
             _icon = new AsyncTexture2D();
             GetIconRegion(icon, _icons);
         }
@@ -103,24 +116,7 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private bool IsValidDialog(out string errorMessage) {
-            errorMessage = string.Empty;
-            var noButtons = _buttons.Count < 1;
-            if (noButtons)
-            {
-                errorMessage += "Prompt dialog must have at least one button. ";
-            }
-            var noText = string.IsNullOrWhiteSpace(_text);
-            if (noText)
-            {
-                errorMessage += "Prompt dialog must have text content.";
-            }
-            return string.IsNullOrEmpty(errorMessage);
-        }
-
         protected override void DisposeControl() {
-            _icons?.Dispose();
-            _bgTexture?.Dispose();
             _icon?.Dispose();
             GameService.Input.Keyboard.KeyPressed -= OnKeyPressed;
             base.DisposeControl();
@@ -190,10 +186,61 @@ namespace Blish_HUD.Controls {
             Show(text, DialogIcon.None, icon, buttons, callback, enterButton, escapeButton);
         }
 
+        /// <summary>
+        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// </summary>
+        /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
+        /// <param name="buttons">Buttons that the prompt should have.</param>
+        /// <param name="callback">Function that is called when a button is pressed.</param>
+        /// <param name="enterButton">Buttons that can be pressed via the Enter key on the keyboard.</param>
+        /// <param name="escapeButton">Buttons that can be pressed via the Escape key on the keyboard.</param>
+        public static void Show(FormattedLabelBuilder label, DialogButton buttons = DialogButton.OK, Action<DialogButton> callback = null,
+                                      DialogButton enterButton = DialogButton.None,
+                                      DialogButton escapeButton = DialogButton.None) {
+            Show(label, DialogIcon.None, null, buttons, callback, enterButton, escapeButton);
+        }
+
+        /// <summary>
+        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// </summary>
+        /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
+        /// <param name="icon">Predefined icon to use.</param>
+        /// <param name="buttons">Buttons that the prompt should have.</param>
+        /// <param name="callback">Function that is called when a button is pressed.</param>
+        /// <param name="enterButton">Buttons that can be pressed via the Enter key on the keyboard.</param>
+        /// <param name="escapeButton">Buttons that can be pressed via the Escape key on the keyboard.</param>
+        public static void Show(FormattedLabelBuilder label, DialogIcon icon, DialogButton buttons = DialogButton.OK, Action<DialogButton> callback = null,
+                                      DialogButton enterButton = DialogButton.None,
+                                      DialogButton escapeButton = DialogButton.None) {
+            Show(label, icon, null, buttons, callback, enterButton, escapeButton);
+        }
+
+        /// <summary>
+        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// </summary>
+        /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
+        /// <param name="icon">Custom icon to use. Will NOT be disposed with the prompt.</param>
+        /// <param name="buttons">Buttons that the prompt should have.</param>
+        /// <param name="callback">Function that is called when a button is pressed.</param>
+        /// <param name="enterButton">Buttons that can be pressed via the Enter key on the keyboard.</param>
+        /// <param name="escapeButton">Buttons that can be pressed via the Escape key on the keyboard.</param>
+        public static void Show(FormattedLabelBuilder label, AsyncTexture2D icon, DialogButton buttons = DialogButton.OK, Action<DialogButton> callback = null,
+                                      DialogButton enterButton = DialogButton.None,
+                                      DialogButton escapeButton = DialogButton.None) {
+            Show(label, DialogIcon.None, icon, buttons, callback, enterButton, escapeButton);
+        }
+
         private static void Show(string text, DialogIcon icon, AsyncTexture2D customIcon, DialogButton buttons, Action<DialogButton> callback,
+                               DialogButton enterButton,
+                               DialogButton escapeButton) {
+            var txt2Lbl = new FormattedLabelBuilder().CreatePart(text, o => o.SetFontSize(ContentService.FontSize.Size18));
+            Show(txt2Lbl, icon, customIcon, buttons, callback, enterButton, escapeButton);
+        }
+
+        private static void Show(FormattedLabelBuilder label, DialogIcon icon, AsyncTexture2D customIcon, DialogButton buttons, Action<DialogButton> callback,
                                        DialogButton enterButton,
                                        DialogButton escapeButton) {
-            var prompt = new ScreenPrompt(text, buttons, callback, icon, customIcon, enterButton, escapeButton)
+            var prompt = new ScreenPrompt(label, buttons, callback, icon, customIcon, enterButton, escapeButton)
             {
                 Parent = Graphics.SpriteScreen,
                 Location = Point.Zero,
@@ -212,9 +259,9 @@ namespace Blish_HUD.Controls {
                 buttonWidth = availableWidth / buttonCount;
             }
 
-            int xOffset = _bgBounds.Width - minLeftOffset - buttonWidth - Panel.RIGHT_PADDING;
-            int yOffset = _bgBounds.Bottom - BUTTON_HEIGHT - Panel.BOTTOM_PADDING;
-            var buttonKeys = _buttons.Keys.ToList();
+            int xOffset = _bgBounds.Width - minLeftOffset - buttonWidth - Panel.RIGHT_PADDING * 2;
+            int yOffset = _bgBounds.Bottom - BUTTON_HEIGHT - Panel.BOTTOM_PADDING - 2;
+            var buttonKeys = _buttons.Keys.Reverse().ToList();
             foreach (var buttonKey in buttonKeys) {
                 StandardButton button = _buttons[buttonKey];
                 if (button == null) {
@@ -251,46 +298,38 @@ namespace Blish_HUD.Controls {
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             base.PaintBeforeChildren(spriteBatch, bounds);
 
-            var textMarginRight = 25;
-            var text = DrawUtil.WrapText(_font, _text, 412);
-            var textSize = _font.MeasureString(text);
-            var textWidth = (int)textSize.Width;
-            var textHeight = (int)textSize.Height;
+            var textSize   = _label.Size;
+            var textWidth  = textSize.X;
+            var textHeight = textSize.Y;
 
             var icon = _customIcon ?? _icon;
             var iconSize = icon == null ? 0 : 64;
-            var textMargin = new Point(iconSize + _iconMargin.X * 2, 17);
+            var textPos = new Point(iconSize + _iconMargin.X + Panel.RIGHT_PADDING, 17);
 
-            var contentWidth = textWidth + iconSize + _iconMargin.X + textMargin.X + textMarginRight;
-            var contentHeight = textHeight > 64 ? textHeight : textHeight + iconSize;
-
-            contentHeight = contentHeight < 100 ? 100 : contentHeight;
+            textHeight = textHeight > 64 ? textHeight : textHeight + iconSize;
 
             // Darken background outside container
             spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.5f);
 
             // Container
             // Calculate background bounds
-            var bgTextureSize = new Point(contentWidth, contentHeight + (BUTTON_HEIGHT * 2 + Panel.TOP_PADDING));
+            var bgTextureSize = new Point(textWidth + iconSize + Panel.RIGHT_PADDING * 6, textHeight + BUTTON_HEIGHT + Panel.TOP_PADDING * 3);
             var bgTexturePos = new Point((bounds.Width - bgTextureSize.X) / 2, (bounds.Height - bgTextureSize.Y) / 2);
             var bgBounds = new Rectangle(bgTexturePos, bgTextureSize);
             _bgBounds = bgBounds;
 
-            var textBounds = new Rectangle(bgBounds.Left + textMargin.X, bgBounds.Y + textMargin.Y, bgBounds.Width - textMarginRight, contentHeight);
-
             // Draw Background
-            spriteBatch.DrawOnCtrl(this, _bgTexture, bgBounds, new Rectangle(29, 23, 942, 942), Color.White);
+            spriteBatch.DrawOnCtrl(this, _bgTexture, bgBounds, new Rectangle(29, 23, 942, 942), Color.White * 0.9f);
 
             // Draw border
-            spriteBatch.DrawRectangleOnCtrl(this, _bgBounds, 2, Color.Black * 0.8f);
+            spriteBatch.DrawRectangleOnCtrl(this, _bgBounds, 3, Color.Black * 0.9f);
 
             if (icon != null && icon.HasTexture) {
                 var iconBounds = new Rectangle(bgBounds.Left + _iconMargin.X, bgBounds.Top + _iconMargin.Y, 64, 64);
                 spriteBatch.DrawOnCtrl(this, icon, iconBounds);
             }
 
-            // Draw text
-            spriteBatch.DrawStringOnCtrl(this, text, _font, textBounds, Color.White, false, HorizontalAlignment.Left, VerticalAlignment.Top);
+            _label.Location = new Point(bgBounds.Left + textPos.X, bgBounds.Y + textPos.Y);
             this.CreateButtons();
         }
     }
