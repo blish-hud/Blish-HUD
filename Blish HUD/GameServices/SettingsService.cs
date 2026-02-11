@@ -209,14 +209,17 @@ namespace Blish_HUD {
                 foreach (var mkp in _moduleSettings) {
                     PerformModuleSettingsSave(mkp.Key, mkp.Value);
                 }
-            } catch (UnauthorizedAccessException) {
+            } catch (UnauthorizedAccessException ex) {
                 Blish_HUD.Debug.Contingency.NotifyFileSaveAccessDenied(_settingsPath, Strings.GameServices.Debug.ContingencyMessages.FileSaveAccessDenied_Action_ToSaveSettings);
+                Logger.Warn(ex, "Failed to save settings.");
+                return;
             } catch (Exception ex) {
                 Logger.Warn(ex, "Failed to save settings.");
                 return;
+            } finally {
+                _saveBuffer = 0;
             }
-
-            _saveBuffer = 0;
+            
             _dirtySave  = false;
 
             Logger.Debug("Settings were saved successfully.");
