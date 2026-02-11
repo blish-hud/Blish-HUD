@@ -12,8 +12,11 @@ namespace Blish_HUD.Controls {
         private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Left;
         private VerticalAlignment _verticalAlignment = VerticalAlignment.Middle;
 
-        public FormattedLabelPartBuilder CreatePart(string text)
-            => new FormattedLabelPartBuilder(text);
+        public FormattedLabelPartBuilder CreatePart(string text) {
+            var part = new FormattedLabelPartBuilder(text);
+            _parts.Add(part.Build()); // For cases where we want this shorthand but keep using this FormattedLabelBuilder.
+            return part;
+        }
 
         public FormattedLabelBuilder CreatePart(string text, Action<FormattedLabelPartBuilder> creationFunc = null) {
             var builder = new FormattedLabelPartBuilder(text);
