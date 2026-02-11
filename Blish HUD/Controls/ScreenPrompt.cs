@@ -61,7 +61,7 @@ namespace Blish_HUD.Controls {
             _text       = text;
             _customIcon = customIcon;
             _iconMargin = new Point(9, 8);
-            _font       = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size22, ContentService.FontStyle.Regular);
+            _font       = GameService.Content.DefaultFont18;
             _buttons    = new Dictionary<DialogButton, StandardButton>();
             foreach (DialogButton button in Enum.GetValues(typeof(DialogButton))) {
                 if (button == DialogButton.None) continue;
@@ -264,14 +264,14 @@ namespace Blish_HUD.Controls {
             var contentWidth = textWidth + iconSize + _iconMargin.X + textMargin.X + textMarginRight;
             var contentHeight = textHeight > 64 ? textHeight : textHeight + iconSize;
 
-            contentHeight = contentHeight < 150 ? 150 : contentHeight;
+            contentHeight = contentHeight < 100 ? 100 : contentHeight;
 
             // Darken background outside container
             spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.5f);
 
             // Container
             // Calculate background bounds
-            var bgTextureSize = new Point(contentWidth, contentHeight + (BUTTON_HEIGHT + Panel.TOP_PADDING));
+            var bgTextureSize = new Point(contentWidth, contentHeight + (BUTTON_HEIGHT * 2 + Panel.TOP_PADDING));
             var bgTexturePos = new Point((bounds.Width - bgTextureSize.X) / 2, (bounds.Height - bgTextureSize.Y) / 2);
             var bgBounds = new Rectangle(bgTexturePos, bgTextureSize);
             _bgBounds = bgBounds;
