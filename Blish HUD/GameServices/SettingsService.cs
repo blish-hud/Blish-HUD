@@ -40,6 +40,7 @@ namespace Blish_HUD {
         private double _saveBuffer;
 
         private readonly Dictionary<string, SettingCollection> _moduleSettings = new Dictionary<string, SettingCollection>();
+        private readonly object _moduleSettingsLock = new object();
 
         protected override void Initialize() {
             JsonReaderSettings = new JsonSerializerSettings() {
@@ -206,7 +207,13 @@ namespace Blish_HUD {
                 WriteFileAtomic(_settingsPath, rawSettings);
 
                 // Save all registered module settings to their individual files
-                foreach (var mkp in _moduleSettings) {
+                KeyValuePair<string, SettingCollection>[] modulesToSave;
+
+                lock (_moduleSettingsLock) {
+                    modulesToSave = _moduleSettings.ToArray();
+                }
+
+                foreach (var mkp in modulesToSave) {
                     PerformModuleSettingsSave(mkp.Key, mkp.Value);
                 }
             } catch (UnauthorizedAccessException ex) {
@@ -271,13 +278,17 @@ namespace Blish_HUD {
         }
 
         internal void RegisterModuleSettings(string moduleNamespace, SettingCollection settings) {
-            _moduleSettings[moduleNamespace] = settings;
+            lock (_moduleSettingsLock) { 
+                _moduleSettings[moduleNamespace] = settings;
+            }
         }
 
         internal void UnregisterModuleSettings(string moduleNamespace) {
-            if (_moduleSettings.TryGetValue(moduleNamespace, out var settings)) {
-                PerformModuleSettingsSave(moduleNamespace, settings);
-                _moduleSettings.Remove(moduleNamespace);
+            lock (_moduleSettingsLock) { 
+                if (_moduleSettings.TryGetValue(moduleNamespace, out var settings)) {
+                    PerformModuleSettingsSave(moduleNamespace, settings);
+                    _moduleSettings.Remove(moduleNamespace);
+                }
             }
         }
 
