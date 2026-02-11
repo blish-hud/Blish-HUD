@@ -8,6 +8,7 @@ using Blish_HUD.GameServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Flurl.Http;
+using System.Diagnostics;
 
 namespace Blish_HUD.Content {
 
@@ -99,7 +100,7 @@ namespace Blish_HUD.Content {
             // Try background update of metadata cache
             _ = Task.Run(async () => {
                 try {
-                    using var _ = await DownloadMetadata().ConfigureAwait(false);
+                    using var webMetadata = await DownloadMetadata().ConfigureAwait(false);
                 } catch (Exception ex) {
                     Logger.Warn(ex, "Background metadata refresh failed");
                 }
@@ -107,6 +108,8 @@ namespace Blish_HUD.Content {
         }
 
         private void ProcessMetadataStream(Stream metadataStream) {
+            var sw = Stopwatch.StartNew();
+
             if (metadataStream.Length == 0) {
                 Logger.Warn("Failed to load asset metadata. Textures won't be loaded.");
 
@@ -117,32 +120,47 @@ namespace Blish_HUD.Content {
                 return;
             }
 
-            using var gzipStream = new GZipStream(metadataStream, CompressionMode.Decompress);
-            using var parser = new BinaryReader(gzipStream);
+            byte[] data;
 
-            // BinaryReader to keep things fairly readable
+            using (var gzipStream = new GZipStream(metadataStream, CompressionMode.Decompress))
+            using (var ms = new MemoryStream()) {
+                gzipStream.CopyTo(ms);
+                data = ms.GetBuffer();
+            }
 
-            _textureReferences = new Dictionary<int, TextureReference>(parser.ReadInt32());
+            int offset = 0;
 
-            int sizeCount = parser.ReadInt32();
+            _textureReferences = new Dictionary<int, TextureReference>(BitConverter.ToInt32(data, offset));
+            offset += 4;
+
+            int sizeCount = BitConverter.ToInt32(data, offset);
+            offset += 4;
 
             _textureSizes = new Point[sizeCount];
             _transparentTextures = new Texture2D[sizeCount];
 
             for (int sizeIndex = 0; sizeIndex < sizeCount; sizeIndex++) {
-                int width = parser.ReadInt32();
-                int height = parser.ReadInt32();
+                int width = BitConverter.ToInt32(data, offset);
+                offset += 4;
+                int height = BitConverter.ToInt32(data, offset);
+                offset += 4;
 
                 _textureSizes[sizeIndex] = new Point(width, height);
-                _transparentTextures[sizeIndex] = new Texture2D(BlishHud.Instance.GraphicsDevice /* This is safe since we're loading early on the main thread */, width, height);
-                _transparentTextures[sizeIndex].SetData(Enumerable.Repeat(Color.Transparent, width * height).ToArray());
+                _transparentTextures[sizeIndex] = new Texture2D(BlishHud.Instance.GraphicsDevice, width, height);
+                _transparentTextures[sizeIndex].SetData(new Color[width * height]);
 
-                int assetCount = parser.ReadInt32();
+                int assetCount = BitConverter.ToInt32(data, offset);
+                offset += 4;
 
                 for (int assetIndex = 0; assetIndex < assetCount; assetIndex++) {
-                    _textureReferences.Add(parser.ReadInt32(), new TextureReference(sizeIndex));
+                    _textureReferences.Add(BitConverter.ToInt32(data, offset), new TextureReference(sizeIndex));
+                    offset += 4;
                 }
             }
+
+            Logger.Debug("=======================================================================");
+            Logger.Debug($"Metadata processing complete. Loaded metadata for {_textureReferences.Count} textures in {sw.Elapsed.TotalSeconds:N2} seconds.");
+            Logger.Debug("=======================================================================");
         }
 
         public override void Load() {
