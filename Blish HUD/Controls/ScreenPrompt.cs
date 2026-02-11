@@ -1,5 +1,4 @@
 ﻿using Blish_HUD.Content;
-using Blish_HUD.Controls;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,9 +9,8 @@ using System.Linq;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
-namespace Blish_HUD.Extended
-{
-    internal sealed class ScreenPrompt : Container
+namespace Blish_HUD.Controls {
+    public sealed class ScreenPrompt : Container
     {
         [Flags]
         public enum DialogButton : ushort
@@ -79,19 +77,18 @@ namespace Blish_HUD.Extended
             _callback = callback;
 
             this.ZIndex = 999;
-            this.LoadIcon(icon);
             this.LoadTextures();
-
+            this.LoadIcon(icon);
             GameService.Input.Keyboard.KeyPressed += OnKeyPressed;
         }
 
         private void LoadTextures() {
             _bgTexture = GameService.Content.GetTexture(@"controls/prompt/156003");
-            _icons     = GameService.Content.GetTexture(@"controls/prompt/154985");
         }
 
         private void LoadIcon(DialogIcon icon) {
             if (icon == DialogIcon.None) return;
+            _icons = GameService.Content.GetTexture(@"controls/prompt/154985");
             _icon = new AsyncTexture2D();
             GetIconRegion(icon, _icons);
         }
@@ -274,7 +271,7 @@ namespace Blish_HUD.Extended
 
             // Container
             // Calculate background bounds
-            var bgTextureSize = new Point(contentWidth, contentHeight + (BUTTON_HEIGHT + Panel.TOP_PADDING) * 2);
+            var bgTextureSize = new Point(contentWidth, contentHeight + (BUTTON_HEIGHT + Panel.TOP_PADDING));
             var bgTexturePos = new Point((bounds.Width - bgTextureSize.X) / 2, (bounds.Height - bgTextureSize.Y) / 2);
             var bgBounds = new Rectangle(bgTexturePos, bgTextureSize);
             _bgBounds = bgBounds;
