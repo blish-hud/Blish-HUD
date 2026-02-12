@@ -359,7 +359,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             spriteBatch.DrawOnCtrl(this, _bgTexture, bgBounds, new Rectangle(29, 23, 942, 942), Color.White * 0.9f);
 
             // Draw border
-            spriteBatch.DrawRectangleOnCtrl(this, _bgBounds, 3, Color.Black * 0.9f);
+            spriteBatch.DrawRectangleOnCtrl(this, _bgBounds, 2, Color.Black * 0.9f);
 
             if (icon != null && icon.HasTexture) {
                 var iconBounds = new Rectangle(bgBounds.Left + _iconMargin.X, bgBounds.Top + _iconMargin.Y, 64, 64);
