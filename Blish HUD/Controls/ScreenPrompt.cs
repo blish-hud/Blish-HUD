@@ -10,11 +10,9 @@ using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 namespace Blish_HUD.Controls {
-    public sealed class ScreenPrompt : Container
-    {
+    public sealed class ScreenPrompt : Container {
         [Flags]
-        public enum DialogButton : ushort
-        {
+        public enum DialogButton : ushort {
             None = 0,
             OK = 1 << 0,
             Confirm = 1 << 1,
@@ -27,8 +25,7 @@ namespace Blish_HUD.Controls {
             Decline = 1 << 8
         }
 
-        public enum DialogIcon
-        {
+        public enum DialogIcon {
             None,
             Exclamation,
             Question,
@@ -54,7 +51,6 @@ namespace Blish_HUD.Controls {
         private readonly FormattedLabel _label;
         private readonly DialogButton _enterButton;
         private readonly DialogButton _escapeButton;
-
 
         private ScreenPrompt(FormattedLabelBuilder label, DialogButton buttons, Action<DialogButton> callback = null, DialogIcon icon = DialogIcon.None, AsyncTexture2D customIcon = null, DialogButton enterButton = DialogButton.None, DialogButton escapeButton = DialogButton.None) {
 
