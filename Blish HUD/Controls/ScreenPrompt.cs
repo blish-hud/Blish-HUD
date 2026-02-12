@@ -38,8 +38,8 @@ namespace Blish_HUD.Common.Gw2.UI {
         private Rectangle  _bgBounds;
         private Point      _iconMargin;
 
-        private const int BUTTON_HEIGHT = 28;
-        private const int BUTTON_WIDTH = 117;
+        private const int BUTTON_HEIGHT = 30;
+        private const int BUTTON_WIDTH = 125;
 
         private readonly List<StandardButton> _buttons;
 
