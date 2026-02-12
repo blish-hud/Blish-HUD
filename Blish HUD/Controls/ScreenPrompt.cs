@@ -39,8 +39,8 @@ namespace Blish_HUD.Common.Gw2.UI {
         private Point      _iconMargin;
 
         private const int BUTTON_HEIGHT = 30;
-        private const int BUTTON_WIDTH = 125;
-
+        private const int BUTTON_WIDTH = 101;
+        private readonly int _maxButtonWidth;
         private readonly List<StandardButton> _buttons;
 
         private readonly Action<int> _callback;
@@ -69,7 +69,12 @@ namespace Blish_HUD.Common.Gw2.UI {
             _iconMargin = new Point(9, 8);
 
             _buttons = new List<StandardButton>();
+            _maxButtonWidth = BUTTON_WIDTH;
             foreach (string bttnStr in buttons) {
+                var bttnWidth = GameService.Content.DefaultFont14.MeasureStringLogical(bttnStr).X;
+                if (bttnWidth > _maxButtonWidth) {
+                    _maxButtonWidth = (int)Math.Round(bttnWidth);
+                }
                 _buttons.Add(new StandardButton() { 
                     Parent  = this, 
                     Text    = bttnStr, 
@@ -314,7 +319,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             int buttonCount = _buttons.Count;
             int availableWidth = _bgBounds.Width - minLeftOffset;
 
-            int buttonWidth = BUTTON_WIDTH;
+            int buttonWidth = _maxButtonWidth + Panel.RIGHT_PADDING * 6;
             if (buttonCount * buttonWidth > availableWidth) {
                 buttonWidth = availableWidth / buttonCount;
             }
