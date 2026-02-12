@@ -86,7 +86,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             _escapeButtonIndex = escapeButtonIndex;
             _callback = callback;
 
-            this.ZIndex = 999;
+            this.ZIndex = Screen.DROPDOWN_BASEINDEX - 12; // Top most layer; but lower than tooltip and dropdown.
             this.LoadTextures();
             GameService.Input.Keyboard.KeyPressed += OnKeyPressed;
         }
