@@ -1,15 +1,15 @@
 ﻿using Blish_HUD.Content;
+using Blish_HUD.Controls;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
-namespace Blish_HUD.Controls {
+namespace Blish_HUD.Common.Gw2.UI {
     public sealed class ScreenPrompt : Container {
         [Flags]
         public enum DialogButton : ushort {
