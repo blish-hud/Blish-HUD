@@ -309,7 +309,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             };
         }
 
-        private void CalcButtonLayout() {
+        private void CalculateButtonLayout() {
             int minLeftOffset = 50;
             int buttonCount = _buttons.Count;
             int availableWidth = _bgBounds.Width - minLeftOffset;
@@ -367,7 +367,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             }
 
             _label.Location = new Point(bgBounds.Left + textPos.X, bgBounds.Y + textPos.Y);
-            this.CalcButtonLayout();
+            this.CalculateButtonLayout();
         }
     }
 }
