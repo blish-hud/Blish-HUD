@@ -62,7 +62,7 @@ namespace Blish_HUD.Controls {
                 throw new ArgumentException(errorMessage);
             }
 
-            _label = label.SetWidth(350).AutoSizeHeight().Wrap().Build();
+            _label = label.SetWidth(340).AutoSizeHeight().Wrap().Build();
             _label.Parent = this;
             _customIcon = customIcon;
             _iconMargin = new Point(9, 8);
@@ -304,16 +304,16 @@ namespace Blish_HUD.Controls {
 
             var icon = _customIcon ?? _icon;
             var iconSize = icon == null ? 0 : 64;
-            var textPos = new Point(iconSize + _iconMargin.X + Panel.RIGHT_PADDING, 17);
+            var textPos = new Point(iconSize + _iconMargin.X + Panel.RIGHT_PADDING * 2, 17);
 
             textHeight = textHeight > 64 ? textHeight : textHeight + iconSize;
 
             // Darken background outside container
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.5f);
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.15f);
 
             // Container
             // Calculate background bounds
-            var bgTextureSize = new Point(textWidth + iconSize + Panel.RIGHT_PADDING * 6, textHeight + BUTTON_HEIGHT + Panel.TOP_PADDING * 3);
+            var bgTextureSize = new Point(textWidth + iconSize + Panel.RIGHT_PADDING * 10, textHeight + BUTTON_HEIGHT + Panel.TOP_PADDING * 4);
             var bgTexturePos = new Point((bounds.Width - bgTextureSize.X) / 2, (bounds.Height - bgTextureSize.Y) / 2);
             var bgBounds = new Rectangle(bgTexturePos, bgTextureSize);
             _bgBounds = bgBounds;
