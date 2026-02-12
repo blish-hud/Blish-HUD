@@ -321,13 +321,12 @@ namespace Blish_HUD.Common.Gw2.UI {
 
             int xOffset = _bgBounds.Width - minLeftOffset - buttonWidth - Panel.RIGHT_PADDING * 2;
             int yOffset = _bgBounds.Bottom - BUTTON_HEIGHT - Panel.BOTTOM_PADDING - 2;
-            for (int i = 0; i < buttonCount; i++) { 
-                var button = _buttons[i];
+            foreach (var button in _buttons) {
                 if (button == null || button.Enabled) continue;
                 button.Location = new Point(_bgBounds.Left + minLeftOffset + xOffset, yOffset);
                 button.Width = buttonWidth;
                 button.Height = BUTTON_HEIGHT;
-                button.Click += (o, e) => this.ButtonPress(i);
+                button.Click += (o, e) => this.ButtonPress(_buttons.IndexOf((StandardButton)o));
                 button.Enabled = true;
                 xOffset -= buttonWidth + _iconMargin.X;
             }
