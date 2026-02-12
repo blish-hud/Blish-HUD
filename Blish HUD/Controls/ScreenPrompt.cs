@@ -33,18 +33,18 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         private AsyncTexture2D _bgTexture;
-        private AsyncTexture2D _icon;
+        private Rectangle      _bgTextureBounds; // Bounds for the background texture to avoid empty margins and borders, which are not used in the prompt design.
+        private AsyncTexture2D _icon;// Optional icon to display on the left side of the prompt, which can be set via predefined DialogIcon or custom AsyncTexture2D.
 
-        private Rectangle  _bgBounds;
-        private Point      _iconMargin;
+        private Rectangle _bgBounds; // Calculated bounds for the background, which also serves as the container for the text and buttons.
+        private Point     _iconMargin; // Space between the icon and the text, as well as between buttons if multiple are present.
 
         private const int BUTTON_HEIGHT = 30;
         private const int BUTTON_WIDTH = 117;
-        private readonly int _maxButtonWidth;
+        private readonly int _maxButtonWidth; // Calculated max button width based on text size, with a minimum defined by BUTTON_WIDTH.
+
         private readonly List<StandardButton> _buttons;
-
         private readonly Action<int> _callback;
-
         private readonly FormattedLabel _label;
         private readonly int _enterButtonIndex;
         private readonly int _escapeButtonIndex;
@@ -86,7 +86,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             _escapeButtonIndex = escapeButtonIndex;
             _callback = callback;
 
-            this.ZIndex = Screen.DROPDOWN_BASEINDEX - 12; // Top most layer; but lower than tooltip and dropdown.
+            this.ZIndex = Screen.TOOLTIP_BASEZINDEX - 16; // Top most layer but lower than tooltip.
             this.LoadTextures();
             GameService.Input.Keyboard.KeyPressed += OnKeyPressed;
         }
@@ -106,6 +106,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private void LoadTextures() {
             _bgTexture = GameService.Content.DatAssetCache.GetTextureFromAssetId(156003);
+            _bgTextureBounds = new Rectangle(33, 27, 936, 936); // Define bounds because the background texture has empty margin and border parts that we avoid.
         }
 
         protected override void DisposeControl() {
@@ -272,7 +273,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private static FormattedLabelBuilder GetDefaultLabel(string text) {
             return new FormattedLabelBuilder()
-                .CreatePart(text, o => o.SetFontSize(ContentService.FontSize.Size18));
+                .CreatePart(text, o => o.SetFontSize(ContentService.FontSize.Size16));
         }
 
         private static AsyncTexture2D GetDefaultIcon(DialogIcon icon) {
@@ -356,15 +357,17 @@ namespace Blish_HUD.Common.Gw2.UI {
             // Container
             // Calculate background bounds
             var bgTextureSize = new Point(textWidth + iconSize + Panel.RIGHT_PADDING * 10, textHeight + BUTTON_HEIGHT + Panel.TOP_PADDING * 4);
+            bgTextureSize = new Point(bgTextureSize.X < _bgTextureBounds.Width ? bgTextureSize.X : _bgTextureBounds.Width,
+                                      bgTextureSize.Y < _bgTextureBounds.Height ? bgTextureSize.Y : _bgTextureBounds.Height); // Clamp to max texture bounds.
             var bgTexturePos = new Point((bounds.Width - bgTextureSize.X) / 2, (bounds.Height - bgTextureSize.Y) / 2);
             var bgBounds = new Rectangle(bgTexturePos, bgTextureSize);
             _bgBounds = bgBounds;
 
             // Draw Background
-            spriteBatch.DrawOnCtrl(this, _bgTexture, bgBounds, new Rectangle(29, 23, 942, 942), Color.White * 0.9f);
+            spriteBatch.DrawOnCtrl(this, _bgTexture, bgBounds, new Rectangle(_bgTextureBounds.Location, bgTextureSize), Color.White);
 
             // Draw border
-            spriteBatch.DrawRectangleOnCtrl(this, _bgBounds, 2, Color.Black * 0.9f);
+            spriteBatch.DrawRectangleOnCtrl(this, _bgBounds, 2, Color.Black);
 
             if (icon != null && icon.HasTexture) {
                 var iconBounds = new Rectangle(bgBounds.Left + _iconMargin.X, bgBounds.Top + _iconMargin.Y, 64, 64);
