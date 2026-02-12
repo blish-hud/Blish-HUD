@@ -62,10 +62,13 @@ namespace Blish_HUD.Common.Gw2.UI {
                 throw new ArgumentException(errorMessage);
             }
 
-            _label = label.SetWidth(340).AutoSizeHeight().Wrap().Build();
+            _label        = label.SetWidth(340).AutoSizeHeight().Wrap().Build();
             _label.Parent = this;
+
+            _icon       = icon;
             _iconMargin = new Point(9, 8);
-            _buttons    = new List<StandardButton>();
+
+            _buttons = new List<StandardButton>();
             foreach (string bttnStr in buttons) {
                 _buttons.Add(new StandardButton() { 
                     Parent  = this, 
@@ -303,7 +306,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             };
         }
 
-        private void CreateButtons() {
+        private void CalcButtonLayout() {
             int minLeftOffset = 50;
             int buttonCount = _buttons.Count;
             int availableWidth = _bgBounds.Width - minLeftOffset;
@@ -318,11 +321,11 @@ namespace Blish_HUD.Common.Gw2.UI {
             for (int i = 0; i < buttonCount; i++) { 
                 var button = _buttons[i];
                 if (button == null || button.Enabled) continue;
+                button.Location = new Point(_bgBounds.Left + minLeftOffset + xOffset, yOffset);
                 button.Width = buttonWidth;
                 button.Height = BUTTON_HEIGHT;
-                button.Location = new Point(_bgBounds.Left + minLeftOffset + xOffset, yOffset);
-                button.Enabled = true;
                 button.Click += (o, e) => this.ButtonPress(i);
+                button.Enabled = true;
                 xOffset -= buttonWidth + _iconMargin.X;
             }
         }
@@ -362,7 +365,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             }
 
             _label.Location = new Point(bgBounds.Left + textPos.X, bgBounds.Y + textPos.Y);
-            this.CreateButtons();
+            this.CalcButtonLayout();
         }
     }
 }
