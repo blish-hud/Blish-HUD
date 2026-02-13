@@ -10,28 +10,14 @@ using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 namespace Blish_HUD.Common.Gw2.UI {
+    public enum DialogIcon {
+        None,
+        Exclamation,
+        Question,
+        Present
+    }
+
     public sealed class ScreenPrompt : Container {
-        [Flags]
-        public enum DialogButton : ushort {
-            None = 0,
-            OK = 1 << 0,
-            Confirm = 1 << 1,
-            Cancel = 1 << 2,
-            Yes = 1 << 3,
-            No = 1 << 4,
-            Ignore = 1 << 5,
-            Close = 1 << 6,
-            Apply = 1 << 7,
-            Decline = 1 << 8
-        }
-
-        public enum DialogIcon {
-            None,
-            Exclamation,
-            Question,
-            Present
-        }
-
         private AsyncTexture2D _bgTexture;
         private Rectangle      _bgTextureBounds; // Bounds for the background texture to avoid empty margins and borders, which are not used in the prompt design.
         private AsyncTexture2D _icon;// Optional icon to display on the left side of the prompt, which can be set via predefined DialogIcon or custom AsyncTexture2D.
@@ -41,26 +27,25 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private const int BUTTON_HEIGHT = 30;
         private const int BUTTON_WIDTH = 117;
-        private readonly int _maxButtonWidth; // Calculated max button width based on text size, with a minimum defined by BUTTON_WIDTH.
+        private int _maxButtonWidth; // Calculated max button width based on text size, with a minimum defined by BUTTON_WIDTH.
 
-        private readonly List<StandardButton> _buttons;
-        private readonly Action<int> _callback;
+        private readonly List<DialogButton> _buttons;
         private readonly FormattedLabel _label;
-        private readonly int _enterButtonIndex;
-        private readonly int _escapeButtonIndex;
 
         private ScreenPrompt(
             FormattedLabelBuilder label, 
             AsyncTexture2D icon, 
-            IReadOnlyList<string> buttons, 
-            Action<int> callback, 
-            int enterButtonIndex, 
-            int escapeButtonIndex) {
+            List<DialogButton> buttons) {
 
-            if (!IsValidDialog(label, buttons, out var errorMessage)) {
-                icon?.Dispose();
-                throw new ArgumentException(errorMessage);
-            }
+            if (label == null)
+                throw new ArgumentNullException(nameof(label), $"[{nameof(ScreenPrompt)}] Parameter '{nameof(label)}' cannot be null.");
+
+            // Defaulting to OK button if no buttons provided to ensure there's always a way to close the prompt.
+            if (buttons == null || buttons.Count == 0)
+                buttons = new List<DialogButton>() { DialogButton.OK };
+
+            if (buttons.Count(b => b.Selected) > 1)
+                throw new ArgumentException($"[{nameof(ScreenPrompt)}] Only one {nameof(DialogButton)} can be selected by default.", nameof(buttons));
 
             _label        = label.SetWidth(340).AutoSizeHeight().Wrap().Build();
             _label.Parent = this;
@@ -68,40 +53,20 @@ namespace Blish_HUD.Common.Gw2.UI {
             _icon       = icon;
             _iconMargin = new Point(9, 8);
 
-            _buttons = new List<StandardButton>();
+            _buttons = buttons;
             _maxButtonWidth = BUTTON_WIDTH;
-            foreach (string bttnStr in buttons) {
-                var bttnWidth = GameService.Content.DefaultFont14.MeasureStringLogical(bttnStr).X + Panel.RIGHT_PADDING * 2;
-                if (bttnWidth > _maxButtonWidth) {
-                    _maxButtonWidth = (int)Math.Round(bttnWidth);
-                }
-                _buttons.Add(new StandardButton() { 
-                    Parent  = this, 
-                    Text    = bttnStr, 
-                    Enabled = false 
-                });
-            }
 
-            _enterButtonIndex = enterButtonIndex;
-            _escapeButtonIndex = escapeButtonIndex;
-            _callback = callback;
+            // Calculate max button width.
+            foreach (DialogButton button in _buttons) {
+                var bttnWidth = GameService.Content.DefaultFont14 // Default font of StandardButton
+                    .MeasureStringLogical(button.Text).X + Panel.RIGHT_PADDING * 2;
+                if (bttnWidth > _maxButtonWidth) 
+                    _maxButtonWidth = (int)Math.Round(bttnWidth);
+            }
 
             this.ZIndex = Screen.TOOLTIP_BASEZINDEX - 16; // Top most layer but lower than tooltip.
             this.LoadTextures();
             GameService.Input.Keyboard.KeyPressed += OnKeyPressed;
-        }
-
-        private bool IsValidDialog(FormattedLabelBuilder label, IReadOnlyList<string> buttons, out string errorMessage) {
-            errorMessage = string.Empty;
-            var noButtons = buttons == null || buttons.Count == 0;
-            if (noButtons) {
-                errorMessage += "Prompt dialog must have at least one button. ";
-            }
-            var noText = label == null;
-            if (noText) {
-                errorMessage += "Prompt dialog must have text content.";
-            }
-            return string.IsNullOrEmpty(errorMessage);
         }
 
         private void LoadTextures() {
@@ -115,38 +80,36 @@ namespace Blish_HUD.Common.Gw2.UI {
             base.DisposeControl();
         }
 
-        private void ButtonPress(int buttonIndex) {
-            if (buttonIndex < 0 || buttonIndex >= _buttons.Count) return;
-            GameService.Input.Keyboard.KeyPressed -= OnKeyPressed;
-            GameService.Content.PlaySoundEffectByName("button-click");
-            _callback?.Invoke(buttonIndex);
-            this.Dispose();
-        }
-
         private void OnKeyPressed(object o, KeyboardEventArgs e) {
-            switch (e.Key) {
-                case Keys.Enter:
-                    this.ButtonPress(_enterButtonIndex);
-                    break;
-                case Keys.Escape:
-                    this.ButtonPress(_escapeButtonIndex);
-                    break;
-                default: return;
+            if (e.Key == Keys.Escape) {
+                this.Dispose();
+                return;
             }
-        }
 
-        /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
-        /// </summary>
-        /// <param name="text">Text inside the popup.</param>
-        /// <param name="buttons">Buttons that the prompt should have.</param>
-        /// <param name="callback">Function that is called when a button is pressed.</param>
-        /// <param name="enterButtonIndex">Index of a button that can be triggered via the Enter key on the keyboard.</param>
-        /// <param name="escapeButtonIndex">Index of a button that can be triggered via the Escape key on the keyboard.</param>
-        public static void Show(string text, DialogButton buttons = DialogButton.OK, Action<int> callback = null,
-                                      int enterButtonIndex  = 0,
-                                      int escapeButtonIndex = 1) {
-            Show(text, DialogIcon.None, buttons, callback, enterButtonIndex, escapeButtonIndex);
+            if (e.Key == Keys.Enter) {
+                _buttons.FirstOrDefault(b => b.Selected)?.DoClick(this);
+                return;
+            }
+
+            if (e.Key == Keys.Tab) {
+                // Find currently selected index.
+                int currentIndex = _buttons.FindIndex(b => b.Selected);
+
+                // Fallback if none selected yet.
+                if (currentIndex < 0) currentIndex = 0;
+
+                bool backwards = (GameService.Input.Keyboard.ActiveModifiers & ModifierKeys.Shift) != 0;
+
+                int newIndex = backwards
+                    ? (currentIndex - 1 + _buttons.Count) % _buttons.Count
+                    : (currentIndex + 1) % _buttons.Count;
+
+                // Update selection.
+                for (int i = 0; i < _buttons.Count; i++) {
+                    _buttons[i].Select(i == newIndex);
+                }
+                return;
+            }
         }
 
         /// <summary>
@@ -154,13 +117,8 @@ namespace Blish_HUD.Common.Gw2.UI {
         /// </summary>
         /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
         /// <param name="buttons">Buttons that the prompt should have.</param>
-        /// <param name="callback">Function that is called when a button is pressed.</param>
-        /// <param name="enterButtonIndex">Index of a button that can be triggered via the Enter key on the keyboard.</param>
-        /// <param name="escapeButtonIndex">Index of a button that can be triggered via the Escape key on the keyboard.</param>
-        public static void Show(FormattedLabelBuilder label, DialogButton buttons, Action<int> callback = null,
-                                      int enterButtonIndex = 0,
-                                      int escapeButtonIndex = 1) {
-            Show(label, DialogIcon.None, buttons, callback, enterButtonIndex, escapeButtonIndex);
+        public static void Show(FormattedLabelBuilder label, params DialogButton[] buttons) {
+            Show(label, null, buttons);
         }
 
         /// <summary>
@@ -169,17 +127,8 @@ namespace Blish_HUD.Common.Gw2.UI {
         /// <param name="text">Text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
         /// <param name="icon">Predefined icon to use.</param>
         /// <param name="buttons">Predefined buttons that the prompt should have.</param>
-        /// <param name="callback">Function that is called when a button is pressed.</param>
-        /// <param name="enterButtonIndex">Index of a button that can be triggered via the Enter key on the keyboard.</param>
-        /// <param name="escapeButtonIndex">Index of a button that can be triggered via the Escape key on the keyboard.</param>
-        public static void Show(
-            string text,
-            DialogIcon icon = DialogIcon.None,
-            DialogButton buttons = DialogButton.OK,
-            Action<int> callback = null,
-            int enterButtonIndex = 0,
-            int escapeButtonIndex = 1) {
-            Show(GetDefaultLabel(text), icon, buttons, callback, enterButtonIndex, escapeButtonIndex);
+        public static void Show(string text, DialogIcon icon = DialogIcon.None, params DialogButton[] buttons) {
+            Show(GetDefaultLabel(text), GetDefaultIcon(icon), buttons);
         }
 
         /// <summary>
@@ -188,17 +137,17 @@ namespace Blish_HUD.Common.Gw2.UI {
         /// <param name="text">Text inside the popup.</param>
         /// <param name="icon">Custom icon to use. Will NOT be disposed with the prompt.</param>
         /// <param name="buttons">Buttons that the prompt should have.</param>
-        /// <param name="callback">Function that is called when a button is pressed.</param>
-        /// <param name="enterButtonIndex">Index of a button that can be triggered via the Enter key on the keyboard.</param>
-        /// <param name="escapeButtonIndex">Index of a button that can be triggered via the Escape key on the keyboard.</param>
-        public static void Show(
-            string text,
-            AsyncTexture2D icon,
-            DialogButton buttons = DialogButton.OK,
-            Action<int> callback = null,
-            int enterButtonIndex = 0,
-            int escapeButtonIndex = 1) {
-            Show(GetDefaultLabel(text), icon, buttons, callback, enterButtonIndex, escapeButtonIndex);
+        public static void Show(string text, AsyncTexture2D icon, params DialogButton[] buttons) {
+            Show(GetDefaultLabel(text), icon, buttons);
+        }
+
+        /// <summary>
+        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// </summary>
+        /// <param name="text">Text inside the popup.</param>
+        /// <param name="buttons">Buttons that the prompt should have.</param>
+        public static void Show(string text, params DialogButton[] buttons) {
+            Show(GetDefaultLabel(text), null, buttons);
         }
 
         /// <summary>
@@ -207,32 +156,8 @@ namespace Blish_HUD.Common.Gw2.UI {
         /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
         /// <param name="icon">Predefined icon to use.</param>
         /// <param name="buttons">Buttons that the prompt should have.</param>
-        /// <param name="callback">Function that is called when a button is pressed.</param>
-        /// <param name="enterButtonIndex">Index of a button that can be triggered via the Enter key on the keyboard.</param>
-        /// <param name="escapeButtonIndex">Index of a button that can be triggered via the Escape key on the keyboard.</param>
-        public static void Show(
-            FormattedLabelBuilder label,
-            DialogIcon icon,
-            DialogButton buttons = DialogButton.OK,
-            Action<int> callback = null,
-            int enterButtonIndex = 0,
-            int escapeButtonIndex = 1) {
-            Show(label, GetDefaultIcon(icon), buttons, callback, enterButtonIndex, escapeButtonIndex);
-        }
-
-        /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
-        /// </summary>
-        /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
-        /// <param name="icon">Predefined icon to use.</param>
-        /// <param name="buttons">Buttons that the prompt should have.</param>
-        /// <param name="callback">Function that is called when a button is pressed.</param>
-        /// <param name="enterButtonIndex">Index of a button that can be triggered via the Enter key on the keyboard.</param>
-        /// <param name="escapeButtonIndex">Index of a button that can be triggered via the Escape key on the keyboard.</param>
-        public static void Show(FormattedLabelBuilder label, DialogIcon icon, IEnumerable<string> buttons = null, Action<int> callback = null,
-                                      int enterButtonIndex = 0,
-                                      int escapeButtonIndex = 1) {
-            Show(label, GetDefaultIcon(icon), buttons, callback, enterButtonIndex, escapeButtonIndex);
+        public static void Show(FormattedLabelBuilder label, DialogIcon icon, params DialogButton[] buttons) {
+            Show(label, GetDefaultIcon(icon), buttons);
         }
 
         /// <summary>
@@ -241,29 +166,8 @@ namespace Blish_HUD.Common.Gw2.UI {
         /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
         /// <param name="icon">Custom icon to use. Will NOT be disposed with the prompt.</param>
         /// <param name="buttons">Buttons that the prompt should have.</param>
-        /// <param name="callback">Function that is called when a button is pressed.</param>
-        /// <param name="enterButtonIndex">Index of a button that can be triggered via the Enter key on the keyboard.</param>
-        /// <param name="escapeButtonIndex">Index of a button that can be triggered via the Escape key on the keyboard.</param>
-        public static void Show(FormattedLabelBuilder label, AsyncTexture2D icon, DialogButton buttons = DialogButton.OK, Action<int> callback = null,
-                                      int enterButtonIndex = 0,
-                                      int escapeButtonIndex = 1) {
-            Show(label, icon, GetDefaultButtons(buttons), callback, enterButtonIndex, escapeButtonIndex);
-        }
-
-        /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
-        /// </summary>
-        /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
-        /// <param name="icon">Custom icon to use. Will NOT be disposed with the prompt.</param>
-        /// <param name="buttons">Buttons that the prompt should have.</param>
-        /// <param name="callback">Function that is called when a button is pressed.</param>
-        /// <param name="enterButtonIndex">Index of a button that can be triggered via the Enter key on the keyboard.</param>
-        /// <param name="escapeButtonIndex">Index of a button that can be triggered via the Escape key on the keyboard.</param>
-        public static void Show(FormattedLabelBuilder label, AsyncTexture2D icon = null, IEnumerable<string> buttons = null, Action<int> callback = null,
-                                       int enterButtonIndex = 0,
-                                       int escapeButtonIndex = 1) {
-            var prompt = new ScreenPrompt(label, icon, buttons.ToList(), callback, enterButtonIndex, escapeButtonIndex)
-            {
+        public static void Show(FormattedLabelBuilder label, AsyncTexture2D icon = null, params DialogButton[] buttons) {
+            var prompt = new ScreenPrompt(label, icon, buttons?.ToList()) {
                 Parent = Graphics.SpriteScreen,
                 Location = Point.Zero,
                 Size = Graphics.SpriteScreen.Size
@@ -291,50 +195,32 @@ namespace Blish_HUD.Common.Gw2.UI {
             return iconTex;
         }
 
-        private static IReadOnlyList<string> GetDefaultButtons(DialogButton buttons) {
-            return Enum.GetValues(typeof(DialogButton))
-                .Cast<DialogButton>()
-                .Reverse()
-                .Where(b => b != DialogButton.None && (buttons & b) == b)
-                .Select(GetDefaultButtonText)
-                .ToList();
-        }
-
-        private static string GetDefaultButtonText(DialogButton button) {
-            return button switch {
-                DialogButton.OK => Strings.Common.Action_OK,
-                DialogButton.Confirm => Strings.Common.Action_Confirm,
-                DialogButton.Cancel => Strings.Common.Action_Cancel,
-                DialogButton.Yes => Strings.Common.Action_Yes,
-                DialogButton.No => Strings.Common.Action_No,
-                DialogButton.Ignore => Strings.Common.Action_Ignore,
-                DialogButton.Close => Strings.Common.Action_Close,
-                DialogButton.Apply => Strings.Common.Action_Apply,
-                DialogButton.Decline => Strings.Common.Action_Decline,
-                _ => string.Empty
-            };
-        }
-
         private void CalculateButtonLayout() {
             int minLeftOffset = 50;
             int buttonCount = _buttons.Count;
             int availableWidth = _bgBounds.Width - minLeftOffset;
 
+            // Calculate button width.
             int buttonWidth = _maxButtonWidth + Panel.RIGHT_PADDING * 2;
             if (buttonCount * buttonWidth > availableWidth) {
                 buttonWidth = availableWidth / buttonCount;
             }
 
-            int xOffset = _bgBounds.Width - minLeftOffset - buttonWidth - Panel.RIGHT_PADDING * 2;
+            // Calculate total width of the button row.
+            int totalWidth = buttonCount * buttonWidth
+                           + (buttonCount - 1) * _iconMargin.X;
+
+            // Anchor the whole group to the RIGHT.
+            int xOffset = _bgBounds.Right - totalWidth - Panel.RIGHT_PADDING * 2;
             int yOffset = _bgBounds.Bottom - BUTTON_HEIGHT - Panel.BOTTOM_PADDING - 2;
             foreach (var button in _buttons) {
-                if (button == null || button.Enabled) continue;
-                button.Location = new Point(_bgBounds.Left + minLeftOffset + xOffset, yOffset);
-                button.Width = buttonWidth;
-                button.Height = BUTTON_HEIGHT;
-                button.Click += (o, e) => this.ButtonPress(_buttons.IndexOf((StandardButton)o));
-                button.Enabled = true;
-                xOffset -= buttonWidth + _iconMargin.X;
+                if (button == null) continue;
+                var bounds = new Rectangle(
+                    new Point(xOffset, yOffset),
+                    new Point(buttonWidth, BUTTON_HEIGHT)
+                );
+                button.Transform(this, bounds);
+                xOffset += buttonWidth + _iconMargin.X;
             }
         }
 
@@ -377,5 +263,61 @@ namespace Blish_HUD.Common.Gw2.UI {
             _label.Location = new Point(bgBounds.Left + textPos.X, bgBounds.Y + textPos.Y);
             this.CalculateButtonLayout();
         }
+    }
+
+    public sealed class DialogButton {
+        internal string Text;
+        internal bool Selected;
+        private Action _callback;
+        private StandardButton _button;
+        private DialogButton(string text, Action callback = null) {
+            if (string.IsNullOrEmpty(text)) 
+                throw new ArgumentNullException(nameof(text), $"[{nameof(DialogButton)}] Parameter '{nameof(text)}' cannot be null or empty.");
+
+            _callback = callback;
+            Text = text;
+            _button = new StandardButton() {
+                Text = text,
+                Enabled = false
+            };
+            _button.Click += (o, e) => {
+                DoClick(((StandardButton)o).Parent);
+            };
+        }
+
+        internal void DoClick(Container parent) {
+            GameService.Content.PlaySoundEffectByName("button-click");
+            parent?.Dispose();
+            _callback?.Invoke();
+        }
+
+        internal void Transform(ScreenPrompt parent, Rectangle bounds) {
+            _button.Parent = parent;
+            _button.Location = bounds.Location;
+            _button.Size = bounds.Size;
+            _button.Enabled = true;
+        }
+
+        public DialogButton Action(Action callback) {
+            _callback = callback;
+            return this;
+        }
+
+        public DialogButton Select(bool selected = true) {
+            Selected = selected;
+            _button.BackgroundColor = selected ? new Color(192, 216, 255, 217) : Color.Transparent;
+            return this;
+        }
+
+        public static DialogButton OK => new DialogButton(Strings.Common.Action_OK);
+        public static DialogButton Confirm => new DialogButton(Strings.Common.Action_Confirm);
+        public static DialogButton Cancel => new DialogButton(Strings.Common.Action_Cancel);
+        public static DialogButton Yes => new DialogButton(Strings.Common.Action_Yes);
+        public static DialogButton No => new DialogButton(Strings.Common.Action_No);
+        public static DialogButton Ignore => new DialogButton(Strings.Common.Action_Ignore);
+        public static DialogButton Close => new DialogButton(Strings.Common.Action_Close);
+        public static DialogButton Apply => new DialogButton(Strings.Common.Action_Apply);
+        public static DialogButton Decline => new DialogButton(Strings.Common.Action_Decline);
+        public static DialogButton Create(string text) => new DialogButton(text);
     }
 }
