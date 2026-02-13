@@ -238,41 +238,41 @@ namespace Blish_HUD {
             spriteBatch.DrawString(font, text, textPos, color * absoluteOpacity, clippingRectangle);
         }
 
-        public static void DrawRectangleOnCtrl(this SpriteBatch spriteBatch, Control ctrl, Rectangle bounds, int lineWidth, Color color) {
-            if (lineWidth <= 0 || bounds.Width <= 0 || bounds.Height <= 0) {
-                return;
-            }
+        public static void DrawBorderOnCtrl(this SpriteBatch spriteBatch,
+                                       Control ctrl,
+                                       Rectangle bounds,
+                                       int lineWidth,
+                                       Color color) {
 
-            // Clamp lineWidth so it doesn't exceed half the rect size
+            if (lineWidth <= 0 || bounds.Width <= 0 || bounds.Height <= 0) return;
+
             lineWidth = Math.Min(lineWidth, Math.Min(bounds.Width / 2, bounds.Height / 2));
 
+            var localBounds = bounds.ToBounds(ctrl.AbsoluteBounds);
+            var col = color * ctrl.AbsoluteOpacity();
+
             // Top
-            spriteBatch.DrawOnCtrl(ctrl, ContentService.Textures.Pixel,
-              new Rectangle(bounds.X, bounds.Y, bounds.Width, lineWidth), color);
+            spriteBatch.Draw(ContentService.Textures.Pixel,
+                new Rectangle(localBounds.X, localBounds.Y, localBounds.Width, lineWidth), col);
 
             // Bottom
-            spriteBatch.DrawOnCtrl(ctrl, ContentService.Textures.Pixel,
-              new Rectangle(bounds.X, bounds.Bottom - lineWidth, bounds.Width, lineWidth), color);
+            spriteBatch.Draw(ContentService.Textures.Pixel,
+                new Rectangle(localBounds.X, localBounds.Bottom - lineWidth, localBounds.Width, lineWidth), col);
 
-            // Left
-            spriteBatch.DrawOnCtrl(ctrl, ContentService.Textures.Pixel,
-              new Rectangle(bounds.X, bounds.Y + lineWidth, lineWidth, bounds.Height - (lineWidth * 2)), color);
+            int innerHeight = localBounds.Height - (lineWidth * 2);
+            if (innerHeight > 0) {
+                // Left
+                spriteBatch.Draw(ContentService.Textures.Pixel,
+                    new Rectangle(localBounds.X, localBounds.Y + lineWidth, lineWidth, innerHeight), col);
 
-            // Right
-            spriteBatch.DrawOnCtrl(ctrl, ContentService.Textures.Pixel,
-              new Rectangle(bounds.Right - lineWidth, bounds.Y + lineWidth, lineWidth, bounds.Height - (lineWidth * 2)), color);
+                // Right
+                spriteBatch.Draw(ContentService.Textures.Pixel,
+                    new Rectangle(localBounds.Right - lineWidth, localBounds.Y + lineWidth, lineWidth, innerHeight), col);
+            }
         }
 
-        public static void DrawRectangleOnCtrl(this SpriteBatch spriteBatch, Control ctrl, Rectangle bounds, int lineWidth) {
-            DrawRectangleOnCtrl(spriteBatch, ctrl, bounds, lineWidth, Color.Black);
-        }
-
-        public static void DrawRectangleOnCtrl(this SpriteBatch spriteBatch, Control ctrl, Rectangle bounds, Color color) {
-            DrawRectangleOnCtrl(spriteBatch, ctrl, bounds, Math.Min(bounds.Width, bounds.Height) / 2, color);
-        }
-
-        public static void DrawRectangleOnCtrl(this SpriteBatch spriteBatch, Control ctrl, Rectangle bounds) {
-            DrawRectangleOnCtrl(spriteBatch, ctrl, bounds, Color.Black);
+        public static void DrawBorderCtrl(this SpriteBatch spriteBatch, Control ctrl, Rectangle bounds, int lineWidth = 2) {
+            DrawBorderOnCtrl(spriteBatch, ctrl, bounds, lineWidth, Color.Black);
         }
     }
 }
