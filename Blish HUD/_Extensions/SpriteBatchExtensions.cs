@@ -271,7 +271,7 @@ namespace Blish_HUD {
             }
         }
 
-        public static void DrawBorderCtrl(this SpriteBatch spriteBatch, Control ctrl, Rectangle bounds, int lineWidth = 2) {
+        public static void DrawBorderOnCtrl(this SpriteBatch spriteBatch, Control ctrl, Rectangle bounds, int lineWidth = 2) {
             DrawBorderOnCtrl(spriteBatch, ctrl, bounds, lineWidth, Color.Black);
         }
     }
