@@ -17,17 +17,27 @@ namespace Blish_HUD.Common.Gw2.UI {
         Present
     }
 
+    /// <summary>
+    /// Represents a modal prompt that displays a message and allows user interaction through buttons.
+    /// </summary>
+    /// <remarks>
+    /// The prompt is displayed in the center of the <seealso cref="SpriteBatch">screen</seealso> 
+    /// and can include an optional <seealso cref="AsyncTexture2D">icon</seealso>. 
+    /// It supports multiple buttons with <seealso cref="Action">callbacks</seealso>.<br/>
+    /// Navigation and interaction is also possible via <see cref="Keys.Tab"/> and <seealso cref="Keys.Enter"/> respectively.
+    /// <seealso cref="Keys.Escape"/> closes the prompt silently.
+    /// </remarks>
     public sealed class ScreenPrompt : Container {
         private AsyncTexture2D _bgTexture;
-        private Rectangle      _bgTextureBounds; // Bounds for the background texture to avoid empty margins and borders, which are not used in the prompt design.
-        private AsyncTexture2D _icon;// Optional icon to display on the left side of the prompt, which can be set via predefined DialogIcon or custom AsyncTexture2D.
+        private Rectangle      _bgTextureBounds; // Bounds of bg texture without empty margins and borders.
+        private AsyncTexture2D _icon; // Optional icon to display.
 
-        private Rectangle _bgBounds; // Calculated bounds for the background, which also serves as the container for the text and buttons.
-        private Point     _iconMargin; // Space between the icon and the text, as well as between buttons if multiple are present.
+        private Rectangle _bgBounds; // Calculated bounds of container.
+        private Point     _iconMargin; // Space between icon and the text, as well as between buttons.
 
-        private const int BUTTON_HEIGHT = 30;
-        private const int BUTTON_WIDTH = 117;
-        private int _maxButtonWidth; // Calculated max button width based on text size, with a minimum defined by BUTTON_WIDTH.
+        private const int BUTTON_HEIGHT = 30; // Fixed button height.
+        private const int BUTTON_WIDTH = 117; // Minimum button width.
+        private int _maxButtonWidth; // Calculated max button width based on text width.
 
         private readonly List<DialogButton> _buttons;
         private readonly FormattedLabel _label;
@@ -58,7 +68,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
             // Calculate max button width.
             foreach (DialogButton button in _buttons) {
-                var bttnWidth = GameService.Content.DefaultFont14 // Default font of StandardButton
+                var bttnWidth = GameService.Content.DefaultFont14 // Default font of StandardButton.
                     .MeasureStringLogical(button.Text).X + Panel.RIGHT_PADDING * 2;
                 if (bttnWidth > _maxButtonWidth) 
                     _maxButtonWidth = (int)Math.Round(bttnWidth);
@@ -71,7 +81,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private void LoadTextures() {
             _bgTexture = GameService.Content.DatAssetCache.GetTextureFromAssetId(156003);
-            _bgTextureBounds = new Rectangle(33, 27, 936, 936); // Define bounds because the background texture has empty margin and border parts that we avoid.
+            _bgTextureBounds = new Rectangle(33, 27, 936, 936); // Ensure empty margin and border parts of bg texture are avoided.
         }
 
         protected override void DisposeControl() {
@@ -82,7 +92,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private void OnKeyPressed(object o, KeyboardEventArgs e) {
             if (e.Key == Keys.Escape) {
-                this.Dispose();
+                this.Dispose(); // Close the prompt silently.
                 return;
             }
 
@@ -270,11 +280,10 @@ namespace Blish_HUD.Common.Gw2.UI {
         internal bool Selected;
         private Action _callback;
         private StandardButton _button;
-        private DialogButton(string text, Action callback = null) {
+        private DialogButton(string text) {
             if (string.IsNullOrEmpty(text)) 
                 throw new ArgumentNullException(nameof(text), $"[{nameof(DialogButton)}] Parameter '{nameof(text)}' cannot be null or empty.");
 
-            _callback = callback;
             Text = text;
             _button = new StandardButton() {
                 Text = text,
