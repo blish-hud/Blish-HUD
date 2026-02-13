@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -367,7 +368,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             spriteBatch.DrawOnCtrl(this, _bgTexture, bgBounds, new Rectangle(_bgTextureBounds.Location, bgTextureSize), Color.White);
 
             // Draw border
-            spriteBatch.DrawRectangleOnCtrl(this, _bgBounds, 2, Color.Black);
+            spriteBatch.DrawBorderOnCtrl(this, _bgBounds, 2, Color.Black);
 
             if (icon != null && icon.HasTexture) {
                 var iconBounds = new Rectangle(bgBounds.Left + _iconMargin.X, bgBounds.Top + _iconMargin.Y, 64, 64);
@@ -377,5 +378,23 @@ namespace Blish_HUD.Common.Gw2.UI {
             _label.Location = new Point(bgBounds.Left + textPos.X, bgBounds.Y + textPos.Y);
             this.CalculateButtonLayout();
         }
+    }
+
+    public sealed class DialogButton {
+        private Action<DialogButton> _callback;
+        private Keys _key;
+        private string _text;
+        private DialogButton(string text, Action<DialogButton> callback, Keys key = Keys.None) { 
+            _callback = callback;
+            _key = key;
+            _text = text;
+        }
+
+        public DialogButton Action(Action<DialogButton> callback) {
+            return this;
+        }
+
+        public static DialogButton OK => new DialogButton("OK", null, Keys.Enter);
+        public static DialogButton Cancel => new DialogButton("Cancel", null, Keys.Escape);
     }
 }
