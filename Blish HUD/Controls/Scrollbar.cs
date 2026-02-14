@@ -161,11 +161,6 @@ namespace Blish_HUD.Controls {
 
             if (scrollValue == 0) return;
 
-            // Handle the scroll value overflow (happens when scrolling fast in one direction)
-            if (scrollValue < -32000) {
-                scrollValue += 65536;
-            }
-
             // Propotional scroll amount based on the scroll value, with a minimum of 8
             float scrollMultiplier = scrollValue / 8f;
             scrollMultiplier = Math.Max(8f, Math.Abs(scrollMultiplier)) * Math.Sign(scrollValue);
