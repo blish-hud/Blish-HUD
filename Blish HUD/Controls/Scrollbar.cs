@@ -158,10 +158,17 @@ namespace Blish_HUD.Controls {
                 ctrl = ctrl.Parent;
             }
 
-            if (GameService.Input.Mouse.State.ScrollWheelValue == 0) return;
+            int scrollValue = GameService.Input.Mouse.State.ScrollWheelValue;
 
-            float normalScroll = Math.Sign(GameService.Input.Mouse.State.ScrollWheelValue);
-            ScrollAnimated((int)normalScroll * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
+            if (scrollValue == 0) return;
+
+            // Handle the scroll value overflow (happens when scrolling a lot in one direction)
+            if (scrollValue < -32000) {
+                scrollValue += 65536;
+            }
+
+            float scrollDirection = Math.Sign(scrollValue);
+            ScrollAnimated((int)scrollDirection * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
         }
 
         private ClickFocus GetScrollFocus(Point mousePos) => mousePos switch {
