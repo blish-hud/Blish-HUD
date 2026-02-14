@@ -123,7 +123,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
         /// </summary>
         /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
         /// <param name="buttons">Buttons that the prompt should have.</param>
@@ -132,7 +132,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
         /// </summary>
         /// <param name="text">Text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
         /// <param name="icon">Predefined icon to use.</param>
@@ -142,7 +142,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
         /// </summary>
         /// <param name="text">Text inside the popup.</param>
         /// <param name="icon">Custom icon to use. Will NOT be disposed with the prompt.</param>
@@ -152,7 +152,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
         /// </summary>
         /// <param name="text">Text inside the popup.</param>
         /// <param name="buttons">Buttons that the prompt should have.</param>
@@ -161,7 +161,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
         /// </summary>
         /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
         /// <param name="icon">Predefined icon to use.</param>
@@ -171,7 +171,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         /// <summary>
-        /// Shows an immovable error prompt popup window in the center of the screen.
+        /// Shows an immovable <seealso cref="ScreenPrompt"/> in the center of the screen.
         /// </summary>
         /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
         /// <param name="icon">Custom icon to use. Will NOT be disposed with the prompt.</param>
