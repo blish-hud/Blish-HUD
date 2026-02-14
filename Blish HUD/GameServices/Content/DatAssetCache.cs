@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Blish_HUD.Content {
@@ -191,19 +192,13 @@ namespace Blish_HUD.Content {
 
             int addedCount = 0;
 
-            // I'm 99% sure that GameService.Graphics will be defined by this point
-            // but just in case, we'll check and fall back to direct device access if it's not
-            GraphicsDeviceContext graphicsLease = default;
-            GraphicsDevice graphicsDevice;
-
-            if (GameService.Graphics != null) {
-                graphicsLease = GameService.Graphics.LendGraphicsDeviceContext(true);
-                graphicsDevice = graphicsLease.GraphicsDevice;
-            } else {
-                graphicsDevice = BlishHud.Instance.GraphicsDevice;
+            // At this point, it's 99% likely that GameService.Graphics is defined, but we'll
+            // spin just in case it is not (safe - we're on a background thread).
+            while (GameService.Graphics == null) {
+                Thread.Sleep(50);
             }
 
-            try {
+            using (var ctx = GameService.Graphics.LendGraphicsDeviceContext(true)) {
                 for (int sizeIndex = 0; sizeIndex < sizeCount; sizeIndex++) {
                     int width = BitConverter.ToInt32(data, offset);
                     offset += 4;
@@ -217,7 +212,7 @@ namespace Blish_HUD.Content {
                         existingSizes[size] = resolvedSizeIndex;
                         textureSizesList.Add(size);
 
-                        var transparentTexture = new Texture2D(graphicsDevice, width, height);
+                        var transparentTexture = new Texture2D(ctx.GraphicsDevice, width, height);
                         transparentTexture.SetData(new Color[width * height]);
                         transparentTexturesList.Add(transparentTexture);
                     }
@@ -235,8 +230,6 @@ namespace Blish_HUD.Content {
                         }
                     }
                 }
-            } finally {
-                graphicsLease.Dispose();
             }
 
             // Update arrays before the dictionary so that any new size indices
