@@ -16,7 +16,6 @@ namespace Blish_HUD.Controls {
         private const int SCROLL_ARROW      = 50;
         private const int SCROLL_CONT_ARROW = 10;
         private const int SCROLL_CONT_TRACK = 15;
-        private const int SCROLL_WHEEL      = 30;
 
         #region Load Static
 
@@ -162,13 +161,16 @@ namespace Blish_HUD.Controls {
 
             if (scrollValue == 0) return;
 
-            // Handle the scroll value overflow (happens when scrolling a lot in one direction)
+            // Handle the scroll value overflow (happens when scrolling fast in one direction)
             if (scrollValue < -32000) {
                 scrollValue += 65536;
             }
 
-            float scrollDirection = Math.Sign(scrollValue);
-            ScrollAnimated((int)scrollDirection * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
+            // Propotional scroll amount based on the scroll value, with a minimum of 8
+            float scrollMultiplier = scrollValue / 8f;
+            scrollMultiplier = Math.Max(8f, Math.Abs(scrollMultiplier)) * Math.Sign(scrollValue);
+
+            ScrollAnimated(-(int)scrollMultiplier * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
         }
 
         private ClickFocus GetScrollFocus(Point mousePos) => mousePos switch {
