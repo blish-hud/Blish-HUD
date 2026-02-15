@@ -200,8 +200,9 @@ namespace Blish_HUD.Common.Gw2.UI {
         /// The <paramref name="customIcon"/> will <c>not</c> be disposed with the <seealso cref="StandardDialog"/>.
         /// </remarks>
         public static void Show(Container parent, FormattedLabelBuilder label, AsyncTexture2D customIcon, params DialogButton[] buttons) {
+            parent ??= GameService.Graphics.SpriteScreen;
             var prompt = new StandardDialog(label, customIcon, buttons?.ToList()) {
-                Parent = parent ?? GameService.Graphics.SpriteScreen,
+                Parent = parent,
                 Location = Point.Zero,
                 Size = parent.Size
             };
