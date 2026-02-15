@@ -10,6 +10,9 @@ using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 namespace Blish_HUD.Common.Gw2.UI {
+    /// <summary>
+    /// Specifies default icons that can be displayed in a dialog box, specifically <see cref="StandardDialog"/>.
+    /// </summary>
     public enum DialogIcon {
         None,
         Exclamation,
@@ -27,7 +30,7 @@ namespace Blish_HUD.Common.Gw2.UI {
     /// Navigation and interaction is also possible via <see cref="Keys.Tab"/> and <seealso cref="Keys.Enter"/> respectively.
     /// <seealso cref="Keys.Escape"/> closes the prompt silently.
     /// </remarks>
-    public sealed class ScreenPrompt : Container {
+    public sealed class StandardDialog : Container {
         private AsyncTexture2D _bgTexture;
         private Rectangle      _bgTextureBounds; // Bounds of bg texture without empty margins and borders.
         private AsyncTexture2D _icon; // Optional icon to display.
@@ -42,20 +45,20 @@ namespace Blish_HUD.Common.Gw2.UI {
         private readonly List<DialogButton> _buttons;
         private readonly FormattedLabel _label;
 
-        private ScreenPrompt(
+        private StandardDialog(
             FormattedLabelBuilder label, 
             AsyncTexture2D icon, 
             List<DialogButton> buttons) {
 
             if (label == null)
-                throw new ArgumentNullException(nameof(label), $"[{nameof(ScreenPrompt)}] Parameter '{nameof(label)}' cannot be null.");
+                throw new ArgumentNullException(nameof(label), $"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' cannot be null.");
 
             // Defaulting to OK button if no buttons provided to ensure there's always a way to close the prompt.
             if (buttons == null || buttons.Count == 0)
                 buttons = new List<DialogButton>() { DialogButton.OK };
 
             if (buttons.Count(b => b.Selected) > 1)
-                throw new ArgumentException($"[{nameof(ScreenPrompt)}] Only one {nameof(DialogButton)} can be selected by default.", nameof(buttons));
+                throw new ArgumentException($"[{nameof(StandardDialog)}] Only one {nameof(DialogButton)} can be selected by default.", nameof(buttons));
 
             _label        = label.SetWidth(340).AutoSizeHeight().Wrap().Build();
             _label.Parent = this;
@@ -91,10 +94,10 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         private void OnKeyPressed(object o, KeyboardEventArgs e) {
-            if (e.Key == Keys.Escape) {
+            /*if (e.Key == Keys.Escape) {
                 this.Dispose(); // Close the prompt silently.
                 return;
-            }
+            }*/
 
             if (e.Key == Keys.Enter) {
                 _buttons.FirstOrDefault(b => b.Selected)?.DoClick(this);
@@ -122,65 +125,82 @@ namespace Blish_HUD.Common.Gw2.UI {
             }
         }
 
-        /// <summary>
-        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
-        /// </summary>
-        /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
-        /// <param name="buttons">Buttons that the prompt should have.</param>
+        /// <inheritdoc cref="Show(Container, FormattedLabelBuilder, AsyncTexture2D, DialogButton[])"/>
         public static void Show(FormattedLabelBuilder label, params DialogButton[] buttons) {
-            Show(label, null, buttons);
+            Show(null, label, null, buttons);
         }
 
-        /// <summary>
-        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
-        /// </summary>
-        /// <param name="text">Text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
-        /// <param name="icon">Predefined icon to use.</param>
-        /// <param name="buttons">Predefined buttons that the prompt should have.</param>
-        public static void Show(string text, DialogIcon icon = DialogIcon.None, params DialogButton[] buttons) {
-            Show(GetDefaultLabel(text), GetDefaultIcon(icon), buttons);
+        /// <inheritdoc cref="Show(Container, string, DialogIcon, DialogButton[])"/>
+        public static void Show(string text, DialogIcon sysIcon, params DialogButton[] buttons) {
+            Show(null, GetDefaultLabel(text), GetDefaultIcon(sysIcon), buttons);
         }
 
-        /// <summary>
-        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
-        /// </summary>
-        /// <param name="text">Text inside the popup.</param>
-        /// <param name="icon">Custom icon to use. Will NOT be disposed with the prompt.</param>
-        /// <param name="buttons">Buttons that the prompt should have.</param>
-        public static void Show(string text, AsyncTexture2D icon, params DialogButton[] buttons) {
-            Show(GetDefaultLabel(text), icon, buttons);
+        /// <inheritdoc cref="Show(Container, string, AsyncTexture2D, DialogButton[])"/>
+        public static void Show(string text, AsyncTexture2D customIcon, params DialogButton[] buttons) {
+            Show(null, GetDefaultLabel(text), customIcon, buttons);
         }
 
-        /// <summary>
-        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
-        /// </summary>
-        /// <param name="text">Text inside the popup.</param>
-        /// <param name="buttons">Buttons that the prompt should have.</param>
+        /// <inheritdoc cref="Show(Container, string, AsyncTexture2D, DialogButton[])"/>
         public static void Show(string text, params DialogButton[] buttons) {
-            Show(GetDefaultLabel(text), null, buttons);
+            Show(null, GetDefaultLabel(text), null, buttons);
+        }
+
+        /// <inheritdoc cref="Show(Container, FormattedLabelBuilder, DialogIcon, DialogButton[])"/>
+        public static void Show(FormattedLabelBuilder label, DialogIcon sysIcon, params DialogButton[] buttons) {
+            Show(null, label, GetDefaultIcon(sysIcon), buttons);
+        }
+
+        /// <inheritdoc cref="Show(Container, FormattedLabelBuilder, AsyncTexture2D, DialogButton[])"/>
+        public static void Show(FormattedLabelBuilder label, AsyncTexture2D customIcon, params DialogButton[] buttons) {
+            Show(null, label, customIcon, buttons);
+        }
+
+        /// <inheritdoc cref="Show(Container, FormattedLabelBuilder, AsyncTexture2D, DialogButton[])"/>
+        public static void Show(Container parent, FormattedLabelBuilder label, params DialogButton[] buttons) {
+            Show(parent, label, null, buttons);
+        }
+
+        /// <inheritdoc cref="Show(Container, string, DialogIcon, DialogButton[])"/>
+        public static void Show(Container parent, string text, AsyncTexture2D customIcon, params DialogButton[] buttons) {
+            Show(parent, GetDefaultLabel(text), customIcon, buttons);
+        }
+
+        /// <inheritdoc cref="Show(Container, string, DialogIcon, DialogButton[])"/>
+        public static void Show(Container parent, string text, params DialogButton[] buttons) {
+            Show(parent, GetDefaultLabel(text), null, buttons);
+        }
+
+        /// <inheritdoc cref="Show(Container, FormattedLabelBuilder, AsyncTexture2D, DialogButton[])"/>
+        /// <inheritdoc cref="Show(Container, string, DialogIcon, DialogButton[])"/>
+        public static void Show(Container parent, FormattedLabelBuilder label, DialogIcon sysIcon, params DialogButton[] buttons) {
+            Show(parent, label, GetDefaultIcon(sysIcon), buttons);
+        }
+
+        /// <inheritdoc cref="Show(Container, FormattedLabelBuilder, AsyncTexture2D, DialogButton[])"/>
+        /// <param name="text">Text inside the <see cref="StandardDialog"/>.</param>
+        /// <param name="sysIcon">Predefined icon to display in the top-left corner of the <see cref="StandardDialog"/>.</param>
+        public static void Show(Container parent, string text, DialogIcon sysIcon, params DialogButton[] buttons) {
+            Show(parent, GetDefaultLabel(text), GetDefaultIcon(sysIcon), buttons);
         }
 
         /// <summary>
-        /// Shows a <seealso cref="ScreenPrompt"/> in the center of the screen.
+        /// Shows an immovable <seealso cref="StandardDialog"/> in the center of its parent container, blocking input until it is closed.
         /// </summary>
-        /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
-        /// <param name="icon">Predefined icon to use.</param>
-        /// <param name="buttons">Buttons that the prompt should have.</param>
-        public static void Show(FormattedLabelBuilder label, DialogIcon icon, params DialogButton[] buttons) {
-            Show(label, GetDefaultIcon(icon), buttons);
-        }
-
-        /// <summary>
-        /// Shows an immovable <seealso cref="ScreenPrompt"/> in the center of the screen.
-        /// </summary>
-        /// <param name="label">Formatted text inside the popup. Will be build with auto wrap and sizing by the prompt.</param>
-        /// <param name="icon">Custom icon to use. Will NOT be disposed with the prompt.</param>
-        /// <param name="buttons">Buttons that the prompt should have.</param>
-        public static void Show(FormattedLabelBuilder label, AsyncTexture2D icon = null, params DialogButton[] buttons) {
-            var prompt = new ScreenPrompt(label, icon, buttons?.ToList()) {
-                Parent = Graphics.SpriteScreen,
+        /// <param name="parent">The container to show the <seealso cref="StandardDialog"/> in. Defaults to <see cref="GameService"/><c>.Graphics.SpriteScreen</c>.</param>
+        /// <param name="label">Formatted text inside the <seealso cref="StandardDialog"/>.</param>
+        /// <param name="customIcon">Icon to display in the top-left corner of the <seealso cref="StandardDialog"/>.</param>
+        /// <param name="buttons">Buttons that the <seealso cref="StandardDialog"/> should have.</param>
+        /// <remarks>
+        /// Internally calls <see cref="FormattedLabelBuilder.SetWidth(int)"/>, <see cref="FormattedLabelBuilder.AutoSizeHeight"/> 
+        /// <see cref="FormattedLabelBuilder.Wrap"/> and <see cref="FormattedLabelBuilder.Build"/> on the <paramref name="label"/>.<br/>
+        /// The <paramref name="customIcon"/> will be disposed with the <seealso cref="StandardDialog"/>.
+        /// Use <seealso cref="Texture2DExtension.Duplicate"/> for <seealso cref="DatAssetCache"/> textures before passing them to this method.
+        /// </remarks>
+        public static void Show(Container parent, FormattedLabelBuilder label, AsyncTexture2D customIcon, params DialogButton[] buttons) {
+            var prompt = new StandardDialog(label, customIcon, buttons?.ToList()) {
+                Parent = parent ?? GameService.Graphics.SpriteScreen,
                 Location = Point.Zero,
-                Size = Graphics.SpriteScreen.Size
+                Size = parent.Size
             };
             prompt.Show();
         }
@@ -275,6 +295,9 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
     }
 
+    /// <summary>
+    /// Represents a button that can be added to a dialog, specifically <see cref="StandardDialog"/>.
+    /// </summary>
     public sealed class DialogButton {
         internal string Text;
         internal bool Selected;
@@ -300,7 +323,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             _callback?.Invoke();
         }
 
-        internal void Transform(ScreenPrompt parent, Rectangle bounds) {
+        internal void Transform(Container parent, Rectangle bounds) {
             _button.Parent = parent;
             _button.Location = bounds.Location;
             _button.Size = bounds.Size;
