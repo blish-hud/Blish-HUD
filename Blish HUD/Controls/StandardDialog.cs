@@ -31,6 +31,10 @@ namespace Blish_HUD.Common.Gw2.UI {
     /// <seealso cref="Keys.Escape"/> closes the prompt silently.
     /// </remarks>
     public sealed class StandardDialog : Container {
+        private static Texture2D _questionIcon;
+        private static Texture2D _exclamationIcon;
+        private static Texture2D _presentIcon;
+
         private AsyncTexture2D _bgTexture;
         private Rectangle      _bgTextureBounds; // Bounds of bg texture without empty margins and borders.
         private AsyncTexture2D _icon; // Optional icon to display.
@@ -88,7 +92,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         }
 
         protected override void DisposeControl() {
-            _icon?.Dispose();
+            //_icon?.Dispose(); // Disposal of icon should be handled by caller.
             GameService.Input.Keyboard.KeyPressed -= OnKeyPressed;
             base.DisposeControl();
         }
@@ -215,11 +219,14 @@ namespace Blish_HUD.Common.Gw2.UI {
             var iconAtlas = GameService.Content.DatAssetCache.GetTextureFromAssetId(154985);
             iconAtlas.TextureSwapped += (o, e) => {
                 if (icon == DialogIcon.Exclamation) {
-                    iconTex.SwapTexture(iconAtlas.Texture.GetRegion(0, 0, 64, 64));
+                    _exclamationIcon ??= iconAtlas.Texture.GetRegion(0, 0, 64, 64);
+                    iconTex.SwapTexture(_exclamationIcon);
                 } else if (icon == DialogIcon.Question) {
-                    iconTex.SwapTexture(iconAtlas.Texture.GetRegion(64, 0, 64, 64));
+                    _questionIcon ??= iconAtlas.Texture.GetRegion(64, 0, 64, 64);
+                    iconTex.SwapTexture(_questionIcon);
                 } else if (icon == DialogIcon.Present) {
-                    iconTex.SwapTexture(iconAtlas.Texture.GetRegion(128, 0, 64, 64));
+                    _presentIcon ??= iconAtlas.Texture.GetRegion(128, 0, 64, 64);
+                    iconTex.SwapTexture(_presentIcon);
                 }
             };
             return iconTex;
