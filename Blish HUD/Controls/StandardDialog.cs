@@ -197,8 +197,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         /// <remarks>
         /// Internally calls <see cref="FormattedLabelBuilder.SetWidth(int)"/>, <see cref="FormattedLabelBuilder.AutoSizeHeight"/> 
         /// <see cref="FormattedLabelBuilder.Wrap"/> and <see cref="FormattedLabelBuilder.Build"/> on the <paramref name="label"/>.<br/>
-        /// The <paramref name="customIcon"/> will be disposed with the <seealso cref="StandardDialog"/>.
-        /// Use <seealso cref="Texture2DExtension.Duplicate"/> for <seealso cref="DatAssetCache"/> textures before passing them to this method.
+        /// The <paramref name="customIcon"/> will <c>not</c> be disposed with the <seealso cref="StandardDialog"/>.
         /// </remarks>
         public static void Show(Container parent, FormattedLabelBuilder label, AsyncTexture2D customIcon, params DialogButton[] buttons) {
             var prompt = new StandardDialog(label, customIcon, buttons?.ToList()) {
