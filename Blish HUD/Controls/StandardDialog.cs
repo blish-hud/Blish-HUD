@@ -279,14 +279,14 @@ namespace Blish_HUD.Common.Gw2.UI {
 
             // Container
             // Calculate background bounds
-            var bgTextureSize = new Point(textWidth + iconSize + Panel.RIGHT_PADDING * 10, textHeight + BUTTON_HEIGHT + Panel.TOP_PADDING * 4);
-            bgTextureSize = new Point(bgTextureSize.X < _bgTextureBounds.Width ? bgTextureSize.X : _bgTextureBounds.Width,
-                                      bgTextureSize.Y < _bgTextureBounds.Height ? bgTextureSize.Y : _bgTextureBounds.Height); // Clamp to max texture bounds.
+            var bgSize = new Point(textWidth + iconSize + Panel.RIGHT_PADDING * 10, textHeight + BUTTON_HEIGHT + Panel.TOP_PADDING * 4);
+            var bgTextureSize = new Point(bgSize.X < _bgTextureBounds.Width ? bgSize.X : _bgTextureBounds.Width,
+                                      bgSize.Y < _bgTextureBounds.Height ? bgSize.Y : _bgTextureBounds.Height); // Clamp to max texture bounds.
             var bgTexturePos = new Point((bounds.Width - bgTextureSize.X) / 2, (bounds.Height - bgTextureSize.Y) / 2);
-            var bgBounds = new Rectangle(bgTexturePos, bgTextureSize);
+            var bgBounds = new Rectangle(bgTexturePos, bgSize);
             _bgBounds = bgBounds;
 
-            // Draw Background
+            // Draw Background (starts stretching when bgSize bigger than bgTextureSize).
             spriteBatch.DrawOnCtrl(this, _bgTexture, bgBounds, new Rectangle(_bgTextureBounds.Location, bgTextureSize), Color.White);
 
             // Draw border
