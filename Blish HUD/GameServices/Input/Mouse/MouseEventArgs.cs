@@ -41,7 +41,7 @@ namespace Blish_HUD.Input {
         internal int WheelDelta {
             get {
                 int v             = (int)((this.MouseData & 0xFFFF0000) >> 16);
-                if (v > 32768) v -= ushort.MaxValue + 1;
+                if (v >= 32768) v -= ushort.MaxValue + 1;
                 return v;
             }
         }

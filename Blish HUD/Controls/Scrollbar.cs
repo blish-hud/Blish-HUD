@@ -16,6 +16,7 @@ namespace Blish_HUD.Controls {
         private const int SCROLL_ARROW      = 50;
         private const int SCROLL_CONT_ARROW = 10;
         private const int SCROLL_CONT_TRACK = 15;
+        private const int SCROLL_WHEEL = 15;
 
         #region Load Static
 
@@ -161,8 +162,8 @@ namespace Blish_HUD.Controls {
 
             if (scrollValue == 0) return;
 
-            // Propotional scroll amount based on the scroll value, with a minimum of 8
-            float scrollMultiplier = scrollValue / 8f;
+            // Proportional scroll amount based on the scroll value, with a minimum of 8
+            float scrollMultiplier = (scrollValue / 120f) * SCROLL_WHEEL;
             scrollMultiplier = Math.Max(8f, Math.Abs(scrollMultiplier)) * Math.Sign(scrollValue);
 
             ScrollAnimated(-(int)scrollMultiplier * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
