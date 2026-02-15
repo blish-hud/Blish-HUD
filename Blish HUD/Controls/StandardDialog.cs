@@ -57,6 +57,11 @@ namespace Blish_HUD.Common.Gw2.UI {
             if (label == null)
                 throw new ArgumentNullException(nameof(label), $"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' cannot be null.");
 
+            _label = label.SetWidth(340).AutoSizeHeight().Wrap().Build();
+
+            if (_label.Height == 0)
+                throw new ArgumentException($"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' must have non-empty text or its height failed to calculate.", nameof(label));
+
             // Defaulting to OK button if no buttons provided to ensure there's always a way to close the prompt.
             if (buttons == null || buttons.Count == 0)
                 buttons = new List<DialogButton>() { DialogButton.OK };
@@ -64,7 +69,6 @@ namespace Blish_HUD.Common.Gw2.UI {
             if (buttons.Count(b => b.Selected) > 1)
                 throw new ArgumentException($"[{nameof(StandardDialog)}] Only one {nameof(DialogButton)} can be selected by default.", nameof(buttons));
 
-            _label        = label.SetWidth(340).AutoSizeHeight().Wrap().Build();
             _label.Parent = this;
 
             _icon       = icon;
