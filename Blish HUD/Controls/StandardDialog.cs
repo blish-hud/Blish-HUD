@@ -41,11 +41,12 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private Rectangle _bgBounds; // Calculated bounds of container.
 
-        private const int DIALOG_WIDTH  = 360; // Fixed dialog width.
+        private const int DIALOG_WIDTH  = 350; // Fixed dialog width.
         private const int DIALOG_HEIGHT = 100; // Minimum dialog height.
         private const int BUTTON_HEIGHT = 24; // Fixed button height.
         private const int BUTTON_WIDTH  = 117; // Minimum button width.
 
+        private const int ICON_SIZE     = 64;
         private const int ICON_MARGIN   = 5; // Space between icon and text.
         private const int BUTTON_MARGIN = 3; // Space between buttons.
 
@@ -55,14 +56,32 @@ namespace Blish_HUD.Common.Gw2.UI {
         private readonly FormattedLabel _label;
 
         private StandardDialog(
+            Container parent,
             FormattedLabelBuilder label, 
             AsyncTexture2D icon, 
             List<DialogButton> buttons) {
 
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent), $"[{nameof(StandardDialog)}] Parameter '{nameof(parent)}' cannot be null.");
+
             if (label == null)
                 throw new ArgumentNullException(nameof(label), $"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' cannot be null.");
 
-            _label = label.SetWidth(DIALOG_WIDTH).AutoSizeHeight().Wrap().Build();
+            this.Parent = parent;
+            this.Location = Point.Zero;
+            this.Size = parent.Size;
+
+            var dialogWidth = DIALOG_WIDTH;
+            if (this.Parent.Width < DIALOG_WIDTH) { // Adjust to small parent container.
+                dialogWidth = this.Parent.Width - (Panel.RIGHT_PADDING * 2) - (Panel.LEFT_PADDING * 2);
+                if (dialogWidth <= 0)
+                    throw new Exception($"[{nameof(StandardDialog)}] Parent container width is too small.");
+            }
+
+            _label = label.SetWidth(dialogWidth).AutoSizeHeight().Wrap().Build();
+
+            if (_label.Height > this.Parent.Height)
+                throw new Exception($"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' exceeded parent container height.");
 
             if (_label.Height == 0)
                 throw new ArgumentException($"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' must have non-empty text or its height failed to calculate.", nameof(label));
@@ -213,12 +232,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         /// </remarks>
         public static void Show(Container parent, FormattedLabelBuilder label, AsyncTexture2D customIcon, params DialogButton[] buttons) {
             parent ??= GameService.Graphics.SpriteScreen;
-            var prompt = new StandardDialog(label, customIcon, buttons?.ToList()) {
-                Parent = parent,
-                Location = Point.Zero,
-                Size = parent.Size
-            };
-            prompt.Show();
+            new StandardDialog(parent, label, customIcon, buttons?.ToList()).Show();
         }
 
         private static FormattedLabelBuilder GetDefaultLabel(string text) {
@@ -281,10 +295,10 @@ namespace Blish_HUD.Common.Gw2.UI {
             var textHeight = textSize.Y < DIALOG_HEIGHT ? DIALOG_HEIGHT : textSize.Y;
 
             var icon = _icon;
-            var iconSize = icon == null ? 0 : 64;
+            var iconSize = icon == null ? 0 : ICON_SIZE;
             var textPos = new Point(iconSize + ICON_MARGIN + Panel.RIGHT_PADDING * 2, 17);
 
-            textHeight = textHeight > 64 ? textHeight : textHeight + iconSize;
+            textHeight = textHeight > ICON_SIZE ? textHeight : textHeight + iconSize;
 
             // Darken background outside container
             spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.15f);
@@ -305,7 +319,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             spriteBatch.DrawBorderOnCtrl(this, _bgBounds, 2, Color.Black);
 
             if (icon != null && icon.HasTexture) {
-                var iconBounds = new Rectangle(bgBounds.Left + ICON_MARGIN, bgBounds.Top + ICON_MARGIN + 2, 64, 64);
+                var iconBounds = new Rectangle(bgBounds.Left + ICON_MARGIN, bgBounds.Top + ICON_MARGIN + 2, ICON_SIZE, ICON_SIZE);
                 spriteBatch.DrawOnCtrl(this, icon, iconBounds);
             }
 
