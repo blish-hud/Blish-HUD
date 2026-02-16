@@ -41,8 +41,9 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private Rectangle _bgBounds; // Calculated bounds of container.
 
-        private const int DIALOG_WIDTH  = 340; // Fixed dialog width.
-        private const int BUTTON_HEIGHT = 30; // Fixed button height.
+        private const int DIALOG_WIDTH  = 360; // Fixed dialog width.
+        private const int DIALOG_HEIGHT = 100; // Minimum dialog height.
+        private const int BUTTON_HEIGHT = 24; // Fixed button height.
         private const int BUTTON_WIDTH  = 117; // Minimum button width.
 
         private const int ICON_MARGIN   = 5; // Space between icon and text.
@@ -277,7 +278,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
             var textSize   = _label.Size;
             var textWidth  = textSize.X;
-            var textHeight = textSize.Y;
+            var textHeight = textSize.Y < DIALOG_HEIGHT ? DIALOG_HEIGHT : textSize.Y;
 
             var icon = _icon;
             var iconSize = icon == null ? 0 : 64;
@@ -361,6 +362,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         public static DialogButton OK => new DialogButton(Strings.Common.Action_OK);
         public static DialogButton Confirm => new DialogButton(Strings.Common.Action_Confirm);
+        public static DialogButton Accept => new DialogButton(Strings.Common.Action_Accept);
         public static DialogButton Cancel => new DialogButton(Strings.Common.Action_Cancel);
         public static DialogButton Yes => new DialogButton(Strings.Common.Action_Yes);
         public static DialogButton No => new DialogButton(Strings.Common.Action_No);
