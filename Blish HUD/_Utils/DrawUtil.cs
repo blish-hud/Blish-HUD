@@ -61,6 +61,7 @@ namespace Blish_HUD {
                 }
             }
 
+            lines.Add(sb.ToString());
             return string.Join("\n", lines);
         }
 
