@@ -41,7 +41,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private Rectangle _bgBounds; // Calculated bounds of container.
 
-        private const int DIALOG_WIDTH  = 340; // Fixed dialog width. Begins to stretch once max texture height is reached.
+        private const int DIALOG_WIDTH  = 340; // Fixed dialog width.
         private const int BUTTON_HEIGHT = 30; // Fixed button height.
         private const int BUTTON_WIDTH  = 117; // Minimum button width.
 
