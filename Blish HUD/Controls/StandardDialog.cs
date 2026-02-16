@@ -40,11 +40,14 @@ namespace Blish_HUD.Common.Gw2.UI {
         private AsyncTexture2D _icon; // Optional icon to display.
 
         private Rectangle _bgBounds; // Calculated bounds of container.
-        private Point     _iconMargin; // Space between icon and the text, as well as between buttons.
 
-        private const int DIALOG_WIDTH = 340; // Fixed dialog width. Begins to stretch once max texture height is reached.
+        private const int DIALOG_WIDTH  = 340; // Fixed dialog width. Begins to stretch once max texture height is reached.
         private const int BUTTON_HEIGHT = 30; // Fixed button height.
-        private const int BUTTON_WIDTH = 117; // Minimum button width.
+        private const int BUTTON_WIDTH  = 117; // Minimum button width.
+
+        private const int ICON_MARGIN   = 5; // Space between icon and text.
+        private const int BUTTON_MARGIN = 3; // Space between buttons.
+
         private int _maxButtonWidth; // Calculated max button width based on text width.
 
         private readonly List<DialogButton> _buttons;
@@ -70,12 +73,9 @@ namespace Blish_HUD.Common.Gw2.UI {
             if (buttons.Count(b => b.Selected) > 1)
                 throw new ArgumentException($"[{nameof(StandardDialog)}] Only one {nameof(DialogButton)} can be selected by default.", nameof(buttons));
 
-            _label.Parent = this;
-
-            _icon       = icon;
-            _iconMargin = new Point(9, 8);
-
-            _buttons = buttons;
+            _label.Parent   = this;
+            _icon           = icon;
+            _buttons        = buttons;
             _maxButtonWidth = BUTTON_WIDTH;
 
             // Calculate max button width.
@@ -225,42 +225,42 @@ namespace Blish_HUD.Common.Gw2.UI {
                 .CreatePart(text, o => o.SetFontSize(ContentService.FontSize.Size16));
         }
 
-        private static AsyncTexture2D GetDefaultIcon(DialogIcon icon) {
+        private static AsyncTexture2D GetDefaultIcon(DialogIcon sysIcon) {
             var iconTex = new AsyncTexture2D();
             var iconAtlas = GameService.Content.DatAssetCache.GetTextureFromAssetId(154985);
             iconAtlas.TextureSwapped += (o, e) => {
-                if (icon == DialogIcon.Exclamation) {
-                    _exclamationIcon ??= iconAtlas.Texture.GetRegion(0, 0, 64, 64);
-                    iconTex.SwapTexture(_exclamationIcon);
-                } else if (icon == DialogIcon.Question) {
-                    _questionIcon ??= iconAtlas.Texture.GetRegion(64, 0, 64, 64);
-                    iconTex.SwapTexture(_questionIcon);
-                } else if (icon == DialogIcon.Present) {
-                    _presentIcon ??= iconAtlas.Texture.GetRegion(128, 0, 64, 64);
-                    iconTex.SwapTexture(_presentIcon);
-                }
+                _exclamationIcon ??= e.NewValue.GetRegion(0, 0, 64, 64);
+                _questionIcon    ??= e.NewValue.GetRegion(64, 0, 64, 64);
+                _presentIcon     ??= e.NewValue.GetRegion(128, 0, 64, 64);
+                SwapDefaultIcon(sysIcon, iconTex);
             };
+            SwapDefaultIcon(sysIcon, iconTex);
             return iconTex;
         }
 
-        private void CalculateButtonLayout() {
-            int minLeftOffset = 50;
-            int buttonCount = _buttons.Count;
-            int availableWidth = _bgBounds.Width - minLeftOffset;
-
-            // Calculate button width.
-            int buttonWidth = _maxButtonWidth + Panel.RIGHT_PADDING * 2;
-            if (buttonCount * buttonWidth > availableWidth) {
-                buttonWidth = availableWidth / buttonCount;
+        private static void SwapDefaultIcon(DialogIcon sysIcon, AsyncTexture2D iconTex) {
+            switch (sysIcon) {
+                case DialogIcon.Exclamation: iconTex.SwapTexture(_exclamationIcon); break;
+                case DialogIcon.Question: iconTex.SwapTexture(_questionIcon); break;
+                case DialogIcon.Present: iconTex.SwapTexture(_presentIcon); break;
+                default: break;
             }
+        }
 
-            // Calculate total width of the button row.
-            int totalWidth = buttonCount * buttonWidth
-                           + (buttonCount - 1) * _iconMargin.X;
-
-            // Anchor the whole group to the RIGHT.
-            int xOffset = _bgBounds.Right - totalWidth - Panel.RIGHT_PADDING * 2;
-            int yOffset = _bgBounds.Bottom - BUTTON_HEIGHT - Panel.BOTTOM_PADDING - 2;
+        private void CalculateButtonLayout() {
+            int buttonCount = _buttons.Count;
+            int availableWidth = _bgBounds.Width - Panel.RIGHT_PADDING * 2;
+            int buttonWidth = _maxButtonWidth + Panel.RIGHT_PADDING * 2;
+            var totalMargins = buttonCount * BUTTON_MARGIN;
+            int totalWidth = buttonCount * buttonWidth + totalMargins;
+            // Shrink buttons if row is wider than available space.
+            if (totalWidth > availableWidth) {
+                buttonWidth = Math.Max(1, (availableWidth - totalMargins) / buttonCount);
+                totalWidth = buttonCount * buttonWidth + totalMargins;
+            }
+            // Anchor the row to the RIGHT.
+            int xOffset = _bgBounds.Right - totalWidth - Panel.RIGHT_PADDING;
+            int yOffset = _bgBounds.Bottom - BUTTON_HEIGHT - Panel.BOTTOM_PADDING;
             foreach (var button in _buttons) {
                 if (button == null) continue;
                 var bounds = new Rectangle(
@@ -268,7 +268,7 @@ namespace Blish_HUD.Common.Gw2.UI {
                     new Point(buttonWidth, BUTTON_HEIGHT)
                 );
                 button.Transform(this, bounds);
-                xOffset += buttonWidth + _iconMargin.X;
+                xOffset += buttonWidth + BUTTON_MARGIN;
             }
         }
 
@@ -281,7 +281,7 @@ namespace Blish_HUD.Common.Gw2.UI {
 
             var icon = _icon;
             var iconSize = icon == null ? 0 : 64;
-            var textPos = new Point(iconSize + _iconMargin.X + Panel.RIGHT_PADDING * 2, 17);
+            var textPos = new Point(iconSize + ICON_MARGIN + Panel.RIGHT_PADDING * 2, 17);
 
             textHeight = textHeight > 64 ? textHeight : textHeight + iconSize;
 
@@ -304,7 +304,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             spriteBatch.DrawBorderOnCtrl(this, _bgBounds, 2, Color.Black);
 
             if (icon != null && icon.HasTexture) {
-                var iconBounds = new Rectangle(bgBounds.Left + _iconMargin.X, bgBounds.Top + _iconMargin.Y, 64, 64);
+                var iconBounds = new Rectangle(bgBounds.Left + ICON_MARGIN, bgBounds.Top + ICON_MARGIN + 2, 64, 64);
                 spriteBatch.DrawOnCtrl(this, icon, iconBounds);
             }
 
