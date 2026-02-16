@@ -42,6 +42,7 @@ namespace Blish_HUD.Common.Gw2.UI {
         private Rectangle _bgBounds; // Calculated bounds of container.
         private Point     _iconMargin; // Space between icon and the text, as well as between buttons.
 
+        private const int DIALOG_WIDTH = 340; // Fixed dialog width. Begins to stretch once max texture height is reached.
         private const int BUTTON_HEIGHT = 30; // Fixed button height.
         private const int BUTTON_WIDTH = 117; // Minimum button width.
         private int _maxButtonWidth; // Calculated max button width based on text width.
@@ -57,7 +58,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             if (label == null)
                 throw new ArgumentNullException(nameof(label), $"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' cannot be null.");
 
-            _label = label.SetWidth(340).AutoSizeHeight().Wrap().Build();
+            _label = label.SetWidth(DIALOG_WIDTH).AutoSizeHeight().Wrap().Build();
 
             if (_label.Height == 0)
                 throw new ArgumentException($"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' must have non-empty text or its height failed to calculate.", nameof(label));
@@ -113,23 +114,29 @@ namespace Blish_HUD.Common.Gw2.UI {
             }
 
             if (e.Key == Keys.Tab) {
-                // Find currently selected index.
-                int currentIndex = _buttons.FindIndex(b => b.Selected);
-
-                // Fallback if none selected yet.
-                if (currentIndex < 0) currentIndex = 0;
-
-                bool backwards = (GameService.Input.Keyboard.ActiveModifiers & ModifierKeys.Shift) != 0;
-
-                int newIndex = backwards
-                    ? (currentIndex - 1 + _buttons.Count) % _buttons.Count
-                    : (currentIndex + 1) % _buttons.Count;
-
-                // Update selection.
-                for (int i = 0; i < _buttons.Count; i++) {
-                    _buttons[i].Select(i == newIndex);
-                }
+                CycleButtonFocus();
                 return;
+            }
+        }
+
+        private void CycleButtonFocus() {
+            GameService.Content.PlaySoundEffectByName("menu-item-click");
+
+            // Find currently selected index.
+            int currentIndex = _buttons.FindIndex(b => b.Selected);
+
+            // Fallback if none selected yet.
+            if (currentIndex < 0) currentIndex = 0;
+
+            bool backwards = (GameService.Input.Keyboard.ActiveModifiers & ModifierKeys.Shift) != 0;
+
+            int newIndex = backwards
+                ? (currentIndex - 1 + _buttons.Count) % _buttons.Count
+                : (currentIndex + 1) % _buttons.Count;
+
+            // Update selection.
+            for (int i = 0; i < _buttons.Count; i++) {
+                _buttons[i].Select(i == newIndex);
             }
         }
 
