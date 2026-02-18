@@ -1,4 +1,4 @@
-﻿using Blish_HUD.Content;
+using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,7 +30,7 @@ namespace Blish_HUD.Common.Gw2.UI {
     /// Navigation and interaction is also possible via <see cref="Keys.Tab"/> and <seealso cref="Keys.Enter"/> respectively.
     /// <seealso cref="Keys.Escape"/> closes the prompt silently.
     /// </remarks>
-    public sealed class StandardDialog : Container {
+    public class StandardDialog : Container {
         private static Texture2D _questionIcon;
         private static Texture2D _exclamationIcon;
         private static Texture2D _presentIcon;
@@ -41,16 +41,19 @@ namespace Blish_HUD.Common.Gw2.UI {
 
         private Rectangle _bgBounds; // Calculated bounds of container.
 
-        private const int DIALOG_WIDTH  = 350; // Fixed dialog width.
+        private const int DIALOG_WIDTH  = 454; // Default dialog width when enough space.
         private const int DIALOG_HEIGHT = 100; // Minimum dialog height.
         private const int BUTTON_HEIGHT = 24; // Fixed button height.
-        private const int BUTTON_WIDTH  = 117; // Minimum button width.
+        private const int BUTTON_WIDTH  = 117; // Default button width when enough space.
 
         private const int ICON_SIZE     = 64;
         private const int ICON_MARGIN   = 5; // Space between icon and text.
         private const int BUTTON_MARGIN = 3; // Space between buttons.
 
-        private int _maxButtonWidth; // Calculated max button width based on text width.
+        private int _maxDialogWidth; // Calculated dialog width based on parent container width.
+        private int _maxDialogHeight; // Calculated dialog height based on auto sized label height.
+        private int _maxIconSize; // Calculated max icon size.
+        private int _maxButtonWidth; // Calculated max button width.
 
         private readonly List<DialogButton> _buttons;
         private readonly FormattedLabel _label;
@@ -71,20 +74,24 @@ namespace Blish_HUD.Common.Gw2.UI {
             this.Location = Point.Zero;
             this.Size = parent.Size;
 
-            var dialogWidth = DIALOG_WIDTH;
-            if (this.Parent.Width < DIALOG_WIDTH) { // Adjust to small parent container.
-                dialogWidth = this.Parent.Width - (Panel.RIGHT_PADDING * 2) - (Panel.LEFT_PADDING * 2);
-                if (dialogWidth <= 0)
-                    throw new Exception($"[{nameof(StandardDialog)}] Parent container width is too small.");
-            }
+            _maxIconSize = icon == null ? 0 : ICON_SIZE;
+            _maxDialogWidth = CalculateWidth();
 
-            _label = label.SetWidth(dialogWidth).AutoSizeHeight().Wrap().Build();
+            var labelPadding = _maxIconSize + Panel.RIGHT_PADDING * 10;
+            var labelWidth = _maxDialogWidth - labelPadding;
 
-            if (_label.Height > this.Parent.Height)
-                throw new Exception($"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' exceeded parent container height.");
+            if (labelWidth <= 0)
+                throw new Exception($"[{nameof(StandardDialog)}] Parent container width is too small.");
 
-            if (_label.Height == 0)
+            _label = label.SetWidth(labelWidth).AutoSizeHeight().Wrap().Build();
+
+            if (_label.Height <= 0)
                 throw new ArgumentException($"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' must have non-empty text or its height failed to calculate.", nameof(label));
+
+            _maxDialogHeight = CalculateHeight(); // Calculate dialog height now based on auto sized label height.
+
+            if (_maxDialogHeight > this.Parent.ContentRegion.Height - Panel.TOP_PADDING * 2)
+                throw new Exception($"[{nameof(StandardDialog)}] Parameter '{nameof(label)}' exceeded parent container height.");
 
             // Defaulting to OK button if no buttons provided to ensure there's always a way to close the prompt.
             if (buttons == null || buttons.Count == 0)
@@ -104,6 +111,8 @@ namespace Blish_HUD.Common.Gw2.UI {
                     .MeasureStringLogical(button.Text).X + Panel.RIGHT_PADDING * 2;
                 if (bttnWidth > _maxButtonWidth) 
                     _maxButtonWidth = (int)Math.Round(bttnWidth);
+
+                button.Click += (s, e) => this.Dispose();
             }
 
             this.ZIndex = Screen.TOOLTIP_BASEZINDEX - 16; // Top most layer but lower than tooltip.
@@ -129,7 +138,7 @@ namespace Blish_HUD.Common.Gw2.UI {
             }*/
 
             if (e.Key == Keys.Enter) {
-                _buttons.FirstOrDefault(b => b.Selected)?.DoClick(this);
+                _buttons.FirstOrDefault(b => b.Selected)?.DoClick();
                 return;
             }
 
@@ -287,27 +296,35 @@ namespace Blish_HUD.Common.Gw2.UI {
             }
         }
 
+        private int CalculateWidth() {
+            var dialogWidth = DIALOG_WIDTH;
+            var dialogMargin = Panel.RIGHT_PADDING * 4 + _maxIconSize + ICON_MARGIN + Panel.RIGHT_PADDING * 2;
+            if (this.Parent.ContentRegion.Width < DIALOG_WIDTH + dialogMargin) { // Adjust to small parent container.
+                dialogWidth = this.Parent.ContentRegion.Width - dialogMargin;
+            }
+            return dialogWidth;
+        }
+
+        private int CalculateHeight() {
+            var textHeight = _label.Height < DIALOG_HEIGHT ? DIALOG_HEIGHT : _label.Height;
+            return (textHeight > _maxIconSize ? textHeight : textHeight + _maxIconSize) 
+                    + BUTTON_HEIGHT + Panel.TOP_PADDING * 4;
+        }
+
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             base.PaintBeforeChildren(spriteBatch, bounds);
 
-            var textSize   = _label.Size;
-            var textWidth  = textSize.X;
-            var textHeight = textSize.Y < DIALOG_HEIGHT ? DIALOG_HEIGHT : textSize.Y;
-
             var icon = _icon;
-            var iconSize = icon == null ? 0 : ICON_SIZE;
-            var textPos = new Point(iconSize + ICON_MARGIN + Panel.RIGHT_PADDING * 2, 17);
-
-            textHeight = textHeight > ICON_SIZE ? textHeight : textHeight + iconSize;
+            var textPos = new Point(_maxIconSize + ICON_MARGIN + Panel.RIGHT_PADDING * 2, 17);
 
             // Darken background outside container
             spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, Color.Black * 0.15f);
 
             // Container
             // Calculate background bounds
-            var bgSize = new Point(textWidth + iconSize + Panel.RIGHT_PADDING * 10, textHeight + BUTTON_HEIGHT + Panel.TOP_PADDING * 4);
+            var bgSize = new Point(_maxDialogWidth, _maxDialogHeight);
             var bgTextureSize = new Point(bgSize.X < _bgTextureBounds.Width ? bgSize.X : _bgTextureBounds.Width,
-                                      bgSize.Y < _bgTextureBounds.Height ? bgSize.Y : _bgTextureBounds.Height); // Clamp to max texture bounds.
+                                          bgSize.Y < _bgTextureBounds.Height ? bgSize.Y : _bgTextureBounds.Height); // Clamp to max texture bounds.
             var bgTexturePos = new Point((bounds.Width - bgTextureSize.X) / 2, (bounds.Height - bgTextureSize.Y) / 2);
             var bgBounds = new Rectangle(bgTexturePos, bgSize);
             _bgBounds = bgBounds;
@@ -316,74 +333,15 @@ namespace Blish_HUD.Common.Gw2.UI {
             spriteBatch.DrawOnCtrl(this, _bgTexture, bgBounds, new Rectangle(_bgTextureBounds.Location, bgTextureSize), Color.White);
 
             // Draw border
-            spriteBatch.DrawBorderOnCtrl(this, _bgBounds, 2, Color.Black);
+            spriteBatch.DrawBorderOnCtrl(this, _bgBounds, Color.Black, 2);
 
             if (icon != null && icon.HasTexture) {
-                var iconBounds = new Rectangle(bgBounds.Left + ICON_MARGIN, bgBounds.Top + ICON_MARGIN + 2, ICON_SIZE, ICON_SIZE);
+                var iconBounds = new Rectangle(bgBounds.Left + ICON_MARGIN, bgBounds.Top + ICON_MARGIN + 2, _maxIconSize, _maxIconSize);
                 spriteBatch.DrawOnCtrl(this, icon, iconBounds);
             }
 
             _label.Location = new Point(bgBounds.Left + textPos.X, bgBounds.Y + textPos.Y);
             this.CalculateButtonLayout();
         }
-    }
-
-    /// <summary>
-    /// Represents a button that can be added to a dialog, specifically <see cref="StandardDialog"/>.
-    /// </summary>
-    public sealed class DialogButton {
-        internal string Text;
-        internal bool Selected;
-        private Action _callback;
-        private StandardButton _button;
-        private DialogButton(string text) {
-            if (string.IsNullOrEmpty(text)) 
-                throw new ArgumentNullException(nameof(text), $"[{nameof(DialogButton)}] Parameter '{nameof(text)}' cannot be null or empty.");
-
-            Text = text;
-            _button = new StandardButton() {
-                Text = text,
-                Enabled = false
-            };
-            _button.Click += (o, e) => {
-                DoClick(((StandardButton)o).Parent);
-            };
-        }
-
-        internal void DoClick(Container parent) {
-            GameService.Content.PlaySoundEffectByName("button-click");
-            parent?.Dispose();
-            _callback?.Invoke();
-        }
-
-        internal void Transform(Container parent, Rectangle bounds) {
-            _button.Parent = parent;
-            _button.Location = bounds.Location;
-            _button.Size = bounds.Size;
-            _button.Enabled = true;
-        }
-
-        public DialogButton Action(Action callback) {
-            _callback = callback;
-            return this;
-        }
-
-        public DialogButton Select(bool selected = true) {
-            Selected = selected;
-            _button.BackgroundColor = selected ? new Color(192, 216, 255, 217) : Color.Transparent;
-            return this;
-        }
-
-        public static DialogButton OK => new DialogButton(Strings.Common.Action_OK);
-        public static DialogButton Confirm => new DialogButton(Strings.Common.Action_Confirm);
-        public static DialogButton Accept => new DialogButton(Strings.Common.Action_Accept);
-        public static DialogButton Cancel => new DialogButton(Strings.Common.Action_Cancel);
-        public static DialogButton Yes => new DialogButton(Strings.Common.Action_Yes);
-        public static DialogButton No => new DialogButton(Strings.Common.Action_No);
-        public static DialogButton Ignore => new DialogButton(Strings.Common.Action_Ignore);
-        public static DialogButton Close => new DialogButton(Strings.Common.Action_Close);
-        public static DialogButton Apply => new DialogButton(Strings.Common.Action_Apply);
-        public static DialogButton Decline => new DialogButton(Strings.Common.Action_Decline);
-        public static DialogButton Create(string text) => new DialogButton(text);
     }
 }
