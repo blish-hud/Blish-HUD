@@ -46,6 +46,15 @@ namespace Blish_HUD.Input {
             }
         }
 
+        internal bool PropagationStopped { get; private set; }
+
+        /// <summary>
+        /// Prevents the current mouse event from being propagated to other event listeners.
+        /// </summary>
+        public void StopPropagation() {
+            this.PropagationStopped = true;
+        }
+
         public MouseEventArgs(MouseEventType eventType) { this.EventType = eventType; }
 
         public MouseEventArgs(MouseEventType eventType, bool isDoubleClick) : this(eventType) { this.IsDoubleClick = isDoubleClick; }
