@@ -60,8 +60,11 @@ namespace Blish_HUD.Gw2Mumble {
 
         private Vector3 _position = Vector3.Zero;
         private Vector3 _forward  = Vector3.Forward;
+        private Vector3? _lastCamDirection = null;
 
-        /// <inheritdoc cref="IGw2MumbleClient.AvatarPosition"/>
+        private const float _flushEpsilon = 0.0001f;
+
+        /// <inheritdoc cref="IGw2MumbleClien t.AvatarPosition"/>
         public Vector3 Position => _position;
 
         /// <inheritdoc cref="IGw2MumbleClient.AvatarFront"/>
@@ -91,20 +94,35 @@ namespace Blish_HUD.Gw2Mumble {
         /// <inheritdoc cref="IGw2MumbleClient.Mount"/>
         public MountType CurrentMount => _service.RawClient.Mount;
 
-        private const int POSITIONBUFFER_MAXSIZE  = 12;
-        private const int POSITIONBUFFER_CURRSIZE = 8;
+        private const int POSITIONBUFFER_MAXSIZE  = 6;
 
-        private readonly DynamicallySmoothedValue<Vector3> _positionBuffer = new DynamicallySmoothedValue<Vector3>(POSITIONBUFFER_MAXSIZE, () => POSITIONBUFFER_CURRSIZE);
+        private readonly DynamicallySmoothedValue<Vector4> _positionBuffer = new DynamicallySmoothedValue<Vector4>(POSITIONBUFFER_MAXSIZE);
 
         internal PlayerCharacter(Gw2MumbleService service) {
             _service = service;
         }
 
         internal void Update(GameTime gameTime) {
-            _positionBuffer.PushValue(_service.RawClient.AvatarPosition.ToXnaVector3());
+            Vector3 camPosition = _service.RawClient.CameraPosition.ToXnaVector3();
+            Vector3 camDirection = _service.RawClient.CameraFront.ToXnaVector3();
+            Vector3 charPosition = _service.RawClient.AvatarPosition.ToXnaVector3();
+
+            Matrix cam = Matrix.CreateLookAt(camPosition, camPosition + camDirection, new Vector3(0.0f, 1.0f, 0.0f));
+            Matrix cami = Matrix.Invert(cam);
+
+            if (_lastCamDirection.HasValue && Vector3.DistanceSquared(_lastCamDirection.Value, camDirection) >= _flushEpsilon) {
+                _positionBuffer.flush();
+            }
+
+            _lastCamDirection = camDirection;
+
+            _positionBuffer.PushValue(Vector4.Transform(new Vector4(charPosition, 1.0f), cam));
+
+            Vector4 averagedCharPosition = Vector4.Transform(_positionBuffer.Value, cami);
+            averagedCharPosition = Vector4.Divide(averagedCharPosition, averagedCharPosition.W);
 
             _position = GameService.Graphics.SmoothCharacterPosition
-                            ? _positionBuffer.Value
+                            ? new Vector3(averagedCharPosition.X, averagedCharPosition.Y, averagedCharPosition.Z)
                             : _service.RawClient.AvatarPosition.ToXnaVector3();
             
             _forward  = _service.RawClient.AvatarFront.ToXnaVector3();
