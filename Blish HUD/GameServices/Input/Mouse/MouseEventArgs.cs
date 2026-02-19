@@ -62,6 +62,16 @@ namespace Blish_HUD.Input {
             this.Flags     = flags;
             this.Time      = time;
             this.Extra     = extraInfo;
+
+            // XButton1 and XButton2 both trigger the same Pressed and Released events,
+            // so we use the lParam data to determine which is actually being pressed.
+            if ((mouseData & 0xFFFF0000) == 0x00020000) {
+                this.EventType = eventType switch {
+                    MouseEventType.XButton1Pressed  => MouseEventType.XButton2Pressed,
+                    MouseEventType.XButton1Released => MouseEventType.XButton2Released,
+                    _                               => this.EventType
+                };
+            }
         }
 
     }
