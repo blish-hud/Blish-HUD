@@ -29,7 +29,7 @@ namespace Blish_HUD.Graphics {
         /// Disposes of this graphics context, calling <see cref="GraphicsService.ReturnGraphicsDevice"/>
         /// </summary>
         public void Dispose() {
-            _service.ReturnGraphicsDevice(_highPriority);
+            _service?.ReturnGraphicsDevice(_highPriority);
         }
     }
 }
