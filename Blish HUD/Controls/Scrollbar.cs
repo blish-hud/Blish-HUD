@@ -16,7 +16,7 @@ namespace Blish_HUD.Controls {
         private const int SCROLL_ARROW      = 50;
         private const int SCROLL_CONT_ARROW = 10;
         private const int SCROLL_CONT_TRACK = 15;
-        private const int SCROLL_WHEEL      = 30;
+        private const int SCROLL_WHEEL = 15;
 
         #region Load Static
 
@@ -158,10 +158,15 @@ namespace Blish_HUD.Controls {
                 ctrl = ctrl.Parent;
             }
 
-            if (GameService.Input.Mouse.State.ScrollWheelValue == 0) return;
+            int scrollValue = GameService.Input.Mouse.State.ScrollWheelValue;
 
-            float normalScroll = Math.Sign(GameService.Input.Mouse.State.ScrollWheelValue);
-            ScrollAnimated((int)normalScroll * -SCROLL_WHEEL * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
+            if (scrollValue == 0) return;
+
+            // Proportional scroll amount based on the scroll value, with a minimum of 8
+            float scrollMultiplier = (scrollValue / 120f) * SCROLL_WHEEL;
+            scrollMultiplier = Math.Max(8f, Math.Abs(scrollMultiplier)) * Math.Sign(scrollValue);
+
+            ScrollAnimated(-(int)scrollMultiplier * System.Windows.Forms.SystemInformation.MouseWheelScrollLines);
         }
 
         private ClickFocus GetScrollFocus(Point mousePos) => mousePos switch {
