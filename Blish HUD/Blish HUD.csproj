@@ -259,6 +259,7 @@
     <PackageReference Include="protobuf-net" Version="3.0.101" PrivateAssets="all" />
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
+    <PackageReference Include="sqlite-net-static" Version="1.9.172" />
   </ItemGroup>
 
   <ItemGroup>

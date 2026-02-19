@@ -20,7 +20,8 @@ namespace Blish_HUD {
             ArcDpsV2          = new ArcDpsServiceV2(), // This needs to be initialized bf the V1
             ArcDps          = new ArcDpsService(),
             Contexts        = new ContextsService(),
-            Module          = new ModuleService()
+            LocalDb         = new LocalDbService(),
+            Module          = new ModuleService(),
         };
 
         public static IReadOnlyList<GameService> All => _allServices;
@@ -96,6 +97,7 @@ namespace Blish_HUD {
         public static readonly ArcDpsService          ArcDps;
         public static readonly ArcDpsServiceV2        ArcDpsV2;
         public static readonly ContextsService        Contexts;
+        public static readonly LocalDbService         LocalDb;
         public static readonly ModuleService          Module;
 
         #endregion
