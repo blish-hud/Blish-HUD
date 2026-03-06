@@ -335,8 +335,24 @@ namespace Blish_HUD.Common.Gw2.UI {
             // Draw border
             spriteBatch.DrawBorderOnCtrl(this, _bgBounds, Color.Black, 2);
 
+            // Draw icon (keep aspect ratio and fit to bounds)
             if (icon != null && icon.HasTexture) {
-                var iconBounds = new Rectangle(bgBounds.Left + ICON_MARGIN, bgBounds.Top + ICON_MARGIN + 2, _maxIconSize, _maxIconSize);
+                var slotBounds = new Rectangle(
+                    bgBounds.Left + ICON_MARGIN,
+                    bgBounds.Top + ICON_MARGIN + 2,
+                    _maxIconSize,
+                    _maxIconSize
+                );
+                int texWidth = icon.Width;
+                int texHeight = icon.Height;
+                float scale = Math.Min(1f, Math.Min((float)_maxIconSize / texWidth,
+                                                    (float)_maxIconSize / texHeight)); // Only scale down.
+                int drawWidth = (int)Math.Round(texWidth * scale);
+                int drawHeight = (int)Math.Round(texHeight * scale);
+                int x = slotBounds.Left + (slotBounds.Width - drawWidth) / 2;
+                int y = slotBounds.Top;
+                var iconBounds = new Rectangle(x, y, drawWidth, drawHeight);
+                spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, slotBounds, Color.Black * 0.15f); // Darken icon slot
                 spriteBatch.DrawOnCtrl(this, icon, iconBounds);
             }
 
