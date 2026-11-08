@@ -25,6 +25,13 @@ namespace Blish_HUD.Controls {
         [Newtonsoft.Json.JsonIgnore]
         public ControlCollection<Control> Children => _children;
 
+        // Reused every frame so that updating, painting, and handling input for child controls don't allocate
+        private Control[] _updateBuffer = Array.Empty<Control>();
+        private Control[] _paintBuffer  = Array.Empty<Control>();
+        private ulong[]   _paintOrder   = Array.Empty<ulong>();
+        private Control[] _inputBuffer  = Array.Empty<Control>();
+        private ulong[]   _inputOrder   = Array.Empty<ulong>();
+
         protected Container() {
             _children = new ControlCollection<Control>();
         }
@@ -226,22 +233,36 @@ namespace Blish_HUD.Controls {
                 thisResult = base.TriggerMouseInput(mouseEventType, ms);
             }
 
-            List<Control>               children        = _children.ToList();
-            IOrderedEnumerable<Control> zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
+            int count = _children.CopyToBuffer(ref _inputBuffer);
 
-            foreach (var childControl in zSortedChildren) {
-                if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
-                    childResult = childControl.TriggerMouseInput(mouseEventType, ms);
+            try {
+                // TopMost first and later children first on ties
+                EnsureCapacity(ref _inputOrder, count);
 
-                    if (childResult != null) {
-                        if (!childResult.Captures.HasFlag(CaptureType.Filter)) {
-                            break;
+                for (int i = 0; i < count; i++) {
+                    _inputOrder[i] = ~ZIndexSortKey(_inputBuffer[i].ZIndex, i);
+                }
+
+                Array.Sort(_inputOrder, 0, count);
+
+                for (int i = 0; i < count; i++) {
+                    var childControl = _inputBuffer[(int)(uint)~_inputOrder[i]];
+
+                    if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
+                        childResult = childControl.TriggerMouseInput(mouseEventType, ms);
+
+                        if (childResult != null) {
+                            if ((childResult.Captures & CaptureType.Filter) != CaptureType.Filter) {
+                                break;
+                            }
+
+                            // Child has Filter flag so we have to pretend we didn't see it
+                            childResult = null;
                         }
-
-                        // Child has Filter flag so we have to pretend we didn't see it
-                        childResult = null;
                     }
                 }
+            } finally {
+                Array.Clear(_inputBuffer, 0, count);
             }
 
             return childResult ?? thisResult;
@@ -264,29 +285,36 @@ namespace Blish_HUD.Controls {
         public sealed override void DoUpdate(GameTime gameTime) {
             UpdateContainer(gameTime);
 
-            Control[] children = _children.ToArray();
+            int count = _children.CopyToBuffer(ref _updateBuffer);
 
-            _contentBounds = ControlUtil.GetControlBounds(children);
+            try {
+                // GetControlBounds skips empty slots, so this is safe
+                _contentBounds = ControlUtil.GetControlBounds(_updateBuffer);
 
-            // Update our size based on the sizing mode
-            var parent = this.Parent;
-            if (parent != null) { 
-                this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
-                                                      this.Width,
-                                                      _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
-                                                      parent.ContentRegion.Width - this.Left),
-                                      GetUpdatedSizing(this.HeightSizingMode,
-                                                      this.Height,
-                                                      _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
-                                                      parent.ContentRegion.Height - this.Top));
-            }
-
-            // Update our children
-            foreach (var childControl in children) {
-                // Update child if it is visible or if it hasn't rendered yet (needs a first time calc)
-                if (childControl.Visible || childControl.LayoutState != LayoutState.Ready) {
-                    childControl.Update(gameTime);
+                // Update our size based on the sizing mode
+                var parent = this.Parent;
+                if (parent != null) {
+                    this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
+                                                          this.Width,
+                                                          _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
+                                                          parent.ContentRegion.Width - this.Left),
+                                          GetUpdatedSizing(this.HeightSizingMode,
+                                                          this.Height,
+                                                          _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
+                                                          parent.ContentRegion.Height - this.Top));
                 }
+
+                // Update our children
+                for (int i = 0; i < count; i++) {
+                    var childControl = _updateBuffer[i];
+
+                    // Update child if it is visible or if it hasn't rendered yet (needs a first time calc)
+                    if (childControl.Visible || childControl.LayoutState != LayoutState.Ready) {
+                        childControl.Update(gameTime);
+                    }
+                }
+            } finally {
+                Array.Clear(_updateBuffer, 0, count);
             }
         }
 
@@ -313,17 +341,40 @@ namespace Blish_HUD.Controls {
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
             var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
             
-            var zSortedChildren = _children.ToArray().OrderBy(i => i.ZIndex);
+            int count = _children.CopyToBuffer(ref _paintBuffer);
 
-            // Render each visible child
-            foreach (var childControl in zSortedChildren) {
-                if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
-                    var childBounds = new Rectangle(Point.Zero, childControl.Size);
+            try {
+                // Lowest first with ties kept in child order
+                EnsureCapacity(ref _paintOrder, count);
 
-                    if (childControl.AbsoluteBounds.Intersects(contentScissor) || !childControl.ClipsBounds) {
-                        childControl.Draw(spriteBatch, childBounds, contentScissor);
+                for (int i = 0; i < count; i++) {
+                    _paintOrder[i] = ZIndexSortKey(_paintBuffer[i].ZIndex, i);
+                }
+
+                Array.Sort(_paintOrder, 0, count);
+
+                // Render each visible child
+                for (int i = 0; i < count; i++) {
+                    var childControl = _paintBuffer[(int)(uint)_paintOrder[i]];
+
+                    if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
+                        var childBounds = new Rectangle(Point.Zero, childControl.Size);
+
+                        if (childControl.AbsoluteBounds.Intersects(contentScissor) || !childControl.ClipsBounds) {
+                            childControl.Draw(spriteBatch, childBounds, contentScissor);
+                        }
                     }
                 }
+            } finally {
+                Array.Clear(_paintBuffer, 0, count);
+            }
+        }
+
+        private static ulong ZIndexSortKey(int zIndex, int index) => ((ulong)((uint)zIndex ^ 0x80000000u) << 32) | (uint)index;
+
+        private static void EnsureCapacity(ref ulong[] buffer, int count) {
+            if (buffer.Length < count) {
+                buffer = new ulong[count + 8];
             }
         }
 
