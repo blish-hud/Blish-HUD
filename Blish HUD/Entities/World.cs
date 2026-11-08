@@ -29,6 +29,14 @@ namespace Blish_HUD.Entities {
                 }
             }
         }
+        
+        public int EntityCount {
+            get {
+                lock (_entities.SyncRoot) {
+                    return _entities.Count;
+                }
+            }
+        }
 
         public World(ICamera camera) {
             this.Camera = camera;
