@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Blish_HUD.GameServices;
+﻿using Blish_HUD.GameServices;
 using Microsoft.Xna.Framework;
 
 namespace Blish_HUD.GameIntegration {
@@ -7,8 +6,9 @@ namespace Blish_HUD.GameIntegration {
 
         private static readonly Logger Logger = Logger.GetLogger<TacOIntegration>();
 
-        private const string TACO_PROCESS   = "GW2TacO";
-        private const int    CHECK_INTERVAL = 3000;
+        private const string TACO_WINDOW_CLASS = "CoRE2";
+        private const string TACO_WINDOW_TITLE = "Guild Wars 2 Tactical Overlay";
+        private const int    CHECK_INTERVAL    = 3000;
 
         private double _timeSinceCheck;
 
@@ -25,9 +25,7 @@ namespace Blish_HUD.GameIntegration {
             _timeSinceCheck += gameTime.ElapsedGameTime.TotalMilliseconds;
 
             if (_timeSinceCheck > CHECK_INTERVAL) {
-                Process[] tacoApp = Process.GetProcessesByName(TACO_PROCESS);
-
-                this.TacOIsRunning = tacoApp.Length > 0;
+                this.TacOIsRunning = WindowUtil.WindowExists(TACO_WINDOW_CLASS, TACO_WINDOW_TITLE);
 
                 _timeSinceCheck = 0;
             }
