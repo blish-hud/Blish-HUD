@@ -53,74 +53,123 @@ namespace Blish_HUD.Overlay.SelfUpdater {
         }
 
         private static void HandleUpdate(string unpackPath) {
+            string applicationDir = Path.GetDirectoryName(Application.ExecutablePath);
+
             // Remove any old files from old versions
             foreach (string fileName in _obsoleteFiles) {
-                string fullFilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), fileName);
+                DeleteFile(Path.Combine(applicationDir, fileName));
+            }
 
-                if (File.Exists(fullFilePath)) {
-                    File.Delete(fullFilePath);
+            using (var unpackStream = File.OpenRead(unpackPath))
+            using (var unpacker = new ZipArchive(unpackStream)) {
+                var rootDirs = unpacker.Entries
+                    .Select(entry => entry.FullName.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+                    .Where(parts => parts.Length > 1)
+                    .Select(parts => parts[0])
+                    .Distinct()
+                    .ToList();
+                var allFiles  = unpacker.Entries.Where(entry => !string.IsNullOrWhiteSpace(entry.Name) && !string.Equals(entry.Name, FILE_EXE)).ToList();
+                var rootFiles = allFiles.Where(entry => !entry.FullName.Contains("/"));
+
+                foreach (string dirName in rootDirs) {
+                    DeleteDirectory(Path.Combine(applicationDir, dirName));
+                }
+
+                foreach (var file in rootFiles) {
+                    DeleteFile(Path.Combine(applicationDir, file.FullName));
+                }
+
+                foreach (var file in allFiles) {
+                    string filePath = Path.Combine(applicationDir, file.FullName);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    WithRetry(() => file.ExtractToFile(filePath, true));
                 }
             }
 
-            var unpackStream = File.OpenRead(unpackPath);
-            var unpacker     = new ZipArchive(unpackStream);
-
-            var applicationDir = Directory.GetCurrentDirectory();
-
-            var rootDirs  = unpacker.Entries
-                .Select(entry => entry.FullName.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
-                .Where(parts => parts.Length > 1)
-                .Select(parts => parts[0] + "/")
-                .Distinct()
-                .ToList();
-            var allFiles  = unpacker.Entries.Where(entry => !string.IsNullOrWhiteSpace(entry.Name) && !string.Equals(entry.Name, FILE_EXE));
-            var rootFiles = allFiles.Where(entry => !entry.FullName.Contains("/"));
-
-            foreach (var dirPath in rootDirs) {
-                if (Directory.Exists(dirPath)) {
-                    Directory.Delete(dirPath, true);
-                }
-            }
-
-            foreach (var file in rootFiles) {
-                string filePath = Path.Combine(applicationDir, file.FullName);
-
-                if (File.Exists(filePath)) {
-                    File.Delete(filePath);
-                }
-            }
-
-            foreach (var file in allFiles) {
-                string dir = Path.GetDirectoryName(file.FullName);
-
-                Directory.CreateDirectory(Path.Combine(applicationDir, dir));
-                file.ExtractToFile(Path.Combine(applicationDir,        file.FullName));
-            }
-
-            if (File.Exists(Path.Combine(applicationDir, FILE_EXEBACKUP))) {
-                File.Delete(Path.Combine(applicationDir, FILE_EXEBACKUP));
-            }
-
-            unpacker.Dispose();
-            unpackStream.Dispose();
-
-            File.Delete(unpackPath);
+            DeleteFile(Path.Combine(applicationDir, FILE_EXEBACKUP));
+            DeleteFile(unpackPath);
         }
 
-        private static bool TryWaitForProcessLocks() {
-            bool timedout = true;
-            for (int i = SINGLEPROCESS_DELAY; i > 0; i--) {
-                Process[] instances = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(FILE_EXE));
-
-                if (instances.Length <= 1) {
-                    timedout = false;
-                    continue;
-                }
-
-                System.Threading.Thread.Sleep(1000);
+        private static void DeleteFile(string filePath) {
+            if (!File.Exists(filePath)) {
+                return;
             }
 
-            return !timedout;
+            WithRetry(() => {
+                File.SetAttributes(filePath, FileAttributes.Normal);
+                File.Delete(filePath);
+            });
+        }
+
+        private static void DeleteDirectory(string dirPath) {
+            if (!Directory.Exists(dirPath)) {
+                return;
+            }
+
+            var attributes = File.GetAttributes(dirPath);
+
+            // Clear ReadOnly (and others) so the directory itself can be removed (OneDrive marks them read-only which was causing tons of updates to fail)
+            File.SetAttributes(dirPath, FileAttributes.Directory);
+
+            if (attributes.HasFlag(FileAttributes.ReparsePoint)) {
+                // Removes symlinks/junctions without following them - OneDrive folders are reparse points too, but fail here and recurse below
+                try {
+                    Directory.Delete(dirPath, false);
+                    return;
+                } catch (IOException) { /* Not empty - fall through to a recursive delete */ }
+            }
+
+            foreach (string filePath in Directory.EnumerateFiles(dirPath)) {
+                DeleteFile(filePath);
+            }
+
+            foreach (string subDirPath in Directory.EnumerateDirectories(dirPath)) {
+                DeleteDirectory(subDirPath);
+            }
+
+            WithRetry(() => Directory.Delete(dirPath, false));
+        }
+
+        private static void WithRetry(Action action, int attempts = 5) {
+            // Retry a few times on IO failures in case OneDrive or something is holding on too tight
+            for (int attempt = 1; ; attempt++) {
+                try {
+                    action();
+                    return;
+                } catch (IOException ex) when (attempt < attempts) {
+                    Logger.Warn(ex, $"Update file operation failed (attempt {attempt} of {attempts}).  Retrying...");
+                    System.Threading.Thread.Sleep(250 * attempt);
+                } catch (UnauthorizedAccessException ex) when (attempt < attempts) {
+                    Logger.Warn(ex, $"Update file operation was denied (attempt {attempt} of {attempts}).  Retrying...");
+                    System.Threading.Thread.Sleep(250 * attempt);
+                }
+            }
+        }
+
+        private static bool TryWaitForProcessLocks(int attempts = SINGLEPROCESS_DELAY) {
+            string processName = Path.GetFileNameWithoutExtension(FILE_EXE);
+
+            for (int attempt = 1; ; attempt++) {
+                Process[] instances = Process.GetProcessesByName(processName);
+                int       others    = instances.Length - 1;
+
+                foreach (var instance in instances) {
+                    instance.Dispose();
+                }
+
+                if (others <= 0) {
+                    return true;
+                }
+
+                if (attempt >= attempts) {
+                    Logger.Warn($"Gave up waiting on {others} other Blish HUD instance(s) to close.");
+                    return false;
+                }
+
+                Logger.Warn($"Waiting on {others} other Blish HUD instance(s) to close (attempt {attempt} of {attempts}).  Retrying...");
+                System.Threading.Thread.Sleep(1000);
+            }
         }
 
         public static async Task BeginUpdate(CoreVersionManifest coreVersionManifest, IProgress<string> progress = null) {
