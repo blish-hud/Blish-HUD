@@ -206,7 +206,7 @@ namespace Blish_HUD.Input {
 
             if (GameService.Overlay.InterfaceHidden) return false;
 
-            if (GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.UI.IsTextInputFocused) return false;
+            if (_textInputDelegate == null && GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.UI.IsTextInputFocused) return false;
 
             // Handle the escape key
             if (key == Keys.Escape && eventType == KeyboardEventType.KeyDown) {
