@@ -181,7 +181,7 @@ namespace Blish_HUD {
                     int lineHeightDiff = 0;
 
                     while (destinationRectangle.Height - lineHeightDiff > 0 && (line = reader.ReadLine()) != null) {
-                        DrawStringOnCtrl(spriteBatch, ctrl, line, font, destinationRectangle.Add(0, lineHeightDiff, 0, -0), color, wrap, stroke, strokeDistance, horizontalAlignment, verticalAlignment, clippingRectangle);
+                        DrawStringOnCtrl(spriteBatch, ctrl, line, font, destinationRectangle.Add(0, lineHeightDiff, 0, -0), color, false, stroke, strokeDistance, horizontalAlignment, verticalAlignment, clippingRectangle);
 
                         lineHeightDiff += font.LineHeight;
                     }
