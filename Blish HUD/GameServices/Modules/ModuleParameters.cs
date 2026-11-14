@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Blish_HUD.GameServices.Modules.Managers;
 using Blish_HUD.Modules.Managers;
 
 namespace Blish_HUD.Modules {
@@ -13,6 +14,7 @@ namespace Blish_HUD.Modules {
         private ContentsManager    _contentsManager;
         private DirectoriesManager _directoriesManager;
         private Gw2ApiManager      _gw2ApiManager;
+        private EventBusManager    _eventBusManager;
 
         public Manifest Manifest => _manifest;
 
@@ -23,6 +25,8 @@ namespace Blish_HUD.Modules {
         public DirectoriesManager DirectoriesManager => _directoriesManager;
 
         public Gw2ApiManager Gw2ApiManager => _gw2ApiManager;
+
+        public EventBusManager EventBusManager => _eventBusManager;
 
         internal static ModuleParameters BuildFromManifest(Manifest manifest, ModuleManager module) {
             switch (manifest.ManifestVersion) {
@@ -44,7 +48,8 @@ namespace Blish_HUD.Modules {
                 _settingsManager    = SettingsManager.GetModuleInstance(module),
                 _contentsManager    = ContentsManager.GetModuleInstance(module),
                 _directoriesManager = DirectoriesManager.GetModuleInstance(module),
-                _gw2ApiManager      = Gw2ApiManager.GetModuleInstance(module)
+                _gw2ApiManager      = Gw2ApiManager.GetModuleInstance(module),
+                _eventBusManager    = EventBusManager.GetModuleInstance(module)
             };
 
             if (builtModuleParameters._gw2ApiManager == null) {
@@ -68,6 +73,7 @@ namespace Blish_HUD.Modules {
 
         public void Dispose() {
             _contentsManager?.Dispose();
+            _eventBusManager?.Dispose();
         }
 
     }
