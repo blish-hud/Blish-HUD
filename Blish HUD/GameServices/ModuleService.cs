@@ -300,6 +300,10 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
+                if (debugModule != null && debugModule.State.UserEnabledPermissions == null) {
+                    debugModule.State.UserEnabledPermissions = debugModule.Manifest.ApiPermissions.Keys.ToArray();
+                }
+
                 debugModule?.TryEnable();
             }
 
