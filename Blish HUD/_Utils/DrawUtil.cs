@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
-using System;
 using System.Linq;
 using System.Text;
 using Blish_HUD.Controls;
+using System.Collections.Generic;
 
 namespace Blish_HUD {
     public static class DrawUtil {
@@ -45,23 +45,24 @@ namespace Blish_HUD {
         /// <remarks> Source: https://stackoverflow.com/a/15987581/595437 </remarks>
         private static string WrapTextSegment(BitmapFont spriteFont, string text, float maxLineWidth) {
             string[] words      = text.Split(' ');
-            var      sb         = new StringBuilder();
-            float    lineWidth  = 0f;
-            float    spaceWidth = spriteFont.MeasureString(" ").Width;
+            var lines = new List<string>();
+            var sb = new StringBuilder();
 
             foreach (string word in words) {
-                Vector2 size = spriteFont.MeasureString(word);
+                string appendingString = word + " ";
+                Vector2 size = spriteFont.MeasureString(appendingString);
 
-                if (lineWidth + size.X < maxLineWidth) {
-                    sb.Append(word + " ");
-                    lineWidth += size.X + spaceWidth;
+                if (spriteFont.MeasureString(sb.ToString()).Width + size.X < maxLineWidth) {
+                    sb.Append(appendingString);
                 } else {
-                    sb.Append("\n" + word + " ");
-                    lineWidth = size.X + spaceWidth;
+                    lines.Add(sb.ToString());
+                    sb = new StringBuilder();
+                    sb.Append(appendingString);
                 }
             }
 
-            return sb.ToString();
+            lines.Add(sb.ToString());
+            return string.Join("\n", lines);
         }
 
         public static string WrapText(BitmapFont spriteFont, string text, float maxLineWidth) {
