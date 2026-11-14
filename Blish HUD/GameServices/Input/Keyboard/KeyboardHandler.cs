@@ -218,8 +218,8 @@ namespace Blish_HUD.Input {
 
                 // Close the active window or top level context menu (if any) if enabled in settings
                 if (GameService.Overlay.CloseWindowOnEscape.Value) {
-                    var activeContextMenu = GameService.Graphics.SpriteScreen.Children
-                       .OfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
+                    var activeContextMenu = GameService.Graphics.SpriteScreen
+                        .GetChildrenOfType<ContextMenuStrip>().FirstOrDefault(c => c.Visible);
 
                     if (activeContextMenu != null) {
                         // If we found an active context menu item, close it
