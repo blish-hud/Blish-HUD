@@ -47,7 +47,7 @@ namespace Blish_HUD.Modules {
         [JsonProperty("directories")]
         public List<string> Directories { get; private set; }
 
-        [JsonProperty("enable_without_gw2")]
+        [JsonProperty("enabled_without_gw2")]
         public bool EnabledWithoutGW2 { get; private set; }
 
         [JsonProperty("api_permissions")]
