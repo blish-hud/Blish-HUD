@@ -208,7 +208,14 @@ namespace Blish_HUD.Controls {
             if (_enabled && _clickPrimed) {
                 // Distinguish click from double-click
                 if (GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds - _lastClickTime < SystemInformation.DoubleClickTime) {
-                    OnClick(new MouseEventArgs(e.EventType, true));
+                    var doubleClickArgs = new MouseEventArgs(e.EventType, true);
+                    OnClick(doubleClickArgs);
+
+                    // Ensure that when double-click propagation is stopped, it also
+                    // stops propagating the single-click event
+                    if (doubleClickArgs.PropagationStopped) {
+                        e.StopPropagation();
+                    }
                 } else {
                     _lastClickTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
                     OnClick(e);
@@ -810,34 +817,44 @@ namespace Blish_HUD.Controls {
             return CaptureType.Mouse;
         }
 
+        [Obsolete("This overload does not support stopping propagation, use the overload that takes MouseEventArgs.")]
         protected void TriggerMouseEvent(MouseEventType mouseEventType) {
-            switch (mouseEventType) {
+            TriggerMouseEvent(new MouseEventArgs(mouseEventType));
+        }
+
+        protected void TriggerMouseEvent(MouseEventArgs args) {
+            switch (args.EventType) {
                 case MouseEventType.LeftMouseButtonPressed:
-                    OnLeftMouseButtonPressed(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed));
+                    OnLeftMouseButtonPressed(args);
                     break;
                 case MouseEventType.LeftMouseButtonReleased:
-                    OnLeftMouseButtonReleased(new MouseEventArgs(MouseEventType.LeftMouseButtonReleased));
+                    OnLeftMouseButtonReleased(args);
                     break;
                 case MouseEventType.RightMouseButtonPressed:
-                    OnRightMouseButtonPressed(new MouseEventArgs(MouseEventType.RightMouseButtonPressed));
+                    OnRightMouseButtonPressed(args);
                     break;
                 case MouseEventType.RightMouseButtonReleased:
-                    OnRightMouseButtonReleased(new MouseEventArgs(MouseEventType.RightMouseButtonReleased));
+                    OnRightMouseButtonReleased(args);
                     break;
                 case MouseEventType.MouseMoved:
-                    OnMouseMoved(new MouseEventArgs(MouseEventType.MouseMoved));
+                    OnMouseMoved(args);
                     this.MouseOver = true;
                     break;
                 case MouseEventType.MouseWheelScrolled:
-                    OnMouseWheelScrolled(new MouseEventArgs(MouseEventType.MouseWheelScrolled));
+                    OnMouseWheelScrolled(args);
                     break;
             }
         }
 
+        [Obsolete("This overload does not support stopping propagation, use the overload that takes MouseEventArgs.")]
         public virtual Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
+            return TriggerMouseInput(new MouseEventArgs(mouseEventType), ms);
+        }
+
+        public virtual Control TriggerMouseInput(MouseEventArgs args, MouseState ms) {
             var inputCapture = CapturesInput();
 
-            switch (mouseEventType) {
+            switch (args.EventType) {
                 case MouseEventType.MouseMoved:
                 case MouseEventType.LeftMouseButtonPressed:
                 case MouseEventType.LeftMouseButtonReleased:
@@ -846,13 +863,13 @@ namespace Blish_HUD.Controls {
                 case MouseEventType.MouseEntered:
                 case MouseEventType.MouseLeft:
                     if (inputCapture.HasFlag(CaptureType.Mouse) || inputCapture.HasFlag(CaptureType.Filter)) {
-                        TriggerMouseEvent(mouseEventType);
+                        TriggerMouseEvent(args);
                         return this;
                     }
                     break;
                 case MouseEventType.MouseWheelScrolled:
                     if (inputCapture.HasFlag(CaptureType.MouseWheel) || inputCapture.HasFlag(CaptureType.Filter)) {
-                        TriggerMouseEvent(mouseEventType);
+                        TriggerMouseEvent(args);
                         return this;
                     }
                     break;

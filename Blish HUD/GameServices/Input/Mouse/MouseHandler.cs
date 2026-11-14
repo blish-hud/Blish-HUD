@@ -153,11 +153,13 @@ namespace Blish_HUD.Input {
 
             // Handle mouse moved
             if (prevMouseState.Position != this.State.Position) {
+                var mouseMovedArgs = new MouseEventArgs(MouseEventType.MouseMoved);
+
                 if (this.CursorIsVisible) {
-                    this.ActiveControl = GameService.Graphics.SpriteScreen.TriggerMouseInput(MouseEventType.MouseMoved, this.State);
+                    this.ActiveControl = GameService.Graphics.SpriteScreen.TriggerMouseInput(mouseMovedArgs, this.State);
                 }
 
-                this.MouseMoved?.Invoke(this, new MouseEventArgs(MouseEventType.MouseMoved));
+                this.MouseMoved?.Invoke(this, mouseMovedArgs);
             }
 
             // Handle mouse events blocked by the mouse hook
@@ -228,7 +230,7 @@ namespace Blish_HUD.Input {
 
         private void HandleMouseEvent(MouseEventArgs mouseEvent) {
             if (HandleHookedMouseEvent(mouseEvent) && this.CursorIsVisible) {
-                GameService.Graphics.SpriteScreen.TriggerMouseInput(mouseEvent.EventType, this.State);
+                GameService.Graphics.SpriteScreen.TriggerMouseInput(mouseEvent, this.State);
             }
         }
 

@@ -218,12 +218,16 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public override Control TriggerMouseInput(MouseEventType mouseEventType, MouseState ms) {
+        public override Control TriggerMouseInput(MouseEventArgs args, MouseState ms) {
             Control thisResult  = null;
             Control childResult = null;
 
             if (CapturesInput() != CaptureType.None) {
-                thisResult = base.TriggerMouseInput(mouseEventType, ms);
+                thisResult = base.TriggerMouseInput(args, ms);
+            }
+
+            if (args.PropagationStopped) {
+                return thisResult;
             }
 
             List<Control>               children        = _children.ToList();
@@ -231,7 +235,7 @@ namespace Blish_HUD.Controls {
 
             foreach (var childControl in zSortedChildren) {
                 if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
-                    childResult = childControl.TriggerMouseInput(mouseEventType, ms);
+                    childResult = childControl.TriggerMouseInput(args, ms);
 
                     if (childResult != null) {
                         if (!childResult.Captures.HasFlag(CaptureType.Filter)) {
@@ -241,6 +245,10 @@ namespace Blish_HUD.Controls {
                         // Child has Filter flag so we have to pretend we didn't see it
                         childResult = null;
                     }
+                }
+
+                if (args.PropagationStopped) {
+                    break;
                 }
             }
 
