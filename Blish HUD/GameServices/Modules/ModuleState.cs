@@ -12,6 +12,7 @@ namespace Blish_HUD.Modules {
 
         public bool IgnoreDependencies { get; set; }
 
+        [JsonIgnore]
         public SettingCollection Settings { get; set; }
 
     }

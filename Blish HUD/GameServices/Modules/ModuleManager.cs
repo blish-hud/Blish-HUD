@@ -145,6 +145,10 @@ namespace Blish_HUD.Modules {
             this.State.Enabled = this.Enabled;
             GameService.Settings.Save();
 
+            // Flush module settings to their own file and free them from memory
+            GameService.Settings.UnregisterModuleSettings(this.Manifest.Namespace);
+            this.State.Settings = null;
+
             GameService.Module.SortMenuItems();
         }
 
