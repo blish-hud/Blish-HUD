@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Blish_HUD.Controls {
 
@@ -50,7 +51,17 @@ namespace Blish_HUD.Controls {
                 UpdateScrollbar();
             }
         }
-        
+
+        public float ScrollDistance {
+            get => _panelScrollbar?.ScrollDistance ?? 0f;
+            set {
+                if (!CanScroll || _panelScrollbar == null)
+                    return;
+
+                _panelScrollbar.ScrollDistance = MathHelper.Clamp(value, 0f, 1f);
+            }
+        }
+
         protected string _title;
         public string Title {
             get => _title;
@@ -155,14 +166,12 @@ namespace Blish_HUD.Controls {
             base.OnChildAdded(e);
 
             e.ChangedChild.Resized += UpdateContentRegionBounds;
-            e.ChangedChild.Moved += UpdateContentRegionBounds;
         }
 
         protected override void OnChildRemoved(ChildChangedEventArgs e) {
             base.OnChildRemoved(e);
 
             e.ChangedChild.Resized -= UpdateContentRegionBounds;
-            e.ChangedChild.Moved   -= UpdateContentRegionBounds;
         }
 
         /// <inheritdoc />
@@ -203,8 +212,8 @@ namespace Blish_HUD.Controls {
                                      .Ease(Glide.Ease.QuadOut);
         }
 
-        private void UpdateContentRegionBounds(object sender, EventArgs e) {
-            UpdateScrollbar();
+        private void UpdateContentRegionBounds(object sender, ResizedEventArgs e) {
+            UpdateScrollbarPosition(e.CurrentSize.Y, e.PreviousSize.Y);
         }
 
         private Rectangle _layoutHeaderBounds;
@@ -275,12 +284,29 @@ namespace Blish_HUD.Controls {
                                                         ARROW_SIZE).OffsetBy(_layoutAccordionArrowOrigin.ToPoint());
         }
 
+        /// <summary>
+        /// Set the scrollbar distance to the location of the child control inside the panel
+        /// </summary>
+        /// <param name="child">A direct child of the panel</param>
+        public void ScrollToChild(Control child) {
+            if (!CanScroll || !this.Children.Contains(child) || _panelScrollbar == null)
+                return;
+
+            if (child.Location.Y == 0)
+                ScrollDistance = 0f;
+            else {
+                var panelHeight = (float)this.Children.Where(c => c.Visible).Max(c => c.Bottom);
+                ScrollDistance = (float)child.Location.Y / (panelHeight - _panelScrollbar.Height);
+            }
+        }
+
         private void UpdateScrollbar() {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
                to work correctly */
             if (this.CanScroll) {
-                if (_panelScrollbar == null) 
-                    _panelScrollbar = new Scrollbar(this);
+                if (_panelScrollbar == null) {
+                    _panelScrollbar =  new Scrollbar(this);
+                }
 
                 this.PropertyChanged -= UpdatePanelScrollbarOnOwnPropertyChanged;
                 this.PropertyChanged += UpdatePanelScrollbarOnOwnPropertyChanged;
@@ -296,6 +322,16 @@ namespace Blish_HUD.Controls {
                 _panelScrollbar?.Dispose();
                 _panelScrollbar = null;
             }
+        }
+
+        private void UpdateScrollbarPosition(int currentPanelHeight, int previousPanelHeight) {
+            if (!this.CanScroll) 
+                return;
+
+            var scrollTarget = _panelScrollbar.ScrollDistance * (float)((previousPanelHeight - 20) - _panelScrollbar.Height);
+
+            float distance = scrollTarget / (float)((currentPanelHeight - 20) - _panelScrollbar.Height);
+            _panelScrollbar.ScrollDistance = MathHelper.Clamp(distance, 0f, 1f);
         }
 
         // TODO Temporary solution to avoid memory leak due to Adhesive bindings before
@@ -416,7 +452,6 @@ namespace Blish_HUD.Controls {
             
             foreach (var control in this._children) {
                 control.Resized -= UpdateContentRegionBounds;
-                control.Moved   -= UpdateContentRegionBounds;
             }
 
             base.DisposeControl();

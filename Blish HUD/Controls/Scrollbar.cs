@@ -239,13 +239,7 @@ namespace Blish_HUD.Controls {
         }
 
         public override void RecalculateLayout() {
-            var lastVal = _scrollbarPercent;
             RecalculateScrollbarSize();
-
-            if (lastVal != _scrollbarPercent && _associatedContainer != null) {
-                this.ScrollDistance       = 0;
-                this.TargetScrollDistance = 0;
-            }
 
             _upArrowBounds   = new Rectangle(this.Width / 2 - _textureUpArrow.Width   / 2, 0,                                                                                                 _textureUpArrow.Width,   _textureUpArrow.Height);
             _downArrowBounds = new Rectangle(this.Width / 2 - _textureDownArrow.Width / 2, this.Height                                                            - _textureDownArrow.Height, _textureDownArrow.Width, _textureDownArrow.Height);
@@ -258,12 +252,12 @@ namespace Blish_HUD.Controls {
         private void RecalculateScrollbarSize() {
             if (_associatedContainer == null) return;
 
-            var tempContainerChidlren = _associatedContainer.Children.ToArray();
+            var tempContainerChildren = _associatedContainer.Children.ToArray();
 
             _containerLowestContent = 0;
 
-            for (int i = 0; i < tempContainerChidlren.Length; i++) {
-                ref var child = ref tempContainerChidlren[i];
+            for (int i = 0; i < tempContainerChildren.Length; i++) {
+                ref var child = ref tempContainerChildren[i];
 
                 if (child.Visible) {
                     _containerLowestContent = Math.Max(_containerLowestContent, child.Bottom);
