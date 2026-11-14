@@ -4,6 +4,7 @@ using Blish_HUD.Controls;
 using Blish_HUD.Input.WinApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Control = Blish_HUD.Controls.Control;
 
 namespace Blish_HUD.Input {
@@ -11,6 +12,23 @@ namespace Blish_HUD.Input {
     public class MouseHandler : IInputHandler {
 
         private static readonly Logger Logger = Logger.GetLogger<MouseHandler>();
+
+        #region Event Handling
+
+        public event EventHandler<MouseEventArgs> MouseMoved;
+        public event EventHandler<MouseEventArgs> LeftMouseButtonPressed;
+        public event EventHandler<MouseEventArgs> LeftMouseButtonReleased;
+        public event EventHandler<MouseEventArgs> RightMouseButtonPressed;
+        public event EventHandler<MouseEventArgs> RightMouseButtonReleased;
+        public event EventHandler<MouseEventArgs> MouseWheelScrolled;
+        public event EventHandler<MouseEventArgs> MiddleMouseButtonPressed;
+        public event EventHandler<MouseEventArgs> MiddleMouseButtonReleased;
+        public event EventHandler<MouseEventArgs> XButton1Pressed;
+        public event EventHandler<MouseEventArgs> XButton1Released;
+        public event EventHandler<MouseEventArgs> XButton2Pressed;
+        public event EventHandler<MouseEventArgs> XButton2Released;
+
+        #endregion
 
         /// <summary>
         /// The current position of the mouse relative to the application.
@@ -117,6 +135,24 @@ namespace Blish_HUD.Input {
                 case MouseEventType.MouseWheelScrolled:
                     this.MouseWheelScrolled?.Invoke(this, e);
                     break;
+                case MouseEventType.MiddleMouseButtonPressed:
+                    this.MiddleMouseButtonPressed?.Invoke(this, e);
+                    break;
+                case MouseEventType.MiddleMouseButtonReleased:
+                    this.MiddleMouseButtonReleased?.Invoke(this, e);
+                    break;
+                case MouseEventType.XButton1Pressed:
+                    this.XButton1Pressed?.Invoke(this, e);
+                    break;
+                case MouseEventType.XButton1Released:
+                    this.XButton1Released?.Invoke(this, e);
+                    break;
+                case MouseEventType.XButton2Pressed:
+                    this.XButton2Pressed?.Invoke(this, e);
+                    break;
+                case MouseEventType.XButton2Released:
+                    this.XButton2Released?.Invoke(this, e);
+                    break;
                 default:
                     Logger.Debug("Got unsupported input {mouseDataMessage}.", e.EventType);
                     return false;
@@ -140,11 +176,11 @@ namespace Blish_HUD.Input {
 
             var prevMouseState = this.State;
 
-            var rawMouseState = Mouse.GetState();
+            var rawMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
 
-            this.State = new MouseState((int) (rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
-                                        (int) (rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
-                                        _mouseEvent?.WheelDelta ?? 0, 
+            this.State = new MouseState((int)(rawMouseState.X / GameService.Graphics.UIScaleMultiplier),
+                                        (int)(rawMouseState.Y / GameService.Graphics.UIScaleMultiplier),
+                                        _mouseEvent?.WheelDelta ?? 0,
                                         rawMouseState.LeftButton,
                                         rawMouseState.MiddleButton,
                                         rawMouseState.RightButton,
@@ -244,18 +280,5 @@ namespace Blish_HUD.Input {
         public void UnsetActiveControl() {
             this.ActiveControl = null;
         }
-
-        #region Events
-
-        public event EventHandler<MouseEventArgs> MouseMoved;
-        public event EventHandler<MouseEventArgs> LeftMouseButtonPressed;
-        public event EventHandler<MouseEventArgs> LeftMouseButtonReleased;
-        public event EventHandler<MouseEventArgs> RightMouseButtonPressed;
-        public event EventHandler<MouseEventArgs> RightMouseButtonReleased;
-        public event EventHandler<MouseEventArgs> MouseWheelScrolled;
-
-        #endregion
-
     }
-
 }

@@ -30,10 +30,11 @@ namespace Blish_HUD.Input {
         public event EventHandler<KeyboardEventArgs> KeyStateChanged;
 
         private void OnKeyStateChanged(KeyboardEventArgs e) {
-            if (e.EventType == KeyboardEventType.KeyDown)
+            if (e.EventType == KeyboardEventType.KeyDown) {
                 this.KeyPressed?.Invoke(this, e);
-            else
+            } else {
                 this.KeyReleased?.Invoke(this, e);
+            }
 
             this.KeyStateChanged?.Invoke(this, e);
         }

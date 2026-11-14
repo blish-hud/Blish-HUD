@@ -28,9 +28,39 @@
         RightMouseButtonReleased = 517,
 
         /// <summary>
+        /// Occurs when the middle-mouse button is pressed.
+        /// </summary>
+        MiddleMouseButtonPressed = 519,
+
+        /// <summary>
+        /// Occurs when the middle-mouse button is released.
+        /// </summary>
+        MiddleMouseButtonReleased = 520,
+
+        /// <summary>
         /// Occurs when the mouse-wheel is scrolled.
         /// </summary>
         MouseWheelScrolled = 522,
+
+        /// <summary>
+        /// Occurs when the back button is pressed.
+        /// </summary>
+        XButton1Pressed = 523,
+
+        /// <summary>
+        /// Occurs when the back button is released.
+        /// </summary>
+        XButton1Released = 524,
+
+        /// <summary>
+        /// Occurs when the forward button is pressed.
+        /// </summary>
+        XButton2Pressed = 525,
+
+        /// <summary>
+        /// Occurs when the forward button is released.
+        /// </summary>
+        XButton2Released = 526,
 
         /// <summary>
         /// Occurs when the mouse enters the bounds of the control.

@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework.Input;
+using Blish_HUD.Input.Mouse;
 
 namespace Blish_HUD.Input {
 
@@ -30,6 +31,7 @@ namespace Blish_HUD.Input {
         private Keys _primaryKey;
         /// <summary>
         /// The primary key in the binding.
+        /// Mutually exclusive with <see cref="PrimaryMouseButton"/>.
         /// </summary>
         [JsonProperty]
         public Keys PrimaryKey { 
@@ -38,8 +40,35 @@ namespace Blish_HUD.Input {
                 if (_primaryKey == value) {
                     return;
                 }
+
+                if (value != Keys.None) {
+                    _primaryMouseButton = MouseButtons.None;
+                }
+
                 _primaryKey = value;
                 BindingChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private MouseButtons _primaryMouseButton;
+        /// <summary>
+        /// The primary mouse button in the binding.
+        /// Mutually exclusive with <see cref="PrimaryKey"/>.
+        /// </summary>
+        [JsonProperty]
+        public MouseButtons PrimaryMouseButton {
+            get => _primaryMouseButton;
+            set {
+                if (_primaryMouseButton == value) {
+                    return;
+                }
+
+                if (value != MouseButtons.None) {
+                    _primaryKey = Keys.None;
+                }
+
+                _primaryMouseButton = value;
+                this.BindingChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -55,6 +84,7 @@ namespace Blish_HUD.Input {
                 if (_modifierKeys == value) {
                     return;
                 }
+
                 _modifierKeys = value;
                 BindingChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -74,8 +104,23 @@ namespace Blish_HUD.Input {
                     if (value) {
                         KeyboardOnKeyStateChanged(null, null);
                         GameService.Input.Keyboard.KeyStateChanged += KeyboardOnKeyStateChanged;
+
+                        GameService.Input.Mouse.MiddleMouseButtonPressed  += MouseButtonStateChanged;
+                        GameService.Input.Mouse.XButton1Pressed           += MouseButtonStateChanged;
+                        GameService.Input.Mouse.XButton2Pressed           += MouseButtonStateChanged;
+                        GameService.Input.Mouse.MiddleMouseButtonReleased += MouseButtonStateChanged;
+                        GameService.Input.Mouse.XButton1Released          += MouseButtonStateChanged;
+                        GameService.Input.Mouse.XButton2Released          += MouseButtonStateChanged;
                     } else {
                         GameService.Input.Keyboard.KeyStateChanged -= KeyboardOnKeyStateChanged;
+
+                        GameService.Input.Mouse.MiddleMouseButtonPressed  -= MouseButtonStateChanged;
+                        GameService.Input.Mouse.XButton1Pressed           -= MouseButtonStateChanged;
+                        GameService.Input.Mouse.XButton2Pressed           -= MouseButtonStateChanged;
+                        GameService.Input.Mouse.MiddleMouseButtonReleased -= MouseButtonStateChanged;
+                        GameService.Input.Mouse.XButton1Released          -= MouseButtonStateChanged;
+                        GameService.Input.Mouse.XButton2Released          -= MouseButtonStateChanged;
+
                         GameService.Input.Keyboard.UnstageKeyBinding(this);
                     }
 
@@ -84,6 +129,10 @@ namespace Blish_HUD.Input {
                     Reset();
                 }
             }
+        }
+
+        private void MouseButtonStateChanged(object sender, MouseEventArgs e) {
+            KeyboardOnKeyStateChanged(null, null);
         }
 
         /// <summary>
@@ -110,14 +159,21 @@ namespace Blish_HUD.Input {
 
         public KeyBinding(Keys primaryKey) : this(ModifierKeys.None, primaryKey) { /* NOOP */ }
 
+        public KeyBinding(MouseButtons primaryMouseButon) : this(ModifierKeys.None, primaryMouseButon) { /* NOOP */ }
+
         public KeyBinding(ModifierKeys modifierKeys, Keys primaryKey) {
             _modifierKeys = modifierKeys;
             _primaryKey   = primaryKey;
         }
 
+        public KeyBinding(ModifierKeys modifierKeys, MouseButtons primaryMouseButton) {
+            _modifierKeys = modifierKeys;
+            _primaryMouseButton = primaryMouseButton;
+        }
+
         private void KeyboardOnKeyStateChanged(object sender, KeyboardEventArgs e) {
-            if (this.PrimaryKey == Keys.None 
-             || (this.IgnoreWhenInTextField && GameService.Input.Keyboard.TextFieldIsActive())) return;
+            if ((this.PrimaryKey == Keys.None && this.PrimaryMouseButton == MouseButtons.None)
+             || (this.IgnoreWhenInTextField   && GameService.Input.Keyboard.TextFieldIsActive())) return;
 
             CheckTrigger(GameService.Input.Keyboard.ActiveModifiers, GameService.Input.Keyboard.KeysDown);
         }
@@ -138,13 +194,22 @@ namespace Blish_HUD.Input {
             this.IsTriggering = false;
         }
 
+        private bool MouseButtonActive() {
+            return _primaryMouseButton switch {
+                MouseButtons.MiddleButton => GameService.Input.Mouse.State.MiddleButton == ButtonState.Pressed,
+                MouseButtons.XButton1     => GameService.Input.Mouse.State.XButton1     == ButtonState.Pressed,
+                MouseButtons.XButton2     => GameService.Input.Mouse.State.XButton2     == ButtonState.Pressed,
+                _                         => false
+            };
+        }
+
         private void CheckTrigger(ModifierKeys activeModifiers, IEnumerable<Keys> pressedKeys) {
             if (activeModifiers == this.ModifierKeys || _acceptedPrimaryModifierKeys.Contains(_primaryKey)) {
                 if (this.BlockSequenceFromGw2) {
                     GameService.Input.Keyboard.StageKeyBinding(this);
                 }
 
-                if (pressedKeys.Contains(this.PrimaryKey)) {
+                if (pressedKeys.Contains(this.PrimaryKey) || MouseButtonActive()) {
                     Fire();
                     return;
                 }
@@ -159,7 +224,7 @@ namespace Blish_HUD.Input {
         /// Gets a display string representing the <see cref="KeyBinding"/> suitable
         /// for display in the UI.
         /// </summary>
-        public string GetBindingDisplayText() => KeysUtil.GetFriendlyName(this.ModifierKeys, this.PrimaryKey);
+        public string GetBindingDisplayText() => KeysUtil.GetFriendlyName(this.ModifierKeys, this.PrimaryKey, this.PrimaryMouseButton);
 
         /// <summary>
         /// Manually triggers the actions bound to this <see cref="KeyBinding"/>.
