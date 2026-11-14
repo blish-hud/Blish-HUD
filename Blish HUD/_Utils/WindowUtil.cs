@@ -43,6 +43,9 @@ namespace Blish_HUD {
         [DllImport("Dwmapi.dll")]
         private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
 
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
         [DllImport("user32.dll")]
         private static extern IntPtr GetActiveWindow();
 
@@ -108,6 +111,8 @@ namespace Blish_HUD {
         private static extern IntPtr GetWindow(IntPtr hWnd, GW uCmd);
 
         internal static void SetForegroundWindowEx(IntPtr handle) => SetForegroundWindow(handle);
+
+        internal static bool WindowExists(string className, string windowTitle) => FindWindow(className, windowTitle) != IntPtr.Zero;
 
         private static IntPtr GetWindowLong(IntPtr hWnd, int nIndex) => IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLongPtr32(hWnd, nIndex);
 
