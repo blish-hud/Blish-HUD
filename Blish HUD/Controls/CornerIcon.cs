@@ -63,7 +63,7 @@ namespace Blish_HUD.Controls {
             set {
                 if (SetProperty(ref _dynamicHide, value)) {
                     Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f)).OnBegin(() => {
-                        if (this.DynamicHide) this.Visible = true;
+                        if (this.DynamicHide && !_decluttered) this.Visible = true;
                     }).OnComplete(() => {
                         if (!this.DynamicHide) this.Visible = false;
                     });
@@ -106,6 +106,23 @@ namespace Blish_HUD.Controls {
             get => _priority ?? (_icon?.GetHashCode() ?? 0);
             set {
                 if (SetProperty(ref _priority, value)) {
+                    UpdateCornerIconPositions();
+                }
+            }
+        }
+
+        private bool _decluttered;
+        /// <summary>
+        /// Indicates whether this <see cref="CornerIcon"/> is flagged as decluttered.
+        /// Decluttered icons remain registered (and can be shown again), but are not
+        /// displayed in the corner icon bar and do not occupy a position in it.
+        /// </summary>
+        public bool Decluttered {
+            get => _decluttered;
+            set {
+                if (SetProperty(ref _decluttered, value)) {
+                    this.Visible = !_decluttered && _dynamicHide;
+
                     UpdateCornerIconPositions();
                 }
             }
@@ -158,11 +175,13 @@ namespace Blish_HUD.Controls {
         }
 
         private static void UpdateCornerIconPositions() {
-            List<CornerIcon> sortedIcons = CornerIcons.OrderByDescending((cornerIcon) => cornerIcon.Priority).ToList();
+            List<CornerIcon> sortedIcons = CornerIcons.Where(cornerIcon => !cornerIcon.Decluttered)
+                                                      .OrderByDescending(cornerIcon => cornerIcon.Priority)
+                                                      .ToList();
 
             int horizontalOffset = ICON_SIZE * ICON_POSITION + LeftOffset;
 
-            for (int i = 0; i < CornerIcons.Count; i++) {
+            for (int i = 0; i < sortedIcons.Count; i++) {
                 sortedIcons[i].Location = new Point(ICON_SIZE * i + horizontalOffset, 0);
             }
         }

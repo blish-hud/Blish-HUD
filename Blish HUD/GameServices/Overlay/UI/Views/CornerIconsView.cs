@@ -7,9 +7,12 @@ namespace Blish_HUD.Overlay.UI.Views {
 
     /// <summary>
     /// View used to list the registered <see cref="CornerIcon"/>s so that they
-    /// can be sorted and hidden.
+    /// can be sorted and decluttered.
     /// </summary>
     public class CornerIconsView : View {
+
+        private const int MENU_ITEM_HEIGHT = 40;
+        private const int ROW_PADDING      = 12;
 
         protected override void Build(Container buildPanel) {
             var cornerIconsPanel = new Panel() {
@@ -21,19 +24,35 @@ namespace Blish_HUD.Overlay.UI.Views {
                 Parent     = buildPanel
             };
 
+            int contentWidth = cornerIconsPanel.ContentRegion.Width - (ROW_PADDING * 2);
+
+            var hintLabel = new Label() {
+                Text      = "Check an icon to declutter it from the corner icon bar.",
+                Width     = contentWidth,
+                Height    = 28,
+                TextColor = Color.LightGray,
+                Parent    = cornerIconsPanel
+            };
+
             var cornerIconsList = new Menu() {
-                MenuItemHeight = 40,
-                Width          = cornerIconsPanel.ContentRegion.Width,
+                MenuItemHeight = MENU_ITEM_HEIGHT,
+                Width          = contentWidth,
+                Top            = hintLabel.Bottom,
                 Parent         = cornerIconsPanel
             };
 
             foreach (CornerIcon cornerIcon in CornerIcon.All) {
-                string name = GetName(cornerIcon);
+                CornerIcon currentCornerIcon = cornerIcon;
+                string     name              = GetName(cornerIcon);
 
-                _ = new MenuItem(GetDisplayName(name), cornerIcon.Icon) {
+                var menuItem = new MenuItem(GetDisplayName(name), cornerIcon.Icon) {
+                    CanCheck         = true,
+                    Checked          = cornerIcon.Decluttered,
                     BasicTooltipText = name,
                     Parent           = cornerIconsList
                 };
+
+                menuItem.CheckedChanged += (sender, e) => currentCornerIcon.Decluttered = e.Checked;
             }
         }
 

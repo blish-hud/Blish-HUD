@@ -407,24 +407,23 @@ namespace Blish_HUD.Controls {
                 extension = !this.Enabled ? "-disabled" : extension;
 
                 firstItemSprite = Resources.Checkable.TextureRegionsCheckbox.First(cb => cb.Name == $"checkbox/cb{state}{extension}");
-            } else if (this.Icon != null && _children.IsEmpty) {
-                // performance?
-                firstItemSprite = new TextureRegion2D(this.Icon);
-            }
 
-            // Draw either the checkbox or the icon, if one or the either is available
-            if (firstItemSprite != null) {
                 spriteBatch.DrawOnCtrl(this,
                                        firstItemSprite,
                                        this.FirstItemBoxRegion.OffsetBy(currentLeftSidePadding, 0));
+
+                currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
             }
 
-            if (_canCheck) {
+            // A MenuItem can show both a checkbox and an icon, in which case the checkbox comes first.
+            if (this.Icon != null && _children.IsEmpty) {
+                spriteBatch.DrawOnCtrl(this,
+                                       new TextureRegion2D(this.Icon),
+                                       this.FirstItemBoxRegion.OffsetBy(currentLeftSidePadding, 0));
+
                 currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
-            } else if (!_children.IsEmpty) {
+            } else if (!this.CanCheck && !_children.IsEmpty) {
                 currentLeftSidePadding += ICON_PADDING;
-            } else if (_icon != null) {
-                currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
             }
 
             spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont16, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight), _textColor, true, true);
