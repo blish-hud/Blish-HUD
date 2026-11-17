@@ -28,6 +28,8 @@ namespace Blish_HUD.Overlay.UI.Views {
         private Menu _cornerIconsList;
 
         private readonly List<CornerIconMenuItem> _cornerIconMenuItems = new List<CornerIconMenuItem>();
+        private readonly HashSet<CornerIcon>      _trackedCornerIcons = new HashSet<CornerIcon>();
+        private          bool                     _refreshQueued;
 
         protected override void Build(Container buildPanel) {
             var cornerIconsPanel = new Panel() {
@@ -57,6 +59,48 @@ namespace Blish_HUD.Overlay.UI.Views {
             };
 
             BuildCornerIconMenuItems();
+
+            CornerIcon.Registered += CornerIconOnRegistered;
+
+            foreach (CornerIcon cornerIcon in CornerIcon.All) {
+                TrackCornerIcon(cornerIcon);
+            }
+        }
+
+        private void CornerIconOnRegistered(object sender, ValueEventArgs<CornerIcon> e) {
+            TrackCornerIcon(e.Value);
+            QueueRefresh();
+        }
+
+        private void CornerIconOnDisposed(object sender, EventArgs e) {
+            if (!(sender is CornerIcon cornerIcon)) return;
+
+            UntrackCornerIcon(cornerIcon);
+            QueueRefresh();
+        }
+
+        private void TrackCornerIcon(CornerIcon cornerIcon) {
+            if (!_trackedCornerIcons.Add(cornerIcon)) return;
+
+            cornerIcon.Disposed += CornerIconOnDisposed;
+        }
+
+        private void UntrackCornerIcon(CornerIcon cornerIcon) {
+            if (!_trackedCornerIcons.Remove(cornerIcon)) return;
+
+            cornerIcon.Disposed -= CornerIconOnDisposed;
+        }
+
+        private void QueueRefresh() {
+            if (_refreshQueued) return;
+
+            _refreshQueued = true;
+
+            GameService.Overlay.QueueMainThreadUpdate(_ => {
+                _refreshQueued = false;
+
+                RefreshCornerIconMenuItems();
+            });
         }
 
         private void BuildCornerIconMenuItems() {
@@ -120,7 +164,7 @@ namespace Blish_HUD.Overlay.UI.Views {
             GameService.Overlay.ApplyCornerIconOrder(orderedIcons);
 
             // Let the click finish before rebuilding the list.
-            GameService.Overlay.QueueMainThreadUpdate(_ => RefreshCornerIconMenuItems());
+            QueueRefresh();
         }
 
         private static List<CornerIcon> GetOrderedIcons() {
@@ -128,6 +172,12 @@ namespace Blish_HUD.Overlay.UI.Views {
         }
 
         protected override void Unload() {
+            CornerIcon.Registered -= CornerIconOnRegistered;
+
+            foreach (CornerIcon cornerIcon in _trackedCornerIcons.ToArray()) {
+                UntrackCornerIcon(cornerIcon);
+            }
+
             foreach (CornerIconMenuItem menuItem in _cornerIconMenuItems) {
                 menuItem.Dispose();
             }
