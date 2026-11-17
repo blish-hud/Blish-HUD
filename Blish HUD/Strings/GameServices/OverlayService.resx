@@ -217,6 +217,12 @@ It might not be installed.</value>
   <data name="Setting_ToggleBlishWindowKeybind_DisplayName" xml:space="preserve">
     <value>Toggle Blish HUD window</value>
   </data>
+  <data name="Setting_ToggleCornerIconDeclutter_Description" xml:space="preserve">
+    <value>Set keybind to show or hide the corner icons flagged as decluttered</value>
+  </data>
+  <data name="Setting_ToggleCornerIconDeclutter_DisplayName" xml:space="preserve">
+    <value>Toggle Corner Icon Declutter</value>
+  </data>
   <data name="Setting_DynamicHUDMenuBar_Description" xml:space="preserve">
     <value>Controls visibility of the Menu bar located in the upper-left of the screen.</value>
   </data>

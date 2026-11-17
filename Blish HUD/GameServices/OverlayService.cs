@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -51,9 +52,12 @@ namespace Blish_HUD {
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
         internal SettingEntry<KeyBinding> InteractKey { get; private set; }
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
+        public SettingEntry<KeyBinding> ToggleCornerIconDeclutter { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
         internal SettingEntry<bool> ShowPreviews { get; private set; }
+        internal SettingEntry<string[]> DeclutteredCornerIcons { get; private set; }
+        internal SettingEntry<string[]> CornerIconOrder { get; private set; }
 
         public bool InterfaceHidden = false;
 
@@ -105,6 +109,8 @@ namespace Blish_HUD {
 
             DefineSettings(this.OverlaySettings);
             DefineDynamicHUDSettings(this.DynamicHUDSettings);
+
+            CornerIcon.Registered += CornerIconOnRegistered;
 
             ApplyInitialSettings();
 
@@ -165,14 +171,29 @@ namespace Blish_HUD {
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
+            this.ToggleCornerIconDeclutter = settings.DefineSetting(nameof(this.ToggleCornerIconDeclutter),
+                                                                    new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.I),
+                                                                    () => Strings.GameServices.OverlayService.Setting_ToggleCornerIconDeclutter_DisplayName,
+                                                                    () => Strings.GameServices.OverlayService.Setting_ToggleCornerIconDeclutter_Description);
+
             this.ShowPreviews = settings.DefineSetting(nameof(this.ShowPreviews),
                                                        false,
                                                        () => Strings.GameServices.OverlayService.Setting_ShowPreviews_DisplayName,
                                                        () => Strings.GameServices.OverlayService.Setting_ShowPreviews_Description);
 
+            this.DeclutteredCornerIcons = settings.DefineSetting(nameof(this.DeclutteredCornerIcons),
+                                                                 Array.Empty<string>());
+
+            this.CornerIconOrder = settings.DefineSetting(nameof(this.CornerIconOrder),
+                                                          Array.Empty<string>());
+
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
             this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
+
+            this.ToggleCornerIconDeclutter.Value.BlockSequenceFromGw2 = true;
+            this.ToggleCornerIconDeclutter.Value.Enabled              = true;
+            this.ToggleCornerIconDeclutter.Value.Activated            += delegate { CornerIcon.DeclutterEnabled = !CornerIcon.DeclutterEnabled; };
 
             // Lock 'StayInTray' if we launched Guild Wars 2 with a launch argument.
             if (ApplicationSettings.Instance.StartGw2 > 0 || ApplicationSettings.Instance.ProcessId > 0) {
@@ -220,6 +241,155 @@ namespace Blish_HUD {
 
         private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
             GameIntegration.WinForms.SetShowInTaskbar(e.NewValue);
+        }
+
+        private readonly HashSet<CornerIcon> _cornerIconsWithLoadedState = new HashSet<CornerIcon>();
+        private          int                 _nextUnsavedCornerIconOrderIndex;
+        private          bool                _applyingCornerIconOrder;
+
+        private const int CORNER_ICON_ORDER_PRIORITY_BASE = int.MaxValue - 100;
+        private const int CORNER_ICON_ORDER_PRIORITY_STEP = 10;
+
+        private void CornerIconOnRegistered(object sender, ValueEventArgs<CornerIcon> e) {
+            CornerIcon cornerIcon = e.Value;
+
+            cornerIcon.PropertyChanged += CornerIconOnPropertyChanged;
+            cornerIcon.Disposed        += CornerIconOnDisposed;
+
+            ApplyLoadedCornerIconState(cornerIcon);
+        }
+
+        private void CornerIconOnDisposed(object sender, EventArgs e) {
+            if (!(sender is CornerIcon cornerIcon)) return;
+
+            cornerIcon.PropertyChanged -= CornerIconOnPropertyChanged;
+            cornerIcon.Disposed        -= CornerIconOnDisposed;
+
+            _cornerIconsWithLoadedState.Remove(cornerIcon);
+        }
+
+        private void CornerIconOnPropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (!(sender is CornerIcon cornerIcon)) return;
+
+            switch (e.PropertyName) {
+                case nameof(CornerIcon.Decluttered):
+                    StoreDeclutterState(cornerIcon);
+                    break;
+                case nameof(CornerIcon.IconName):
+                case nameof(Control.BasicTooltipText):
+                    ApplyLoadedCornerIconState(cornerIcon);
+                    break;
+                case nameof(CornerIcon.Priority):
+                    ReassertCornerIconOrder(cornerIcon);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Applies the persisted declutter state and ordering once the <see cref="CornerIcon"/> has a usable name.
+        /// Some modules only assign the name after the icon has been constructed.
+        /// </summary>
+        private void ApplyLoadedCornerIconState(CornerIcon cornerIcon) {
+            if (cornerIcon.Exempt || _cornerIconsWithLoadedState.Contains(cornerIcon)) return;
+
+            string name = cornerIcon.Name;
+
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            _cornerIconsWithLoadedState.Add(cornerIcon);
+
+            if (this.DeclutteredCornerIcons.Value?.Contains(name, StringComparer.OrdinalIgnoreCase) == true) {
+                cornerIcon.Decluttered = true;
+            }
+
+            ApplyLoadedCornerIconOrder(cornerIcon, name);
+        }
+
+        private void ApplyLoadedCornerIconOrder(CornerIcon cornerIcon, string name) {
+            string[] cornerIconOrder = this.CornerIconOrder.Value;
+
+            if (cornerIconOrder == null || cornerIconOrder.Length == 0) return;
+
+            int orderIndex = Array.FindIndex(cornerIconOrder, orderedName => string.Equals(orderedName, name, StringComparison.OrdinalIgnoreCase));
+
+            if (orderIndex < 0) {
+                // Icons that were not part of the saved order are appended after the known ones.
+                orderIndex = cornerIconOrder.Length + _nextUnsavedCornerIconOrderIndex++;
+            }
+
+            SetCornerIconOrderPriority(cornerIcon, orderIndex);
+        }
+
+        /// <summary>
+        /// Modules may set their own <see cref="CornerIcon.Priority"/> after the icon has been created.
+        /// Reassert the saved order for icons that are part of it.
+        /// </summary>
+        private void ReassertCornerIconOrder(CornerIcon cornerIcon) {
+            if (_applyingCornerIconOrder || cornerIcon.Exempt) return;
+
+            string name = cornerIcon.Name;
+
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            string[] cornerIconOrder = this.CornerIconOrder.Value;
+
+            if (cornerIconOrder == null || cornerIconOrder.Length == 0) return;
+
+            int orderIndex = Array.FindIndex(cornerIconOrder, orderedName => string.Equals(orderedName, name, StringComparison.OrdinalIgnoreCase));
+
+            if (orderIndex < 0) return;
+
+            SetCornerIconOrderPriority(cornerIcon, orderIndex);
+        }
+
+        private void SetCornerIconOrderPriority(CornerIcon cornerIcon, int orderIndex) {
+            _applyingCornerIconOrder = true;
+
+            try {
+                cornerIcon.Priority = CORNER_ICON_ORDER_PRIORITY_BASE - orderIndex * CORNER_ICON_ORDER_PRIORITY_STEP;
+            } finally {
+                _applyingCornerIconOrder = false;
+            }
+        }
+
+        /// <summary>
+        /// Applies and saves the provided order of <see cref="CornerIcon"/>s.
+        /// </summary>
+        internal void ApplyCornerIconOrder(IEnumerable<CornerIcon> orderedCornerIcons) {
+            List<CornerIcon> cornerIcons = orderedCornerIcons.ToList();
+
+            _applyingCornerIconOrder = true;
+
+            try {
+                for (int i = 0; i < cornerIcons.Count; i++) {
+                    cornerIcons[i].Priority = CORNER_ICON_ORDER_PRIORITY_BASE - i * CORNER_ICON_ORDER_PRIORITY_STEP;
+                }
+            } finally {
+                _applyingCornerIconOrder = false;
+            }
+
+            this.CornerIconOrder.Value = cornerIcons.Select(cornerIcon => cornerIcon.Name)
+                                                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                                                    .ToArray();
+        }
+
+        private void StoreDeclutterState(CornerIcon cornerIcon) {
+            if (cornerIcon.Exempt) return;
+
+            string name = cornerIcon.Name;
+
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            string[] declutteredCornerIcons = this.DeclutteredCornerIcons.Value ?? Array.Empty<string>();
+
+            bool isStored = declutteredCornerIcons.Contains(name, StringComparer.OrdinalIgnoreCase);
+
+            if (cornerIcon.Decluttered == isStored) return;
+
+            this.DeclutteredCornerIcons.Value = cornerIcon.Decluttered
+                                                    ? declutteredCornerIcons.Concat(new[] { name }).ToArray()
+                                                    : declutteredCornerIcons.Where(storedName => !string.Equals(storedName, name, StringComparison.OrdinalIgnoreCase))
+                                                                            .ToArray();
         }
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
@@ -335,12 +505,21 @@ namespace Blish_HUD {
                 Id            = $"{nameof(OverlayService)}_BlishHUD_38d37290-b5f9-447d-97ea-45b0b50e5f55"
             };
 
+            BuildCornerIconsTab();
             BuildSettingTab();
+        }
+
+        private void BuildCornerIconsTab() {
+            this.BlishHudWindow.AddTab("Corner Icons",
+                                       AsyncTexture2D.FromAssetId(102323),
+                                       () => new CornerIconsView(),
+                                       int.MaxValue - 20);
         }
 
         private void BuildCornerIcon() {
             this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), $"{Strings.Common.BlishHUD}\n\n{Strings.GameServices.InputService.Input_Mouse2}: {Strings.Common.Hint_MoreOptions}") {
                 Priority = int.MaxValue,
+                Exempt   = true,
                 Parent   = Graphics.SpriteScreen,
             };
 
@@ -376,6 +555,15 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
+            CornerIcon.Registered -= CornerIconOnRegistered;
+
+            foreach (CornerIcon cornerIcon in CornerIcon.All) {
+                cornerIcon.PropertyChanged -= CornerIconOnPropertyChanged;
+                cornerIcon.Disposed        -= CornerIconOnDisposed;
+            }
+
+            _cornerIconsWithLoadedState.Clear();
+
             this.BlishMenuIcon.Dispose();
             this.BlishHudWindow.Dispose();
         }

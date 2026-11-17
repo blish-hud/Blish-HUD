@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,6 +23,20 @@ namespace Blish_HUD.Controls {
         }
 
         private static ObservableCollection<CornerIcon> CornerIcons { get; }
+
+        /// <summary>
+        /// A snapshot of all currently loaded <see cref="CornerIcon"/>s in the order
+        /// they are displayed (exempt icons first, then highest <see cref="Priority"/> first).
+        /// </summary>
+        public static IReadOnlyList<CornerIcon> All {
+            get {
+                lock (CornerIcons) {
+                    return CornerIcons.OrderByDescending(cornerIcon => cornerIcon.Exempt)
+                                      .ThenByDescending(cornerIcon => cornerIcon.Priority)
+                                      .ToList();
+                }
+            }
+        }
 
         private static readonly Rectangle _standardIconBounds;
 
@@ -51,7 +66,7 @@ namespace Blish_HUD.Controls {
             set {
                 if (SetProperty(ref _dynamicHide, value)) {
                     Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f)).OnBegin(() => {
-                        if (this.DynamicHide) this.Visible = true;
+                        if (this.DynamicHide && this.ShouldBeVisible) this.Visible = true;
                     }).OnComplete(() => {
                         if (!this.DynamicHide) this.Visible = false;
                     });
@@ -86,6 +101,23 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _iconName, value);
         }
 
+        /// <summary>
+        /// The name used to identify this <see cref="CornerIcon"/>. Prefers <see cref="IconName"/>
+        /// and falls back to <see cref="Control.BasicTooltipText"/>, since some modules only
+        /// provide the name through the tooltip.
+        /// </summary>
+        public string Name {
+            get {
+                string name = !string.IsNullOrWhiteSpace(_iconName)
+                                  ? _iconName
+                                  : this.BasicTooltipText;
+
+                return name?.Split('\n')
+                            .Select(line => line.Trim())
+                            .FirstOrDefault(line => line.Length > 0);
+            }
+        }
+
         private int? _priority;
         /// <summary>
         /// <see cref="CornerIcon"/>s are sorted by priority so that, from left to right, priority goes from the highest to lowest.
@@ -94,6 +126,74 @@ namespace Blish_HUD.Controls {
             get => _priority ?? (_icon?.GetHashCode() ?? 0);
             set {
                 if (SetProperty(ref _priority, value)) {
+                    UpdateCornerIconPositions();
+                }
+            }
+        }
+
+        private bool _decluttered;
+        /// <summary>
+        /// Indicates whether this <see cref="CornerIcon"/> is flagged as decluttered.
+        /// Decluttered icons remain registered (and can be shown again), but are not
+        /// displayed in the corner icon bar and do not occupy a position in it.
+        /// Exempt icons can not be decluttered.
+        /// </summary>
+        public bool Decluttered {
+            get => _decluttered;
+            set {
+                if (_exempt && value) return;
+
+                if (SetProperty(ref _decluttered, value)) {
+                    this.Visible = ShouldBeVisible;
+
+                    UpdateCornerIconPositions();
+                }
+            }
+        }
+
+        private static bool _declutterEnabled = true;
+        /// <summary>
+        /// Indicates whether corner icons flagged as <see cref="Decluttered"/> should
+        /// currently be hidden. When <c>false</c>, all corner icons are shown.
+        /// </summary>
+        public static bool DeclutterEnabled {
+            get => _declutterEnabled;
+            set {
+                if (_declutterEnabled == value) return;
+
+                _declutterEnabled = value;
+
+                CornerIcon[] cornerIcons;
+
+                lock (CornerIcons) {
+                    cornerIcons = CornerIcons.ToArray();
+                }
+
+                foreach (CornerIcon cornerIcon in cornerIcons) {
+                    cornerIcon.Visible = cornerIcon.ShouldBeVisible;
+                }
+
+                UpdateCornerIconPositions();
+            }
+        }
+
+        private bool ShouldBeVisible => !(_decluttered && _declutterEnabled) && _dynamicHide;
+
+        private bool _exempt;
+        /// <summary>
+        /// Indicates whether this <see cref="CornerIcon"/> is exempt from actions
+        /// such as decluttering and sorting (for example, the Blish HUD icon).
+        /// Exempt icons are always displayed first and are never decluttered.
+        /// </summary>
+        public bool Exempt {
+            get => _exempt;
+            set {
+                if (SetProperty(ref _exempt, value)) {
+                    // An exempt icon can never remain decluttered.
+                    if (_exempt && _decluttered) {
+                        this.Decluttered = false;
+                    }
+
                     UpdateCornerIconPositions();
                 }
             }
@@ -112,6 +212,11 @@ namespace Blish_HUD.Controls {
                 }
             }
         }
+
+        /// <summary>
+        /// Occurs when a new <see cref="CornerIcon"/> has been registered.
+        /// </summary>
+        public static event EventHandler<ValueEventArgs<CornerIcon>> Registered;
 
         static CornerIcon() {
             CornerIcons = new ObservableCollection<CornerIcon>();
@@ -146,11 +251,14 @@ namespace Blish_HUD.Controls {
         }
 
         private static void UpdateCornerIconPositions() {
-            List<CornerIcon> sortedIcons = CornerIcons.OrderByDescending((cornerIcon) => cornerIcon.Priority).ToList();
+            List<CornerIcon> sortedIcons = CornerIcons.Where(cornerIcon => !(cornerIcon.Decluttered && _declutterEnabled))
+                                                      .OrderByDescending(cornerIcon => cornerIcon.Exempt)
+                                                      .ThenByDescending(cornerIcon => cornerIcon.Priority)
+                                                      .ToList();
 
             int horizontalOffset = ICON_SIZE * ICON_POSITION + LeftOffset;
 
-            for (int i = 0; i < CornerIcons.Count; i++) {
+            for (int i = 0; i < sortedIcons.Count; i++) {
                 sortedIcons[i].Location = new Point(ICON_SIZE * i + horizontalOffset, 0);
             }
         }
@@ -187,11 +295,14 @@ namespace Blish_HUD.Controls {
             lock (CornerIcons) {
                 CornerIcons.Add(this);
             }
+
+            Registered?.Invoke(this, new ValueEventArgs<CornerIcon>(this));
         }
 
         public CornerIcon(AsyncTexture2D icon, string iconName) : this() {
-            _icon     = icon;
-            _iconName = iconName;
+            _icon = icon;
+
+            this.IconName = iconName;
         }
 
         public CornerIcon(AsyncTexture2D icon, AsyncTexture2D hoverIcon, string iconName) : this(icon, iconName) {
