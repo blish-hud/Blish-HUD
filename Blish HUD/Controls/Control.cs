@@ -347,6 +347,11 @@ namespace Blish_HUD.Controls {
 
                 _location = value;
 
+                if (!_applyingRelativeLayout) {
+                    if (previousLocation.X != _location.X) _explicitLocationX = true;
+                    if (previousLocation.Y != _location.Y) _explicitLocationY = true;
+                }
+
                 OnPropertyChanged();
 
                 // We do this to make sure we raise PropertyChanged events for alias properties
@@ -424,6 +429,11 @@ namespace Blish_HUD.Controls {
 
                 _size = value;
 
+                if (!_applyingRelativeLayout) {
+                    if (previousSize.X != _size.X) _explicitWidth  = true;
+                    if (previousSize.Y != _size.Y) _explicitHeight = true;
+                }
+
                 OnPropertyChanged();
 
                 if (previousSize.Y != _size.Y)
@@ -466,6 +476,262 @@ namespace Blish_HUD.Controls {
                 if (_size.Y == value) return;
 
                 this.Size = new Point(_size.X, value);
+            }
+        }
+
+        #endregion
+
+        #region Relative Sizing and Positioning
+
+        private bool _explicitWidth;
+        private bool _explicitHeight;
+        private bool _explicitLocationX;
+        private bool _explicitLocationY;
+        private bool _applyingRelativeLayout;
+
+        private int? _widthPercent;
+        /// <summary>
+        /// The width of the <see cref="Control"/> as a percentage (0 to 100) of the
+        /// width of the <see cref="Container.ContentRegion"/> of its <see cref="Parent"/>.
+        /// The value is recalculated whenever the parent is resized.
+        /// <br/><br/>
+        /// Setting <see cref="Width"/> explicitly after setting this property disables
+        /// percentage-based width until this property is set again. Set to <c>null</c> to disable it.
+        /// <br/><br/>
+        /// Percentage-based sizing is ignored while the parent is a <see cref="FlowPanel"/>
+        /// or is sized with <see cref="SizingMode.AutoSize"/>. On a <see cref="Container"/>,
+        /// its own <see cref="Container.WidthSizingMode"/> takes precedence.
+        /// <br/><br/>Default: null
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value is less than 0 or greater than 100.</exception>
+        [JsonIgnore]
+        public int? WidthPercent {
+            get => _widthPercent;
+            set {
+                ValidatePercent(value, nameof(this.WidthPercent));
+
+                bool changed = _widthPercent != value;
+
+                _widthPercent   = value;
+                _explicitWidth  = false;
+
+                if (changed) OnPropertyChanged();
+                ApplyRelativeLayout();
+            }
+        }
+
+        private int? _heightPercent;
+        /// <summary>
+        /// The height of the <see cref="Control"/> as a percentage (0 to 100) of the
+        /// height of the <see cref="Container.ContentRegion"/> of its <see cref="Parent"/>.
+        /// The value is recalculated whenever the parent is resized.
+        /// <br/><br/>
+        /// Setting <see cref="Height"/> explicitly after setting this property disables
+        /// percentage-based height until this property is set again. Set to <c>null</c> to disable it.
+        /// <br/><br/>
+        /// Percentage-based sizing is ignored while the parent is a <see cref="FlowPanel"/>
+        /// or is sized with <see cref="SizingMode.AutoSize"/>. On a <see cref="Container"/>,
+        /// its own <see cref="Container.HeightSizingMode"/> takes precedence.
+        /// <br/><br/>Default: null
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value is less than 0 or greater than 100.</exception>
+        [JsonIgnore]
+        public int? HeightPercent {
+            get => _heightPercent;
+            set {
+                ValidatePercent(value, nameof(this.HeightPercent));
+
+                bool changed = _heightPercent != value;
+
+                _heightPercent  = value;
+                _explicitHeight = false;
+
+                if (changed) OnPropertyChanged();
+                ApplyRelativeLayout();
+            }
+        }
+
+        private int? _xPercent;
+        /// <summary>
+        /// The horizontal position of the point of the <see cref="Control"/> selected by
+        /// <see cref="Anchor"/>, expressed as a percentage (0 to 100) of the width of the
+        /// <see cref="Container.ContentRegion"/> of its <see cref="Parent"/>.
+        /// For example, <see cref="AnchorPoint.TopRight"/> with a value of 100 aligns the
+        /// right edge of the control with the right edge of the parent's content region.
+        /// The value is recalculated whenever the parent is resized.
+        /// <br/><br/>
+        /// Setting <see cref="Location"/> explicitly after setting this property disables
+        /// percentage-based horizontal positioning until this property is set again.
+        /// Set to <c>null</c> to disable it.
+        /// <br/><br/>
+        /// This is ignored while the parent is a <see cref="FlowPanel"/> or is sized with
+        /// <see cref="SizingMode.AutoSize"/>.
+        /// <br/><br/>Default: null
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value is less than 0 or greater than 100.</exception>
+        [JsonIgnore]
+        public int? XPercent {
+            get => _xPercent;
+            set {
+                ValidatePercent(value, nameof(this.XPercent));
+
+                bool changed = _xPercent != value;
+
+                _xPercent           = value;
+                _explicitLocationX  = false;
+
+                if (changed) OnPropertyChanged();
+                ApplyRelativeLayout();
+            }
+        }
+
+        private int? _yPercent;
+        /// <summary>
+        /// The vertical position of the point of the <see cref="Control"/> selected by
+        /// <see cref="Anchor"/>, expressed as a percentage (0 to 100) of the height of the
+        /// <see cref="Container.ContentRegion"/> of its <see cref="Parent"/>.
+        /// For example, <see cref="AnchorPoint.BottomRight"/> with a value of 100 aligns the
+        /// bottom edge of the control with the bottom edge of the parent's content region.
+        /// The value is recalculated whenever the parent is resized.
+        /// <br/><br/>
+        /// Setting <see cref="Location"/> explicitly after setting this property disables
+        /// percentage-based vertical positioning until this property is set again.
+        /// Set to <c>null</c> to disable it.
+        /// <br/><br/>
+        /// This is ignored while the parent is a <see cref="FlowPanel"/> or is sized with
+        /// <see cref="SizingMode.AutoSize"/>.
+        /// <br/><br/>Default: null
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value is less than 0 or greater than 100.</exception>
+        [JsonIgnore]
+        public int? YPercent {
+            get => _yPercent;
+            set {
+                ValidatePercent(value, nameof(this.YPercent));
+
+                bool changed = _yPercent != value;
+
+                _yPercent           = value;
+                _explicitLocationY  = false;
+
+                if (changed) OnPropertyChanged();
+                ApplyRelativeLayout();
+            }
+        }
+
+        private AnchorPoint _anchor = AnchorPoint.TopLeft;
+        /// <summary>
+        /// The point of the <see cref="Control"/> which <see cref="XPercent"/> and
+        /// <see cref="YPercent"/> position within the parent's content region.
+        /// <br/><br/>Default: <see cref="AnchorPoint.TopLeft"/>
+        /// </summary>
+        [JsonIgnore]
+        public AnchorPoint Anchor {
+            get => _anchor;
+            set {
+                if (_anchor == value) return;
+
+                _anchor = value;
+
+                OnPropertyChanged();
+                ApplyRelativeLayout();
+            }
+        }
+
+        private static void ValidatePercent(int? value, string propertyName) {
+            if (value < 0 || value > 100) {
+                throw new ArgumentOutOfRangeException(propertyName, value, "Percent values must be between 0 and 100, or null to disable percentage-based layout.");
+            }
+        }
+
+        private static int ResolvePercent(int parentSize, int percent) {
+            return (int)Math.Round(parentSize * (percent / 100d), MidpointRounding.AwayFromZero);
+        }
+
+        private int GetHorizontalAnchorOffset() {
+            switch (this.Anchor) {
+                case AnchorPoint.Top:
+                case AnchorPoint.Center:
+                case AnchorPoint.Bottom:
+                    return this.Width / 2;
+                case AnchorPoint.TopRight:
+                case AnchorPoint.Right:
+                case AnchorPoint.BottomRight:
+                    return this.Width;
+                default:
+                    return 0;
+            }
+        }
+
+        private int GetVerticalAnchorOffset() {
+            switch (this.Anchor) {
+                case AnchorPoint.Left:
+                case AnchorPoint.Center:
+                case AnchorPoint.Right:
+                    return this.Height / 2;
+                case AnchorPoint.BottomLeft:
+                case AnchorPoint.Bottom:
+                case AnchorPoint.BottomRight:
+                    return this.Height;
+                default:
+                    return 0;
+            }
+        }
+
+        private bool HasRelativeLayout => _widthPercent.HasValue
+                                       || _heightPercent.HasValue
+                                       || _xPercent.HasValue
+                                       || _yPercent.HasValue;
+
+        /// <summary>
+        /// Resolves <see cref="WidthPercent"/>, <see cref="HeightPercent"/>,
+        /// <see cref="XPercent"/>, and <see cref="YPercent"/> against the current
+        /// <see cref="Container.ContentRegion"/> of the parent.
+        /// </summary>
+        private void ApplyRelativeLayout() {
+            if (_applyingRelativeLayout || !HasRelativeLayout) return;
+
+            var parent = this.Parent;
+
+            if (parent == null) return;
+
+            bool parentIsFlowPanel  = parent is FlowPanel;
+            bool parentAutoWidth    = parent.WidthSizingMode  == SizingMode.AutoSize;
+            bool parentAutoHeight   = parent.HeightSizingMode == SizingMode.AutoSize;
+
+            var contentRegion = parent.ContentRegion;
+
+            var newSize     = _size;
+            var newLocation = _location;
+
+            try {
+                _applyingRelativeLayout = true;
+
+                if (_widthPercent.HasValue && !_explicitWidth && !parentIsFlowPanel && !parentAutoWidth) {
+                    newSize.X = ResolvePercent(contentRegion.Width, _widthPercent.Value);
+                }
+
+                if (_heightPercent.HasValue && !_explicitHeight && !parentIsFlowPanel && !parentAutoHeight) {
+                    newSize.Y = ResolvePercent(contentRegion.Height, _heightPercent.Value);
+                }
+
+                if (newSize != _size) {
+                    this.Size = newSize;
+                }
+
+                if (_xPercent.HasValue && !_explicitLocationX && !parentIsFlowPanel && !parentAutoWidth) {
+                    newLocation.X = ResolvePercent(contentRegion.Width, _xPercent.Value) - GetHorizontalAnchorOffset();
+                }
+
+                if (_yPercent.HasValue && !_explicitLocationY && !parentIsFlowPanel && !parentAutoHeight) {
+                    newLocation.Y = ResolvePercent(contentRegion.Height, _yPercent.Value) - GetVerticalAnchorOffset();
+                }
+
+                if (newLocation != _location) {
+                    this.Location = newLocation;
+                }
+            } finally {
+                _applyingRelativeLayout = false;
             }
         }
 
@@ -641,6 +907,8 @@ namespace Blish_HUD.Controls {
                     if (this.Parent == null || !this.Parent.AddChild(this)) {
                         _parent = null;
                     }
+
+                    ApplyRelativeLayout();
                 }
             }
         }
@@ -878,6 +1146,8 @@ namespace Blish_HUD.Controls {
         public virtual void DoUpdate(GameTime gameTime) { /* NOOP */ }
 
         public void Update(GameTime gameTime) {
+            ApplyRelativeLayout();
+
             DoUpdate(gameTime);
 
             UpdateLayout();
