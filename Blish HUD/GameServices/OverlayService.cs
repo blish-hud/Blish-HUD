@@ -335,7 +335,15 @@ namespace Blish_HUD {
                 Id            = $"{nameof(OverlayService)}_BlishHUD_38d37290-b5f9-447d-97ea-45b0b50e5f55"
             };
 
+            BuildCornerIconsTab();
             BuildSettingTab();
+        }
+
+        private void BuildCornerIconsTab() {
+            this.BlishHudWindow.AddTab("Corner Icons",
+                                       AsyncTexture2D.FromAssetId(102323),
+                                       () => new CornerIconsView(),
+                                       int.MaxValue - 20);
         }
 
         private void BuildCornerIcon() {
