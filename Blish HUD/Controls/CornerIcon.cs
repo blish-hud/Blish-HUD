@@ -25,12 +25,14 @@ namespace Blish_HUD.Controls {
 
         /// <summary>
         /// A snapshot of all currently loaded <see cref="CornerIcon"/>s in the order
-        /// they are displayed (highest <see cref="Priority"/> first).
+        /// they are displayed (exempt icons first, then highest <see cref="Priority"/> first).
         /// </summary>
         public static IReadOnlyList<CornerIcon> All {
             get {
                 lock (CornerIcons) {
-                    return CornerIcons.OrderByDescending(cornerIcon => cornerIcon.Priority).ToList();
+                    return CornerIcons.OrderByDescending(cornerIcon => cornerIcon.Exempt)
+                                      .ThenByDescending(cornerIcon => cornerIcon.Priority)
+                                      .ToList();
                 }
             }
         }
@@ -116,12 +118,35 @@ namespace Blish_HUD.Controls {
         /// Indicates whether this <see cref="CornerIcon"/> is flagged as decluttered.
         /// Decluttered icons remain registered (and can be shown again), but are not
         /// displayed in the corner icon bar and do not occupy a position in it.
+        /// Exempt icons can not be decluttered.
         /// </summary>
         public bool Decluttered {
             get => _decluttered;
             set {
+                if (_exempt && value) return;
+
                 if (SetProperty(ref _decluttered, value)) {
                     this.Visible = !_decluttered && _dynamicHide;
+
+                    UpdateCornerIconPositions();
+                }
+            }
+        }
+
+        private bool _exempt;
+        /// <summary>
+        /// Indicates whether this <see cref="CornerIcon"/> is exempt from actions
+        /// such as decluttering and sorting (for example, the Blish HUD icon).
+        /// Exempt icons are always displayed first and are never decluttered.
+        /// </summary>
+        public bool Exempt {
+            get => _exempt;
+            set {
+                if (SetProperty(ref _exempt, value)) {
+                    // An exempt icon can never remain decluttered.
+                    if (_exempt && _decluttered) {
+                        this.Decluttered = false;
+                    }
 
                     UpdateCornerIconPositions();
                 }
@@ -176,7 +201,8 @@ namespace Blish_HUD.Controls {
 
         private static void UpdateCornerIconPositions() {
             List<CornerIcon> sortedIcons = CornerIcons.Where(cornerIcon => !cornerIcon.Decluttered)
-                                                      .OrderByDescending(cornerIcon => cornerIcon.Priority)
+                                                      .OrderByDescending(cornerIcon => cornerIcon.Exempt)
+                                                      .ThenByDescending(cornerIcon => cornerIcon.Priority)
                                                       .ToList();
 
             int horizontalOffset = ICON_SIZE * ICON_POSITION + LeftOffset;

@@ -46,9 +46,11 @@ namespace Blish_HUD.Overlay.UI.Views {
                 string     name              = GetName(cornerIcon);
 
                 var menuItem = new MenuItem(GetDisplayName(name), cornerIcon.Icon) {
-                    CanCheck         = true,
+                    CanCheck         = !cornerIcon.Exempt,
                     Checked          = cornerIcon.Decluttered,
-                    BasicTooltipText = name,
+                    BasicTooltipText = cornerIcon.Exempt
+                                           ? $"{name}\n\nThis icon is exempt and can not be decluttered."
+                                           : name,
                     Parent           = cornerIconsList
                 };
 
