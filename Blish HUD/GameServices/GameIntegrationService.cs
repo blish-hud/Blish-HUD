@@ -246,7 +246,7 @@ namespace Blish_HUD {
             }
 
             private void Unfocus() {
-                Mouse.Click(MouseButton.LEFT, Graphics.GraphicsDevice.Viewport.Width / 2, 0);
+                Mouse.Click(MouseButton.LEFT, Graphics.WindowWidth / 2, 0);
             }
 
             private bool IsTextValid(string text) {

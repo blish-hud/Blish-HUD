@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.IO.Compression;
-using System.Text.RegularExpressions;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using SpriteFontPlus;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace Blish_HUD {
 
@@ -45,13 +47,15 @@ namespace Blish_HUD {
             public static Texture2D TransparentPixel { get; private set; }
 
             public static void Load() {
-                Error = Content.GetTexture(@"common\error");
+                using (var ctx = Graphics.LendGraphicsDeviceContext(true)) {
+                    Error = Content.GetTexture(@"common\error");
 
-                Pixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
-                Pixel.SetData(new[] { Color.White });
+                    Pixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
+                    Pixel.SetData(new[] { Color.White });
 
-                TransparentPixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
-                TransparentPixel.SetData(new[] { Color.Transparent });
+                    TransparentPixel = new Texture2D(ctx.GraphicsDevice, 1, 1);
+                    TransparentPixel.SetData(new[] { Color.Transparent });
+                }
             }
         }
 
@@ -93,10 +97,17 @@ namespace Blish_HUD {
 
         public enum FontStyle {
             Regular,
-            Italic
+            Italic,
+            Bold,
         }
 
         public ContentManager ContentManager => BlishHud.Instance.ActiveContentManager;
+
+        public DatAssetCache DatAssetCache { get; private set; }
+
+        internal ContentService() {
+            SetServiceModules(this.DatAssetCache = new DatAssetCache(this));
+        }
 
         protected override void Initialize() {
             // Typically occurs when Blish HUD is extracted without its dependencies.
@@ -167,18 +178,13 @@ namespace Blish_HUD {
                             var textureCanSeek = new MemoryStream();
                             textureStream.CopyTo(textureCanSeek);
 
-                            return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek);
+                            if (GameService.Graphics == null) {
+                                return TextureUtil.FromStreamPremultiplied(BlishHud.Instance.GraphicsDevice, textureCanSeek);
+                            } else {
+                                return TextureUtil.FromStreamPremultiplied(textureCanSeek);
+                            }
                         }
                     }
-
-                    #if DEBUG
-                    System.IO.Directory.CreateDirectory(@"ref\to-include");
-
-                    // Makes it easy to know what's in use so that it can be added to the ref archive later
-                    if (File.Exists($@"ref\{filepath}")) File.Copy($@"ref\{filepath}", $@"ref\to-include\{filepath}", true);
-
-                    return TextureFromFile($@"ref\{filepath}");
-                    #endif
 
                     return null;
                 }
@@ -238,37 +244,7 @@ namespace Blish_HUD {
         /// <returns>A transparent texture that is later overwritten by the texture downloaded from the Render Service.</returns>
         /// <seealso cref="https://wiki.guildwars2.com/wiki/API:Render_service"/>
         public AsyncTexture2D GetRenderServiceTexture(string signature, string fileId) {
-            AsyncTexture2D returnedTexture = new AsyncTexture2D(Textures.TransparentPixel.Duplicate());
-
-            string requestUrl = $"{RENDERSERVICE_REQUESTURL}{signature}/{fileId}.png";
-
-            Gw2WebApi.AnonymousConnection.Client.Render.DownloadToByteArrayAsync(requestUrl)
-                     .ContinueWith((textureDataResponse) => {
-                                       if (textureDataResponse.Exception != null) {
-                                           Logger.Warn(textureDataResponse.Exception, "Request to render service for {textureUrl} failed.", requestUrl);
-                                           return;
-                                       }
-
-                                       // Ensure that the texture is loaded on the correct thread.
-                                       Graphics.QueueMainThreadRender((_) => {
-                                              try {
-                                                  var textureData = textureDataResponse.Result;
-
-                                                  using (var textureStream = new MemoryStream(textureData)) {
-                                                      var loadedTexture = TextureUtil.FromStreamPremultiplied(Graphics.GraphicsDevice, textureStream);
-
-                                                      returnedTexture.SwapTexture(loadedTexture);
-                                                  }
-                                              } catch (Exception ex) {
-                                                  Logger.Warn(ex, $"Render service texture {requestUrl} failed to load.");
-
-                                                  returnedTexture.SwapTexture(Textures.Error);
-                                              }
-                                       });
-                                       
-                                   });
-
-            return returnedTexture;
+            return this.DatAssetCache.GetTextureFromAssetId(int.Parse(fileId));
         }
 
         /// <summary>

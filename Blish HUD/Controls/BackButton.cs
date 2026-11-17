@@ -1,4 +1,5 @@
-﻿using Blish_HUD.Input;
+﻿using Blish_HUD.Content;
+using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,9 +12,9 @@ namespace Blish_HUD.Controls {
         private const int BACKBUTTON_ICON_PADDING = 9;
         private const int BACKBUTTON_ICON_SIZE = 36;
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D _textureBackButton = Content.GetTexture("784268");
+        private readonly AsyncTexture2D _textureBackButton = AsyncTexture2D.FromAssetId(784268);
 
         #endregion
 

@@ -106,4 +106,7 @@
   <data name="Hotkey_AssignInputsTo" xml:space="preserve">
     <value>Assign inputs to: {0}</value>
   </data>
+  <data name="Input_Mouse2" xml:space="preserve">
+    <value>Mouse 2</value>
+  </data>
 </root>

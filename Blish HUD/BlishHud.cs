@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -59,13 +60,18 @@ namespace Blish_HUD {
             FormHandle = this.Window.Handle;
             Form       = Control.FromHandle(FormHandle).FindForm();
 
-            // Avoid the flash the window shows when the application launches
-            Form.BackColor = System.Drawing.Color.Black;
-            Form.Location  = new System.Drawing.Point(-Form.Width * 2, -Form.Height * 2);
 
-            this.Window.IsBorderless = true;
-            this.Window.AllowAltF4   = false;
-            this.InactiveSleepTime   = TimeSpan.Zero;
+            Form.BackColor = System.Drawing.Color.Black;
+            // Avoid the flash the window shows when the application launches (-32000x-32000 is where windows places minimized windows)
+            Form.Location = new System.Drawing.Point(-32000, -32000);
+
+            if (!File.Exists("OpacityFix")) {
+                // Causes an issue with it showing a black box if we don't set this to true
+                this.Window.IsBorderless = true;
+            }
+
+            this.Window.AllowAltF4 = false;
+            this.InactiveSleepTime = TimeSpan.Zero;
 
             // Initialize all game services
             foreach (var service in GameService.All) {
@@ -108,6 +114,8 @@ namespace Blish_HUD {
 
         protected override void Update(GameTime gameTime) {
             if (!GameService.GameIntegration.Gw2Instance.Gw2IsRunning) {
+                Form.Location = new System.Drawing.Point(-32000, -32000);
+
                 // If gw2 isn't open so only run the essentials
                 GameService.Debug.DoUpdate(gameTime);
                 GameService.GameIntegration.DoUpdate(gameTime);

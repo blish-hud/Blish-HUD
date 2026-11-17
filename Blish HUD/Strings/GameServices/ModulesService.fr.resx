@@ -227,7 +227,7 @@ Téléchargez des modules et placez-les dans le dossier modules.</value>
     <value>Supprimer le module</value>
   </data>
   <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
-    <value>La version du module est trop ancienne</value>
+    <value>La version du module est incompatible</value>
   </data>
   <data name="PkgInstall_Progress_Installing" xml:space="preserve">
     <value>Installation...</value>
@@ -261,5 +261,11 @@ Téléchargez des modules et placez-les dans le dossier modules.</value>
   </data>
   <data name="PkgManagement_Update" xml:space="preserve">
     <value>Mise à jour</value>
+  </data>
+  <data name="PkgManagement_MoreInfo" xml:space="preserve">
+    <value>Plus d'informations</value>
+  </data>
+  <data name="ApiPermission_NotEditable" xml:space="preserve">
+    <value>Les permissions ne peuvent être modifiées que lorsque le module est désactivé.</value>
   </data>
 </root>

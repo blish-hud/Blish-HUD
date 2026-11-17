@@ -11,10 +11,19 @@ namespace Blish_HUD.Graphics {
         private static readonly HashSet<SharedEffect> _loadedEffects = new HashSet<SharedEffect>();
 
         internal static void UpdateEffects(GameTime gameTime) {
-            foreach (var loadedEffect in _loadedEffects.ToArray()) {
+            SharedEffect[] loadedEffects = null;
+
+            lock (_loadedEffects) {
+                loadedEffects = _loadedEffects.ToArray();
+            }
+
+            foreach (var loadedEffect in loadedEffects) {
                 if (loadedEffect.IsDisposed) {
+                    lock (_loadedEffects) {
+                        _loadedEffects.Remove(loadedEffect);
+                    }
                     Logger.Debug("An EntityEffect was disposed of.");
-                    _loadedEffects.Remove(loadedEffect);
+
                     continue;
                 }
 
@@ -23,8 +32,11 @@ namespace Blish_HUD.Graphics {
         }
 
         private static void RegisterEntityEffect(SharedEffect effectInstance) {
+            lock (_loadedEffects) {
+                _loadedEffects.Add(effectInstance);
+            }
+
             Logger.Debug("EntityEffect {effectName} was registered.", effectInstance.GetType().FullName);
-            _loadedEffects.Add(effectInstance);
         }
 
         #region ctors

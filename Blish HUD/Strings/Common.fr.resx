@@ -156,4 +156,7 @@
   <data name="PlaceholderSearch" xml:space="preserve">
     <value>Rechercher...</value>
   </data>
+  <data name="Hint_MoreOptions" xml:space="preserve">
+    <value>Plus d'options</value>
+  </data>
 </root>

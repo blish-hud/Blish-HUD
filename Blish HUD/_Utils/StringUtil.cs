@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Blish_HUD {
     public static class StringUtil {
+        private const char REPLACEMENT_CHARACTER = '\uFFFD';
 
         /// <summary>
         /// Returns a new string in which all occurrences of a specified string in the current instance are replaced with another 
@@ -85,5 +83,133 @@ namespace Blish_HUD {
             return resultStringBuilder.ToString();
         }
 
+        /// <summary>
+        /// Checks that the string is well-formed.
+        /// (Does not contain non-matching or truncated surrogate pairs)
+        /// </summary>
+        /// <param name="input">The input string</param>
+        /// <returns>A value indicating whether the string is well-formed.</returns>
+        internal static bool IsWellFormed(this string input) {
+            if (input == null) {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            return IsWellFormed(input, 0, input.Length);
+        }
+
+        /// <summary>
+        /// Checks that a part of the string is well-formed.
+        /// (Does not contain non-matching or truncated surrogate pairs)
+        /// </summary>
+        /// <param name="input">The input string</param>
+        /// <param name="offset">The offset to start validating from.</param>
+        /// <param name="length">The length of the input to validate.</param>
+        /// <returns>A value indicating whether the string is well-formed.</returns>
+        internal static bool IsWellFormed(this string input, int offset, int length) {
+            if (input == null) {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            if (offset > input.Length) {
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            }
+
+            int end = offset + length;
+            if (end > input.Length) {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
+
+            for (int i = offset; i < end; i++) {
+                char current = input[i];
+
+                if (char.IsHighSurrogate(current)) {
+                    // A high surrogate must be followed by a low surrogate.
+                    if (i + 1 >= end || !char.IsLowSurrogate(input[i + 1])) {
+                        return false;
+                    }
+
+                    i++;
+                } else if (char.IsLowSurrogate(current)) {
+                    // A low surrogate without a preceding high surrogate is invalid.
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Replaces any invalid surrogate pairs within the string with the replacement character.
+        /// </summary>
+        /// <param name="input">The input string</param>
+        /// <returns>A string with any invalid surrogates replaced with the replacement character.
+        /// If no invalid surrogates are found, returns the input string unaltered.</returns>
+        internal static string ReplaceInvalidSurrogates(this string input) {
+            if (input == null) {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            return ReplaceInvalidSurrogates(input, 0, input.Length);
+        }
+
+        /// <summary>
+        /// Checks that a part of the string is well-formed.
+        /// (Does not contain non-matching or truncated surrogate pairs)
+        /// </summary>
+        /// <param name="input">The input string</param>
+        /// <param name="offset">The offset to start validating from.</param>
+        /// <param name="length">The length of the input to validate.</param>
+        /// <returns>A string with any invalid surrogates replaced with the replacement character.
+        /// If no invalid surrogates are found, returns the input string unaltered.</returns>
+        internal static string ReplaceInvalidSurrogates(this string input, int offset, int length) {
+            if (input == null) {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            if (offset > input.Length) {
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            }
+
+            int end = offset + length;
+            if (end > input.Length) {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
+
+            StringBuilder replacement = null;
+            for (int i = offset; i < end; i++) {
+                char current = input[i];
+
+                if (char.IsHighSurrogate(current)) {
+                    // A high surrogate must be followed by a low surrogate.
+                    if (i + 1 >= end || !char.IsLowSurrogate(input[i + 1])) {
+                        replacement ??= new StringBuilder(input, input.Length);
+                        replacement[i] = REPLACEMENT_CHARACTER;
+                    }
+
+                    i++;
+                } else if (char.IsLowSurrogate(current)) {
+                    // A low surrogate without a preceding high surrogate is invalid.
+                    replacement ??= new StringBuilder(input, input.Length);
+                    replacement[i] = REPLACEMENT_CHARACTER;
+                }
+            }
+
+            return replacement?.ToString() ?? input;
+        }
+
+        /// <summary>
+        /// Returns the number of utf-16 characters needed
+        /// to represent this utf-32 codepoint.
+        /// </summary>
+        /// <param name="utf32"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        internal static int GetUtf16CharCountFromUtf32(int utf32) {
+            if (utf32 < 0 || utf32 > 1114111 || (utf32 >= 55296 && utf32 <= 57343)) {
+                throw new ArgumentOutOfRangeException("utf32", "InvalidUTF32");
+            }
+
+            return utf32 <= char.MaxValue ? 1 : 2;
+        }
     }
 }

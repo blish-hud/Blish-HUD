@@ -74,11 +74,12 @@ namespace Blish_HUD.Controls {
             var glyphs = _font.GetGlyphs(_text);
 
             foreach (var glyph in glyphs) {
-                if (glyph.Position.X + glyph.FontRegion.Width / 2f > _horizontalOffset + x) {
+                if (glyph.FontRegion != null 
+                    && (glyph.Position.X + glyph.FontRegion.Width / 2f > _horizontalOffset + x)) {
                     break;
                 }
 
-                charIndex++;
+                charIndex += StringUtil.GetUtf16CharCountFromUtf32(glyph.Character);
             }
 
             return charIndex;
@@ -104,7 +105,7 @@ namespace Blish_HUD.Controls {
             if (selectionLength <= 0 || selectionStart + selectionLength > _text.Length) return Rectangle.Empty;
 
             float highlightLeftOffset = MeasureStringWidth(_text.Substring(0, selectionStart));
-            float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength));
+            float highlightWidth      = MeasureStringWidth(_text.Substring(selectionStart, selectionLength)) + 1;
 
             switch (this.HorizontalAlignment)
             {
@@ -117,7 +118,7 @@ namespace Blish_HUD.Controls {
                 default: break;
             }
 
-            return new Rectangle(_textRegion.Left + (int)highlightLeftOffset - 1,
+            return new Rectangle(_textRegion.Left + (int)highlightLeftOffset,
                                  _textRegion.Y,
                                  (int)highlightWidth,
                                  _font.LineHeight - 1);
@@ -136,7 +137,7 @@ namespace Blish_HUD.Controls {
                 default: break;
             }
 
-            return new Rectangle(_textRegion.X + (int)textOffset - 2,
+            return new Rectangle(_textRegion.X + (int)textOffset,
                                  _textRegion.Y + 2,
                                  2,
                                  _font.LineHeight - 4);

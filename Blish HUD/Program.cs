@@ -1,13 +1,8 @@
 ﻿using Blish_HUD.DebugHelper.Services;
 using EntryPoint;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -105,15 +100,10 @@ namespace Blish_HUD {
                         singleInstanceMutex.ReleaseMutex();
                     }
 
-                    if (RestartOnExit) {
-                        // REF: https://referencesource.microsoft.com/#System.Windows.Forms/winforms/Managed/System/WinForms/Application.cs,1447
-                        var arguments = Environment.GetCommandLineArgs().Skip(1).Select(arg => $"\"{arg}\"");
-
-                        var currentStartInfo = Process.GetCurrentProcess().StartInfo;
-                        currentStartInfo.FileName  = Application.ExecutablePath;
-                        currentStartInfo.Arguments = string.Join(" ", arguments);
-
-                        Process.Start(currentStartInfo);
+                    if (RestartOnExit 
+                     && !(ApplicationSettings.Instance.StartGw2 > 0 
+                      || ApplicationSettings.Instance.ProcessId > 0)) {
+                        Application.Restart();
                     }
                 }
             }

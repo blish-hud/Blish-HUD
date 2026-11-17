@@ -2,9 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading;
+using Blish_HUD.Content;
 using Blish_HUD.Contexts;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics;
@@ -16,7 +16,6 @@ using Blish_HUD.Settings.UI.Views;
 using Gw2Sharp.WebApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using NLog;
 using ContextMenuStrip = Blish_HUD.Controls.ContextMenuStrip;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MenuItem = Blish_HUD.Controls.MenuItem;
@@ -28,6 +27,7 @@ namespace Blish_HUD {
         private static readonly Logger Logger = Logger.GetLogger<OverlayService>();
 
         private const string APPLICATION_SETTINGS = "OverlayConfiguration";
+        private const string DYNAMICHUD_SETTINGS = "DynamicHUDConfiguration";
 
         internal const int FORCE_EXIT_TIMEOUT = 4000;
 
@@ -44,6 +44,7 @@ namespace Blish_HUD {
         public  GameTime CurrentGameTime { get; private set; } = new GameTime(TimeSpan.Zero, TimeSpan.Zero);
 
         internal SettingCollection OverlaySettings { get; private set; }
+        internal SettingCollection DynamicHUDSettings { get; private set; }
 
         public SettingEntry<Locale> UserLocale    { get; private set; }
         public SettingEntry<bool>   StayInTray    { get; private set; }
@@ -52,6 +53,8 @@ namespace Blish_HUD {
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
+        internal SettingEntry<bool> ShowPreviews { get; private set; }
+
         public bool InterfaceHidden = false;
 
         private readonly ConcurrentQueue<Action<GameTime>> _queuedUpdates = new ConcurrentQueue<Action<GameTime>>();
@@ -62,6 +65,16 @@ namespace Blish_HUD {
             get => _dynamicHUDMenuBar.Value;
             set => _dynamicHUDMenuBar.Value = value;
         }
+        private SettingEntry<DynamicHUDMethod> _dynamicHUDWindows;
+        public DynamicHUDMethod DynamicHUDWindows {
+            get => _dynamicHUDWindows.Value;
+            set => _dynamicHUDWindows.Value = value;
+        }
+        private SettingEntry<DynamicHUDMethod> _dynamicHUDLoading;
+        public DynamicHUDMethod DynamicHUDLoading {
+            get => _dynamicHUDLoading.Value;
+            set => _dynamicHUDLoading.Value = value;
+        }
 
         public OverlaySettingsTab SettingsTab { get; private set; }
 
@@ -71,6 +84,8 @@ namespace Blish_HUD {
         public bool Exiting { get; private set; }
 
         private readonly object _exitLock = new object();
+
+        private bool _sotoIsLive = false;
 
         internal OverlayService() {
             SetServiceModules(this.OverlayUpdateHandler = new OverlayUpdateHandler(this));
@@ -85,9 +100,13 @@ namespace Blish_HUD {
         }
 
         protected override void Initialize() {
-            this.OverlaySettings = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
+            this.OverlaySettings    = Settings.RegisterRootSettingCollection(APPLICATION_SETTINGS);
+            this.DynamicHUDSettings = Settings.RegisterRootSettingCollection(DYNAMICHUD_SETTINGS);
 
             DefineSettings(this.OverlaySettings);
+            DefineDynamicHUDSettings(this.DynamicHUDSettings);
+
+            ApplyInitialSettings();
 
             PrepareSettingsTab();
         }
@@ -96,12 +115,12 @@ namespace Blish_HUD {
             this.SettingsTab = new OverlaySettingsTab(this);
 
             // About
-            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection, GameService.Content.GetTexture("440023")),
+            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.AboutSection, AsyncTexture2D.FromAssetId(440023)),
                                                  (m) => new AboutView(),
                                                  int.MinValue);
 
             // Overlay Settings
-            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, GameService.Content.GetTexture("156736")),
+            this.SettingsTab.RegisterSettingMenu(new MenuItem(Strings.GameServices.OverlayService.OverlaySettingsSection, AsyncTexture2D.FromAssetId(156736)),
                                                  (m) => new OverlaySettingsView(),
                                                  int.MaxValue - 12);
         }
@@ -112,10 +131,14 @@ namespace Blish_HUD {
                                                               () => Strings.GameServices.OverlayService.Setting_AppCulture_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_AppCulture_Description);
 
-            this.StayInTray    =       settings.DefineSetting("StayInTray",
-                                                              true,
-                                                              () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,
-                                                              () => Strings.GameServices.OverlayService.Setting_StayInTray_Description + (ApplicationSettings.Instance.StartGw2 > 0 ? " (Disabled because you launched Blish HUD with --startgw2 or -g)" : ""));
+            this.StayInTray = settings.DefineSetting("StayInTray",
+                                                     true,
+                                                     () => Strings.GameServices.OverlayService.Setting_StayInTray_DisplayName,
+                                                     () => Strings.GameServices.OverlayService.Setting_StayInTray_Description
+                                                         + (ApplicationSettings.Instance.StartGw2  > 0
+                                                         || ApplicationSettings.Instance.ProcessId > 0
+                                                                ? Strings.GameServices.OverlayService.Setting_StayInTray_AppendDisabled
+                                                                : string.Empty));
 
             this.ShowInTaskbar =       settings.DefineSetting("ShowInTaskbar",
                                                               false,
@@ -126,11 +149,6 @@ namespace Blish_HUD {
                                                               true,
                                                               () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_CloseWindowOnEscape_Description);
-
-            _dynamicHUDMenuBar =       settings.DefineSetting("DynamicHUDMenuBar",
-                                                              DynamicHUDMethod.AlwaysShow,
-                                                              () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,
-                                                              () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
 
             this.InteractKey =         settings.DefineSetting(nameof(this.InteractKey),
                                                               new KeyBinding(Keys.F),
@@ -146,21 +164,23 @@ namespace Blish_HUD {
                                                               new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.B),
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
-            
+
+            this.ShowPreviews = settings.DefineSetting(nameof(this.ShowPreviews),
+                                                       false,
+                                                       () => Strings.GameServices.OverlayService.Setting_ShowPreviews_DisplayName,
+                                                       () => Strings.GameServices.OverlayService.Setting_ShowPreviews_Description);
 
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
             this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
 
             // Lock 'StayInTray' if we launched Guild Wars 2 with a launch argument.
-            if (ApplicationSettings.Instance.StartGw2 > 0) {
+            if (ApplicationSettings.Instance.StartGw2 > 0 || ApplicationSettings.Instance.ProcessId > 0) {
                 this.StayInTray.SetDisabled();
             }
 
             // TODO: See https://github.com/blish-hud/Blish-HUD/issues/282
             this.UserLocale.SetExcluded(Locale.Chinese);
-
-            _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
 
             this.ShowInTaskbar.SettingChanged += ShowInTaskbarOnSettingChanged;
             this.UserLocale.SettingChanged    += UserLocaleOnSettingChanged;
@@ -169,8 +189,27 @@ namespace Blish_HUD {
 
             this.HideAllInterface.Value.Enabled = true;
             this.HideAllInterface.Value.Activated += delegate { this.InterfaceHidden = !this.InterfaceHidden; };
+        }
 
-            ApplyInitialSettings();
+        private void DefineDynamicHUDSettings(SettingCollection settings) {
+            _dynamicHUDMenuBar = settings.DefineSetting("DynamicHUDMenuBar",
+                                                        DynamicHUDMethod.AlwaysShow,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_DisplayName,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDMenuBar_Description);
+
+            _dynamicHUDWindows = settings.DefineSetting("DynamicHUDWindows",
+                                                        DynamicHUDMethod.AlwaysShow,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDWindows_DisplayName,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDWindows_Description);
+
+            _dynamicHUDLoading = settings.DefineSetting("DynamicHUDLoading",
+                                                        DynamicHUDMethod.AlwaysShow,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_DisplayName,
+                                                        () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_Description);
+
+            _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
+            _dynamicHUDWindows.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
+            _dynamicHUDLoading.SetExcluded(DynamicHUDMethod.ShowPeaceful, DynamicHUDMethod.ShowInCombat);
         }
 
         private void ApplyInitialSettings() {
@@ -186,8 +225,9 @@ namespace Blish_HUD {
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
             var culture = GetCultureFromGw2Locale(e.NewValue);
 
+            // Update the UI culture for the entire application domain by setting DefaultThreadCurrentUICulture
+            // DO NOT change CurrentUICulture, otherwise running threads will NOT get updated with the new default.
             CultureInfo.DefaultThreadCurrentUICulture = culture;
-            CultureInfo.CurrentUICulture              = culture;
 
             this.UserLocaleChanged?.Invoke(this, new ValueEventArgs<CultureInfo>(culture));
         }
@@ -232,6 +272,7 @@ namespace Blish_HUD {
             ActiveBlishHud.Exit();
         }
 
+
         private CultureInfo GetCultureFromGw2Locale(Locale locale) {
             switch (locale) {
                 case Locale.German:
@@ -271,7 +312,15 @@ namespace Blish_HUD {
             }
         }
 
+        private void SotoFix() {
+            // TODO: We will eventually want to change this so that we detect if the active player has at least one level 80 - we use this to move the icon over one more.
+            if (DateTime.UtcNow.Date >= new DateTime(2023, 8, 22, 0, 0, 0, DateTimeKind.Utc)) {
+                _sotoIsLive = true;
+            }
+        }
+
         protected override void Load() {
+            SotoFix();
             BuildMainWindow();
             BuildCornerIcon();
         }
@@ -290,7 +339,7 @@ namespace Blish_HUD {
         }
 
         private void BuildCornerIcon() {
-            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), Strings.Common.BlishHUD) {
+            this.BlishMenuIcon = new CornerIcon(Content.GetTexture("logo"), Content.GetTexture("logo-big"), $"{Strings.Common.BlishHUD}\n\n{Strings.GameServices.InputService.Input_Mouse2}: {Strings.Common.Hint_MoreOptions}") {
                 Priority = int.MaxValue,
                 Parent   = Graphics.SpriteScreen,
             };
@@ -321,7 +370,7 @@ namespace Blish_HUD {
 
         private void BuildSettingTab() {
             this.BlishHudWindow.AddTab(Strings.GameServices.SettingsService.SettingsTab,
-                                       Content.GetTexture("155052"),
+                                       AsyncTexture2D.FromAssetId(155052),
                                        () => new SettingsMenuView(this.SettingsTab),
                                        int.MaxValue - 10);
         }
@@ -344,7 +393,8 @@ namespace Blish_HUD {
 
             if (GameIntegration.Gw2Instance.IsInGame) {
                 int offset = /* Offset +1 if Chinese client */ (GameIntegration.ClientType.ClientType == Gw2ClientContext.ClientType.Chinese ? 1 : 0)
-                           + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0);
+                           + /* Offset +1 if running TacO   */ (GameIntegration.TacO.TacOIsRunning ? 1 : 0)
+                           + /* Offset +1 if SOTO released  */ (_sotoIsLive ? 1 : 0);
 
                 CornerIcon.LeftOffset = offset * 36;
             }

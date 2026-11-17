@@ -1,0 +1,3 @@
+[submodule "thirdparty/nvidiaProfileInspector"]
+	path = thirdparty/nvidiaProfileInspector
+	url = https://github.com/Orbmu2k/nvidiaProfileInspector.git

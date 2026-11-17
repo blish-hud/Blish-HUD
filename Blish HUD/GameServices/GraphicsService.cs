@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Blish_HUD.Controls;
 using Blish_HUD.Entities;
 using Blish_HUD.Graphics;
@@ -8,11 +12,20 @@ using Blish_HUD.Settings;
 using Gw2Sharp.Mumble.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX;
+using Color = Microsoft.Xna.Framework.Color;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+using Point = Microsoft.Xna.Framework.Point;
 
 namespace Blish_HUD {
     public class GraphicsService:GameService {
 
         private const string GRAPHICS_SETTINGS = "GraphicsConfiguration";
+
+        private const int TARGET_MAX_FRAMETIME = 14;
+        private const int MIN_QUEUED_RENDERS   = 1;
+
+        private static readonly Point MinimumUnscaledGameResolution = new Point(1024, 768);
 
         #region Load Static
 
@@ -137,7 +150,7 @@ namespace Blish_HUD {
                     return dpi != 0
                                ? dpi / 96f
                                : 1f;
-                }
+            }
 
             return 1f;
         }
@@ -152,33 +165,26 @@ namespace Blish_HUD {
 
         public GraphicsDeviceManager GraphicsDeviceManager => BlishHud.Instance.ActiveGraphicsDeviceManager;
 
+        [Obsolete("To ensure exclusive use of the graphics device use GameService.Graphics.LendGraphicsDevice().", true)]
         public GraphicsDevice GraphicsDevice => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
 
-        public int WindowWidth => this.GraphicsDevice.Viewport.Width;
-        public int WindowHeight => this.GraphicsDevice.Viewport.Height;
+        public int WindowWidth  => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Width;
+        public int WindowHeight => BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice.Viewport.Height;
 
         public  float AspectRatio { get; private set; }
 
-        internal SettingCollection _graphicsSettings;
-
-        public SettingCollection GraphicsSettings => _graphicsSettings;
+        public SettingCollection GraphicsSettings { get; private set; }
 
         private SettingEntry<FramerateMethod> _frameLimiterSetting;
-        private SettingEntry<bool>            _enableVsyncSetting;
         private SettingEntry<bool>            _smoothCharacterPositionSetting;
         private SettingEntry<DpiMethod>       _dpiScalingMethodSetting;
-        private SettingEntry<ManualUISize>   _UISizeSetting;
+        private SettingEntry<ManualUISize>    _UISizeSetting;
 
         public FramerateMethod FrameLimiter {
             get => ApplicationSettings.Instance.TargetFramerate > 0
                        ? FramerateMethod.Custom
                        : _frameLimiterSetting.Value;
             set => _frameLimiterSetting.Value = value;
-        }
-
-        public bool EnableVsync {
-            get => _enableVsyncSetting.Value;
-            set => _enableVsyncSetting.Value = value;
         }
 
         public bool SmoothCharacterPosition {
@@ -200,15 +206,16 @@ namespace Blish_HUD {
             set {
                 if (!this.Resolution.Equals(value)) {
                     try {
-                        BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
-                        BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
-
-                        BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
-
+                        using (var ctx = GameService.Graphics.LendGraphicsDeviceContext()) {
+                            BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  = value.X;
+                            BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight = value.Y;
+                            BlishHud.Instance.ActiveGraphicsDeviceManager.ApplyChanges();
+                        }
+                        
                         // Exception would be from the code above, but don't update our
                         // scaling if there is an exception
                         ScreenSizeUpdated(value);
-                    } catch (SharpDX.SharpDXException sdxe) {
+                    } catch (SharpDXException sdxe) {
                         // If device lost, we should hopefully handle in device lost event below
                     }
                 }
@@ -238,21 +245,16 @@ namespace Blish_HUD {
             // Might do better error handling later on
             ActiveBlishHud.GraphicsDevice.DeviceLost += delegate { GameService.Overlay.Restart(); };
 
-            _graphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
+            this.GraphicsSettings = Settings.RegisterRootSettingCollection(GRAPHICS_SETTINGS);
 
-            DefineSettings(_graphicsSettings);
+            DefineSettings(this.GraphicsSettings);
         }
 
         private void DefineSettings(SettingCollection settings) {
-            _frameLimiterSetting =            settings.DefineSetting("FramerateLimiter",
-                                                                     FramerateMethod.LockedTo90Fps,
-                                                                     () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
-                                                                     () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
-
-            _enableVsyncSetting =             settings.DefineSetting("EnableVsync",
-                                                                     true,
-                                                                     () => Strings.GameServices.GraphicsService.Setting_Vsync_DisplayName,
-                                                                     () => Strings.GameServices.GraphicsService.Setting_Vsync_Description);
+            _frameLimiterSetting = settings.DefineSetting("FramerateLimiter",
+                                                          FramerateMethod.LockedTo60Fps,
+                                                          () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_DisplayName,
+                                                          () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description);
 
             if (_frameLimiterSetting.Value == FramerateMethod.SyncWithGame || _frameLimiterSetting.Value == FramerateMethod.Custom) {
                 // SyncWithGame is no longer supported.  It causes more problems than it solves.
@@ -260,8 +262,7 @@ namespace Blish_HUD {
 
                 // Likewise, Custom framerates are only possible via launch option currently.
                 // Old versions could enable it, so this fixes that.
-                _frameLimiterSetting.Value = FramerateMethod.LockedTo90Fps;
-                _enableVsyncSetting.Value  = true;
+                _frameLimiterSetting.Value = FramerateMethod.LockedTo60Fps;
             }
 
             _smoothCharacterPositionSetting = settings.DefineSetting("EnableCharacterPositionBuffer",
@@ -269,92 +270,187 @@ namespace Blish_HUD {
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_SmoothCharacterPosition_Description);
 
-            _dpiScalingMethodSetting =        settings.DefineSetting(nameof(DpiScalingMethod),
+            _dpiScalingMethodSetting = settings.DefineSetting(nameof(DpiScalingMethod),
                                                                      DpiMethod.SyncWithGame,
                                                                      () => Strings.GameServices.GraphicsService.Setting_DPIScaling_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_DPIScaling_Description);
 
-            _UISizeSetting =                  settings.DefineSetting(nameof(UIScalingMethod),
+            _UISizeSetting = settings.DefineSetting(nameof(UIScalingMethod),
                                                                      ManualUISize.SyncWithGame,
                                                                      () => Strings.GameServices.GraphicsService.Setting_UIScaling_DisplayName,
                                                                      () => Strings.GameServices.GraphicsService.Setting_UIScaling_Description);
-
-
+            
             _frameLimiterSetting.SettingChanged += FrameLimiterSettingMethodChanged;
-            _enableVsyncSetting.SettingChanged  += EnableVsyncChanged;
+            FrameLimiterSettingMethodChanged(_frameLimiterSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
 
-            EnableVsyncChanged(_enableVsyncSetting, new ValueChangedEventArgs<bool>(_enableVsyncSetting.Value, _enableVsyncSetting.Value));
-            FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(_frameLimiterSetting.Value, _frameLimiterSetting.Value));
+            _frameLimiterSetting.SetExcluded(FramerateMethod.Custom, FramerateMethod.SyncWithGame, FramerateMethod.TrueUnlimited);
 
-            _frameLimiterSetting.SetExcluded(FramerateMethod.Custom, FramerateMethod.SyncWithGame);
-
+            // User has specified a custom FPS target via launch arg
             if (ApplicationSettings.Instance.TargetFramerate > 0) {
-                // Disable frame limiter setting and update description - user has manually specified via launch arg
                 _frameLimiterSetting.SetDisabled();
                 _frameLimiterSetting.GetDescriptionFunc = () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description + Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Locked_Description;
 
-                FrameLimiterSettingMethodChanged(_enableVsyncSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.Custom, FramerateMethod.Custom));
+                FrameLimiterSettingMethodChanged(_frameLimiterSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.Custom, FramerateMethod.Custom));
             }
-        }
 
-        private void EnableVsyncChanged(object sender, ValueChangedEventArgs<bool> e) {
-            GraphicsDeviceManager.SynchronizeWithVerticalRetrace = e.NewValue;
-            GraphicsDeviceManager.ApplyChanges();
+            // User has unlocked the FPS via launch arg
+            if (ApplicationSettings.Instance.UnlockFps) {
+                // Disable frame limiter setting and update description - user has unlocked the FPS via launch arg
+                _frameLimiterSetting.SetDisabled();
+                _frameLimiterSetting.GetDescriptionFunc = () => Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Description + Strings.GameServices.GraphicsService.Setting_FramerateLimiter_Locked_Description;
+
+                FrameLimiterSettingMethodChanged(_frameLimiterSetting, new ValueChangedEventArgs<FramerateMethod>(FramerateMethod.TrueUnlimited, FramerateMethod.TrueUnlimited));
+            }
         }
 
         private void FrameLimiterSettingMethodChanged(object sender, ValueChangedEventArgs<FramerateMethod> e) {
-            switch (e.NewValue) {
-                case FramerateMethod.Custom: // Only enabled via launch options
-                    BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate);
-                    break;
-                case FramerateMethod.SyncWithGame:
-                    BlishHud.Instance.IsFixedTimeStep   = false;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
-                    break;
-                case FramerateMethod.LockedTo30Fps:
-                    BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
-                    break;
-                case FramerateMethod.LockedTo60Fps:
-                    BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
-                    break;
-                case FramerateMethod.LockedTo90Fps:
-                    BlishHud.Instance.IsFixedTimeStep   = true;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1d / 90d);
-                    break;
-                case FramerateMethod.Unlimited:
-                    BlishHud.Instance.IsFixedTimeStep   = false;
-                    BlishHud.Instance.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
-                    break;
+            bool currentVsync = GraphicsDeviceManager.SynchronizeWithVerticalRetrace;
+
+            var frameRateLookup = new Dictionary<FramerateMethod, (bool IsFixedTimeStep, TimeSpan TargetElapsedTime, bool VSync)> {
+                { FramerateMethod.Custom,        (true, TimeSpan.FromSeconds(1d / ApplicationSettings.Instance.TargetFramerate), false) }, // Only enabled with launch args
+                { FramerateMethod.SyncWithGame,  (false, TimeSpan.FromMilliseconds(1), false) }, // Deprecated
+                { FramerateMethod.LockedTo30Fps, (true, TimeSpan.FromSeconds(1d / 30d), false) },
+                { FramerateMethod.LockedTo60Fps, (true, TimeSpan.FromSeconds(1d / 60d), false) },
+                { FramerateMethod.LockedTo90Fps, (true, TimeSpan.FromSeconds(1d / 90d), false) },
+                { FramerateMethod.Unlimited,     (false, TimeSpan.FromMilliseconds(1), true) }, // Unlimited with vsync (safe)
+                { FramerateMethod.TrueUnlimited, (false, TimeSpan.FromMilliseconds(1), false) } // Unlimited without vsync (unsafe)
+            };
+
+            if (frameRateLookup.TryGetValue(e.NewValue, out var settings)) {
+                BlishHud.Instance.IsFixedTimeStep = settings.IsFixedTimeStep;
+                BlishHud.Instance.TargetElapsedTime = settings.TargetElapsedTime;
+                if (settings.VSync != currentVsync) {
+                    GraphicsDeviceManager.SynchronizeWithVerticalRetrace = settings.VSync;
+                    GraphicsDeviceManager.ApplyChanges();
+                }
+            } else {
+                // Shouldn't be possible unless settings are manually modified
+                Logger.Warn($"Attempted to set the frame rate limiter to invalid value '{e.NewValue}'.  No changes to the frame limiter were made.");
             }
         }
 
-        internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
-            this.GraphicsDevice.Clear(Color.Transparent);
+        private readonly object _lendLockLow    = new object();
+        private readonly object _lendLockNext   = new object();
+        private readonly object _lendLockDevice = new object();
 
-            // Skip rendering all elements when hotkey is pressed
+        /// <summary>
+        /// Provides exclusive and locked access to the <see cref="GraphicsDevice"/>. This
+        /// method blocks until the device is available and will yield to higher priority
+        /// lend requests. Core lend requests receive priority over these requests.  Once
+        /// done with the <see cref="GraphicsDevice"/> unlock it with <see cref="ReturnGraphicsDevice"/>.
+        /// </summary>
+        /// <param name="highPriority">
+        /// If <c>true</c> then this thread will return as soon as the <see cref="GraphicsDevice"/>
+        /// becomes available - ahead of all low priority lend requests.
+        /// </param>
+        internal GraphicsDevice LendGraphicsDevice(bool highPriority) {
+            if (!highPriority) {
+                Monitor.Enter(_lendLockLow);
+            }
+
+            if (Monitor.IsEntered(_lendLockDevice)) {
+                Monitor.Enter(_lendLockDevice);
+            } else {
+                Monitor.Enter(_lendLockNext);
+                Monitor.Enter(_lendLockDevice);
+                Monitor.Exit(_lendLockNext);
+            }
+
+            return BlishHud.Instance.ActiveGraphicsDeviceManager.GraphicsDevice;
+        }
+
+        /// <summary>
+        /// Provides exclusive and locked access to the <see cref="GraphicsDevice"/>. This
+        /// method blocks until the device is available and will yield to higher priority
+        /// lend requests. Core lend requests receive priority over these requests.  Once
+        /// done with the <see cref="GraphicsDevice"/> unlock it with <see cref="ReturnGraphicsDevice"/>.
+        /// </summary>
+        internal GraphicsDevice LendGraphicsDevice() {
+            return LendGraphicsDevice(false);
+        }
+
+        /// <summary>
+        /// Provides exclusive and locked access to the <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/>. This
+        /// method blocks until the device is available and will yield to higher priority
+        /// lend requests. Core lend requests receive priority over these requests.
+        /// The returned <see cref="GraphicsDeviceContext"/> should be disposed of either
+        /// via a <see langword="using"/> statement, or by calling
+        /// <see cref="GraphicsDeviceContext.Dispose"/> directly.
+        /// </summary>
+        public GraphicsDeviceContext LendGraphicsDeviceContext() {
+            return LendGraphicsDeviceContext(false);
+        }
+
+        /// <summary>
+        /// Provides exclusive and locked access to the <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/>. This
+        /// method blocks until the device is available and will yield to higher priority
+        /// lend requests. Core lend requests receive priority over these requests.
+        /// The returned <see cref="GraphicsDeviceContext"/> should be disposed of either
+        /// via a <see langword="using"/> statement, or by calling
+        /// <see cref="GraphicsDeviceContext.Dispose"/> directly.
+        /// </summary>
+        /// <param name="highPriority">
+        /// If <see langword="true"/> then this thread will return as soon as the <see cref="GraphicsDeviceContext.GraphicsDevice"/>
+        /// becomes available - ahead of all low priority lend requests.
+        /// </param>
+        internal GraphicsDeviceContext LendGraphicsDeviceContext(bool highPriority) {
+            return new GraphicsDeviceContext(this, highPriority);
+        }
+
+        /// <summary>
+        /// Unlocks access to the <see cref="GraphicsDevice"/>.  You must call this after <see cref="LendGraphicsDevice"/>.
+        /// </summary>
+        internal void ReturnGraphicsDevice(bool highPriority) {
+            Monitor.Exit(_lendLockDevice);
+
+            if (!highPriority) {
+                Monitor.Exit(_lendLockLow);
+            }
+        }
+
+        private static readonly Logger Logger = Logger.GetLogger<GraphicsService>();
+
+        private readonly Stopwatch _renderTimer = Stopwatch.StartNew();
+
+        internal void Render(GameTime gameTime, SpriteBatch spriteBatch) {
+            _renderTimer.Restart();
+
+            using GraphicsDeviceContext ctx = this.LendGraphicsDeviceContext();
+            
+            if (_renderTimer.ElapsedMilliseconds > 1) {
+                Logger.Debug($"Render thread stalled for {_renderTimer.ElapsedMilliseconds} ms.");
+            }
+
+            ctx.GraphicsDevice.Clear(Color.Transparent);
+
+            // Skip rendering all elements when UI is hidden
             if (GameService.Overlay.InterfaceHidden) return;
 
             GameService.Debug.StartTimeFunc("3D objects");
             // Only draw 3D elements if we are in game and map is closed
-            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
-                this.World.Render(this.GraphicsDevice);
+            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
+                this.World.Render(ctx.GraphicsDevice);
+            }
             GameService.Debug.StopTimeFunc("3D objects");
 
             // Slightly better scaling (text is a bit more legible)
-            this.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            ctx.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             GameService.Debug.StartTimeFunc("UI Elements");
+
             if (this.SpriteScreen != null && this.SpriteScreen.Visible) {
                 this.SpriteScreen.Draw(spriteBatch, this.SpriteScreen.LocalBounds, this.SpriteScreen.LocalBounds);
             }
+
             GameService.Debug.StopTimeFunc("UI Elements");
 
             GameService.Debug.StartTimeFunc("Render Queue");
-            if (_queuedRenders.TryDequeue(out var renderCall)) {
-                renderCall.Invoke(this.GraphicsDevice);
+            for (int i = MIN_QUEUED_RENDERS; i > 0 && _queuedRenders.TryDequeue(out var renderCall); i--) {
+                renderCall.Invoke(ctx.GraphicsDevice);
+
+                if (_renderTimer.ElapsedMilliseconds < TARGET_MAX_FRAMETIME) {
+                    i++;
+                }
             }
             GameService.Debug.StopTimeFunc("Render Queue");
         }
@@ -362,10 +458,18 @@ namespace Blish_HUD {
         protected override void Load() { /* NOOP */ }
 
         private void Rescale() {
-            this.UIScaleMultiplier = GetDpiScaleRatio() * GetScaleRatio(GameService.Gw2Mumble.UI.UISize);
+            Point backbufferSize = new Point(
+                BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth,
+                BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight);
 
-            this.SpriteScreen.Size = new Point((int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferWidth  / this.UIScaleMultiplier),
-                                               (int)(BlishHud.Instance.ActiveGraphicsDeviceManager.PreferredBackBufferHeight / this.UIScaleMultiplier));
+            int integerDpi = (int)GetDpiScaleRatio();
+            Point scaledMinimumGameResolution = MinimumUnscaledGameResolution * new Point(integerDpi, integerDpi);
+
+            this.UIScaleMultiplier = GetDpiScaleRatio()
+              * GetScaleRatio(GameService.Gw2Mumble.UI.UISize)
+              * scaledMinimumGameResolution.GetAspectRatioScale(backbufferSize);
+
+            this.SpriteScreen.Size = backbufferSize.UiToScale();
 
             this.UIScaleTransform = Matrix.CreateScale(this.UIScaleMultiplier);
         }

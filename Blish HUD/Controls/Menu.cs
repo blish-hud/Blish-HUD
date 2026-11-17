@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blish_HUD.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,9 +10,9 @@ namespace Blish_HUD.Controls {
 
         private const int DEFAULT_ITEM_HEIGHT = 32;
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D _textureMenuItemFade = Content.GetTexture("156044");
+        private readonly AsyncTexture2D _textureMenuItemFade = AsyncTexture2D.FromAssetId(156044);
 
         #endregion
 
@@ -101,8 +102,14 @@ namespace Blish_HUD.Controls {
             // We'll bind the top of the control to the bottom of the last control we added
             var lastItem = _children.LastOrDefault();
             if (lastItem != null) {
-                Adhesive.Binding.CreateOneWayBinding(() => e.ChangedChild.Top,
-                                                     () => lastItem.Bottom, applyLeft: true);
+                // Handler will be removed again when the underlying object is being disposed
+                lastItem.PropertyChanged += (_, args) => {
+                    if (args.PropertyName == "Bottom") {
+                        e.ChangedChild.Top = lastItem.Bottom;
+                    }
+                };
+                
+                e.ChangedChild.Top = lastItem.Bottom;
             }
 
             ShouldShift = e.ResultingChildren.Any(mi => {
@@ -135,7 +142,7 @@ namespace Blish_HUD.Controls {
             // Draw items dark every other one
             for (int sec = 0; sec < _size.Y / MenuItemHeight; sec += 2) {
                 spriteBatch.DrawOnCtrl(this,
-                                       _textureMenuItemFade,
+                                       _textureMenuItemFade.Texture,
                                        new Rectangle(0,
                                                      MenuItemHeight * sec - VerticalScrollOffset,
                                                      _size.X,
@@ -144,5 +151,15 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        public override void RecalculateLayout() {
+            int lastBottom = 0;
+
+            foreach (var child in _children.Where(c => c.Visible)) {
+                child.Location = new Point(0, lastBottom);
+                child.Width = this.Width;
+
+                lastBottom = child.Bottom;
+            }
+        }
     }
 }

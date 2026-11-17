@@ -8,18 +8,16 @@ namespace Blish_HUD.Controls.Extern
     /// Struct representing a point.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct POINT
-    {
+    public struct POINT {
         public int X;
         public int Y;
 
-        public static implicit operator Point(POINT point)
-        {
+        public static implicit operator Point(POINT point) {
             return new Point(point.X, point.Y);
         }
     }
-    internal static class PInvoke
-    {
+
+    internal static class PInvoke {
         [DllImport("user32.dll")]
         internal static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] Input[] pInputs, int cbSize);
 
@@ -58,5 +56,6 @@ namespace Blish_HUD.Controls.Extern
 
         [DllImport("user32.dll")]
         internal static extern bool GetCursorPos(out POINT lpPoint);
+
     }
 }

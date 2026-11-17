@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 using Blish_HUD.Debug;
 using Blish_HUD.Settings;
 using Humanizer;
@@ -34,7 +37,7 @@ namespace Blish_HUD {
 
         private static LoggingConfiguration _logConfiguration;
 
-        private const string STRUCLOG_TIME      = "${time:invariant=true}";
+        private const string STRUCLOG_TIME      = "${date:universalTime=false:format=HH\\:mm\\:ss.ffff K}"; // Default culture is invariant
         private const string STRUCLOG_LEVEL     = "${level:uppercase=true:padding=-5}";
         private const string STRUCLOG_LOGGER    = "${logger}";
         private const string STRUCLOG_MESSAGE   = "${message}";
@@ -44,6 +47,9 @@ namespace Blish_HUD {
         private const int  MAX_LOG_SESSIONS = 6;
 
         internal static void InitDebug() {
+            // Better capture thrown exceptions.
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
             // Make sure crash dir is available for logs as early as possible
             string logPath = DirectoryUtil.RegisterDirectory("logs");
 
@@ -89,26 +95,54 @@ namespace Blish_HUD {
             Logger = Logger.GetLogger<DebugService>();
         }
 
-        public static void TargetDebug(string time, string level, string logger, string message) {
-            System.Diagnostics.Debug.WriteLine($"{time} | {level} | {logger} | {message}");
+        public static void TargetDebug(LogEventInfo logEvent, object[] parameters) {
+            if (!Debugger.IsAttached) return;
+
+            DateTime localTime = logEvent.TimeStamp.ToLocalTime();
+
+            // Use switch to return string constants for known log levels, avoiding string allocations
+            string level = logEvent.Level.Ordinal switch {
+                0 => "TRACE",
+                1 => "DEBUG",
+                2 => "INFO ",
+                3 => "WARN ",
+                4 => "ERROR",
+                5 => "FATAL",
+                _ => logEvent.Level.Name.ToUpperInvariant().PadRight(5)
+            };
+            string logger = logEvent.LoggerName;
+            string message = logEvent.FormattedMessage;
+
+            const int INTERNAL_DEBUG_WRITESIZE = 4091;
+
+            string outEntry = $"{localTime:HH:mm:ss.ffff K} | {level} | {logger} | {message}\r\n";
+
+            // Messages that are too large can cause issues for various debuggers
+            if (outEntry.Length >= INTERNAL_DEBUG_WRITESIZE) {
+                int offset;
+
+                for (offset = 0; offset < outEntry.Length - INTERNAL_DEBUG_WRITESIZE; offset += INTERNAL_DEBUG_WRITESIZE) {
+                    Debugger.Log(0, null, outEntry.Substring(offset, INTERNAL_DEBUG_WRITESIZE));
+                }
+
+                Debugger.Log(0, null, outEntry.Substring(offset));
+            } else {
+                Debugger.Log(0, null, outEntry);
+            }
         }
 
         private static void AddDebugTarget(LoggingConfiguration logConfig) {
             LogManager.ThrowExceptions = true;
 
-            var logDebug = new MethodCallTarget("logdebug") {
-                ClassName  = typeof(DebugService).AssemblyQualifiedName,
-                MethodName = nameof(TargetDebug),
-                Parameters = {
-                    new MethodCallParameter(STRUCLOG_TIME),
-                    new MethodCallParameter(STRUCLOG_LEVEL),
-                    new MethodCallParameter(STRUCLOG_LOGGER),
-                    new MethodCallParameter(STRUCLOG_MESSAGE)
-                }
+            var logDebug = new MethodCallTarget("logdebug", TargetDebug);
+
+            // MethodCallTarget is synchronous, wrap it in an async target to avoid blocking the main thread
+            var asyncDebug = new AsyncTargetWrapper("asyncdebug", logDebug) {
+                ForceLockingQueue = false
             };
 
-            _logConfiguration.AddTarget(logDebug);
-            _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, logDebug);
+            _logConfiguration.AddTarget(asyncDebug);
+            _logConfiguration.AddRule(LogLevel.Debug, LogLevel.Fatal, asyncDebug);
         }
 
         public static void UpdateLogLevel(LogLevel newLogLevel) {
@@ -122,10 +156,18 @@ namespace Blish_HUD {
         }
 
         private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args) {
+            if (args.ExceptionObject is Exception e) {
+                Fatal(e);
+            }
+        }
+
+        private static void ApplicationThreadException(object sender, ThreadExceptionEventArgs args) {
+            Fatal(args.Exception);
+        }
+
+        private static void Fatal(Exception e) {
             Input.DisableHooks();
-
-            var e = (Exception) args.ExceptionObject;
-
+            
             Logger.Fatal(e, "Blish HUD encountered a fatal crash!");
         }
 
@@ -212,7 +254,8 @@ namespace Blish_HUD {
 
             this.FrameCounter = new DynamicallySmoothedValue<float>(FRAME_DURATION_SAMPLES);
 
-            if (!ApplicationSettings.Instance.DebugEnabled) {
+            if (!Debugger.IsAttached) {
+                Application.ThreadException                += ApplicationThreadException;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
             }
         }
@@ -221,7 +264,7 @@ namespace Blish_HUD {
             _funcTimes = new ConcurrentDictionary<string, DebugCounter>();
 
             this.OverlayTexts = new OverlayStrings();
-            this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.Entities.Count()}");
+            this.OverlayTexts.TryAdd("entityCount", _ => $"3D Entities Displayed: {Graphics.World.EntityCount}");
             this.OverlayTexts.TryAdd("renderLate",  gameTime => "Render Late: "     + (gameTime.IsRunningSlowly ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("arcDps",      _ => "ArcDPS Bridge: "          + (ArcDps.RenderPresent ? "Yes" : "No"));
             this.OverlayTexts.TryAdd("volume",      _ => "Average In-Game Volume: " + GameIntegration.Audio.Volume);

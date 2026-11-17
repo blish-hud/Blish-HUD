@@ -1,0 +1,552 @@
+using Blish_HUD.Content;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.BitmapFonts;
+using System;
+using MouseEventArgs = Blish_HUD.Input.MouseEventArgs;
+
+namespace Blish_HUD.Controls {
+
+    /// <summary>
+    /// Base class for numeric input controls with spinner buttons.
+    /// </summary>
+    public abstract class NumberInputBase : TextInputBase {
+        protected const int TextPaddingX = 10;
+
+        protected const int SpinnerWidth = 32;
+
+        protected const int SpinnerButtonHeight = 16;
+
+        // Points up
+        protected static readonly AsyncTexture2D SpinnerSprite = AsyncTexture2D.FromAssetId(517181);
+
+        // Points up
+        protected static readonly AsyncTexture2D SpinnerGlowSprite = AsyncTexture2D.FromAssetId(517182);
+
+        protected static readonly Texture2D TextBoxSprite = Content.GetTexture("textbox");
+
+        private NumberInputSpinnerGlow _glow = NumberInputSpinnerGlow.None;
+
+        private NumberInputAction _action = NumberInputAction.None;
+
+        private TimeSpan _incrementInterval = TimeSpan.FromMilliseconds(150);
+
+        private TimeSpan _incrementTimer;
+
+        private Rectangle _textBoxRectangle = Rectangle.Empty;
+
+        private Rectangle _textRectangle = Rectangle.Empty;
+
+        private Rectangle _cursorRectangle = Rectangle.Empty;
+
+        private Rectangle _highlightRectangle = Rectangle.Empty;
+
+        protected int _horizontalOffset;
+
+        protected string _formatString = "G"; // Default general format
+
+        protected NumberInputBase() {
+            Width = 150;
+            Height = SpinnerButtonHeight * 2;
+            Input.Mouse.MouseWheelScrolled += OnGlobalMouseWheelScrolled;
+        }
+
+        /// <summary>
+        /// Gets or sets the format string used to display the value.
+        /// </summary>
+        public string FormatString {
+            get => _formatString;
+            set => SetProperty(ref _formatString, value ?? "G");
+        }
+
+        /// <summary>
+        /// Increments the value by the increment amount.
+        /// </summary>
+        protected abstract void IncrementValue();
+
+        /// <summary>
+        /// Decrements the value by the increment amount.
+        /// </summary>
+        protected abstract void DecrementValue();
+
+        /// <summary>
+        /// Stores the current value before editing begins, for reverting on invalid input.
+        /// </summary>
+        protected abstract void StoreOriginalValue();
+
+        /// <summary>
+        /// Applies the current text as the value, or reverts to the original value if parsing fails.
+        /// </summary>
+        protected abstract void ApplyTextAsValue();
+
+        /// <summary>
+        /// Called when the mouse wheel is scrolled over the control.
+        /// </summary>
+        /// <param name="scrollDelta">The scroll wheel delta value.</param>
+        protected abstract void HandleMouseWheelScrolled(int scrollDelta);
+
+        /// <inheritdoc />
+        public override void DoUpdate(GameTime gameTime) {
+            switch (_action) {
+                case NumberInputAction.Increment:
+                    _incrementTimer += gameTime.ElapsedGameTime;
+                    if (_incrementTimer >= _incrementInterval) {
+                        IncrementValue();
+                        _incrementTimer += gameTime.ElapsedGameTime;
+                        _incrementInterval = TimeSpan.FromMilliseconds(100);
+                    }
+                    break;
+                case NumberInputAction.Decrement:
+                    _incrementTimer += gameTime.ElapsedGameTime;
+                    if (_incrementTimer >= _incrementInterval) {
+                        DecrementValue();
+                        _incrementTimer += gameTime.ElapsedGameTime;
+                        _incrementInterval = TimeSpan.FromMilliseconds(100);
+                    }
+                    break;
+                case NumberInputAction.None:
+                default:
+                    _incrementTimer = TimeSpan.Zero;
+                    _incrementInterval = TimeSpan.FromMilliseconds(150);
+                    break;
+            }
+
+            base.DoUpdate(gameTime);
+        }
+
+        /// <inheritdoc />
+        public override void RecalculateLayout() {
+            // Layout zones (left to right):
+            // | (empty space) | _textBoxRectangle | SpinnerWidth |
+            //
+            // _horizontalOffset: shifts the text view when cursor moves
+            //   - Negative offset = text shifted right, revealing left overflow
+            //   - Reset to 0 when control loses focus
+
+            _textBoxRectangle = TextBoxRectangle();
+
+            _textRectangle = TextRectangle();
+
+            _highlightRectangle = HighlightRectangle();
+
+            _cursorRectangle = CursorRectangle();
+
+            Rectangle TextBoxRectangle() {
+                // The visible textbox background area (clipping region for text)
+                // - X: aligned to the right against the spinner
+                // - Y: 0 (top edge of control)
+                // - Width: the smallest between the available width and the text width with padding
+                // - Height: full control height
+
+                int maxWidth = Width - SpinnerWidth;
+                int textWidth = (int)_font.MeasureString(_text).Width + TextPaddingX * 2;
+                int finalWidth = Math.Min(maxWidth, textWidth);
+
+                return new Rectangle(0, 0, finalWidth, Height);
+            }
+
+            Rectangle TextRectangle() {
+                // Logical text positioning area for DrawStringOnCtrl with HorizontalAlignment.Right
+                // Text is right-aligned within this rectangle (right edge of text = right edge of rectangle)
+                //
+                // _horizontalOffset adjusts text position:
+                // - offset = 0: default position, text right edge at (textBoxWidth - padding)
+                // - offset < 0: text shifted right, revealing left overflow
+                // - offset > 0: not used (we scroll by making offset negative to reveal left overflow)
+                //
+                // Padding rules:
+                // - TextPaddingX on right when offset = 0 (normal state)
+                // - No padding when scrolled (offset != 0), text can touch edges
+
+                // The right edge of the text (where right-aligned text ends)
+                // Subtracting offset: negative offset increases right edge (shifts text right)
+                int textRightEdge = _textBoxRectangle.Width - TextPaddingX - _horizontalOffset;
+
+                // Vertical centering
+                int verticalPadding = (Height / 2) - (_font.LineHeight / 2);
+
+                return new Rectangle(_textBoxRectangle.X, verticalPadding, textRightEdge, _font.LineHeight);
+            }
+
+            Rectangle CursorRectangle() {
+                // Blinking cursor position within the text
+                // - X: calculated from right-aligned text start + width of text before cursor
+                // - Y: slightly inset from text rectangle top
+                // - Width: 2 pixels (thin cursor line)
+                // - Height: font line height minus inset
+                // - Must account for _horizontalOffset
+
+                int currentCursorIndex = _cursorIndex;
+                if (currentCursorIndex > _text.Length) {
+                    currentCursorIndex = _text.Length;
+                }
+
+                float textWidth = _font.MeasureString(_text).Width;
+                float textStart = _textRectangle.Right - textWidth;
+                float cursorX = textStart + _font.MeasureString(_text.Substring(0, currentCursorIndex)).Width;
+
+                return new Rectangle(
+                    (int)cursorX,
+                    _textRectangle.Y + 2,
+                    2,
+                    _font.LineHeight - 4
+                );
+            }
+
+            Rectangle HighlightRectangle() {
+                // Selection highlight area
+                // - X: position of selection start character (accounting for right-alignment)
+                // - Y: same as text rectangle
+                // - Width: distance from selection start to selection end
+                // - Height: font line height
+                // - Must account for _horizontalOffset
+                // - Returns Empty if no selection or invalid selection bounds
+                // - Clipped to _textBoxRectangle bounds
+
+                int currentSelectionStart = _selectionStart;
+                int currentSelectionEnd = _selectionEnd;
+                int selectionOffset = Math.Min(currentSelectionStart, currentSelectionEnd);
+                if (selectionOffset > _text.Length) {
+                    return Rectangle.Empty;
+                }
+
+                int selectionLength = Math.Abs(currentSelectionStart - currentSelectionEnd);
+                if (selectionLength <= 0 || selectionOffset + selectionLength > _text.Length) {
+                    return Rectangle.Empty;
+                }
+
+                float textWidth = _font.MeasureString(_text).Width;
+                float textStart = _textRectangle.Right - textWidth;
+                float highlightStart = textStart + _font.MeasureString(_text.Substring(0, selectionOffset)).Width;
+                float highlightWidth = _font.MeasureString(_text.Substring(selectionOffset, selectionLength)).Width;
+
+                var highlight = new Rectangle(
+                    (int)highlightStart,
+                    _textRectangle.Y,
+                    (int)highlightWidth,
+                    _font.LineHeight
+                );
+
+                // Clip to textbox bounds
+                return Rectangle.Intersect(highlight, _textBoxRectangle);
+            }
+        }
+
+        /// <inheritdoc />
+        public override int GetCursorIndexFromPosition(int x, int y) {
+            float textStart = Width - _font.MeasureString(Text).Width - TextPaddingX - SpinnerWidth;
+
+            int charIndex = 0;
+
+            BitmapFont.StringGlyphEnumerable glyphs = _font.GetGlyphs(_text);
+            foreach (BitmapFontGlyph glyph in glyphs) {
+                if (textStart + glyph.Position.X + (glyph.FontRegion.Width / 2f) > _horizontalOffset + x) {
+                    break;
+                }
+
+                charIndex++;
+            }
+
+            return charIndex;
+        }
+
+        /// <inheritdoc />
+        protected override void OnMouseMoved(MouseEventArgs e) {
+            if (!Enabled) {
+                _glow = NumberInputSpinnerGlow.None;
+                base.OnMouseMoved(e);
+                return;
+            }
+
+            bool mouseOverSpinner = e.MousePosition.X > AbsoluteBounds.Right - SpinnerWidth;
+            bool mouseOverUpButton = mouseOverSpinner && e.MousePosition.Y < AbsoluteBounds.Top + SpinnerButtonHeight;
+            _glow = (mouseOverSpinner, mouseOverUpButton) switch {
+                (true, true) => NumberInputSpinnerGlow.Up,
+                (true, false) => NumberInputSpinnerGlow.Down,
+                _ => NumberInputSpinnerGlow.None
+            };
+
+            base.OnMouseMoved(e);
+        }
+
+        /// <inheritdoc />
+        protected override void OnMouseLeft(MouseEventArgs e) {
+            _glow = NumberInputSpinnerGlow.None;
+            base.OnMouseLeft(e);
+        }
+
+        /// <inheritdoc />
+        protected override void MoveLine(int delta) {
+            // Not applicable for single-line numeric input
+        }
+
+        /// <inheritdoc />
+        protected override void UpdateScrolling() {
+            // Don't scroll when not focused - offset should remain at 0
+            if (!_focused || _text.Length == 0) {
+                _horizontalOffset = 0;
+                _prevCursorIndex = _cursorIndex;
+                Invalidate();
+                return;
+            }
+
+            // For right-aligned text:
+            // - Text right edge is at: _textBoxRectangle.Width - TextPaddingX - _horizontalOffset
+            // - Text left edge is at: rightEdge - textWidth
+            // - Cursor position: leftEdge + widthBeforeCursor
+            // - We need cursor to stay within visible bounds (0 to _textBoxRectangle.Width)
+            //
+            // _horizontalOffset adjusts text position:
+            // - Positive offset: text shifts left, reveals right content (when cursor moves right)
+            // - Negative offset: text shifts right, reveals left content (when cursor moves left into overflow)
+
+            int currentCursorIndex = Math.Min(_cursorIndex, _text.Length);
+            float textWidth = _font.MeasureString(_text).Width;
+            float widthBeforeCursor = _font.MeasureString(_text.Substring(0, currentCursorIndex)).Width;
+
+            // Calculate text position with current offset
+            float textRightEdge = _textBoxRectangle.Width - TextPaddingX - _horizontalOffset;
+            float textLeftEdge = textRightEdge - textWidth;
+            float cursorX = textLeftEdge + widthBeforeCursor;
+
+            // Adjust offset to keep cursor in visible bounds
+            if (cursorX < 0) {
+                // Cursor is off the left edge, shift text right (make offset more negative)
+                _horizontalOffset += (int)cursorX;
+            } else if (cursorX > _textBoxRectangle.Width - TextPaddingX) {
+                // Cursor is off the right edge, shift text left (make offset more positive)
+                _horizontalOffset += (int)(cursorX - (_textBoxRectangle.Width - TextPaddingX));
+            }
+
+            // Clamp offset to valid range:
+            // - Min offset (most negative): when text is shifted fully right, leftmost char visible at left edge
+            // - Max offset (most positive): 0 (text at default right-aligned position)
+            float availableWidth = _textBoxRectangle.Width - TextPaddingX;
+            float minOffset = availableWidth - textWidth; // Can be negative if text overflows
+            float maxOffset = 0;
+
+            // Only allow scrolling if text actually overflows
+            if (textWidth > availableWidth) {
+                _horizontalOffset = (int)Math.Max(minOffset, Math.Min(_horizontalOffset, maxOffset));
+            } else {
+                _horizontalOffset = 0;
+            }
+
+            _prevCursorIndex = _cursorIndex;
+            Invalidate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
+            if (!Enabled) {
+                return;
+            }
+
+            if (e.MousePosition.X > AbsoluteBounds.Right - SpinnerWidth) {
+                UnsetFocus();
+                Content.PlaySoundEffectByName(@"button-click");
+                _action = e.MousePosition.Y < AbsoluteBounds.Top + SpinnerButtonHeight
+                    ? NumberInputAction.Increment
+                    : NumberInputAction.Decrement;
+            } else {
+                base.OnLeftMouseButtonPressed(e);
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void OnLeftMouseButtonReleased(MouseEventArgs e) {
+            if (!Enabled) {
+                _action = NumberInputAction.None;
+                return;
+            }
+
+            switch (_action) {
+                case NumberInputAction.Increment:
+                    IncrementValue();
+                    UnsetFocus();
+                    break;
+                case NumberInputAction.Decrement:
+                    DecrementValue();
+                    UnsetFocus();
+                    break;
+                case NumberInputAction.None:
+                default:
+                    base.OnLeftMouseButtonReleased(e);
+                    break;
+            }
+
+            _action = NumberInputAction.None;
+        }
+
+        /// <inheritdoc />
+        protected override void OnClick(MouseEventArgs e) {
+            if (!Enabled) {
+                return;
+            }
+
+            if (!Focused) {
+                SelectAll();
+                Invalidate();
+            }
+
+            base.OnClick(e);
+        }
+
+        /// <inheritdoc />
+        protected override void HandleEnter() {
+            UnsetFocus();
+        }
+
+        /// <inheritdoc />
+        protected override void OnInputFocusChanged(ValueEventArgs<bool> e) {
+            base.OnInputFocusChanged(e);
+            if (e.Value) {
+                StoreOriginalValue();
+                SelectAll();
+                Invalidate();
+            } else {
+                ApplyTextAsValue();
+                _horizontalOffset = 0;
+                Invalidate();
+            }
+        }
+
+        private void OnGlobalMouseWheelScrolled(object sender, MouseEventArgs e) {
+            if (MouseOver && Enabled) {
+                HandleMouseWheelScrolled(Input.Mouse.State.ScrollWheelValue);
+            }
+        }
+
+        /// <summary>
+        /// Renders the text content within the specified region, supporting optional clipping.
+        /// </summary>
+        /// <remarks>
+        /// This method extends <see cref="TextInputBase.PaintText(SpriteBatch, Rectangle, HorizontalAlignment)"/>
+        /// by adding an optional clipping rectangle parameter.
+        /// </remarks>
+        /// <param name="spriteBatch">The sprite batch used for drawing.</param>
+        /// <param name="textRegion">The region where the text should be rendered.</param>
+        /// <param name="horizontalAlignment">The horizontal alignment of the text within the region.</param>
+        /// <param name="clippingRectangle">An optional rectangle to clip the rendered text.</param>
+        protected virtual void PaintText(SpriteBatch spriteBatch, Rectangle textRegion, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, Rectangle? clippingRectangle = null) {
+            // Draw the placeholder text
+            // (not currently used as number input always has a non-nullable value, but included for completeness)
+            if (!_focused && _text.Length == 0) {
+                spriteBatch.DrawStringOnCtrl(this, _placeholderText, _font, textRegion, Color.LightGray, false, false, 0, horizontalAlignment, VerticalAlignment.Top, clippingRectangle);
+            }
+
+            // Draw the text
+            var textColor = Enabled ? _foreColor : StandardColors.DisabledText;
+            spriteBatch.DrawStringOnCtrl(this, _text, _font, textRegion, textColor, false, false, 0, horizontalAlignment, VerticalAlignment.Top, clippingRectangle);
+        }
+
+        /// <inheritdoc />
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+            #region Text
+
+            if (Focused) {
+                if (_highlightRectangle.IsEmpty) {
+                    PaintCursor(spriteBatch, _cursorRectangle);
+                }
+            }
+
+            spriteBatch.DrawOnCtrl(
+                this,
+                TextBoxSprite,
+                _textBoxRectangle
+            );
+            PaintHighlight(spriteBatch, _highlightRectangle);
+            PaintText(spriteBatch, _textRectangle, HorizontalAlignment.Right, _textBoxRectangle);
+
+            #endregion Text
+
+            #region Spinner
+
+            Rectangle buttonsRectangle = new Rectangle(bounds.Right - SpinnerWidth, 0, SpinnerWidth, SpinnerButtonHeight * 2);
+            var spinnerTint = Enabled ? Color.White : StandardColors.DisabledText;
+            switch ((hoverButton: _glow, pressedButton: _action)) {
+                case (NumberInputSpinnerGlow.Up, NumberInputAction.None):
+                    spriteBatch.DrawOnCtrl(
+                        this,
+                        SpinnerGlowSprite,
+                        buttonsRectangle
+                    );
+
+                    spriteBatch.DrawOnCtrl(
+                        this,
+                        SpinnerSprite,
+                        buttonsRectangle,
+                        null,
+                        spinnerTint,
+                        0,
+                        Vector2.Zero,
+                        SpriteEffects.FlipVertically
+                    );
+                    break;
+                case (NumberInputSpinnerGlow.Down, NumberInputAction.None):
+                    spriteBatch.DrawOnCtrl(
+                        this,
+                        SpinnerSprite,
+                        buttonsRectangle,
+                        null,
+                        spinnerTint
+                    );
+                    spriteBatch.DrawOnCtrl(
+                        this,
+                        SpinnerGlowSprite,
+                        buttonsRectangle,
+                        null,
+                        spinnerTint,
+                        0,
+                        Vector2.Zero,
+                        SpriteEffects.FlipVertically
+                    );
+                    break;
+                default:
+                    spriteBatch.DrawOnCtrl(
+                        this,
+                        SpinnerSprite,
+                        buttonsRectangle,
+                        null,
+                        spinnerTint
+                    );
+
+                    spriteBatch.DrawOnCtrl(
+                        this,
+                        SpinnerSprite,
+                        buttonsRectangle,
+                        null,
+                        spinnerTint,
+                        0,
+                        Vector2.Zero,
+                        SpriteEffects.FlipVertically
+                    );
+                    break;
+            }
+
+            #endregion Spinner
+        }
+
+        /// <inheritdoc />
+        protected override void DisposeControl() {
+            Input.Mouse.MouseWheelScrolled -= OnGlobalMouseWheelScrolled;
+            base.DisposeControl();
+        }
+
+        private enum NumberInputAction {
+            None,
+
+            Increment,
+
+            Decrement
+        }
+
+        private enum NumberInputSpinnerGlow {
+            None,
+
+            Up,
+
+            Down
+        }
+    }
+}

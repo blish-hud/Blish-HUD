@@ -106,29 +106,33 @@ namespace Blish_HUD.Controls {
         }
 
         protected override void OnChildAdded(ChildChangedEventArgs e) {
+            OnChildrenChanged(e.ResultingChildren);
             base.OnChildAdded(e);
-            OnChildrenChanged(e);
 
             e.ChangedChild.Resized += ChangedChildOnResized;
         }
 
         protected override void OnChildRemoved(ChildChangedEventArgs e) {
+            OnChildrenChanged(e.ResultingChildren);
             base.OnChildRemoved(e);
-            OnChildrenChanged(e);
 
             e.ChangedChild.Resized -= ChangedChildOnResized;
         }
 
         private void ChangedChildOnResized(object sender, ResizedEventArgs e) {
-            ReflowChildLayout(_children);
+            OnChildrenChanged(_children.ToArray());
         }
 
-        private void OnChildrenChanged(ChildChangedEventArgs e) {
-            ReflowChildLayout(e.ResultingChildren);
+        private void OnChildrenChanged(IEnumerable<Control> resultingChildren) {
+            if (this.IsLayoutSuspended) {
+                Invalidate();
+            } else {
+                ReflowChildLayout(resultingChildren);
+            }
         }
 
         public override void RecalculateLayout() {
-            ReflowChildLayout(_children);
+            ReflowChildLayout(_children.ToArray());
 
             base.RecalculateLayout();
         }
@@ -140,7 +144,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public void FilterChildren<TControl>(Func<TControl, bool> filter) where TControl : Control {
             _children.Cast<TControl>().ToList().ForEach(tc => tc.Visible = filter(tc));
-            ReflowChildLayout(_children);
+            this.Invalidate();
         }
 
         /// <summary>
@@ -155,7 +159,7 @@ namespace Blish_HUD.Controls {
 
             _children = new ControlCollection<Control>(tempChildren);
 
-            ReflowChildLayout(_children);
+            this.Invalidate();
         }
 
         private void ReflowChildLayoutLeftToRight(IEnumerable<Control> allChildren) {
@@ -336,5 +340,14 @@ namespace Blish_HUD.Controls {
                     break;
             }
         }
+
+        protected override void DisposeControl() {
+            base.DisposeControl();
+
+            foreach (var control in _children) {
+                control.Resized -= ChangedChildOnResized;
+            }
+        }
+
     }
 }

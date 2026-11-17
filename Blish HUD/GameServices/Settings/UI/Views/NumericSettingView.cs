@@ -6,10 +6,10 @@ namespace Blish_HUD.Settings.UI.Views {
     public abstract class NumericSettingView<T> : SettingView<T>
         where T : IComparable<T> {
         
-        private const int CONTROL_PADDING = 5;
-
-        private const int TRACKBAR_WIDTH  = 277;
-        private const int TRACKBAR_HEIGHT = 16;
+        protected const int CONTROL_PADDING = 5;
+        protected const int TRACKBAR_LEFT   = 220;
+        protected const int TRACKBAR_WIDTH  = 280;
+        protected const int TRACKBAR_HEIGHT = 20;
         
         protected Label    _displayNameLabel;
         protected TrackBar _valueTrackBar;
@@ -25,7 +25,7 @@ namespace Blish_HUD.Settings.UI.Views {
 
             _valueTrackBar = new TrackBar() {
                 Size   = new Point(TRACKBAR_WIDTH, TRACKBAR_HEIGHT),
-                Left   = 185,
+                Left   = TRACKBAR_LEFT,
                 Parent = buildPanel
             };
 
@@ -42,10 +42,14 @@ namespace Blish_HUD.Settings.UI.Views {
         protected override void RefreshDisplayName(string displayName) {
             _displayNameLabel.Text = displayName;
 
+            if (_displayNameLabel.Width > 220)
+                _valueTrackBar.Left = _displayNameLabel.Width + CONTROL_PADDING;
+
             UpdateSizeAndLayout();
         }
 
         protected override void RefreshDescription(string description) {
+            _displayNameLabel.BasicTooltipText = description;
             _valueTrackBar.BasicTooltipText = description;
         }
 

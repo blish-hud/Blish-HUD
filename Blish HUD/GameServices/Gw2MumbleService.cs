@@ -16,6 +16,23 @@ namespace Blish_HUD {
 
         private readonly IGw2Client _gw2Client;
 
+        #region Events
+
+        /// <summary>
+        /// Fires when the availability status changes.
+        /// </summary>
+        public event EventHandler<ValueEventArgs<bool>> IsAvailableChanged;
+
+        private void OnIsAvailableChanged(ValueEventArgs<bool> e) => IsAvailableChanged?.Invoke(this, e);
+
+        private bool _prevIsAvailable = false;
+
+        private void HandleEvents() {
+            MumbleEventImpl.CheckAndHandleEvent(ref _prevIsAvailable, this.IsAvailable, OnIsAvailableChanged);
+        }
+
+        #endregion
+
         /// <inheritdoc cref="Gw2MumbleClient"/>
         public IGw2MumbleClient RawClient { get; private set; }
 
@@ -89,6 +106,7 @@ namespace Blish_HUD {
             this.TimeSinceTick += gameTime.ElapsedGameTime;
 
             this.RawClient.Update();
+            HandleEvents();
 
             if (this.RawClient.Tick > _prevTick) {
                 _prevTick = this.RawClient.Tick;

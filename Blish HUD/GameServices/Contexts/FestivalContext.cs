@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Flurl.Http;
 using Gw2Sharp.WebApi.Exceptions;
 
 namespace Blish_HUD.Contexts {
@@ -133,7 +134,16 @@ namespace Blish_HUD.Contexts {
         }
 
         private async void Gw2WebApiOnFinishedLoading(object sender, EventArgs e) {
-            SetFestivals(await GetFestivalsFromGw2Api());
+            // Festivals found via a trick from the API.
+            var festivals = await GetFestivalsFromGw2Api();
+
+            if (_fault != null || festivals.Count() == _knownFestivalCategories.Count) {
+                // Known bug introduced in early 2022 around the EoD release.
+                // All festivals are for some reason returned by the API.  Very annoying.
+                festivals = await GetFestivalsFromLambda();
+            }
+
+            SetFestivals(festivals);
         }
 
         private void SetFestivals(IEnumerable<Festival> festivals) {
@@ -144,6 +154,22 @@ namespace Blish_HUD.Contexts {
             Logger.Info("Active festival(s): {activeFestivals}", string.Join(", ", _activeFestivals.Select(festival => festival.DisplayName)));
 
             this.ConfirmReady();
+        }
+
+        private async Task<IEnumerable<Festival>> GetFestivalsFromLambda() {
+            _fault = null;
+
+            try {
+                string[] staticFestivals = await "https://l.blishhud.com/general/getactivefestivals".GetJsonAsync<string[]>();
+
+                return staticFestivals.Select(Festival.FromName);
+            } catch (Exception ex) {
+                _fault = $"Failed to query Blish HUD static API: {ex.Message}";
+
+                Logger.Warn(ex, "Failed to query Blish HUD static API.");
+            }
+
+            return Enumerable.Empty<Festival>();
         }
 
         private async Task<IEnumerable<Festival>> GetFestivalsFromGw2Api() {

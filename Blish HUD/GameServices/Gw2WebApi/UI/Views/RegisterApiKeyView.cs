@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Gw2WebApi.UI.Presenters;
@@ -24,16 +25,21 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             Perfect
         }
 
+        private static readonly ProcessStartInfo _arenaNetApplicationsWebsiteProcessStartInfo = new ProcessStartInfo() {
+            FileName = "https://account.arena.net/applications",
+            UseShellExecute = true
+        };
+
         private static readonly Logger Logger = Logger.GetLogger<RegisterApiKeyView>();
 
         private const int MAX_KEYNAME_LENGTH = 14;
         private const int MIN_KEY_LENGTH     = 10;
 
-        private readonly Dictionary<ApiTokenStatusType, Texture2D> _tokenStatusTextures = new Dictionary<ApiTokenStatusType, Texture2D>() {
-            {ApiTokenStatusType.Neutral, GameService.Content.GetTexture(@"common/154983")},
-            {ApiTokenStatusType.Failed,  GameService.Content.GetTexture(@"common/154982")},
-            {ApiTokenStatusType.Partial, GameService.Content.GetTexture(@"common/154981")},
-            {ApiTokenStatusType.Perfect, GameService.Content.GetTexture(@"common/154979")}
+        private readonly Dictionary<ApiTokenStatusType, AsyncTexture2D> _tokenStatusTextures = new Dictionary<ApiTokenStatusType, AsyncTexture2D>() {
+            {ApiTokenStatusType.Neutral, AsyncTexture2D.FromAssetId(154983)},
+            {ApiTokenStatusType.Failed,  AsyncTexture2D.FromAssetId(154982)},
+            {ApiTokenStatusType.Partial, AsyncTexture2D.FromAssetId(154981)},
+            {ApiTokenStatusType.Perfect, AsyncTexture2D.FromAssetId(154979)}
         };
 
         private readonly TokenPermission[] _minimumTokenPermissions = {
@@ -145,7 +151,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent         = buildPanel
             };
 
-            var bullet = GameService.Content.GetTexture("155038");
+            var bullet = AsyncTexture2D.FromAssetId(155038);
 
             int offset = 18;
 
@@ -166,7 +172,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
 
             var openAnetApplicationsBttn = new StandardButton() {
                 Text     = Strings.GameServices.Gw2ApiService.Link_ManageApplications,
-                Icon     = GameService.Content.GetTexture("common/1441452"),
+                Icon     = AsyncTexture2D.FromAssetId(1441452),
                 Size     = new Point(256,        32),
                 Location = new Point(step1.Left, step1.Bottom + 5),
                 Parent   = buildPanel
@@ -242,7 +248,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                 Parent         = buildPanel
             };
 
-            openAnetApplicationsBttn.Click += delegate { Process.Start("https://account.arena.net/applications"); };
+            openAnetApplicationsBttn.Click += delegate { Process.Start(_arenaNetApplicationsWebsiteProcessStartInfo); };
 
             ReloadApiKeys();
 
@@ -250,6 +256,8 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
         }
 
         private async void RegisterKeyBttnClicked(object sender, Input.MouseEventArgs e) {
+            _registerKeyBttn.Enabled = false;
+
             await GameService.Gw2WebApi.RegisterKey(_loadedDetails.AccountInfo.Name, this.ApiKey);
 
             ReloadApiKeys();
@@ -310,10 +318,10 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_InvalidToken);
                 } catch (AuthorizationRequiredException) {
                     SetTokenStatus(ApiTokenStatusType.Failed, Strings.GameServices.Gw2ApiService.TokenStatus_AccountFailed);
-                } catch (UnexpectedStatusException) {
-                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.Common.Unknown);
                 } catch (RequestCanceledException) {
                     // NOOP keep existing status to avoid walking over the call that cancelled us
+                } catch (Exception) {
+                    SetTokenStatus(ApiTokenStatusType.Failed, Strings.Common.Unknown);
                 }
             } else {
                 SetTokenStatus(ApiTokenStatusType.Neutral);

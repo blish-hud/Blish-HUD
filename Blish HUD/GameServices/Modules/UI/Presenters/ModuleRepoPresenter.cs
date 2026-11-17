@@ -59,16 +59,37 @@ namespace Blish_HUD.Modules.UI.Presenters {
             }
         }
 
+        /// <summary>
+        ///     Gets the currently installed module version.
+        /// </summary>
+        /// <param name="moduleNamespace">The namespace of the module to get the installed version of.</param>
+        /// <returns>The currently installed module version or null if module is not installed.</returns>
+        private SemVer.Version GetCurrentModuleVersion(string moduleNamespace) {
+            return GameService.Module.Modules.FirstOrDefault(m => m.Manifest.Namespace == moduleNamespace)?.Manifest?.Version;  
+        }
+
         private void UpdatePackagesView() {
             this.View.RepoFlowPanel.ClearChildren();
 
             bool s = true;
 
-            foreach (var pkgManifest in this.Model.GetPkgManifests().GroupBy(m => m.Namespace)) {
+            foreach (var pkgManifest in this.Model.GetPkgManifests()
+                                            .Where(m => GameService.Overlay.ShowPreviews.Value || !m.IsPreview)
+                                            .GroupBy(m => m.Namespace)
+                                            .Select(pkgs => pkgs.OrderBy(x => x.Version))
+                                            .OrderByDescending(pkgs => {
+                                                var lastManifest = pkgs.Last();
+                                                var latestInstalledVersion = this.GetCurrentModuleVersion(lastManifest.Namespace);
+                                                var needsUpdate = latestInstalledVersion != null && latestInstalledVersion < lastManifest.Version;
+                                                return needsUpdate;
+                                            }) // Modules with update at top
+                                            .ThenBy(pkgs => pkgs.Last().Name)) {
                 var nPanel = new ViewContainer {
-                    Size     = new Point(this.View.RepoFlowPanel.Width - 25, 64),
-                    ShowTint = (s = !s),
-                    Parent   = this.View.RepoFlowPanel
+                    Size             = new Point(this.View.RepoFlowPanel.Width - 25, 64),
+                    ShowTint         = (s = !s),
+                    Parent           = this.View.RepoFlowPanel,
+                    HeightSizingMode = SizingMode.AutoSize,
+                    AutoSizePadding  = new Point(0, 5)
                 };
 
                 nPanel.Show(new ManagePkgView(pkgManifest));

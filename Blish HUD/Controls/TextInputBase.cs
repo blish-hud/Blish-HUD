@@ -64,7 +64,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public event EventHandler<ValueEventArgs<bool>> InputFocusChanged;
 
-        protected void OnTextChanged(ValueChangedEventArgs<string> e) => TextChanged?.Invoke(this, e);
+        protected virtual void OnTextChanged(ValueChangedEventArgs<string> e) => TextChanged?.Invoke(this, e);
 
         protected void OnCursorIndexChanged(ValueEventArgs<int> e) {
             _cursorMoved = true;
@@ -74,7 +74,7 @@ namespace Blish_HUD.Controls {
             CursorIndexChanged?.Invoke(this, e);
         }
 
-        protected void OnInputFocusChanged(ValueEventArgs<bool> e) {
+        protected virtual void OnInputFocusChanged(ValueEventArgs<bool> e) {
             UpdateFocusState(e.Value);
 
             InputFocusChanged?.Invoke(this, e);
@@ -170,6 +170,7 @@ namespace Blish_HUD.Controls {
         }
 
         protected int _cursorIndex;
+        protected int _prevCursorIndex;
 
         /// <summary>
         /// Gets or sets the current index of the cursor within the text.
@@ -177,6 +178,7 @@ namespace Blish_HUD.Controls {
         public int CursorIndex {
             get => _cursorIndex;
             set {
+                _prevCursorIndex = _cursorIndex;
                 if (SetProperty(ref _cursorIndex, value, true)) {
                     OnCursorIndexChanged(new ValueEventArgs<int>(value));
                 }
@@ -188,7 +190,7 @@ namespace Blish_HUD.Controls {
         /// </summary>
         public int Length => _text.Length;
 
-        /// Get state of modifier keys
+        // Get state of modifier keys
         protected bool IsShiftDown => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Shift);
         protected bool IsCtrlDown  => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Ctrl);
         protected bool IsAltDown   => GameService.Input.Keyboard.ActiveModifiers.HasFlag(ModifierKeys.Alt);
@@ -196,6 +198,7 @@ namespace Blish_HUD.Controls {
         protected bool _multiline;
         protected bool _caretVisible;
         protected bool _cursorMoved;
+        protected bool _cursorDragging;
 
         private TimeSpan _lastInvalidate;
         private bool     _insertMode;
@@ -225,25 +228,11 @@ namespace Blish_HUD.Controls {
             SetText(_text.Substring(0, index) + _text.Substring(index + length), true);
         }
 
-        private string RemoveUnsupportedChars(string value) {
-            var result = new StringBuilder(value.Length);
-
-            foreach (char c in value) {
-                if (_font.GetCharacterRegion(c) != null || (_multiline && c == NEWLINE)) {
-                    result.Append(c);
-                }
-            }
-
-            return result.ToString();
-        }
-
         private bool InsertChars(int index, string value, out int length) {
             if (string.IsNullOrEmpty(value)) {
                 length = 0;
                 return false;
             }
-
-            value = RemoveUnsupportedChars(value);
 
             int startLength = _text.Length;
 
@@ -292,9 +281,9 @@ namespace Blish_HUD.Controls {
         }
 
         public void ReplaceAll(string value) {
-            Replace(0, 
-                    string.IsNullOrEmpty(value) 
-                        ? 0 
+            Replace(0,
+                    string.IsNullOrEmpty(value)
+                        ? 0
                         : value.Length,
                     value);
         }
@@ -311,15 +300,13 @@ namespace Blish_HUD.Controls {
         private void DeleteSelection() {
             if (_selectionStart == _selectionEnd) return;
 
-            if (_selectionStart < _selectionEnd) {
-                Delete(_selectionStart, _selectionEnd - _selectionStart);
-                _selectionEnd = _selectionStart;
-            } else {
-                Delete(_selectionEnd, _selectionStart - _selectionEnd);
-                _selectionStart = _selectionEnd;
-            }
+            int deleteStart = Math.Min(_selectionStart, _selectionEnd);
+            int deleteLength = Math.Max(_selectionStart, _selectionEnd) - deleteStart;
 
-            UserSetCursorIndex(_selectionStart);
+            Delete(deleteStart, deleteLength);
+
+            UserSetCursorIndex(deleteStart);
+            ResetSelection();
         }
 
         private bool Paste(string value) {
@@ -393,19 +380,12 @@ namespace Blish_HUD.Controls {
         }
 
         protected void UserSetCursorIndex(int newIndex) {
-            if (newIndex > _text.Length) {
-                newIndex = _text.Length;
-            }
-
-            if (newIndex < 0) {
-                newIndex = 0;
-            }
-
-            this.CursorIndex = newIndex;
+            this.CursorIndex = MathHelper.Clamp(newIndex, 0, _text.Length);
         }
 
         protected void ResetSelection() {
-            this.SelectionStart = _selectionEnd = _cursorIndex;
+            this.SelectionEnd   = _cursorIndex;
+            this.SelectionStart = _cursorIndex;
         }
 
         protected void UpdateSelection() {
@@ -428,24 +408,134 @@ namespace Blish_HUD.Controls {
         }
 
         protected float MeasureStringWidth(string text) {
-            if (string.IsNullOrEmpty(text)) return 0;
-
-            var lastGlyph = _font.GetGlyphs(text).Last();
-
-            return lastGlyph.Position.X + (lastGlyph.FontRegion?.Width ?? 0);
+            return _font.MeasureStringLogical(text).X;
         }
 
-        protected int GetClosestLeftWordBoundary(int index) {
-            while (index > 0 && (index - 1 >= _text.Length || !WordSeperators.Contains(_text[index - 1]))) {
-                --index;
+        protected int GetClosestLeftWordSelectionBoundary(int index) {
+            string text = _text;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
+
+            index = MathHelper.Clamp(index, 0, text.Length - 1);
+            bool startWasInWord = !WordSeperators.Contains(text[index]);
+
+            while (index-- > 0) {
+                if (!WordSeperators.Contains(text[index]) != startWasInWord) {
+                    break;
+                }
+            }
+
+            return ++index;
+        }
+
+        protected int GetClosestRightWordSelectionBoundary(int index) {
+            string text = _text;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
+
+            index = MathHelper.Clamp(index, 0, text.Length - 1);
+            bool startWasInWord = !WordSeperators.Contains(text[index]);
+
+            while (++index < text.Length) {
+                if (!WordSeperators.Contains(text[index]) != startWasInWord) {
+                    break;
+                }
             }
 
             return index;
         }
 
+        protected int GetClosestLeftWordNavigationBoundary(int index) {
+            if (index <= 0) return 0;
+
+            // Walk through any contiguous whitespace to the left of the cursor
+            while (index > 0 && char.IsWhiteSpace(_text[index - 1])) {
+                index--;
+            }
+
+            if (index == 0) return 0;
+
+            // Determine if we're working with a block of word characters or seperator characters
+            bool targetIsSeparator = WordSeperators.Contains(_text[index - 1]);
+
+            // Keep walking backwards as long as the character type matches the target type
+            while (index > 0) {
+                bool currentIsSeparator = WordSeperators.Contains(_text[index - 1]);
+
+                if (currentIsSeparator != targetIsSeparator) {
+                    break;
+                }
+
+                index--;
+            }
+
+            return index;
+        }
+
+        protected int GetClosestRightWordNavigationBoundary(int index) {
+            if (index >= _text.Length) return _text.Length;
+
+            // Walk through any contiguous whitespace to the right of the cursor
+            while (index < _text.Length && char.IsWhiteSpace(_text[index])) {
+                index++;
+            }
+
+            if (index >= _text.Length) return _text.Length;
+
+            // Determine if we're working with a block of word characters or seperator characters
+            bool targetIsSeparator = WordSeperators.Contains(_text[index]);
+
+            // Keep walking forwards as long as the character type matches the target type
+            while (index < _text.Length) {
+                bool currentIsSeparator = WordSeperators.Contains(_text[index]);
+
+                if (currentIsSeparator != targetIsSeparator) {
+                    break;
+                }
+
+                index++;
+            }
+
+            return index;
+        }
+
+        [Obsolete("Use GetClosestLeftWordSelectionBoundary or GetClosestLeftWordNavigationBoundary instead.")]
+        protected int GetClosestLeftWordBoundary(int index) {
+            return GetClosestLeftWordSelectionBoundary(index);
+        }
+
+        [Obsolete("Use GetClosestRightWordSelectionBoundary or GetClosestRightWordNavigationBoundary instead.")]
         protected int GetClosestRightWordBoundary(int index) {
-            while (index < _text.Length && !WordSeperators.Contains(_text[index])) {
-                ++index;
+            return GetClosestRightWordSelectionBoundary(index);
+        }
+
+        protected int GetClosestLeftCharacterBoundary(int index) {
+            string text = this._text;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
+
+            index = MathHelper.Clamp(index, 0, this._text.Length);
+
+            if (index > 0 && index < text.Length && char.IsSurrogatePair(text, index - 1)) {
+                index--;
+            }
+
+            return index;
+        }
+
+        protected int GetClosestRightCharacterBoundary(int index) {
+            string text = this._text;
+            if (string.IsNullOrEmpty(text)) {
+                return 0;
+            }
+
+            index = MathHelper.Clamp(index, 0, this._text.Length);
+
+            if (index > 0 && index < text.Length && char.IsSurrogatePair(text, index - 1)) {
+                index++;
             }
 
             return index;
@@ -454,6 +544,7 @@ namespace Blish_HUD.Controls {
         private string ProcessText(string value) {
             if (value == null) return string.Empty;
 
+            value.ReplaceInvalidSurrogates();
             value = value.Replace("\r", string.Empty);
 
             if (!_multiline) {
@@ -472,7 +563,7 @@ namespace Blish_HUD.Controls {
 
             value = ProcessText(value);
 
-            if (!SetProperty(ref _text, value)) return false;
+            if (!SetProperty(ref _text, value, false, nameof(Text))) return false;
 
             // TODO: Update formatted text?
 
@@ -629,8 +720,21 @@ namespace Blish_HUD.Controls {
 
         protected virtual void HandleBackspace() {
             if (_selectionStart == _selectionEnd) {
-                if (Delete(_cursorIndex - 1, 1)) {
-                    UserSetCursorIndex(_cursorIndex - 1);
+                if (this.IsCtrlDown) {
+                    int deleteToIndex = GetClosestLeftWordNavigationBoundary(_cursorIndex);
+
+                    if (Delete(deleteToIndex, _cursorIndex - deleteToIndex)) {
+                        UserSetCursorIndex(deleteToIndex);
+                        ResetSelection();
+                    }
+                    return;
+                }
+
+                int toIndex = _cursorIndex;
+                int fromIndex = GetClosestLeftCharacterBoundary(toIndex - 1);
+
+                if (Delete(fromIndex, toIndex - fromIndex)) {
+                    UserSetCursorIndex(fromIndex);
                     ResetSelection();
                 }
             } else {
@@ -640,17 +744,32 @@ namespace Blish_HUD.Controls {
 
         protected virtual void HandleDelete() {
             if (_selectionStart == _selectionEnd) {
-                Delete(_cursorIndex, 1);
+                if (this.IsCtrlDown) {
+                    int deleteToIndex = GetClosestRightWordNavigationBoundary(_cursorIndex);
+
+                    Delete(_cursorIndex, deleteToIndex - _cursorIndex);
+                    return;
+                }
+
+                int fromIndex = _cursorIndex;
+                int toIndex = GetClosestRightCharacterBoundary(fromIndex + 1);
+
+                Delete(fromIndex, toIndex - fromIndex);
             } else {
                 DeleteSelection();
             }
         }
 
         protected virtual void HandleLeft(bool ctrlDown) {
-            int newIndex = _cursorIndex - 1;
+            int newIndex;
 
             if (ctrlDown) {
-                newIndex = GetClosestLeftWordBoundary(newIndex);
+                newIndex = GetClosestLeftWordNavigationBoundary(_cursorIndex);
+            } else if (_selectionStart != _selectionEnd && !this.IsShiftDown) {
+                // Collapse the selection to the left side
+                newIndex = Math.Min(_selectionStart, _selectionEnd);
+            } else {
+                newIndex = GetClosestLeftCharacterBoundary(_cursorIndex - 1);
             }
 
             UserSetCursorIndex(newIndex);
@@ -658,10 +777,15 @@ namespace Blish_HUD.Controls {
         }
 
         protected virtual void HandleRight(bool ctrlDown) {
-            int newIndex = _cursorIndex + 1;
+            int newIndex;
 
             if (ctrlDown) {
-                newIndex = GetClosestRightWordBoundary(newIndex);
+                newIndex = GetClosestRightWordNavigationBoundary(_cursorIndex);
+            } else if (_selectionStart != _selectionEnd && !this.IsShiftDown) {
+                // Collapse the selection to the right side
+                newIndex = Math.Max(_selectionStart, _selectionEnd);
+            } else {
+                newIndex = GetClosestRightCharacterBoundary(_cursorIndex + 1);
             }
 
             UserSetCursorIndex(newIndex);
@@ -706,11 +830,13 @@ namespace Blish_HUD.Controls {
 
         private void UpdateFocusState(bool focused) {
             if (focused) {
+                Input.Mouse.LeftMouseButtonPressed  += OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseLeftMouseButtonReleased;
                 Input.Keyboard.KeyStateChanged      += OnGlobalKeyboardKeyStateChanged;
 
                 GameService.Input.Keyboard.SetTextInputListner(OnTextInput);
             } else {
+                Input.Mouse.LeftMouseButtonPressed  -= OnGlobalMouseLeftMouseButtonPressed;
                 Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseLeftMouseButtonReleased;
                 Input.Keyboard.KeyStateChanged      -= OnGlobalKeyboardKeyStateChanged;
 
@@ -722,30 +848,57 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
+        private void OnGlobalMouseLeftMouseButtonPressed(object sender, MouseEventArgs e) {
             this.Focused = _mouseOver && _enabled;
+        }
+
+        private void OnGlobalMouseLeftMouseButtonReleased(object sender, MouseEventArgs e) {
+            _cursorDragging = false;
         }
 
         public abstract int GetCursorIndexFromPosition(int x, int y);
 
         public int GetCursorIndexFromPosition(Point position) => GetCursorIndexFromPosition(position.X, position.Y);
 
-        protected void HandleMouseUpdatedCursorIndex(int newIndex, bool isDoubleClick) {
-            if (_cursorIndex == newIndex && isDoubleClick) {
-                this.SelectionStart = GetClosestLeftWordBoundary(newIndex);
-                this.SelectionEnd   = GetClosestRightWordBoundary(newIndex);
-            } else {
-                UserSetCursorIndex(newIndex);
-                UpdateSelectionIfShiftDown();
+        protected void HandleMouseUpdatedCursorIndex(int newIndex) {
+            UserSetCursorIndex(newIndex);
+            UpdateSelectionIfShiftDown();
+        }
+
+        protected void HandleMouseDoubleClick() {
+            if (_cursorIndex == _prevCursorIndex) {
+                this.SelectionStart = GetClosestLeftWordSelectionBoundary(_cursorIndex);
+                this.SelectionEnd   = GetClosestRightWordSelectionBoundary(_cursorIndex);
             }
+        }
+
+        protected void HandleMouseSelectionDrag(int newIndex) {
+            UserSetCursorIndex(newIndex);
+            this.SelectionEnd = newIndex;
+        }
+
+        protected override void OnLeftMouseButtonPressed(MouseEventArgs e) {
+            base.OnLeftMouseButtonPressed(e);
+
+            _cursorDragging = true;
+
+            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition));
+
+            this.Focused = true;
+        }
+
+        protected override void OnMouseMoved(MouseEventArgs e) {
+            base.OnMouseMoved(e);
+
+            if (_cursorDragging) HandleMouseSelectionDrag(GetCursorIndexFromPosition(this.RelativeMousePosition));
         }
 
         protected override void OnClick(MouseEventArgs e) {
             base.OnClick(e);
 
-            this.Focused = true;
+            if (e.IsDoubleClick) HandleMouseDoubleClick();
 
-            HandleMouseUpdatedCursorIndex(GetCursorIndexFromPosition(this.RelativeMousePosition), e.IsDoubleClick);
+            this.Focused = true;
         }
 
         protected void PaintText(SpriteBatch spriteBatch, Rectangle textRegion, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left) {

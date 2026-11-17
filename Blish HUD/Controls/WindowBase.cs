@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Blish_HUD.Content;
+using Blish_HUD.Graphics;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
@@ -26,9 +28,9 @@ namespace Blish_HUD.Controls {
         private static readonly Texture2D _textureExitButton       = Content.GetTexture("button-exit");
         private static readonly Texture2D _textureExitButtonActive = Content.GetTexture("button-exit-active");
 
-        private static readonly Texture2D _textureWindowCorner                = Content.GetTexture(@"controls/window/156008");
-        private static readonly Texture2D _textureWindowResizableCorner       = Content.GetTexture(@"controls/window/156009");
-        private static readonly Texture2D _textureWindowResizableCornerActive = Content.GetTexture(@"controls/window/156010");
+        private readonly AsyncTexture2D _textureWindowCorner                = AsyncTexture2D.FromAssetId(156008);
+        private readonly AsyncTexture2D _textureWindowResizableCorner       = AsyncTexture2D.FromAssetId(156009);
+        private readonly AsyncTexture2D _textureWindowResizableCornerActive = AsyncTexture2D.FromAssetId(156010);
 
         private static readonly SettingCollection _windowSettings = GameService.Settings.Settings.AddSubCollection(WINDOW_SETTINGS);
 
@@ -109,6 +111,8 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _id, value);
         }
 
+        private bool _savedVisibility = false;
+
         protected bool StandardWindow = false;
 
         private Panel _activePanel;
@@ -183,6 +187,9 @@ namespace Blish_HUD.Controls {
 
             Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseRelease;
 
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += delegate { UpdateWindowBaseDynamicHUDCombatState(this); };
+            GameService.GameIntegration.Gw2Instance.IsInGameChanged += delegate { UpdateWindowBaseDynamicHUDLoadingState(this); };
+
             _animFade = Animation.Tweener.Tween(this, new { Opacity = 1f }, 0.2f).Repeat().Reflect();
             _animFade.Pause();
 
@@ -190,6 +197,24 @@ namespace Blish_HUD.Controls {
                 _animFade.Pause();
                 if (_opacity <= 0) this.Visible = false;
             });
+        }
+
+        public static void UpdateWindowBaseDynamicHUDCombatState(WindowBase wb) {
+            if (GameService.Overlay.DynamicHUDWindows == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                wb._savedVisibility = wb.Visible;
+                if (wb._savedVisibility) wb.Hide();
+            } else {
+                if (wb._savedVisibility) wb.Show();
+            }
+        }
+
+        public static void UpdateWindowBaseDynamicHUDLoadingState(WindowBase wb) {
+            if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
+                wb._savedVisibility = wb.Visible;
+                if (wb._savedVisibility) wb.Hide();
+            } else {
+                if (wb._savedVisibility) wb.Show();
+            }
         }
 
         protected virtual void ConstructWindow(Texture2D background, Vector2 backgroundOrigin, Rectangle? windowBackgroundBounds = null, Thickness outerPadding = default, int titleBarHeight = 0, bool standardWindow = true) {
@@ -294,6 +319,8 @@ namespace Blish_HUD.Controls {
         }
 
         public bool CanClose => true;
+
+        public bool CanCloseWithEscape => true;
 
         #region Window Navigation
 

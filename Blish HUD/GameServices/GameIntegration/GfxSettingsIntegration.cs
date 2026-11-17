@@ -4,11 +4,12 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Xml;
+using Blish_HUD.Debug;
 using Blish_HUD.GameIntegration.GfxSettings;
 using Blish_HUD.GameServices;
 
 namespace Blish_HUD.GameIntegration {
-    public class GfxSettingsIntegration : ServiceModule<GameIntegrationService> {
+    public sealed class GfxSettingsIntegration : ServiceModule<GameIntegrationService> {
 
         private static readonly Logger Logger = Logger.GetLogger<GfxSettingsIntegration>();
 
@@ -98,7 +99,7 @@ namespace Blish_HUD.GameIntegration {
 
         private bool _loadLock;
 
-        public GfxSettingsIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
+        internal GfxSettingsIntegration(GameIntegrationService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
             _service.Gw2Instance.Gw2Started += Gw2Proc_Gw2Started;
@@ -222,6 +223,11 @@ namespace Blish_HUD.GameIntegration {
                     gfxSettingsFileStream.Dispose();
 
                     Logger.Debug("Finished parsing GSA file.");
+
+                    // Easiest place to check where we should now know if the user is in fullscreen or not
+                    if (this.IsAvailable) {
+                        ContingencyChecks.CheckForFullscreenDx9Conflict();
+                    }
                 }
             } catch (IOException ex) {
                 if (remainingAttempts > 0) {

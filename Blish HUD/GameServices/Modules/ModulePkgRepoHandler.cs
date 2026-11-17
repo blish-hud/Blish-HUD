@@ -13,7 +13,7 @@ using Flurl.Http;
 using Humanizer;
 
 namespace Blish_HUD.Modules {
-    public class ModulePkgRepoHandler : ServiceModule<ModuleService> {
+    public sealed class ModulePkgRepoHandler : ServiceModule<ModuleService> {
 
         private static readonly Logger Logger = Logger.GetLogger<ModulePkgRepoHandler>();
 
@@ -54,7 +54,7 @@ namespace Blish_HUD.Modules {
         private MenuItem         _repoMenuItem;
         private IPkgRepoProvider _defaultRepoProvider;
 
-        public ModulePkgRepoHandler(ModuleService service) : base(service) { /* NOOP */ }
+        internal ModulePkgRepoHandler(ModuleService service) : base(service) { /* NOOP */ }
         
         public override void Load() {
             DefineModuleRepoSettings(GameService.Settings.RegisterRootSettingCollection(REPO_SETTINGS));
@@ -98,7 +98,7 @@ namespace Blish_HUD.Modules {
         private void RefreshUpdateIndicatorStates() {
             // TODO: Blish HUD icon should be handled in the Overlay service - this will likely have to wait for the old TabbedWindow to get replaced with the new one.
 
-            if (this.UnacknowledgedUpdates.Any()) {
+            if (this.UnacknowledgedUpdates.Any(module => GameService.Overlay.ShowPreviews.Value || !module.IsPreview)) {
                 // settings menu item indicator
                 _repoMenuItem.Text             = $"{Strings.GameServices.Modules.RepoAndPkgManagement.PkgRepoSection} ({Strings.GameServices.ModulesService.PkgManagement_Update.ToQuantity(_pendingUpdates.Length)})";
                 _repoMenuItem.Icon             = GameService.Content.GetTexture(TEXTUREREF_REPOMENU_PENDINGUPDATE);

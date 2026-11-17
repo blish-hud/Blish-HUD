@@ -43,6 +43,9 @@ namespace Blish_HUD {
         [DllImport("Dwmapi.dll")]
         private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
 
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
         [DllImport("user32.dll")]
         private static extern IntPtr GetActiveWindow();
 
@@ -109,6 +112,8 @@ namespace Blish_HUD {
 
         internal static void SetForegroundWindowEx(IntPtr handle) => SetForegroundWindow(handle);
 
+        internal static bool WindowExists(string className, string windowTitle) => FindWindow(className, windowTitle) != IntPtr.Zero;
+
         private static IntPtr GetWindowLong(IntPtr hWnd, int nIndex) => IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLongPtr32(hWnd, nIndex);
 
         private static int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong) => IntPtr.Size != 8 ? SetWindowLong32(hWnd, nIndex, dwNewLong) : (int) SetWindowLongPtr64(hWnd, nIndex, new UIntPtr(dwNewLong));
@@ -140,7 +145,6 @@ namespace Blish_HUD {
             // Let Gw2InstanceIntegration sync behavior with game runtime
             SetShowInTaskbar(winHandle, false);
 
-            SetLayeredWindowAttributes(winHandle, 0, 0,   1);
             SetLayeredWindowAttributes(winHandle, 0, 255, 2);
         }
 

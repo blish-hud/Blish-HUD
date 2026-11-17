@@ -141,4 +141,8 @@
   <data name="Action_Retry" xml:space="preserve">
     <value>Retry</value>
   </data>
+  <data name="Hint_MoreOptions" xml:space="preserve">
+    <value>More options</value>
+    <comment>Used in a tooltip to indicate that a control may have more options.</comment>
+  </data>
 </root>

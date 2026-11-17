@@ -126,4 +126,7 @@
   <data name="BlishHUD" xml:space="preserve">
     <value>Blish HUD</value>
   </data>
+  <data name="Hint_MoreOptions" xml:space="preserve">
+    <value>Más opciones</value>
+  </data>
 </root>

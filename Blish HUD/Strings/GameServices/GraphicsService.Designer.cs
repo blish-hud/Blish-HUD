@@ -19,7 +19,7 @@ namespace Blish_HUD.Strings.GameServices {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class GraphicsService {
@@ -106,7 +106,7 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Disabled because Blish HUD was started with --maxfps specified).
+        ///   Looks up a localized string similar to (Disabled because Blish HUD was started with --maxfps/--unlockfps specified).
         /// </summary>
         internal static string Setting_FramerateLimiter_Locked_Description {
             get {
@@ -148,24 +148,6 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string Setting_UIScaling_DisplayName {
             get {
                 return ResourceManager.GetString("Setting_UIScaling_DisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enabling Vsync limits the frame rate of Blish HUD to the monitor refresh rate to prevent screen tearing..
-        /// </summary>
-        internal static string Setting_Vsync_Description {
-            get {
-                return ResourceManager.GetString("Setting_Vsync_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enable Vsync.
-        /// </summary>
-        internal static string Setting_Vsync_DisplayName {
-            get {
-                return ResourceManager.GetString("Setting_Vsync_DisplayName", resourceCulture);
             }
         }
     }

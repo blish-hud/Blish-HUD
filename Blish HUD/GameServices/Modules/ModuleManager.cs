@@ -18,6 +18,12 @@ namespace Blish_HUD.Modules {
         public event EventHandler<EventArgs> ModuleEnabled;
         public event EventHandler<EventArgs> ModuleDisabled;
 
+        public event EventHandler<EventArgs> ModuleLoaded;
+
+        public void OnModuleLoaded(object _, EventArgs e) {
+            this.ModuleLoaded?.Invoke(this, e);
+        }
+
         private Assembly _moduleAssembly;
         
         private bool _forceAllowDependency = false;
@@ -51,7 +57,7 @@ namespace Blish_HUD.Modules {
         [Import]
         public Module ModuleInstance { get; private set; }
 
-        public ModuleManager(Manifest manifest, ModuleState state, IDataReader dataReader) {
+        internal ModuleManager(Manifest manifest, ModuleState state, IDataReader dataReader) {
             this.Manifest   = manifest;
             this.State      = state;
             this.DataReader = dataReader;
@@ -84,6 +90,8 @@ namespace Blish_HUD.Modules {
                             _dirtyNamespaces.Add(this.Manifest.Namespace);
                         }
 
+                        this.ModuleInstance.ModuleLoaded += OnModuleLoaded;
+
                         this.Enabled = true;
 
                         try {
@@ -105,6 +113,8 @@ namespace Blish_HUD.Modules {
             this.State.Enabled = this.Enabled;
             GameService.Settings.Save();
 
+            GameService.Module.SortMenuItems();
+
             return this.Enabled;
         }
 
@@ -113,13 +123,29 @@ namespace Blish_HUD.Modules {
 
             this.Enabled = false;
 
-            this.ModuleInstance?.Dispose();
+            if (this.ModuleInstance != null) {
+                this.ModuleInstance.ModuleLoaded -= OnModuleLoaded;
+            }
+
+            try {
+                this.ModuleInstance?.Dispose();
+            } catch (Exception ex) {
+                Logger.GetLogger(this.ModuleInstance != null ? this.ModuleInstance.GetType() : typeof(ModuleManager)).Error(ex, "Module {module} threw an exception while unloading.", this.Manifest.GetDetailedName());
+                
+                if (ApplicationSettings.Instance.DebugEnabled) {
+                    // To assist in debugging modules
+                    throw;
+                }
+            }
+
             this.ModuleInstance = null;
             
             this.ModuleDisabled?.Invoke(this, EventArgs.Empty);
 
             this.State.Enabled = this.Enabled;
             GameService.Settings.Save();
+
+            GameService.Module.SortMenuItems();
         }
 
         public void DeleteModule() {
@@ -234,6 +260,11 @@ namespace Blish_HUD.Modules {
             Disable();
 
             GameService.Module.UnregisterModule(this);
+
+            this.ModuleEnabled = null;
+            this.ModuleDisabled = null;
+
+            this.ModuleLoaded = null;
 
             _moduleAssembly = null;
 

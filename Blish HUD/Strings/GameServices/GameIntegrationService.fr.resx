@@ -126,4 +126,7 @@
   <data name="TrayIcon_OpenSettingsFolder" xml:space="preserve">
     <value>Ouvrir le dossier des paramètres</value>
   </data>
+  <data name="TrayIcon_OpenProgramDataFolder" xml:space="preserve">
+    <value>Ouvrir le dossier ProgramData</value>
+  </data>
 </root>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Text;
 using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Settings;
@@ -20,8 +21,10 @@ namespace Blish_HUD.Modules {
         public event EventHandler<UnobservedTaskExceptionEventArgs> ModuleException;
 
         internal void OnModuleRunStateChanged(ModuleRunStateChangedEventArgs e) {
-            Logger.Debug("Module {moduleName} run state changed to {runState}", ModuleParameters.Manifest.GetDetailedName(), e.RunState);
-            this.ModuleRunStateChanged?.Invoke(this, e);
+            if (ModuleParameters != null) {
+                Logger.Debug("Module {moduleName} run state changed to {runState}", ModuleParameters.Manifest.GetDetailedName(), e.RunState);
+                this.ModuleRunStateChanged?.Invoke(this, e);
+            }
 
             if (e.RunState == ModuleRunState.Loaded) {
                 OnModuleLoaded(EventArgs.Empty);
@@ -61,6 +64,8 @@ namespace Blish_HUD.Modules {
         }
 
         public bool Loaded => _runState == ModuleRunState.Loaded;
+
+        internal string ErrorReason { get; set; }
 
         #region Manifest & Parameter Aliases
 
@@ -108,6 +113,7 @@ namespace Blish_HUD.Modules {
 
                     if (!loadError.Observed && _loadTask.Exception != null) {
                         Logger.GetLogger(GetType()).Error(_loadTask.Exception, "Module {module} had an unhandled exception while loading.", ModuleParameters.Manifest.GetDetailedName());
+                        this.ErrorReason = GetModuleErrorReason(_loadTask.Exception);
 
                         if (ApplicationSettings.Instance.DebugEnabled) {
                             throw _loadTask.Exception;
@@ -135,11 +141,34 @@ namespace Blish_HUD.Modules {
             }
         }
 
+        /// <summary>
+        ///     Builds a error reason for the module from the specified exception.
+        /// </summary>
+        /// <param name="ex">The exception to read to error reason from.</param>
+        /// <returns>A string containing the error reasons.</returns>
+        private static string GetModuleErrorReason(Exception ex) {
+            if (ex is AggregateException ae && ae.InnerExceptions.Count > 0) {
+                StringBuilder sb = new StringBuilder();
+                foreach (Exception innerException in ae.InnerExceptions) {
+                    if (innerException != null) {
+                        sb.AppendLine(innerException.Message);
+                    }
+                }
+
+                return sb.ToString().Trim();
+            }
+
+            return ex.Message;
+        }
+
         public void DoUpdate(GameTime gameTime) {
-            if (_runState == ModuleRunState.Loaded) {
-                Update(gameTime);
-            } else {
-                CheckForLoaded();
+            switch (_runState) {
+                case ModuleRunState.Loaded:
+                    Update(gameTime);
+                    break;
+                case ModuleRunState.Loading:
+                    CheckForLoaded();
+                    break;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -8,10 +9,12 @@ using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
+using Blish_HUD.Modules.UI.Controls;
 using Blish_HUD.Modules.UI.Views;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Flurl.Http;
 
 namespace Blish_HUD {
 
@@ -30,11 +33,13 @@ namespace Blish_HUD {
         private const string MODULE_MANIFESTNAME = "manifest.json";
 
         private const string MODULE_COMPATIBILITYLIST = "compatibility.json";
+        private const string MODULE_SPOILEDURI        = "https://pkgs.blishhud.com/spoiled.json";
 
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleRegistered;
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleUnregistered;
 
-        private List<ModuleDependency> _incompatibleModules = new List<ModuleDependency>(0);
+        private List<ModuleDependency> _incompatibleModules      = new List<ModuleDependency>(0);
+        private HashSet<string>        _spoiledModuleIdentifiers = new HashSet<string>(0);
 
         /// <summary>
         /// Access to repo management and state.
@@ -69,11 +74,17 @@ namespace Blish_HUD {
         }
 
         internal bool ModuleIsExplicitlyIncompatible(ModuleManager moduleManager) {
-            return _incompatibleModules.Any(compatibilityListing => string.Equals(moduleManager.Manifest.Namespace, compatibilityListing.Namespace, StringComparison.OrdinalIgnoreCase)
+            return _spoiledModuleIdentifiers.Contains($"{moduleManager.Manifest.Namespace}_{moduleManager.Manifest.Version}")
+                || _incompatibleModules.Any(compatibilityListing => string.Equals(moduleManager.Manifest.Namespace, compatibilityListing.Namespace, StringComparison.OrdinalIgnoreCase)
                                                                  && compatibilityListing.VersionRange.IsSatisfied(moduleManager.Manifest.Version.BaseVersion()));
         }
 
         public ModuleManager RegisterModule(IDataReader moduleReader) {
+            if (moduleReader == null) {
+                Logger.Warn("Failed to register a module as its archive could not be loaded.");
+                return null;
+            }
+
             if (!moduleReader.FileExists(MODULE_MANIFESTNAME)) {
                 Logger.Warn("Attempted to load an invalid module {modulePath}: {manifestName} is missing.", moduleReader.GetPathRepresentation(), MODULE_MANIFESTNAME);
                 return null;
@@ -161,6 +172,15 @@ namespace Blish_HUD {
             }
         }
 
+        private void LoadSpoiledList() {
+            try {
+                // We block for this on purpose
+                _spoiledModuleIdentifiers = MODULE_SPOILEDURI.GetJsonAsync<string[]>().GetAwaiter().GetResult().ToHashSet();
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to load the spoiled modules list!");
+            }
+        }
+
         private void LoadCompatibility(IDataReader datReader) {
             if (datReader.FileExists(MODULE_COMPATIBILITYLIST)) {
                 try {
@@ -185,10 +205,11 @@ namespace Blish_HUD {
         }
 
         private void HandleRefLoading() {
-            var datReader = new ZipArchiveReader("ref.dat");
+            var datReader = new ZipArchiveReader(ApplicationSettings.Instance.RefPath);
 
             HandleFirstVersionLaunch(datReader);
             LoadCompatibility(datReader);
+            LoadSpoiledList();
         }
         
         /// <summary>
@@ -203,7 +224,25 @@ namespace Blish_HUD {
                 return null;
             }
 
-            return RegisterModule(new ZipArchiveReader(modulePath));
+            ZipArchiveReader moduleArchive = null;
+
+            try {
+                moduleArchive = new ZipArchiveReader(modulePath);
+            } catch (InvalidDataException e) {
+                Logger.Warn(e, "Attempted to load a module {modulePath} which appears to be corrupt.  Deleting it so that it can be redownloaded.", modulePath);
+
+                try {
+                    File.Delete(modulePath); // Delete it to avoid problems and help ensure the user downloads a new copy.
+                } catch (Exception ex) {
+                    Logger.Warn(ex, "Failed to delete module {modulePath}.", modulePath);
+                }
+
+                return null;
+            } catch (Exception e) {
+                Logger.Error(e, "Attempted to load a module {modulePath} but the archive could not be read.", modulePath);
+            }
+
+            return RegisterModule(moduleArchive);
         }
 
         /// <summary>
@@ -288,13 +327,26 @@ namespace Blish_HUD {
         private          MenuItem                            _rootModuleSettingsMenuItem;
         private readonly Dictionary<MenuItem, ModuleManager> _moduleMenus = new Dictionary<MenuItem, ModuleManager>();
 
+        private IOrderedEnumerable<KeyValuePair<MenuItem, ModuleManager>> GetSortedMenuItems() {
+            return _moduleMenus.OrderByDescending(c => c.Value.Enabled).ThenBy(c => c.Value.Manifest.Name);
+        }
+
+        internal void SortMenuItems() {
+            _rootModuleSettingsMenuItem.ClearChildren();
+
+            foreach (var menuItemPair in this.GetSortedMenuItems()) {
+                menuItemPair.Key.Parent = _rootModuleSettingsMenuItem;
+            }
+        }
+        
         private void RegisterModuleMenuInSettings(ModuleManager moduleManager) {
-            var moduleMi = new MenuItem(moduleManager.Manifest.Name) {
-                BasicTooltipText = moduleManager.Manifest.Description,
-                Parent           = _rootModuleSettingsMenuItem
+            var moduleMi = new ModuleMenuItem(moduleManager) {
+                BasicTooltipText = moduleManager.Manifest.Description
             };
 
             _moduleMenus.Add(moduleMi, moduleManager);
+
+            this.SortMenuItems();
         }
 
         private void UnregisterModuleMenuInSettings(ModuleManager moduleManager) {
@@ -303,7 +355,7 @@ namespace Blish_HUD {
                     _moduleMenus.Remove(moduleMenuPair.Key);
 
                     MenuItem toSelect = moduleMenuPair.Key.Selected
-                        ? _moduleMenus.FirstOrDefault().Key ?? _rootModuleSettingsMenuItem
+                        ? this.GetSortedMenuItems().FirstOrDefault().Key ?? _rootModuleSettingsMenuItem
                         : null;
 
                     moduleMenuPair.Key.Parent = null;

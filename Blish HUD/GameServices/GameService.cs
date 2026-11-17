@@ -17,6 +17,7 @@ namespace Blish_HUD {
             Graphics        = new GraphicsService(),
             Overlay         = new OverlayService(),
             GameIntegration = new GameIntegrationService(),
+            ArcDpsV2          = new ArcDpsServiceV2(), // This needs to be initialized bf the V1
             ArcDps          = new ArcDpsService(),
             Contexts        = new ContextsService(),
             Module          = new ModuleService()
@@ -41,17 +42,17 @@ namespace Blish_HUD {
 
         private IServiceModule[] _serviceModules = Array.Empty<IServiceModule>();
 
-        protected void SetServiceModules(params IServiceModule[] serviceModules) {
+        internal void SetServiceModules(params IServiceModule[] serviceModules) {
             _serviceModules = serviceModules ?? Array.Empty<IServiceModule>();
         }
 
-        public void DoInitialize(BlishHud game) {
+        internal void DoInitialize(BlishHud game) {
             ActiveBlishHud = game;
 
             Initialize();
         }
 
-        public void DoLoad() {
+        internal void DoLoad() {
             Load();
 
             foreach (var serviceModule in _serviceModules) {
@@ -62,7 +63,7 @@ namespace Blish_HUD {
             OnFinishedLoading(EventArgs.Empty);
         }
 
-        public void DoUnload() {
+        internal void DoUnload() {
             foreach (var serviceModule in _serviceModules) {
                 serviceModule.Unload();
             }
@@ -72,7 +73,7 @@ namespace Blish_HUD {
             this.Loaded = false;
         }
 
-        public void DoUpdate(GameTime gameTime) {
+        internal void DoUpdate(GameTime gameTime) {
             foreach (var serviceModule in _serviceModules) {
                 serviceModule.Update(gameTime);
             }
@@ -93,6 +94,7 @@ namespace Blish_HUD {
         public static readonly InputService           Input;
         public static readonly GameIntegrationService GameIntegration;
         public static readonly ArcDpsService          ArcDps;
+        public static readonly ArcDpsServiceV2        ArcDpsV2;
         public static readonly ContextsService        Contexts;
         public static readonly ModuleService          Module;
 

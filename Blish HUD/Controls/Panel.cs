@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Adhesive;
-using Blish_HUD.Content;
+﻿using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using System;
+using System.ComponentModel;
 
 namespace Blish_HUD.Controls {
 
@@ -29,16 +27,15 @@ namespace Blish_HUD.Controls {
         private const int ARROW_SIZE       = 32;
         private const int MAX_ACCENT_WIDTH = 256;
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D _texturePanelHeader       = Content.GetTexture("controls/panel/1032325");
-        private static readonly Texture2D _texturePanelHeaderActive = Content.GetTexture("controls/panel/1032324");
+        private readonly AsyncTexture2D _texturePanelHeader       = AsyncTexture2D.FromAssetId(1032325);
+        private readonly AsyncTexture2D _texturePanelHeaderActive = AsyncTexture2D.FromAssetId(1032324);
 
+        private readonly AsyncTexture2D _textureCornerAccent   = AsyncTexture2D.FromAssetId(1002144);
+        private readonly AsyncTexture2D _textureLeftSideAccent = AsyncTexture2D.FromAssetId(605025);
 
-        private static readonly Texture2D _textureCornerAccent   = Content.GetTexture("controls/panel/1002144");
-        private static readonly Texture2D _textureLeftSideAccent = Content.GetTexture("605025");
-
-        private static readonly Texture2D _textureAccordionArrow = Content.GetTexture("controls/panel/155953");
+        private readonly AsyncTexture2D _textureAccordionArrow = AsyncTexture2D.FromAssetId(155953);
 
         #endregion
 
@@ -58,6 +55,12 @@ namespace Blish_HUD.Controls {
         public string Title {
             get => _title;
             set => SetProperty(ref _title, value, true);
+        }
+
+        protected AsyncTexture2D _icon;
+        public AsyncTexture2D Icon {
+            get => _icon;
+            set => SetProperty(ref _icon, value);
         }
 
         protected AsyncTexture2D _backgroundTexture;
@@ -205,6 +208,7 @@ namespace Blish_HUD.Controls {
         }
 
         private Rectangle _layoutHeaderBounds;
+        private Rectangle _layoutHeaderIconBounds;
         private Rectangle _layoutHeaderTextBounds;
 
         private Vector2   _layoutAccordionArrowOrigin;
@@ -251,7 +255,18 @@ namespace Blish_HUD.Controls {
                                                _size.Y - topOffset - bottomOffset);
 
             _layoutHeaderBounds     = new Rectangle(this.ContentRegion.Left,       0, this.ContentRegion.Width,       HEADER_HEIGHT);
-            _layoutHeaderTextBounds = new Rectangle(_layoutHeaderBounds.Left + 10, 0, _layoutHeaderBounds.Width - 10, HEADER_HEIGHT);
+
+            if (_icon?.HasTexture == true) {
+
+                _layoutHeaderIconBounds = new Rectangle(_layoutHeaderBounds.Left + 3, 3, HEADER_HEIGHT - 6, HEADER_HEIGHT - 6);
+                _layoutHeaderTextBounds = new Rectangle(_layoutHeaderIconBounds.Right + 5, 0, _layoutHeaderBounds.Width - _layoutHeaderIconBounds.Width, HEADER_HEIGHT);
+
+            } else {
+
+                _layoutHeaderIconBounds = Rectangle.Empty;
+                _layoutHeaderTextBounds = new Rectangle(_layoutHeaderBounds.Left + 10, 0, _layoutHeaderBounds.Width - 10, HEADER_HEIGHT);
+
+            }
 
             _layoutAccordionArrowOrigin = new Vector2((float)ARROW_SIZE / 2, (float)ARROW_SIZE / 2);
             _layoutAccordionArrowBounds = new Rectangle(_layoutHeaderBounds.Right - ARROW_SIZE,
@@ -260,8 +275,6 @@ namespace Blish_HUD.Controls {
                                                         ARROW_SIZE).OffsetBy(_layoutAccordionArrowOrigin.ToPoint());
         }
 
-        private List<Binding> _scrollbarBindings = new List<Adhesive.Binding>();
-
         private void UpdateScrollbar() {
             /* TODO: Fix .CanScroll: currently you have to set it after you set other region changing settings for it
                to work correctly */
@@ -269,27 +282,47 @@ namespace Blish_HUD.Controls {
                 if (_panelScrollbar == null) 
                     _panelScrollbar = new Scrollbar(this);
 
-                // TODO: Switch to breaking these bindings once it is supported in Adhesive
-                _scrollbarBindings.ToList().ForEach((bind) => bind.Disable());
+                this.PropertyChanged -= UpdatePanelScrollbarOnOwnPropertyChanged;
+                this.PropertyChanged += UpdatePanelScrollbarOnOwnPropertyChanged;
 
-                _scrollbarBindings = new List<Binding> {
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Parent,  () => this.Parent,  applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Height,  () => this.Height,  (h) => this.ContentRegion.Height  - 20,                        applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Right,   () => this.Right,   (r) => r                          - _panelScrollbar.Width / 2, applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Top,     () => this.Top,     (t) => t + this.ContentRegion.Top + 10,                        applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.Visible, () => this.Visible, applyLeft: true),
-                    Binding.CreateOneWayBinding(() => _panelScrollbar.ZIndex,  () => this.ZIndex,  (z) => z + 2, applyLeft: true)
-                };
+                _panelScrollbar.Parent  = this.Parent;
+                _panelScrollbar.Height  = this.ContentRegion.Height  - 20;
+                _panelScrollbar.Right   = this.Right                          - _panelScrollbar.Width / 2;
+                _panelScrollbar.Top     = this.Top + this.ContentRegion.Top + 10;
+                _panelScrollbar.Visible = this.Visible;
+                _panelScrollbar.ZIndex  = this.ZIndex + 2;
             } else {
-                // TODO: Switch to breaking these bindings once it is supported in Adhesive
-                _scrollbarBindings.ToList().ForEach((bind) => bind.Disable());
-                _scrollbarBindings.Clear();
-
+                this.PropertyChanged -= UpdatePanelScrollbarOnOwnPropertyChanged;
                 _panelScrollbar?.Dispose();
                 _panelScrollbar = null;
             }
         }
-        
+
+        // TODO Temporary solution to avoid memory leak due to Adhesive bindings before
+        // This will be replaced when the Scrollbar is converted to a stateless overlay
+        private void UpdatePanelScrollbarOnOwnPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+            switch (e.PropertyName) {
+                case "Parent":
+                    _panelScrollbar.Parent = this.Parent;
+                    break;
+                case "Height":
+                    _panelScrollbar.Height = this.ContentRegion.Height - 20;
+                    break;
+                case "Right":
+                    _panelScrollbar.Right = this.Right - _panelScrollbar.Width / 2;
+                    break;
+                case "Top":
+                    _panelScrollbar.Top = this.Top + this.ContentRegion.Top + 10;
+                    break;
+                case "Visible":
+                    _panelScrollbar.Visible = this.Visible;
+                    break;
+                case "ZIndex":
+                    _panelScrollbar.ZIndex = this.ZIndex + 2;
+                    break;
+            }
+        }
+
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             if (_backgroundTexture != null) {
                 spriteBatch.DrawOnCtrl(this, _backgroundTexture, bounds);
@@ -316,6 +349,11 @@ namespace Blish_HUD.Controls {
                     spriteBatch.DrawOnCtrl(this,
                                            _texturePanelHeader,
                                            _layoutHeaderBounds);
+                }
+
+                // Panel header icon
+                if (_icon?.HasTexture == true) {
+                    spriteBatch.DrawOnCtrl(this, _icon, _layoutHeaderIconBounds, Color.White);
                 }
 
                 // Panel header text
@@ -375,6 +413,11 @@ namespace Blish_HUD.Controls {
 
         protected override void DisposeControl() {
             _panelScrollbar?.Dispose();
+            
+            foreach (var control in this._children) {
+                control.Resized -= UpdateContentRegionBounds;
+                control.Moved   -= UpdateContentRegionBounds;
+            }
 
             base.DisposeControl();
         }

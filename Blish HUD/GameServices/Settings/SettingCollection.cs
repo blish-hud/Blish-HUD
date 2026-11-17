@@ -142,11 +142,19 @@ namespace Blish_HUD.Settings {
         }
 
         public SettingCollection AddSubCollection(string collectionKey, bool lazyLoaded = false) {
-            return AddSubCollection(collectionKey, false, lazyLoaded);
+            return AddSubCollection(collectionKey, false, lazyLoaded, null);
         }
 
         public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false) {
-            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }).Value;
+            return AddSubCollection(collectionKey, renderInUi, lazyLoaded, null);
+        }
+
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, Func<string> displayNameFunc = null) {
+            return AddSubCollection(collectionKey, renderInUi, false, displayNameFunc);
+        }
+
+        public SettingCollection AddSubCollection(string collectionKey, bool renderInUi, bool lazyLoaded = false, Func<string> displayNameFunc = null) {
+            return DefineSetting(collectionKey, new SettingCollection(lazyLoaded) { RenderInUi = renderInUi }, displayNameFunc).Value;
         }
 
         public bool ContainsSetting(string entryKey) {

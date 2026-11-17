@@ -9,30 +9,20 @@ using Blish_HUD.Settings;
 using Flurl.Http;
 
 namespace Blish_HUD.Overlay {
-    public class OverlayUpdateHandler : ServiceModule<OverlayService> {
+    public sealed class OverlayUpdateHandler : ServiceModule<OverlayService> {
 
         private static readonly Logger Logger = Logger.GetLogger<OverlayUpdateHandler>();
 
         private const string UPDATE_SETTINGS = nameof(OverlayUpdateHandler) + "Configuration";
 
-        private const string DEFAULT_CORERELEASE_URL = "https://versions.blishhud.com/all.json";
+        private const string DEFAULT_CORERELEASE_URL = "https://versions.blishhud.com/all.json?cv={0}";
 
         private CoreVersionManifest[] _availableUpdates = Array.Empty<CoreVersionManifest>();
 
-        private SettingEntry<bool>           _prereleasesVisible;
         private SettingEntry<SemVer.Version> _lastAcknowledgedUpdate;
         private SettingEntry<bool>           _notifyOfNewReleases;
 
         private int _releaseLoadAttemptsRemaining = 3;
-
-        /// <summary>
-        /// If the user should be prompted about prerelease versions.
-        /// If <c>false</c>, only release versions will be taken into consideration for the user.
-        /// </summary>
-        public bool PrereleasesVisible {
-            get => _prereleasesVisible.Value;
-            set => _prereleasesVisible.Value = value;
-        }
 
         /// <summary>
         /// The last update <see cref="SemVer.Version"/> that was acknowledged by the user.
@@ -52,19 +42,18 @@ namespace Blish_HUD.Overlay {
         /// <summary>
         /// The highest version release.  Will include prereleases only if <see cref="PrereleasesVisible"/> is <c>true</c>.
         /// </summary>
-        public CoreVersionManifest LatestRelease => _availableUpdates.Where(manifest => manifest.IsPrerelease == this.PrereleasesVisible)
+        public CoreVersionManifest LatestRelease => _availableUpdates.Where(manifest => GameService.Overlay.ShowPreviews.Value || !manifest.IsPrerelease)
                                                                      .OrderByDescending(manifest => manifest.Version)
                                                                      .FirstOrDefault();
 
-        public OverlayUpdateHandler(OverlayService service) : base(service) { /* NOOP */ }
+        internal OverlayUpdateHandler(OverlayService service) : base(service) { /* NOOP */ }
 
         public override void Load() {
             DefineOverlayUpdateSettings(GameService.Settings.RegisterRootSettingCollection(UPDATE_SETTINGS));
-            BeginLoadReleases(DEFAULT_CORERELEASE_URL);
+            BeginLoadReleases(string.Format(DEFAULT_CORERELEASE_URL, Program.OverlayVersion.BaseAndPrerelease()));
         }
 
         private void DefineOverlayUpdateSettings(SettingCollection settingCollection) {
-            _prereleasesVisible     = settingCollection.DefineSetting(nameof(PrereleasesVisible),           false);
             _lastAcknowledgedUpdate = settingCollection.DefineSetting(nameof(this.LastAcknowledgedRelease), new SemVer.Version("0.0.0"));
             _notifyOfNewReleases    = settingCollection.DefineSetting(nameof(this.NotifyOfNewRelease),      true);
         }
@@ -104,7 +93,7 @@ namespace Blish_HUD.Overlay {
             }
         }
 
-        private void ShowReleaseSplash(CoreVersionManifest coreVersionManifest, bool subtle) {
+        internal void ShowReleaseSplash(CoreVersionManifest coreVersionManifest, bool subtle) {
             if (_activeUpdateWindow?.Parent == null) {
                 // Release old window.
                 _activeUpdateWindow = null;
@@ -117,6 +106,14 @@ namespace Blish_HUD.Overlay {
             if (!subtle) {
                 _activeUpdateWindow.Show();
             }
+        }
+
+        public (bool Available, CoreVersionManifest NewManifest) GetUpdateAvailable() {
+            if (this.LatestRelease.Version > Program.OverlayVersion) {
+                return (true, this.LatestRelease);
+            }
+
+            return (false, default);
         }
 
         public IEnumerable<ContextMenuStripItem> GetContextMenuItems() {

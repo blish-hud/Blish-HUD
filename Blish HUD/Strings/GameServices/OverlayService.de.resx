@@ -259,4 +259,13 @@ Für die beste Erfahrung auf die selbe Taste wie im Spiel setzen.</value>
   <data name="Setting_InteractKey_DisplayName" xml:space="preserve">
     <value>Interagieren</value>
   </data>
+  <data name="SelfUpdate_NewPrereleaseAvailable" xml:space="preserve">
+    <value>Neue Beta-Version verfügbar</value>
+  </data>
+  <data name="Setting_MuteIfNoGameAudio_Description" xml:space="preserve">
+    <value>Wenn aktiviert, schaltet Blish HUD die Lautstärke stumm, wenn das Spiel ebenfalls keinen Ton ausgibt.</value>
+  </data>
+  <data name="Setting_MuteIfNoGameAudio_DisplayName" xml:space="preserve">
+    <value>Stummschalten, wenn Guild Wars 2 stummgeschaltet wird.</value>
+  </data>
 </root>

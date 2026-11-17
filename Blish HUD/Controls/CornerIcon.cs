@@ -121,21 +121,28 @@ namespace Blish_HUD.Controls {
             CornerIcons.CollectionChanged += delegate { UpdateCornerIconPositions(); };
             
             GameService.Input.Mouse.MouseMoved += (sender, e) => {
+                CornerIcon[] cornerIcons = null;
+
+                lock (CornerIcons) {
+                    cornerIcons = CornerIcons.ToArray();
+                }
+
                 var scaledMousePos = Input.Mouse.State.Position.ScaleToUi();
                 if (scaledMousePos.Y < ICON_SIZE && scaledMousePos.X < ICON_SIZE * ICON_POSITION + LeftOffset) {
-                    foreach (var cornerIcon in CornerIcons) {
+                    foreach (var cornerIcon in cornerIcons) {
                         cornerIcon.MouseInHouse = true;
                     }
 
                     return;
                 }
 
-                foreach (var cornerIcon in CornerIcons) {
+                foreach (var cornerIcon in cornerIcons) {
                     cornerIcon.MouseInHouse = false;
                 }
             };
 
-            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += delegate { UpdateCornerIconDynamicHUDState(); };
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += delegate { UpdateCornerIconDynamicHUDCombatState(); };
+            GameService.GameIntegration.Gw2Instance.IsInGameChanged += delegate { UpdateCornerIconDynamicHUDLoadingState(); };
         }
 
         private static void UpdateCornerIconPositions() {
@@ -148,8 +155,20 @@ namespace Blish_HUD.Controls {
             }
         }
 
-        public static void UpdateCornerIconDynamicHUDState() {
+        public static void UpdateCornerIconDynamicHUDCombatState() {
             if (GameService.Overlay.DynamicHUDMenuBar == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
+                foreach (var cornerIcon in CornerIcons) {
+                    cornerIcon.DynamicHide = false;
+                }
+            } else {
+                foreach (var cornerIcon in CornerIcons) {
+                    cornerIcon.DynamicHide = true;
+                }
+            }
+        }
+
+        public static void UpdateCornerIconDynamicHUDLoadingState() {
+            if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
                 foreach (var cornerIcon in CornerIcons) {
                     cornerIcon.DynamicHide = false;
                 }
@@ -165,7 +184,9 @@ namespace Blish_HUD.Controls {
             this.Size   = new Point(ICON_SIZE, ICON_SIZE);
             this.DynamicHide = true;
 
-            CornerIcons.Add(this);
+            lock (CornerIcons) {
+                CornerIcons.Add(this);
+            }
         }
 
         public CornerIcon(AsyncTexture2D icon, string iconName) : this() {
@@ -221,7 +242,9 @@ namespace Blish_HUD.Controls {
 
         /// <inheritdoc />
         protected override void DisposeControl() {
-            CornerIcons.Remove(this);
+            lock (CornerIcons) {
+                CornerIcons.Remove(this);
+            }
         }
 
     }

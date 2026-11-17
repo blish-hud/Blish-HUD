@@ -9,8 +9,6 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Blish_HUD.Controls {
 
-    // TODO: Ensure that container objects, when disposed, first dispose of their children
-
     /// <summary>
     /// A control that is capable of having child controls that are drawn when the container is drawn.
     /// Classes that inherit should be packaged controls that that manage their own controls internally.
@@ -26,6 +24,13 @@ namespace Blish_HUD.Controls {
 
         [Newtonsoft.Json.JsonIgnore]
         public ControlCollection<Control> Children => _children;
+
+        // Reused every frame so that updating, painting, and handling input for child controls don't allocate
+        private Control[] _updateBuffer = Array.Empty<Control>();
+        private Control[] _paintBuffer  = Array.Empty<Control>();
+        private ulong[]   _paintOrder   = Array.Empty<ulong>();
+        private Control[] _inputBuffer  = Array.Empty<Control>();
+        private ulong[]   _inputOrder   = Array.Empty<ulong>();
 
         protected Container() {
             _children = new ControlCollection<Control>();
@@ -73,22 +78,38 @@ namespace Blish_HUD.Controls {
         public Point ContentBounds => _contentBounds;
         
         private int _verticalScrollOffset;
+
+        /// <summary>
+        /// Indicates the vertical offset used when rendering the child <see cref="Control"/>s within the <see cref="ContentRegion"/>.
+        /// </summary>
         public int VerticalScrollOffset {
             get => _verticalScrollOffset;
-            set => SetProperty(ref _verticalScrollOffset, value);
+            set { 
+                if (SetProperty(ref _verticalScrollOffset, value) && this.MouseOver) {
+                    Input.Mouse.RecalculateActiveControl();
+                } 
+            }
         }
 
         private int _horizontalScrollOffset;
+
+        /// <summary>
+        /// Indicates the horizontal offset used when rendering the child <see cref="Control"/>s within the <see cref="ContentRegion"/>.
+        /// </summary>
         public int HorizontalScrollOffset {
             get => _horizontalScrollOffset;
-            set => SetProperty(ref _horizontalScrollOffset, value);
+            set {
+                if (SetProperty(ref _horizontalScrollOffset, value) && this.MouseOver) {
+                    Input.Mouse.RecalculateActiveControl();
+                }
+            }
         }
 
         private SizingMode _widthSizingMode = SizingMode.Standard;
 
         /// <summary>
         /// Determines how the width of this
-        /// container should be handled.
+        /// <see cref="Container"/> should be handled.
         /// </summary>
         public virtual SizingMode WidthSizingMode {
             get => _widthSizingMode;
@@ -99,7 +120,7 @@ namespace Blish_HUD.Controls {
 
         /// <summary>
         /// Determines how the height of this
-        /// container should be handled.
+        /// <see cref="Container"/> should be handled.
         /// </summary>
         public virtual SizingMode HeightSizingMode {
             get => _heightSizingMode;
@@ -120,9 +141,12 @@ namespace Blish_HUD.Controls {
 
         protected override CaptureType CapturesInput() => CaptureType.Mouse | CaptureType.MouseWheel;
 
+        /// <summary>
+        /// Returns all descendant <see cref="Control"/>s of this <see cref="Container"/>.
+        /// </summary>
         public IEnumerable<Control> GetDescendants() {
             // Breadth-first unrolling without the inefficiency of recursion.
-            var remainingChildren = new Queue<Control>(this.Children);
+            var remainingChildren = new Queue<Control>(this.Children.ToArray());
 
             while (remainingChildren.Count > 0) {
                 var child = remainingChildren.Dequeue();
@@ -136,6 +160,21 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        /// <summary>
+        /// Returns all child <see cref="Control"/>s of this <see cref="Container"/> of type <typeparamref name="T"/>.
+        /// </summary>
+        public IEnumerable<T> GetChildrenOfType<T>() {
+            foreach (var child in this.Children.ToArray()) {
+                if (child is T tChild) {
+                    yield return tChild;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to add the provided <see cref="Control"/> as a child of the <see cref="Container"/>.
+        /// Adding a control this way does not update the <see cref="Control"/>'s <see cref="Control.Parent"/> making it unsuitable for most situations.
+        /// </summary>
         public bool AddChild(Control child) {
             if (_children.Contains(child)) return true;
 
@@ -154,6 +193,10 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
+        /// <summary>
+        /// Attempts to remove the provided <see cref="Control"/> from the children of this <see cref="Container"/>.
+        /// Removing a control this way does not update the <see cref="Control"/>'s <see cref="Control.Parent"/> making it unsuitable for most situations.
+        /// </summary>
         public bool RemoveChild(Control child) {
             if (!_children.Contains(child)) return true;
 
@@ -173,6 +216,9 @@ namespace Blish_HUD.Controls {
             return true;
         }
 
+        /// <summary>
+        /// Safely clears all child <see cref="Control"/> from this <see cref="Container"/>.
+        /// </summary>
         public void ClearChildren() {
             while (_children.Count > 0) {
                 _children[0].Parent = null;
@@ -187,22 +233,36 @@ namespace Blish_HUD.Controls {
                 thisResult = base.TriggerMouseInput(mouseEventType, ms);
             }
 
-            List<Control>               children        = _children.ToList();
-            IOrderedEnumerable<Control> zSortedChildren = children.OrderByDescending(i => i.ZIndex).ThenByDescending(c => children.IndexOf(c));
+            int count = _children.CopyToBuffer(ref _inputBuffer);
 
-            foreach (var childControl in zSortedChildren) {
-                if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
-                    childResult = childControl.TriggerMouseInput(mouseEventType, ms);
+            try {
+                // TopMost first and later children first on ties
+                EnsureCapacity(ref _inputOrder, count);
 
-                    if (childResult != null) {
-                        if (!childResult.Captures.HasFlag(CaptureType.Filter)) {
-                            break;
+                for (int i = 0; i < count; i++) {
+                    _inputOrder[i] = ~ZIndexSortKey(_inputBuffer[i].ZIndex, i);
+                }
+
+                Array.Sort(_inputOrder, 0, count);
+
+                for (int i = 0; i < count; i++) {
+                    var childControl = _inputBuffer[(int)(uint)~_inputOrder[i]];
+
+                    if (childControl.AbsoluteBounds.Contains(ms.Position) && childControl.Visible) {
+                        childResult = childControl.TriggerMouseInput(mouseEventType, ms);
+
+                        if (childResult != null) {
+                            if ((childResult.Captures & CaptureType.Filter) != CaptureType.Filter) {
+                                break;
+                            }
+
+                            // Child has Filter flag so we have to pretend we didn't see it
+                            childResult = null;
                         }
-
-                        // Child has Filter flag so we have to pretend we didn't see it
-                        childResult = null;
                     }
                 }
+            } finally {
+                Array.Clear(_inputBuffer, 0, count);
             }
 
             return childResult ?? thisResult;
@@ -225,33 +285,41 @@ namespace Blish_HUD.Controls {
         public sealed override void DoUpdate(GameTime gameTime) {
             UpdateContainer(gameTime);
 
-            Control[] children = _children.ToArray();
+            int count = _children.CopyToBuffer(ref _updateBuffer);
 
-            _contentBounds = ControlUtil.GetControlBounds(children);
+            try {
+                // GetControlBounds skips empty slots, so this is safe
+                _contentBounds = ControlUtil.GetControlBounds(_updateBuffer);
 
-            // Update our size based on the sizing mode
-            if (this.Parent != null) { 
-                this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
-                                                      this.Width,
-                                                      _contentBounds.X                            + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
-                                                      this.Parent.ContentRegion.Width - this.Left),
-                                      GetUpdatedSizing(this.HeightSizingMode,
-                                                      this.Height,
-                                                      _contentBounds.Y                 + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
-                                                      this.Parent.ContentRegion.Height - this.Top));
-            }
-
-            // Update our children
-            foreach (var childControl in children) {
-                // Update child if it is visible or if it hasn't rendered yet (needs a first time calc)
-                if (childControl.Visible || childControl.LayoutState != LayoutState.Ready) {
-                    childControl.Update(gameTime);
+                // Update our size based on the sizing mode
+                var parent = this.Parent;
+                if (parent != null) {
+                    this.Size = new Point(GetUpdatedSizing(this.WidthSizingMode,
+                                                          this.Width,
+                                                          _contentBounds.X           + (this.Width - this.ContentRegion.Width) + _autoSizePadding.X,
+                                                          parent.ContentRegion.Width - this.Left),
+                                          GetUpdatedSizing(this.HeightSizingMode,
+                                                          this.Height,
+                                                          _contentBounds.Y            + (this.Height - this.ContentRegion.Height) + _autoSizePadding.Y,
+                                                          parent.ContentRegion.Height - this.Top));
                 }
+
+                // Update our children
+                for (int i = 0; i < count; i++) {
+                    var childControl = _updateBuffer[i];
+
+                    // Update child if it is visible or if it hasn't rendered yet (needs a first time calc)
+                    if (childControl.Visible || childControl.LayoutState != LayoutState.Ready) {
+                        childControl.Update(gameTime);
+                    }
+                }
+            } finally {
+                Array.Clear(_updateBuffer, 0, count);
             }
         }
 
         protected sealed override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            var controlScissor = Graphics.GraphicsDevice.ScissorRectangle.ScaleBy(1 / Graphics.UIScaleMultiplier);
+            var controlScissor = spriteBatch.GraphicsDevice.ScissorRectangle.ScaleBy(1 / Graphics.UIScaleMultiplier);
 
             // Draw container background
             PaintBeforeChildren(spriteBatch, bounds);
@@ -261,7 +329,7 @@ namespace Blish_HUD.Controls {
             PaintChildren(spriteBatch, bounds, controlScissor);
 
             // Restore scissor
-            Graphics.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.UIScaleMultiplier);
+            spriteBatch.GraphicsDevice.ScissorRectangle = controlScissor.ScaleBy(Graphics.UIScaleMultiplier);
 
             spriteBatch.Begin(this.SpriteBatchParameters);
 
@@ -273,17 +341,40 @@ namespace Blish_HUD.Controls {
         protected void PaintChildren(SpriteBatch spriteBatch, Rectangle bounds, Rectangle scissor) {
             var contentScissor = Rectangle.Intersect(scissor, ContentRegion.ToBounds(this.AbsoluteBounds));
             
-            var zSortedChildren = _children.ToArray().OrderBy(i => i.ZIndex);
+            int count = _children.CopyToBuffer(ref _paintBuffer);
 
-            // Render each visible child
-            foreach (var childControl in zSortedChildren) {
-                if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
-                    var childBounds = new Rectangle(Point.Zero, childControl.Size);
+            try {
+                // Lowest first with ties kept in child order
+                EnsureCapacity(ref _paintOrder, count);
 
-                    if (childControl.AbsoluteBounds.Intersects(contentScissor) || !childControl.ClipsBounds) {
-                        childControl.Draw(spriteBatch, childBounds, contentScissor);
+                for (int i = 0; i < count; i++) {
+                    _paintOrder[i] = ZIndexSortKey(_paintBuffer[i].ZIndex, i);
+                }
+
+                Array.Sort(_paintOrder, 0, count);
+
+                // Render each visible child
+                for (int i = 0; i < count; i++) {
+                    var childControl = _paintBuffer[(int)(uint)_paintOrder[i]];
+
+                    if (childControl.Visible && childControl.LayoutState != LayoutState.SkipDraw) {
+                        var childBounds = new Rectangle(Point.Zero, childControl.Size);
+
+                        if (childControl.AbsoluteBounds.Intersects(contentScissor) || !childControl.ClipsBounds) {
+                            childControl.Draw(spriteBatch, childBounds, contentScissor);
+                        }
                     }
                 }
+            } finally {
+                Array.Clear(_paintBuffer, 0, count);
+            }
+        }
+
+        private static ulong ZIndexSortKey(int zIndex, int index) => ((ulong)((uint)zIndex ^ 0x80000000u) << 32) | (uint)index;
+
+        private static void EnsureCapacity(ref ulong[] buffer, int count) {
+            if (buffer.Length < count) {
+                buffer = new ulong[count + 8];
             }
         }
 

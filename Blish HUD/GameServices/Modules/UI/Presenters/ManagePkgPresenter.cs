@@ -7,7 +7,7 @@ using Blish_HUD.Modules.UI.Views;
 using Version = SemVer.Version;
 
 namespace Blish_HUD.Modules.UI.Presenters {
-    public class ManagePkgPresenter : Presenter<ManagePkgView, IGrouping<string, PkgManifest>> {
+    public class ManagePkgPresenter : Presenter<ManagePkgView, IOrderedEnumerable<PkgManifest>> {
 
         private ModuleManager _existingModule;
 
@@ -15,10 +15,10 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
         private PkgManifest _selectedVersion;
 
-        public ManagePkgPresenter(ManagePkgView view, IGrouping<string, PkgManifest> model) : base(view, model) { /* NOOP */ }
+        public ManagePkgPresenter(ManagePkgView view, IOrderedEnumerable<PkgManifest> model) : base(view, model) { /* NOOP */ }
 
         protected override Task<bool> Load(IProgress<string> progress) {
-            _existingModule = GameService.Module.Modules.FirstOrDefault(m => m.Manifest.Namespace == this.Model.Key);
+            _existingModule = GameService.Module.Modules.FirstOrDefault(m => m.Manifest.Namespace == this.Model.LastOrDefault()?.Namespace);
 
             return base.Load(progress);
         }
@@ -40,6 +40,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.View.ModuleNamespace   = _selectedVersion.Namespace;
             this.View.ModuleContributor = _selectedVersion.Contributors[0];
             this.View.SelectedVersion   = _selectedVersion.Version;
+            this.View.IsPreviewVersion  = _selectedVersion.IsPreview;
 
             if (_selectedVersion is PkgManifestV1 pkgv1) {
                 this.View.ModuleDescription = pkgv1.Description;

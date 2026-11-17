@@ -47,12 +47,12 @@ namespace Blish_HUD.Modules.UI.Presenters {
                                            : dependencyCheck.Module.Manifest.Version.BaseVersion().ToString();
 
                 string status = dependencyCheck.CheckResult switch {
-                    ModuleDependencyCheckResult.NotFound => $"{Strings.GameServices.ModulesService.Dependency_NotFound} {requiredRange}",
-                    ModuleDependencyCheckResult.Available => $"v{actualVersion}",
-                    ModuleDependencyCheckResult.AvailableNotEnabled => $"{Strings.GameServices.ModulesService.Dependency_NotEnabled} {requiredRange}",
+                    ModuleDependencyCheckResult.NotFound              => $"{Strings.GameServices.ModulesService.Dependency_NotFound} {requiredRange}",
+                    ModuleDependencyCheckResult.Available             => $"{requiredRange} | v{actualVersion}",
+                    ModuleDependencyCheckResult.AvailableNotEnabled   => $"{Strings.GameServices.ModulesService.Dependency_NotEnabled} {requiredRange}",
                     ModuleDependencyCheckResult.AvailableWrongVersion => $"{Strings.GameServices.ModulesService.Dependency_WrongVersion} {requiredRange}",
-                    ModuleDependencyCheckResult.FoundInRepo => $"[Found In Repo (Not Implemented)] v{requiredRange}",
-                    _ => ""
+                    ModuleDependencyCheckResult.FoundInRepo           => $"[Found In Repo (Not Implemented)] {requiredRange}",
+                    _                                                 => ""
                 };
 
                 checkResults.Add((dependencyCheck.GetDisplayName(), status, dependencyCheck.CheckResult));

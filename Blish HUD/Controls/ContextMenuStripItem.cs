@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Blish_HUD.Content;
 using Blish_HUD.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 
 namespace Blish_HUD.Controls {
 
@@ -14,9 +14,10 @@ namespace Blish_HUD.Controls {
 
         private const int TEXT_LEFTPADDING = HORIZONTAL_PADDING + BULLET_SIZE + HORIZONTAL_PADDING;
 
-        #region Load Static
+        #region Textures
 
-        private static readonly Texture2D _textureBullet = Content.GetTexture("155038");
+        private readonly AsyncTexture2D _textureBullet = AsyncTexture2D.FromAssetId(155038);
+
         private static readonly Texture2D _textureArrow  = Content.GetTexture("context-menu-strip-submenu");
 
         #endregion
@@ -66,21 +67,25 @@ namespace Blish_HUD.Controls {
             var textSize = GameService.Content.DefaultFont14.MeasureString(_text);
             int nWidth   = (int)textSize.Width + TEXT_LEFTPADDING + TEXT_LEFTPADDING;
 
-            if (this.Parent != null) {
-                this.Width = Math.Max(this.Parent.Width - 4, nWidth);
+            var parent = this.Parent;
+
+            if (parent != null) {
+                this.Width = Math.Max(parent.Width - 4, nWidth);
             } else {
                 this.Width = nWidth;
             }
         }
 
         protected override void OnClick(MouseEventArgs e) {
+            // It is important that we handle this first to avoid mistakenly removing
+            // the handlers if the control is disposed of during the click.
+            base.OnClick(e);
+
             if (this.CanCheck) {
                 this.Checked = !this.Checked;
             } else {
-                this.Parent.Hide();
+                this.Parent?.Hide();
             }
-
-            base.OnClick(e);
         }
 
         protected override void OnMouseEntered(MouseEventArgs e) {
