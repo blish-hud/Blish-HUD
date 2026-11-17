@@ -200,20 +200,33 @@ namespace Blish_HUD.Controls {
         }
 
         public static void UpdateWindowBaseDynamicHUDCombatState(WindowBase wb) {
-            if (GameService.Overlay.DynamicHUDWindows == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
-                wb._savedVisibility = wb.Visible;
-                if (wb._savedVisibility) wb.Hide();
-            } else {
-                if (wb._savedVisibility) wb.Show();
-            }
+            UpdateWindowBaseDynamicHUDVisibility(wb);
         }
 
         public static void UpdateWindowBaseDynamicHUDLoadingState(WindowBase wb) {
-            if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
+            UpdateWindowBaseDynamicHUDVisibility(wb);
+        }
+
+        private static bool ShouldShowDynamicHUD() {
+            bool showForCombat = GameService.Overlay.DynamicHUDWindows switch {
+                DynamicHUDMethod.NeverShow    => false,
+                DynamicHUDMethod.ShowPeaceful => !GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
+                DynamicHUDMethod.ShowInCombat => GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
+                _                             => true
+            };
+
+            bool showForLoading = GameService.Overlay.DynamicHUDLoading != DynamicHUDMethod.NeverShow
+                               || GameService.GameIntegration.Gw2Instance.IsInGame;
+
+            return showForCombat && showForLoading;
+        }
+
+        private static void UpdateWindowBaseDynamicHUDVisibility(WindowBase wb) {
+            if (ShouldShowDynamicHUD()) {
+                if (wb._savedVisibility) wb.Show();
+            } else {
                 wb._savedVisibility = wb.Visible;
                 if (wb._savedVisibility) wb.Hide();
-            } else {
-                if (wb._savedVisibility) wb.Show();
             }
         }
 

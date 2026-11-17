@@ -156,26 +156,32 @@ namespace Blish_HUD.Controls {
         }
 
         public static void UpdateCornerIconDynamicHUDCombatState() {
-            if (GameService.Overlay.DynamicHUDMenuBar == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
-                foreach (var cornerIcon in CornerIcons) {
-                    cornerIcon.DynamicHide = false;
-                }
-            } else {
-                foreach (var cornerIcon in CornerIcons) {
-                    cornerIcon.DynamicHide = true;
-                }
-            }
+            UpdateCornerIconsDynamicHUDVisibility();
         }
 
         public static void UpdateCornerIconDynamicHUDLoadingState() {
-            if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
-                foreach (var cornerIcon in CornerIcons) {
-                    cornerIcon.DynamicHide = false;
-                }
-            } else {
-                foreach (var cornerIcon in CornerIcons) {
-                    cornerIcon.DynamicHide = true;
-                }
+            UpdateCornerIconsDynamicHUDVisibility();
+        }
+
+        private static bool ShouldShowDynamicHUD() {
+            bool showForCombat = GameService.Overlay.DynamicHUDMenuBar switch {
+                DynamicHUDMethod.NeverShow    => false,
+                DynamicHUDMethod.ShowPeaceful => !GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
+                DynamicHUDMethod.ShowInCombat => GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
+                _                             => true
+            };
+
+            bool showForLoading = GameService.Overlay.DynamicHUDLoading != DynamicHUDMethod.NeverShow
+                               || GameService.GameIntegration.Gw2Instance.IsInGame;
+
+            return showForCombat && showForLoading;
+        }
+
+        private static void UpdateCornerIconsDynamicHUDVisibility() {
+            bool shouldShow = ShouldShowDynamicHUD();
+
+            foreach (var cornerIcon in CornerIcons) {
+                cornerIcon.DynamicHide = shouldShow;
             }
         }
 
@@ -187,6 +193,8 @@ namespace Blish_HUD.Controls {
             lock (CornerIcons) {
                 CornerIcons.Add(this);
             }
+
+            this.DynamicHide = ShouldShowDynamicHUD();
         }
 
         public CornerIcon(AsyncTexture2D icon, string iconName) : this() {
