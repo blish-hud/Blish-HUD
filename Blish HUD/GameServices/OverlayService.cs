@@ -207,9 +207,21 @@ namespace Blish_HUD {
                                                         () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_DisplayName,
                                                         () => Strings.GameServices.OverlayService.Setting_DynamicHUDLoading_Description);
 
-            _dynamicHUDMenuBar.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
-            _dynamicHUDWindows.SetExcluded(DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
-            _dynamicHUDLoading.SetExcluded(DynamicHUDMethod.ShowPeaceful, DynamicHUDMethod.ShowInCombat);
+            ExcludeDynamicHUDOptions(_dynamicHUDMenuBar, DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
+            ExcludeDynamicHUDOptions(_dynamicHUDWindows, DynamicHUDMethod.NeverShow, DynamicHUDMethod.ShowInCombat);
+            ExcludeDynamicHUDOptions(_dynamicHUDLoading, DynamicHUDMethod.ShowPeaceful, DynamicHUDMethod.ShowInCombat);
+        }
+
+        /// <summary>
+        /// Excludes the provided options from the settings UI, unless one of them is already the
+        /// active value. Options can intentionally be set by editing settings.json directly; when
+        /// that happens, the loaded value is kept selectable so that the settings UI can neither
+        /// hide nor reset it.
+        /// </summary>
+        private static void ExcludeDynamicHUDOptions(SettingEntry<DynamicHUDMethod> setting, params DynamicHUDMethod[] excluded) {
+            DynamicHUDMethod currentValue = setting.Value;
+
+            setting.SetExcluded(excluded.Where(option => option != currentValue).ToArray());
         }
 
         private void ApplyInitialSettings() {
