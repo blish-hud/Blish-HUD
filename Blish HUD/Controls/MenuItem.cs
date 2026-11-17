@@ -62,6 +62,15 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _shouldShift, value, true);
         }
 
+        private int _leftPadding;
+        /// <summary>
+        /// Additional padding added to the left of this <see cref="MenuItem"/>'s content.
+        /// </summary>
+        public int LeftPadding {
+            get => _leftPadding;
+            set => SetProperty(ref _leftPadding, value, true);
+        }
+
         public bool Selected => _selectedMenuItem == this;
 
         protected MenuItem _selectedMenuItem;
@@ -299,7 +308,7 @@ namespace Blish_HUD.Controls {
             MouseOverIconBox = _canCheck
                             && _overSection
                             && FirstItemBoxRegion
-                              .OffsetBy(LeftSidePadding, 0)
+                              .OffsetBy(LeftSidePadding + _leftPadding, 0)
                               .Contains(RelativeMousePosition);
 
             base.OnMouseMoved(e);
@@ -391,7 +400,7 @@ namespace Blish_HUD.Controls {
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
-            int currentLeftSidePadding = this.LeftSidePadding;
+            int currentLeftSidePadding = this.LeftSidePadding + _leftPadding;
 
             // If MenuItem has children, show dropdown arrow
             if (!_children.IsEmpty)

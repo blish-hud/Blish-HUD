@@ -14,6 +14,9 @@ namespace Blish_HUD.Overlay.UI.Views {
         private const int MENU_ITEM_HEIGHT = 40;
         private const int ROW_PADDING      = 12;
 
+        // Width of a MenuItem checkbox plus its padding, used to line up exempt icons.
+        private const int CHECKBOX_SPACE = 42;
+
         protected override void Build(Container buildPanel) {
             var cornerIconsPanel = new Panel() {
                 ShowBorder = true,
@@ -48,6 +51,7 @@ namespace Blish_HUD.Overlay.UI.Views {
                 var menuItem = new MenuItem(GetDisplayName(name), cornerIcon.Icon) {
                     CanCheck         = !cornerIcon.Exempt,
                     Checked          = cornerIcon.Decluttered,
+                    LeftPadding      = cornerIcon.Exempt ? CHECKBOX_SPACE : 0,
                     BasicTooltipText = cornerIcon.Exempt
                                            ? $"{name}\n\nThis icon is exempt and can not be decluttered."
                                            : name,
