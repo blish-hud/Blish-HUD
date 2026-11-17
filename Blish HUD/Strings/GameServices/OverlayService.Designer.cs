@@ -624,6 +624,24 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set keybind to show or hide the corner icons flagged as decluttered.
+        /// </summary>
+        internal static string Setting_ToggleCornerIconDeclutter_Description {
+            get {
+                return ResourceManager.GetString("Setting_ToggleCornerIconDeclutter_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Corner Icon Declutter.
+        /// </summary>
+        internal static string Setting_ToggleCornerIconDeclutter_DisplayName {
+            get {
+                return ResourceManager.GetString("Setting_ToggleCornerIconDeclutter_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When enabled, Blish HUD will adjust it&apos;s volume to the game audio..
         /// </summary>
         internal static string Setting_UseGameVolume_Description {

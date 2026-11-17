@@ -52,6 +52,7 @@ namespace Blish_HUD {
         public SettingEntry<bool>   ShowInTaskbar { get; private set; }
         internal SettingEntry<KeyBinding> InteractKey { get; private set; }
         public SettingEntry<KeyBinding> ToggleBlishWindow { get; private set; }
+        public SettingEntry<KeyBinding> ToggleCornerIconDeclutter { get; private set; }
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
         internal SettingEntry<bool> ShowPreviews { get; private set; }
@@ -169,6 +170,11 @@ namespace Blish_HUD {
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_DisplayName,
                                                               () => Strings.GameServices.OverlayService.Setting_ToggleBlishWindowKeybind_Description);
 
+            this.ToggleCornerIconDeclutter = settings.DefineSetting(nameof(this.ToggleCornerIconDeclutter),
+                                                                    new KeyBinding(ModifierKeys.Shift | ModifierKeys.Ctrl, Keys.I),
+                                                                    () => Strings.GameServices.OverlayService.Setting_ToggleCornerIconDeclutter_DisplayName,
+                                                                    () => Strings.GameServices.OverlayService.Setting_ToggleCornerIconDeclutter_Description);
+
             this.ShowPreviews = settings.DefineSetting(nameof(this.ShowPreviews),
                                                        false,
                                                        () => Strings.GameServices.OverlayService.Setting_ShowPreviews_DisplayName,
@@ -180,6 +186,10 @@ namespace Blish_HUD {
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
             this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
+
+            this.ToggleCornerIconDeclutter.Value.BlockSequenceFromGw2 = true;
+            this.ToggleCornerIconDeclutter.Value.Enabled              = true;
+            this.ToggleCornerIconDeclutter.Value.Activated            += delegate { CornerIcon.DeclutterEnabled = !CornerIcon.DeclutterEnabled; };
 
             // Lock 'StayInTray' if we launched Guild Wars 2 with a launch argument.
             if (ApplicationSettings.Instance.StartGw2 > 0 || ApplicationSettings.Instance.ProcessId > 0) {

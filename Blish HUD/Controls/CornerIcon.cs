@@ -66,7 +66,7 @@ namespace Blish_HUD.Controls {
             set {
                 if (SetProperty(ref _dynamicHide, value)) {
                     Animation.Tweener.Tween(this, new { HoverTrans = (this.DynamicHide ? ICON_TRANS : 0.0f) }, (this.DynamicHide ? 0.55f : 0.65f)).OnBegin(() => {
-                        if (this.DynamicHide && !_decluttered) this.Visible = true;
+                        if (this.DynamicHide && this.ShouldBeVisible) this.Visible = true;
                     }).OnComplete(() => {
                         if (!this.DynamicHide) this.Visible = false;
                     });
@@ -144,12 +144,40 @@ namespace Blish_HUD.Controls {
                 if (_exempt && value) return;
 
                 if (SetProperty(ref _decluttered, value)) {
-                    this.Visible = !_decluttered && _dynamicHide;
+                    this.Visible = ShouldBeVisible;
 
                     UpdateCornerIconPositions();
                 }
             }
         }
+
+        private static bool _declutterEnabled = true;
+        /// <summary>
+        /// Indicates whether corner icons flagged as <see cref="Decluttered"/> should
+        /// currently be hidden. When <c>false</c>, all corner icons are shown.
+        /// </summary>
+        public static bool DeclutterEnabled {
+            get => _declutterEnabled;
+            set {
+                if (_declutterEnabled == value) return;
+
+                _declutterEnabled = value;
+
+                CornerIcon[] cornerIcons;
+
+                lock (CornerIcons) {
+                    cornerIcons = CornerIcons.ToArray();
+                }
+
+                foreach (CornerIcon cornerIcon in cornerIcons) {
+                    cornerIcon.Visible = cornerIcon.ShouldBeVisible;
+                }
+
+                UpdateCornerIconPositions();
+            }
+        }
+
+        private bool ShouldBeVisible => !(_decluttered && _declutterEnabled) && _dynamicHide;
 
         private bool _exempt;
         /// <summary>
@@ -223,7 +251,7 @@ namespace Blish_HUD.Controls {
         }
 
         private static void UpdateCornerIconPositions() {
-            List<CornerIcon> sortedIcons = CornerIcons.Where(cornerIcon => !cornerIcon.Decluttered)
+            List<CornerIcon> sortedIcons = CornerIcons.Where(cornerIcon => !(cornerIcon.Decluttered && _declutterEnabled))
                                                       .OrderByDescending(cornerIcon => cornerIcon.Exempt)
                                                       .ThenByDescending(cornerIcon => cornerIcon.Priority)
                                                       .ToList();
