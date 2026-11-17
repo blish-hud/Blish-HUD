@@ -129,7 +129,7 @@ Starte Blish HUD als Administrator neu oder Guild Wars 2 ohne Administrator.</va
     <value>Schau in unserem &lt;a href="{0}"&gt;Leitfaden zur Fehlerbehebung (English)&lt;/a&gt; nach dem Fehler oder besuche uns auf unserem &lt;a href="{1}"&gt;Discord 💢Hilfe Kanal&lt;/a&gt;.</value>
   </data>
   <data name="ArcDpsSameDir_Description" xml:space="preserve">
-    <value>Es gibt eine 'd3dll.dll' (z.B. ArcDPS) im selben Ordner wie Blish HUD. Dies wird zur Folge haben, dass versucht wird sie in Blish HUD zu lagen und einen Absturz verursachen. Bitte verschiebe Blish HUD in ein anderes Verzeichnis.</value>
+    <value>Es gibt eine 'd3dll.dll' (z.B. ArcDPS) im selben Ordner wie Blish HUD. Dies wird zur Folge haben, dass versucht wird, sie in Blish HUD zu laden und einen Absturz verursachen. Bitte verschiebe Blish HUD in ein anderes Verzeichnis.</value>
   </data>
   <data name="ArcDpsSameDir_Title" xml:space="preserve">
     <value>Blish HUD konnte nicht gestartet werden!</value>
@@ -138,13 +138,13 @@ Starte Blish HUD als Administrator neu oder Guild Wars 2 ohne Administrator.</va
     <value>Blish HUD muss entpackt werden!</value>
   </data>
   <data name="MissingRef_Description" xml:space="preserve">
-    <value>Blish HUD konnte die Datei ref.dat icht finden. Wenn du Blish HUD heruntergeladen hast, überprüfe ob du alle Dateien aus der Zipdatei entpackt hast und stelle sicher, dass diese im selben Verzeichnis wie Blish HUD.exe liegen.</value>
+    <value>Blish HUD konnte die Datei ref.dat nicht finden. Wenn du Blish HUD heruntergeladen hast, überprüfe, ob du alle Dateien aus der Zipdatei entpackt hast, und stelle sicher, dass diese im selben Verzeichnis wie Blish HUD.exe liegen.</value>
   </data>
   <data name="FileSaveAccessDenied_Title" xml:space="preserve">
-    <value>Blish HUD wurde daran gehindert Daten zu speichern!</value>
+    <value>Blish HUD wurde daran gehindert, Daten zu speichern!</value>
   </data>
   <data name="FileSaveAccessDenied_Description" xml:space="preserve">
-    <value>Blish HUD wurde aktiv daran gehintert in das Verzeichnis '{0}' zu speichern {1}.
+    <value>Blish HUD wurde aktiv daran gehindert, in das Verzeichnis '{0}' zu speichern {1}.
 
 Dies bedeutet normalerweise, dass ein AntiVirus Programm oder der Verzeichnisschutz von Windows uns daran hindert. Bitte stelle sicher, dass Blish HUD als Ausnahme registriert ist.</value>
   </data>
@@ -152,7 +152,7 @@ Dies bedeutet normalerweise, dass ein AntiVirus Programm oder der Verzeichnissch
     <value>Web Zugriff blockiert!</value>
   </data>
   <data name="HttpAccessDenied_Description" xml:space="preserve">
-    <value>Etwas hat uns explizit daran gehindert auf das Internet zuzugreifen {0}.
+    <value>Etwas hat uns explizit daran gehindert, auf das Internet zuzugreifen {0}.
 
 Wenn du ein Antivirus Programm oder eine Firewall verwendest, dann füge Blish HUD bitte den Ausnahmen hinzu.</value>
   </data>
@@ -160,7 +160,7 @@ Wenn du ein Antivirus Programm oder eine Firewall verwendest, dann füge Blish H
     <value>Update fehlgeschlagen!</value>
   </data>
   <data name="CoreUpdateFailed_Description" xml:space="preserve">
-    <value>Update auf v{0} von Blish HUD fehlgeschlagen. Starte Blish HUD neu um es noch einmal zu versuchen. Der Fehler war:
+    <value>Update auf v{0} von Blish HUD fehlgeschlagen. Starte Blish HUD neu, um es noch einmal zu versuchen. Der Fehler war:
 
 {1}</value>
   </data>
@@ -194,9 +194,9 @@ Siehe den verlinkten Fehlerbehebungsleitfaden für weitere Informationen zur Beh
     <value>Inkompatible NVIDIA-Einstellungen</value>
   </data>
   <data name="CfaBlocking_Description" xml:space="preserve">
-    <value>Blish HUD wurde aktiv daran gehindert, in '{0}' zu speichern, was auf die Kontrollierte Ordnerzugriff-Funktion von Windows zurückzuführen zu sein scheint.
+    <value>Blish HUD wurde aktiv daran gehindert, in '{0}' zu speichern, was auf die kontrollierte Ordnerzugriffs-Funktion von Windows zurückzuführen zu sein scheint.
 
-Bitte erlauben Sie Blish HUD ausdrücklich in Ihren Einstellungen für den Kontrollierten Ordnerzugriff oder beachten Sie den unten verlinkten Fehlerbehebungsleitfaden.</value>
+Bitte erlauben Sie Blish HUD ausdrücklich in Ihren Einstellungen für den kontrollierten Ordnerzugriff oder beachten Sie den unten verlinkten Fehlerbehebungsleitfaden.</value>
   </data>
   <data name="CfaBlocking_Title" xml:space="preserve">
     <value>Blish HUD Blockiert!</value>
