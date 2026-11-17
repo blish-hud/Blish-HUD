@@ -117,13 +117,7 @@ namespace Blish_HUD.Overlay.UI.Views {
             orderedIcons[newIndex]  = orderedIcons[index];
             orderedIcons[index]     = swappedIcon;
 
-            // Renumber priorities so that the icon order is stable in the current session.
-            int priority = int.MaxValue - 100;
-
-            foreach (CornerIcon orderedIcon in orderedIcons) {
-                orderedIcon.Priority = priority;
-                priority            -= 10;
-            }
+            GameService.Overlay.ApplyCornerIconOrder(orderedIcons);
 
             // Let the click finish before rebuilding the list.
             GameService.Overlay.QueueMainThreadUpdate(_ => RefreshCornerIconMenuItems());
