@@ -14,8 +14,8 @@ namespace Blish_HUD.Controls {
 
         private const int DEFAULT_ITEM_HEIGHT = 32;
         
-        private const int ICON_PADDING = 10;
-        private const int ICON_SIZE    = 32;
+        protected const int ICON_PADDING = 10;
+        protected const int ICON_SIZE    = 32;
         
         private const int ARROW_SIZE = 16;
 
@@ -69,6 +69,24 @@ namespace Blish_HUD.Controls {
         public int LeftPadding {
             get => _leftPadding;
             set => SetProperty(ref _leftPadding, value, true);
+        }
+
+        private int _iconPadding;
+        /// <summary>
+        /// Additional padding added between the checkbox (if shown) and the <see cref="Icon"/>.
+        /// </summary>
+        public int IconPadding {
+            get => _iconPadding;
+            set => SetProperty(ref _iconPadding, value, true);
+        }
+
+        private int _rightPadding;
+        /// <summary>
+        /// Additional padding added to the right of this <see cref="MenuItem"/>'s content.
+        /// </summary>
+        public int RightPadding {
+            get => _rightPadding;
+            set => SetProperty(ref _rightPadding, value, true);
         }
 
         public bool Selected => _selectedMenuItem == this;
@@ -157,8 +175,7 @@ namespace Blish_HUD.Controls {
         [JsonIgnore]
         private bool MouseOverIconBox { get; set; } = false;
 
-        private int LeftSidePadding {
-            get {
+        protected int LeftSidePadding {            get {
                 int leftSideBuilder = ICON_PADDING;
 
                 // Add space if we need to render dropdown arrow
@@ -424,6 +441,8 @@ namespace Blish_HUD.Controls {
                 currentLeftSidePadding += ICON_SIZE + ICON_PADDING;
             }
 
+            currentLeftSidePadding += _iconPadding;
+
             // A MenuItem can show both a checkbox and an icon, in which case the checkbox comes first.
             if (this.Icon != null && _children.IsEmpty) {
                 spriteBatch.DrawOnCtrl(this,
@@ -435,7 +454,7 @@ namespace Blish_HUD.Controls {
                 currentLeftSidePadding += ICON_PADDING;
             }
 
-            spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont16, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING), this.MenuItemHeight), _textColor, true, true);
+            spriteBatch.DrawStringOnCtrl(this, _text, Content.DefaultFont16, new Rectangle(currentLeftSidePadding, 0, this.Width - (currentLeftSidePadding - ICON_PADDING) - _rightPadding, this.MenuItemHeight), _textColor, true, true);
         }
 
     }
