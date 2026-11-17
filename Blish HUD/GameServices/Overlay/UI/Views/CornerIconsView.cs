@@ -1,3 +1,4 @@
+using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Microsoft.Xna.Framework;
@@ -27,20 +28,38 @@ namespace Blish_HUD.Overlay.UI.Views {
             };
 
             foreach (CornerIcon cornerIcon in CornerIcon.All) {
-                _ = new MenuItem(GetDisplayName(cornerIcon), cornerIcon.Icon) {
-                    BasicTooltipText = cornerIcon.IconName,
+                string name = GetName(cornerIcon);
+
+                _ = new MenuItem(GetDisplayName(name), cornerIcon.Icon) {
+                    BasicTooltipText = name,
                     Parent           = cornerIconsList
                 };
             }
         }
 
-        private static string GetDisplayName(CornerIcon cornerIcon) {
-            if (string.IsNullOrWhiteSpace(cornerIcon.IconName)) {
-                return "(Unnamed)";
+        /// <summary>
+        /// Corner icons may be named through <see cref="CornerIcon.IconName"/> or,
+        /// as some modules do, through <see cref="Control.BasicTooltipText"/>.
+        /// </summary>
+        private static string GetName(CornerIcon cornerIcon) {
+            if (!string.IsNullOrWhiteSpace(cornerIcon.IconName)) {
+                return cornerIcon.IconName;
             }
 
-            // Corner icon names may contain additional lines (such as hint text).
-            return cornerIcon.IconName.Split('\n')[0].Trim();
+            return !string.IsNullOrWhiteSpace(cornerIcon.BasicTooltipText)
+                       ? cornerIcon.BasicTooltipText
+                       : null;
+        }
+
+        private static string GetDisplayName(string name) {
+            // Names may contain additional lines (such as hint text), so use the first non-empty one.
+            string firstLine = name?.Split('\n')
+                                    .Select(line => line.Trim())
+                                    .FirstOrDefault(line => line.Length > 0);
+
+            return string.IsNullOrWhiteSpace(firstLine)
+                       ? "(Unnamed)"
+                       : firstLine;
         }
 
     }
