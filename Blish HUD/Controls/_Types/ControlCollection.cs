@@ -169,6 +169,28 @@ namespace Blish_HUD.Controls {
             }
         }
 
+        internal int CopyToBuffer(ref T[] buffer) {
+            bool tookLock = !_listLock.IsReadLockHeld && !_listLock.IsWriteLockHeld;
+
+            if (tookLock)
+                _listLock.EnterReadLock();
+
+            try {
+                int count = _innerList.Count;
+
+                if (buffer == null || buffer.Length < count) {
+                    buffer = new T[count + 8];
+                }
+
+                _innerList.CopyTo(buffer, 0);
+
+                return count;
+            } finally {
+                if (tookLock)
+                    _listLock.ExitReadLock();
+            }
+        }
+
         public int IndexOf(T item) {
             if (!_listLock.IsReadLockHeld)
                 _listLock.EnterReadLock();

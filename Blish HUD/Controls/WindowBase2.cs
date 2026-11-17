@@ -84,20 +84,49 @@ namespace Blish_HUD.Controls {
             return GameService.Graphics.SpriteScreen.GetChildrenOfType<IWindow>();
         }
 
+        // Reused by GetZIndex so that it doesn't allocate (per-thread since GetZIndex can be called from input threads)
+        [ThreadStatic]
+        private static Control[] _zIndexBuffer;
+
         /// <summary>
         /// Returns the calculated zindex offset.  This should be added to the base zindex (typically <see cref="Screen.WINDOW_BASEZINDEX"/>) and returned as the zindex.
         /// </summary>
         public static int GetZIndex(IWindow thisWindow) {
-            IWindow[] windows = GetWindows().ToArray();
+            int count = GameService.Graphics.SpriteScreen.Children.CopyToBuffer(ref _zIndexBuffer);
 
-            if (!windows.Contains(thisWindow)) {
-                throw new InvalidOperationException($"{nameof(thisWindow)} must be a direct child of GameService.Graphics.SpriteScreen before ZIndex can automatically be calculated.");
+            try {
+                bool   found               = false;
+                bool   thisTopMost         = thisWindow.TopMost;
+                double thisLastInteraction = thisWindow.LastInteraction;
+                int    windowsBefore       = 0;
+
+                for (int i = 0; i < count; i++) {
+                    if (!(_zIndexBuffer[i] is IWindow window)) continue;
+
+                    if (window == thisWindow) {
+                        found = true;
+                        continue;
+                    }
+
+                    int order = window.TopMost.CompareTo(thisTopMost);
+                    if (order == 0) {
+                        order = window.LastInteraction.CompareTo(thisLastInteraction);
+                    }
+
+                    // Handle ties
+                    if (order < 0 || (order == 0 && !found)) {
+                        windowsBefore++;
+                    }
+                }
+
+                if (!found) {
+                    throw new InvalidOperationException($"{nameof(thisWindow)} must be a direct child of GameService.Graphics.SpriteScreen before ZIndex can automatically be calculated.");
+                }
+
+                return Screen.WINDOW_BASEZINDEX + windowsBefore;
+            } finally {
+                Array.Clear(_zIndexBuffer, 0, count);
             }
-
-            return Screen.WINDOW_BASEZINDEX + windows.OrderBy(window => window.TopMost)
-                                                     .ThenBy(window => window.LastInteraction)
-                                                     .TakeWhile(window => window != thisWindow)
-                                                     .Count();
         }
 
         /// <summary>
