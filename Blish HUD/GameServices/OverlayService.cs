@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -54,6 +55,7 @@ namespace Blish_HUD {
         public SettingEntry<bool>   CloseWindowOnEscape { get; private set; }
         public SettingEntry<KeyBinding> HideAllInterface { get; private set; }
         internal SettingEntry<bool> ShowPreviews { get; private set; }
+        internal SettingEntry<string[]> DeclutteredCornerIcons { get; private set; }
 
         public bool InterfaceHidden = false;
 
@@ -105,6 +107,8 @@ namespace Blish_HUD {
 
             DefineSettings(this.OverlaySettings);
             DefineDynamicHUDSettings(this.DynamicHUDSettings);
+
+            CornerIcon.Registered += CornerIconOnRegistered;
 
             ApplyInitialSettings();
 
@@ -170,6 +174,9 @@ namespace Blish_HUD {
                                                        () => Strings.GameServices.OverlayService.Setting_ShowPreviews_DisplayName,
                                                        () => Strings.GameServices.OverlayService.Setting_ShowPreviews_Description);
 
+            this.DeclutteredCornerIcons = settings.DefineSetting(nameof(this.DeclutteredCornerIcons),
+                                                                 Array.Empty<string>());
+
             this.ToggleBlishWindow.Value.BlockSequenceFromGw2 =  true;
             this.ToggleBlishWindow.Value.Enabled              =  true;
             this.ToggleBlishWindow.Value.Activated            += delegate { this.BlishHudWindow.ToggleWindow(); };
@@ -220,6 +227,77 @@ namespace Blish_HUD {
 
         private void ShowInTaskbarOnSettingChanged(object sender, ValueChangedEventArgs<bool> e) {
             GameIntegration.WinForms.SetShowInTaskbar(e.NewValue);
+        }
+
+        private readonly HashSet<CornerIcon> _cornerIconsWithLoadedDeclutterState = new HashSet<CornerIcon>();
+
+        private void CornerIconOnRegistered(object sender, ValueEventArgs<CornerIcon> e) {
+            CornerIcon cornerIcon = e.Value;
+
+            cornerIcon.PropertyChanged += CornerIconOnPropertyChanged;
+            cornerIcon.Disposed        += CornerIconOnDisposed;
+
+            ApplyLoadedDeclutterState(cornerIcon);
+        }
+
+        private void CornerIconOnDisposed(object sender, EventArgs e) {
+            if (!(sender is CornerIcon cornerIcon)) return;
+
+            cornerIcon.PropertyChanged -= CornerIconOnPropertyChanged;
+            cornerIcon.Disposed        -= CornerIconOnDisposed;
+
+            _cornerIconsWithLoadedDeclutterState.Remove(cornerIcon);
+        }
+
+        private void CornerIconOnPropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (!(sender is CornerIcon cornerIcon)) return;
+
+            switch (e.PropertyName) {
+                case nameof(CornerIcon.Decluttered):
+                    StoreDeclutterState(cornerIcon);
+                    break;
+                case nameof(CornerIcon.IconName):
+                case nameof(Control.BasicTooltipText):
+                    ApplyLoadedDeclutterState(cornerIcon);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Applies the persisted declutter state once the <see cref="CornerIcon"/> has a usable name.
+        /// Some modules only assign the name after the icon has been constructed.
+        /// </summary>
+        private void ApplyLoadedDeclutterState(CornerIcon cornerIcon) {
+            if (cornerIcon.Exempt || _cornerIconsWithLoadedDeclutterState.Contains(cornerIcon)) return;
+
+            string name = cornerIcon.Name;
+
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            _cornerIconsWithLoadedDeclutterState.Add(cornerIcon);
+
+            if (this.DeclutteredCornerIcons.Value?.Contains(name, StringComparer.OrdinalIgnoreCase) == true) {
+                cornerIcon.Decluttered = true;
+            }
+        }
+
+        private void StoreDeclutterState(CornerIcon cornerIcon) {
+            if (cornerIcon.Exempt) return;
+
+            string name = cornerIcon.Name;
+
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            string[] declutteredCornerIcons = this.DeclutteredCornerIcons.Value ?? Array.Empty<string>();
+
+            bool isStored = declutteredCornerIcons.Contains(name, StringComparer.OrdinalIgnoreCase);
+
+            if (cornerIcon.Decluttered == isStored) return;
+
+            this.DeclutteredCornerIcons.Value = cornerIcon.Decluttered
+                                                    ? declutteredCornerIcons.Concat(new[] { name }).ToArray()
+                                                    : declutteredCornerIcons.Where(storedName => !string.Equals(storedName, name, StringComparison.OrdinalIgnoreCase))
+                                                                            .ToArray();
         }
 
         private void UserLocaleOnSettingChanged(object sender, ValueChangedEventArgs<Locale> e) {
@@ -385,6 +463,15 @@ namespace Blish_HUD {
         }
 
         protected override void Unload() {
+            CornerIcon.Registered -= CornerIconOnRegistered;
+
+            foreach (CornerIcon cornerIcon in CornerIcon.All) {
+                cornerIcon.PropertyChanged -= CornerIconOnPropertyChanged;
+                cornerIcon.Disposed        -= CornerIconOnDisposed;
+            }
+
+            _cornerIconsWithLoadedDeclutterState.Clear();
+
             this.BlishMenuIcon.Dispose();
             this.BlishHudWindow.Dispose();
         }

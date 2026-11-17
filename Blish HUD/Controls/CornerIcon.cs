@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -100,6 +101,23 @@ namespace Blish_HUD.Controls {
             set => SetProperty(ref _iconName, value);
         }
 
+        /// <summary>
+        /// The name used to identify this <see cref="CornerIcon"/>. Prefers <see cref="IconName"/>
+        /// and falls back to <see cref="Control.BasicTooltipText"/>, since some modules only
+        /// provide the name through the tooltip.
+        /// </summary>
+        public string Name {
+            get {
+                string name = !string.IsNullOrWhiteSpace(_iconName)
+                                  ? _iconName
+                                  : this.BasicTooltipText;
+
+                return name?.Split('\n')
+                            .Select(line => line.Trim())
+                            .FirstOrDefault(line => line.Length > 0);
+            }
+        }
+
         private int? _priority;
         /// <summary>
         /// <see cref="CornerIcon"/>s are sorted by priority so that, from left to right, priority goes from the highest to lowest.
@@ -166,6 +184,11 @@ namespace Blish_HUD.Controls {
                 }
             }
         }
+
+        /// <summary>
+        /// Occurs when a new <see cref="CornerIcon"/> has been registered.
+        /// </summary>
+        public static event EventHandler<ValueEventArgs<CornerIcon>> Registered;
 
         static CornerIcon() {
             CornerIcons = new ObservableCollection<CornerIcon>();
@@ -244,11 +267,14 @@ namespace Blish_HUD.Controls {
             lock (CornerIcons) {
                 CornerIcons.Add(this);
             }
+
+            Registered?.Invoke(this, new ValueEventArgs<CornerIcon>(this));
         }
 
         public CornerIcon(AsyncTexture2D icon, string iconName) : this() {
-            _icon     = icon;
-            _iconName = iconName;
+            _icon = icon;
+
+            this.IconName = iconName;
         }
 
         public CornerIcon(AsyncTexture2D icon, AsyncTexture2D hoverIcon, string iconName) : this(icon, iconName) {

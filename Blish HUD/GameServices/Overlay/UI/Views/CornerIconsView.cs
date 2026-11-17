@@ -1,4 +1,3 @@
-using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Microsoft.Xna.Framework;
@@ -46,9 +45,9 @@ namespace Blish_HUD.Overlay.UI.Views {
 
             foreach (CornerIcon cornerIcon in CornerIcon.All) {
                 CornerIcon currentCornerIcon = cornerIcon;
-                string     name              = GetName(cornerIcon);
+                string     name              = cornerIcon.Name;
 
-                var menuItem = new MenuItem(GetDisplayName(name), cornerIcon.Icon) {
+                var menuItem = new MenuItem(string.IsNullOrWhiteSpace(name) ? "(Unnamed)" : name, cornerIcon.Icon) {
                     CanCheck         = !cornerIcon.Exempt,
                     Checked          = cornerIcon.Decluttered,
                     LeftPadding      = cornerIcon.Exempt ? CHECKBOX_SPACE : 0,
@@ -60,31 +59,6 @@ namespace Blish_HUD.Overlay.UI.Views {
 
                 menuItem.CheckedChanged += (sender, e) => currentCornerIcon.Decluttered = e.Checked;
             }
-        }
-
-        /// <summary>
-        /// Corner icons may be named through <see cref="CornerIcon.IconName"/> or,
-        /// as some modules do, through <see cref="Control.BasicTooltipText"/>.
-        /// </summary>
-        private static string GetName(CornerIcon cornerIcon) {
-            if (!string.IsNullOrWhiteSpace(cornerIcon.IconName)) {
-                return cornerIcon.IconName;
-            }
-
-            return !string.IsNullOrWhiteSpace(cornerIcon.BasicTooltipText)
-                       ? cornerIcon.BasicTooltipText
-                       : null;
-        }
-
-        private static string GetDisplayName(string name) {
-            // Names may contain additional lines (such as hint text), so use the first non-empty one.
-            string firstLine = name?.Split('\n')
-                                    .Select(line => line.Trim())
-                                    .FirstOrDefault(line => line.Length > 0);
-
-            return string.IsNullOrWhiteSpace(firstLine)
-                       ? "(Unnamed)"
-                       : firstLine;
         }
 
     }
