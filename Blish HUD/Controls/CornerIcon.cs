@@ -23,6 +23,18 @@ namespace Blish_HUD.Controls {
 
         private static ObservableCollection<CornerIcon> CornerIcons { get; }
 
+        /// <summary>
+        /// A snapshot of all currently loaded <see cref="CornerIcon"/>s in the order
+        /// they are displayed (highest <see cref="Priority"/> first).
+        /// </summary>
+        public static IReadOnlyList<CornerIcon> All {
+            get {
+                lock (CornerIcons) {
+                    return CornerIcons.OrderByDescending(cornerIcon => cornerIcon.Priority).ToList();
+                }
+            }
+        }
+
         private static readonly Rectangle _standardIconBounds;
 
         private const int   ICON_POSITION = 10;
