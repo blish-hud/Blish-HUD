@@ -10,7 +10,16 @@ namespace Blish_HUD.Input {
         public DebugHelperKeyboardHookManager(IMessageService debugHelperMessageService) : base(debugHelperMessageService) { }
 
         protected override void HookCallback(KeyboardEventMessage message) {
-            KeyboardEventArgs keyboardEventArgs = new KeyboardEventArgs((KeyboardEventType)message.EventType, (Keys)message.Key);
+            Keys key = (Keys)message.Key;
+
+            // Windows reports the numpad Enter key with the same virtual-key code as the
+            // main Enter key. The numpad Enter key is marked as an extended key while the
+            // main one is not, which lets us tell the two apart.
+            if (key == Keys.Enter && (message.Flags & 0x01) != 0) { // 0x01 = LLKHF_EXTENDED
+                key = KeysUtil.NumPadEnter;
+            }
+
+            KeyboardEventArgs keyboardEventArgs = new KeyboardEventArgs((KeyboardEventType)message.EventType, key);
             bool              isHandled         = false;
 
             lock (((IList) this.Handlers).SyncRoot) {

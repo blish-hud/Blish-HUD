@@ -8,6 +8,17 @@ using Microsoft.Xna.Framework.Input;
 namespace Blish_HUD.Input {
     public static class KeysUtil {
 
+        /// <summary>
+        /// Represents the Enter key on the numpad, which Windows reports using the
+        /// same virtual-key code (<see cref="Keys.Enter"/>) as the main Enter key.
+        /// </summary>
+        /// <remarks>
+        /// This value is not part of the <see cref="Keys"/> enum. It uses the one
+        /// undefined virtual-key code (255) so that it can be told apart from
+        /// <see cref="Keys.Enter"/> throughout Blish HUD's input handling.
+        /// </remarks>
+        public const Keys NumPadEnter = (Keys) 0xFF;
+
         [DllImport("user32.dll")]
         private static extern uint MapVirtualKey(uint uCode, uint uMapType);
 
@@ -24,6 +35,7 @@ namespace Blish_HUD.Input {
                 {Keys.LeftShift, "Left Shift"},
                 {Keys.Multiply, "Multiply (NUM)"},
                 {Keys.None, ""},
+                {NumPadEnter, "Enter (NUM)"},
                 {Keys.NumPad0, "0 (NUM)"},
                 {Keys.NumPad1, "1 (NUM)"},
                 {Keys.NumPad2, "2 (NUM)"},
@@ -100,6 +112,14 @@ namespace Blish_HUD.Input {
             return _friendlyKeyNames.TryGetValue(key, out string friendlyName)
                        ? friendlyName
                        : key.ToString();
+        }
+
+        /// <summary>
+        /// Returns the virtual-key code that corresponds to the provided <see cref="Keys"/> value.
+        /// This maps Blish HUD's synthetic <see cref="NumPadEnter"/> back to <see cref="Keys.Enter"/>.
+        /// </summary>
+        internal static Keys ToVirtualKey(Keys key) {
+            return key == NumPadEnter ? Keys.Enter : key;
         }
 
         /// <summary>

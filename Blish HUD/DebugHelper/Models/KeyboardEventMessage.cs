@@ -9,6 +9,8 @@ namespace Blish_HUD.DebugHelper.Models {
 
         [ProtoMember(102)] public int Key { get; set; }
 
+        [ProtoMember(103)] public int Flags { get; set; }
+
     }
 
 }
