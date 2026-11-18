@@ -47,17 +47,19 @@ namespace Blish_HUD {
             string[] words      = text.Split(' ');
             var      sb         = new StringBuilder();
             float    lineWidth  = 0f;
-            float    spaceWidth = spriteFont.MeasureString(" ").Width;
+            float    spaceWidth = spriteFont.MeasureString("  ").Width - spriteFont.MeasureString(" ").Width;
+            float    aWidth     = spriteFont.MeasureString("a").Width;
 
             foreach (string word in words) {
-                Vector2 size = spriteFont.MeasureString(word);
+                float wordWidth = spriteFont.MeasureString("a" + word).Width - aWidth;
+                wordWidth = Math.Max(wordWidth, spriteFont.MeasureString(word + "a").Width - aWidth);
 
-                if (lineWidth + size.X < maxLineWidth) {
+                if (lineWidth + wordWidth < maxLineWidth) {
                     sb.Append(word + " ");
-                    lineWidth += size.X + spaceWidth;
+                    lineWidth += wordWidth + spaceWidth;
                 } else {
                     sb.Append("\n" + word + " ");
-                    lineWidth = size.X + spaceWidth;
+                    lineWidth = wordWidth + spaceWidth;
                 }
             }
 
