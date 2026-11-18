@@ -239,7 +239,7 @@ namespace Blish_HUD.Input {
 
             // Handle text input
             if (_textInputDelegate != null) {
-                string chars = TypedInputUtil.VkCodeToString((uint)key, eventType == KeyboardEventType.KeyDown);
+                string chars = TypedInputUtil.VkCodeToString((uint)KeysUtil.ToVirtualKey(key), eventType == KeyboardEventType.KeyDown);
                 _textInputDelegate?.Invoke(chars);
                 return ShouldBlockKeyEvent(key);
             }

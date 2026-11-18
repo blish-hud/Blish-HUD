@@ -663,6 +663,7 @@ namespace Blish_HUD.Controls {
                     HandleDelete();
                     break;
                 case Keys.Enter:
+                case KeysUtil.NumPadEnter:
                     HandleEnter();
                     break;
                 case Keys.Z:

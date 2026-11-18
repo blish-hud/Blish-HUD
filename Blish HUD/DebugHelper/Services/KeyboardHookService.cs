@@ -32,10 +32,12 @@ namespace Blish_HUD.DebugHelper.Services {
 
             uint eventType = ((uint)wParam % 2) + 256; // filter out SysKeyDown & SysKeyUp
             int  key       = Marshal.ReadInt32(lParam);
+            int  flags     = Marshal.ReadInt32(lParam, 8); // KBDLLHOOKSTRUCT.flags
 
             var message = new KeyboardEventMessage {
                 EventType = eventType,
-                Key       = key
+                Key       = key,
+                Flags     = flags
             };
 
             KeyboardResponseMessage? response = messageService.SendAndWait<KeyboardResponseMessage>(message, TimeSpan.FromMilliseconds(CALLBACK_TIMEOUT));
