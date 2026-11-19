@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Blish_HUD.Content;
+using Blish_HUD.Controls;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules {
@@ -77,7 +78,22 @@ namespace Blish_HUD.Modules {
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
                 return false;
 
-            this.EnsureRequiredApiPermissions();
+            var missingPermissions = this.GetMissingRequiredApiPermissions();
+
+            if (missingPermissions.Length > 0) {
+                Logger.Warn("Module {module} requires approval for API permission(s): {permissions}.",
+                            this.Manifest.GetDetailedName(),
+                            string.Join(", ", missingPermissions));
+
+                if (GameService.Graphics?.SpriteScreen != null) {
+                    ScreenNotification.ShowNotification(
+                        string.Format(Strings.GameServices.ModulesService.ApiPermission_ApprovalNotification, this.Manifest.Name),
+                        ScreenNotification.NotificationType.Warning,
+                        duration: 8);
+                }
+
+                return false;
+            }
 
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 
@@ -122,30 +138,13 @@ namespace Blish_HUD.Modules {
             return this.Enabled;
         }
 
-        private void EnsureRequiredApiPermissions() {
-            var requiredPermissions = this.Manifest.ApiPermissions
-                .Where(pair => !pair.Value.Optional)
-                .Select(pair => pair.Key)
-                .ToArray();
+        internal TokenPermission[] GetMissingRequiredApiPermissions() {
+            var approvedPermissions = this.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>();
 
-            if (requiredPermissions.Length == 0) return;
-
-            var permissions = this.State.UserEnabledPermissions?.ToList()
-                           ?? new List<TokenPermission>();
-
-            bool changed = false;
-
-            foreach (var permission in requiredPermissions) {
-                if (!permissions.Contains(permission)) {
-                    permissions.Add(permission);
-                    changed = true;
-                }
-            }
-
-            if (!changed) return;
-
-            this.State.UserEnabledPermissions = permissions.ToArray();
-            GameService.Settings.Save();
+            return this.Manifest.ApiPermissions
+                       .Where(pair => !pair.Value.Optional && !approvedPermissions.Contains(pair.Key))
+                       .Select(pair => pair.Key)
+                       .ToArray();
         }
 
         public void Disable() {
