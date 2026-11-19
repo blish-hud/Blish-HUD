@@ -19,7 +19,7 @@ namespace Blish_HUD.Strings.GameServices {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class ModulesService {
@@ -61,11 +61,12 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Missing required permissions:.
+        ///   Looks up a localized string similar to &quot;{0}&quot; needs approval for new API permissions.
+        ///Open Modules &gt; {0} to review them..
         /// </summary>
-        internal static string ApiPermission_MissingRequiredPermissions {
+        internal static string ApiPermission_ApprovalNotification {
             get {
-                return ResourceManager.GetString("ApiPermission_MissingRequiredPermissions", resourceCulture);
+                return ResourceManager.GetString("ApiPermission_ApprovalNotification", resourceCulture);
             }
         }
         
@@ -77,16 +78,16 @@ namespace Blish_HUD.Strings.GameServices {
                 return ResourceManager.GetString("ApiPermission_ApprovalRequired", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Module &quot;{0}&quot; needs approval for new API permissions. Open Modules &gt; {0} to review them..
+        ///   Looks up a localized string similar to Missing required permissions:.
         /// </summary>
-        internal static string ApiPermission_ApprovalNotification {
+        internal static string ApiPermission_MissingRequiredPermissions {
             get {
-                return ResourceManager.GetString("ApiPermission_ApprovalNotification", resourceCulture);
+                return ResourceManager.GetString("ApiPermission_MissingRequiredPermissions", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to No permissions requested.
         /// </summary>
