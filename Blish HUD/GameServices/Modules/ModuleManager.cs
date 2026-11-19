@@ -4,8 +4,10 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Blish_HUD.Content;
+using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules {
 
@@ -75,6 +77,8 @@ namespace Blish_HUD.Modules {
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
                 return false;
 
+            this.EnsureRequiredApiPermissions();
+
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 
             if (moduleParams != null) {
@@ -116,6 +120,32 @@ namespace Blish_HUD.Modules {
             GameService.Module.SortMenuItems();
 
             return this.Enabled;
+        }
+
+        private void EnsureRequiredApiPermissions() {
+            var requiredPermissions = this.Manifest.ApiPermissions
+                .Where(pair => !pair.Value.Optional)
+                .Select(pair => pair.Key)
+                .ToArray();
+
+            if (requiredPermissions.Length == 0) return;
+
+            var permissions = this.State.UserEnabledPermissions?.ToList()
+                           ?? new List<TokenPermission>();
+
+            bool changed = false;
+
+            foreach (var permission in requiredPermissions) {
+                if (!permissions.Contains(permission)) {
+                    permissions.Add(permission);
+                    changed = true;
+                }
+            }
+
+            if (!changed) return;
+
+            this.State.UserEnabledPermissions = permissions.ToArray();
+            GameService.Settings.Save();
         }
 
         public void Disable() {
