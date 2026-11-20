@@ -14,8 +14,6 @@ namespace Blish_HUD.Modules.UI.Views {
         private FlowPanel _permissionFlowPanel;
         private Label     _messageLabel;
 
-        private bool[] _checkboxStates;
-
         private bool _editable;
 
         /// <summary>
@@ -26,7 +24,7 @@ namespace Blish_HUD.Modules.UI.Views {
             set {
                 _editable = value;
 
-                if (_permissionFlowPanel == null || _messageLabel == null || _checkboxStates == null)
+                if (_permissionFlowPanel == null || _messageLabel == null)
                     return;
 
                 ResetCheckboxStates();
@@ -67,12 +65,10 @@ namespace Blish_HUD.Modules.UI.Views {
             _permissionFlowPanel.ClearChildren();
             _permissionFlowPanel.Hide();
 
-            _checkboxStates = permissions.Select(permission => permission.Optional).ToArray();
-
             foreach ((var permission, bool optional, string description, bool set) in permissions) {
                 var permissionCheckbox = new Checkbox() {
                     Text             = permission.ToString(),
-                    Enabled          = optional && this.Editable,
+                    Enabled          = this.Editable,
                     BasicTooltipText = description,
                     Parent           = _permissionFlowPanel
                 };
@@ -81,7 +77,7 @@ namespace Blish_HUD.Modules.UI.Views {
                     this.PermissionStateChanged?.Invoke(this, new KeyedValueChangedEventArgs<TokenPermission, bool>(permission, e.Checked));
                 };
 
-                permissionCheckbox.Checked = set || !optional;
+                permissionCheckbox.Checked = set;
             }
 
             // Show "No permissions requested" if there are none
@@ -89,14 +85,8 @@ namespace Blish_HUD.Modules.UI.Views {
         }
 
         private void ResetCheckboxStates() {
-            var checkboxes = _permissionFlowPanel.GetChildrenOfType<Checkbox>().ToArray();
-            if (Editable) {
-                for (int i = 0; i < checkboxes.Length; i++)
-                    checkboxes[i].Enabled = _checkboxStates[i];
-            } else {
-                foreach (var checkbox in checkboxes) {
-                    checkbox.Enabled = false;
-                }
+            foreach (var checkbox in _permissionFlowPanel.GetChildrenOfType<Checkbox>()) {
+                checkbox.Enabled = this.Editable;
             }
         }
     }

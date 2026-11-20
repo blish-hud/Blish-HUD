@@ -36,6 +36,8 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.Model.State.UserEnabledPermissions = newPermissionList.ToArray();
 
             GameService.Settings.Save();
+
+            UpdateStatus();
         }
 
         private void ModelOnModuleEnabled(object sender, EventArgs e) {
@@ -57,12 +59,18 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.View.SetPermissions(this.Model.Manifest.ApiPermissions.Select(p => (p.Key,
                                                                                      p.Value.Optional,
                                                                                      p.Value.Details ?? "",
-                                                                                     this.Model.State.UserEnabledPermissions?.Contains(p.Key) ?? true))
+                                                                                     this.Model.State.UserEnabledPermissions?.Contains(p.Key) ?? false))
                                          .OrderBy(p => p.Optional));
         }
 
         private void UpdateStatus() {
-            if (this.Model.Enabled && this.Model.Manifest.ApiPermissions.Any()) {
+            var missingPermissions = this.Model.GetMissingRequiredApiPermissions();
+
+            if (missingPermissions.Length > 0) {
+                this.View.SetDetails(
+                    $"{Strings.GameServices.ModulesService.ApiPermission_ApprovalRequired} {string.Join(", ", missingPermissions)}",
+                    TitledDetailView.DetailLevel.Warning);
+            } else if (this.Model.Enabled && this.Model.Manifest.ApiPermissions.Any()) {
                 this.View.SetDetails(Strings.GameServices.ModulesService.ApiPermission_NotEditable,
                                      TitledDetailView.DetailLevel.Info);
             } else {

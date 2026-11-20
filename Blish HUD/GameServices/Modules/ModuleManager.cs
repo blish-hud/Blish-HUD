@@ -4,8 +4,11 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Blish_HUD.Content;
+using Blish_HUD.Controls;
+using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules {
 
@@ -75,6 +78,23 @@ namespace Blish_HUD.Modules {
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
                 return false;
 
+            var missingPermissions = this.GetMissingRequiredApiPermissions();
+
+            if (missingPermissions.Length > 0) {
+                Logger.Warn("Module {module} requires approval for API permission(s): {permissions}.",
+                            this.Manifest.GetDetailedName(),
+                            string.Join(", ", missingPermissions));
+
+                if (GameService.Graphics?.SpriteScreen != null) {
+                    ScreenNotification.ShowNotification(
+                        string.Format(Strings.GameServices.ModulesService.ApiPermission_ApprovalNotification, this.Manifest.Name),
+                        ScreenNotification.NotificationType.Warning,
+                        duration: 8);
+                }
+
+                return false;
+            }
+
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 
             if (moduleParams != null) {
@@ -116,6 +136,15 @@ namespace Blish_HUD.Modules {
             GameService.Module.SortMenuItems();
 
             return this.Enabled;
+        }
+
+        internal TokenPermission[] GetMissingRequiredApiPermissions() {
+            var approvedPermissions = this.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>();
+
+            return this.Manifest.ApiPermissions
+                       .Where(pair => !pair.Value.Optional && !approvedPermissions.Contains(pair.Key))
+                       .Select(pair => pair.Key)
+                       .ToArray();
         }
 
         public void Disable() {
