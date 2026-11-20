@@ -157,7 +157,7 @@ eingetragene Warenzeichen der NCSOFT Corporation. Alle anderen Warenzeichen sind
 ihrer jeweiligen Besitzer.</value>
   </data>
   <data name="Setting_AudioDevice_Description" xml:space="preserve">
-    <value>Bestimmt das Audioausgabegerät welches von Blish HUD verwendet wird. Das Ausgabegerät passt sich an das gewählte Audiogerät von GW2 an.</value>
+    <value>Bestimmt das Audioausgabegerät, welches von Blish HUD verwendet wird. Das Ausgabegerät passt sich an das gewählte Audiogerät von GW2 an.</value>
   </data>
   <data name="Setting_AudioDevice_DisplayName" xml:space="preserve">
     <value>Audiogerät</value>
@@ -175,16 +175,16 @@ ihrer jeweiligen Besitzer.</value>
     <value>Lautstärke</value>
   </data>
   <data name="Setting_ToggleBlishWindowKeybind_Description" xml:space="preserve">
-    <value>Hotkey zum ein- und ausblenden vom Blish HUD Hauptfenster</value>
+    <value>Hotkey zum Ein- und Ausblenden des Blish HUD-Hauptfensters</value>
   </data>
   <data name="Setting_ToggleBlishWindowKeybind_DisplayName" xml:space="preserve">
     <value>Blish HUD ein- und ausblenden</value>
   </data>
   <data name="ConnectionStatus_ArcDPSBridge_Connected" xml:space="preserve">
-    <value>Mit ArcDPS Plugin verbunden.</value>
+    <value>Mit dem ArcDPS-Plugin verbunden.</value>
   </data>
   <data name="ConnectionStatus_ArcDPSBridge_Disconnected" xml:space="preserve">
-    <value>Keine Verbindung mit ArcDPS Plugin möglich.</value>
+    <value>Keine Verbindung mit dem ArcDPS-Plugin möglich.</value>
   </data>
   <data name="ConnectionStatus_ArcDPSBridge_Name" xml:space="preserve">
     <value>ArcDPS Bridge</value>
@@ -208,7 +208,7 @@ ihrer jeweiligen Besitzer.</value>
     <value>Keine Aktualisierungen ausstehend</value>
   </data>
   <data name="SelfUpdate_PendingUpdatesQueryFailed" xml:space="preserve">
-    <value>Konnte keine Verbindung mit dem Update Server herstellen</value>
+    <value>Konnte keine Verbindung mit dem Update-Server herstellen.</value>
   </data>
   <data name="SelfUpdate_Progress_DownloadingPrereleaseArchive" xml:space="preserve">
     <value>Downloade Vorschauversion v{0}...</value>
@@ -235,7 +235,7 @@ ihrer jeweiligen Besitzer.</value>
     <value>Update auf Version v{0}</value>
   </data>
   <data name="Setting_CloseWindowOnEscape_Description" xml:space="preserve">
-    <value>Schließt Blish HUD Fenster mit der Escape Taste</value>
+    <value>Schließt das Blish HUD-Fenster mit der Escape-Taste</value>
   </data>
   <data name="Setting_CloseWindowOnEscape_DisplayName" xml:space="preserve">
     <value>Fenster mit Escape schließen</value>
@@ -254,7 +254,7 @@ ihrer jeweiligen Besitzer.</value>
   </data>
   <data name="Setting_InteractKey_Description" xml:space="preserve">
     <value>Taste zum Interagieren mit der Spielwelt.
-Für die beste Erfahrung auf die selbe Taste wie im Spiel setzen.</value>
+Für die beste Erfahrung auf dieselbe Taste wie im Spiel legen.</value>
   </data>
   <data name="Setting_InteractKey_DisplayName" xml:space="preserve">
     <value>Interagieren</value>

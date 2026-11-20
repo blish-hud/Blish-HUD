@@ -142,7 +142,7 @@
     <value>Erforderliche Berechtigungen:</value>
   </data>
   <data name="Dependency_MissingDependencies" xml:space="preserve">
-    <value>Dieses Modul verlässt sich auf Abhängigkeiten die derzeit nicht verfügbar sind:</value>
+    <value>Dieses Modul verlässt sich auf Abhängigkeiten, die derzeit nicht verfügbar sind:</value>
   </data>
   <data name="ModuleState_Disabled" xml:space="preserve">
     <value>Deaktiviert</value>
@@ -205,7 +205,7 @@
     <value>Einstellungen löschen</value>
   </data>
   <data name="ModuleOption_ClearSettings_DescriptionDisabled" xml:space="preserve">
-    <value>Einstellungen können nicht gelöscht werden wärend das Modul aktiv ist.</value>
+    <value>Einstellungen können nicht gelöscht werden, während das Modul aktiv ist.</value>
   </data>
   <data name="ModuleOption_ClearSettings_DescriptionEnabled" xml:space="preserve">
     <value>Einstellungen des Moduls zurücksetzen.</value>
@@ -217,7 +217,7 @@
     <value>'{0}' Verzeichnis öffnen</value>
   </data>
   <data name="ModuleSettings_ShownWhenEnabled" xml:space="preserve">
-    <value>Einstellungen werden angezeigt sobald das Modul aktiviert ist</value>
+    <value>Einstellungen werden angezeigt, sobald das Modul aktiviert ist</value>
   </data>
   <data name="ModuleState_Custom_ExplicitlyIncompatible" xml:space="preserve">
     <value>Modulversion ist inkompatibel</value>
@@ -245,7 +245,7 @@ Lade einige herunter und platziere sie im Modulverzeichnis.</value>
     <value>Installieren</value>
   </data>
   <data name="PkgManagement_ModulesNeedRestart" xml:space="preserve">
-    <value>Blich HUD muss neugestartet werden bevor eine Module geladen werden können.</value>
+    <value>Blish HUD muss neu gestartet werden, bevor einige Module geladen werden können.</value>
   </data>
   <data name="PkgManagement_Progress_CheckingRepository" xml:space="preserve">
     <value>Überprüfe Modulquelle...</value>
