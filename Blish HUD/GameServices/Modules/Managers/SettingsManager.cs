@@ -6,11 +6,14 @@ namespace Blish_HUD.Modules.Managers {
         public SettingCollection ModuleSettings { get; }
 
         private SettingsManager(ModuleManager module) {
-            if (module.State.Settings == null) {
-                module.State.Settings = new SettingCollection(true);
-            }
+            SettingCollection settings = GameService.Settings.LoadModuleSettings(module.Manifest.Namespace)
+                                      ?? new SettingCollection(true);
 
-            this.ModuleSettings = module.State.Settings;
+            module.State.Settings = settings;
+            this.ModuleSettings   = settings;
+
+            // Register so that the periodic save includes this module's settings
+            GameService.Settings.RegisterModuleSettings(module.Manifest.Namespace, settings);
         }
 
         internal static SettingsManager GetModuleInstance(ModuleManager module) {
