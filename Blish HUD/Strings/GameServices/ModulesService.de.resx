@@ -268,4 +268,7 @@ Lade einige herunter und platziere sie im Modulverzeichnis.</value>
   <data name="ApiPermission_NotEditable" xml:space="preserve">
     <value>Berechtigungen können nur bearbeitet werden, wenn das Modul deaktiviert ist.</value>
   </data>
+  <data name="PkgManagement_IsPreview" xml:space="preserve">
+    <value>Vorschauversion</value>
+  </data>
 </root>

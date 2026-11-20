@@ -201,4 +201,15 @@ Bitte erlauben Sie Blish HUD ausdrücklich in Ihren Einstellungen für den Kontr
   <data name="CfaBlocking_Title" xml:space="preserve">
     <value>Blish HUD blockiert!</value>
   </data>
+  <data name="ConflictingFullscreenSettings_Title" xml:space="preserve">
+    <value>Widersprüchliche Grafikeinstellungen!</value>
+  </data>
+  <data name="ConflictingFullscreenSettings_Description" xml:space="preserve">
+    <value>Blish HUD hat festgestellt, dass du das Spiel im Vollbildmodus mit aktiviertem DirectX 9 ausführst. Blish HUD kann in dieser Konfiguration nicht funktionieren. Zur Behebung kannst du:
+
+1) 'DirectX 9-Rendering aktivieren (veraltet)' in den Grafikoptionen des Spiels deaktivieren.
+2) Setze 'Auflösung' auf 'Vollbildfenster' oder 'Fenster'.
+
+Den unten verlinkten Leitfaden kannst du für weitere Hilfe zu Rate ziehen.</value>
+  </data>
 </root>

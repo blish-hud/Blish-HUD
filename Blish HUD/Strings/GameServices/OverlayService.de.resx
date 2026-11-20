@@ -268,4 +268,49 @@ Für die beste Erfahrung auf dieselbe Taste wie im Spiel legen.</value>
   <data name="Setting_MuteIfNoGameAudio_DisplayName" xml:space="preserve">
     <value>Stummschalten, wenn Guild Wars 2 stummgeschaltet wird.</value>
   </data>
+  <data name="Setting_ShowPreviews_DisplayName" xml:space="preserve">
+    <value>Vorschauversionen</value>
+  </data>
+  <data name="Setting_ShowPreviews_Description" xml:space="preserve">
+    <value>Wenn aktiviert, werden Vorschauversionen von Modulen und von Blish HUD selbst über die Oberfläche verfügbar.
+
+WARNUNG: Vorschauversionen von Modulen oder von Blish HUD können instabil sein. Wenn du diese Funktion aktivierst, erklärst du dich damit einverstanden, als Versuchskaninchen zu dienen. Verwende keine Vorschauversionen von Modulen oder von Blish HUD, wenn du nicht bereit bist, Abstürze, Fehler oder andere Probleme in Kauf zu nehmen.</value>
+  </data>
+  <data name="OverlayDynamicHUDSection" xml:space="preserve">
+    <value>Dynamisches HUD</value>
+  </data>
+  <data name="Setting_DynamicHUDLoading_Description" xml:space="preserve">
+    <value>Steuert die Sichtbarkeit während Zwischensequenzen und Ladebildschirmen.</value>
+  </data>
+  <data name="Setting_DynamicHUDLoading_DisplayName" xml:space="preserve">
+    <value>Zwischensequenz / Ladebildschirm</value>
+  </data>
+  <data name="Setting_DynamicHUDWindows_Description" xml:space="preserve">
+    <value>Steuert die Sichtbarkeit der Fenster.</value>
+  </data>
+  <data name="Setting_DynamicHUDWindows_DisplayName" xml:space="preserve">
+    <value>Fenster</value>
+  </data>
+  <data name="AboutThirdPartySoftwareHeading" xml:space="preserve">
+    <value>Softwarelizenzen</value>
+  </data>
+  <data name="Setting_StayInTray_AppendDisabled" xml:space="preserve">
+    <value> (Deaktiviert, da Blish HUD mit --startgw2, --pid, -g oder -P gestartet wurde)</value>
+  </data>
+  <data name="About_DiscordCallToAction1" xml:space="preserve">
+    <value>Der Großteil des Feedbacks, der Entwicklung und anderer Diskussionen zu Blish HUD findet in unserem&#32;</value>
+  </data>
+  <data name="About_DiscordCallToAction2" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="About_DiscordCallToAction3" xml:space="preserve">
+    <value> Kanal statt.</value>
+  </data>
+  <data name="About_DiscordCallToAction_Question" xml:space="preserve">
+    <value>Brauchst du Hilfe oder möchtest du
+dich an der Unterhaltung beteiligen?</value>
+  </data>
+  <data name="About_DiscordCallToAction_Button" xml:space="preserve">
+    <value>Tritt unserem Discord bei</value>
+  </data>
 </root>
