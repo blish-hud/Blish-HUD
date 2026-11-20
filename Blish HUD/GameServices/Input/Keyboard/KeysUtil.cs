@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Blish_HUD.Input.Mouse;
 using Humanizer;
 using Microsoft.Xna.Framework.Input;
 
@@ -12,6 +13,7 @@ namespace Blish_HUD.Input {
         private static extern uint MapVirtualKey(uint uCode, uint uMapType);
 
         private static readonly Dictionary<Keys, string> _friendlyKeyNames;
+        private static readonly Dictionary<MouseButtons, string> _friendlyMouseButtonNames;
 
         static KeysUtil() {
             _friendlyKeyNames = new Dictionary<Keys, string>() {
@@ -41,6 +43,13 @@ namespace Blish_HUD.Input {
                 {Keys.RightShift, "Right Shift"},
                 {Keys.Space, "Space"},
                 {Keys.Subtract, "Subtract (NUM)"}
+            };
+
+            _friendlyMouseButtonNames = new Dictionary<MouseButtons, string>() {
+                { MouseButtons.None, "" },
+                { MouseButtons.MiddleButton, "Mouse 3" },
+                { MouseButtons.XButton1, "Mouse 4" },
+                { MouseButtons.XButton2, "Mouse 5" },
             };
 
             string CreateFriendlyName(Keys key) {
@@ -103,6 +112,15 @@ namespace Blish_HUD.Input {
         }
 
         /// <summary>
+        /// Returns the friendly display name of the provided <see cref="MouseButtons"/> value.
+        /// </summary>
+        public static string GetFriendlyName(MouseButtons button) {
+            return _friendlyMouseButtonNames.TryGetValue(button, out string friendlyName)
+                ? friendlyName
+                : button.ToString();
+        }
+
+        /// <summary>
         /// Gets a display string representing a <see cref="ModifierKeys"/> and
         /// <see cref="Keys"/> pair suitable for display in the UI.
         /// </summary>
@@ -118,6 +136,35 @@ namespace Blish_HUD.Input {
             }
 
             return displayText;
+        }
+
+        /// <summary>
+        /// Gets a display string representing a <see cref="ModifierKeys"/> and
+        /// <see cref="MouseButtons"/> pair suitable for display in the UI.
+        /// </summary>
+        public static string GetFriendlyName(ModifierKeys modifierKeys, MouseButtons primaryMouseButton) {
+            string displayText = "";
+
+            if (primaryMouseButton != MouseButtons.None) {
+                if (modifierKeys != ModifierKeys.None) {
+                    displayText = $"{modifierKeys.ToString().Replace(", ", " + ")} + ";
+                }
+
+                displayText += GetFriendlyName(primaryMouseButton);
+            }
+
+            return displayText;
+        }
+
+        /// <summary>
+        /// Gets a display string representing a <see cref="ModifierKeys"/> and
+        /// either <see cref="Keys"/> or <see cref="MouseButtons"/> pair suitable 
+        /// for display in the UI.
+        /// </summary>
+        public static string GetFriendlyName(ModifierKeys modifierKeys, Keys primaryKey, MouseButtons primaryMouseButton) {
+            return primaryKey != Keys.None
+                ? GetFriendlyName(modifierKeys, primaryKey)
+                : GetFriendlyName(modifierKeys, primaryMouseButton);
         }
 
         /// <summary>
