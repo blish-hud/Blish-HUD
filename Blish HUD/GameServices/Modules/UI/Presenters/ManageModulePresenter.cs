@@ -110,7 +110,15 @@ namespace Blish_HUD.Modules.UI.Presenters {
                                                  ? Strings.GameServices.ModulesService.ModuleOption_ClearSettings_DescriptionEnabled
                                                  : Strings.GameServices.ModulesService.ModuleOption_ClearSettings_DescriptionDisabled;
 
-            clearSettings.Click += delegate { this.Model.State.Settings = null; };
+            clearSettings.Click += delegate { 
+                this.Model.State.Settings = null;
+                foreach (var directoryName in this.Model.Manifest.Directories) {
+                    var dirPath = Path.Combine(DirectoryUtil.BasePath, directoryName);
+                    if (Directory.Exists(dirPath)) {
+                        Directory.Delete(dirPath, true);
+                    }
+                }
+            };
 
             return clearSettings;
         }
