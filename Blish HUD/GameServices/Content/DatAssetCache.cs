@@ -1,13 +1,16 @@
-﻿using System;
+﻿using Blish_HUD.GameServices;
+using Blish_HUD.Graphics;
+using Flurl.Http;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using SharpDX.MediaFoundation;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Blish_HUD.GameServices;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Flurl.Http;
 
 namespace Blish_HUD.Content {
 
@@ -76,7 +79,7 @@ namespace Blish_HUD.Content {
 
                 return new MemoryStream(rawMetadata);
             } catch (Exception ex) {
-                Logger.Warn(ex, "Failed to load asset metadata.");
+                Logger.Warn(ex, "Failed to download asset metadata from server.");
 
                 return Stream.Null;
             }
@@ -85,64 +88,157 @@ namespace Blish_HUD.Content {
         private void EarlyLoad() {
             string metadataCache = Path.Combine(_assetCachePath, METADATA_FILE);
 
-            // Use either existing metadata cache or fallback to ref.dat
+            // Use either existing asset metadata cache or fallback to ref.dat
             if (File.Exists(metadataCache)) {
                 using Stream localMetadataStream = File.Open(metadataCache, FileMode.Open, FileAccess.Read, FileShare.Read);
                 ProcessMetadataStream(localMetadataStream);
-                Logger.Debug("Local metadata loaded, trying background update");
+                Logger.Debug("Local asset metadata loaded.");
             } else {
                 using Stream metadataStream = LoadFallbackMetadataStream();
                 ProcessMetadataStream(metadataStream);
-                Logger.Debug("Falling back to ref.dat, trying background update");
+                Logger.Debug("Fallback asset metadata loaded from ref.dat.");
             }
 
-            // Try background update of metadata cache
+            // Trigger background update of asset metadata cache
             _ = Task.Run(async () => {
                 try {
-                    using var _ = await DownloadMetadata().ConfigureAwait(false);
+                    using var webMetadata = await DownloadMetadata().ConfigureAwait(false);
+                    ProcessMetadataStream(webMetadata);
                 } catch (Exception ex) {
-                    Logger.Warn(ex, "Background metadata refresh failed");
+                    Logger.Warn(ex, "Background asset metadata refresh from server failed.");
                 }
             });
         }
 
         private void ProcessMetadataStream(Stream metadataStream) {
             if (metadataStream.Length == 0) {
-                Logger.Warn("Failed to load asset metadata. Textures won't be loaded.");
+                if (_textureReferences == null) {
+                    Logger.Warn("Failed to load asset metadata. Textures won't be loaded.");
 
-                _textureReferences = new Dictionary<int, TextureReference>(0);
-                _textureSizes = Array.Empty<Point>();
-                _transparentTextures = Array.Empty<Texture2D>();
+                    _textureReferences   = new Dictionary<int, TextureReference>(0);
+                    _textureSizes        = Array.Empty<Point>();
+                    _transparentTextures = Array.Empty<Texture2D>();
+                }
 
                 return;
             }
 
-            using var gzipStream = new GZipStream(metadataStream, CompressionMode.Decompress);
-            using var parser = new BinaryReader(gzipStream);
+            byte[] data;
 
-            // BinaryReader to keep things fairly readable
+            using (var gzipStream = new GZipStream(metadataStream, CompressionMode.Decompress))
+            using (var ms = new MemoryStream()) {
+                gzipStream.CopyTo(ms);
+                data = ms.GetBuffer();
+            }
 
-            _textureReferences = new Dictionary<int, TextureReference>(parser.ReadInt32());
+            int offset = 0;
 
-            int sizeCount = parser.ReadInt32();
+            int totalTextureCount = BitConverter.ToInt32(data, offset);
+            offset += 4;
 
+            int sizeCount = BitConverter.ToInt32(data, offset);
+            offset += 4;
+
+            bool isUpdate = _textureReferences != null && _textureReferences.Count > 0;
+
+            if (!isUpdate) {
+                InitializeMetadata(data, offset, totalTextureCount, sizeCount);
+            } else {
+                MergeMetadata(data, offset, totalTextureCount, sizeCount);
+            }
+        }
+
+        private void InitializeMetadata(byte[] data, int offset, int totalTextureCount, int sizeCount) {
+            // Initial load — build everything from scratch
+            _textureReferences = new Dictionary<int, TextureReference>(totalTextureCount);
             _textureSizes = new Point[sizeCount];
             _transparentTextures = new Texture2D[sizeCount];
 
             for (int sizeIndex = 0; sizeIndex < sizeCount; sizeIndex++) {
-                int width = parser.ReadInt32();
-                int height = parser.ReadInt32();
+                int width = BitConverter.ToInt32(data, offset);
+                offset += 4;
+                int height = BitConverter.ToInt32(data, offset);
+                offset += 4;
 
                 _textureSizes[sizeIndex] = new Point(width, height);
                 _transparentTextures[sizeIndex] = new Texture2D(BlishHud.Instance.GraphicsDevice /* This is safe since we're loading early on the main thread */, width, height);
-                _transparentTextures[sizeIndex].SetData(Enumerable.Repeat(Color.Transparent, width * height).ToArray());
+                _transparentTextures[sizeIndex].SetData(new Color[width * height]);
 
-                int assetCount = parser.ReadInt32();
+                int assetCount = BitConverter.ToInt32(data, offset);
+                offset += 4;
 
                 for (int assetIndex = 0; assetIndex < assetCount; assetIndex++) {
-                    _textureReferences.Add(parser.ReadInt32(), new TextureReference(sizeIndex));
+                    _textureReferences.Add(BitConverter.ToInt32(data, offset), new TextureReference(sizeIndex));
+                    offset += 4;
                 }
             }
+        }
+
+        private void MergeMetadata(byte[] data, int offset, int totalTextureCount, int sizeCount) {
+            // Merge update — only add new sizes and texture references
+            var existingSizes = new Dictionary<Point, int>(_textureSizes.Length);
+            for (int i = 0; i < _textureSizes.Length; i++) {
+                existingSizes[_textureSizes[i]] = i;
+            }
+
+            var textureSizesList = new List<Point>(_textureSizes);
+            var transparentTexturesList = new List<Texture2D>(_transparentTextures);
+
+            // Copy existing references into a new dictionary so we can atomically swap later
+            var mergedReferences = new Dictionary<int, TextureReference>(Math.Max(totalTextureCount, _textureReferences.Count));
+            foreach (var kvp in _textureReferences) {
+                mergedReferences[kvp.Key] = kvp.Value;
+            }
+
+            int addedCount = 0;
+
+            // At this point, it's 99% likely that GameService.Graphics is defined, but we'll
+            // spin just in case it is not (safe - we're on a background thread).
+            while (GameService.Graphics == null) {
+                Thread.Sleep(50);
+            }
+
+            using (var ctx = GameService.Graphics.LendGraphicsDeviceContext(true)) {
+                for (int sizeIndex = 0; sizeIndex < sizeCount; sizeIndex++) {
+                    int width = BitConverter.ToInt32(data, offset);
+                    offset += 4;
+                    int height = BitConverter.ToInt32(data, offset);
+                    offset += 4;
+
+                    var size = new Point(width, height);
+
+                    if (!existingSizes.TryGetValue(size, out int resolvedSizeIndex)) {
+                        resolvedSizeIndex = textureSizesList.Count;
+                        existingSizes[size] = resolvedSizeIndex;
+                        textureSizesList.Add(size);
+
+                        var transparentTexture = new Texture2D(ctx.GraphicsDevice, width, height);
+                        transparentTexture.SetData(new Color[width * height]);
+                        transparentTexturesList.Add(transparentTexture);
+                    }
+
+                    int assetCount = BitConverter.ToInt32(data, offset);
+                    offset += 4;
+
+                    for (int assetIndex = 0; assetIndex < assetCount; assetIndex++) {
+                        int assetId = BitConverter.ToInt32(data, offset);
+                        offset += 4;
+
+                        if (!mergedReferences.ContainsKey(assetId)) {
+                            mergedReferences[assetId] = new TextureReference(resolvedSizeIndex);
+                            addedCount++;
+                        }
+                    }
+                }
+            }
+
+            // Update arrays before the dictionary so that any new size indices
+            // are valid before the TextureReferences pointing to them become visible
+            _textureSizes = textureSizesList.ToArray();
+            _transparentTextures = transparentTexturesList.ToArray();
+            _textureReferences = mergedReferences;
+
+            Logger.Debug($"Asset metadata merge complete. Added {addedCount} new texture references ({mergedReferences.Count} total).");
         }
 
         public override void Load() {
