@@ -289,7 +289,7 @@ namespace Blish_HUD.Gw2WebApi.UI.Views {
             return _tokenTestCanceller.Token;
         }
 
-        private void ApiKeyTextBoxOnTextChanged(object sender, EventArgs e) {
+        private void ApiKeyTextBoxOnTextChanged(object sender, ValueChangedEventArgs<string> e) {
             SetTokenStatus(ApiTokenStatusType.Loading);
             _tokenCheckDebounceWrapper(this.ApiKey);
         }
