@@ -14,6 +14,8 @@ namespace Blish_HUD.Modules.UI.Views {
         private FlowPanel _permissionFlowPanel;
         private Label     _messageLabel;
 
+        private bool[] _checkboxStates;
+
         private bool _editable;
 
         /// <summary>
@@ -24,7 +26,7 @@ namespace Blish_HUD.Modules.UI.Views {
             set {
                 _editable = value;
 
-                if (_permissionFlowPanel == null || _messageLabel == null)
+                if (_permissionFlowPanel == null || _messageLabel == null || _checkboxStates == null)
                     return;
 
                 ResetCheckboxStates();
@@ -65,12 +67,14 @@ namespace Blish_HUD.Modules.UI.Views {
             _permissionFlowPanel.ClearChildren();
             _permissionFlowPanel.Hide();
 
+            _checkboxStates = permissions.Select(permission => permission.Optional).ToArray();
+
             foreach ((var permission, bool optional, string description, bool set) in permissions) {
                 var permissionCheckbox = new Checkbox() {
                     Text             = optional
                                            ? permission.ToString()
                                            : $"{permission} {Strings.GameServices.ModulesService.ApiPermission_RequiredSuffix}",
-                    Enabled          = this.Editable,
+                    Enabled          = optional && this.Editable,
                     BasicTooltipText = description,
                     Parent           = _permissionFlowPanel
                 };
@@ -79,7 +83,8 @@ namespace Blish_HUD.Modules.UI.Views {
                     this.PermissionStateChanged?.Invoke(this, new KeyedValueChangedEventArgs<TokenPermission, bool>(permission, e.Checked));
                 };
 
-                permissionCheckbox.Checked = set;
+                // Required permissions are always checked and cannot be unchecked.
+                permissionCheckbox.Checked = set || !optional;
             }
 
             // Show "No permissions requested" if there are none
@@ -87,8 +92,10 @@ namespace Blish_HUD.Modules.UI.Views {
         }
 
         private void ResetCheckboxStates() {
-            foreach (var checkbox in _permissionFlowPanel.GetChildrenOfType<Checkbox>()) {
-                checkbox.Enabled = this.Editable;
+            var checkboxes = _permissionFlowPanel.GetChildrenOfType<Checkbox>().ToArray();
+
+            for (int i = 0; i < checkboxes.Length; i++) {
+                checkboxes[i].Enabled = this.Editable && _checkboxStates[i];
             }
         }
     }
