@@ -209,10 +209,13 @@ namespace Blish_HUD.Controls {
 
         private static void UpdateWindowBaseDynamicHUDVisibility(WindowBase wb) {
             if (GameService.Overlay.ShouldShowDynamicHUD(GameService.Overlay.DynamicHUDWindows)) {
-                if (wb._savedVisibility) wb.Show();
-            } else {
-                wb._savedVisibility = wb.Visible;
-                if (wb._savedVisibility) wb.Hide();
+                if (wb._savedVisibility) {
+                    wb._savedVisibility = false;
+                    wb.Show();
+                }
+            } else if (wb.Visible) {
+                wb._savedVisibility = true;
+                wb.Hide();
             }
         }
 
