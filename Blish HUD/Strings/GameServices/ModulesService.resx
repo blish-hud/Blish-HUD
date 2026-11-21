@@ -147,10 +147,6 @@
   <data name="ApiPermission_ApprovalRequired" xml:space="preserve">
     <value>This module requires approval for new API permissions before it can be enabled.</value>
   </data>
-  <data name="ApiPermission_ApprovalNotification" xml:space="preserve">
-    <value>"{0}" needs approval for new API permissions.
-Open Modules &gt; {0} to review them.</value>
-  </data>
   <data name="Dependency_MissingDependencies" xml:space="preserve">
     <value>This module relies on dependencies not currently available:</value>
   </data>

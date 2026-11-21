@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Blish_HUD.Content;
-using Blish_HUD.Controls;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules {
@@ -107,13 +106,6 @@ namespace Blish_HUD.Modules {
                 Logger.Warn("Module {module} requires approval for API permission(s): {permissions}.",
                             this.Manifest.GetDetailedName(),
                             string.Join(", ", missingPermissions));
-
-                if (GameService.Graphics?.SpriteScreen != null) {
-                    ScreenNotification.ShowNotification(
-                        string.Format(Strings.GameServices.ModulesService.ApiPermission_ApprovalNotification, this.Manifest.Name),
-                        ScreenNotification.NotificationType.Warning,
-                        duration: 8);
-                }
 
                 return false;
             }

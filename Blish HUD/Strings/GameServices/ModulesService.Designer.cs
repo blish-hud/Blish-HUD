@@ -61,16 +61,6 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;{0}&quot; needs approval for new API permissions.
-        ///Open Modules &gt; {0} to review them..
-        /// </summary>
-        internal static string ApiPermission_ApprovalNotification {
-            get {
-                return ResourceManager.GetString("ApiPermission_ApprovalNotification", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This module requires approval for new API permissions before it can be enabled..
         /// </summary>
         internal static string ApiPermission_ApprovalRequired {

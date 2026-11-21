@@ -144,10 +144,6 @@
   <data name="ApiPermission_MissingRequiredPermissions" xml:space="preserve">
     <value>Erforderliche Berechtigungen:</value>
   </data>
-  <data name="ApiPermission_ApprovalNotification" xml:space="preserve">
-    <value>"{0}" bentigt neue API Berechtigungen.
-Öffne Module &gt; {0} um sie anzupassen.</value>
-  </data>
   <data name="Dependency_MissingDependencies" xml:space="preserve">
     <value>Dieses Modul verlässt sich auf Abhängigkeiten die derzeit nicht verfügbar sind:</value>
   </data>
