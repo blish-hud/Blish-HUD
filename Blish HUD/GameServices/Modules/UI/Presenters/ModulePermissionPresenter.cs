@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
@@ -23,7 +22,9 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void ViewOnPermissionStateChanged(object sender, KeyedValueChangedEventArgs<TokenPermission, bool> e) {
-            var newPermissionList = this.Model.State.UserEnabledPermissions?.ToList() ?? new List<TokenPermission>(1);
+            // When nothing has been saved yet, all requested permissions are enabled by default.
+            var newPermissionList = this.Model.State.UserEnabledPermissions?.ToList()
+                                 ?? this.Model.Manifest.ApiPermissions.Keys.ToList();
 
             if (e.Value) {
                 if (!newPermissionList.Contains(e.Key)) {
@@ -59,7 +60,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.View.SetPermissions(this.Model.Manifest.ApiPermissions.Select(p => (p.Key,
                                                                                      p.Value.Optional,
                                                                                      p.Value.Details ?? "",
-                                                                                     this.Model.State.UserEnabledPermissions?.Contains(p.Key) ?? false))
+                                                                                     this.Model.State.UserEnabledPermissions?.Contains(p.Key) ?? true))
                                          .OrderBy(p => p.Optional));
         }
 
