@@ -73,6 +73,17 @@ namespace Blish_HUD.Modules {
         }
 
         public bool TryEnable() {
+            return TryEnable(false);
+        }
+
+        /// <summary>
+        /// Attempts to enable the module.
+        /// </summary>
+        /// <param name="userInitiated">
+        /// Indicates that the user explicitly requested the module to be enabled. When <see langword="true"/>,
+        /// missing required API permissions are approved as part of the user's consent.
+        /// </param>
+        public bool TryEnable(bool userInitiated) {
             if (this.Enabled                                             // We're already enabled.
              || this.IsModuleAssemblyStateDirty                          // User updated the module after the old assembly had already been enabled.
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
@@ -80,7 +91,19 @@ namespace Blish_HUD.Modules {
 
             var missingPermissions = this.GetMissingRequiredApiPermissions();
 
-            if (missingPermissions.Length > 0) {
+            if (userInitiated) {
+                if (this.State.UserEnabledPermissions == null) {
+                    // Nothing has been saved yet, so default all requested permissions on.
+                    this.State.UserEnabledPermissions = this.Manifest.ApiPermissions.Keys.ToArray();
+                    GameService.Settings.Save();
+                } else if (missingPermissions.Length > 0) {
+                    // An explicit enable request from the user is consent for any required permissions.
+                    this.State.UserEnabledPermissions = this.State.UserEnabledPermissions.Concat(missingPermissions)
+                                                                                          .Distinct()
+                                                                                          .ToArray();
+                    GameService.Settings.Save();
+                }
+            } else if (missingPermissions.Length > 0) {
                 Logger.Warn("Module {module} requires approval for API permission(s): {permissions}.",
                             this.Manifest.GetDetailedName(),
                             string.Join(", ", missingPermissions));

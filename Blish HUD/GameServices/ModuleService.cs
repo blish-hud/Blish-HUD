@@ -300,7 +300,8 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
-                debugModule?.TryEnable();
+                // The developer explicitly requested this module, so treat enabling it as user-initiated.
+                debugModule?.TryEnable(true);
             }
 
             HandleRefLoading();

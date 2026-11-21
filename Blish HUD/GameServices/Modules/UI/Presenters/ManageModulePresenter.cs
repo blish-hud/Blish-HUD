@@ -184,7 +184,7 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void ViewOnEnableModuleClicked(object sender, EventArgs e) {
-            if (this.Model.TryEnable()) {
+            if (this.Model.TryEnable(true)) {
                 SubscribeToModuleRunState();
             }
         }
