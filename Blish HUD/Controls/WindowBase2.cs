@@ -298,22 +298,8 @@ namespace Blish_HUD.Controls {
             UpdateWindowBaseDynamicHUDVisibility(wb);
         }
 
-        private static bool ShouldShowDynamicHUD() {
-            bool showForCombat = GameService.Overlay.DynamicHUDWindows switch {
-                DynamicHUDMethod.NeverShow    => false,
-                DynamicHUDMethod.ShowPeaceful => !GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
-                DynamicHUDMethod.ShowInCombat => GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
-                _                             => true
-            };
-
-            bool showForLoading = GameService.Overlay.DynamicHUDLoading != DynamicHUDMethod.NeverShow
-                               || GameService.GameIntegration.Gw2Instance.IsInGame;
-
-            return showForCombat && showForLoading;
-        }
-
         private static void UpdateWindowBaseDynamicHUDVisibility(WindowBase2 wb) {
-            if (ShouldShowDynamicHUD()) {
+            if (GameService.Overlay.ShouldShowDynamicHUD(GameService.Overlay.DynamicHUDWindows)) {
                 if (wb._savedVisibility) wb.Show();
             } else {
                 wb._savedVisibility = wb.Visible;

@@ -163,22 +163,8 @@ namespace Blish_HUD.Controls {
             UpdateCornerIconsDynamicHUDVisibility();
         }
 
-        private static bool ShouldShowDynamicHUD() {
-            bool showForCombat = GameService.Overlay.DynamicHUDMenuBar switch {
-                DynamicHUDMethod.NeverShow    => false,
-                DynamicHUDMethod.ShowPeaceful => !GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
-                DynamicHUDMethod.ShowInCombat => GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
-                _                             => true
-            };
-
-            bool showForLoading = GameService.Overlay.DynamicHUDLoading != DynamicHUDMethod.NeverShow
-                               || GameService.GameIntegration.Gw2Instance.IsInGame;
-
-            return showForCombat && showForLoading;
-        }
-
         private static void UpdateCornerIconsDynamicHUDVisibility() {
-            bool shouldShow = ShouldShowDynamicHUD();
+            bool shouldShow = GameService.Overlay.ShouldShowDynamicHUD(GameService.Overlay.DynamicHUDMenuBar);
 
             foreach (var cornerIcon in CornerIcons) {
                 cornerIcon.DynamicHide = shouldShow;
@@ -194,7 +180,7 @@ namespace Blish_HUD.Controls {
                 CornerIcons.Add(this);
             }
 
-            this.DynamicHide = ShouldShowDynamicHUD();
+            this.DynamicHide = GameService.Overlay.ShouldShowDynamicHUD(GameService.Overlay.DynamicHUDMenuBar);
         }
 
         public CornerIcon(AsyncTexture2D icon, string iconName) : this() {

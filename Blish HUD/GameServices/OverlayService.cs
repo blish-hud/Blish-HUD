@@ -224,6 +224,24 @@ namespace Blish_HUD {
             setting.SetExcluded(excluded.Where(option => option != currentValue).ToArray());
         }
 
+        /// <summary>
+        /// Determines whether elements subject to the provided Dynamic HUD method should currently be visible.
+        /// </summary>
+        /// <param name="method">The combat-based Dynamic HUD method to evaluate (i.e. the menu bar or windows method).</param>
+        internal bool ShouldShowDynamicHUD(DynamicHUDMethod method) {
+            bool showForCombat = method switch {
+                DynamicHUDMethod.NeverShow    => false,
+                DynamicHUDMethod.ShowPeaceful => !GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
+                DynamicHUDMethod.ShowInCombat => GameService.Gw2Mumble.PlayerCharacter.IsInCombat,
+                _                             => true
+            };
+
+            bool showForLoading = this.DynamicHUDLoading != DynamicHUDMethod.NeverShow
+                               || GameService.GameIntegration.Gw2Instance.IsInGame;
+
+            return showForCombat && showForLoading;
+        }
+
         private void ApplyInitialSettings() {
             UserLocaleOnSettingChanged(this.UserLocale, new ValueChangedEventArgs<Locale>(GetGw2LocaleFromCurrentUICulture(), this.UserLocale.Value));
 
