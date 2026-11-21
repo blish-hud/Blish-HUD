@@ -134,6 +134,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (required).
+        /// </summary>
+        internal static string ApiPermission_RequiredSuffix {
+            get {
+                return ResourceManager.GetString("ApiPermission_RequiredSuffix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This module relies on dependencies not currently available:.
         /// </summary>
         internal static string Dependency_MissingDependencies {

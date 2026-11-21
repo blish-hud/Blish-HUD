@@ -67,7 +67,9 @@ namespace Blish_HUD.Modules.UI.Views {
 
             foreach ((var permission, bool optional, string description, bool set) in permissions) {
                 var permissionCheckbox = new Checkbox() {
-                    Text             = permission.ToString(),
+                    Text             = optional
+                                           ? permission.ToString()
+                                           : $"{permission} {Strings.GameServices.ModulesService.ApiPermission_RequiredSuffix}",
                     Enabled          = this.Editable,
                     BasicTooltipText = description,
                     Parent           = _permissionFlowPanel

@@ -123,6 +123,9 @@
   <data name="ApiPermission_Required" xml:space="preserve">
     <value>Requis</value>
   </data>
+  <data name="ApiPermission_RequiredSuffix" xml:space="preserve">
+    <value>(requis)</value>
+  </data>
   <data name="ApiPermission_Optional" xml:space="preserve">
     <value>Optionel</value>
   </data>
