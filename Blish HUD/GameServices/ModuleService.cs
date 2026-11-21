@@ -58,6 +58,12 @@ namespace Blish_HUD {
         private readonly List<ModuleManager>          _modules = new List<ModuleManager>();
         public           IReadOnlyList<ModuleManager> Modules => _modules.ToList();
 
+        /// <summary>
+        /// Namespaces of modules loaded from <see cref="ApplicationSettings.DebugModulePath"/>.
+        /// Installed modules with these namespaces are ignored so that the debug module always takes precedence.
+        /// </summary>
+        private readonly HashSet<string> _debugModuleNamespaces = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         internal ModuleService() {
             SetServiceModules(this.ModulePkgRepoHandler = new ModulePkgRepoHandler(this));
         }
@@ -107,6 +113,15 @@ namespace Blish_HUD {
             // Avoid loading the same module multiple times (ensure we load the highest version).
             var existingModule = _modules.FirstOrDefault(module => string.Equals(moduleManifest.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase));
             if (existingModule != null) {
+                // Modules injected with the --module argument take precedence over installed modules.
+                if (_debugModuleNamespaces.Contains(existingModule.Manifest.Namespace)) {
+                    Logger.Info("The module {module} at path {modulePath} was ignored because a module with the same namespace was loaded using the --{moduleOption} argument.",
+                                moduleManifest.GetDetailedName(),
+                                moduleReader.GetPathRepresentation(),
+                                ApplicationSettings.OPTION_DEBUGMODULEPATH);
+                    return null;
+                }
+
                 Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} is a duplicate of this module.  Please remove any duplicate module(s).",
                             moduleManifest.Namespace,
                             moduleReader.GetPathRepresentation());
@@ -280,15 +295,8 @@ namespace Blish_HUD {
         protected override void Load() {
             RegisterModulesInSettings();
 
-            if (ApplicationSettings.Instance.DebugEnabled) {
-                // Allows devs to symlink the output directories of modules in development straight to the modules folder
-                foreach (string manifestPath in Directory.GetFiles(this.ModulesDirectory, MODULE_MANIFESTNAME, SearchOption.AllDirectories)) {
-                    string moduleDir = Directory.GetParent(manifestPath).FullName;
-
-                    RegisterUnpackedModule(moduleDir);
-                }
-            }
-
+            // Load the module specified with the --module argument first so that it takes precedence
+            // over any installed module with the same namespace.
             if (ApplicationSettings.Instance.DebugModulePath != null) {
                 ModuleManager debugModule = null;
 
@@ -300,7 +308,19 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
-                debugModule?.TryEnable();
+                if (debugModule != null) {
+                    _debugModuleNamespaces.Add(debugModule.Manifest.Namespace);
+                    debugModule.TryEnable();
+                }
+            }
+
+            if (ApplicationSettings.Instance.DebugEnabled) {
+                // Allows devs to symlink the output directories of modules in development straight to the modules folder
+                foreach (string manifestPath in Directory.GetFiles(this.ModulesDirectory, MODULE_MANIFESTNAME, SearchOption.AllDirectories)) {
+                    string moduleDir = Directory.GetParent(manifestPath).FullName;
+
+                    RegisterUnpackedModule(moduleDir);
+                }
             }
 
             HandleRefLoading();
