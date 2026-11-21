@@ -200,20 +200,22 @@ namespace Blish_HUD.Controls {
         }
 
         public static void UpdateWindowBaseDynamicHUDCombatState(WindowBase wb) {
-            if (GameService.Overlay.DynamicHUDWindows == DynamicHUDMethod.ShowPeaceful && GameService.Gw2Mumble.PlayerCharacter.IsInCombat) {
-                wb._savedVisibility = wb.Visible;
-                if (wb._savedVisibility) wb.Hide();
-            } else {
-                if (wb._savedVisibility) wb.Show();
-            }
+            UpdateWindowBaseDynamicHUDVisibility(wb);
         }
 
         public static void UpdateWindowBaseDynamicHUDLoadingState(WindowBase wb) {
-            if (GameService.Overlay.DynamicHUDLoading == DynamicHUDMethod.NeverShow && !GameService.GameIntegration.Gw2Instance.IsInGame) {
-                wb._savedVisibility = wb.Visible;
-                if (wb._savedVisibility) wb.Hide();
-            } else {
-                if (wb._savedVisibility) wb.Show();
+            UpdateWindowBaseDynamicHUDVisibility(wb);
+        }
+
+        private static void UpdateWindowBaseDynamicHUDVisibility(WindowBase wb) {
+            if (GameService.Overlay.ShouldShowDynamicHUD(GameService.Overlay.DynamicHUDWindows)) {
+                if (wb._savedVisibility) {
+                    wb._savedVisibility = false;
+                    wb.Show();
+                }
+            } else if (wb.Visible) {
+                wb._savedVisibility = true;
+                wb.Hide();
             }
         }
 
