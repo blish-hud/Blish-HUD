@@ -19,7 +19,7 @@ namespace Blish_HUD.Strings.GameServices {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class ModulesService {
@@ -535,6 +535,15 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string PkgManagement_Update {
             get {
                 return ResourceManager.GetString("PkgManagement_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This update requests new API permissions..
+        /// </summary>
+        internal static string PkgManagement_Update_NewPermissions {
+            get {
+                return ResourceManager.GetString("PkgManagement_Update_NewPermissions", resourceCulture);
             }
         }
     }

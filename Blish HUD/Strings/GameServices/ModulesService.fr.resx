@@ -144,6 +144,9 @@
   <data name="ApiPermission_MissingRequiredPermissions" xml:space="preserve">
     <value>Permissions requises manquantes :</value>
   </data>
+  <data name="ApiPermission_ApprovalRequired" xml:space="preserve">
+    <value>Ce module nécessite l'approbation de nouvelles permissions API avant de pouvoir être activé.</value>
+  </data>
   <data name="Dependency_MissingDependencies" xml:space="preserve">
     <value>Ce module a des dépendances non disponibles actuellement :</value>
   </data>
@@ -264,6 +267,9 @@ Téléchargez des modules et placez-les dans le dossier modules.</value>
   </data>
   <data name="PkgManagement_Update" xml:space="preserve">
     <value>Mise à jour</value>
+  </data>
+  <data name="PkgManagement_Update_NewPermissions" xml:space="preserve">
+    <value>Cette mise à jour demande de nouvelles permissions API.</value>
   </data>
   <data name="PkgManagement_MoreInfo" xml:space="preserve">
     <value>Plus d'informations</value>

@@ -162,6 +162,29 @@ namespace Blish_HUD.Modules {
                        .ToArray();
         }
 
+        /// <summary>
+        /// Accepts any API permissions added by a module update without changing permissions
+        /// the user has already made a decision about.
+        /// </summary>
+        /// <param name="previousApiPermissions">The API permissions requested by the previous version of the module.</param>
+        internal void MergeAddedApiPermissions(IEnumerable<TokenPermission> previousApiPermissions) {
+            if (this.State.UserEnabledPermissions == null) {
+                // Nothing has been saved yet, so default all requested permissions on.
+                this.State.UserEnabledPermissions = this.Manifest.ApiPermissions.Keys.ToArray();
+                GameService.Settings.Save();
+                return;
+            }
+
+            var addedPermissions = this.Manifest.ApiPermissions.Keys.Except(previousApiPermissions).ToArray();
+
+            if (addedPermissions.Length == 0) return;
+
+            this.State.UserEnabledPermissions = this.State.UserEnabledPermissions.Concat(addedPermissions)
+                                                                                  .Distinct()
+                                                                                  .ToArray();
+            GameService.Settings.Save();
+        }
+
         public void Disable() {
             if (!this.Enabled) return;
 

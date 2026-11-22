@@ -53,6 +53,19 @@ namespace Blish_HUD.Modules.UI.Views {
             set => (_previewLabel ?? throw new ViewNotBuiltException()).Visible = value;
         }
 
+        /// <summary>
+        /// Indicates whether the selected update requests API permissions not present in the installed version.
+        /// </summary>
+        public bool NewPermissionsWarningVisible {
+            get => _newPermissionsLabel?.Visible ?? throw new ViewNotBuiltException();
+            set {
+                if (_newPermissionsLabel == null) throw new ViewNotBuiltException();
+
+                _newPermissionsLabel.Visible = value;
+                PositionNewPermissionsLabel();
+            }
+        }
+
         public string ModuleNamespace {
             get => _nameLabel?.BasicTooltipText ?? throw new ViewNotBuiltException();
             set => (_nameLabel ?? throw new ViewNotBuiltException()).BasicTooltipText = value;
@@ -81,6 +94,7 @@ namespace Blish_HUD.Modules.UI.Views {
                 if (_descLabel == null) throw new ViewNotBuiltException();
 
                 _descLabel.Text = value;
+                PositionNewPermissionsLabel();
             }
         }
 
@@ -152,6 +166,7 @@ namespace Blish_HUD.Modules.UI.Views {
         private Label          _previewLabel;
         private Label          _authLabel;
         private Label          _descLabel;
+        private Label          _newPermissionsLabel;
         private Image          _statusImage;
         private Dropdown       _versionDropdown;
         private StandardButton _actionButton;
@@ -235,11 +250,27 @@ namespace Blish_HUD.Modules.UI.Views {
                 VerticalAlignment = VerticalAlignment.Top,
             };
 
+            _newPermissionsLabel = new Label() {
+                Text           = Strings.GameServices.ModulesService.PkgManagement_Update_NewPermissions,
+                TextColor      = Control.StandardColors.Yellow,
+                AutoSizeWidth  = true,
+                AutoSizeHeight = true,
+                Location       = new Point(_descLabel.Left, _descLabel.Bottom + 4),
+                Visible        = false,
+                Parent         = buildPanel
+            };
+
             _statusImage.Click            += StatusImageOnClick;
             _actionButton.Click           += OnActionClicked;
             _versionDropdown.ValueChanged += OnVersionSelected;
 
             infoButton.Click += OnMoreInfoClicked;
+        }
+
+        private void PositionNewPermissionsLabel() {
+            if (_descLabel == null || _newPermissionsLabel == null) return;
+
+            _newPermissionsLabel.Top = _descLabel.Bottom + 4;
         }
 
         private void OnMoreInfoClicked(object sender, MouseEventArgs e) {
