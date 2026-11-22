@@ -3,7 +3,6 @@ using Blish_HUD.Graphics;
 using Flurl.Http;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +25,9 @@ namespace Blish_HUD.Content {
         private const double RETRY_COUNT  = 5;
         private const int    RETRY_DELAY  = 2000;
         private const double RETRY_RELOAD = 5000d;
+
+        private const int GRAPHICS_WAIT_INTERVAL = 50;
+        private const int GRAPHICS_WAIT_TIMEOUT  = 5000;
 
         private Point[]                           _textureSizes;
         private Dictionary<int, TextureReference> _textureReferences;
@@ -139,7 +141,9 @@ namespace Blish_HUD.Content {
             int sizeCount = BitConverter.ToInt32(data, offset);
             offset += 4;
 
-            bool isUpdate = _textureReferences != null && _textureReferences.Count > 0;
+            // Only the very first load (from EarlyLoad on the main thread) initializes.  Anything after that
+            // merges, even if the first load came back empty, so that InitializeMetadata never runs off the main thread.
+            bool isUpdate = _textureReferences != null;
 
             if (!isUpdate) {
                 InitializeMetadata(data, offset, totalTextureCount, sizeCount);
@@ -190,55 +194,82 @@ namespace Blish_HUD.Content {
                 mergedReferences[kvp.Key] = kvp.Value;
             }
 
-            int addedCount = 0;
+            int addedCount        = 0;
+            int firstNewSizeIndex = textureSizesList.Count;
 
-            // At this point, it's 99% likely that GameService.Graphics is defined, but we'll
-            // spin just in case it is not (safe - we're on a background thread).
-            while (GameService.Graphics == null) {
-                Thread.Sleep(50);
-            }
+            // First parse and merge while recording any new sizes
+            for (int sizeIndex = 0; sizeIndex < sizeCount; sizeIndex++) {
+                int width = BitConverter.ToInt32(data, offset);
+                offset += 4;
+                int height = BitConverter.ToInt32(data, offset);
+                offset += 4;
 
-            using (var ctx = GameService.Graphics.LendGraphicsDeviceContext(true)) {
-                for (int sizeIndex = 0; sizeIndex < sizeCount; sizeIndex++) {
-                    int width = BitConverter.ToInt32(data, offset);
-                    offset += 4;
-                    int height = BitConverter.ToInt32(data, offset);
-                    offset += 4;
+                var size = new Point(width, height);
 
-                    var size = new Point(width, height);
+                if (!existingSizes.TryGetValue(size, out int resolvedSizeIndex)) {
+                    resolvedSizeIndex = textureSizesList.Count;
+                    existingSizes[size] = resolvedSizeIndex;
+                    textureSizesList.Add(size);
+                }
 
-                    if (!existingSizes.TryGetValue(size, out int resolvedSizeIndex)) {
-                        resolvedSizeIndex = textureSizesList.Count;
-                        existingSizes[size] = resolvedSizeIndex;
-                        textureSizesList.Add(size);
+                int assetCount = BitConverter.ToInt32(data, offset);
+                offset += 4;
 
-                        var transparentTexture = new Texture2D(ctx.GraphicsDevice, width, height);
-                        transparentTexture.SetData(new Color[width * height]);
-                        transparentTexturesList.Add(transparentTexture);
-                    }
-
-                    int assetCount = BitConverter.ToInt32(data, offset);
+                for (int assetIndex = 0; assetIndex < assetCount; assetIndex++) {
+                    int assetId = BitConverter.ToInt32(data, offset);
                     offset += 4;
 
-                    for (int assetIndex = 0; assetIndex < assetCount; assetIndex++) {
-                        int assetId = BitConverter.ToInt32(data, offset);
-                        offset += 4;
-
-                        if (!mergedReferences.ContainsKey(assetId)) {
-                            mergedReferences[assetId] = new TextureReference(resolvedSizeIndex);
-                            addedCount++;
-                        }
+                    if (!mergedReferences.ContainsKey(assetId)) {
+                        mergedReferences[assetId] = new TextureReference(resolvedSizeIndex);
+                        addedCount++;
                     }
                 }
             }
 
-            // Update arrays before the dictionary so that any new size indices
-            // are valid before the TextureReferences pointing to them become visible
-            _textureSizes = textureSizesList.ToArray();
-            _transparentTextures = transparentTexturesList.ToArray();
-            _textureReferences = mergedReferences;
+            int newSizeCount = textureSizesList.Count - firstNewSizeIndex;
 
-            Logger.Debug($"Asset metadata merge complete. Added {addedCount} new texture references ({mergedReferences.Count} total).");
+            if (newSizeCount > 0) {
+                // We only need the graphics device if there are new sizes (rare).  It's very likely that
+                // GameService.Graphics is defined by now, but we'll wait just in case.
+                if (!WaitForGraphicsService()) {
+                    Logger.Warn("Graphics service was not available after {timeout}ms.  Skipping asset metadata merge - the downloaded metadata will be used next launch.", GRAPHICS_WAIT_TIMEOUT);
+                    return;
+                }
+
+                using var ctx = GameService.Graphics.LendGraphicsDeviceContext(true);
+
+                for (int i = firstNewSizeIndex; i < textureSizesList.Count; i++) {
+                    var size = textureSizesList[i];
+
+                    var transparentTexture = new Texture2D(ctx.GraphicsDevice, size.X, size.Y);
+                    transparentTexture.SetData(new Color[size.X * size.Y]);
+                    transparentTexturesList.Add(transparentTexture);
+                }
+            }
+
+            // Update arrays before the dictionary so that any new size indices
+            // are valid before the TextureReferences pointing to them become visible.
+            _textureSizes        = textureSizesList.ToArray();
+            _transparentTextures = transparentTexturesList.ToArray();
+            Volatile.Write(ref _textureReferences, mergedReferences);
+
+            Logger.Debug("Asset metadata merge complete. Added {addedCount} new texture references and {newSizeCount} new sizes ({totalCount} total references).", addedCount, newSizeCount, mergedReferences.Count);
+        }
+
+        private static bool WaitForGraphicsService() {
+            int waited = 0;
+
+            while (GameService.Graphics == null) {
+                if (waited >= GRAPHICS_WAIT_TIMEOUT) {
+                    return false;
+                }
+
+                // safe - we're on a background thread
+                Thread.Sleep(GRAPHICS_WAIT_INTERVAL);
+                waited += GRAPHICS_WAIT_INTERVAL;
+            }
+
+            return true;
         }
 
         public override void Load() {
