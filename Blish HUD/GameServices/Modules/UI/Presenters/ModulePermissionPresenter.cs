@@ -67,7 +67,9 @@ namespace Blish_HUD.Modules.UI.Presenters {
         private void UpdateStatus() {
             var missingPermissions = this.Model.GetMissingRequiredApiPermissions();
 
-            if (missingPermissions.Length > 0) {
+            // State.Enabled remains true when a previously enabled module was blocked from auto-enabling,
+            // which distinguishes an update that needs new permissions from a fresh install.
+            if (!this.Model.Enabled && this.Model.State.Enabled && missingPermissions.Length > 0) {
                 this.View.SetDetails(
                     $"{Strings.GameServices.ModulesService.ApiPermission_ApprovalRequired} {string.Join(", ", missingPermissions)}",
                     TitledDetailView.DetailLevel.Warning);
