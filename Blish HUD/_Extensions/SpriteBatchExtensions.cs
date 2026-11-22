@@ -98,6 +98,14 @@ namespace Blish_HUD {
         }
 
         public static void DrawOnCtrl(this SpriteBatch spriteBatch, Control ctrl, Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects = SpriteEffects.None) {
+            spriteBatch.DrawOnCtrl(ctrl, texture, destinationRectangle, sourceRectangle, color, rotation, origin, effects, null);
+        }
+
+        public static void DrawOnCtrl(this SpriteBatch spriteBatch, Control ctrl, Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects, int? randomSectionSeed) {
+            if (randomSectionSeed.HasValue && sourceRectangle.HasValue) {
+                sourceRectangle = GetRandomSection(sourceRectangle.Value, destinationRectangle.Width, randomSectionSeed.Value);
+            }
+
             spriteBatch.Draw(texture,
                              destinationRectangle.ToBounds(ctrl.AbsoluteBounds),
                              sourceRectangle,
@@ -106,6 +114,17 @@ namespace Blish_HUD {
                              origin,
                              effects,
                              0);
+        }
+
+        private static Rectangle GetRandomSection(Rectangle sourceRectangle, int targetLength, int seed) {
+            if (targetLength <= 0 || sourceRectangle.Width <= targetLength) {
+                return sourceRectangle;
+            }
+
+            int maxOffset = sourceRectangle.Width - targetLength;
+            var (offset, _) = RandomUtil.GetRandomWithSeed(0, maxOffset + 1, seed);
+
+            return new Rectangle(sourceRectangle.X + offset, sourceRectangle.Y, targetLength, sourceRectangle.Height);
         }
 
         public static void DrawStringOnCtrl(this SpriteBatch    spriteBatch,

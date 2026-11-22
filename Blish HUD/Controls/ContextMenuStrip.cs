@@ -13,6 +13,7 @@ namespace Blish_HUD.Controls {
     public class ContextMenuStrip : Container {
 
         private const int BORDER_PADDING = 2;
+        private const int BORDER_WIDTH   = 3;
 
         private const int ITEM_WIDTH = 135;
         private const int ITEM_HEIGHT = 22;
@@ -26,7 +27,11 @@ namespace Blish_HUD.Controls {
 
         private static readonly List<WeakReference<ContextMenuStrip>> _contextMenuStrips = new List<WeakReference<ContextMenuStrip>>();
 
-        private static readonly Texture2D _textureMenuEdge = Content.GetTexture("scrollbar-track");
+        // Derived from GW2 UI texture 155900 (512x16), which contains a noisy 2px line on rows 7 and 8.
+        private static readonly Texture2D _textureMenuEdge = Content.GetTexture("context-menu-strip");
+
+        private const int MENU_EDGE_SOURCE_Y      = 7;
+        private const int MENU_EDGE_SOURCE_HEIGHT = 2;
 
         private static double _lastOpenTime;
 
@@ -68,6 +73,8 @@ namespace Blish_HUD.Controls {
 
         private (Point Position, int DownOffset, int UpOffset) _targetOffset;
 
+        private int _menuEdgeSeed;
+
         protected Func<IEnumerable<ContextMenuStripItem>> GetItemsDelegate { get; private set; }
 
         public ContextMenuStrip() {
@@ -85,6 +92,9 @@ namespace Blish_HUD.Controls {
         protected override void OnShown(EventArgs e) {
             // Keep track of when we opened for debounce
             _lastOpenTime = GameService.Overlay.CurrentGameTime.TotalGameTime.TotalMilliseconds;
+
+            // Pick new random sections of the border strip each time the menu is shown
+            _menuEdgeSeed = RandomUtil.GetRandom(0, 1000000);
 
             if (this.GetItemsDelegate != null) {
                 AddMenuItems(this.GetItemsDelegate());
@@ -256,37 +266,52 @@ namespace Blish_HUD.Controls {
                                                  _size.Y - BORDER_PADDING * 2),
                                    Color.FromNonPremultiplied(33, 32, 33, 255));
 
-            // Left line
-            spriteBatch.DrawOnCtrl(this,
-                                   _textureMenuEdge,
-                                   new Rectangle(0, 1, _textureMenuEdge.Width, _size.Y - BORDER_PADDING),
-                                   new Rectangle(0, 1, _textureMenuEdge.Width, _size.Y - BORDER_PADDING),
-                                   Color.White * 0.8f);
+            int       verticalLength = Math.Max(1, _size.Y - BORDER_WIDTH * 2);
+            Rectangle menuEdgeSource = new Rectangle(0, MENU_EDGE_SOURCE_Y, _textureMenuEdge.Width, MENU_EDGE_SOURCE_HEIGHT);
 
             // Top line
             spriteBatch.DrawOnCtrl(this,
                                    _textureMenuEdge,
-                                   new Rectangle(1, BORDER_PADDING, _textureMenuEdge.Width, _size.X - BORDER_PADDING),
-                                   new Rectangle(1, BORDER_PADDING, _textureMenuEdge.Width, _size.X - BORDER_PADDING),
-                                   Color.White * 0.8f,
-                                   -MathHelper.PiOver2,
-                                   Vector2.Zero);
+                                   new Rectangle(_size.X, BORDER_WIDTH, _size.X, BORDER_WIDTH),
+                                   menuEdgeSource,
+                                   Color.White,
+                                   MathHelper.Pi,
+                                   Vector2.Zero,
+                                   SpriteEffects.None,
+                                   _menuEdgeSeed + 1);
 
             // Bottom line
             spriteBatch.DrawOnCtrl(this,
                                    _textureMenuEdge,
-                                   new Rectangle(1, _size.Y, _textureMenuEdge.Width, _size.X - BORDER_PADDING),
-                                   new Rectangle(1, BORDER_PADDING, _textureMenuEdge.Width, _size.X - BORDER_PADDING),
-                                   Color.White * 0.8f,
-                                   -MathHelper.PiOver2,
-                                   Vector2.Zero);
+                                   new Rectangle(0, _size.Y - BORDER_WIDTH, _size.X, BORDER_WIDTH),
+                                   menuEdgeSource,
+                                   Color.White,
+                                   0f,
+                                   Vector2.Zero,
+                                   SpriteEffects.None,
+                                   _menuEdgeSeed + 2);
+
+            // Left line (the brighter edge of the strip should face out)
+            spriteBatch.DrawOnCtrl(this,
+                                   _textureMenuEdge,
+                                   new Rectangle(BORDER_WIDTH, BORDER_WIDTH, verticalLength, BORDER_WIDTH),
+                                   menuEdgeSource,
+                                   Color.White,
+                                   MathHelper.PiOver2,
+                                   Vector2.Zero,
+                                   SpriteEffects.None,
+                                   _menuEdgeSeed + 3);
 
             // Right line
             spriteBatch.DrawOnCtrl(this,
                                    _textureMenuEdge,
-                                   new Rectangle(_size.X - _textureMenuEdge.Width, 1, _textureMenuEdge.Width, _size.Y - 2),
-                                   new Rectangle(0, 1, _textureMenuEdge.Width, _size.Y - 2),
-                                   Color.White * 0.8f);
+                                   new Rectangle(_size.X - BORDER_WIDTH, _size.Y - BORDER_WIDTH, verticalLength, BORDER_WIDTH),
+                                   menuEdgeSource,
+                                   Color.White,
+                                   -MathHelper.PiOver2,
+                                   Vector2.Zero,
+                                   SpriteEffects.None,
+                                   _menuEdgeSeed + 4);
         }
     }
 
