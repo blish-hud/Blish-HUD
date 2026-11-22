@@ -56,7 +56,17 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             if (pkgManifest.ApiPermissions == null || pkgManifest.ApiPermissions.Count == 0) return false;
 
-            return pkgManifest.ApiPermissions.Keys.Except(_existingModule.Manifest.ApiPermissions.Keys).Any();
+            var installedPermissions = _existingModule.Manifest.ApiPermissions;
+
+            return pkgManifest.ApiPermissions.Any(pkgPermission => {
+                if (!installedPermissions.TryGetValue(pkgPermission.Key, out var installedPermission)) {
+                    // Permission did not exist in the installed version.
+                    return true;
+                }
+
+                // Permission was optional before but is now required.
+                return installedPermission?.Optional == true && pkgPermission.Value?.Optional == false;
+            });
         }
 
         private (Func<PkgManifest, ModuleManager, IProgress<string>, Task<(ModuleManager NewModule, bool Success, string Error)>> Action, string ActionText) GetPackageAction() {

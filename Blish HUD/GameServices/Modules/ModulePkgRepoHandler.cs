@@ -176,7 +176,7 @@ namespace Blish_HUD.Modules {
 
             progress?.Report(Strings.GameServices.ModulesService.PkgInstall_Progress_Upgrading);
 
-            var previousApiPermissions = existingModule.Manifest.ApiPermissions.Keys.ToArray();
+            var previousApiPermissions = existingModule.Manifest.ApiPermissions;
 
             string moduleName = Path.GetFileName(existingModule.DataReader.PhysicalPath);
 
@@ -190,7 +190,7 @@ namespace Blish_HUD.Modules {
 
             var installResult = await InstallPackage(pkgManifest, existingModule, progress);
 
-            installResult.NewModule?.MergeAddedApiPermissions(previousApiPermissions);
+            installResult.NewModule?.MergeApiPermissionChanges(previousApiPermissions);
 
             if (wasEnabled) {
                 // Ensure that module is set to enabled for when Blish HUD restarts
