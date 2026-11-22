@@ -163,6 +163,14 @@ namespace Blish_HUD.Modules {
         }
 
         /// <summary>
+        /// Accepts every API permission requested by the module.
+        /// </summary>
+        internal void AcceptAllApiPermissions() {
+            this.State.UserEnabledPermissions = this.Manifest.ApiPermissions.Keys.ToArray();
+            GameService.Settings.Save();
+        }
+
+        /// <summary>
         /// Accepts any API permissions added by a module update without changing permissions
         /// the user has already made a decision about.
         /// </summary>
@@ -183,6 +191,34 @@ namespace Blish_HUD.Modules {
                                                                                   .Distinct()
                                                                                   .ToArray();
             GameService.Settings.Save();
+        }
+
+        /// <summary>
+        /// Merges API permissions that were not part of the previously loaded version of the module.
+        /// This covers updates performed outside of the package repository, including across restarts.
+        /// </summary>
+        internal void MergeNewlyDeclaredApiPermissions() {
+            var currentPermissions  = this.Manifest.ApiPermissions.Keys.ToArray();
+            var previousPermissions = this.State.KnownApiPermissions;
+
+            if (previousPermissions == null) {
+                this.State.KnownApiPermissions = currentPermissions;
+                GameService.Settings.Save();
+                return;
+            }
+
+            var addedPermissions = currentPermissions.Except(previousPermissions).ToArray();
+
+            if (addedPermissions.Length > 0 && this.State.UserEnabledPermissions != null) {
+                this.State.UserEnabledPermissions = this.State.UserEnabledPermissions.Concat(addedPermissions)
+                                                                                      .Distinct()
+                                                                                      .ToArray();
+            }
+
+            if (addedPermissions.Length > 0 || previousPermissions.Length != currentPermissions.Length) {
+                this.State.KnownApiPermissions = currentPermissions;
+                GameService.Settings.Save();
+            }
         }
 
         public void Disable() {

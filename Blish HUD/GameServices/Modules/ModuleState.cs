@@ -10,6 +10,11 @@ namespace Blish_HUD.Modules {
 
         public TokenPermission[] UserEnabledPermissions { get; set; }
 
+        /// <summary>
+        /// The API permissions declared by the last loaded version of the module.
+        /// </summary>
+        public TokenPermission[] KnownApiPermissions { get; set; }
+
         public bool IgnoreDependencies { get; set; }
 
         public SettingCollection Settings { get; set; }
