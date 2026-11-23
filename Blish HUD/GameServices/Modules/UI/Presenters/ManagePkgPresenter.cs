@@ -48,25 +48,6 @@ namespace Blish_HUD.Modules.UI.Presenters {
 
             (_packageAction, this.View.PackageActionText) = GetPackageAction();
             this.View.PackageActionEnabled                = _packageAction != null;
-            this.View.NewPermissionsWarningVisible        = HasNewApiPermissions(_selectedVersion);
-        }
-
-        private bool HasNewApiPermissions(PkgManifest pkgManifest) {
-            if (_existingModule == null || pkgManifest.Version <= _existingModule.Manifest.Version) return false;
-
-            if (pkgManifest.ApiPermissions == null || pkgManifest.ApiPermissions.Count == 0) return false;
-
-            var installedPermissions = _existingModule.Manifest.ApiPermissions;
-
-            return pkgManifest.ApiPermissions.Any(pkgPermission => {
-                if (!installedPermissions.TryGetValue(pkgPermission.Key, out var installedPermission)) {
-                    // Permission did not exist in the installed version.
-                    return true;
-                }
-
-                // Permission was optional before but is now required.
-                return installedPermission?.Optional == true && pkgPermission.Value?.Optional == false;
-            });
         }
 
         private (Func<PkgManifest, ModuleManager, IProgress<string>, Task<(ModuleManager NewModule, bool Success, string Error)>> Action, string ActionText) GetPackageAction() {

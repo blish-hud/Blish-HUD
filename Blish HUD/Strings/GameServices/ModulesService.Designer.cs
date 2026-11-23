@@ -537,14 +537,5 @@ namespace Blish_HUD.Strings.GameServices {
                 return ResourceManager.GetString("PkgManagement_Update", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This update requests new API permissions..
-        /// </summary>
-        internal static string PkgManagement_Update_NewPermissions {
-            get {
-                return ResourceManager.GetString("PkgManagement_Update_NewPermissions", resourceCulture);
-            }
-        }
     }
 }

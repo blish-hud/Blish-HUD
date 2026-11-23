@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Gw2Sharp.WebApi.V2.Models;
 using JsonSubTypes;
 using Newtonsoft.Json;
 
@@ -26,12 +25,6 @@ namespace Blish_HUD.Modules.Pkgs {
 
         [JsonProperty("dependencies", NullValueHandling = NullValueHandling.Ignore), JsonConverter(typeof(ModuleDependency.VersionDependenciesConverter))]
         public List<ModuleDependency> Dependencies { get; private set; } = new List<ModuleDependency>(0);
-
-        /// <summary>
-        /// The API permissions requested by this version of the module.
-        /// </summary>
-        [JsonProperty("api_permissions", NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<TokenPermission, ModuleApiPermissions> ApiPermissions { get; private set; } = new Dictionary<TokenPermission, ModuleApiPermissions>(0);
 
         [JsonProperty("location", Required = Required.Always)]
         public string Location { get; set; }

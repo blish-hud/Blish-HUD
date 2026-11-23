@@ -212,9 +212,6 @@ Download some modules and place them in the modules folder.</value>
   <data name="PkgManagement_Update" xml:space="preserve">
     <value>Update</value>
   </data>
-  <data name="PkgManagement_Update_NewPermissions" xml:space="preserve">
-    <value>This update requests new API permissions.</value>
-  </data>
   <data name="PkgManagement_Install" xml:space="preserve">
     <value>Install</value>
   </data>
