@@ -1,25 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
-using nspector.Common;
-using nspector.Common.CustomSettings;
-using nspector.Common.Meta;
-using nspector.Native.NvApi.DriverSettings;
 
 namespace Blish_HUD.Debug {
     internal static class ContingencyChecks {
 
         #region Launch Checks
 
+        private static Task<string[]> _enabledNvidiaSettings;
+
         internal static void RunAll() {
+            // Runs in the background so we don't delay Blish HUD's startup.
+            _enabledNvidiaSettings = Task.Run(GetEnabledNvidiaSettings);
+
             CheckArcDps11Injected();
             CheckMinTls12();
             CheckControlledFolderAccessBlocking();
-            CheckNvidiaControlPanelSettings();
+        }
+
+        internal static void ReportDeferredChecks() {
+            string[] enabledNvidiaSettings = _enabledNvidiaSettings?.Result;
+
+            if (enabledNvidiaSettings?.Length > 0) {
+                Contingency.NotifyNvidiaSettings(string.Join(Environment.NewLine, enabledNvidiaSettings.Select(name => string.Format(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Error, name, "Off"))));
+            }
         }
 
         /// <summary>
@@ -70,48 +78,26 @@ namespace Blish_HUD.Debug {
             }
         }
 
+        // NVIDIA control panel settings that make Blish HUD render with an opaque background when set to 1 (on)
+        private static readonly (uint Id, string Name)[] _forbiddenNvidiaSettings = {
+            (0x1074C972, "Antialiasing - FXAA"),           // FXAA_ENABLE_ID
+            (0x0098C1AC, "Multi-Frame Sampled AA (MFAA)"), // MAXWELL_B_SAMPLE_INTERLEAVE_ID
+        };
+
         /// <summary>
-        /// Checks to ensure that non-default Nvidia control panel settings haven't been set for Blish HUD.
-        /// For specific settings, this can cause Blish HUD to render with an opaque background.
+        /// Returns the names of the forbidden NVIDIA settings that are on for Blish HUD.
+        /// Runs off the main thread and never throws.
         /// </summary>
-        private static void CheckNvidiaControlPanelSettings() {
+        private static string[] GetEnabledNvidiaSettings() {
             try {
-                var customSettingNames    = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.CustomSettingNames);
-                var referenceSettingNames = CustomSettingNames.FactoryLoadFromString(nspector.Properties.Resources.ReferenceSettingNames);
+                // Null right away on systems without an NVIDIA driver
+                var values = NvidiaDrs.GetDwordSettings(Application.ExecutablePath, _forbiddenNvidiaSettings.Select(setting => setting.Id));
 
-                var metaService      = new DrsSettingsMetaService(customSettingNames, referenceSettingNames);
-                var decrypterService = new DrsDecrypterService(metaService);
-                var scannerService   = new DrsScannerService(metaService, decrypterService);
-                var settingService   = new DrsSettingsService(metaService, decrypterService);
-
-                var forbiddenValues = new Dictionary<ESetting, HashSet<uint>>() {
-                    [ESetting.FXAA_ENABLE_ID] = new HashSet<uint>() { 1 },
-                    [ESetting.MAXWELL_B_SAMPLE_INTERLEAVE_ID] = new HashSet<uint>() { 1 }
-                };
-
-                // stored using forward slashes for some reason
-                string exePath = Application.ExecutablePath.Replace('\\', '/');
-                string blishProfileName = scannerService.FindProfilesUsingApplication(exePath);
-
-                var errors = new List<string>();
-                foreach (KeyValuePair<ESetting, HashSet<uint>> pair in forbiddenValues) {
-                    SettingMeta settingMeta = metaService.GetSettingMeta((uint)pair.Key);
-                    uint value = settingService.GetDwordValueFromProfile(blishProfileName, (uint)pair.Key);
-
-                    if (pair.Value.Contains(value)) {
-                        SettingValue<uint> settingValue = settingMeta.DwordValues.FirstOrDefault(val => val.Value == value);
-                        string val = settingValue?.ValueName ?? value.ToString();
-
-                        errors.Add(string.Format(Strings.GameServices.Debug.ContingencyMessages.NvidiaSettings_Error, settingMeta.SettingName, val));
-                    }
-                }
-
-                if (errors.Any()) {
-                    Contingency.NotifyNvidiaSettings(string.Join(Environment.NewLine, errors));
-                }
+                return _forbiddenNvidiaSettings.Where(setting => values != null && values.TryGetValue(setting.Id, out uint value) && value == 1)
+                                               .Select(setting => setting.Name)
+                                               .ToArray();
             } catch (Exception) {
-                 // we don't really care if we error here - usually means a non-nvidia system,
-                 // in which case the check is useless anyway.
+                return null; // Not a big deal if this fails
             }
         }
 

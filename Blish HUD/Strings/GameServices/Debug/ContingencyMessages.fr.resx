@@ -177,7 +177,7 @@ Si vous avez un anti-virus ou utilisez un pare-feu tiers, merci de vérifier que
     <value>Il y a d'autres instances de Blish HUD de lancée. Merci de fermer les autres instances avant de relancer Blish HUD pour finir la mise à jour.</value>
   </data>
   <data name="NvidiaSettings_Error" xml:space="preserve">
-    <value>'{0}' ne devrait pas être '{1}'</value>
+    <value>'{0}' devrait être '{1}'</value>
   </data>
   <data name="NvidiaSettings_Description" xml:space="preserve">
     <value>Un de vos paramètres NVIDIA a été modifié de manière incompatible avec Blish HUD (Blish HUD aura un fond noir).

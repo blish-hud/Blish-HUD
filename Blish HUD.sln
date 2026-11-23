@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Resources.Designer.t4 = Resources.Designer.t4
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nspector", "nspector\nspector.csproj", "{51CEA931-296F-4A96-A3CF-28691A90BFCB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,10 +21,6 @@ Global
 		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Debug|x64.Build.0 = Debug|x64
 		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x64.ActiveCfg = Release|x64
 		{AA22EEFD-87BC-46BA-A9EC-493B7985C82F}.Release|x64.Build.0 = Release|x64
-		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Debug|x64.Build.0 = Debug|Any CPU
-		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Release|x64.ActiveCfg = Release|Any CPU
-		{51CEA931-296F-4A96-A3CF-28691A90BFCB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

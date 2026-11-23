@@ -259,7 +259,7 @@ namespace Blish_HUD.Strings.GameServices.Debug {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &apos;{0}&apos; should not be &apos;{1}&apos;.
+        ///   Looks up a localized string similar to &apos;{0}&apos; should be &apos;{1}&apos;.
         /// </summary>
         internal static string NvidiaSettings_Error {
             get {
