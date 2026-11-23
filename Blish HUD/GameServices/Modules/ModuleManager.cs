@@ -162,39 +162,6 @@ namespace Blish_HUD.Modules {
                        .ToArray();
         }
 
-        /// <summary>
-        /// Accepts API permissions that were added or changed to required by a module update.
-        /// </summary>
-        /// <param name="previousApiPermissions">The API permissions requested by the previous version of the module.</param>
-        internal void MergeApiPermissionChanges(IReadOnlyDictionary<TokenPermission, ModuleApiPermissions> previousApiPermissions) {
-            if (this.State.UserEnabledPermissions == null) {
-                // Nothing has been saved yet, so default all requested permissions on.
-                this.State.UserEnabledPermissions = this.Manifest.ApiPermissions.Keys.ToArray();
-                GameService.Settings.Save();
-                return;
-            }
-
-            var changedPermissions = this.Manifest.ApiPermissions
-                                         .Where(currentPermission => {
-                                             if (!previousApiPermissions.TryGetValue(currentPermission.Key, out var previousPermission)) {
-                                                 // Permission is new in this version.
-                                                 return true;
-                                             }
-
-                                             // Permission was optional before but is now required.
-                                             return previousPermission?.Optional == true && currentPermission.Value?.Optional == false;
-                                         })
-                                         .Select(currentPermission => currentPermission.Key)
-                                         .ToArray();
-
-            if (changedPermissions.Length == 0) return;
-
-            this.State.UserEnabledPermissions = this.State.UserEnabledPermissions.Concat(changedPermissions)
-                                                                                  .Distinct()
-                                                                                  .ToArray();
-            GameService.Settings.Save();
-        }
-
         public void Disable() {
             if (!this.Enabled) return;
 
