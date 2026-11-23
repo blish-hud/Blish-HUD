@@ -107,8 +107,6 @@ namespace Blish_HUD {
             // Avoid loading the same module multiple times (ensure we load the highest version).
             var existingModule = _modules.FirstOrDefault(module => string.Equals(moduleManifest.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase));
 
-            bool replacingExistingModule = false;
-
             if (existingModule != null) {
                 Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} is a duplicate of this module.  Please remove any duplicate module(s).",
                             moduleManifest.Namespace,
@@ -120,7 +118,6 @@ namespace Blish_HUD {
                 } else {
                     // This version is newer than the existing one, so replace it
                     UnregisterModule(existingModule);
-                    replacingExistingModule = true;
                 }
             }
 
@@ -131,13 +128,6 @@ namespace Blish_HUD {
             var moduleManager = new ModuleManager(moduleManifest,
                                                   _moduleStates.Value[moduleManifest.Namespace],
                                                   moduleReader);
-
-            moduleManager.MergeNewlyDeclaredApiPermissions();
-
-            if (replacingExistingModule) {
-                // Modules replaced manually are trusted to accept all permissions requested by the new version.
-                moduleManager.AcceptAllApiPermissions();
-            }
 
             if (ModuleIsExplicitlyIncompatible(moduleManager)) {
                 Logger.Warn("The module {module} is not compatible with this version of Blish HUD so it will not allow you to enable it.  Please remove the module or update to a compatible version if one is available.",
@@ -311,8 +301,6 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
-                // The developer explicitly requested this module, so accept all of its permissions.
-                debugModule?.AcceptAllApiPermissions();
                 debugModule?.TryEnable(true);
             }
 
