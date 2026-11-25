@@ -19,6 +19,7 @@ namespace Blish_HUD {
         /// The timespan after which ArcDPS is treated as not responding.
         /// </summary>
         private readonly TimeSpan _leeway = TimeSpan.FromMilliseconds(1000);
+        private readonly TimeSpan _bridgeProbeTimeout = TimeSpan.FromMilliseconds(50);
         private readonly CancellationTokenSource _arcDpsClientCancellationTokenSource = new CancellationTokenSource();
         private readonly List<Action> _registerListeners = new List<Action>();
         private IArcDpsClient _arcDpsClient;
@@ -187,25 +188,32 @@ namespace Blish_HUD {
         }
 
         private ArcDpsBridgeVersion GetVersion(uint processId) {
-            try {
-                var port = GetPort(processId, ArcDpsBridgeVersion.V2);
-                var client = new TcpClient();
-                client.Connect(new IPEndPoint(IPAddress.Loopback, port));
-                client.Dispose();
+            if (IsBridgeListening(GetPort(processId, ArcDpsBridgeVersion.V2))) {
                 return ArcDpsBridgeVersion.V2;
-            } catch (Exception) {
             }
 
-            try {
-                var port = GetPort(processId, ArcDpsBridgeVersion.V1);
-                var client = new TcpClient();
-                client.Connect(new IPEndPoint(IPAddress.Loopback, port));
-                client.Dispose();
+            if (IsBridgeListening(GetPort(processId, ArcDpsBridgeVersion.V1))) {
                 return ArcDpsBridgeVersion.V1;
-            } catch (Exception) {
             }
 
             return ArcDpsBridgeVersion.None;
+        }
+
+        private bool IsBridgeListening(int port) {
+            var client = new TcpClient();
+
+            try {
+                var connectTask = client.ConnectAsync(IPAddress.Loopback, port);
+
+                // Observe the exception so it isn't raised as an unobserved task exception.
+                connectTask.ContinueWith(t => _ = t.Exception, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+
+                return connectTask.Wait(_bridgeProbeTimeout) && client.Connected;
+            } catch (Exception) {
+                return false;
+            } finally {
+                client.Dispose();
+            }
         }
     }
 
