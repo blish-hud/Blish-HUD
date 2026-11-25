@@ -145,7 +145,7 @@
     <value>Erforderliche Berechtigungen:</value>
   </data>
   <data name="ApiPermission_ApprovalRequired" xml:space="preserve">
-    <value>Dieses Modul benötigt die Zustimmung zu neuen API-Berechtigungen, bevor es aktiviert werden kann.</value>
+    <value>Dieses Modul benötigt die Zustimmung zu neuen API-Berechtigungen, bevor es aktiviert werden kann:</value>
   </data>
   <data name="Dependency_MissingDependencies" xml:space="preserve">
     <value>Dieses Modul verlässt sich auf Abhängigkeiten die derzeit nicht verfügbar sind:</value>

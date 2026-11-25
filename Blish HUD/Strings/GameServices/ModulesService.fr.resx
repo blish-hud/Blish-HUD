@@ -145,7 +145,7 @@
     <value>Permissions requises manquantes :</value>
   </data>
   <data name="ApiPermission_ApprovalRequired" xml:space="preserve">
-    <value>Ce module nécessite l'approbation de nouvelles permissions API avant de pouvoir être activé.</value>
+    <value>Ce module nécessite l'approbation de nouvelles permissions API avant de pouvoir être activé:</value>
   </data>
   <data name="Dependency_MissingDependencies" xml:space="preserve">
     <value>Ce module a des dépendances non disponibles actuellement :</value>

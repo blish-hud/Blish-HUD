@@ -79,12 +79,13 @@ namespace Blish_HUD.Modules.UI.Views {
                     Parent           = _permissionFlowPanel
                 };
 
+                // Required permissions are always checked and cannot be unchecked.
+                // Set the initial state before subscribing so loading the view doesn't save permissions.
+                permissionCheckbox.Checked = set || !optional;
+
                 permissionCheckbox.CheckedChanged += delegate (object sender, CheckChangedEvent e) {
                     this.PermissionStateChanged?.Invoke(this, new KeyedValueChangedEventArgs<TokenPermission, bool>(permission, e.Checked));
                 };
-
-                // Required permissions are always checked and cannot be unchecked.
-                permissionCheckbox.Checked = set || !optional;
             }
 
             // Show "No permissions requested" if there are none

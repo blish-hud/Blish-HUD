@@ -125,7 +125,7 @@
     <value>Missing required permissions:</value>
   </data>
   <data name="ApiPermission_ApprovalRequired" xml:space="preserve">
-    <value>This module requires approval for new API permissions before it can be enabled.</value>
+    <value>This module requires approval for new API permissions before it can be enabled:</value>
   </data>
   <data name="Dependency_MissingDependencies" xml:space="preserve">
     <value>This module relies on dependencies not currently available:</value>
