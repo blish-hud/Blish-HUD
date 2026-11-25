@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
@@ -34,12 +35,23 @@ namespace Blish_HUD {
 
         private const string MODULE_COMPATIBILITYLIST = "compatibility.json";
         private const string MODULE_SPOILEDURI        = "https://pkgs.blishhud.com/spoiled.json";
+        private const string MODULE_SPOILEDCACHE      = "spoiled.json";
+
+        /// <summary>
+        /// Maximum time <see cref="Load"/> will wait on the spoiled modules list before
+        /// continuing with the cached copy.  This list is fetched over the network and must
+        /// never be allowed to stall startup (a slow or unreachable endpoint used to block
+        /// for over 40 seconds in the worst case).
+        /// </summary>
+        private const int SPOILED_LIST_TIMEOUT_MS = 1000;
 
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleRegistered;
         public event EventHandler<ValueEventArgs<ModuleManager>> ModuleUnregistered;
 
         private List<ModuleDependency> _incompatibleModules      = new List<ModuleDependency>(0);
         private HashSet<string>        _spoiledModuleIdentifiers = new HashSet<string>(0);
+
+        private Task _spoiledModuleIdentifiersTask;
 
         /// <summary>
         /// Access to repo management and state.
@@ -66,6 +78,13 @@ namespace Blish_HUD {
             _moduleSettings = Settings.RegisterRootSettingCollection(MODULE_SETTINGS);
 
             DefineSettings(_moduleSettings);
+
+            // Use the last successfully downloaded copy until the fresh one arrives.
+            LoadCachedSpoiledList();
+
+            // Kick off the download now so it has the rest of the initialization to
+            // complete before Load() needs it (instead of blocking startup on it).
+            _spoiledModuleIdentifiersTask = Task.Run(DownloadAndCacheSpoiledListAsync);
         }
 
         private void DefineSettings(SettingCollection settings) {
@@ -172,12 +191,64 @@ namespace Blish_HUD {
             }
         }
 
-        private void LoadSpoiledList() {
+        private static string SpoiledListCachePath => DirectoryUtil.CachePath != null
+                                                          ? Path.Combine(DirectoryUtil.CachePath, MODULE_SPOILEDCACHE)
+                                                          : null;
+
+        private void LoadCachedSpoiledList() {
+            string cachePath = SpoiledListCachePath;
+
+            if (cachePath == null || !File.Exists(cachePath)) {
+                return;
+            }
+
             try {
-                // We block for this on purpose
-                _spoiledModuleIdentifiers = MODULE_SPOILEDURI.GetJsonAsync<string[]>().GetAwaiter().GetResult().ToHashSet();
+                string[] cachedIdentifiers = JsonConvert.DeserializeObject<string[]>(File.ReadAllText(cachePath));
+
+                if (cachedIdentifiers != null) {
+                    _spoiledModuleIdentifiers = cachedIdentifiers.ToHashSet();
+                }
             } catch (Exception ex) {
-                Logger.Warn(ex, "Failed to load the spoiled modules list!");
+                Logger.Warn(ex, "Failed to load the cached spoiled modules list from {cachePath}.", cachePath);
+            }
+        }
+
+        private async Task DownloadAndCacheSpoiledListAsync() {
+            string[] spoiledIdentifiers;
+
+            try {
+                spoiledIdentifiers = await MODULE_SPOILEDURI.GetJsonAsync<string[]>();
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to load the spoiled modules list.  Using the cached copy if one is available.");
+                return;
+            }
+
+            _spoiledModuleIdentifiers = spoiledIdentifiers.ToHashSet();
+
+            string cachePath = SpoiledListCachePath;
+
+            if (cachePath == null) {
+                return;
+            }
+
+            try {
+                File.WriteAllText(cachePath, JsonConvert.SerializeObject(spoiledIdentifiers));
+            } catch (Exception ex) {
+                Logger.Warn(ex, "Failed to cache the spoiled modules list to {cachePath}.", cachePath);
+            }
+        }
+
+        private void LoadSpoiledList() {
+            if (_spoiledModuleIdentifiersTask == null) {
+                return;
+            }
+
+            // We block for this on purpose so that modules can be checked for incompatibility
+            // before they are enabled, but only for a short time.  If the request has not
+            // completed by then we continue with the cached copy while the download finishes
+            // in the background.
+            if (!_spoiledModuleIdentifiersTask.Wait(SPOILED_LIST_TIMEOUT_MS)) {
+                Logger.Info("Spoiled modules list was not available within {timeoutMs} ms.  Using the cached copy and continuing to update it in the background.", SPOILED_LIST_TIMEOUT_MS);
             }
         }
 
