@@ -99,6 +99,8 @@ namespace Blish_HUD {
             foreach (var service in GameService.All) {
                 service.DoLoad();
             }
+
+            Debug.ContingencyChecks.ReportDeferredChecks();
         }
 
         protected override void UnloadContent() {

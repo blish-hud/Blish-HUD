@@ -185,7 +185,7 @@ Diese Einstellungen müssen auf die Standardeinstellungen zurückgesetzt werden:
 Siehe den verlinkten Fehlerbehebungsleitfaden für weitere Informationen zur Behebung dieses Problems.</value>
   </data>
   <data name="NvidiaSettings_Error" xml:space="preserve">
-    <value>'{0}' sollte nicht '{1}' sein</value>
+    <value>'{0}' sollte '{1}' sein</value>
   </data>
   <data name="NvidiaSettings_OpenControlPanelAction" xml:space="preserve">
     <value>NVIDIA-Systemsteuerung öffnen</value>

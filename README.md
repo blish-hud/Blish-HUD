@@ -43,7 +43,7 @@ Pull requests are welcome. You are encouraged to join the discussion in the [Bli
 
 #### Instructions
 
-1.  Clone the repo: `git clone -v --recurse-submodules --progress  https://github.com/blish-hud/Blish-HUD.git`
+1.  Clone the repo: `git clone -v --progress https://github.com/blish-hud/Blish-HUD.git`
 2.  Launch the project solution (.sln file) in Visual Studio.
 3.  Open menu: `Tools` -> `NuGet Package Manager` -> `Package Manager Settings`
 4.  Go to `Package Sources` and check if `nuget.org` is available. If not, add a new one with name `nuget.org` and source `https://api.nuget.org/v3/index.json`
