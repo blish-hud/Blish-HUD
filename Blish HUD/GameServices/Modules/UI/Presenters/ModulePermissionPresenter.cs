@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
@@ -23,7 +22,9 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void ViewOnPermissionStateChanged(object sender, KeyedValueChangedEventArgs<TokenPermission, bool> e) {
-            var newPermissionList = this.Model.State.UserEnabledPermissions?.ToList() ?? new List<TokenPermission>(1);
+            // When nothing has been saved yet, all requested permissions are enabled by default.
+            var newPermissionList = this.Model.State.UserEnabledPermissions?.ToList()
+                                 ?? this.Model.Manifest.ApiPermissions.Keys.ToList();
 
             if (e.Value) {
                 if (!newPermissionList.Contains(e.Key)) {
@@ -36,6 +37,8 @@ namespace Blish_HUD.Modules.UI.Presenters {
             this.Model.State.UserEnabledPermissions = newPermissionList.ToArray();
 
             GameService.Settings.Save();
+
+            UpdateStatus();
         }
 
         private void ModelOnModuleEnabled(object sender, EventArgs e) {
@@ -62,7 +65,15 @@ namespace Blish_HUD.Modules.UI.Presenters {
         }
 
         private void UpdateStatus() {
-            if (this.Model.Enabled && this.Model.Manifest.ApiPermissions.Any()) {
+            var missingPermissions = this.Model.GetMissingRequiredApiPermissions();
+
+            // State.Enabled remains true when a previously enabled module was blocked from auto-enabling,
+            // which distinguishes an update that needs new permissions from a fresh install.
+            if (!this.Model.Enabled && this.Model.State.Enabled && missingPermissions.Length > 0) {
+                this.View.SetDetails(
+                    $"{Strings.GameServices.ModulesService.ApiPermission_ApprovalRequired} {string.Join(", ", missingPermissions)}",
+                    TitledDetailView.DetailLevel.Warning);
+            } else if (this.Model.Enabled && this.Model.Manifest.ApiPermissions.Any()) {
                 this.View.SetDetails(Strings.GameServices.ModulesService.ApiPermission_NotEditable,
                                      TitledDetailView.DetailLevel.Info);
             } else {

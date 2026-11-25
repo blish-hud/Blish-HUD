@@ -71,17 +71,21 @@ namespace Blish_HUD.Modules.UI.Views {
 
             foreach ((var permission, bool optional, string description, bool set) in permissions) {
                 var permissionCheckbox = new Checkbox() {
-                    Text             = permission.ToString(),
+                    Text             = optional
+                                           ? permission.ToString()
+                                           : $"{permission} {Strings.GameServices.ModulesService.ApiPermission_RequiredSuffix}",
                     Enabled          = optional && this.Editable,
                     BasicTooltipText = description,
                     Parent           = _permissionFlowPanel
                 };
 
+                // Required permissions are always checked and cannot be unchecked.
+                // Set the initial state before subscribing so loading the view doesn't save permissions.
+                permissionCheckbox.Checked = set || !optional;
+
                 permissionCheckbox.CheckedChanged += delegate (object sender, CheckChangedEvent e) {
                     this.PermissionStateChanged?.Invoke(this, new KeyedValueChangedEventArgs<TokenPermission, bool>(permission, e.Checked));
                 };
-
-                permissionCheckbox.Checked = set || !optional;
             }
 
             // Show "No permissions requested" if there are none
@@ -90,13 +94,9 @@ namespace Blish_HUD.Modules.UI.Views {
 
         private void ResetCheckboxStates() {
             var checkboxes = _permissionFlowPanel.GetChildrenOfType<Checkbox>().ToArray();
-            if (Editable) {
-                for (int i = 0; i < checkboxes.Length; i++)
-                    checkboxes[i].Enabled = _checkboxStates[i];
-            } else {
-                foreach (var checkbox in checkboxes) {
-                    checkbox.Enabled = false;
-                }
+
+            for (int i = 0; i < checkboxes.Length; i++) {
+                checkboxes[i].Enabled = this.Editable && _checkboxStates[i];
             }
         }
     }

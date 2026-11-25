@@ -61,6 +61,15 @@ namespace Blish_HUD.Strings.GameServices {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This module requires approval for new API permissions before it can be enabled..
+        /// </summary>
+        internal static string ApiPermission_ApprovalRequired {
+            get {
+                return ResourceManager.GetString("ApiPermission_ApprovalRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Missing required permissions:.
         /// </summary>
         internal static string ApiPermission_MissingRequiredPermissions {
@@ -111,6 +120,15 @@ namespace Blish_HUD.Strings.GameServices {
         internal static string ApiPermission_Required {
             get {
                 return ResourceManager.GetString("ApiPermission_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (required).
+        /// </summary>
+        internal static string ApiPermission_RequiredSuffix {
+            get {
+                return ResourceManager.GetString("ApiPermission_RequiredSuffix", resourceCulture);
             }
         }
         

@@ -4,8 +4,10 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Blish_HUD.Content;
+using Gw2Sharp.WebApi.V2.Models;
 
 namespace Blish_HUD.Modules {
 
@@ -70,10 +72,43 @@ namespace Blish_HUD.Modules {
         }
 
         public bool TryEnable() {
+            return TryEnable(false);
+        }
+
+        /// <summary>
+        /// Attempts to enable the module.
+        /// </summary>
+        /// <param name="userInitiated">
+        /// Indicates that the user explicitly requested the module to be enabled. When <see langword="true"/>,
+        /// missing required API permissions are approved as part of the user's consent.
+        /// </param>
+        public bool TryEnable(bool userInitiated) {
             if (this.Enabled                                             // We're already enabled.
              || this.IsModuleAssemblyStateDirty                          // User updated the module after the old assembly had already been enabled.
              || GameService.Module.ModuleIsExplicitlyIncompatible(this)) // Module is on the explicit "incompatibile" list.
                 return false;
+
+            var missingPermissions = this.GetMissingRequiredApiPermissions();
+
+            if (userInitiated) {
+                if (this.State.UserEnabledPermissions == null) {
+                    // Nothing has been saved yet, so default all requested permissions on.
+                    this.State.UserEnabledPermissions = this.Manifest.ApiPermissions.Keys.ToArray();
+                    GameService.Settings.Save();
+                } else if (missingPermissions.Length > 0) {
+                    // An explicit enable request from the user is consent for any required permissions.
+                    this.State.UserEnabledPermissions = this.State.UserEnabledPermissions.Concat(missingPermissions)
+                                                                                          .Distinct()
+                                                                                          .ToArray();
+                    GameService.Settings.Save();
+                }
+            } else if (missingPermissions.Length > 0) {
+                Logger.Warn("Module {module} requires approval for API permission(s): {permissions}.",
+                            this.Manifest.GetDetailedName(),
+                            string.Join(", ", missingPermissions));
+
+                return false;
+            }
 
             var moduleParams = ModuleParameters.BuildFromManifest(this.Manifest, this);
 
@@ -116,6 +151,15 @@ namespace Blish_HUD.Modules {
             GameService.Module.SortMenuItems();
 
             return this.Enabled;
+        }
+
+        internal TokenPermission[] GetMissingRequiredApiPermissions() {
+            var approvedPermissions = this.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>();
+
+            return this.Manifest.ApiPermissions
+                       .Where(pair => !pair.Value.Optional && !approvedPermissions.Contains(pair.Key))
+                       .Select(pair => pair.Key)
+                       .ToArray();
         }
 
         public void Disable() {

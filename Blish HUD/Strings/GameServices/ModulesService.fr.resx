@@ -123,6 +123,9 @@
   <data name="ApiPermission_Required" xml:space="preserve">
     <value>Requis</value>
   </data>
+  <data name="ApiPermission_RequiredSuffix" xml:space="preserve">
+    <value>(requis)</value>
+  </data>
   <data name="ApiPermission_Optional" xml:space="preserve">
     <value>Optionel</value>
   </data>
@@ -140,6 +143,9 @@
   </data>
   <data name="ApiPermission_MissingRequiredPermissions" xml:space="preserve">
     <value>Permissions requises manquantes :</value>
+  </data>
+  <data name="ApiPermission_ApprovalRequired" xml:space="preserve">
+    <value>Ce module nécessite l'approbation de nouvelles permissions API avant de pouvoir être activé:</value>
   </data>
   <data name="Dependency_MissingDependencies" xml:space="preserve">
     <value>Ce module a des dépendances non disponibles actuellement :</value>

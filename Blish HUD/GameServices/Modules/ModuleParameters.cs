@@ -55,7 +55,7 @@ namespace Blish_HUD.Modules {
                  *  3. The user updates the module to a version that has a new required permission which haven't been explicitly approved.
                  */
                 // TODO: Show a popup instead that just asks the user if the new permission(s) is/are okay
-                Logger.Warn("An attempt was made to enable the module {module} before all of the required API permissions have been approved.", module.ToString());
+                Logger.Warn("An attempt was made to enable module {module} before all required API permissions were approved.", module.Manifest.GetDetailedName());
                 return null;
             }
 

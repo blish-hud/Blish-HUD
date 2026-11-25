@@ -106,6 +106,7 @@ namespace Blish_HUD {
 
             // Avoid loading the same module multiple times (ensure we load the highest version).
             var existingModule = _modules.FirstOrDefault(module => string.Equals(moduleManifest.Namespace, module.Manifest.Namespace, StringComparison.OrdinalIgnoreCase));
+
             if (existingModule != null) {
                 Logger.Warn("A module with the namespace {moduleNamespace} has has already been loaded.  The module at path {modulePath} is a duplicate of this module.  Please remove any duplicate module(s).",
                             moduleManifest.Namespace,
@@ -300,7 +301,7 @@ namespace Blish_HUD {
                     Logger.Warn("Failed to load module from path {modulePath}.", ApplicationSettings.Instance.DebugModulePath);
                 }
 
-                debugModule?.TryEnable();
+                debugModule?.TryEnable(true);
             }
 
             HandleRefLoading();

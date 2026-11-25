@@ -58,7 +58,18 @@ namespace Blish_HUD.Modules.Managers {
         }
 
         internal static Gw2ApiManager GetModuleInstance(ModuleManager module) {
-            return new Gw2ApiManager(module.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>(), GameService.Gw2WebApi.GetConnection(string.Empty));
+            var missingRequired = module.GetMissingRequiredApiPermissions();
+
+            if (missingRequired.Length > 0) {
+                Logger.Warn("Module {module} requires unapproved API permission(s): {permissions}.",
+                            module.Manifest.GetDetailedName(),
+                            string.Join(", ", missingRequired));
+
+                return null;
+            }
+
+            return new Gw2ApiManager(module.State.UserEnabledPermissions ?? Array.Empty<TokenPermission>(),
+                                     GameService.Gw2WebApi.GetConnection(string.Empty));
         }
 
         internal async Task RenewSubtoken() {
