@@ -124,7 +124,7 @@
     <value>Überschreiben</value>
   </data>
   <data name="Hotkey_AssignInputsTo" xml:space="preserve">
-    <value>Eingaben zuweisen nach: {0}</value>
+    <value>Eingaben zuweisen an: {0}</value>
   </data>
   <data name="Input_Mouse2" xml:space="preserve">
     <value>Maus 2</value>

@@ -127,7 +127,7 @@
     <value>FPS-Limitierung</value>
   </data>
   <data name="Setting_FramerateLimiter_Description" xml:space="preserve">
-    <value>Diese Methode bestimmte die Bildrate mit der Blish HUD ausgeführt wird.</value>
+    <value>Diese Methode bestimmt die Bildrate, mit der Blish HUD ausgeführt wird.</value>
   </data>
   <data name="Setting_SmoothCharacterPosition_DisplayName" xml:space="preserve">
     <value>Weiche Charakterposition</value>
@@ -136,13 +136,13 @@
     <value>Wenn aktiviert, wird die Charakterposition reibungsloser aktualisiert, um zu verhindern, dass 3D-Elemente des Overlays herumspringen.</value>
   </data>
   <data name="Setting_DPIScaling_Description" xml:space="preserve">
-    <value>Aktiviert zusätzliche Skalierung von der UI entsprechend der Systemeinstellungen.</value>
+    <value>Aktiviert zusätzliche Skalierung der UI entsprechend den Systemeinstellungen.</value>
   </data>
   <data name="Setting_DPIScaling_DisplayName" xml:space="preserve">
-    <value>DPI Skalierung</value>
+    <value>DPI-Skalierung</value>
   </data>
   <data name="Setting_UIScaling_Description" xml:space="preserve">
-    <value>Bestimmt die Skalierung des UI. Entweder in Synchronisation mit den Spiel oder manuell. HINWEIS: 'Automatisch' wird sich nur aktualisieren, wenn du mit einem Charakter eingeloggt bist.</value>
+    <value>Bestimmt die Skalierung des UI. Entweder in Synchronisation mit dem Spiel oder manuell. HINWEIS: 'Automatisch' wird sich nur aktualisieren, wenn du mit einem Charakter eingeloggt bist.</value>
   </data>
   <data name="Setting_UIScaling_DisplayName" xml:space="preserve">
     <value>Interface-Größe</value>
