@@ -129,7 +129,7 @@ Starte Blish HUD als Administrator neu oder Guild Wars 2 ohne Administrator.</va
     <value>Schau in unserem &lt;a href="{0}"&gt;Leitfaden zur Fehlerbehebung (Englisch)&lt;/a&gt; nach dem Fehler oder besuche uns auf unserem &lt;a href="{1}"&gt;Discord 💢 Hilfe-Kanal&lt;/a&gt;.</value>
   </data>
   <data name="ArcDpsSameDir_Description" xml:space="preserve">
-    <value>Es gibt eine 'd3dll.dll' (z.B. ArcDPS) im selben Ordner wie Blish HUD. Dies hat zur Folge, dass versucht wird, sie in Blish HUD zu laden und einen Absturz zu verursachen. Bitte verschiebe Blish HUD in ein anderes Verzeichnis.</value>
+    <value>Blish HUD befindet sich im gleichen Verzeichnis wie die Datei 'd3d11.dll' (z.B. ArcDPS / Nexus). Dies hat zur Folge, dass versucht wird, sie in Blish HUD zu laden, was einen Absturz zur Folge hätte. Bitte verschiebe Blish HUD in ein anderes Verzeichnis.</value>
   </data>
   <data name="ArcDpsSameDir_Title" xml:space="preserve">
     <value>Blish HUD konnte nicht gestartet werden!</value>
